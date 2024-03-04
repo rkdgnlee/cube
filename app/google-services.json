@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "146411765594",
+    "project_id": "multi-home-gym",
+    "storage_bucket": "multi-home-gym.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:146411765594:android:6ac7ac323aaad6adfbbd63",
+        "android_client_info": {
+          "package_name": "com.example.mhg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "146411765594-oc1njm5undovc7jhkjcv8uhsufbsnl2b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mhg",
+            "certificate_hash": "56a79fe9b17660533f6a513a6d573755d1ec3da1"
+          }
+        },
+        {
+          "client_id": "146411765594-rkqkd2rp7imrkn8elcj5huquvf4gvri8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD4w79vsQ0LgKWmmqU9iq1pkuhr5zk4Us"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "146411765594-rkqkd2rp7imrkn8elcj5huquvf4gvri8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
