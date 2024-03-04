@@ -1,8 +1,8 @@
 <?php 
 $servername = "localhost";
 $username = "root";
-$password = "";
-$dbname = "mobileappDB";
+$password = "tangoplus0585!";
+$dbname = "tango_gym_test";
 
 $con = mysqli_connect($servername, $username, $password, $dbname);
 
@@ -20,6 +20,7 @@ if (!$con) {
 mysqli_set_charset($con, "utf8");
 $method = $_SERVER['REQUEST_METHOD'];
 $data = json_decode(file_get_contents('php://input'), true);
+// $data = json_decode($output, true);
 
 switch($method) {
     case 'POST': 
@@ -39,19 +40,6 @@ switch($method) {
         mysqli_close($con);
         break;
     case 'PUT': 
-        // if (isset($data["id"])) {
-        //     $sql = "UPDATE t_user SET token = ?, user_name = ?, user_gender = ?, mobile = ?, user_email = ?, birthday= ? WHERE id= ?";
-        //     $stmt = mysqli_prepare($con, $sql);
-        //     mysqli_stmt_bind_param($stmt, "ssssssi", $data["token"], $data["user_name"], $data["user_gender"], $data["mobile"], $data["user_email"], $data["birthday"], $data["id"]);
-        //     $res = mysqli_stmt_execute($stmt);
-        //     if ($res === TRUE) {
-        //         echo "Update Successfully";
-        //     } else {
-        //         echo "Update Error: " . mysqli_error($con);
-        //     };
-        // //     mysqli_close($con);
-        // //     break;
-        // } else {
             $sql = "INSERT INTO t_user (user_id, user_password, user_name, user_gender, user_grade, register_date, mobile, user_email, birthday, last_login_date, modify_date, height, weight, address ,address_detail, login_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = mysqli_prepare($con, $sql);
             $encrypted_password = openssl_encrypt($data["user_password"], $cipher, $key, $options= 0, $iv, $tag);
@@ -65,8 +53,6 @@ switch($method) {
             };
             mysqli_close($con);
             break;
-        // }
-    
     case 'DELETE':
         $sql = "DELETE FROM t_user WHERE login_token= ?";
         $stmt = mysqli_prepare($con, $sql);

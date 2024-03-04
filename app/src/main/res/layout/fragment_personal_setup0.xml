@@ -71,21 +71,6 @@
                 app:layout_constraintStart_toStartOf="@+id/etPwRepeat"
                 app:layout_constraintTop_toBottomOf="@+id/etPwRepeat" />
 
-            <Button
-                android:id="@+id/btnBbatonOAuth"
-                android:layout_width="130dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="@color/orange"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="비바톤 인증"
-                app:cornerRadius="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/etPhoneNum"
-                app:layout_constraintStart_toEndOf="@+id/etPhoneNum"
-                app:layout_constraintTop_toTopOf="@+id/etPhoneNum"
-                app:layout_constraintVertical_bias="0.437" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

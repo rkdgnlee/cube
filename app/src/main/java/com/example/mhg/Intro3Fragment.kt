@@ -45,10 +45,8 @@ import java.lang.Exception
 
 class Intro3Fragment : Fragment() {
     lateinit var binding: FragmentIntro3Binding
-
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
-
 
     private val TAG = this.javaClass.simpleName
     private lateinit var viewModel: UserViewModel
@@ -88,22 +86,22 @@ class Intro3Fragment : Fragment() {
                                                 // ---- Google 토큰에서 가져오기 시작 ----
                                                 val user: FirebaseUser = firebaseAuth.currentUser!!
 //                                            setToken(requireContext(), "google", firebaseAuth.currentUser.toString())
-                                                val JSonObj = JSONObject()
-                                                JSonObj.put("user_name", user.displayName.toString())
-                                                JSonObj.put("user_email", user.email.toString())
-                                                JSonObj.put("mobile", user.phoneNumber.toString())
-                                                JSonObj.put("login_token", tokenId)
-                                                
-                                                fetchJson(R.string.IP_ADDRESS.toString(), JSonObj.toString(), "PUT")
+                                                val JsonObj = JSONObject()
+                                                JsonObj.put("user_name", user.displayName.toString())
+                                                JsonObj.put("user_email", user.email.toString())
+                                                JsonObj.put("mobile", user.phoneNumber.toString())
+                                                JsonObj.put("login_token", tokenId)
+                                                viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
 
                                                 val DataInstance = UserVO(
-                                                    name = user.displayName.toString(),
-                                                    email = user.email.toString(),
-                                                    phoneNumber = user.phoneNumber.toString(),
+                                                    user_name = user.displayName.toString(),
+                                                    user_email = user.email.toString(),
+                                                    mobile = user.phoneNumber.toString(),
+                                                    login_token = tokenId
                                                 )
                                                 viewModel.User.value = DataInstance
 
-                                                Log.d("구글로그인", "이름: ${viewModel.User.value?.name}, 이메일: ${viewModel.User.value?.email}, 핸드폰번호: ${viewModel.User.value?.phoneNumber}")
+                                                Log.d("구글로그인", "이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 핸드폰번호: ${viewModel.User.value?.mobile}")
                                                 val googleSignInToken = account.idToken ?: ""
                                                 if (googleSignInToken != "") {
                                                     Log.e(TAG, "googleSignInToken : $googleSignInToken")
@@ -180,24 +178,25 @@ class Intro3Fragment : Fragment() {
                     override fun onFailure(httpStatus: Int, message: String) {}
 
                     override fun onSuccess(result: NidProfileResponse) {
-                        val JSonObj = JSONObject()
-                        JSonObj.put("user_name", result.profile?.name.toString())
-                        JSonObj.put("user_email", result.profile?.email.toString())
-                        JSonObj.put("mobile", result.profile?.mobile.toString())
-                        JSonObj.put("birthday", result.profile?.birthday.toString())
-                        JSonObj.put("login_token", NaverIdLoginSDK.getAccessToken())
+                        val JsonObj = JSONObject()
+                        JsonObj.put("user_name", result.profile?.name)
+                        JsonObj.put("user_email", result.profile?.email)
+                        JsonObj.put("mobile", result.profile?.mobile)
+                        JsonObj.put("birthday", result.profile?.birthday)
+                        JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken())
 
-                        fetchJson(R.string.IP_ADDRESS.toString(), JSonObj.toString(), "PUT")
+                        viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
                         val DataInstance = UserVO(
-                            name = result.profile?.name.toString(),
-                            email = result.profile?.email.toString(),
-                            birth = result.profile?.birthday.toString(),
-                            phoneNumber = result.profile?.mobile.toString()
+                            user_name = result.profile?.name.toString(),
+                            user_email = result.profile?.email.toString(),
+                            birthday = result.profile?.birthday.toString(),
+                            mobile = result.profile?.mobile.toString(),
+                            login_token = NaverIdLoginSDK.getAccessToken().toString()
                         )
                         viewModel.User.value = DataInstance
                         Log.d(
                             "네이버",
-                            "이름: ${viewModel.User.value?.name}, 이메일: ${viewModel.User.value?.email}, 생년월일: ${viewModel.User.value?.birth} 핸드폰번호: ${viewModel.User.value?.phoneNumber}\""
+                            "이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 생년월일: ${viewModel.User.value?.birthday} 핸드폰번호: ${viewModel.User.value?.mobile}\""
                         )
                         setToken(
                             requireContext(),
@@ -259,8 +258,39 @@ class Intro3Fragment : Fragment() {
             }
             else if (token != null) {
                 Log.e("카카오톡", "로그인에 성공하였습니다.")
-                val intent = Intent(requireContext(), MainActivity::class.java)
-                startActivity(intent)
+
+                UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
+                    if (error != null) {
+                        Log.e(TAG, "토큰 정보 보기 실패", error)
+                    }
+                    else if (tokenInfo != null) {
+                        UserApiClient.instance.me { user, error ->
+                            if (error != null) {
+                                Log.e(TAG, "사용자 정보 요청 실패", error)
+                            }
+                            else if (user != null) {
+                                val JsonObj = JSONObject()
+                                JsonObj.put("user_name", user.kakaoAccount?.name)
+                                JsonObj.put("user_email", user.kakaoAccount?.email)
+                                JsonObj.put("mobile", user.kakaoAccount?.phoneNumber)
+                                JsonObj.put("birthday", user.kakaoAccount?.birthyear + user.kakaoAccount?.birthday)
+                                JsonObj.put("login_token", tokenInfo.id.toString())
+                                viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
+                                val DataInstance = UserVO(
+                                    user_name = user.kakaoAccount?.name.toString(),
+                                    user_email = user.kakaoAccount?.email.toString(),
+                                    birthday = user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString(),
+                                    mobile = user.kakaoAccount?.phoneNumber.toString(),
+                                    login_token = tokenInfo.id.toString()
+                                )
+                                viewModel.User.value = DataInstance
+
+                            }
+                        }
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
             }
         }
 

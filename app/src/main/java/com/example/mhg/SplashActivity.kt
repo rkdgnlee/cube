@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
@@ -28,8 +29,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.user.UserApiClient
@@ -37,16 +36,10 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import java.lang.invoke.MethodType
-import java.net.URL
 import java.util.Calendar
 
 
@@ -55,8 +48,6 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var firebaseAuth : FirebaseAuth
     private lateinit var viewModel: UserViewModel
     private val PERMISSION_REQUEST_CODE = 5000
-    private val IP_ADDRESS = "http://192.168.0.63/t_user_connection.php/"
-//    private val IP_ADDRESS = "https://gym.tangostar.co.kr/t_user_connection.php"
 
     @RequiresApi(Build.VERSION_CODES.O)
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,15 +64,15 @@ class SplashActivity : AppCompatActivity() {
 //            fetchJson(IP_ADDRESS, jsonObj.toString(), "PUT")
 
 //         select 문 실행해보기
-            val jsonObj = JSONObject()
-            jsonObj.put("login_token", "")
+//            val jsonObj = JSONObject()
+//            jsonObj.put("login_token", "")
 //            fetchJson(IP_ADDRESS, jsonObj.toString(), "POST")
 
         // delete 문 실행해보기
 //            val jsonObj3 = JSONObject()
 //            jsonObj3.put("user_sn", 2)
 //            fetchJson(IP_ADDRESS, jsonObj3.toString(), "DELETE")
-            R.string.IP_ADDRESS
+
             // ----- API 초기화 시작 -----
             NaverIdLoginSDK.initialize(this, "m5zFu7piZAAWFf4M4v0j", "ICzYhMzvrT", "Multi Home Gym")
             KakaoSdk.init(this, "3b8fabecdc76c31056605852a34ea729")
@@ -145,22 +136,26 @@ class SplashActivity : AppCompatActivity() {
                     override fun onFailure(call: Call, e: IOException) { }
                     override fun onResponse(call: Call, response: Response) {
                         if (response.isSuccessful) {
-                            val jsonData = response.body?.string()
-                            val jsonObject = jsonData?.let { JSONObject(it) }
-                            Log.e("네이버jsonObject", "${jsonObject?.getJSONObject("response")?.getString("name")}")
-                            if (jsonObject != null) {
-                                val UserInstance = UserVO(
-                                    name = jsonObject.getJSONObject("response").getString("name"),
-                                    email = jsonObject.getJSONObject("response").getString("email"),
-                                    birth = "${jsonObject.getJSONObject("response").getString("birthyear")}-${jsonObject.getJSONObject("response").getString("birthday")}",
-                                    phoneNumber = jsonObject.getJSONObject("response").getString("mobile")
-                                )
-                                Handler(Looper.getMainLooper()).post {
-                                    viewModel.User.value = UserInstance
-                                    Log .e("네이버jsonObject","이름: ${viewModel.User.value?.name}, 이메일: ${viewModel.User.value?.email}, 생년월일: ${viewModel.User.value?.birth} 핸드폰번호: ${viewModel.User.value?.phoneNumber}")
+                            val JsonObj = JSONObject()
+                            JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken().toString())
+                            viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "POST" )
 
-                                }
-                            }
+
+//                            val jsonData = response.body?.string()
+//                            val jsonObject = jsonData?.let { JSONObject(it) }
+//                            Log.e("네이버jsonObject", "${jsonObject?.getJSONObject("response")?.getString("name")}")
+//                            if (jsonObject != null) {
+//                                val UserInstance = UserVO(
+//                                    user_name = jsonObject.getJSONObject("response").getString("name"),
+//                                    user_email = jsonObject.getJSONObject("response").getString("email"),
+//                                    birthday = "${jsonObject.getJSONObject("response").getString("birthyear")}-${jsonObject.getJSONObject("response").getString("birthday")}",
+//                                    mobile = jsonObject.getJSONObject("response").getString("mobile")
+//                                )
+//                                Handler(Looper.getMainLooper()).post {
+//                                    viewModel.User.value = UserInstance
+//                                    Log .e("네이버jsonObject","이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 생년월일: ${viewModel.User.value?.birthday} 핸드폰번호: ${viewModel.User.value?.mobile}")
+//                                }
+//                            }
                         }
                     }
                 })
@@ -169,14 +164,14 @@ class SplashActivity : AppCompatActivity() {
                 val user = Firebase.auth.currentUser
                 user?.let {
                     val UserInstance = UserVO(
-                        name = it.displayName.toString(),
-                        email = it.email.toString(),
-                        birth = "",
-                        phoneNumber = it.phoneNumber.toString()
+                        user_name = it.displayName.toString(),
+                        user_email = it.email.toString(),
+                        birthday = "",
+                        mobile = it.phoneNumber.toString()
                     )
                     Handler(Looper.getMainLooper()).post {
                         viewModel.User.value = UserInstance
-                        Log .e("구글jsonObject","이름: ${viewModel.User.value?.name}, 이메일: ${viewModel.User.value?.email}, 생년월일: ${viewModel.User.value?.birth} 핸드폰번호: ${viewModel.User.value?.phoneNumber}")
+                        Log .e("구글jsonObject","이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 생년월일: ${viewModel.User.value?.birthday} 핸드폰번호: ${viewModel.User.value?.mobile}")
                     }
                 }
                 MainInit()
@@ -192,14 +187,14 @@ class SplashActivity : AppCompatActivity() {
                                 "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                                 "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
                         val UserInstance = UserVO(
-                            name = user.kakaoAccount?.name.toString(),
-                            email = user.kakaoAccount?.email.toString(),
-                            birth = "${user.kakaoAccount?.birthyear}-${user.kakaoAccount?.birthday}",
-                            phoneNumber = user.kakaoAccount?.phoneNumber.toString()
+                            user_id = user.kakaoAccount?.name.toString(),
+                            user_email = user.kakaoAccount?.email.toString(),
+                            birthday = "${user.kakaoAccount?.birthyear}-${user.kakaoAccount?.birthday}",
+                            mobile = user.kakaoAccount?.phoneNumber.toString()
                         )
                         Handler(Looper.getMainLooper()).post {
                             viewModel.User.value = UserInstance
-                            Log .e("카카오jsonObject","이름: ${viewModel.User.value?.name}, 이메일: ${viewModel.User.value?.email}, 생년월일: ${viewModel.User.value?.birth} 핸드폰번호: ${viewModel.User.value?.phoneNumber}")
+                            Log .e("카카오jsonObject","이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 생년월일: ${viewModel.User.value?.birthday} 핸드폰번호: ${viewModel.User.value?.mobile}")
 
                         }
                     }
@@ -211,35 +206,6 @@ class SplashActivity : AppCompatActivity() {
         }, 1500)
         // ---- 화면 경로 설정 끝 ----
     }
-    // ----- PHP 서버 연결 시작 -----
-    fun fetchJson(myUrl : String, json: String, requestType: String) {
-        val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
-
-        val request: Request
-        request = when {
-            requestType == "POST" -> Request.Builder().url(myUrl).post(body).build()
-            requestType == "PUT" -> Request.Builder().url(myUrl).put(body).build()
-            requestType == "DELETE" -> Request.Builder().url(myUrl).delete(body).build()
-            else -> Request.Builder().url(myUrl).post(body).build()
-        }
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("OKHTTP3", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val body = response.body?.string()
-                Log.d("OKHTTP3", "Success to execute request!")
-                // ----- 응답 받은 UserVO형식의 데이터 전처리 시작 -----
-                Log.e("OKHTTP3", body.toString())
-
-                // ----- 응답 받은 UserVO형식의 데이터 전처리 끝 -----
-            }
-        })
-    }
-    // ----- PHP 서버 연결 끝 -----
-
 
     private fun MainInit() {
         val intent = Intent(this, MainActivity::class.java)
