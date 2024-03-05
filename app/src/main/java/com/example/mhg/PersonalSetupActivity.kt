@@ -36,15 +36,15 @@ class PersonalSetupActivity : AppCompatActivity() {
                     supportFragmentManager.findFragmentByTag("f${binding.vp2Setup.currentItem}")
                 if (fragment is PersonalSetup4Fragment) {
                     if (fragment.binding.rbtnhealth.isChecked) {
-                        viewModel.User.value?.exercisePurpose = "health"
+//                        viewModel.User.value?.exercisePurpose = "health"
                     } else if (fragment.binding.rbtnDiet.isChecked) {
-                        viewModel.User.value?.exercisePurpose = "diet"
+//                        viewModel.User.value?.exercisePurpose = "diet"
                     } else if (fragment.binding.rbtnRehabil.isChecked) {
-                        viewModel.User.value?.exercisePurpose = "Rehabil"
+//                        viewModel.User.value?.exercisePurpose = "Rehabil"
                     } else {
-                        viewModel.User.value?.exercisePurpose = "strength"
+//                        viewModel.User.value?.exercisePurpose = "strength"
                     }
-                    Log.d("다섯 번째", "${viewModel.User.value?.exercisePurpose}")
+//                    Log.d("다섯 번째", "${viewModel.User.value?.exercisePurpose}")
                 }
 
                 val intent = Intent(this, MainActivity::class.java)
@@ -53,7 +53,7 @@ class PersonalSetupActivity : AppCompatActivity() {
                 ActivityCompat.finishAffinity(this)
                 Log.d(
                     "최종",
-                    "성별: ${viewModel.User.value?.gender} 몸무게: ${viewModel.User.value?.height} 운동목적: ${viewModel.User.value?.exercisePurpose} 이름: ${viewModel.User.value?.name} "
+                    "성별: ${viewModel.User.value?.user_gender} 몸무게: ${viewModel.User.value?.height}  이름: ${viewModel.User.value?.user_name} "
                 )
                 // ---- view model에 값을 넣기 (4p) 끝 ----
             }
@@ -88,34 +88,33 @@ class PersonalSetupActivity : AppCompatActivity() {
                     val fragment = supportFragmentManager.findFragmentByTag("f$previousPosition")
                     if (fragment is PersonalSetup0Fragment) {
                         val DataInstance = UserVO(
-                            birth = fragment.binding.etBirthDate.text.toString(),
+                            birthday = fragment.binding.etBirthDate.text.toString(),
 
                         )
                         viewModel.User.value = DataInstance
-                        Log.d("첫번째", "${viewModel.User.value?.name}")
+                        Log.d("첫번째", "${viewModel.User.value?.user_name}")
                     } else if (fragment is PersonalSetup1Fragment) {
                         if (fragment.binding.rbtnMale.isChecked) {
-                            viewModel.User.value?.gender = true
+                            viewModel.User.value?.user_gender = "male"
                         } else {
-                            viewModel.User.value?.gender = false
+                            viewModel.User.value?.user_gender = "female"
                         }
                     } else if (fragment is PersonalSetup2Fragment) {
-                        viewModel.User.value?.height = fragment.binding.npPersonalSetup2.value
+                        viewModel.User.value?.height = fragment.binding.npPersonalSetup2.value.toDouble()
                         Log.d("세 번째", "${viewModel.User.value?.height}")
                     } else if (fragment is PersonalSetup3Fragment) {
-                        viewModel.User.value?.weight = fragment.binding.npPerssonalSetup3.value
+                        viewModel.User.value?.weight = fragment.binding.npPerssonalSetup3.value.toDouble()
                         Log.d("네 번째", "${viewModel.User.value?.weight}")
                     } else if (fragment is PersonalSetup4Fragment) {
                         if (fragment.binding.rbtnhealth.isChecked) {
-                            viewModel.User.value?.exercisePurpose = "health"
+//                            viewModel.User.value?.exercisePurpose = "health"
                         } else if (fragment.binding.rbtnDiet.isChecked) {
-                            viewModel.User.value?.exercisePurpose = "diet"
+//                            viewModel.User.value?.exercisePurpose = "diet"
                         } else if (fragment.binding.rbtnRehabil.isChecked) {
-                            viewModel.User.value?.exercisePurpose = "Rehabil"
+//                            viewModel.User.value?.exercisePurpose = "Rehabil"
                         } else {
-                            viewModel.User.value?.exercisePurpose = "strength"
+//                            viewModel.User.value?.exercisePurpose = "strength"
                         }
-                        Log.d("다섯 번째", "${viewModel.User.value?.exercisePurpose}")
                     }
                     // ---- view model에 값을 넣기 (0p ~ 3p) 끝 ----
 

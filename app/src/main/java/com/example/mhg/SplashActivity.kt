@@ -1,5 +1,6 @@
 package com.example.mhg
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -17,7 +18,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
@@ -25,24 +25,29 @@ import com.example.mhg.VO.UserVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivitySplashBinding
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import java.util.Calendar
 
 
+@SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
@@ -53,6 +58,7 @@ class SplashActivity : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_splash)
+
             binding = ActivitySplashBinding.inflate(layoutInflater)
             viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(UserViewModel::class.java)
 
@@ -114,14 +120,13 @@ class SplashActivity : AppCompatActivity() {
             AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
-
         // ----- 인 앱 알림 끝 -----
-
 
         // ---- 화면 경로 설정 시작 ----
         val Handler = Handler(Looper.getMainLooper())
         Handler.postDelayed({
-            // 로그인 정보가 있을 경우
+
+            // ----- 네이버 토큰 있음 시작 -----
             if (naverTokenExist == NidOAuthLoginState.OK) {
                 Log.e("네이버 로그인", "$naverTokenExist")
                 val naverToken = getToken(this, "naverToken")
@@ -135,75 +140,49 @@ class SplashActivity : AppCompatActivity() {
                 client.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) { }
                     override fun onResponse(call: Call, response: Response) {
+                        viewModel.User.value = UserVO()
                         if (response.isSuccessful) {
                             val JsonObj = JSONObject()
                             JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken().toString())
-                            viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "POST" )
+                            fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "POST")
 
-
-//                            val jsonData = response.body?.string()
-//                            val jsonObject = jsonData?.let { JSONObject(it) }
-//                            Log.e("네이버jsonObject", "${jsonObject?.getJSONObject("response")?.getString("name")}")
-//                            if (jsonObject != null) {
-//                                val UserInstance = UserVO(
-//                                    user_name = jsonObject.getJSONObject("response").getString("name"),
-//                                    user_email = jsonObject.getJSONObject("response").getString("email"),
-//                                    birthday = "${jsonObject.getJSONObject("response").getString("birthyear")}-${jsonObject.getJSONObject("response").getString("birthday")}",
-//                                    mobile = jsonObject.getJSONObject("response").getString("mobile")
-//                                )
-//                                Handler(Looper.getMainLooper()).post {
-//                                    viewModel.User.value = UserInstance
-//                                    Log .e("네이버jsonObject","이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 생년월일: ${viewModel.User.value?.birthday} 핸드폰번호: ${viewModel.User.value?.mobile}")
-//                                }
-//                            }
                         }
                     }
                 })
                 MainInit()
+                // ----- 네이버 토큰 있음 끝 -----
+
+                // ----- 구글 토큰 있음 시작 -----
             } else if (googleUserExist != null) {
-                val user = Firebase.auth.currentUser
-                user?.let {
-                    val UserInstance = UserVO(
-                        user_name = it.displayName.toString(),
-                        user_email = it.email.toString(),
-                        birthday = "",
-                        mobile = it.phoneNumber.toString()
-                    )
-                    Handler(Looper.getMainLooper()).post {
-                        viewModel.User.value = UserInstance
-                        Log .e("구글jsonObject","이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 생년월일: ${viewModel.User.value?.birthday} 핸드폰번호: ${viewModel.User.value?.mobile}")
-                    }
-                }
-                MainInit()
-            } else if (AuthApiClient.instance.hasToken()) {
-                val kakaoToken = getToken(this, "kakaoToken")
-
-                UserApiClient.instance.me { user, error ->
-                    if (error != null) {
-                        Log.e("카카오", "사용자 정보 요청 실패", error)
-                    } else if (user != null) {
-                        Log.i("카카오", "사용자 정보 요청 성공"+ "\n회원번호: ${user.id}" +
-                                "\n이메일: ${user.kakaoAccount?.email}" +
-                                "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                                "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
-                        val UserInstance = UserVO(
-                            user_id = user.kakaoAccount?.name.toString(),
-                            user_email = user.kakaoAccount?.email.toString(),
-                            birthday = "${user.kakaoAccount?.birthyear}-${user.kakaoAccount?.birthday}",
-                            mobile = user.kakaoAccount?.phoneNumber.toString()
-                        )
-                        Handler(Looper.getMainLooper()).post {
-                            viewModel.User.value = UserInstance
-                            Log .e("카카오jsonObject","이름: ${viewModel.User.value?.user_name}, 이메일: ${viewModel.User.value?.user_email}, 생년월일: ${viewModel.User.value?.birthday} 핸드폰번호: ${viewModel.User.value?.mobile}")
-
+                val user = FirebaseAuth.getInstance().currentUser
+                user!!.getIdToken(true)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val idToken: String? = task.result.token
+                            val JsonObj = JSONObject()
+                            JsonObj.put("login_token", "$idToken")
+                            fetchJson("http://192.168.0.63/t_user_connection.php/", JsonObj.toString(), "POST")
+                            MainInit()
                         }
                     }
-                }
+
+                // ----- 구글 토큰 있음 끝 -----
+
+                // ----- 카카오 토큰 있음 시작 -----
+            } else if (AuthApiClient.instance.hasToken()) {
+                val kakaoToken = getToken(this, "kakaoToken")
+                val JsonObj = JSONObject()
+                JsonObj.put("login_token", "$kakaoToken")
+                fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "POST")
+
                 MainInit()
             } else {
                 IntroInit()
             } // 로그인 정보가 없을 경우
         }, 1500)
+
+
+        // ----- 카카오 토큰 있음 시작 -----
         // ---- 화면 경로 설정 끝 ----
     }
 
@@ -277,6 +256,43 @@ class SplashActivity : AppCompatActivity() {
             }
         }
     }
-
     // ----- 알림에 대한 함수들 끝 -----
+
+    fun fetchJson(myUrl : String, json: String, requestType: String){
+        val client = OkHttpClient()
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+        val request: Request
+        request = when {
+            requestType == "POST" -> Request.Builder().url(myUrl).post(body).build()
+            requestType == "PUT" -> Request.Builder().url(myUrl).put(body).build()
+            requestType == "DELETE" -> Request.Builder().url(myUrl).delete(body).build()
+            else -> Request.Builder().url(myUrl).post(body).build()
+        }
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("OKHTTP3", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val gson = Gson()
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
+                val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putString("userVO", responseBody)
+                editor.apply()
+
+
+
+//                if (responseBody != null && responseBody.startsWith("[")) {
+//                    val userVOType = object : TypeToken<List<UserVO>>() {}.type
+//                    val userVO: List<UserVO?> = listOf(gson.fromJson(responseBody, userVOType))
+//                    Log.e("userVOType", "$userVO")
+//                    viewModel.User.postValue(userVO[0])
+//                    Log.e("viewModel", "뷰모델: ${viewModel.User.value?.user_name}")
+//                    userVOList = userVO[0]!!
+//                }
+            }
+        })
+    }
 }

@@ -23,12 +23,14 @@ import com.example.mhg.databinding.FragmentIntro3Binding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.user.UserApiClient
@@ -40,7 +42,15 @@ import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import org.json.JSONObject
+import java.io.IOException
 import java.lang.Exception
 
 class Intro3Fragment : Fragment() {
@@ -61,9 +71,7 @@ class Intro3Fragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
 
         // ---- firebase 초기화 및 Google Login API 연동 시작 ----
-        firebaseAuth = Firebase.auth
-
-        val currentUser = firebaseAuth.currentUser
+        val currentUser = Firebase.auth.currentUser
         if (currentUser == null) {
             firebaseAuth = FirebaseAuth.getInstance()
             launcher = registerForActivityResult(
@@ -86,18 +94,27 @@ class Intro3Fragment : Fragment() {
                                                 // ---- Google 토큰에서 가져오기 시작 ----
                                                 val user: FirebaseUser = firebaseAuth.currentUser!!
 //                                            setToken(requireContext(), "google", firebaseAuth.currentUser.toString())
+
+                                                // ----- GOOGLE API에서 DB에 넣는 공간 시작 -----
                                                 val JsonObj = JSONObject()
+                                                JsonObj.put("user_id", user.email.toString())
+                                                JsonObj.put("user_password", user.email.toString())
                                                 JsonObj.put("user_name", user.displayName.toString())
+                                                JsonObj.put("user_gender", "male")
                                                 JsonObj.put("user_email", user.email.toString())
+                                                JsonObj.put("user_grade", 1)
                                                 JsonObj.put("mobile", user.phoneNumber.toString())
                                                 JsonObj.put("login_token", tokenId)
-                                                viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
+                                                fetchJson("http://192.168.0.63/t_user_connection.php/", JsonObj.toString(), "PUT")
+                                                // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
 
                                                 val DataInstance = UserVO(
+                                                    user_id = user.email.toString(),
                                                     user_name = user.displayName.toString(),
                                                     user_email = user.email.toString(),
                                                     mobile = user.phoneNumber.toString(),
-                                                    login_token = tokenId
+                                                    login_token = tokenId,
+
                                                 )
                                                 viewModel.User.value = DataInstance
 
@@ -185,7 +202,7 @@ class Intro3Fragment : Fragment() {
                         JsonObj.put("birthday", result.profile?.birthday)
                         JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken())
 
-                        viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
+                        fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
                         val DataInstance = UserVO(
                             user_name = result.profile?.name.toString(),
                             user_email = result.profile?.email.toString(),
@@ -275,7 +292,7 @@ class Intro3Fragment : Fragment() {
                                 JsonObj.put("mobile", user.kakaoAccount?.phoneNumber)
                                 JsonObj.put("birthday", user.kakaoAccount?.birthyear + user.kakaoAccount?.birthday)
                                 JsonObj.put("login_token", tokenInfo.id.toString())
-                                viewModel.fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
+                                fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
                                 val DataInstance = UserVO(
                                     user_name = user.kakaoAccount?.name.toString(),
                                     user_email = user.kakaoAccount?.email.toString(),
@@ -315,5 +332,34 @@ class Intro3Fragment : Fragment() {
         )
 
         sharedPreferences.edit().putString(key, value).apply()
+    }
+    fun fetchJson(myUrl : String, json: String, requestType: String)   {
+        val client = OkHttpClient()
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+        val request: Request
+        request = when {
+            requestType == "POST" -> Request.Builder().url(myUrl).post(body).build()
+            requestType == "PUT" -> Request.Builder().url(myUrl).put(body).build()
+            requestType == "DELETE" -> Request.Builder().url(myUrl).delete(body).build()
+            else -> Request.Builder().url(myUrl).post(body).build()
+        }
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("OKHTTP3", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val gson = Gson()
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
+                if (responseBody != null && responseBody.startsWith("[")) {
+                    val userVOType = object : TypeToken<List<UserVO>>() {}.type
+                    val userVO: List<UserVO?> = listOf(gson.fromJson(responseBody, userVOType))
+                    Log.e("userVOType", "$userVO")
+                    viewModel.User.postValue(userVO[0])
+                }
+            }
+        }
+        )
     }
 }
