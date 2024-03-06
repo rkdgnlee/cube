@@ -64,6 +64,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("androidx.security:security-crypto:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
 
 //    implementation(files("libs/bbaton_dependancy.aar"))

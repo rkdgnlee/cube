@@ -37,7 +37,9 @@
         <activity
             android:name=".PersonalSetupActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan">
+
+        </activity>
         <activity
             android:name=".SplashActivity"
             android:exported="true">

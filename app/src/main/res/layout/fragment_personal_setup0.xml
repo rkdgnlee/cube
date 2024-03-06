@@ -15,32 +15,33 @@
             android:background="#FFFFFF">
 
             <EditText
-                android:id="@+id/etPhoneNum"
-                android:layout_width="170dp"
+                android:id="@+id/etId"
+                android:layout_width="230dp"
                 android:layout_height="64dp"
-                android:layout_marginStart="52dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="44dp"
                 android:ems="10"
                 android:enabled="true"
-                android:hint="010-0000-0000"
-                android:inputType="phone"
+                android:hint="ID"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.138"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/etName"
-                android:layout_width="300dp"
+                android:layout_width="230dp"
                 android:layout_height="64dp"
-                android:layout_marginTop="44dp"
+                android:layout_marginTop="28dp"
                 android:ems="10"
                 android:hint="이름"
                 android:inputType="text"
-                app:layout_constraintStart_toStartOf="@+id/etPhoneNum"
-                app:layout_constraintTop_toBottomOf="@+id/etPhoneNum" />
+                app:layout_constraintStart_toStartOf="@+id/etId"
+                app:layout_constraintTop_toBottomOf="@+id/etId" />
 
             <EditText
                 android:id="@+id/etPw"
-                android:layout_width="300dp"
+                android:layout_width="230dp"
                 android:layout_height="64dp"
                 android:layout_marginTop="48dp"
                 android:ems="10"
@@ -51,25 +52,113 @@
 
             <EditText
                 android:id="@+id/etPwRepeat"
-                android:layout_width="300dp"
+                android:layout_width="230dp"
                 android:layout_height="64dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="12dp"
                 android:ems="10"
                 android:hint="비밀번호 확인"
                 android:inputType="textPassword"
                 app:layout_constraintStart_toStartOf="@+id/etPw"
                 app:layout_constraintTop_toBottomOf="@+id/etPw" />
 
-            <EditText
-                android:id="@+id/etBirthDate"
-                android:layout_width="300dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="56dp"
-                android:ems="10"
-                android:hint="날짜"
-                android:inputType="date"
+            <RadioGroup
+                android:id="@+id/rgGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="66dp"
                 app:layout_constraintStart_toStartOf="@+id/etPwRepeat"
-                app:layout_constraintTop_toBottomOf="@+id/etPwRepeat" />
+                app:layout_constraintTop_toBottomOf="@+id/etPwRepeat">
+
+                <RadioButton
+                    android:id="@+id/rbtnM"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:text="남자"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/rbtnF"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:text="여자"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/rgGrade"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="44dp"
+                app:layout_constraintEnd_toEndOf="@+id/etPwRepeat"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/rgGender"
+                app:layout_constraintTop_toBottomOf="@+id/etPwRepeat">
+
+                <RadioButton
+                    android:id="@+id/rbtnGrade1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="활기넘친 1" />
+
+                <RadioButton
+                    android:id="@+id/rbtnGrade2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="몸 관리 2" />
+
+                <RadioButton
+                    android:id="@+id/rbtnGrade3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="밸런스 증진 3" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnSignIn2"
+                android:layout_width="120dp"
+                android:layout_height="80dp"
+                android:backgroundTint="@color/setuptextgrey"
+                android:enabled="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="회원가입"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/rgGrade"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/rgGrade"
+                app:layout_constraintTop_toTopOf="@+id/rgGrade" />
+
+            <TextView
+                android:id="@+id/tvPwCompare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="76dp"
+                android:text="비밀번호가 일치하지 않습니다."
+                android:textColor="@color/orange"
+                app:layout_constraintStart_toStartOf="@+id/etPwRepeat"
+                app:layout_constraintTop_toBottomOf="@+id/etPw" />
+
+            <TextView
+                android:id="@+id/tvPwCondition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="영문, 숫자, 특수문자( ! @ # $ % ^ &amp; * ? .)를 모두 포함해서 8~20자리를 입력해주세요"
+                android:textColor="@color/orange"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/etPw"
+                app:layout_constraintStart_toStartOf="@+id/etPw" />
+
+            <TextView
+                android:id="@+id/tvIdCondition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="영문 또는 숫자를 조합해서 4자리 이상 입력해주세요"
+                android:textColor="@color/orange"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/etId"
+                app:layout_constraintStart_toStartOf="@+id/etId" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

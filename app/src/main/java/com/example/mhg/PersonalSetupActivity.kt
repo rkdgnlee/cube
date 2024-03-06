@@ -24,8 +24,10 @@ class PersonalSetupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // ---- viewmodel 초기화 및 viewpager2 초기화 ----
-        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+//        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         initViewPager()
+        val Next =
+
 
         binding.btnSetupNext.setOnSingleClickListener {
             // ---- 설정 완료 시, 선택한 데이터 저장 및 페이지 이동 코드 시작 ----
@@ -51,10 +53,7 @@ class PersonalSetupActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
                 ActivityCompat.finishAffinity(this)
-                Log.d(
-                    "최종",
-                    "성별: ${viewModel.User.value?.user_gender} 몸무게: ${viewModel.User.value?.height}  이름: ${viewModel.User.value?.user_name} "
-                )
+//                Log.d("최종", "성별: ${viewModel.User.value?.user_gender} 몸무게: ${viewModel.User.value?.height}  이름: ${viewModel.User.value?.user_name} ")
                 // ---- view model에 값을 넣기 (4p) 끝 ----
             }
             // ---- 설정 완료 시, 선택한 데이터 저장 및 페이지 이동 코드 끝 ----
@@ -88,23 +87,23 @@ class PersonalSetupActivity : AppCompatActivity() {
                     val fragment = supportFragmentManager.findFragmentByTag("f$previousPosition")
                     if (fragment is PersonalSetup0Fragment) {
                         val DataInstance = UserVO(
-                            birthday = fragment.binding.etBirthDate.text.toString(),
+
 
                         )
-                        viewModel.User.value = DataInstance
-                        Log.d("첫번째", "${viewModel.User.value?.user_name}")
+//                        viewModel.User.value = DataInstance
+//                        Log.d("첫번째", "${viewModel.User.value?.user_name}")
                     } else if (fragment is PersonalSetup1Fragment) {
                         if (fragment.binding.rbtnMale.isChecked) {
-                            viewModel.User.value?.user_gender = "male"
+//                            viewModel.User.value?.user_gender = "male"
                         } else {
-                            viewModel.User.value?.user_gender = "female"
+//                            viewModel.User.value?.user_gender = "female"
                         }
                     } else if (fragment is PersonalSetup2Fragment) {
-                        viewModel.User.value?.height = fragment.binding.npPersonalSetup2.value.toDouble()
-                        Log.d("세 번째", "${viewModel.User.value?.height}")
+//                        viewModel.User.value?.height = fragment.binding.npPersonalSetup2.value.toDouble()
+//                        Log.d("세 번째", "${viewModel.User.value?.height}")
                     } else if (fragment is PersonalSetup3Fragment) {
-                        viewModel.User.value?.weight = fragment.binding.npPerssonalSetup3.value.toDouble()
-                        Log.d("네 번째", "${viewModel.User.value?.weight}")
+//                        viewModel.User.value?.weight = fragment.binding.npPerssonalSetup3.value.toDouble()
+//                        Log.d("네 번째", "${viewModel.User.value?.weight}")
                     } else if (fragment is PersonalSetup4Fragment) {
                         if (fragment.binding.rbtnhealth.isChecked) {
 //                            viewModel.User.value?.exercisePurpose = "health"

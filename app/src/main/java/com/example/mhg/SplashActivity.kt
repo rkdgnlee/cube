@@ -18,19 +18,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.mhg.VO.UserVO
-import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivitySplashBinding
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.gson.Gson
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
 import com.navercorp.nid.NaverIdLoginSDK
@@ -42,6 +37,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.util.Calendar
@@ -51,7 +47,7 @@ import java.util.Calendar
 class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
-    private lateinit var viewModel: UserViewModel
+//    private lateinit var viewModel: UserViewModel
     private val PERMISSION_REQUEST_CODE = 5000
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -60,8 +56,7 @@ class SplashActivity : AppCompatActivity() {
             setContentView(R.layout.activity_splash)
 
             binding = ActivitySplashBinding.inflate(layoutInflater)
-            viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(UserViewModel::class.java)
-
+            val t_userData = Singleton_t_user.getInstance(this)
             // ----/ server연결 /---
         // update 문 실행
 //            val jsonObj = JSONObject()
@@ -132,7 +127,7 @@ class SplashActivity : AppCompatActivity() {
                 val naverToken = getToken(this, "naverToken")
                 Log.e("네이버토큰", "$naverToken")
                 val url = "https://openapi.naver.com/v1/nid/me"
-                val request = okhttp3.Request.Builder()
+                val request = Request.Builder()
                     .url(url)
                     .addHeader("Authorization", "Bearer $naverToken")
                     .build()
@@ -140,11 +135,10 @@ class SplashActivity : AppCompatActivity() {
                 client.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) { }
                     override fun onResponse(call: Call, response: Response) {
-                        viewModel.User.value = UserVO()
                         if (response.isSuccessful) {
                             val JsonObj = JSONObject()
                             JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken().toString())
-                            fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "POST")
+                            fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", applicationContext)
 
                         }
                     }
@@ -161,7 +155,7 @@ class SplashActivity : AppCompatActivity() {
                             val idToken: String? = task.result.token
                             val JsonObj = JSONObject()
                             JsonObj.put("login_token", "$idToken")
-                            fetchJson("http://192.168.0.63/t_user_connection.php/", JsonObj.toString(), "POST")
+                            fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", this)
                             MainInit()
                         }
                     }
@@ -173,8 +167,7 @@ class SplashActivity : AppCompatActivity() {
                 val kakaoToken = getToken(this, "kakaoToken")
                 val JsonObj = JSONObject()
                 JsonObj.put("login_token", "$kakaoToken")
-                fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "POST")
-
+                fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(),"1",  this)
                 MainInit()
             } else {
                 IntroInit()
@@ -232,7 +225,7 @@ class SplashActivity : AppCompatActivity() {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val mChannel = NotificationChannel("5000", name, importance)
             mChannel.description = descriptionText
-            // Register the channel with the system. You can't change the importance
+            // 채널을 등록해야 알림을 받을 수 있음
             // or other notification behaviors after this.
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
@@ -258,40 +251,29 @@ class SplashActivity : AppCompatActivity() {
     }
     // ----- 알림에 대한 함수들 끝 -----
 
-    fun fetchJson(myUrl : String, json: String, requestType: String){
+    fun fetchJson(myUrl : String, json: String, category: String, context: Context){
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
-        val request: Request
-        request = when {
-            requestType == "POST" -> Request.Builder().url(myUrl).post(body).build()
-            requestType == "PUT" -> Request.Builder().url(myUrl).put(body).build()
-            requestType == "DELETE" -> Request.Builder().url(myUrl).delete(body).build()
-            else -> Request.Builder().url(myUrl).post(body).build()
-        }
+        val request = Request.Builder()
+            .url("$myUrl?category=$category&user_id=")
+            .post(body)
+            .build()
+
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("OKHTTP3", "Failed to execute request!")
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val gson = Gson()
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-                val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-                editor.putString("userVO", responseBody)
-                editor.apply()
+//                val jsonDataArray = JSONArray(responseBody)
+//                val jsonObj = jsonDataArray.getJSONObject(0)
+//                val t_userInstance = Singleton_t_user.getInstance(context)
+//                t_userInstance.jsonObject = jsonObj
+//                Log.e("싱글톤", "${t_userInstance.jsonObject}")
 
 
-
-//                if (responseBody != null && responseBody.startsWith("[")) {
-//                    val userVOType = object : TypeToken<List<UserVO>>() {}.type
-//                    val userVO: List<UserVO?> = listOf(gson.fromJson(responseBody, userVOType))
-//                    Log.e("userVOType", "$userVO")
-//                    viewModel.User.postValue(userVO[0])
-//                    Log.e("viewModel", "뷰모델: ${viewModel.User.value?.user_name}")
-//                    userVOList = userVO[0]!!
-//                }
             }
         })
     }

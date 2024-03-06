@@ -69,7 +69,6 @@ class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 lastItemViewHolder.btnsignout.setOnClickListener {
                     if (Firebase.auth.currentUser != null) {
                         Firebase.auth.signOut()
-
                         Log.d("로그아웃", "Firebase sign out successful")
                     } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
                         NaverIdLoginSDK.logout()
@@ -102,4 +101,9 @@ class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return profilemenulist.size + 1
 
     }
+
+
+
+
+
 }

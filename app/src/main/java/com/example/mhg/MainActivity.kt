@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivityMainBinding
 
@@ -20,13 +21,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        val t_userData = Singleton_t_user.getInstance(this)
 
 
-        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-        val userVOJson = sharedPreferences.getString("userVO", null)
-
-        Log.e("userVOJson", "$userVOJson")
-
+        viewModel.User.value = t_userData.jsonObject
+        Log.e("싱글톤>뷰모델", "${viewModel.User.value}")
 
 
 //        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -78,9 +78,5 @@ class MainActivity : AppCompatActivity() {
         override fun handleOnBackPressed() {
 
         }
-
-
     }
-
-
 }

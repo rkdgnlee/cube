@@ -40,7 +40,7 @@ class ReportSkeletonFragment : Fragment() {
 //        websettings.builtInZoomControls = false  // 내장 확대 축소 비활성화
 //        websettings.displayZoomControls = false  // 확대 축소 비활성화
         binding.wvReportSkeleton.webViewClient = WebViewClient()
-        binding.wvReportSkeleton.loadUrl("https://www.google.com")
+//        binding.wvReportSkeleton.loadUrl("https://www.google.com")
 
         // ---- web view 연결 코드 끝 ----
 
