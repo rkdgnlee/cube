@@ -51,6 +51,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
+import kotlin.coroutines.coroutineContext
 
 class Intro3Fragment : Fragment() {
     lateinit var binding: FragmentIntro3Binding
@@ -59,7 +60,7 @@ class Intro3Fragment : Fragment() {
 
     private val TAG = this.javaClass.simpleName
     private lateinit var viewModel: UserViewModel
-    fun fetchJson(myUrl : String, json: String, category: String, context: Context){
+    fun fetchJson(myUrl : String, json: String, category: String, context: Context, callback: () -> Unit){
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
@@ -74,11 +75,12 @@ class Intro3Fragment : Fragment() {
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-                val jsonDataArray = JSONArray(responseBody)
-                val jsonObj = jsonDataArray.getJSONObject(0)
-                val t_userInstance = Singleton_t_user.getInstance(context)
-                t_userInstance.jsonObject = jsonObj
-                Log.e("싱글톤", "${t_userInstance.jsonObject}")
+//                val jsonDataArray = JSONArray(responseBody)
+//                val jsonObj = jsonDataArray.getJSONObject(0)
+//                val t_userInstance = Singleton_t_user.getInstance(context)
+//                t_userInstance.jsonObject = jsonObj
+//                Log.e("OKHTTP3>싱글톤", "${t_userInstance.jsonObject}")
+                callback()
             }
         })
     }
@@ -123,11 +125,14 @@ class Intro3Fragment : Fragment() {
                                                 JsonObj.put("user_mobile", user.phoneNumber.toString())
                                                 JsonObj.put("user_email", user.email.toString())
                                                 JsonObj.put("login_token", tokenId)
-                                                context?.let { it1 -> fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", it1.applicationContext) }
-
+                                                Log.e("구글JsonObj", JsonObj.getString("user_email"))
+                                                fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", requireActivity().applicationContext) {
+                                                    val intent = Intent(requireContext(), MainActivity::class.java)
+                                                    startActivity(intent)
+                                                    ActivityCompat.finishAffinity(requireActivity())
+                                                }
 //                                                    Singleton_t_user.getInstance(requireContext()).jsonObject = JsonObj // 질의를 통해 db에 넣음과 동시에 해당 데이터 singleton 저장
 //                                                    Log.w("싱글톤_구글회원가입", "${Singleton_t_user.getInstance(requireActivity()).jsonObject}")
-
 
                                                 // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
 
@@ -141,9 +146,7 @@ class Intro3Fragment : Fragment() {
                                             }
                                         }
                                 }
-                                val intent = Intent(requireContext(), MainActivity::class.java)
-                                startActivity(intent)
-                                ActivityCompat.finishAffinity(requireActivity())
+
                             } ?: throw Exception()
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -238,7 +241,11 @@ class Intro3Fragment : Fragment() {
                         JsonObj.put("user_birthday", result.profile?.birthYear.toString() + result.profile?.birthday.toString())
                         JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken())
 
-                        context?.let { it1 -> fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", it1.applicationContext) }
+                        fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", requireActivity().applicationContext) {
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+                            ActivityCompat.finishAffinity(requireActivity())
+                        }
                         Singleton_t_user.getInstance(requireActivity()).jsonObject = JsonObj
                         Log.w("싱글톤_네이버회원가입", "${Singleton_t_user.getInstance(requireActivity()).jsonObject}")
                         setToken(
@@ -312,7 +319,11 @@ class Intro3Fragment : Fragment() {
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
                                 JsonObj.put("login_token" , tokenInfo.id.toString())
 
-                                context?.let { it1 -> fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", it1.applicationContext) }
+                                fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", requireActivity().applicationContext) {
+                                    val intent = Intent(requireContext(), MainActivity::class.java)
+                                    startActivity(intent)
+                                    ActivityCompat.finishAffinity(requireActivity())
+                                }
                                 Singleton_t_user.getInstance(requireContext()).jsonObject = JsonObj
                                 Log.w("싱글톤_카카오회원가입", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                 TODO("싱글톤에 넣는 작업 필요")
