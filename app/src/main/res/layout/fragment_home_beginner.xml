@@ -214,7 +214,6 @@
                     android:id="@+id/actHomeBeginner"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="right"
                     android:background="#FFFFFF"
                     android:backgroundTint="#FFFFFF"
                     android:editable="false"

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.example.mhg.Adapter.HomeHorizontalRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.HomeRVBeginnerDataClass
@@ -51,6 +52,8 @@ class HomeBeginnerFragment : Fragment() {
         val adapter = HomeHorizontalRecyclerViewAdapter(horizondatalist)
         adapter.routineList = horizondatalist
         binding.rvHomeBeginnerHorizontal.adapter = adapter
+
+
         val linearlayoutmanager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvHomeBeginnerHorizontal.layoutManager = linearlayoutmanager
 
@@ -78,6 +81,9 @@ class HomeBeginnerFragment : Fragment() {
         val adapter3 = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, sort_list)
         binding.actHomeBeginner.setAdapter(adapter3)
         binding.actHomeBeginner.setText(sort_list.firstOrNull(), false)
+
+        if (binding.actHomeBeginner.text.toString() == "인기순")
+
 
         binding.nsv.isNestedScrollingEnabled = false
         binding.rvHomeBeginnerVertical.isNestedScrollingEnabled = false

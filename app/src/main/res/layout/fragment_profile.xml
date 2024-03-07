@@ -142,8 +142,8 @@
             android:id="@+id/btnImageEdit"
             android:layout_width="32dp"
             android:layout_height="30dp"
-            android:layout_marginStart="68dp"
-            android:layout_marginTop="72dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="68dp"
             android:background="@drawable/profile_image_edit_button"
             app:layout_constraintStart_toStartOf="@+id/ivProfile"
             app:layout_constraintTop_toTopOf="@+id/ivProfile" />

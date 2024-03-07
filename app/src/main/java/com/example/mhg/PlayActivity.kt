@@ -15,23 +15,22 @@ import androidx.camera.video.VideoCapture
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.mhg.databinding.ActivityPlayBinding
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import com.google.android.exoplayer2.util.Util
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-
-typealias LumaListener = (luma: Double) -> Unit
 
 class PlayActivity : AppCompatActivity() {
     lateinit var binding : ActivityPlayBinding
 
-    private var imageCapture: ImageCapture? = null
-
-    private var videoCapture: VideoCapture<Recorder>? = null
-    private var recording: Recording? = null
-
     private lateinit var cameraExecutor: ExecutorService
 
-
-
+    private var player : SimpleExoPlayer? = null
+    private var playWhenReady = true
+    private var currentWindow = 0
+    private var playbackPosition = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayBinding.inflate(layoutInflater)
@@ -45,10 +44,72 @@ class PlayActivity : AppCompatActivity() {
             )
         }
         cameraExecutor = Executors.newSingleThreadExecutor()
-
+        binding.pcvPlay.showTimeoutMs = 0
     }
-    private fun takePhoto() {}
-    private fun captureVideo() {}
+
+    override fun onStart() {
+        super.onStart()
+        if (Util.SDK_INT >= 24) {
+            initializePlayer()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        hideSystemUi()
+        if ((Util.SDK_INT < 24 || player == null)) {
+            initializePlayer()
+        }
+    }
+    override fun onPause() {
+        super.onPause()
+        if (Util.SDK_INT < 24) {
+            releasePlayer()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (Util.SDK_INT >= 24) {
+            releasePlayer()
+        }
+    }
+//    @SuppressLint("InlinedApi")
+//    private fun hideSystemUi() {
+//        binding.pcvPlay.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+//                or View.SYSTEM_UI_FLAG_FULLSCREEN
+//                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+//    }
+    private fun releasePlayer() {
+        player?.run {
+            playbackPosition = this.currentPosition
+            currentWindow = this.currentWindowIndex
+            playWhenReady = this.playWhenReady
+            release()
+        }
+        player = null
+    }
+    private fun initializePlayer() {
+        player = SimpleExoPlayer.Builder(this)
+            .build()
+            .also { exoPlayer ->
+                binding.pcvPlay.player = exoPlayer
+
+                // -----! 노래 (미디어) 항목 만들기 ! ------
+                // uri에서 가져오기
+//                val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(getString(R.string.media_url_mp3))
+                val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(R.raw.winner_winner_funky_chicken_dinner))
+
+                exoPlayer.setMediaItem(mediaItem)
+                exoPlayer.playWhenReady = playWhenReady
+                exoPlayer.seekTo(currentWindow, playbackPosition)
+                exoPlayer.prepare()
+            }
+    }
+
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -76,8 +137,6 @@ class PlayActivity : AppCompatActivity() {
         ContextCompat.checkSelfPermission(
             baseContext, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
     }
-
-
 
     companion object {
         private const val TAG = "CameraXApp"
