@@ -38,7 +38,7 @@ class AlarmActivity : AppCompatActivity() {
 
         val AlarmRecyclerViewAdapter = AlarmRecyclerViewAdapter(alarmList)
         val SwipeHelperCallback = SwipeHelperCallback().apply {
-            setClamp(200f)
+            setClamp(260f)
         }
         val itemTouchHelper = ItemTouchHelper(SwipeHelperCallback)
         itemTouchHelper.attachToRecyclerView(binding.rvAlarm)

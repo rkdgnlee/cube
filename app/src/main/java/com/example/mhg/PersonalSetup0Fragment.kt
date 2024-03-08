@@ -175,9 +175,9 @@ class PersonalSetup0Fragment : Fragment() {
         // ----- ! 서버로 전송하는 코드 ! -----
         binding.btnSignIn2.setOnClickListener {
             val JsonObj = JSONObject()
-            JsonObj.put("user_id", binding.etId.text.toString())
-            JsonObj.put("user_name", binding.etName.text.toString())
-            JsonObj.put("user_password", binding.etPw.text.toString())
+            JsonObj.put("user_id", binding.etId.text.toString().trim())
+            JsonObj.put("user_name", binding.etName.text.toString().trim())
+            JsonObj.put("user_password", binding.etPw.text.toString().trim())
             if (binding.rbtnM.isChecked == true) {
                 JsonObj.put("user_gender", "M")
             } else {

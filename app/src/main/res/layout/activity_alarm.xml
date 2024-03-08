@@ -11,7 +11,7 @@
         android:id="@+id/imgbtnbckAlarm"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginStart="14dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:background="#FFFFFF"
         android:backgroundTint="#FFFFFF"
@@ -48,11 +48,14 @@
         android:id="@+id/btnAlarmSetting"
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:background="#FFFFFF"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/rvAlarm"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textView10"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/alarm_settings_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
