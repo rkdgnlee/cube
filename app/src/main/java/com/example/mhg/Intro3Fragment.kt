@@ -60,7 +60,8 @@ class Intro3Fragment : Fragment() {
 
     private val TAG = this.javaClass.simpleName
     private lateinit var viewModel: UserViewModel
-    fun fetchJson(myUrl : String, json: String, category: String, context: Context, callback: () -> Unit){
+
+    fun fetchINSERTJson(myUrl : String, json: String, category: String){
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
@@ -75,11 +76,30 @@ class Intro3Fragment : Fragment() {
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-//                val jsonDataArray = JSONArray(responseBody)
-//                val jsonObj = jsonDataArray.getJSONObject(0)
-//                val t_userInstance = Singleton_t_user.getInstance(context)
-//                t_userInstance.jsonObject = jsonObj
-//                Log.e("OKHTTP3>싱글톤", "${t_userInstance.jsonObject}")
+            }
+        })
+    }
+    fun fetchSELECTJson(myUrl : String, json: String, category: String, token:String, callback: () -> Unit){
+        val client = OkHttpClient()
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+        val request = Request.Builder()
+            .url("$myUrl?category=$category&login_token=$token")
+            .post(body)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback  {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("OKHTTP3", "Failed to execute request!")
+            }
+            override fun onResponse(call: Call, response: Response)  {
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                val jsonDataArray = jsonObj__?.getJSONArray("aaData")
+                val jsonObj = jsonDataArray?.getJSONObject(0)
+                val t_userInstance = context?.let { Singleton_t_user.getInstance(it) }
+                t_userInstance?.jsonObject = jsonObj
+                Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
                 callback()
             }
         })
@@ -126,11 +146,7 @@ class Intro3Fragment : Fragment() {
                                                 JsonObj.put("user_email", user.email.toString())
                                                 JsonObj.put("login_token", tokenId)
                                                 Log.e("구글JsonObj", JsonObj.getString("user_email"))
-                                                fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", requireActivity().applicationContext) {
-                                                    val intent = Intent(requireContext(), MainActivity::class.java)
-                                                    startActivity(intent)
-                                                    ActivityCompat.finishAffinity(requireActivity())
-                                                }
+                                                fetchINSERTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT")
 //                                                    Singleton_t_user.getInstance(requireContext()).jsonObject = JsonObj // 질의를 통해 db에 넣음과 동시에 해당 데이터 singleton 저장
 //                                                    Log.w("싱글톤_구글회원가입", "${Singleton_t_user.getInstance(requireActivity()).jsonObject}")
 
@@ -159,10 +175,6 @@ class Intro3Fragment : Fragment() {
             startActivity(intent)
             ActivityCompat.finishAffinity(requireActivity())
         }
-        // viewmodel 불러오기
-        viewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
-
-
         // ---- firebase 초기화 및 Google Login API 연동 끝 ----
         return binding.root
     }
@@ -183,31 +195,14 @@ class Intro3Fragment : Fragment() {
                 val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
                 val signInIntent: Intent = googleSignInClient.signInIntent
                 launcher.launch(signInIntent)
-                // ----- GOOGLE API에서 DB에 넣는 공간 시작 -----
-//                val JsonObj = JSONObject()
-//                val user: FirebaseUser = firebaseAuth.currentUser!!
-//                JsonObj.put("user_id", user.email.toString())
-//                JsonObj.put("user_password", user.email.toString())
-//                JsonObj.put("user_name", user.displayName.toString())
-//                JsonObj.put("user_gender", "male")
-//                JsonObj.put("user_grade", 1)
-//                JsonObj.put("user_mobile", user.phoneNumber.toString())
-//                JsonObj.put("user_email", user.email.toString())
-//
-//
-//                JsonObj.put("login_token", )
-//                fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT")
-
             }
         }
         // ---- 구글 로그인 끝 ----
-
 
         // ---- 앱 내 자체 회원가입/로그인 시작 ----
         binding.btnSignin.setOnClickListener {
             val intent = Intent(requireContext(), PersonalSetupActivity::class.java)
             startActivity(intent)
-
         }
         // ---- 네이버 로그인 연동 시작 ----
         val oauthLoginCallback = object : OAuthLoginCallback {
@@ -241,11 +236,11 @@ class Intro3Fragment : Fragment() {
                         JsonObj.put("user_birthday", result.profile?.birthYear.toString() + result.profile?.birthday.toString())
                         JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken())
 
-                        fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", requireActivity().applicationContext) {
-                            val intent = Intent(requireContext(), MainActivity::class.java)
-                            startActivity(intent)
-                            ActivityCompat.finishAffinity(requireActivity())
-                        }
+                        fetchINSERTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT")
+
+
+
+
                         Singleton_t_user.getInstance(requireActivity()).jsonObject = JsonObj
                         Log.w("싱글톤_네이버회원가입", "${Singleton_t_user.getInstance(requireActivity()).jsonObject}")
                         setToken(
@@ -256,8 +251,7 @@ class Intro3Fragment : Fragment() {
                         Log.d("네이버토큰", "${setToken(requireActivity(), "naverToken", NaverIdLoginSDK.getAccessToken().toString())}")
                     }
                 })
-                val intent = Intent(requireActivity(), PersonalSetupActivity::class.java)
-                startActivity(intent)
+                MainInit()
                 // ---- 네이버 로그인 성공 동작 끝 ----
 
             }
@@ -319,11 +313,9 @@ class Intro3Fragment : Fragment() {
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
                                 JsonObj.put("login_token" , tokenInfo.id.toString())
 
-                                fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", requireActivity().applicationContext) {
-                                    val intent = Intent(requireContext(), MainActivity::class.java)
-                                    startActivity(intent)
-                                    ActivityCompat.finishAffinity(requireActivity())
-                                }
+                                fetchINSERTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT")
+
+
                                 Singleton_t_user.getInstance(requireContext()).jsonObject = JsonObj
                                 Log.w("싱글톤_카카오회원가입", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                 TODO("싱글톤에 넣는 작업 필요")
@@ -344,7 +336,11 @@ class Intro3Fragment : Fragment() {
         }
         // ---- 카카오 로그인 연동 끝 ----
     }
-
+    private fun MainInit() {
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        startActivity(intent)
+        ActivityCompat.finishAffinity(requireActivity())
+    }
     private fun setToken(context: Context, key: String, value: String) {
         val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
         val masterKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)

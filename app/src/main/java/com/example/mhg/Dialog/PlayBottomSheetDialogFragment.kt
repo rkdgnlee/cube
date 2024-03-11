@@ -39,16 +39,16 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
         binding = DialogfragmentPlayBottomSheetBinding.inflate(inflater, container, false)
 
         // ----- ! 버튼 연결 코드 ! -----
-        val buttonView = PlaybuttonBinding.inflate(inflater, binding.root as ViewGroup, false)
-        val params = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-        ).apply {
-            gravity = Gravity.END
-        }
-        val dialog = dialog
-
-        binding.root.addView(buttonView.root, params)
+//        val buttonView = PlaybuttonBinding.inflate(inflater, binding.root as ViewGroup, false)
+//        val params = FrameLayout.LayoutParams(
+//            FrameLayout.LayoutParams.MATCH_PARENT,
+//            FrameLayout.LayoutParams.WRAP_CONTENT,
+//        ).apply {
+//            gravity = Gravity.BOTTOM
+//
+//        }
+//        val dialog = dialog
+//        binding.root.addView(buttonView.root, params)
 
         return binding.root
     }
@@ -67,7 +67,7 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
             val desiredHeight = (screenHeight * 0.5).toInt()
             bottomSheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             val behavior = BottomSheetBehavior.from(bottomSheet)
-            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.peekHeight = desiredHeight
             behavior.isHideable = true
         }

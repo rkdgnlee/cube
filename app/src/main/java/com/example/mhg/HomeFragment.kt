@@ -9,10 +9,38 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.mhg.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayout
 
 
 class HomeFragment : Fragment() {
+
+    lateinit var binding : FragmentHomeBinding
+    companion object {
+        fun newInstance(fragmentId: String) : HomeFragment {
+            val fragment = HomeFragment()
+            val args = Bundle()
+            args.putString("fragmentId", fragmentId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+    fun setChildFragment(fragmentId: String) {
+        when (fragmentId) {
+            "home_beginner" -> {
+                binding.vpHome.currentItem = 0
+                binding.tlHome.selectTab(binding.tlHome.getTabAt(0))
+            }
+            "home_intermediate" -> {
+                binding.vpHome.currentItem = 1
+                binding.tlHome.selectTab(binding.tlHome.getTabAt(1))
+            }
+            else -> {
+                binding.vpHome.currentItem = 2
+                binding.tlHome.selectTab(binding.tlHome.getTabAt(2))
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,41 +51,41 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        binding = FragmentHomeBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val viewPager = view.findViewById<ViewPager2>(R.id.vpHome)
-        val adapter = HomePagerAdapter(childFragmentManager, lifecycle)
-        viewPager?.adapter = adapter
-        viewPager?.isUserInputEnabled = false
-        val tablayout = view.findViewById<TabLayout>(R.id.tlHome)
+        binding.vpHome.adapter = HomePagerAdapter(childFragmentManager, lifecycle)
+        binding.vpHome.isUserInputEnabled = false
 
-        tablayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+        // -----! 알림의 route를 통해 자식 fragment로 이동  !-----
+        val fragmentId = arguments?.getString("fragmentId")
+        fragmentId?.let { setChildFragment(it) }
+
+        binding.tlHome.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab!!.position) {
-                    0 -> viewPager.currentItem = 0
-                    1 -> viewPager.currentItem = 1
-                    2 -> viewPager.currentItem = 2
+                    0 -> binding.vpHome.currentItem = 0
+                    1 -> binding.vpHome.currentItem = 1
+                    2 -> binding.vpHome.currentItem = 2
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 when (tab!!.position) {
-                    0 -> viewPager.currentItem = 0
-                    1 -> viewPager.currentItem = 1
-                    2 -> viewPager.currentItem = 2
+                    0 -> binding.vpHome.currentItem = 0
+                    1 -> binding.vpHome.currentItem = 1
+                    2 -> binding.vpHome.currentItem = 2
                 }
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 when (tab!!.position) {
-                    0 -> viewPager.currentItem = 0
-                    1 -> viewPager.currentItem = 1
-                    2 -> viewPager.currentItem = 2
+                    0 -> binding.vpHome.currentItem = 0
+                    1 -> binding.vpHome.currentItem = 1
+                    2 -> binding.vpHome.currentItem = 2
                 }
             }
         })

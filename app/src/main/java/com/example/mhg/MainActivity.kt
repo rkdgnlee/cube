@@ -1,5 +1,6 @@
 package com.example.mhg
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,8 @@ import com.example.mhg.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
+
+    @SuppressLint("CommitTransaction")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -29,8 +32,9 @@ class MainActivity : AppCompatActivity() {
         Log.e("싱글톤>뷰모델", "${viewModel.User.value}")
 
 
+
 //        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        // 화면 초기화
+        // -----! 화면 초기화 !-----
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, HomeFragment())
@@ -38,7 +42,42 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.bnbMain
+        // -----! 알람 경로 설정 !-----
+        val fromAlarmActivity = intent.getBooleanExtra("fromAlarmActivity", false)
+        Log.v("TAG", "$fromAlarmActivity")
+        if (fromAlarmActivity) {
+            val fragmentId = intent.getStringExtra("fragmentId")
+            Log.v("TAG", "$fragmentId")
+            if (fragmentId != null) {
+                val fragment = FragmentFactory.createFragmentById(fragmentId)
+                Log.v("TAG", "$fragment")
+                when (fragmentId) {
+//                    fragment에서 bnb 색 변하게 하기
+                    "home_beginner", "home_expert", "home_intermediate" -> {
+                        val homeFragment = HomeFragment.newInstance(fragmentId)
+                        binding.bnbMain.selectedItemId = R.id.home
+                        setCurrentFragment(homeFragment)
+
+                    }
+                    "report_skeleton", "report_detail", "report_goal" -> {
+                        val reportFragment = ReportFragment.newInstance(fragmentId)
+                        binding.bnbMain.selectedItemId = R.id.report
+                        setCurrentFragment(reportFragment)
+                    }
+                    "pick" -> {
+                        binding.bnbMain.selectedItemId = R.id.pick
+                        setCurrentFragment(fragment)
+                    }
+                    "profile" -> {
+                        binding.bnbMain.selectedItemId = R.id.profile
+                        setCurrentFragment(fragment)
+                    }
+                }
+            }
+        }
+
+
+        // -----! 바텀 네비 바 경로 설정 -----!
 //        binding.bnbMain.setOnNavigationItemReselectedListener(null)
         binding.bnbMain.setOnItemSelectedListener {
             when(it.itemId) {
@@ -63,15 +102,17 @@ class MainActivity : AppCompatActivity() {
         binding.imgbtnAlarm.setOnClickListener {
             val intent = Intent(this, AlarmActivity::class.java)
             startActivity(intent)
+            
         }
 
     }
     fun setCurrentFragment(fragment: Fragment) =
         supportFragmentManager.beginTransaction().apply {
-            add(R.id.flMain, fragment)
-            addToBackStack(null)
+            replace(R.id.flMain, fragment)
+//            addToBackStack(null)
             commit()
         }
+
 
 
     private val onBackPressedCallback = object:OnBackPressedCallback(true) {

@@ -137,13 +137,16 @@ class SplashActivity : AppCompatActivity() {
                     override fun onResponse(call: Call, response: Response) {
                         if (response.isSuccessful) {
                             val JsonObj = JSONObject()
-                            JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken().toString())
-                            fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", applicationContext)
+                            val idToken = NaverIdLoginSDK.getAccessToken().toString()
+                            JsonObj.put("login_token", idToken)
+                            fetchSELECTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", applicationContext, idToken){
+                                MainInit()
+                            }
 
                         }
                     }
                 })
-                MainInit()
+
                 // ----- 네이버 토큰 있음 끝 -----
 
                 // ----- 구글 토큰 있음 시작 -----
@@ -155,11 +158,13 @@ class SplashActivity : AppCompatActivity() {
                             val idToken: String? = task.result.token
                             val JsonObj = JSONObject()
                             JsonObj.put("login_token", "$idToken")
-                            fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", this)
-                            MainInit()
+                            if (idToken != null) {
+                                fetchSELECTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", applicationContext, idToken){
+                                    MainInit()
+                                }
+                            }
                         }
                     }
-
                 // ----- 구글 토큰 있음 끝 -----
 
                 // ----- 카카오 토큰 있음 시작 -----
@@ -167,8 +172,12 @@ class SplashActivity : AppCompatActivity() {
                 val kakaoToken = getToken(this, "kakaoToken")
                 val JsonObj = JSONObject()
                 JsonObj.put("login_token", "$kakaoToken")
-                fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(),"1",  this)
-                MainInit()
+                if (kakaoToken != null) {
+                    fetchSELECTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(),"1", applicationContext, kakaoToken){
+                        MainInit()
+                    }
+                }
+
             } else {
                 IntroInit()
             } // 로그인 정보가 없을 경우
@@ -251,30 +260,31 @@ class SplashActivity : AppCompatActivity() {
     }
     // ----- 알림에 대한 함수들 끝 -----
 
-    fun fetchJson(myUrl : String, json: String, category: String, context: Context){
+    fun fetchSELECTJson(myUrl : String, json: String, category: String, context: Context, token: String, callback: () -> Unit){
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
-            .url("$myUrl?category=$category&user_id=")
+            .url("$myUrl?category=$category&login_token=$token")
             .post(body)
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
+        client.newCall(request).enqueue(object : Callback  {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("OKHTTP3", "Failed to execute request!")
             }
-
-            override fun onResponse(call: Call, response: Response) {
+            override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
-                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-//                val jsonDataArray = JSONArray(responseBody)
-//                val jsonObj = jsonDataArray.getJSONObject(0)
-//                val t_userInstance = Singleton_t_user.getInstance(context)
+                Log.e("OKHTTP3/SELECT", "Success to execute request!: $responseBody")
+//                val jsonObj__ = responseBody?.let { JSONObject(it) }
+//                val jsonDataArray = jsonObj__?.getJSONArray("aaData")
+//                val jsonObj = jsonDataArray?.getJSONObject(0)
+//                val t_userInstance = context.let { Singleton_t_user.getInstance(it) }
 //                t_userInstance.jsonObject = jsonObj
-//                Log.e("싱글톤", "${t_userInstance.jsonObject}")
-
-
+//                Log.e("OKHTTP3>싱글톤", "${t_userInstance.jsonObject}")
+                callback()
             }
         })
     }
+
+
 }

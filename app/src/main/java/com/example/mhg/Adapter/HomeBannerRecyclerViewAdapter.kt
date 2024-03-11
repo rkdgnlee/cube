@@ -23,8 +23,13 @@ RecyclerView.Adapter<HomeBannerRecyclerViewAdapter.MyViewHolder>() {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.banner_item, parent, false)
         return MyViewHolder(view).apply {
             itemView.setOnClickListener {
-                val curPosition = bindingAdapterPosition
-                Toast.makeText(mContext, "${curPosition%5}번째 배너입니다.", Toast.LENGTH_SHORT).show()
+                val currentPosition = bindingAdapterPosition
+                Toast.makeText(mContext, "${currentPosition%5}번째 배너입니다.", Toast.LENGTH_SHORT).show()
+
+
+
+
+
             }
         }
     }

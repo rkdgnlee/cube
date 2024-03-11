@@ -14,7 +14,8 @@ import com.example.mhg.VO.RoutingVO
 import com.example.mhg.databinding.ActivityAlarmBinding
 
 
-class AlarmActivity : AppCompatActivity() {
+
+class AlarmActivity : AppCompatActivity(), OnAlarmClickListener {
     lateinit var binding: ActivityAlarmBinding
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ClickableViewAccessibility")
@@ -30,13 +31,13 @@ class AlarmActivity : AppCompatActivity() {
         }
 
         val alarmList = mutableListOf(
-            RoutingVO(" 운동이 시작됐습니다.", ""),
-            RoutingVO("미션이 부여됐습니다"),
-            RoutingVO("운동 마무리 루틴"),
-            RoutingVO("기기 연결이 완료 됐습니다.")
+            RoutingVO(" 운동이 시작됐습니다.", "home_intermediate"),
+            RoutingVO("미션이 부여됐습니다", "pick"),
+            RoutingVO("운동 마무리 루틴", "report_goal"),
+            RoutingVO("기기 연결이 완료 됐습니다.", "profile")
         )
 
-        val AlarmRecyclerViewAdapter = AlarmRecyclerViewAdapter(alarmList)
+        val AlarmRecyclerViewAdapter = AlarmRecyclerViewAdapter(alarmList, this)
         val SwipeHelperCallback = SwipeHelperCallback().apply {
             setClamp(260f)
         }
@@ -50,7 +51,6 @@ class AlarmActivity : AppCompatActivity() {
                 false
             }
         }
-
         binding.btnAlarmSetting.setOnClickListener {
             val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
                 putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
@@ -58,10 +58,14 @@ class AlarmActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
-
-
-
         // ----- recyclerview 스와이프 삭제 끝 -----
+    }
+    override fun onAlarmClick(fragmentId: String) {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("fragmentId", fragmentId)
+        intent.putExtra("fromAlarmActivity", true)
+        startActivity(intent)
+
     }
 }
 
