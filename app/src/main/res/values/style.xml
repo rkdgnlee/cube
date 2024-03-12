@@ -3,7 +3,7 @@
 
     <style name="OrangeRadioButton" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@color/orange</item>
-        <item name="colorControlNormal">@color/skeletongrey</item>
+        <item name="colorControlNormal">@color/white</item>
         <item name="android:elevation">4dp</item>
     </style>
 

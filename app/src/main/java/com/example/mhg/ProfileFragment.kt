@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.ProfileRecyclerViewAdapter
 import com.example.mhg.VO.RoutingVO
 import com.example.mhg.databinding.FragmentProfileBinding
+import com.google.android.gms.dynamic.SupportFragmentWrapper
 import java.io.IOException
 
 
@@ -65,6 +66,12 @@ class ProfileFragment : Fragment() {
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     1000
                 )
+            }
+        }
+        binding.btnProfileEdit.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, ProfileEditFragment())
+                commit()
             }
         }
     }

@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.example.mhg.databinding.ActivitySplashBinding
+import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -28,16 +30,14 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.util.Calendar
@@ -47,7 +47,6 @@ import java.util.Calendar
 class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
-//    private lateinit var viewModel: UserViewModel
     private val PERMISSION_REQUEST_CODE = 5000
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -57,26 +56,13 @@ class SplashActivity : AppCompatActivity() {
 
             binding = ActivitySplashBinding.inflate(layoutInflater)
             val t_userData = Singleton_t_user.getInstance(this)
-            // ----/ server연결 /---
-        // update 문 실행
-//            val jsonObj = JSONObject()
-//            jsonObj.put("user_sn", )
-//            Log.e("JSON", "$jsonObj")
-//            fetchJson(IP_ADDRESS, jsonObj.toString(), "PUT")
 
-//         select 문 실행해보기
-//            val jsonObj = JSONObject()
-//            jsonObj.put("login_token", "")
-//            fetchJson(IP_ADDRESS, jsonObj.toString(), "POST")
-
-        // delete 문 실행해보기
-//            val jsonObj3 = JSONObject()
-//            jsonObj3.put("user_sn", 2)
-//            fetchJson(IP_ADDRESS, jsonObj3.toString(), "DELETE")
 
             // ----- API 초기화 시작 -----
-            NaverIdLoginSDK.initialize(this, "m5zFu7piZAAWFf4M4v0j", "ICzYhMzvrT", "Multi Home Gym")
-            KakaoSdk.init(this, "3b8fabecdc76c31056605852a34ea729")
+            NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "Multi Home Gym")
+            KakaoSdk.init(this, getString(R.string.kakao_client_id))
+
+
             firebaseAuth = Firebase.auth
 
             val googleUserExist = firebaseAuth.currentUser
@@ -101,7 +87,6 @@ class SplashActivity : AppCompatActivity() {
 
         // ----- 인 앱 알림 시작 -----
         AlarmReceiver()
-
         val intent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val calander: Calendar = Calendar.getInstance().apply {
@@ -124,7 +109,7 @@ class SplashActivity : AppCompatActivity() {
             // ----- 네이버 토큰 있음 시작 -----
             if (naverTokenExist == NidOAuthLoginState.OK) {
                 Log.e("네이버 로그인", "$naverTokenExist")
-                val naverToken = getToken(this, "naverToken")
+                val naverToken = NaverIdLoginSDK.getAccessToken()
                 Log.e("네이버토큰", "$naverToken")
                 val url = "https://openapi.naver.com/v1/nid/me"
                 val request = Request.Builder()
@@ -136,17 +121,18 @@ class SplashActivity : AppCompatActivity() {
                     override fun onFailure(call: Call, e: IOException) { }
                     override fun onResponse(call: Call, response: Response) {
                         if (response.isSuccessful) {
+                            val responseBody = response.body?.string()
+                            val jsonObj__ = responseBody?.let { JSONObject(it) }
+                            val jsonObj = jsonObj__?.getJSONObject("response")
+                            val user_id = jsonObj?.getString("id")
                             val JsonObj = JSONObject()
-                            val idToken = NaverIdLoginSDK.getAccessToken().toString()
-                            JsonObj.put("login_token", idToken)
-                            fetchSELECTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", applicationContext, idToken){
+                            JsonObj.put("user_id", user_id)
+                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
                                 MainInit()
                             }
-
                         }
                     }
                 })
-
                 // ----- 네이버 토큰 있음 끝 -----
 
                 // ----- 구글 토큰 있음 시작 -----
@@ -155,13 +141,10 @@ class SplashActivity : AppCompatActivity() {
                 user!!.getIdToken(true)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            val idToken: String? = task.result.token
                             val JsonObj = JSONObject()
-                            JsonObj.put("login_token", "$idToken")
-                            if (idToken != null) {
-                                fetchSELECTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "1", applicationContext, idToken){
-                                    MainInit()
-                                }
+                            JsonObj.put("user_id", user.uid)
+                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                                MainInit()
                             }
                         }
                     }
@@ -169,22 +152,25 @@ class SplashActivity : AppCompatActivity() {
 
                 // ----- 카카오 토큰 있음 시작 -----
             } else if (AuthApiClient.instance.hasToken()) {
-                val kakaoToken = getToken(this, "kakaoToken")
-                val JsonObj = JSONObject()
-                JsonObj.put("login_token", "$kakaoToken")
-                if (kakaoToken != null) {
-                    fetchSELECTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(),"1", applicationContext, kakaoToken){
-                        MainInit()
+                UserApiClient.instance.me { user, error ->
+                    if (error != null) {
+                        Log.e(TAG, "사용자 정보 요청 실패", error)
+                    }
+                    else if (user != null) {
+                        Log.i(TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
+                        val JsonObj = JSONObject()
+                        JsonObj.put("user_id", user.id)
+                        fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                            MainInit()
+                        }
                     }
                 }
-
             } else {
+                // 로그인 정보가 없을 경우
                 IntroInit()
-            } // 로그인 정보가 없을 경우
+            }
         }, 1500)
-
-
-        // ----- 카카오 토큰 있음 시작 -----
+        // ----- 카카오 토큰 있음 끝 -----
         // ---- 화면 경로 설정 끝 ----
     }
 
@@ -260,12 +246,11 @@ class SplashActivity : AppCompatActivity() {
     }
     // ----- 알림에 대한 함수들 끝 -----
 
-    fun fetchSELECTJson(myUrl : String, json: String, category: String, context: Context, token: String, callback: () -> Unit){
+    fun fetchSELECTJson(myUrl : String, user_id:String, callback: () -> Unit){
         val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
-            .url("$myUrl?category=$category&login_token=$token")
-            .post(body)
+            .url("${myUrl}read.php?user_id=$user_id")
+            .get()
             .build()
 
         client.newCall(request).enqueue(object : Callback  {
@@ -274,17 +259,15 @@ class SplashActivity : AppCompatActivity() {
             }
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
-                Log.e("OKHTTP3/SELECT", "Success to execute request!: $responseBody")
-//                val jsonObj__ = responseBody?.let { JSONObject(it) }
-//                val jsonDataArray = jsonObj__?.getJSONArray("aaData")
-//                val jsonObj = jsonDataArray?.getJSONObject(0)
-//                val t_userInstance = context.let { Singleton_t_user.getInstance(it) }
-//                t_userInstance.jsonObject = jsonObj
-//                Log.e("OKHTTP3>싱글톤", "${t_userInstance.jsonObject}")
+                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                val jsonObj = jsonObj__?.getJSONObject("data")
+                val t_userInstance =  Singleton_t_user.getInstance(baseContext)
+                t_userInstance.jsonObject = jsonObj
+                Log.e("OKHTTP3>싱글톤", "${t_userInstance.jsonObject}")
                 callback()
             }
         })
     }
-
 
 }

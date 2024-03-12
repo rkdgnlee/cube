@@ -30,7 +30,7 @@
             android:id="@+id/ivIntro1Logo"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:layout_marginTop="96dp"
+            android:layout_marginTop="36dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,12 +39,12 @@
 
         <ImageView
             android:id="@+id/ivIntro1Skeleton"
-            android:layout_width="500dp"
-            android:layout_height="500dp"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
             android:layout_marginTop="20dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.73"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivIntro1Logo"
             app:srcCompat="@drawable/intro1skeleton" />
@@ -58,7 +58,6 @@
             android:textColor="#4D4D4D"
             android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.623"
             app:layout_constraintStart_toStartOf="@+id/ivIntro1Skeleton"
             app:layout_constraintTop_toBottomOf="@+id/ivIntro1Skeleton" />
 

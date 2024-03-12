@@ -1,4 +1,4 @@
-package com.example.mhg
+package com.example.mhg.`object`
 
 import android.annotation.SuppressLint
 import android.content.Context

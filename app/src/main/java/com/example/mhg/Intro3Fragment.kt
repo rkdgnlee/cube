@@ -1,7 +1,6 @@
 package com.example.mhg
 
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,11 +13,9 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
-import com.example.mhg.VO.UserViewModel
+import com.example.mhg.`object`.NetworkService.fetchINSERTJson
 import com.example.mhg.databinding.FragmentIntro3Binding
+import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -26,7 +23,6 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
@@ -42,49 +38,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
-import kotlin.coroutines.coroutineContext
 
+@Suppress("NAME_SHADOWING")
 class Intro3Fragment : Fragment() {
     lateinit var binding: FragmentIntro3Binding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
-
     private val TAG = this.javaClass.simpleName
-    private lateinit var viewModel: UserViewModel
 
-    fun fetchINSERTJson(myUrl : String, json: String, category: String){
+    fun fetchSELECTJson(myUrl : String, user_id:String, callback: () -> Unit){
         val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+//        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
-            .url("$myUrl?category=$category")
-            .post(body)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback  {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("OKHTTP3", "Failed to execute request!")
-            }
-            override fun onResponse(call: Call, response: Response)  {
-                val responseBody = response.body?.string()
-                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-            }
-        })
-    }
-    fun fetchSELECTJson(myUrl : String, json: String, category: String, token:String, callback: () -> Unit){
-        val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
-        val request = Request.Builder()
-            .url("$myUrl?category=$category&login_token=$token")
-            .post(body)
+            .url("${myUrl}read.php?user_id=$user_id")
+            .get()
             .build()
 
         client.newCall(request).enqueue(object : Callback  {
@@ -95,9 +68,8 @@ class Intro3Fragment : Fragment() {
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3", "Success to execute request!: $responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
-                val jsonDataArray = jsonObj__?.getJSONArray("aaData")
-                val jsonObj = jsonDataArray?.getJSONObject(0)
-                val t_userInstance = context?.let { Singleton_t_user.getInstance(it) }
+                val jsonObj = jsonObj__?.getJSONObject("data")
+                val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                 t_userInstance?.jsonObject = jsonObj
                 Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
                 callback()
@@ -137,16 +109,20 @@ class Intro3Fragment : Fragment() {
 
 //                                                // ----- GOOGLE API에서 DB에 넣는 공간 시작 -----
                                                 val JsonObj = JSONObject()
-                                                JsonObj.put("user_id", user.email.toString())
+                                                JsonObj.put("user_id", user.uid)
                                                 JsonObj.put("user_password", user.email.toString())
                                                 JsonObj.put("user_name", user.displayName.toString())
                                                 JsonObj.put("user_gender", "male")
                                                 JsonObj.put("user_grade", 1)
                                                 JsonObj.put("user_mobile", user.phoneNumber.toString())
                                                 JsonObj.put("user_email", user.email.toString())
-                                                JsonObj.put("login_token", tokenId)
-                                                Log.e("구글JsonObj", JsonObj.getString("user_email"))
-                                                fetchINSERTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT")
+
+                                                Log.e("구글JsonObj", JsonObj.getString("user_id"))
+                                                fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
+                                                    fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                                                        MainInit()
+                                                    }
+                                                }
 //                                                    Singleton_t_user.getInstance(requireContext()).jsonObject = JsonObj // 질의를 통해 db에 넣음과 동시에 해당 데이터 singleton 저장
 //                                                    Log.w("싱글톤_구글회원가입", "${Singleton_t_user.getInstance(requireActivity()).jsonObject}")
 
@@ -155,6 +131,7 @@ class Intro3Fragment : Fragment() {
                                                 val googleSignInToken = account.idToken ?: ""
                                                 if (googleSignInToken != "") {
                                                     Log.e(TAG, "googleSignInToken : $googleSignInToken")
+
                                                 } else {
                                                     Log.e(TAG, "googleSignInToken이 null")
                                                 }
@@ -230,30 +207,20 @@ class Intro3Fragment : Fragment() {
                         val JsonObj = JSONObject()
                         JsonObj.put("user_id" , result.profile?.id.toString())
                         JsonObj.put("user_name", result.profile?.name.toString())
+                        JsonObj.put("user_password", result.profile?.encId.toString())
                         JsonObj.put("user_gender",result.profile?.gender.toString())
                         JsonObj.put("user_mobile", result.profile?.mobile.toString())
                         JsonObj.put("user_email", result.profile?.email.toString())
                         JsonObj.put("user_birthday", result.profile?.birthYear.toString() + result.profile?.birthday.toString())
-                        JsonObj.put("login_token", NaverIdLoginSDK.getAccessToken())
-
-                        fetchINSERTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT")
-
-
-
-
-                        Singleton_t_user.getInstance(requireActivity()).jsonObject = JsonObj
-                        Log.w("싱글톤_네이버회원가입", "${Singleton_t_user.getInstance(requireActivity()).jsonObject}")
-                        setToken(
-                            requireActivity(),
-                            "naverToken",
-                            NaverIdLoginSDK.getAccessToken().toString()
-                        )
-                        Log.d("네이버토큰", "${setToken(requireActivity(), "naverToken", NaverIdLoginSDK.getAccessToken().toString())}")
+                        Log.i("$TAG, 네이버", JsonObj.getString("user_id"))
+                        fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
+                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                                MainInit()
+                            }
+                        }
                     }
                 })
-                MainInit()
                 // ---- 네이버 로그인 성공 동작 끝 ----
-
             }
         }
         binding.buttonOAuthLoginImg.setOAuthLogin(oauthLoginCallback = oauthLoginCallback)
@@ -267,33 +234,9 @@ class Intro3Fragment : Fragment() {
                     error.toString() == AuthErrorCause.AccessDenied.toString() -> {
                         Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
                     }
-                    error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
-                    }
-                    error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
-                    }
-                    error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
-                    }
-                    error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
-                    }
-                    error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
-                    }
-                    error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
-                    }
-                    error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
-                    }
-
                 }
-            }
-            else if (token != null) {
+            } else if (token != null) {
                 Log.e("카카오톡", "로그인에 성공하였습니다.")
-
                 UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
                     if (error != null) {
                         Log.e(TAG, "토큰 정보 보기 실패", error)
@@ -305,28 +248,27 @@ class Intro3Fragment : Fragment() {
                             }
                             else if (user != null) {
                                 val JsonObj = JSONObject()
-                                JsonObj.put("user_id" , user.kakaoAccount?.email.toString())
+                                JsonObj.put("user_id" , user.id.toString())
                                 JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
+                                JsonObj.put("user_password", user.kakaoAccount?.ci.toString())
                                 JsonObj.put("user_gender", user.kakaoAccount?.gender.toString())
                                 JsonObj.put("user_mobile", user.kakaoAccount?.phoneNumber.toString())
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
-                                JsonObj.put("login_token" , tokenInfo.id.toString())
-
-                                fetchINSERTJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT")
-
-
-                                Singleton_t_user.getInstance(requireContext()).jsonObject = JsonObj
-                                Log.w("싱글톤_카카오회원가입", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
-                                TODO("싱글톤에 넣는 작업 필요")
+                                Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_id"))
+                                fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
+                                    fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                                        MainInit()
+                                    }
+                                }
                             }
                         }
-                        val intent = Intent(requireContext(), MainActivity::class.java)
-                        startActivity(intent)
                     }
                 }
             }
         }
+
+
         binding.ibtnKakaoLogin.setOnClickListener {
             if (UserApiClient.instance.isKakaoTalkLoginAvailable(requireContext())) {
                 UserApiClient.instance.loginWithKakaoTalk(requireContext(), callback = callback)
@@ -341,16 +283,16 @@ class Intro3Fragment : Fragment() {
         startActivity(intent)
         ActivityCompat.finishAffinity(requireActivity())
     }
-    private fun setToken(context: Context, key: String, value: String) {
-        val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
-        val masterKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
-        val sharedPreferences = EncryptedSharedPreferences.create(
-            "encryptedShared", masterKeyAlias, context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-
-        sharedPreferences.edit().putString(key, value).apply()
-    }
+//    private fun setToken(context: Context, key: String, value: String) {
+//        val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
+//        val masterKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
+//        val sharedPreferences = EncryptedSharedPreferences.create(
+//            "encryptedShared", masterKeyAlias, context,
+//            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+//            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+//        )
+//
+//        sharedPreferences.edit().putString(key, value).apply()
+//    }
 
 }

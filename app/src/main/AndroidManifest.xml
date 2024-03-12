@@ -26,6 +26,22 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31"
         tools:replace="android:theme">
+        <!-- 안드로이드 로그인용 activity-->
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+                <data android:host="oauth"
+                    android:scheme="kakao2b0a5b008d30b13376e1b6641b100e7d" />
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".PlayActivity"
             android:exported="false" />
@@ -51,7 +67,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <data
                     android:host="oauth"
-                    android:scheme="kakao3b8fabecdc76c31056605852a34ea729" />
+                    android:scheme="kakao2b0a5b008d30b13376e1b6641b100e7d" />
             </intent-filter>
         </activity>
         <activity
@@ -69,6 +85,7 @@
         <meta-data
             android:name="com.google.firebase.default_notification_channel_id"
             android:value="news"/>
+
     </application>
 
 </manifest>

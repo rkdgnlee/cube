@@ -3,16 +3,19 @@ package com.example.mhg.Adapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.Dialog.PickBottomSheetDialogFragment
 import com.example.mhg.Dialog.PlayBottomSheetDialogFragment
+import com.example.mhg.PickDetailFragment
 import com.example.mhg.VO.RoutingVO
 import com.example.mhg.databinding.PicklistBinding
+import com.example.mhg.onPickDetailClickListener
 import kotlinx.coroutines.NonDisposableHandle.parent
 
 
-class PickRecyclerViewAdapter(var pickList: MutableList<RoutingVO>) : RecyclerView.Adapter<PickRecyclerViewAdapter.MyViewHolder>() {
+class PickRecyclerViewAdapter(var pickList: MutableList<RoutingVO>, private val listener: onPickDetailClickListener ) : RecyclerView.Adapter<PickRecyclerViewAdapter.MyViewHolder>() {
     fun showBottomSheetDialog(context: FragmentActivity, pick : RoutingVO) {
         val bottomsheetfragment = PickBottomSheetDialogFragment()
         val fragmentManager = context.supportFragmentManager
@@ -23,11 +26,15 @@ class PickRecyclerViewAdapter(var pickList: MutableList<RoutingVO>) : RecyclerVi
     }
 
 
+
     inner class MyViewHolder(private val binding: PicklistBinding, private val context: FragmentActivity) : RecyclerView.ViewHolder(binding.root) {
         fun bind(pick : RoutingVO) {
             binding.tvPickTitle.text = pick.title
             binding.ivMore.setOnClickListener {
                 showBottomSheetDialog(context, pick)
+            }
+            binding.tvPickTitle.setOnClickListener {
+                listener.onPickClick(pick.title)
             }
         }
     }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileEditFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/textView39"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:background="@drawable/shadow2"
+            android:gravity="center"
+            android:text="프로필"
+            android:textColor="@color/textgrey"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/etPWProfileEdit"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="44dp"
+            android:ems="10"
+            android:hint="PW"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="@+id/textView39"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="@+id/textView39"
+            app:layout_constraintTop_toBottomOf="@+id/textView39" />
+
+        <EditText
+            android:id="@+id/etEmailProfileEdit"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="32dp"
+            android:ems="10"
+            android:hint="EMAIL"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="@+id/etPWProfileEdit"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/etPWProfileEdit"
+            app:layout_constraintTop_toBottomOf="@+id/etPWProfileEdit" />
+
+        <EditText
+            android:id="@+id/etPhoneProfileEdit"
+            android:layout_width="200dp"
+            android:layout_height="70.dp"
+            android:layout_marginTop="32dp"
+            android:ems="10"
+            android:hint="PHONE"
+            android:inputType="phone"
+            app:layout_constraintEnd_toEndOf="@+id/etEmailProfileEdit"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/etEmailProfileEdit"
+            app:layout_constraintTop_toBottomOf="@+id/etEmailProfileEdit" />
+
+        <Button
+            android:id="@+id/btnProfileUpdate"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="64dp"
+            android:backgroundTint="@color/orange"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="회원수정"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@+id/etPhoneProfileEdit"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/etPhoneProfileEdit"
+            app:layout_constraintTop_toBottomOf="@+id/etPhoneProfileEdit" />
+
+        <Button
+            android:id="@+id/btnProfileDelete"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/textgrey_soft"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="회원탈퇴"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnProfileUpdate"
+            app:layout_constraintStart_toStartOf="@+id/btnProfileUpdate"
+            app:layout_constraintTop_toBottomOf="@+id/btnProfileUpdate" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

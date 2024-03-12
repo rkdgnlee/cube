@@ -21,6 +21,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.example.mhg.databinding.FragmentPersonalSetup0Binding
+import com.example.mhg.`object`.NetworkService
+import com.example.mhg.`object`.Singleton_t_user
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.Call
@@ -36,7 +38,6 @@ import java.io.IOException
 import java.util.regex.Pattern
 
 
-@Suppress("CAST_NEVER_SUCCEEDS")
 class PersonalSetup0Fragment : Fragment() {
     lateinit var binding : FragmentPersonalSetup0Binding
     // ----- datastore 만들기 -----
@@ -57,6 +58,7 @@ class PersonalSetup0Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val idCondition = MutableLiveData(false)
+        val idConfirm = MutableLiveData(false)
         val nameCondition = MutableLiveData(false)
         val pwCondition = MutableLiveData(false)
         val pwCompare = MutableLiveData(false)
@@ -77,8 +79,8 @@ class PersonalSetup0Fragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 idCondition.value = IdPattern.matcher(binding.etId.text.toString()).find()
                 if (idCondition.value == true) {
-                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
-                    binding.tvIdCondition.text = "조건에 일치합니다"
+//                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
+                    binding.tvIdCondition.text = "조건에 일치합니다. 중복 확인을 해주시기 바랍니다."
                 } else {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.orange))
                     binding.tvIdCondition.text = "조건에 일치하지 않습니다"
@@ -87,6 +89,14 @@ class PersonalSetup0Fragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+        binding.btnIdConfirm.setOnClickListener{
+            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), binding.etId.text.toString()) {
+                binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
+                binding.tvIdCondition.text = "조건이 모두 일치합니다."
+                idConfirm.value = true
+            }
+        }
+
         // ----- ! 이름 조건 코드 ! -----
         binding.etName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -148,14 +158,17 @@ class PersonalSetup0Fragment : Fragment() {
         // ----- 모든 조건 충족 시작 -----
         fun checkConditions(): Boolean {
             return idCondition.value == true &&
+                    idConfirm.value == true &&
                     nameCondition.value == true &&
                     pwCondition.value == true &&
                     pwCompare.value == true &&
                     genderCondition.value == true &&
                     gradeCondition.value == true
+
         }
         val allConditions = MediatorLiveData<Boolean>().apply {
             addSource(idCondition) { value = checkConditions() }
+            addSource(idConfirm) { value = checkConditions() }
             addSource(nameCondition) { value = checkConditions() }
             addSource(pwCondition) { value = checkConditions() }
             addSource(pwCompare) { value = checkConditions() }
@@ -190,54 +203,38 @@ class PersonalSetup0Fragment : Fragment() {
             } else {
                 JsonObj.put("user_grade", "3")
             }
-            fetchJson(getString(R.string.IP_ADDRESS), JsonObj.toString(), "PUT", requireActivity())
-            val intent = Intent(requireActivity(), MainActivity::class.java)
-            startActivity(intent)
 
+            NetworkService.fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
+                val intent = Intent(requireActivity(), MainActivity::class.java)
+                startActivity(intent)
+            }
         }
-
-//        fetchJson(R.string.IP_ADDRESS.toString(), JsonObj.toString(), "PUT")
-
-
     }
 
     // ----- ! 응답받은 token 기기 내 datastore에 저장하는 함수 ! -----
-
-
-    fun fetchJson(myUrl : String, json: String, category: String, context: Context){
-        suspend fun saveToken(context: Context, token: String) {
-            val dataStore = context.dataStore
-            val tokenKey = stringPreferencesKey("login_token")
-            dataStore.edit { preferences ->
-                preferences[tokenKey] = token
-            }
-        }
-
+    fun fetchSELECTJson(myUrl : String, user_id:String, callback: () -> Unit){
         val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+//        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
-            .url("${myUrl}?category=$category/")
-            .post(body)
+            .url("${myUrl}read.php?user_id=$user_id")
+            .get()
             .build()
 
-
-        client.newCall(request).enqueue(object : Callback {
+        client.newCall(request).enqueue(object : Callback  {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("OKHTTP3", "Failed to execute request!")
             }
-
-            override fun onResponse(call: Call, response: Response) {
+            override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-//                val jsonDataArray = JSONArray(responseBody)
-//                val jsonObj = jsonDataArray.getJSONObject(0)
-//
-//                (context as Fragment).lifecycleScope.launch(Dispatchers.Main) {
-//                    saveToken(context, jsonObj.getString("login_token"))
-//                }
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                if (jsonObj__?.getString("status") == "404") {
+                    activity?.runOnUiThread{
+                        callback()
+                    }
+                }
             }
         })
-
     }
 
 }

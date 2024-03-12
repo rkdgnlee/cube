@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.IntroActivity
+import com.example.mhg.MainActivity
 import com.example.mhg.R
 import com.example.mhg.VO.RoutingVO
 import com.example.mhg.databinding.ProfileMenuLastItemBinding
@@ -84,6 +85,7 @@ class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     }
                     val intent = Intent(holder.itemView.context, IntroActivity::class.java)
                     holder.itemView.context.startActivity(intent)
+                    MainActivity().finish()
                 }
             }
         }

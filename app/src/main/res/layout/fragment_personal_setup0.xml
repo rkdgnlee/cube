@@ -122,7 +122,7 @@
                 android:id="@+id/btnSignIn2"
                 android:layout_width="120dp"
                 android:layout_height="80dp"
-                android:backgroundTint="@color/setuptextgrey"
+                android:backgroundTint="@color/orange"
                 android:enabled="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -164,6 +164,21 @@
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@+id/etId"
                 app:layout_constraintStart_toStartOf="@+id/etId" />
+
+            <Button
+                android:id="@+id/btnIdConfirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:backgroundTint="@color/orange"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="중복확인"
+                app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/etId"
+                app:layout_constraintStart_toEndOf="@+id/etId"
+                app:layout_constraintTop_toBottomOf="@+id/tvIdCondition"
+                app:layout_constraintVertical_bias="0.562" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

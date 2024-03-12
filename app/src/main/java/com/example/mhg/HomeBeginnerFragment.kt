@@ -115,8 +115,6 @@ class HomeBeginnerFragment : Fragment() {
 
         // ----- autoCompleteTextView를 통해 sort 하는 코드 끝 -----
 
-
-
         binding.tabRoutine.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {

@@ -1,17 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PickDetailFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF">
 
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:background="@drawable/shadow2"
+            android:gravity="center"
+            android:text="즐겨찾기"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPickDetail"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="#FFFFFF"
+            android:gravity="center"
+            android:paddingBottom="0dp"
+            android:textColorHint="@color/black"
+            app:boxBackgroundColor="@color/white"
+            app:boxBackgroundMode="outline"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxStrokeColor="@color/black"
+            app:counterTextColor="@color/white"
+            app:endIconDrawable="@drawable/pick_detail_icon"
+            app:endIconMinSize="24dp"
+            app:endIconMode="dropdown_menu"
+            app:endIconScaleType="centerCrop"
+            app:endIconTint="@color/textgrey_soft"
+            app:expandedHintEnabled="true"
+            app:helperTextTextColor="@color/black"
+            app:hintTextColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView22"
+            app:startIconTint="@color/textgrey">
+
+            <AutoCompleteTextView
+                android:id="@+id/actPickDetail"
+                android:layout_width="196dp"
+                android:layout_height="64dp"
+                android:background="#FFFFFF"
+                android:backgroundTint="#FFFFFF"
+                android:editable="false"
+                android:gravity="left|center_vertical"
+                android:inputType="none"
+                android:maxLength="10"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:popupBackground="@color/white"
+                android:text="안녕하세요안녕하세요"
+                android:textColor="#000000"
+                android:textColorHighlight="#000000"
+                android:textColorHint="#000000"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPickDetail"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnPickDetail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPickDetail"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="112dp"
+            android:background="@drawable/pick_favorite_add_button"
+            android:elevation="16dp"
+            android:text="+ 추가하기"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
