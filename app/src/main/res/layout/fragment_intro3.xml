@@ -17,7 +17,7 @@
             android:id="@+id/imageView3"
             android:layout_width="0dp"
             android:layout_height="400dp"
-            android:layout_marginBottom="244dp"
+            android:layout_marginBottom="344dp"
             android:scaleType="centerCrop"
             android:src="@drawable/intro3cube"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -39,8 +39,8 @@
 
         <Button
             android:id="@+id/btnSignin"
-            android:layout_width="230dp"
-            android:layout_height="48dp"
+            android:layout_width="250dp"
+            android:layout_height="52dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="#FF7A00"
             android:insetTop="0dp"
@@ -51,14 +51,13 @@
             app:cornerRadius="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/ibtnGoogleLogin"
-            android:layout_width="230dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
+            android:layout_width="250dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/api_login_logo"
             android:scaleType="centerCrop"
             android:src="@drawable/google_custom_button"
@@ -69,9 +68,9 @@
 
         <ImageButton
             android:id="@+id/ibtnKakaoLogin"
-            android:layout_width="230dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
+            android:layout_width="250dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="20dp"
             android:background="#FFFFFF"
             android:scaleType="centerCrop"
             android:src="@drawable/kakao_custom_button"
@@ -81,12 +80,11 @@
 
         <com.navercorp.nid.oauth.view.NidOAuthLoginButton
             android:id="@+id/buttonOAuthLoginImg"
-            android:layout_width="230dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="8dp"
+            android:layout_width="260dp"
+            android:layout_height="54dp"
+            android:layout_marginBottom="20dp"
             app:layout_constraintBottom_toTopOf="@+id/btnSignin"
             app:layout_constraintEnd_toEndOf="@+id/btnSignin"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/btnSignin" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

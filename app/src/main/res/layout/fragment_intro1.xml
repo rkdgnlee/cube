@@ -39,9 +39,9 @@
 
         <ImageView
             android:id="@+id/ivIntro1Skeleton"
-            android:layout_width="400dp"
+            android:layout_width="0dp"
             android:layout_height="400dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -53,6 +53,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
             android:gravity="center"
             android:text="큐짐 하나로 집에서도\n트레이닝을 시작해 보세요"
             android:textColor="#4D4D4D"

@@ -16,31 +16,18 @@
             android:background="#FFFFFF">
 
             <EditText
-                android:id="@+id/etId"
-                android:layout_width="230dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="44dp"
-                android:ems="10"
-                android:enabled="true"
-                android:hint="ID"
-                android:inputType="text"
-                android:maxLength="20"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.138"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
                 android:id="@+id/etName"
                 android:layout_width="230dp"
                 android:layout_height="64dp"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="16dp"
                 android:ems="10"
                 android:hint="이름"
                 android:inputType="text"
                 android:maxLength="12"
-                app:layout_constraintStart_toStartOf="@+id/etId"
-                app:layout_constraintTop_toBottomOf="@+id/etId" />
+                app:layout_constraintEnd_toEndOf="@+id/etPhone"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/etPhone"
+                app:layout_constraintTop_toBottomOf="@+id/etPhone" />
 
             <EditText
                 android:id="@+id/etPw"
@@ -120,15 +107,15 @@
 
             <Button
                 android:id="@+id/btnSignIn2"
-                android:layout_width="120dp"
-                android:layout_height="80dp"
+                android:layout_width="130dp"
+                android:layout_height="60dp"
                 android:backgroundTint="@color/orange"
                 android:enabled="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="회원가입"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/rgGrade"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -162,23 +149,37 @@
                 android:text="영문 또는 숫자를 조합해서 4자리 이상 입력해주세요"
                 android:textColor="@color/orange"
                 android:textSize="10sp"
-                app:layout_constraintBottom_toTopOf="@+id/etId"
-                app:layout_constraintStart_toStartOf="@+id/etId" />
+                tools:layout_editor_absoluteX="35dp"
+                tools:layout_editor_absoluteY="29dp" />
 
             <Button
                 android:id="@+id/btnIdConfirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="16dp"
                 android:backgroundTint="@color/orange"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="중복확인"
                 app:cornerRadius="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/etId"
-                app:layout_constraintStart_toEndOf="@+id/etId"
-                app:layout_constraintTop_toBottomOf="@+id/tvIdCondition"
-                app:layout_constraintVertical_bias="0.562" />
+                app:layout_constraintBottom_toBottomOf="@+id/etPhone"
+                app:layout_constraintStart_toEndOf="@+id/etPhone"
+                app:layout_constraintTop_toBottomOf="@+id/tvIdCondition" />
+
+            <EditText
+                android:id="@+id/etPhone"
+                android:layout_width="230dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="44dp"
+                android:ems="10"
+                android:enabled="true"
+                android:hint="phone"
+                android:inputType="text"
+                android:maxLength="20"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.138"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

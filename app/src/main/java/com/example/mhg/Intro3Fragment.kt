@@ -51,12 +51,13 @@ class Intro3Fragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private val TAG = this.javaClass.simpleName
+    // TODO 매니저님이 짜준 로직 대로, JSON, METHOD 바꿔야함
 
-    fun fetchSELECTJson(myUrl : String, user_id:String, callback: () -> Unit){
+    fun fetchSELECTJson(myUrl : String, user_mobile:String, callback: () -> Unit){
         val client = OkHttpClient()
 //        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_id=$user_id")
+            .url("${myUrl}read.php?user_mobile=$user_mobile")
             .get()
             .build()
 
@@ -68,7 +69,8 @@ class Intro3Fragment : Fragment() {
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3", "Success to execute request!: $responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
-                val jsonObj = jsonObj__?.getJSONObject("data")
+//              TODO  if () 어떤 response가 오는지에 맞게 일단 조건을 걸어야 함 해당 값들이 반환되면 거기다가 UPDATE만 하기, 없으면 INSERT
+                val jsonObj = jsonObj__?.optJSONObject("data")
                 val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                 t_userInstance?.jsonObject = jsonObj
                 Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
@@ -108,20 +110,23 @@ class Intro3Fragment : Fragment() {
 //                                            setToken(requireContext(), "google", firebaseAuth.currentUser.toString())
 
 //                                                // ----- GOOGLE API에서 DB에 넣는 공간 시작 -----
+
                                                 val JsonObj = JSONObject()
-                                                JsonObj.put("user_id", user.uid)
-                                                JsonObj.put("user_password", user.email.toString())
+                                                JsonObj.put("user_id", "")
+                                                JsonObj.put("user_password", "")
                                                 JsonObj.put("user_name", user.displayName.toString())
-                                                JsonObj.put("user_gender", "male")
+                                                JsonObj.put("user_gender", "MALE")
                                                 JsonObj.put("user_grade", 1)
                                                 JsonObj.put("user_mobile", user.phoneNumber.toString())
                                                 JsonObj.put("user_email", user.email.toString())
+                                                JsonObj.put("google_login_id", user.uid)
 
-                                                Log.e("구글JsonObj", JsonObj.getString("user_id"))
+                                                Log.e("구글JsonObj", JsonObj.getString("user_mobile"))
                                                 fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
-                                                    fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
-                                                        MainInit()
-                                                    }
+                                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                                                    t_userInstance?.jsonObject = JsonObj
+                                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                                    MainInit()
                                                 }
 //                                                    Singleton_t_user.getInstance(requireContext()).jsonObject = JsonObj // 질의를 통해 db에 넣음과 동시에 해당 데이터 singleton 저장
 //                                                    Log.w("싱글톤_구글회원가입", "${Singleton_t_user.getInstance(requireActivity()).jsonObject}")
@@ -205,18 +210,28 @@ class Intro3Fragment : Fragment() {
 
                     override fun onSuccess(result: NidProfileResponse) {
                         val JsonObj = JSONObject()
-                        JsonObj.put("user_id" , result.profile?.id.toString())
+                        val naver_mobile = result.profile?.mobile.toString().replaceFirst("010", "+82 10")
+                        val naver_gender : String
+                        if (result.profile?.gender.toString() == "M") {
+                            naver_gender = "MALE"
+                        } else {
+                            naver_gender = "FEMALE"
+                        }
+                        JsonObj.put("user_id" , "")
                         JsonObj.put("user_name", result.profile?.name.toString())
                         JsonObj.put("user_password", result.profile?.encId.toString())
-                        JsonObj.put("user_gender",result.profile?.gender.toString())
-                        JsonObj.put("user_mobile", result.profile?.mobile.toString())
+                        JsonObj.put("user_gender", naver_gender)
+                        JsonObj.put("user_mobile", naver_mobile)
                         JsonObj.put("user_email", result.profile?.email.toString())
-                        JsonObj.put("user_birthday", result.profile?.birthYear.toString() + result.profile?.birthday.toString())
-                        Log.i("$TAG, 네이버", JsonObj.getString("user_id"))
+                        JsonObj.put("user_birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
+                        JsonObj.put("naver_login_id" , result.profile?.id.toString())
+
+                        Log.i("$TAG, 네이버", JsonObj.getString("user_mobile"))
                         fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
-                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
-                                MainInit()
-                            }
+                            val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                            t_userInstance?.jsonObject = JsonObj
+                            Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                            MainInit()
                         }
                     }
                 })
@@ -248,18 +263,21 @@ class Intro3Fragment : Fragment() {
                             }
                             else if (user != null) {
                                 val JsonObj = JSONObject()
-                                JsonObj.put("user_id" , user.id.toString())
+                                JsonObj.put("user_id" , "")
                                 JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 JsonObj.put("user_password", user.kakaoAccount?.ci.toString())
                                 JsonObj.put("user_gender", user.kakaoAccount?.gender.toString())
                                 JsonObj.put("user_mobile", user.kakaoAccount?.phoneNumber.toString())
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
+                                JsonObj.put("kakao_login_id" , user.id.toString())
+
                                 Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_id"))
                                 fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
-                                    fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
-                                        MainInit()
-                                    }
+                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                                    t_userInstance?.jsonObject = JsonObj
+                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                    MainInit()
                                 }
                             }
                         }

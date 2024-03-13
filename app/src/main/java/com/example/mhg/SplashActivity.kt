@@ -48,7 +48,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private val PERMISSION_REQUEST_CODE = 5000
-
+    // TODO 매니저님이 짜준 로직 대로, JSON, METHOD 바꿔야함
     @RequiresApi(Build.VERSION_CODES.O)
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -61,8 +61,6 @@ class SplashActivity : AppCompatActivity() {
             // ----- API 초기화 시작 -----
             NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "Multi Home Gym")
             KakaoSdk.init(this, getString(R.string.kakao_client_id))
-
-
             firebaseAuth = Firebase.auth
 
             val googleUserExist = firebaseAuth.currentUser
@@ -124,11 +122,11 @@ class SplashActivity : AppCompatActivity() {
                             val responseBody = response.body?.string()
                             val jsonObj__ = responseBody?.let { JSONObject(it) }
                             val jsonObj = jsonObj__?.getJSONObject("response")
-                            val user_id = jsonObj?.getString("id")
-                            val JsonObj = JSONObject()
-                            JsonObj.put("user_id", user_id)
-                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
-                                MainInit()
+                            val naver_mobile = jsonObj?.getString("mobile")?.replaceFirst("010", "+82 10")
+                            if (naver_mobile != null) {
+                                fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), naver_mobile) {
+                                    MainInit()
+                                }
                             }
                         }
                     }
@@ -261,7 +259,7 @@ class SplashActivity : AppCompatActivity() {
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3", "Success to execute request!: $responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
-                val jsonObj = jsonObj__?.getJSONObject("data")
+                val jsonObj = jsonObj__?.optJSONObject("data")
                 val t_userInstance =  Singleton_t_user.getInstance(baseContext)
                 t_userInstance.jsonObject = jsonObj
                 Log.e("OKHTTP3>싱글톤", "${t_userInstance.jsonObject}")

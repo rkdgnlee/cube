@@ -57,7 +57,7 @@ class PersonalSetup0Fragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val idCondition = MutableLiveData(false)
+//        val idCondition = MutableLiveData(false)
         val idConfirm = MutableLiveData(false)
         val nameCondition = MutableLiveData(false)
         val pwCondition = MutableLiveData(false)
@@ -65,32 +65,32 @@ class PersonalSetup0Fragment : Fragment() {
         val genderCondition = MutableLiveData(false)
         val gradeCondition = MutableLiveData(false)
 
-        val idPattern = "^[a-zA-Z0-9]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
+//        val idPattern = "^[a-zA-Z0-9]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
         val namePatternKor =  "^[가-힣]{2,8}\$"
         val namePatternEng = "^[a-zA-Z\\s]{4,20}$"
         val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&.^])[A-Za-z[0-9]$@$!%*#?&.^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
-        val IdPattern = Pattern.compile(idPattern)
+//        val IdPattern = Pattern.compile(idPattern)
         val NamePatternKor = Pattern.compile(namePatternKor)
         val NamePatternEng = Pattern.compile(namePatternEng)
         val Pwpattern = Pattern.compile(pwPattern)
 
         // ----- ! ID 조건 코드 ! -----
-        binding.etId.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                idCondition.value = IdPattern.matcher(binding.etId.text.toString()).find()
-                if (idCondition.value == true) {
-//                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
-                    binding.tvIdCondition.text = "조건에 일치합니다. 중복 확인을 해주시기 바랍니다."
-                } else {
-                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.orange))
-                    binding.tvIdCondition.text = "조건에 일치하지 않습니다"
-                }
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+//        binding.etId.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                idCondition.value = IdPattern.matcher(binding.etId.text.toString()).find()
+//                if (idCondition.value == true) {
+////                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
+//                    binding.tvIdCondition.text = "조건에 일치합니다. 중복 확인을 해주시기 바랍니다."
+//                } else {
+//                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.orange))
+//                    binding.tvIdCondition.text = "조건에 일치하지 않습니다"
+//                }
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
         binding.btnIdConfirm.setOnClickListener{
-            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), binding.etId.text.toString()) {
+            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), binding.etPhone.text.toString()) {
                 binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
                 binding.tvIdCondition.text = "조건이 모두 일치합니다."
                 idConfirm.value = true
@@ -157,8 +157,7 @@ class PersonalSetup0Fragment : Fragment() {
         }
         // ----- 모든 조건 충족 시작 -----
         fun checkConditions(): Boolean {
-            return idCondition.value == true &&
-                    idConfirm.value == true &&
+            return idConfirm.value == true &&
                     nameCondition.value == true &&
                     pwCondition.value == true &&
                     pwCompare.value == true &&
@@ -167,7 +166,6 @@ class PersonalSetup0Fragment : Fragment() {
 
         }
         val allConditions = MediatorLiveData<Boolean>().apply {
-            addSource(idCondition) { value = checkConditions() }
             addSource(idConfirm) { value = checkConditions() }
             addSource(nameCondition) { value = checkConditions() }
             addSource(pwCondition) { value = checkConditions() }
@@ -188,7 +186,7 @@ class PersonalSetup0Fragment : Fragment() {
         // ----- ! 서버로 전송하는 코드 ! -----
         binding.btnSignIn2.setOnClickListener {
             val JsonObj = JSONObject()
-            JsonObj.put("user_id", binding.etId.text.toString().trim())
+            JsonObj.put("user_phone", binding.etPhone.text.toString().trim())
             JsonObj.put("user_name", binding.etName.text.toString().trim())
             JsonObj.put("user_password", binding.etPw.text.toString().trim())
             if (binding.rbtnM.isChecked == true) {
@@ -205,8 +203,10 @@ class PersonalSetup0Fragment : Fragment() {
             }
 
             NetworkService.fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
-                val intent = Intent(requireActivity(), MainActivity::class.java)
-                startActivity(intent)
+                fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
     }
@@ -232,6 +232,12 @@ class PersonalSetup0Fragment : Fragment() {
                     activity?.runOnUiThread{
                         callback()
                     }
+                } else {
+                    val jsonObj = jsonObj__?.getJSONObject("data")
+                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                    t_userInstance?.jsonObject = jsonObj
+                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                    callback()
                 }
             }
         })

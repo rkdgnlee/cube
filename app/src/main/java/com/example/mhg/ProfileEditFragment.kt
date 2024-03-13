@@ -34,7 +34,7 @@ class ProfileEditFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentProfileEditBinding.inflate(inflater)
 
         val t_userData = Singleton_t_user.getInstance(requireContext())
@@ -45,9 +45,13 @@ class ProfileEditFragment : Fragment() {
         Log.w("$TAG, update", "user_id: $user_id, user_email: $user_email, user_mobile: $user_mobile")
 
         binding.etPWProfileEdit.setText(user_password ?: "")
-        binding.etEmailProfileEdit.setText(user_email ?: "")
-        binding.etPhoneProfileEdit.setText(user_mobile ?: "")
-        
+
+        if (user_email != null) {
+            binding.etEmailProfileEdit.setText(user_email ?: "")
+        }
+        if (user_mobile != null) {
+            binding.etPhoneProfileEdit.setText(user_mobile ?: "")
+        }
         binding.btnProfileUpdate.setOnClickListener {
             val etUser_password = binding.etPWProfileEdit.text.toString()
             val etUser_email =binding.etEmailProfileEdit.text.toString()
@@ -57,8 +61,8 @@ class ProfileEditFragment : Fragment() {
             JsonObj.put("user_password",etUser_password )
             JsonObj.put("user_email", etUser_email )
             JsonObj.put("user_mobile", etUser_mobile )
-            if (user_id != null) {
-                fetchUPDATEJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString(), user_id = user_id) {
+            if (user_mobile != null) {
+                fetchUPDATEJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString(), user_mobile = user_mobile) {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flMain, ProfileFragment())
                         commit()
@@ -67,19 +71,19 @@ class ProfileEditFragment : Fragment() {
             }
         }
         binding.btnProfileDelete.setOnClickListener {
-            edit(user_id.toString())
+            edit(user_mobile.toString())
         }
 
 
         return binding.root
     }
-    fun edit(user_id : String) {
+    fun edit(user_mobile : String) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("계정 삭제")
             .setMessage("계정을 삭제하면 복구할 수 없습니다.\n그래도 진행하시겠습니까?")
             .setPositiveButton("확인",
                 DialogInterface.OnClickListener { dialog, id ->
-                    fetchDeleteJson(getString(R.string.IP_ADDRESS_T_USER), user_id = user_id) {
+                    fetchDeleteJson(getString(R.string.IP_ADDRESS_T_USER), user_mobile = user_mobile) {
                         if (Firebase.auth.currentUser != null) {
                             Firebase.auth.signOut()
                             Log.d("로그아웃", "Firebase sign out successful")

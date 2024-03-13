@@ -89,11 +89,11 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
             binding.tvPlayRoutineDuration.text = it.duration.toString()
             binding.tvPlayRoutineExplanation.text = it.explanation
         }
-//        binding.btnPlay.setOnClickListener {
-//            val intent = Intent(requireContext(), PlayActivity::class.java)
-//            startActivity(intent)
-//
-//        }
+        binding.btnPlay.setOnClickListener {
+            val intent = Intent(requireContext(), PlayActivity::class.java)
+            startActivity(intent)
+
+        }
 
 
     }
