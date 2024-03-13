@@ -85,14 +85,10 @@ class PersonalSetupActivity : AppCompatActivity() {
                 val previousPosition = position - 1
                 if (previousPosition >= 0) {
                     val fragment = supportFragmentManager.findFragmentByTag("f$previousPosition")
-                    if (fragment is PersonalSetup0Fragment) {
-                        val DataInstance = UserVO(
 
-
-                        )
 //                        viewModel.User.value = DataInstance
 //                        Log.d("첫번째", "${viewModel.User.value?.user_name}")
-                    } else if (fragment is PersonalSetup1Fragment) {
+                    if (fragment is PersonalSetup1Fragment) {
                         if (fragment.binding.rbtnMale.isChecked) {
 //                            viewModel.User.value?.user_gender = "male"
                         } else {
@@ -134,7 +130,7 @@ class PersonalSetupActivity : AppCompatActivity() {
 
 // setup(성별, 키, 몸무게, 운동 목적 4단계 절차)을 viewpager로 연결할 adapter
 class SetupViewPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
-    private val fragments = listOf(PersonalSetup0Fragment() ,PersonalSetup1Fragment(), PersonalSetup2Fragment(), PersonalSetup3Fragment(), PersonalSetup4Fragment())
+    private val fragments = listOf(PersonalSetup1Fragment(), PersonalSetup2Fragment(), PersonalSetup3Fragment(), PersonalSetup4Fragment())
     override fun getItemCount(): Int {
         return fragments.size
     }

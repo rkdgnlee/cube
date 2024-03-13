@@ -95,6 +95,7 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.android.identity:identity-credential-android:20231002")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.activity:activity:1.8.0")
     val paging_version = "3.2.1"
     implementation("androidx.paging:paging-runtime:$paging_version")
     implementation ("androidx.browser:browser:1.7.0")

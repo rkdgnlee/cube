@@ -9,11 +9,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import org.json.JSONObject
 import java.io.IOException
 
 object NetworkService{
-    private val client = OkHttpClient()
     // TODO 매니저님이 짜준 로직 대로, JSON, METHOD 바꿔야함
     fun fetchINSERTJson(myUrl : String, json: String, callback: () -> Unit){
         val client = OkHttpClient()

@@ -20,4 +20,21 @@ import java.io.IOException
 
 class UserViewModel: ViewModel() {
     val User = MutableLiveData<JSONObject?>()
+
+    val idCondition = MutableLiveData(false)
+
+    val nameCondition = MutableLiveData(false)
+    val mobileCondition = MutableLiveData(false)
+    val pwCondition = MutableLiveData(false)
+    val pwCompare = MutableLiveData(false)
+    val emailCondition = MutableLiveData(false)
+
+    fun checkConditions(): Boolean {
+        return idCondition.value == true &&
+                nameCondition.value == true &&
+                mobileCondition.value == true &&
+                pwCondition.value == true &&
+                pwCompare.value == true &&
+                emailCondition.value == true
+        }
 }

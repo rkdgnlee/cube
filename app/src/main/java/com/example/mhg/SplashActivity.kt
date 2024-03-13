@@ -244,10 +244,10 @@ class SplashActivity : AppCompatActivity() {
     }
     // ----- 알림에 대한 함수들 끝 -----
 
-    fun fetchSELECTJson(myUrl : String, user_id:String, callback: () -> Unit){
+    fun fetchSELECTJson(myUrl : String, user_mobile:String, callback: () -> Unit){
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_id=$user_id")
+            .url("${myUrl}read.php?user_mobile=$user_mobile")
             .get()
             .build()
 

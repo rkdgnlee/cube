@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignIn4Fragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/etMobile"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:background="@drawable/pick_favorite_add_button"
+            android:backgroundTint="@color/button_grey"
+            android:ems="10"
+            android:hint="핸드폰 번호"
+            android:inputType="text"
+            android:paddingLeft="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.30" />
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="268dp"
+            android:backgroundTint="@color/orange"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="회원가입 완료!"
+            android:textSize="20sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="@+id/etMobile"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toStartOf="@+id/etMobile"
+            app:layout_constraintTop_toBottomOf="@+id/etMobile" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

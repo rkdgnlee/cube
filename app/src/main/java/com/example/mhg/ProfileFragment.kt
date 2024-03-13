@@ -49,12 +49,15 @@ class ProfileFragment : Fragment() {
 
         // -----! profile의 나이, 몸무게, 키  설정 코드 시작 !-----
         val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val user_name = t_userdata.jsonObject?.getString("user_name")
-        val user_birthyear = t_userdata.jsonObject?.getString("user_birthday")?.substring(0, 5)?.toInt()
-        val currentYear = Calendar.getInstance()[Calendar.YEAR]
-        val age = user_birthyear?.let { currentYear.minus(it) }
+        val user_name = t_userdata.jsonObject?.optString("user_name")
         binding.tvName.text = user_name
-        binding.tvAge.text = age.toString()
+
+        val user_birthyear = t_userdata.jsonObject?.optString("user_birthday")?.substring(0, 4)?.toInt()
+        if (user_birthyear != null) {
+            val currentYear = Calendar.getInstance()[Calendar.YEAR]
+            val age = currentYear.minus(user_birthyear)
+            binding.tvAge.text = age.toString()
+        }
         // -----! profile의 나이, 몸무게, 키  설정 코드 끝!-----
 
 
