@@ -138,29 +138,7 @@ class SetupViewPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateA
         return fragments[position]
     }
 }
-// 클릭 방지 리스너
-class OnSingleClickListener(private val clickListener: View.OnClickListener) : View.OnClickListener {
-    companion object {
-
-        // ---- 클릭 방지 시간 설정 ----
-        const val CLICK_INTERVAL : Long = 1000
-        const val Tag = "OnSingleClickListener"
-    }
-    private var clickable = true
-
-    override fun onClick(v: View?) {
-        if (clickable) {
-            clickable = false
-            v?.run {
-                postDelayed({ clickable = true}, CLICK_INTERVAL)
-                clickListener.onClick(v)
-            }
-        } else {
-            Log.d(Tag, "wainting for a while")
-        }
-    }
-}
-fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
     val listener = View.OnClickListener { action(it) }
     setOnClickListener(OnSingleClickListener(listener))
 }

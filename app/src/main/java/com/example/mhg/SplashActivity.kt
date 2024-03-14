@@ -40,6 +40,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.net.URLEncoder
 import java.util.Calendar
 
 
@@ -122,9 +123,10 @@ class SplashActivity : AppCompatActivity() {
                             val responseBody = response.body?.string()
                             val jsonObj__ = responseBody?.let { JSONObject(it) }
                             val jsonObj = jsonObj__?.getJSONObject("response")
-                            val naver_mobile = jsonObj?.getString("mobile")?.replaceFirst("010", "+82 10")
+                            // -----! 전화번호 변환 !-----
+                            val naver_mobile = URLEncoder.encode(jsonObj?.getString("mobile")?.replaceFirst("010", "+82 10"), "UTF-8")
                             if (naver_mobile != null) {
-                                fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), naver_mobile) {
+                                fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), naver_mobile, false) {
                                     MainInit()
                                 }
                             }
@@ -140,8 +142,8 @@ class SplashActivity : AppCompatActivity() {
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val JsonObj = JSONObject()
-                            JsonObj.put("user_id", user.uid)
-                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                            JsonObj.put("google_login_id", user.uid)
+                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("google_login_id"), true) {
                                 MainInit()
                             }
                         }
@@ -157,8 +159,9 @@ class SplashActivity : AppCompatActivity() {
                     else if (user != null) {
                         Log.i(TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
                         val JsonObj = JSONObject()
-                        JsonObj.put("user_id", user.id)
-                        fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_id")) {
+                        val kakao_mobile = URLEncoder.encode(user.kakaoAccount?.phoneNumber.toString(), "UTF-8")
+                        JsonObj.put("user_mobile", kakao_mobile)
+                        fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_mobile"), false) {
                             MainInit()
                         }
                     }
@@ -244,10 +247,10 @@ class SplashActivity : AppCompatActivity() {
     }
     // ----- 알림에 대한 함수들 끝 -----
 
-    fun fetchSELECTJson(myUrl : String, user_mobile:String, callback: () -> Unit){
+    fun fetchSELECTJson(myUrl : String, identifier:String, isGoogleId: Boolean ,callback: () -> Unit){
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_mobile=$user_mobile")
+            .url(if (isGoogleId) "${myUrl}read.php?google_login_id=$identifier" else "${myUrl}read.php?user_mobile=$identifier")
             .get()
             .build()
 

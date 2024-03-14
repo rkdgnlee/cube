@@ -45,6 +45,7 @@ class SignIn4Fragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 viewModel.mobileCondition.value = MobilePattern.matcher(binding.etMobile.text.toString()).find()
+                viewModel.User.value?.put("user_mobile", binding.etMobile.text)
             }
         })
         viewModel.mobileCondition.observe(viewLifecycleOwner) { condition ->
@@ -54,20 +55,23 @@ class SignIn4Fragment : Fragment() {
                 else binding.btnSignIn.resources.getColor(R.color.orange)
             )
         }
+
+
         binding.btnSignIn.setOnClickListener {
             if (viewModel.mobileCondition.value == true) {
                 val JsonObj = viewModel.User.value
-                JsonObj?.put("user_mobile", binding.etMobile.text)
-
                 // -----! json에 데이터 추가 후 singleton 담기 + Main 이동 !-----
                 NetworkService.fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
-                val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                t_userInstance?.jsonObject = JsonObj
-                Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-                val intent = Intent(requireContext(), MainActivity::class.java)
-                startActivity(intent)
+                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                    t_userInstance?.jsonObject = JsonObj
+                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                    val intent = Intent(requireContext(), PersonalSetupActivity::class.java)
+                    startActivity(intent)
+                    SignInActivity().finish()
                 }
             }
         }
+
+
     }
 }

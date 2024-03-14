@@ -42,7 +42,7 @@ class IntroActivity : AppCompatActivity() {
 }
 
 class IntroViewPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
-    private val fragments = listOf(Intro1Fragment(),Intro2Fragment(), Intro3Fragment(), Intro4Fragment())
+    private val fragments = listOf(Intro1Fragment(),Intro2Fragment(), Intro3Fragment())
     override fun getItemCount(): Int {
         return fragments.size
     }

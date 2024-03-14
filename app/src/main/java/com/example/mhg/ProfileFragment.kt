@@ -51,13 +51,13 @@ class ProfileFragment : Fragment() {
         val t_userdata = Singleton_t_user.getInstance(requireContext())
         val user_name = t_userdata.jsonObject?.optString("user_name")
         binding.tvName.text = user_name
-
-        val user_birthyear = t_userdata.jsonObject?.optString("user_birthday")?.substring(0, 4)?.toInt()
-        if (user_birthyear != null) {
-            val currentYear = Calendar.getInstance()[Calendar.YEAR]
-            val age = currentYear.minus(user_birthyear)
-            binding.tvAge.text = age.toString()
-        }
+        // TODO 실제 값들이 다 받아와질 때 나이 계산
+//        val user_birthyear = t_userdata.jsonObject?.optString("user_birthday")?.substring(0, 3)?.toInt()
+//        if (user_birthyear != null) {
+//            val currentYear = Calendar.getInstance()[Calendar.YEAR]
+//            val age = currentYear.minus(user_birthyear)
+//            binding.tvAge.text = age.toString()
+//        }
         // -----! profile의 나이, 몸무게, 키  설정 코드 끝!-----
 
 

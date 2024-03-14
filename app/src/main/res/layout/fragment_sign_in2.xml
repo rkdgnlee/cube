@@ -38,7 +38,7 @@
             android:backgroundTint="@color/button_grey"
             android:ems="10"
             android:hint="비밀번호"
-            android:inputType="text"
+            android:inputType="textPassword"
             android:paddingLeft="16dp"
             app:layout_constraintEnd_toEndOf="@+id/etId"
             app:layout_constraintStart_toStartOf="@+id/etId"
@@ -54,10 +54,45 @@
             android:backgroundTint="@color/button_grey"
             android:ems="10"
             android:hint="비밀번호 확인"
-            android:inputType="text"
+            android:inputType="textPassword"
             android:paddingLeft="16dp"
             app:layout_constraintEnd_toEndOf="@+id/etPw"
             app:layout_constraintStart_toStartOf="@+id/etPw"
             app:layout_constraintTop_toBottomOf="@+id/etPw" />
+
+        <TextView
+            android:id="@+id/tvIdCondition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="영문 또는 숫자를 조합해서 4자리 이상 입력해주세요"
+            android:textColor="@color/orange"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/etId"
+            app:layout_constraintStart_toStartOf="@+id/etId" />
+
+        <TextView
+            android:id="@+id/tvPwCondition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="영문, 숫자, 특수문자( ! @ # $ % ^ &amp; * ? .)를 모두 포함해서 8~20자리를 입력해주세요"
+            android:textColor="@color/orange"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toTopOf="@+id/etPw"
+            app:layout_constraintStart_toStartOf="@+id/etPw" />
+
+
+        <TextView
+            android:id="@+id/tvPwCompare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="비밀번호가 일치하지 않습니다."
+            android:textColor="@color/orange"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/etPwRepeat"
+            app:layout_constraintStart_toStartOf="@+id/etPwRepeat" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

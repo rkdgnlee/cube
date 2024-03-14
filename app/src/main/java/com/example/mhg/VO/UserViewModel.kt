@@ -22,7 +22,6 @@ class UserViewModel: ViewModel() {
     val User = MutableLiveData<JSONObject?>()
 
     val idCondition = MutableLiveData(false)
-
     val nameCondition = MutableLiveData(false)
     val mobileCondition = MutableLiveData(false)
     val pwCondition = MutableLiveData(false)

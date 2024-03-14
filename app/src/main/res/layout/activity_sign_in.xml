@@ -6,6 +6,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignInActivity">
+
+    <TextView
+        android:id="@+id/tvSignInNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:text="다음"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/diSignIn"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvSignInPrevious"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:text="이전"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toStartOf="@+id/diSignIn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vp2SignIn"
         android:layout_width="0dp"
@@ -23,7 +50,7 @@
         android:id="@+id/diSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="48dp"
         android:foregroundGravity="center"
         app:dotsColor="@color/setuptextgrey"
         app:dotsCornerRadius="24dp"

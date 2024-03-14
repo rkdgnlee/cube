@@ -55,31 +55,31 @@ class Intro3Fragment : Fragment() {
     private val TAG = this.javaClass.simpleName
 //    val viewModel : UserViewModel by viewModels()
 
-    fun fetchSELECTJson(myUrl : String, user_mobile:String, callback: () -> Unit){
-        val client = OkHttpClient()
-//        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
-        val request = Request.Builder()
-            .url("${myUrl}read.php?user_mobile=$user_mobile")
-            .get()
-            .build()
-
-        client.newCall(request).enqueue(object : Callback  {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("OKHTTP3", "Failed to execute request!")
-            }
-            override fun onResponse(call: Call, response: Response)  {
-                val responseBody = response.body?.string()
-                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-                val jsonObj__ = responseBody?.let { JSONObject(it) }
-//              TODO  if () 어떤 response가 오는지에 맞게 일단 조건을 걸어야 함 해당 값들이 반환되면 거기다가 UPDATE만 하기, 없으면 INSERT
-                val jsonObj = jsonObj__?.optJSONObject("data")
-                val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                t_userInstance?.jsonObject = jsonObj
-                Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-                callback()
-            }
-        })
-    }
+//    fun fetchSELECTJson(myUrl : String, user_mobile:String, callback: () -> Unit){
+//        val client = OkHttpClient()
+////        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
+//        val request = Request.Builder()
+//            .url("${myUrl}read.php?user_mobile=$user_mobile")
+//            .get()
+//            .build()
+//
+//        client.newCall(request).enqueue(object : Callback  {
+//            override fun onFailure(call: Call, e: IOException) {
+//                Log.e("OKHTTP3", "Failed to execute request!")
+//            }
+//            override fun onResponse(call: Call, response: Response)  {
+//                val responseBody = response.body?.string()
+//                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
+//                val jsonObj__ = responseBody?.let { JSONObject(it) }
+////              TODO  if () 어떤 response가 오는지에 맞게 일단 조건을 걸어야 함 해당 값들이 반환되면 거기다가 UPDATE만 하기, 없으면 INSERT
+//                val jsonObj = jsonObj__?.optJSONObject("data")
+//                val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+//                t_userInstance?.jsonObject = jsonObj
+//                Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+//                callback()
+//            }
+//        })
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -109,10 +109,8 @@ class Intro3Fragment : Fragment() {
                                                 Log.d("로그인", "${firebaseAuth.currentUser}")
                                                 // ---- Google 토큰에서 가져오기 시작 ----
                                                 val user: FirebaseUser = firebaseAuth.currentUser!!
-//                                            setToken(requireContext(), "google", firebaseAuth.currentUser.toString())
 
-//                                                // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
-
+                                                // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
                                                 val JsonObj = JSONObject()
                                                 JsonObj.put("user_name", user.displayName.toString())
                                                 JsonObj.put("user_email", user.email.toString())
@@ -122,19 +120,11 @@ class Intro3Fragment : Fragment() {
                                                 val intent = Intent(requireContext(), SignInActivity::class.java)
                                                 intent.putExtra("user", JsonObj.toString())
                                                 startActivity(intent)
-//                                                fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
-//                                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-//                                                    t_userInstance?.jsonObject = JsonObj
-//                                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-//                                                    MainInit()
-//                                                }
-
                                                 // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
 
                                                 val googleSignInToken = account.idToken ?: ""
                                                 if (googleSignInToken != "") {
                                                     Log.e(TAG, "googleSignInToken : $googleSignInToken")
-
                                                 } else {
                                                     Log.e(TAG, "googleSignInToken이 null")
                                                 }
@@ -142,7 +132,6 @@ class Intro3Fragment : Fragment() {
                                             }
                                         }
                                 }
-
                             } ?: throw Exception()
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -151,7 +140,7 @@ class Intro3Fragment : Fragment() {
                 }
             )
         } else {
-            val intent = Intent(requireContext(), MainActivity::class.java)
+            val intent = Intent(requireContext(), SignInActivity::class.java)
             startActivity(intent)
             ActivityCompat.finishAffinity(requireActivity())
         }
@@ -269,9 +258,7 @@ class Intro3Fragment : Fragment() {
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
                                 JsonObj.put("kakao_login_id" , user.id.toString())
 
-
-
-                                Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_id"))
+                                Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_mobile"))
                                 fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
                                     val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                                     t_userInstance?.jsonObject = JsonObj

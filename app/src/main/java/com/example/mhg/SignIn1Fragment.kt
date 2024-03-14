@@ -27,19 +27,19 @@ class SignIn1Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSignIn1Binding.inflate(inflater)
-//        val namePatternKor =  "^[가-힣]{2,8}\$"
-//        val namePatternEng = "^[a-zA-Z\\s]{4,20}$"
-//        val NamePatternKor = Pattern.compile(namePatternKor)
-//        val NamePatternEng = Pattern.compile(namePatternEng)
+        val namePatternKor =  "^[가-힣]{2,8}\$"
+        val namePatternEng = "^[a-zA-Z\\s]{4,20}$"
+        val NamePatternKor = Pattern.compile(namePatternKor)
+        val NamePatternEng = Pattern.compile(namePatternEng)
                 // ----- ! 이름 조건 코드 ! -----
-//        binding.etName.addTextChangedListener(object : TextWatcher {
-//            override fun afterTextChanged(s: Editable?) {
-//                viewModel.nameCondition.value = NamePatternKor.matcher(binding.etName.text.toString()).find() || NamePatternEng.matcher(binding.etName.text.toString()).find()
-//
-//            }
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-//        })
+        binding.etName.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.nameCondition.value = NamePatternKor.matcher(binding.etName.text.toString()).find() || NamePatternEng.matcher(binding.etName.text.toString()).find()
+                viewModel.User.value?.put("user_name", binding.etName.text)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
 
         viewModel.User.observe(viewLifecycleOwner) {user ->
@@ -52,6 +52,8 @@ class SignIn1Fragment : Fragment() {
                 binding.etName.isEnabled = true
             }
         }
+
+
         return binding.root
     }
 
