@@ -46,14 +46,10 @@ class ExerciseLoadDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             val jsonArr = NetworkService.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
             Log.w(TAG, "jsonArr: $jsonArr")
-//            if (jsonObj != null) {
-//                ExerciseRepository(db.ExerciseDao(), NetworkService).StoreExercises(jsonObj)
-//                Log.w(TAG + "db내용", "${ExerciseRepository(db.ExerciseDao(), NetworkService).getExercises()}")
-//            }
             if (jsonArr != null) {
                 try {
                     ExerciseRepository(db.ExerciseDao(), NetworkService).StoreExercises(jsonArr)
-                    Log.w(TAG + "db내용", "${ExerciseRepository(db.ExerciseDao(), NetworkService).getExercises()}")
+                    Log.w(TAG + "db내용", "${ExerciseRepository(db.ExerciseDao(), NetworkService).getHomeRVBeginnerData()}")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error storing exercises", e)
                 }

@@ -1,10 +1,12 @@
 package com.example.mhg.Dialog
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -54,6 +56,7 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -78,19 +81,31 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
         val bundle = arguments
         val routine : HomeRVBeginnerDataClass? = bundle?.getParcelable("routineList")
         routine?.let {
-            binding.tvPlayRoutineName.text = it.name
-            binding.tvPlayRoutineDuration.text = it.duration.toString()
-            binding.tvPlayRoutineExplanation.text = it.explanation
+            binding.tvPlayExerciseName.text = it.exerciseName
+            binding.tvPlayRoutineDuration.text = it.videoTime
+            binding.tvPlayExerciseDescription.text = it.exerciseDescription
+            binding.tvPlayRelatedJoint.text = it.relatedJoint
+            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
+            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
         }
         val warmup : HomeRVBeginnerDataClass? = bundle?.getParcelable("warmupList")
         warmup?.let {
-            binding.tvPlayRoutineName.text = it.name
-            binding.tvPlayRoutineName.text = it.name
-            binding.tvPlayRoutineDuration.text = it.duration.toString()
-            binding.tvPlayRoutineExplanation.text = it.explanation
+            binding.tvPlayExerciseName.text = it.exerciseName
+            binding.tvPlayRoutineDuration.text = it.videoTime
+            binding.tvPlayExerciseDescription.text = it.exerciseDescription
+            binding.tvPlayRelatedJoint.text = it.relatedJoint
+            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
+            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
         }
         binding.btnPlay.setOnClickListener {
             val intent = Intent(requireContext(), PlayActivity::class.java)
+            if (routine != null) {
+                intent.putExtra("ExerciseData", routine)
+                Log.w(TAG + "운동데이터", "${routine.relatedSymptom}")
+            } else if (warmup != null){
+                intent.putExtra("ExerciseData", warmup)
+                Log.w(TAG + "운동데이터", "${warmup.relatedSymptom}")
+            }
             startActivity(intent)
 
         }

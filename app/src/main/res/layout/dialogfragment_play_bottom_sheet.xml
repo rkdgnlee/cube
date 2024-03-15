@@ -19,14 +19,16 @@
         android:background="@drawable/bottom_sheet_background">
 
         <TextView
-            android:id="@+id/tvPlayRoutineName"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvPlayExerciseName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
             android:text="근력운동 루틴"
             android:textSize="32sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,11 +36,13 @@
             android:id="@+id/imageButton"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="36dp"
             android:background="#FFFFFF"
             android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="@+id/tvPlayRoutineName"
-            app:layout_constraintTop_toBottomOf="@+id/tvPlayRoutineName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.055"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseName"
             app:srcCompat="@drawable/play_duration_icon" />
 
         <TextView
@@ -49,6 +53,7 @@
             android:text="30"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageButton"
+            app:layout_constraintHorizontal_bias="0.08"
             app:layout_constraintStart_toEndOf="@+id/imageButton"
             app:layout_constraintTop_toTopOf="@+id/imageButton" />
 
@@ -57,22 +62,119 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="분"
+            android:text="초"
             android:textSize="23sp"
             app:layout_constraintBottom_toBottomOf="@+id/tvPlayRoutineDuration"
             app:layout_constraintStart_toEndOf="@+id/tvPlayRoutineDuration"
-            app:layout_constraintTop_toTopOf="@+id/tvPlayRoutineDuration"
-            app:layout_constraintVertical_bias="0.5" />
+            app:layout_constraintTop_toTopOf="@+id/tvPlayRoutineDuration" />
 
         <TextView
-            android:id="@+id/tvPlayRoutineExplanation"
-            android:layout_width="374dp"
+            android:id="@+id/tvPlayExerciseDescription"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="벤치프레스, 데드리프트, 스쿼트를 중심으로하는 대둔근 및"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@+id/imageButton"
+            android:layout_marginTop="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:text="어깨 근력 강화 운동 1"
+            android:textColor="@color/textgrey"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView41" />
+
+        <TextView
+            android:id="@+id/tvPlayRelatedJoint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:text="어깨"
+            android:textColor="@color/textgrey"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView42" />
+
+        <TextView
+            android:id="@+id/textView41"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="운동 설명"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.069"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+
+        <TextView
+            android:id="@+id/textView42"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="관련 관절"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.069"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseDescription" />
+
+        <TextView
+            android:id="@+id/textView43"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="관련 근육"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.069"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPlayRelatedJoint" />
+
+        <TextView
+            android:id="@+id/tvPlayRelatedMuscle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:text="삼각근, 위팔 두갈래근 등을 포함하는 어깨와 위팔 근육군"
+            android:textColor="@color/textgrey"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+        <TextView
+            android:id="@+id/tvPlayRelatedSymptom"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:text="어깨 근력 강화가 필요한 노인 일상생활능력 중 개인위생, 집안일하기 등과 같이 상지를 활용한 능력 향상"
+            android:textColor="@color/textgrey"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView44" />
+
+        <TextView
+            android:id="@+id/textView44"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="관련 증상"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.069"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPlayRelatedMuscle" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -84,7 +186,6 @@
         android:background="@drawable/shadow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent">
 
         <Button

@@ -1,6 +1,7 @@
 package com.example.mhg.Room
 
 import com.example.mhg.R
+import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.`object`.NetworkService
 import org.json.JSONArray
 import org.json.JSONObject
@@ -10,6 +11,27 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao, private val netwo
         return exerciseDao.getAll()
     }
 
+    suspend fun getHomeRVBeginnerData(): List<HomeRVBeginnerDataClass> {
+        return exerciseDao.getAll().map { exercise ->
+            HomeRVBeginnerDataClass(
+                imgUrl = null,  // 이미지 URL은 데이터베이스에 없으므로 null 또는 기본 이미지 URL을 설정합니다.
+                exerciseName = exercise.exercise_name,
+                exerciseDescription = exercise.exercise_description,
+                relatedJoint = exercise.related_joint,
+                relatedMuscle = exercise.related_muscle,
+                relatedSymptom = exercise.related_symptom,
+                exerciseStage = exercise.exercise_stage,
+                exerciseFequency = exercise.exercise_frequency,
+                exerciseIntensity = exercise.exercise_intensity,
+                exerciseInitialPosture = exercise.exercise_initial_posture,
+                exerciseMethod = exercise.exercise_method,
+                exerciseCaution = exercise.exercise_caution,
+                videoAlternativeName = exercise.video_alternative_name,
+                videoFilepath = exercise.video_filepath,
+                videoTime = exercise.video_time
+            )
+        }
+    }
     suspend fun StoreExercises(jsonArr: JSONArray) {
         for (i in 0 until jsonArr.length()) {
             val jsonObj = jsonArr.getJSONObject(i)
@@ -40,6 +62,5 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao, private val netwo
             }
             // -----! 각 JSONObject의 이름 존재 체크 로직 끝 !-----
         }
-
     }
 }

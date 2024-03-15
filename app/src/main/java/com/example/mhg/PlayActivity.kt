@@ -1,12 +1,20 @@
 package com.example.mhg
 
+import android.content.ContentValues.TAG
+import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ImageButton
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.databinding.ActivityPlayBinding
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -21,29 +29,47 @@ import java.util.concurrent.Executors
 
 class PlayActivity : AppCompatActivity() {
     lateinit var binding : ActivityPlayBinding
-    private var videoUrl = "http://techslides.com/demos/sample-videos/small.mp4"
-//    private lateinit var cameraExecutor: ExecutorService
+    private var videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
 
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var player : SimpleExoPlayer? = null
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition = 0L
+    
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val exerciseData: HomeRVBeginnerDataClass? = intent.getParcelableExtra("ExerciseData", HomeRVBeginnerDataClass::class.java)
+        Log.w(TAG, "$exerciseData")
+//        videoUrl = exerciseData?.videoFilepath.toString()
+//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        // -----! 각 설명들 textView에 넣기 !-----
+        binding.tvPlayExerciseStage.text = exerciseData?.exerciseStage.toString()
+        binding.tvPlayExerciseFrequency.text = exerciseData?.exerciseFequency.toString()
+        binding.tvPlayExerciseIntensity.text = exerciseData?.exerciseIntensity.toString()
+        binding.tvPlayExerciseInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
+        binding.tvPlayExerciseMethod.text = exerciseData?.exerciseMethod.toString()
+        binding.tvPlayExerciseCaution.text = exerciseData?.exerciseCaution.toString()
 
-//        if (allPermissionsGranted()) {
-//            startCamera()
-//        } else {
-//            ActivityCompat.requestPermissions(
-//                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-//            )
-//        }
-//        cameraExecutor = Executors.newSingleThreadExecutor()
-//        binding.pcvPlay.showTimeoutMs = 0
+
+
+
+        // 인텐트로부터 재생 시간 가져오기
+        playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
+
+        // -----! 전체화면 구현 로직 시작 !-----
+        val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
+
+        fullscreenButton.setOnClickListener {
+            val intent = Intent(this, FullScreenActivity::class.java)
+            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
+            startActivity(intent)
+        }
+
     }
 
     private fun initPlayer(){
@@ -52,6 +78,7 @@ class PlayActivity : AppCompatActivity() {
         buildMediaSource()?.let {
             simpleExoPlayer?.prepare(it)
         }
+        simpleExoPlayer?.seekTo(playbackPosition)
     }
     private fun buildMediaSource() : MediaSource {
         val dataSourceFactory = DefaultDataSourceFactory(this, "sample")
@@ -74,7 +101,18 @@ class PlayActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         simpleExoPlayer?.release()
+//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong("playbackPosition", simpleExoPlayer?.currentPosition ?: 0L)
+        outState.putInt("currentWindow", simpleExoPlayer?.currentWindowIndex ?: 0)
+        outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
+    }
+
+
+
     // -----  오디오 플레이어 코드 시작  -----
 //    override fun onStart() {
 //        super.onStart()
@@ -131,58 +169,5 @@ class PlayActivity : AppCompatActivity() {
 //    }  // -----  오디오 플레이어 코드 끝  -----
 
 
-//    private fun startCamera() {
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-//        cameraProviderFuture.addListener({
-//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-//
-//            val preview = Preview.Builder()
-//                .build()
-//                .also {
-//                    it.setSurfaceProvider(binding.previewView.surfaceProvider)
-//                }
-//            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-//            try {
-//                cameraProvider.unbindAll()
-//                cameraProvider.bindToLifecycle(
-//                    this, cameraSelector, preview
-//                )
-//            } catch (exc: Exception) {
-//                Log.e("실패", "USE CASE binding failed", exc)
-//            }
-//        }, ContextCompat.getMainExecutor(this))
-//
-//    }
-//
-//    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-//        ContextCompat.checkSelfPermission(
-//            baseContext, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-//    }
-//
-//    companion object {
-//        private const val TAG = "CameraXApp"
-//        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-//        private const val REQUEST_CODE_PERMISSIONS = 10
-//        private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
-//    }
-//
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-//            if (allPermissionsGranted()) {
-//                startCamera()
-//            } else {
-//                Toast.makeText(this, "접근 권한이 허용되지 않아 카메라를 실행할 수 없습니다. 설정에서 접근 권한을 허용해주세요", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        cameraExecutor.shutdown()
-//    }
+
 }

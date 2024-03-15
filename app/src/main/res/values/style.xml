@@ -40,4 +40,8 @@
         <item name="behavior_peekHeight">auto</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="ExoMediaButton.FullScreen">
+        <item name="android:background">@drawable/fullscreen_button</item>
+    </style>
 </resources>

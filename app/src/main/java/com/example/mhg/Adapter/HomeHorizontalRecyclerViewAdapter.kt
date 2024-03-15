@@ -38,7 +38,7 @@ class HomeHorizontalRecyclerViewAdapter(var routineList : List<HomeRVBeginnerDat
 //            .load(currentItem.imgUrl)
 //            .diskCacheStrategy(DiskCacheStrategy.ALL)
 //            .into(holder.ivhomehorizonal)
-        holder.tvhomehorizontal.text = currentItem.name
+        holder.tvhomehorizontal.text = currentItem.exerciseName
 
         holder.btnhomeHorzontal.setOnClickListener {
             showBottomSheetDialog(holder.itemView.context as FragmentActivity, currentItem)

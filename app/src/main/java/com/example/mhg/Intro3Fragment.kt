@@ -289,7 +289,6 @@ class Intro3Fragment : Fragment() {
     private fun ExerciseDialogInit() {
         val dialogFragment = ExerciseLoadDialogFragment()
         dialogFragment.show(requireActivity().supportFragmentManager, "DialogFragment")
-        requireActivity().finish()
     }
 //    private fun setToken(context: Context, key: String, value: String) {
 //        val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC

@@ -5,31 +5,60 @@ import android.os.Parcelable
 
 data class HomeRVBeginnerDataClass(
     var imgUrl: String? = "",
-    var name: String?,
-    var duration: Int? = 0,
-    val uri: String? = null,
-    val explanation: String? = ""
+    var exerciseName: String?,
+    var exerciseDescription: String? = "",
+    var relatedJoint: String? = "",
+    var relatedMuscle: String?,
+    var relatedSymptom: String?,
+    var exerciseStage: String? = "",
+    var exerciseFequency: String? = "",
+    var exerciseIntensity: String? = "",
+    var exerciseInitialPosture: String? = "",
+    var exerciseMethod: String? = "",
+    var exerciseCaution: String? = "",
+    var videoAlternativeName: String? = "",
+    var videoFilepath: String? = "",
+    var videoTime: String? = ""
+
 ) : Parcelable {
 
 //담는거
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
-        parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readString(),
-        parcel.readString()
-    ) {
-    }
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+    )
 
     override fun describeContents(): Int = 0
 
         override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(imgUrl)
-        dest.writeString(name)
-        duration?.let { dest.writeInt(it) }
-        dest.writeString(uri)
-        dest.writeString(explanation)
-
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
+            dest.writeString(imgUrl)
     }
 // 불러오는 거
     companion object CREATOR : Parcelable.Creator<HomeRVBeginnerDataClass> {
