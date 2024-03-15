@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -17,7 +18,7 @@ import com.example.mhg.databinding.ActivityPersonalSetupBinding
 
 class PersonalSetupActivity : AppCompatActivity() {
     lateinit var binding: ActivityPersonalSetupBinding
-    private lateinit var viewModel: UserViewModel
+    val viewModel: UserViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPersonalSetupBinding.inflate(layoutInflater)

@@ -62,7 +62,7 @@ class ProfileEditFragment : Fragment() {
             JsonObj.put("user_email", etUser_email )
             JsonObj.put("user_mobile", etUser_mobile )
             if (user_mobile != null) {
-                fetchUPDATEJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString(), user_mobile = user_mobile) {
+                fetchUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), user_mobile = user_mobile) {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flMain, ProfileFragment())
                         commit()
@@ -83,7 +83,7 @@ class ProfileEditFragment : Fragment() {
             .setMessage("계정을 삭제하면 복구할 수 없습니다.\n그래도 진행하시겠습니까?")
             .setPositiveButton("확인",
                 DialogInterface.OnClickListener { dialog, id ->
-                    fetchDeleteJson(getString(R.string.IP_ADDRESS_T_USER), user_mobile = user_mobile) {
+                    fetchDeleteJson(getString(R.string.IP_ADDRESS_t_user), user_mobile = user_mobile) {
                         if (Firebase.auth.currentUser != null) {
                             Firebase.auth.signOut()
                             Log.d("로그아웃", "Firebase sign out successful")

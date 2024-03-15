@@ -126,7 +126,7 @@ class SplashActivity : AppCompatActivity() {
                             // -----! 전화번호 변환 !-----
                             val naver_mobile = URLEncoder.encode(jsonObj?.getString("mobile")?.replaceFirst("010", "+82 10"), "UTF-8")
                             if (naver_mobile != null) {
-                                fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), naver_mobile, false) {
+                                fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), naver_mobile, false) {
                                     MainInit()
                                 }
                             }
@@ -143,7 +143,7 @@ class SplashActivity : AppCompatActivity() {
                         if (task.isSuccessful) {
                             val JsonObj = JSONObject()
                             JsonObj.put("google_login_id", user.uid)
-                            fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("google_login_id"), true) {
+                            fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("google_login_id"), true) {
                                 MainInit()
                             }
                         }
@@ -161,7 +161,7 @@ class SplashActivity : AppCompatActivity() {
                         val JsonObj = JSONObject()
                         val kakao_mobile = URLEncoder.encode(user.kakaoAccount?.phoneNumber.toString(), "UTF-8")
                         JsonObj.put("user_mobile", kakao_mobile)
-                        fetchSELECTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.getString("user_mobile"), false) {
+                        fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("user_mobile"), false) {
                             MainInit()
                         }
                     }

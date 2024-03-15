@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.example.mhg.databinding.DialogFragmentReportSkeletonCalendarBinding
+
+import com.example.mhg.databinding.DialogfragmentReportSkeletonCalendarBinding
 
 
 class ReportSkeletonCalendarDialogFragment : DialogFragment() {
     // TODO: Rename and change types of parameters
-    lateinit var binding: DialogFragmentReportSkeletonCalendarBinding
+    lateinit var binding: DialogfragmentReportSkeletonCalendarBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -20,7 +21,7 @@ class ReportSkeletonCalendarDialogFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DialogFragmentReportSkeletonCalendarBinding.inflate(inflater)
+        binding = DialogfragmentReportSkeletonCalendarBinding.inflate(inflater)
         // Inflate the layout for this fragment
         return binding.root
     }

@@ -2,6 +2,12 @@ package com.example.mhg.`object`
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.google.firebase.inject.Deferred
+import com.google.gson.JsonArray
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -9,6 +15,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 
 object NetworkService{
@@ -70,4 +78,24 @@ object NetworkService{
             }
         })
     }
+
+    suspend fun fetchExerciseJson(myUrl: String): JSONArray? {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}read.php")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+
+                jsonObj__?.optJSONArray("data")
+
+            }
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivityMainBinding
 import com.example.mhg.`object`.Singleton_t_user

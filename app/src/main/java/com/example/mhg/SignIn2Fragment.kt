@@ -1,13 +1,17 @@
 package com.example.mhg
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.activityViewModels
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentSignIn2Binding
@@ -15,6 +19,10 @@ import java.util.regex.Pattern
 
 
 class SignIn2Fragment : Fragment() {
+    interface OnFragmentInteractionListener {
+        fun onFragmentInteraction()
+    }
+    private var listener : OnFragmentInteractionListener? = null
     lateinit var binding: FragmentSignIn2Binding
     val viewModel : UserViewModel by activityViewModels()
 
@@ -26,6 +34,30 @@ class SignIn2Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSignIn2Binding.inflate(inflater)
+
+        viewModel.User.observe(viewLifecycleOwner) {user ->
+            if (user != null && user.has("user_id")) {
+                viewModel.idCondition.value = true
+                viewModel.pwCondition.value = true
+                viewModel.pwCompare.value = true
+            } else {
+                binding.etId.text.clear()
+            }
+        }
+
+        binding.etPwRepeat.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                listener?.onFragmentInteraction()
+                true
+            } else {
+                false
+            }
+        }
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&.^])[A-Za-z[0-9]$@$!%*#?&.^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
         val idPattern = "^[a-zA-Z0-9]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
         val IdPattern = Pattern.compile(idPattern)
@@ -37,6 +69,8 @@ class SignIn2Fragment : Fragment() {
                 if (viewModel.idCondition.value == true) {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
                     binding.tvIdCondition.text = "조건에 일치합니다."
+                    viewModel.User.value?.put("user_id", binding.etId.text)
+                    Log.w(ContentValues.TAG, "${viewModel.User.value?.getString("user_id")}")
                 } else {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.orange))
                     binding.tvIdCondition.text = "조건에 일치하지 않습니다"
@@ -74,26 +108,21 @@ class SignIn2Fragment : Fragment() {
                     binding.tvPwCompare.text = "비밀번호가 일치하지 않습니다"
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----
-                viewModel.User.value?.put("user_id", binding.etId.text)
+
                 viewModel.User.value?.put("user_password", binding.etPw.text)
+
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        viewModel.User.observe(viewLifecycleOwner) {user ->
-            if (user != null) {
-                binding.etId.isEnabled = false
-                viewModel.idCondition.value = true
-                viewModel.pwCondition.value = true
-                viewModel.pwCompare.value = true
-            } else {
-                binding.etId.text.clear()
-                binding.etId.isEnabled = true
-            }
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
-
-
-        return binding.root
     }
 }

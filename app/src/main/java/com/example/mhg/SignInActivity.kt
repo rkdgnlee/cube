@@ -1,6 +1,8 @@
 package com.example.mhg
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
+import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,9 +18,15 @@ import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivitySignInBinding
 import org.json.JSONObject
 
-class SignInActivity : AppCompatActivity() {
+class SignInActivity :
+    AppCompatActivity(),
+    SignIn1Fragment.OnFragmentInteractionListener,
+    SignIn2Fragment.OnFragmentInteractionListener,
+    SignIn3Fragment.OnFragmentInteractionListener {
     lateinit var binding : ActivitySignInBinding
     val viewModel: UserViewModel by viewModels()
+    lateinit var pagerAdapter: SignInViewPagerAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,14 +34,20 @@ class SignInActivity : AppCompatActivity() {
         setContentView(binding.root)
         initViewPager()
 
+        pagerAdapter = SignInViewPagerAdapter(this)
+        binding.vp2SignIn.adapter = pagerAdapter
         // -----! google login 했을 시 페이지 지정 시작 !-----
         val userString = intent.getStringExtra("user")
-        val user = userString?.let { JSONObject(it) }
-
-        viewModel.User.value = user // json으로 일단 넣음
-        if (viewModel.User.value != null) {
-            binding.vp2SignIn.setCurrentItem(3)
+        if (userString != null) {
+            val user = JSONObject(userString)
+            viewModel.User.value = user
+            if (viewModel.User.value != null) {
+                binding.vp2SignIn.setCurrentItem(3)
+            }
+        } else {
+            viewModel.User.value = JSONObject()
         }
+//
 
         // -----! google login 했을 시 페이지 지정 끝 !-----
 
@@ -43,22 +57,17 @@ class SignInActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 when (position) {
-                    4 -> {
+                    0 -> {
+                        binding.tvSignInPrevious.text = ""
+                    }
+                    3 -> {
                         binding.tvSignInNext.text = ""
                     }
                     else -> {
                         binding.tvSignInNext.text = "다음"
+                        binding.tvSignInPrevious.text = "이전"
                     }
                 }
-
-//                // ---- view model에 값을 넣기 (0p ~ 3p) 시작 ----
-//                val previousPosition = position - 1
-//                if (previousPosition >= 0) {
-//                    val fragment = supportFragmentManager.findFragmentByTag("f$previousPosition")
-//
-//                    // ---- view model에 값을 넣기 (0p ~ 3p) 끝 ----
-//                }
-//                binding.vp2SignIn.currentItem = binding.vp2SignIn.currentItem + 1
             }
         })
         binding.tvSignInPrevious.setOnSingleClickListener {
@@ -68,9 +77,14 @@ class SignInActivity : AppCompatActivity() {
             }
         }
         binding.tvSignInNext.setOnSingleClickListener {
+
             binding.vp2SignIn.currentItem = binding.vp2SignIn.currentItem + 1
         }
+
         // -----! 페이지 변경 callback 메소드 끝 !-----
+    }
+    override fun onFragmentInteraction() {
+        binding.tvSignInNext.performClick()
     }
     private fun initViewPager() {
         val viewPager = binding.vp2SignIn
@@ -86,10 +100,14 @@ class SignInActivity : AppCompatActivity() {
 //            }
 //        })
     }
+
 }
 
 class SignInViewPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
     private val fragments = listOf(SignIn1Fragment(), SignIn2Fragment(), SignIn3Fragment(), SignIn4Fragment())
+    fun getFragment(position: Int): Fragment {
+        return fragments[position]
+    }
     override fun getItemCount(): Int {
         return fragments.size
     }

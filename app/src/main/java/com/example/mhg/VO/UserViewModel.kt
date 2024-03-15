@@ -19,8 +19,10 @@ import org.json.JSONObject
 import java.io.IOException
 
 class UserViewModel: ViewModel() {
-    val User = MutableLiveData<JSONObject?>()
-
+    val User = MutableLiveData(JSONObject())
+    init {
+        User.value = JSONObject()
+    }
     val idCondition = MutableLiveData(false)
     val nameCondition = MutableLiveData(false)
     val mobileCondition = MutableLiveData(false)

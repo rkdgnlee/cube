@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.viewModels
+import com.example.mhg.Dialog.ExerciseLoadDialogFragment
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.`object`.NetworkService.fetchINSERTJson
 import com.example.mhg.databinding.FragmentIntro3Binding
@@ -59,7 +60,7 @@ class Intro3Fragment : Fragment() {
 //        val client = OkHttpClient()
 ////        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
 //        val request = Request.Builder()
-//            .url("${myUrl}read.php?user_mobile=$user_mobile")
+//            .url("${myUrl}users/read.php?user_mobile=$user_mobile")
 //            .get()
 //            .build()
 //
@@ -120,6 +121,7 @@ class Intro3Fragment : Fragment() {
                                                 val intent = Intent(requireContext(), SignInActivity::class.java)
                                                 intent.putExtra("user", JsonObj.toString())
                                                 startActivity(intent)
+
                                                 // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
 
                                                 val googleSignInToken = account.idToken ?: ""
@@ -214,11 +216,12 @@ class Intro3Fragment : Fragment() {
                         JsonObj.put("naver_login_id" , result.profile?.id.toString())
 
                         Log.i("$TAG, 네이버", JsonObj.getString("user_mobile"))
-                        fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
+                        fetchINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                             val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                             t_userInstance?.jsonObject = JsonObj
                             Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-                            MainInit()
+                            ExerciseDialogInit()
+
                         }
                     }
                 })
@@ -259,11 +262,11 @@ class Intro3Fragment : Fragment() {
                                 JsonObj.put("kakao_login_id" , user.id.toString())
 
                                 Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_mobile"))
-                                fetchINSERTJson(getString(R.string.IP_ADDRESS_T_USER), JsonObj.toString()) {
+                                fetchINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                     val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                                     t_userInstance?.jsonObject = JsonObj
                                     Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-                                    MainInit()
+                                    ExerciseDialogInit()
                                 }
                             }
                         }
@@ -282,10 +285,11 @@ class Intro3Fragment : Fragment() {
         }
         // ---- 카카오 로그인 연동 끝 ----
     }
-    private fun MainInit() {
-        val intent = Intent(requireContext(), MainActivity::class.java)
-        startActivity(intent)
-        ActivityCompat.finishAffinity(requireActivity())
+
+    private fun ExerciseDialogInit() {
+        val dialogFragment = ExerciseLoadDialogFragment()
+        dialogFragment.show(requireActivity().supportFragmentManager, "DialogFragment")
+        requireActivity().finish()
     }
 //    private fun setToken(context: Context, key: String, value: String) {
 //        val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
