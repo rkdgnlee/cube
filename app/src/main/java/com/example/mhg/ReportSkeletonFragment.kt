@@ -2,32 +2,42 @@ package com.example.mhg
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ChartVO
 import com.example.mhg.VO.HomeRVBeginnerDataClass
+import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentReportSkeletonBinding
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 import java.util.Calendar
 import java.util.TimeZone
+import kotlin.random.Random
 
 class ReportSkeletonFragment : Fragment() {
     lateinit var binding : FragmentReportSkeletonBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
+    val viewModel: UserViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,10 +69,24 @@ class ReportSkeletonFragment : Fragment() {
         binding.tvReportDateCurrent.text = selectedDate
 
 
-        val datePickerDialog = DatePickerDialog(requireContext(), R.style.Theme_App, { view, year, month, day ->
-            selectedDate = "$year. ${month + 1}. $day"
-            binding.tvReportDateCurrent.text = selectedDate
-            c.set(year, month, day)
+        val datePickerDialog = DatePickerDialog(requireContext(), R.style.Theme_App,
+            { view, year, month, day ->
+
+                selectedDate = "$year. ${month + 1}. $day"
+                binding.tvReportDateCurrent.text = selectedDate
+                c.set(year, month, day)
+
+                // -----! 날짜 선택 후 서버 응답 후 처리 시작 !-----
+                // TODO 1.날짜형식 알맞게 수정하기
+                val fetchDate = "$year-${month + 1}-$day"
+                // TODO 2. 매니저님과 조율하여 매개변수 넣어서 조회
+//                fetchUserHistoryJson() {
+//                TODO 3. 데이터 값 전부 뿌리기 - viewModel.UserHistory.value?.optString("")
+//                }
+
+
+
+            // -----! 날짜 선택 후 서버 응답 후 처리 끝 !-----
         }, year, month, day)
 
         binding.btnReportCalendar.setOnClickListener {
@@ -73,7 +97,7 @@ class ReportSkeletonFragment : Fragment() {
         binding.btnReportDateLeft.setOnClickListener {
             c.add(Calendar.DAY_OF_MONTH, -1) // 하루를 빼기
             year = c.get(Calendar.YEAR)
-            month = c.get(Calendar.MONTH)
+            month = c.get(Calendar.MONTH)+1
             day = c.get(Calendar.DAY_OF_MONTH)
             selectedDate = "$year. ${month + 1}. $day"
             binding.tvReportDateCurrent.text = selectedDate
@@ -84,7 +108,7 @@ class ReportSkeletonFragment : Fragment() {
             if (!c.after(today)) {
                  // 하루 더하기
                 year = c.get(Calendar.YEAR)
-                month = c.get(Calendar.MONTH)
+                month = c.get(Calendar.MONTH)+1
                 day = c.get(Calendar.DAY_OF_MONTH)
                 c.add(Calendar.DAY_OF_MONTH, + 1)
                 selectedDate = "$year. ${month + 1}. $day"
@@ -100,21 +124,16 @@ class ReportSkeletonFragment : Fragment() {
         val yAxisleft = lineChart.axisLeft
         val yAxisright = lineChart.axisRight
         val legend = lineChart.legend
-        val datalist : List<ChartVO> = listOf(
-            ChartVO("5월", 48),
-            ChartVO("6월", 70),
-            ChartVO("7월", 77),
-            ChartVO("8월", 65),
-            ChartVO("9월", 31),
-            ChartVO("10월", 28),
-            ChartVO("11월", 52),
-            ChartVO("12월", 14),
-            ChartVO("1월", 76),
-            ChartVO("2월", 51),
-            ChartVO("3월", 55),
-            ChartVO("4월", 62),
 
-        )
+        val datalist : MutableList<ChartVO> = mutableListOf()
+        for (i in 0 until 12) {
+            val currentMonth = (month +i) % 12
+            if (currentMonth == 0) {
+                datalist.add(ChartVO("12월", Random.nextInt(99)))
+            } else {
+                datalist.add(ChartVO("${currentMonth}월", Random.nextInt(99)))
+            }
+        }
         val entries : MutableList<Entry> = mutableListOf()
         for (i in datalist.indices) {
             // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
@@ -179,4 +198,31 @@ class ReportSkeletonFragment : Fragment() {
 
 
     }
+    fun fetchUserHistoryJson(myUrl : String, user_mobile:String, callback: () -> Unit) {
+        val client = OkHttpClient()
+//        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url("${myUrl}users/read.php?user_mobile=$user_mobile")
+            .get()
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("OKHTTP3", "Failed to execute request!")
+            }
+            override fun onResponse(call: Call, response: Response)  {
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+//              TODO  히스토리에 맞게 정보 받아와서 VIEWMODEL에 담아넣기
+                val jsonObj = jsonObj__?.optJSONObject("data")
+                viewModel.UserHistory.value = jsonObj
+//                val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+//                t_userInstance?.jsonObject = jsonObj
+//                Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                callback()
+            }
+        })
+    }
+
 }

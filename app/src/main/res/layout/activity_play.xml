@@ -39,9 +39,11 @@
         android:id="@+id/tvPlayExerciseStage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="TextView"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.086"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
 
@@ -49,11 +51,11 @@
         android:id="@+id/tvPlayExerciseFrequency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="24dp"
         android:text="TextView"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/tvPlayExerciseStage"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseStage"
         app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseStage" />
 
@@ -61,11 +63,11 @@
         android:id="@+id/tvPlayExerciseIntensity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="28dp"
         android:text="TextView"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/tvPlayExerciseFrequency"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseFrequency"
         app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseFrequency" />
 
@@ -73,7 +75,7 @@
         android:id="@+id/tvPlayExercise_initial_posture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="20dp"
         android:text="TextView"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/tvPlayExerciseIntensity"
@@ -85,7 +87,7 @@
         android:id="@+id/tvPlayExerciseMethod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="28dp"
         android:text="TextView"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/tvPlayExercise_initial_posture"
@@ -97,11 +99,11 @@
         android:id="@+id/tvPlayExerciseCaution"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="24dp"
         android:text="TextView"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/tvPlayExerciseMethod"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseMethod"
         app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseMethod" />
 </androidx.constraintlayout.widget.ConstraintLayout>

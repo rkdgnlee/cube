@@ -20,6 +20,8 @@ import java.io.IOException
 
 class UserViewModel: ViewModel() {
     val User = MutableLiveData(JSONObject())
+
+    val UserHistory = MutableLiveData(JSONObject())
     init {
         User.value = JSONObject()
     }
@@ -29,6 +31,7 @@ class UserViewModel: ViewModel() {
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
     val emailCondition = MutableLiveData(false)
+    val mobileAuthCondition = MutableLiveData(false)
 
     fun checkConditions(): Boolean {
         return idCondition.value == true &&

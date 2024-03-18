@@ -1,5 +1,6 @@
 package com.example.mhg
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -7,17 +8,15 @@ import android.view.View
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.mhg.databinding.ActivityFullScreenBinding
+import com.example.mhg.databinding.ActivityPlayFullScreenBinding
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 
-class FullScreenActivity : AppCompatActivity() {
-        lateinit var binding: ActivityFullScreenBinding
+class PlayFullScreenActivity : AppCompatActivity() {
+        lateinit var binding: ActivityPlayFullScreenBinding
         private var videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
 
         private var simpleExoPlayer: SimpleExoPlayer? = null
@@ -28,11 +27,11 @@ class FullScreenActivity : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             enableEdgeToEdge()
-            binding = ActivityFullScreenBinding.inflate(layoutInflater)
+            binding = ActivityPlayFullScreenBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
             // -----! landscape로 방향 설정 & 재생시간 받아오기 !-----
-
+            videoUrl = intent.getStringExtra("video_url").toString()
             playbackPosition = intent.getLongExtra("current_position", 0L)
             initPlayer()
 
@@ -40,10 +39,7 @@ class FullScreenActivity : AppCompatActivity() {
             // -----! 원래 화면으로 돌아감 !-----
             val fullscreenButton = binding.pvFullScreen.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
             fullscreenButton.setOnClickListener {
-                val intent = Intent(this, PlayActivity::class.java)
-                intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
-                startActivity(intent)
-                finish()
+                onBackPressed()
             }
 
         }
@@ -63,7 +59,7 @@ class FullScreenActivity : AppCompatActivity() {
         private fun initPlayer(){
             simpleExoPlayer = SimpleExoPlayer.Builder(this).build()
             binding.pvFullScreen.player = simpleExoPlayer
-            buildMediaSource()?.let {
+            buildMediaSource().let {
                 simpleExoPlayer?.prepare(it)
             }
             simpleExoPlayer?.seekTo(playbackPosition)
@@ -100,7 +96,17 @@ class FullScreenActivity : AppCompatActivity() {
         outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+
+        val currentPosition = simpleExoPlayer?.currentPosition
+        val video_url = videoUrl
+        val intent = Intent(this,PlayActivity::class.java)
+        intent.putExtra("current_position", currentPosition)
+        intent.putExtra("video_url", video_url)
+        setResult(Activity.RESULT_OK, intent)
+
+        simpleExoPlayer?.seekTo(currentPosition ?: 0)
         super.onBackPressed()
     }
 }

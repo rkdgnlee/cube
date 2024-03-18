@@ -3,15 +3,20 @@ package com.example.mhg.Dialog
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
@@ -67,24 +72,50 @@ class ExerciseLoadDialogFragment : DialogFragment() {
         return binding.root
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState)
-    }
 
-    override fun onStart() {
-        super.onStart()
-        initializeDialogOptions()
-    }
 
-    private fun initializeDialogOptions() {
-        val darkTransparentBlack = Color.argb((255 * 0.6).toInt(), 0, 0, 0)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(darkTransparentBlack))
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        dialog?.window?.setDimAmount(0.4f)
-        isCancelable = false
-    }
+//    override fun onStart() {
+//        super.onStart()
+//        initializeDialogOptions()
+//    }
+//
+//    private fun initializeDialogOptions() {
+//        val darkTransparentBlack = Color.argb((255 * 0.6).toInt(), 0, 0, 0)
+//        dialog?.window?.setBackgroundDrawable(ColorDrawable(darkTransparentBlack))
+//        dialog?.window?.setLayout(
+//            ViewGroup.LayoutParams.MATCH_PARENT,
+//            ViewGroup.LayoutParams.MATCH_PARENT
+//        )
+//        dialog?.window?.setDimAmount(0.4f)
+//        isCancelable = false
+//    }
 
+    override fun onResume() {
+        super.onResume()
+        context?.dialogFragmentResize(ExerciseLoadDialogFragment(), 0.9f, 0.9f)
+    }
+    fun Context.dialogFragmentResize(dialogFragment: DialogFragment, width: Float, height: Float) {
+        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        if (Build.VERSION.SDK_INT < 30) {
+            val display = windowManager.defaultDisplay
+            val size = Point()
+
+            display.getSize(size)
+            val window = dialogFragment.dialog?.window
+
+            val x = (size.x * width).toInt()
+            val y = (size.y * height).toInt()
+            window?.setLayout(x, y)
+        } else {
+            dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            val rect = windowManager.currentWindowMetrics.bounds
+            val window = dialogFragment.dialog?.window
+            val x = (rect.width()* width).toInt()
+            val y = (rect.height()* height).toInt()
+
+            window?.setLayout(x, y)
+        }
+    }
 }

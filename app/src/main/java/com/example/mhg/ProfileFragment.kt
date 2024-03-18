@@ -1,5 +1,6 @@
 package com.example.mhg
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
@@ -8,16 +9,26 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.RoundedCorner
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.Request
+import com.bumptech.glide.request.RequestOptions
 import com.example.mhg.Adapter.ProfileRecyclerViewAdapter
 import com.example.mhg.VO.RoutingVO
 import com.example.mhg.databinding.FragmentProfileBinding
@@ -44,6 +55,7 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,9 +77,15 @@ class ProfileFragment : Fragment() {
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
         val imageUri = sharedPreferences.getString("imageUri", null)
         if (imageUri != null) {
-            binding.ivProfile.setImageURI(Uri.parse(imageUri))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                Glide.with(this)
+                    .load(imageUri)
+                    .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                    .into(binding.ivProfile)
+            }
         }
-        // ----- 이미지 로드 끝 -----
+
+            // ----- 이미지 로드 끝 -----
 
         val profilemenulist = mutableListOf<RoutingVO>(
             RoutingVO("개인정보", "1"),
@@ -127,6 +145,7 @@ class ProfileFragment : Fragment() {
 
     }
 
+    @SuppressLint("CheckResult")
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -140,7 +159,15 @@ class ProfileFragment : Fragment() {
                     val editor = sharedPreferences.edit()
                     editor.putString("imageUri", selectedImageUri.toString())
                     editor.apply()
-                    binding.ivProfile.setImageURI(selectedImageUri)
+                    Glide.with(this)
+                        .load(selectedImageUri)
+                        .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                        .into(binding.ivProfile)
+
+
+
+
+
                 } else {
                     Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }

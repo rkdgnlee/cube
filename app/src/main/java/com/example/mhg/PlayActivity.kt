@@ -1,35 +1,25 @@
 package com.example.mhg
 
+import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.databinding.ActivityPlayBinding
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.RawResourceDataSource
-import com.google.android.exoplayer2.util.Util
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 class PlayActivity : AppCompatActivity() {
     lateinit var binding : ActivityPlayBinding
-    private var videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+    private var videoUrl = "https://gym.tangostar.co.kr/data/contents/videos/%EB%93%B1%20%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%B9%AD%20%EC%9D%98%EC%9E%90.mp4"
 
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var player : SimpleExoPlayer? = null
@@ -42,11 +32,14 @@ class PlayActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val exerciseData: HomeRVBeginnerDataClass? = intent.getParcelableExtra("ExerciseData", HomeRVBeginnerDataClass::class.java)
+
+        val exerciseData: HomeRVBeginnerDataClass? = intent.getParcelableExtra("ExerciseData")
         Log.w(TAG, "$exerciseData")
-//        videoUrl = exerciseData?.videoFilepath.toString()
+
 //        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
         // -----! 각 설명들 textView에 넣기 !-----
+        videoUrl = exerciseData?.videoFilepath.toString()
         binding.tvPlayExerciseStage.text = exerciseData?.exerciseStage.toString()
         binding.tvPlayExerciseFrequency.text = exerciseData?.exerciseFequency.toString()
         binding.tvPlayExerciseIntensity.text = exerciseData?.exerciseIntensity.toString()
@@ -55,9 +48,6 @@ class PlayActivity : AppCompatActivity() {
         binding.tvPlayExerciseCaution.text = exerciseData?.exerciseCaution.toString()
 
 
-
-
-        // 인텐트로부터 재생 시간 가져오기
         playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
 
@@ -65,9 +55,11 @@ class PlayActivity : AppCompatActivity() {
         val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
 
         fullscreenButton.setOnClickListener {
-            val intent = Intent(this, FullScreenActivity::class.java)
+            val intent = Intent(this, PlayFullScreenActivity::class.java)
+            intent.putExtra("video_url", videoUrl)
             intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
-            startActivity(intent)
+
+            startActivityForResult(intent, 8080)
         }
 
     }
@@ -111,6 +103,18 @@ class PlayActivity : AppCompatActivity() {
         outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 8080 && resultCode == Activity.RESULT_OK) {
+            val currentPosition = data?.getLongExtra("current_position", 0)
+            val VideoUrl = data?.getStringExtra("video_url")
+
+            videoUrl = VideoUrl.toString()
+            playbackPosition = currentPosition!!
+            initPlayer()
+        }
+    }
 
 
     // -----  오디오 플레이어 코드 시작  -----

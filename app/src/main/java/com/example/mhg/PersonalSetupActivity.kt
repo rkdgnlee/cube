@@ -138,6 +138,7 @@ class SetupViewPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateA
     override fun createFragment(position: Int): Fragment {
         return fragments[position]
     }
+
 }
 private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
     val listener = View.OnClickListener { action(it) }

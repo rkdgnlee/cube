@@ -1,5 +1,7 @@
 package com.example.mhg
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
@@ -48,6 +50,20 @@ class SignIn1Fragment : Fragment() {
                 false
             }
         }
+
+        view?.postDelayed({
+            val fadeIn = ObjectAnimator.ofFloat(binding.tvNameSignIn, "alpha", 0f, 1f)
+            fadeIn.duration = 900
+            val moveUp = ObjectAnimator.ofFloat(binding.tvNameSignIn, "translationY", 100f, 0f)
+            moveUp.duration = 900
+
+            val animatorSet = AnimatorSet()
+            animatorSet.apply {
+                play(fadeIn)
+                play(moveUp)
+            }
+            animatorSet.start()
+        },500)
         return binding.root
     }
 

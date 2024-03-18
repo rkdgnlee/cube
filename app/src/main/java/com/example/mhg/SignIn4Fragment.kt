@@ -23,11 +23,20 @@ import com.example.mhg.databinding.FragmentSignIn4Binding
 import com.example.mhg.`object`.NetworkService
 import com.example.mhg.`object`.NetworkService.fetchINSERTJson
 import com.example.mhg.`object`.Singleton_t_user
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.auth
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class SignIn4Fragment : Fragment() {
     lateinit var binding: FragmentSignIn4Binding
     val viewModel : UserViewModel by activityViewModels()
+    val auth = Firebase.auth
+    var verificationId = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,10 +74,44 @@ class SignIn4Fragment : Fragment() {
                 else binding.btnSignIn.resources.getColor(R.color.orange)
             )
         }
+        // -----! 인증문자 발송 & 확인 시작 ! -----
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(p0: PhoneAuthCredential) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onVerificationFailed(p0: FirebaseException) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                super.onCodeSent(verificationId, token)
+                this@SignIn4Fragment.verificationId = verificationId
+
+            }
+        }
+
+        binding.btnAuthSend.setOnClickListener {
+            val transformMobile = phoneNumber82(binding.etMobile.text.toString())
+            val optionsCompat = PhoneAuthOptions.newBuilder(auth)
+                .setPhoneNumber(transformMobile)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(requireActivity())
+                .setCallbacks(callbacks)
+                .build()
+            PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
+            auth.setLanguageCode("kr")
+        }
+        binding.btnAuthConfirm.setOnClickListener {
+            val credential = PhoneAuthProvider.getCredential(verificationId, binding.etAuthNumber.text.toString())
+            signInWithPhoneAuthCredential(credential)
+        }
+
+        // -----! 인증문자 발송 & 확인 끝 ! -----
         binding.btnSignIn.setOnClickListener {
-            if (viewModel.mobileCondition.value == true) {
+            if (viewModel.mobileAuthCondition.value == true) {
                 val JsonObj = viewModel.User.value
-                val user_mobile = binding.etMobile.text.toString().replaceFirst("010", "+82 10")
+                val user_mobile = binding.etMobile.text.toString().replaceFirst("010", "+8210")
                 JsonObj?.put("user_mobile", user_mobile)
                 Log.w(TAG, "${JsonObj?.getString("user_mobile")}")
                 Log.w(TAG+"VIEWMODEL", "$JsonObj")
@@ -93,5 +136,30 @@ class SignIn4Fragment : Fragment() {
             }
         }
     }
-
+    fun phoneNumber82(msg: String) : String {
+        val firstNumber: String = msg.substring(0,3)
+        var phoneEdit = msg.substring(3)
+        when (firstNumber) {
+            "010" -> phoneEdit = "+8210$phoneEdit"
+            "011" -> phoneEdit = "+8211$phoneEdit"
+            "016" -> phoneEdit = "+8216$phoneEdit"
+            "017" -> phoneEdit = "+8217$phoneEdit"
+            "018" -> phoneEdit = "+8218$phoneEdit"
+            "019" -> phoneEdit = "+8219$phoneEdit"
+            "106" -> phoneEdit = "+82106$phoneEdit"
+        }
+        return phoneEdit
+    }
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    viewModel.mobileAuthCondition.value = true
+                    binding.etAuthNumber.isEnabled = false
+                    binding.etMobile.isEnabled = false
+                } else {
+                    Log.w(TAG, "mobile auth failed.")
+                }
+            }
+    }
 }

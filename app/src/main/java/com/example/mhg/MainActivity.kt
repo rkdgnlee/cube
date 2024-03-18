@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.mhg.VO.UserViewModel
@@ -16,14 +18,14 @@ import com.example.mhg.`object`.Singleton_t_user
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
-
+    val viewModel: UserViewModel by viewModels()
     @SuppressLint("CommitTransaction")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+
         val t_userData = Singleton_t_user.getInstance(this)
 
 

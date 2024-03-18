@@ -5,10 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.activity.viewModels
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayout
 
@@ -16,6 +21,7 @@ import com.google.android.material.tabs.TabLayout
 class HomeFragment : Fragment() {
 
     lateinit var binding : FragmentHomeBinding
+
     companion object {
         fun newInstance(fragmentId: String) : HomeFragment {
             val fragment = HomeFragment()
@@ -52,6 +58,9 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(layoutInflater)
+
+
+
         return binding.root
     }
 
@@ -89,7 +98,6 @@ class HomeFragment : Fragment() {
                 }
             }
         })
-
     }
 }
 class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle:Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle) {

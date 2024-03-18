@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeHorizontalRecyclerViewAdapter
@@ -17,6 +18,7 @@ import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.Room.ExerciseDatabase
 import com.example.mhg.Room.ExerciseRepository
 import com.example.mhg.VO.HomeRVBeginnerDataClass
+import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBeginnerBinding
 import com.example.mhg.`object`.NetworkService
 import com.google.android.material.tabs.TabLayout
@@ -28,6 +30,8 @@ import kotlinx.coroutines.withContext
 class HomeBeginnerFragment : Fragment() {
     lateinit var binding: FragmentHomeBeginnerBinding
     lateinit var ExerciseList : List<HomeRVBeginnerDataClass>
+
+    val viewModel : UserViewModel by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -52,6 +56,7 @@ class HomeBeginnerFragment : Fragment() {
         // ----- 로그인 시 변경 할 부분 끝 -----
         val db = ExerciseDatabase.getInstance(requireContext())
         lifecycleScope.launch {
+            // -----! db에서 받아서 뿌려주기 시작 !-----
             ExerciseList = getExerciseData(db)
             val horizonDataList = ArrayList<HomeRVBeginnerDataClass>()
             val verticalDataList = ArrayList<HomeRVBeginnerDataClass>()
@@ -69,11 +74,20 @@ class HomeBeginnerFragment : Fragment() {
             binding.rvHomeBeginnerVertical.adapter = adapter2
             val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvHomeBeginnerVertical.layoutManager = linearLayoutManager2
+            // -----! db에서 받아서 뿌려주기 끝 !-----
 
             binding.nsv.isNestedScrollingEnabled = false
             binding.rvHomeBeginnerVertical.isNestedScrollingEnabled = false
             binding.rvHomeBeginnerVertical.overScrollMode = 0
-            // ---- vertical RV에 들어갈 데이터 담는 공간 끝 ----
+
+            // -----! 메인 유저 체중/달성률/업적 control 시작 !-----
+            binding.tvHomeWeight.text = viewModel.User.value?.optString("user_weight")
+
+            binding.tvHomeGoal
+
+
+            // -----! 메인 유저 별 체중 달성률 업적 control 끝 !-----
+
             // ----- autoCompleteTextView를 통해 sort 하는 코드 시작 -----
             val sort_list = listOf("인기순", "조회순", "최신순", "오래된순")
             val adapter3 = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, sort_list)
@@ -121,13 +135,6 @@ class HomeBeginnerFragment : Fragment() {
 //            HomeRVBeginnerDataClass("https://src.hidoc.co.kr/image/lib/2023/9/1/1693553295231_0.jpg", "Warm up", 25),
 //            HomeRVBeginnerDataClass("https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201912/13/ed91135f-1189-429d-ae2a-507664b03924.jpg", "Warm up", 12),
 //        )
-
-
-
-
-
-
-
         // ----- autoCompleteTextView를 통해 sort 하는 코드 끝 -----
 
 //        binding.tabRoutine.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {

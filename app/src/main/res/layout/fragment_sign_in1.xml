@@ -10,25 +10,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="0dp"
-            android:layout_height="64dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:background="@drawable/pick_favorite_add_button"
-            android:backgroundTint="@color/button_grey"
-            android:ems="10"
-            android:hint="이름"
-            android:inputType="text"
-            android:paddingLeft="16dp"
-            android:textAlignment="gravity"
-            android:textSize="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="224dp"
+            android:layout_marginEnd="32dp"
+            app:cardCornerRadius="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.30" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/edit_text_background"
+                android:ems="10"
+                android:hint="이름"
+                android:inputType="text"
+                android:paddingLeft="16dp"
+                android:textAlignment="gravity"
+                android:textSize="20dp" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvNameSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="이름을 입력해주세요 !"
+            android:textColor="@color/textgrey"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toTopOf="@+id/cardView10"
+            app:layout_constraintEnd_toEndOf="@+id/cardView10"
+            app:layout_constraintStart_toStartOf="@+id/cardView10" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -26,7 +26,8 @@ class PickFragment : Fragment(), onPickDetailClickListener {
             RoutingVO("기본 운동 루틴1", "pick_detail"),
             RoutingVO("몸풀기 루틴", "pick_detail"),
             RoutingVO("운동 마무리", "pick_detail"),
-            RoutingVO("인터벌", "pick_detail")
+            RoutingVO("인터벌", "pick_detail"),
+
         )
         val PickRecyclerViewAdapter = PickRecyclerViewAdapter(pickList, this)
         binding.rvPick.adapter = PickRecyclerViewAdapter
@@ -34,12 +35,18 @@ class PickFragment : Fragment(), onPickDetailClickListener {
         binding.rvPick.layoutManager = linearLayoutManager
 
 
+        binding.btnPickAdd.setOnClickListener {
+
+        }
+
         return binding.root
     }
     override fun onPickClick(title: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flMain, PickDetailFragment.newInstance(title))
+            addToBackStack(null)
             commit()
+
         }
     }
 
