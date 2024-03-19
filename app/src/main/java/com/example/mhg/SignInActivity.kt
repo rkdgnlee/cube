@@ -77,7 +77,6 @@ class SignInActivity :
             }
         }
         binding.tvSignInNext.setOnSingleClickListener {
-
             binding.vp2SignIn.currentItem = binding.vp2SignIn.currentItem + 1
         }
 

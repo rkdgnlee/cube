@@ -4,6 +4,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentSignIn1Binding
@@ -33,37 +35,7 @@ class SignIn1Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSignIn1Binding.inflate(inflater)
-        viewModel.User.observe(viewLifecycleOwner) {user ->
-            if (user != null && user.has("user_name")) {
-                binding.etName.setText(user.getString("user_name"))
-                viewModel.nameCondition.value = true
-            } else {
-                binding.etName.text.clear()
-                binding.etName.isEnabled = true
-            }
-        }
-        binding.etName.setOnEditorActionListener{_, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                listener?.onFragmentInteraction()
-                true
-            } else {
-                false
-            }
-        }
 
-        view?.postDelayed({
-            val fadeIn = ObjectAnimator.ofFloat(binding.tvNameSignIn, "alpha", 0f, 1f)
-            fadeIn.duration = 900
-            val moveUp = ObjectAnimator.ofFloat(binding.tvNameSignIn, "translationY", 100f, 0f)
-            moveUp.duration = 900
-
-            val animatorSet = AnimatorSet()
-            animatorSet.apply {
-                play(fadeIn)
-                play(moveUp)
-            }
-            animatorSet.start()
-        },500)
         return binding.root
     }
 
@@ -77,14 +49,55 @@ class SignIn1Fragment : Fragment() {
         // ----- ! 이름 조건 코드 ! -----
         binding.etName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                val newText = s.toString()
-                viewModel.nameCondition.value = NamePatternKor.matcher(binding.etName.text.toString()).find() || NamePatternEng.matcher(binding.etName.text.toString()).find()
-                viewModel.User.value?.put("user_name", newText)
 
+                viewModel.nameCondition.value = NamePatternKor.matcher(binding.etName.text.toString()).find() || NamePatternEng.matcher(binding.etName.text.toString()).find()
+
+                if (viewModel.nameCondition.value == true) {
+                    viewModel.User.value?.put("user_name", s.toString())
+                }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+        // -----! 글자 입력해주세요 애니메이션!-----
+
+        val fadeIn = ObjectAnimator.ofFloat(binding.tvSignIn1, "alpha", 0f, 1f)
+        fadeIn.duration = 900
+
+        val moveUp = ObjectAnimator.ofFloat(binding.tvSignIn1, "translationY", 100f, 0f)
+        moveUp.duration = 900
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(fadeIn, moveUp)
+        animatorSet.start()
+
+
+        viewModel.User.observe(viewLifecycleOwner) {user ->
+            if (user != null && user.has("user_name")) {
+                binding.etName.setText(user.getString("user_name"))
+                viewModel.nameCondition.value = true
+            } else {
+                binding.etName.text.clear()
+                binding.etName.isEnabled = true
+            }
+        }
+        binding.etName.setOnEditorActionListener{_, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                listener?.onFragmentInteraction()
+
+                true
+            } else {
+                false
+            }
+        }
+
+        binding.etName.setOnFocusChangeListener { _, hasFocus ->
+            val transitionDrawable = binding.etName.background as? TransitionDrawable
+            if (hasFocus) {
+                transitionDrawable?.startTransition(500)
+            } else {
+                transitionDrawable?.reverseTransition(500)
+            }
+        }
 
     }
     override fun onAttach(context: Context) {

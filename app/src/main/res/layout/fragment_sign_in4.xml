@@ -13,13 +13,14 @@
         <Button
             android:id="@+id/btnAuthSend"
             android:layout_width="wrap_content"
-            android:layout_height="64dp"
+            android:layout_height="0dp"
             android:layout_marginEnd="32dp"
             android:backgroundTint="@color/orange"
+            android:enabled="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="인증문자 발송"
-            android:textSize="20sp"
+            android:textSize="16sp"
             app:cornerRadius="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView12"
             app:layout_constraintEnd_toEndOf="parent"
@@ -31,12 +32,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="224dp"
             android:layout_marginEnd="8dp"
             app:cardCornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnAuthSend"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.25">
 
             <EditText
                 android:id="@+id/etMobile"
@@ -51,7 +53,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView13"
+            android:id="@+id/cvAuthNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -74,33 +76,50 @@
 
         <Button
             android:id="@+id/btnAuthConfirm"
-            android:layout_width="164dp"
-            android:layout_height="64dp"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginEnd="32dp"
             android:backgroundTint="@color/orange"
+            android:enabled="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="인증번호 확인"
-            android:textSize="20sp"
+            android:textSize="16sp"
             app:cornerRadius="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/cardView13"
+            app:layout_constraintBottom_toBottomOf="@+id/cvAuthNumber"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/cardView13" />
+            app:layout_constraintTop_toTopOf="@+id/cvAuthNumber" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSignIn"
-            android:layout_width="164dp"
+            android:layout_width="0dp"
             android:layout_height="64dp"
-            android:layout_marginTop="32dp"
-            android:backgroundTint="@color/orange"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/button_background"
+            android:enabled="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:paddingLeft="36dp"
+            android:paddingRight="36dp"
             android:text="가입완료"
-            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
             app:cornerRadius="16dp"
-            app:layout_constraintEnd_toEndOf="@+id/btnAuthConfirm"
-            app:layout_constraintStart_toStartOf="@+id/cardView13"
-            app:layout_constraintTop_toBottomOf="@+id/cardView13" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cvAuthNumber"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:text="핸드폰 인증"
+            app:layout_constraintBottom_toTopOf="@+id/cardView12"
+            app:layout_constraintEnd_toEndOf="@+id/btnAuthSend"
+            app:layout_constraintStart_toStartOf="@+id/cardView12" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

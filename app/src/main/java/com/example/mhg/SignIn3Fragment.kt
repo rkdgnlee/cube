@@ -1,8 +1,9 @@
 package com.example.mhg
 
-import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -25,11 +26,6 @@ class SignIn3Fragment : Fragment() {
     private var listener : OnFragmentInteractionListener? = null
     lateinit var binding : FragmentSignIn3Binding
     val viewModel : UserViewModel by activityViewModels()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,14 +40,7 @@ class SignIn3Fragment : Fragment() {
                 binding.etEmail.text.clear()
             }
         }
-        binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                listener?.onFragmentInteraction()
-                true
-            } else {
-                false
-            }
-        }
+
         return binding.root
     }
 
@@ -70,6 +59,14 @@ class SignIn3Fragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+        binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                listener?.onFragmentInteraction()
+                true
+            } else {
+                false
+            }
+        }
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -79,13 +76,5 @@ class SignIn3Fragment : Fragment() {
             throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
 
-        // 화면 회전을 감지합니다.
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE || newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // 화면이 회전하면 EditText를 활성화합니다.
-            binding.etEmail.isEnabled = true
-        }
-    }
 }

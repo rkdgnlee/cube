@@ -1,8 +1,11 @@
 package com.example.mhg
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -26,15 +29,11 @@ class SignIn2Fragment : Fragment() {
     lateinit var binding: FragmentSignIn2Binding
     val viewModel : UserViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSignIn2Binding.inflate(inflater)
-
         viewModel.User.observe(viewLifecycleOwner) {user ->
             if (user != null && user.has("user_id")) {
                 viewModel.idCondition.value = true
@@ -45,14 +44,6 @@ class SignIn2Fragment : Fragment() {
             }
         }
 
-        binding.etPwRepeat.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                listener?.onFragmentInteraction()
-                true
-            } else {
-                false
-            }
-        }
         return binding.root
     }
 
@@ -69,7 +60,7 @@ class SignIn2Fragment : Fragment() {
                 if (viewModel.idCondition.value == true) {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.success_green))
                     binding.tvIdCondition.text = "조건에 일치합니다."
-                    viewModel.User.value?.put("user_id", binding.etId.text)
+                    viewModel.User.value?.put("user_id", s.toString())
                     Log.w(ContentValues.TAG, "${viewModel.User.value?.getString("user_id")}")
                 } else {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.orange))
@@ -79,7 +70,14 @@ class SignIn2Fragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-
+        binding.etId.setOnFocusChangeListener { _, hasFocus ->
+            val transitionDrawable = binding.etId.background as? TransitionDrawable
+            if (hasFocus) {
+                transitionDrawable?.startTransition(500)
+            } else {
+                transitionDrawable?.reverseTransition(500)
+            }
+        }
         // ----- ! 비밀번호 조건 코드 ! -----
         binding.etPw.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
@@ -88,14 +86,24 @@ class SignIn2Fragment : Fragment() {
                 if (viewModel.pwCondition.value == true) {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(R.color.success_green))
                     binding.tvPwCondition.text = "조건에 일치합니다"
+
                 } else {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(R.color.orange))
                     binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ? .)를 모두 포함해서 8~20자리를 입력해주세요"
+
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+        binding.etPw.setOnFocusChangeListener { _, hasFocus ->
+            val transitionDrawable = binding.etPw.background as? TransitionDrawable
+            if (hasFocus) {
+                transitionDrawable?.startTransition(500)
+            } else {
+                transitionDrawable?.reverseTransition(500)
+            }
+        }
         // ----- ! 비밀번호 확인 코드 ! -----
         binding.etPwRepeat.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -109,12 +117,41 @@ class SignIn2Fragment : Fragment() {
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----
 
-                viewModel.User.value?.put("user_password", binding.etPw.text)
+                viewModel.User.value?.put("user_password", s.toString())
 
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+        binding.etPwRepeat.setOnFocusChangeListener { _, hasFocus ->
+            val transitionDrawable = binding.etPwRepeat.background as? TransitionDrawable
+            if (hasFocus) {
+                transitionDrawable?.startTransition(500)
+            } else {
+                transitionDrawable?.reverseTransition(500)
+            }
+        }
+        // -----! 글자 입력해주세요 애니메이션!-----
+
+        val fadeIn = ObjectAnimator.ofFloat(binding.tvSignIn2, "alpha", 0f, 1f)
+        fadeIn.duration = 900
+
+        val moveUp = ObjectAnimator.ofFloat(binding.tvSignIn2, "translationY", 50f, 0f)
+        moveUp.duration = 900
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(fadeIn, moveUp)
+        animatorSet.start()
+
+
+        // -----! 자판에서 다음 눌렀을 때 페이지 넘어가기 !-----
+        binding.etPwRepeat.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                listener?.onFragmentInteraction()
+                true
+            } else {
+                false
+            }
+        }
 
     }
     override fun onAttach(context: Context) {
