@@ -43,7 +43,15 @@ class SignIn2Fragment : Fragment() {
                 binding.etId.text.clear()
             }
         }
+        // -----! 글자 입력해주세요 애니메이션!-----
+        val fadeIn = ObjectAnimator.ofFloat(binding.tvSignIn2, "alpha", 0f, 1f)
+        fadeIn.duration = 900
 
+        val moveUp = ObjectAnimator.ofFloat(binding.tvSignIn2, "translationY", 50f, 0f)
+        moveUp.duration = 900
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(fadeIn, moveUp)
+        animatorSet.start()
         return binding.root
     }
 
@@ -131,16 +139,8 @@ class SignIn2Fragment : Fragment() {
                 transitionDrawable?.reverseTransition(500)
             }
         }
-        // -----! 글자 입력해주세요 애니메이션!-----
 
-        val fadeIn = ObjectAnimator.ofFloat(binding.tvSignIn2, "alpha", 0f, 1f)
-        fadeIn.duration = 900
 
-        val moveUp = ObjectAnimator.ofFloat(binding.tvSignIn2, "translationY", 50f, 0f)
-        moveUp.duration = 900
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeIn, moveUp)
-        animatorSet.start()
 
 
         // -----! 자판에서 다음 눌렀을 때 페이지 넘어가기 !-----

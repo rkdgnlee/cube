@@ -8,7 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <Button
             android:id="@+id/btnAuthSend"
@@ -26,6 +27,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/cardView12"
             app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView13"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/cardView12"
+            app:layout_constraintEnd_toEndOf="@+id/btnAuthSend"
+            app:layout_constraintStart_toStartOf="@+id/cardView12">
+
+            <TextView
+                android:id="@+id/tvTelecom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:paddingLeft="16dp"
+                android:text="통신사"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/sign_in_telecom_arrow" />
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView12"
@@ -72,6 +101,7 @@
                 android:inputType="number"
                 android:padding="16dp"
                 android:paddingLeft="16dp" />
+
         </androidx.cardview.widget.CardView>
 
         <Button
@@ -90,11 +120,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/cvAuthNumber" />
 
+        <TextView
+            android:id="@+id/tvSignIn4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="핸드폰 인증"
+            android:textColor="@color/textgrey"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/cardView13"
+            app:layout_constraintEnd_toEndOf="@+id/cardView13"
+            app:layout_constraintStart_toStartOf="@+id/cardView13" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSignIn"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:layout_marginTop="40dp"
+            android:layout_gravity="bottom"
             android:background="@drawable/button_background"
             android:enabled="false"
             android:insetTop="0dp"
@@ -104,22 +146,13 @@
             android:text="가입완료"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:cornerRadius="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cvAuthNumber"
             app:layout_constraintVertical_bias="1.0" />
 
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="28dp"
-            android:text="핸드폰 인증"
-            app:layout_constraintBottom_toTopOf="@+id/cardView12"
-            app:layout_constraintEnd_toEndOf="@+id/btnAuthSend"
-            app:layout_constraintStart_toStartOf="@+id/cardView12" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>

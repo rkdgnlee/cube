@@ -1,5 +1,7 @@
 package com.example.mhg
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.res.Configuration

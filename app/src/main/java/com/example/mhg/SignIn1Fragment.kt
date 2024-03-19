@@ -49,9 +49,7 @@ class SignIn1Fragment : Fragment() {
         // ----- ! 이름 조건 코드 ! -----
         binding.etName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-
                 viewModel.nameCondition.value = NamePatternKor.matcher(binding.etName.text.toString()).find() || NamePatternEng.matcher(binding.etName.text.toString()).find()
-
                 if (viewModel.nameCondition.value == true) {
                     viewModel.User.value?.put("user_name", s.toString())
                 }

@@ -1,11 +1,15 @@
 package com.example.mhg
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +36,9 @@ class SignInActivity :
         enableEdgeToEdge()
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
         initViewPager()
 
         pagerAdapter = SignInViewPagerAdapter(this)
@@ -53,14 +60,32 @@ class SignInActivity :
 
         // -----! 페이지 변경 callback 메소드 시작 !-----
         binding.vp2SignIn.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            @SuppressLint("SetTextI18n")
+            @SuppressLint("SetTextI18n", "CutPasteId")
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 when (position) {
                     0 -> {
                         binding.tvSignInPrevious.text = ""
+
+                    }
+                    2 -> {
+                        val fadeIn = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn3), "alpha", 0f, 1f)
+                        fadeIn.duration = 900
+                        val moveUp = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn3), "translationY", 100f, 0f)
+                        moveUp.duration = 900
+                        val animatorSet = AnimatorSet()
+                        animatorSet.playTogether(fadeIn, moveUp)
+                        animatorSet.start()
+                        binding.tvSignInNext.text = "다음"
                     }
                     3 -> {
+                        val fadeIn = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn4), "alpha", 0f, 1f)
+                        fadeIn.duration = 900
+                        val moveUp = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn4), "translationY", 100f, 0f)
+                        moveUp.duration = 900
+                        val animatorSet = AnimatorSet()
+                        animatorSet.playTogether(fadeIn, moveUp)
+                        animatorSet.start()
                         binding.tvSignInNext.text = ""
                     }
                     else -> {

@@ -1,34 +1,31 @@
 package com.example.mhg
 
+import android.R.attr.button
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.view.Window
-import android.widget.EditText
-import android.widget.RelativeLayout
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.WindowManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.viewpager2.widget.ViewPager2
 import com.example.mhg.Dialog.ExerciseLoadDialogFragment
+import com.example.mhg.Dialog.PlayBottomSheetDialogFragment
+import com.example.mhg.Dialog.SignInBottomSheetDialogFragment
+import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.VO.UserViewModel
-import com.example.mhg.databinding.ActivitySignInBinding
 import com.example.mhg.databinding.FragmentSignIn4Binding
-import com.example.mhg.`object`.NetworkService
 import com.example.mhg.`object`.NetworkService.fetchINSERTJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.material.snackbar.Snackbar
@@ -41,12 +38,17 @@ import com.google.firebase.auth.auth
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
+
 class SignIn4Fragment : Fragment() {
     lateinit var binding: FragmentSignIn4Binding
+
     val viewModel : UserViewModel by activityViewModels()
     val auth = Firebase.auth
     var verificationId = ""
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        getActivity()?.getWindow()?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,26 +60,26 @@ class SignIn4Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // ------! 통신사 선택 !-----
+        binding.tvTelecom.setOnClickListener {
+            showBottomSheetDialog(requireActivity())
+        }
+
         // ------! 전화번호 형식 !-----
-        val mobilePattern = "^010-\\d{4}-\\d{4}$"
+        val mobilePattern = "^010\\d{4}\\d{4}$"
         val MobilePattern = Pattern.compile(mobilePattern)
-        binding.etMobile.addTextChangedListener(PhoneNumberFormattingTextWatcher())
-        binding.etMobile.addTextChangedListener(object: TextWatcher {
+        binding.etMobile.addTextChangedListener(object: TextWatcher, PhoneNumberFormattingTextWatcher() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 viewModel.mobileCondition.value = MobilePattern.matcher(binding.etMobile.text.toString()).find()
+                if (viewModel.mobileCondition.value == true) {
+                    viewModel.User.value?.put("user_mobile", s.toString())
+                    binding.btnAuthSend.isEnabled = true
 
+                }
             }
         })
-        // 전화번호 형식
-        viewModel.mobileCondition.observe(viewLifecycleOwner) {condition ->
-            if (condition) {
-                binding.btnSignIn.isEnabled = true
-                viewModel.mobileCondition.value = true
-                viewModel.User.value?.put("user_mobile", binding.etMobile.text)
-            }
-        }
 
         // -----! 인증문자 발송 & 확인 시작 ! -----
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -89,30 +91,40 @@ class SignIn4Fragment : Fragment() {
 
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireView(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
+                binding.btnAuthConfirm.isEnabled = true
             }
         }
 
         binding.btnAuthSend.setOnClickListener {
             val transformMobile = phoneNumber82(binding.etMobile.text.toString())
-            val optionsCompat = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber(transformMobile)
-                .setTimeout(60L, TimeUnit.SECONDS)
-                .setActivity(requireActivity())
-                .setCallbacks(callbacks)
-                .build()
-            PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
-            auth.setLanguageCode("kr")
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("전화번호 확인")
+                .setMessage("${binding.etMobile.text} 번호로 인증번호를 보내시겠습니까?")
+                .setPositiveButton("예") { _, _ ->
+                    val optionsCompat = PhoneAuthOptions.newBuilder(auth)
+                        .setPhoneNumber(transformMobile)
+                        .setTimeout(60L, TimeUnit.SECONDS)
+                        .setActivity(requireActivity())
+                        .setCallbacks(callbacks)
+                        .build()
+                    Log.w(TAG+"문자", "${PhoneAuthOptions.newBuilder(auth)}")
+                    PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
+                    auth.setLanguageCode("kr")
+                }
+                .setNegativeButton("아니오", null)
+                .show()
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
         binding.btnAuthConfirm.setOnClickListener {
             val credential = PhoneAuthProvider.getCredential(verificationId, binding.etAuthNumber.text.toString())
             signInWithPhoneAuthCredential(credential)
         }
 
-        // -----! viewmodel의 인증문자 확인이 성공 !-----
+
 
         // -----! 인증문자 발송 & 확인 끝 ! -----
-
-
 
         binding.btnSignIn.setOnClickListener {
             if (viewModel.mobileAuthCondition.value == true) {
@@ -166,12 +178,29 @@ class SignIn4Fragment : Fragment() {
                         val transitionDrawable = binding.btnSignIn.background as? TransitionDrawable
                         transitionDrawable?.startTransition(500)
                         binding.btnSignIn.isEnabled = true
-                        Snackbar.make(requireView(), "인증에 성공했습니다 !", Snackbar.LENGTH_INDEFINITE).show()
+                        val snackbar = Snackbar.make(requireView(), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
+                        snackbar.setAction("확인", object: OnClickListener{
+                            override fun onClick(v: View?) {
+                                snackbar.dismiss()
+                            }
+                        })
+                        snackbar.show()
                     }
                 } else {
                     Log.w(TAG, "mobile auth failed.")
                 }
             }
+    }
+
+    private fun showBottomSheetDialog(context: FragmentActivity) {
+        val bottomsheetfragment = SignInBottomSheetDialogFragment()
+        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBottomSheetDialogFragment.onTelecomSelectedListener {
+            override fun onTelecomSelected(telecom: String) {
+                binding.tvTelecom.text = telecom
+            }
+        })
+        val fragmentManager = context.supportFragmentManager
+        bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
     }
 
 }
