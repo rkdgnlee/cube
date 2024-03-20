@@ -19,5 +19,8 @@ data class Exercise(
     val exercise_caution: String,
     val video_alternative_name: String,
     val video_filepath: String,
-    val video_time: String
+    val video_time: String,
+    val exercise_type_id: String,
+    val exercise_type_name: String,
+
 )

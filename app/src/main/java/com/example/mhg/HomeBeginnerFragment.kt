@@ -2,9 +2,11 @@ package com.example.mhg
 
 import android.R
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +22,6 @@ import com.example.mhg.Room.ExerciseRepository
 import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBeginnerBinding
-import com.example.mhg.`object`.NetworkService
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,8 +30,9 @@ import kotlinx.coroutines.withContext
 
 class HomeBeginnerFragment : Fragment() {
     lateinit var binding: FragmentHomeBeginnerBinding
-    lateinit var ExerciseList : List<HomeRVBeginnerDataClass>
 
+    lateinit var ExerciseList : List<HomeRVBeginnerDataClass>
+    private val exerciseTypeList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")
     val viewModel : UserViewModel by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,33 +51,45 @@ class HomeBeginnerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         // ----- 로그인 시 변경 할 부분 시작 -----
         binding.tvHomeWeight.text
         binding.tvHomeAchieve.text
         binding.tvHomeGoal.text
         // ----- 로그인 시 변경 할 부분 끝 -----
+
         val db = ExerciseDatabase.getInstance(requireContext())
         lifecycleScope.launch {
+
             // -----! db에서 받아서 뿌려주기 시작 !-----
+
+
             ExerciseList = getExerciseData(db)
-            val horizonDataList = ArrayList<HomeRVBeginnerDataClass>()
             val verticalDataList = ArrayList<HomeRVBeginnerDataClass>()
             for(i in 0 until ExerciseList.size) {
-                horizonDataList.add(ExerciseList[i])
                 verticalDataList.add(ExerciseList[i])
+//                Log.w(TAG, "$verticalDataList")
             }
-            val adapter = HomeHorizontalRecyclerViewAdapter(horizonDataList)
-            adapter.routineList = horizonDataList
+
+            // -----! horizontal 어댑터 시작 !-----
+            val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment, exerciseTypeList)
+            adapter.routineList = exerciseTypeList.slice(0..3)
             binding.rvHomeBeginnerHorizontal.adapter = adapter
             val linearlayoutmanager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             binding.rvHomeBeginnerHorizontal.layoutManager = linearlayoutmanager
+            // -----! horizontal 어댑터 끝 !-----
+
+            // -----! vertical 어댑터 시작 !-----
             val adapter2 = HomeVerticalRecyclerViewAdapter(verticalDataList)
             adapter2.warmupList = verticalDataList
             binding.rvHomeBeginnerVertical.adapter = adapter2
             val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvHomeBeginnerVertical.layoutManager = linearLayoutManager2
-            // -----! db에서 받아서 뿌려주기 끝 !-----
+            // -----! vertical 어댑터 끝 !-----
 
+
+            // -----! db에서 받아서 뿌려주기 끝 !-----
+            binding.tvExerciseCount.text = verticalDataList.size.toString()
             binding.nsv.isNestedScrollingEnabled = false
             binding.rvHomeBeginnerVertical.isNestedScrollingEnabled = false
             binding.rvHomeBeginnerVertical.overScrollMode = 0
@@ -137,51 +151,37 @@ class HomeBeginnerFragment : Fragment() {
 //        )
         // ----- autoCompleteTextView를 통해 sort 하는 코드 끝 -----
 
-//        binding.tabRoutine.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-//            override fun onTabSelected(tab: TabLayout.Tab?) {
-//                when (tab?.position) {
-//                    0 -> {
-//                        horizonDataList = arrayListOf(
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/c35a/0add/45861c3e627195b650faca5d387128ac?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=h0znnXkKs1~XWt998q4i6d2kBHyHdRBGxk0iWIyQBK61O9G3YPSnZx8lWQqJ2lOq~CsXlRAITgqJ5oNivviV9oYUGcw2KwgJQ~yyvR2W1sJzppw9VkFdFCU7rp04Z5~fG7e0-MAvm9~9p1kJ5M9gj4TWBQP~KVWZeJP0fyAncoMxnqQxUg3nYcBR-W-aO0IPodnPuxhGHUJ8bDX3oGkFFuvx8GeNQXL4E6lfobblrkYhkdq91P0EdC7trA7QhQ4RrzIjX4OtIOZx~6QxPFItwa1OOAEFgcB9GgTOS4n6CY7JhINavwtFxoWCCzig7BCreoxYmub-8scnv02TUGRUmw__", "코어운동 루틴", duration = 5, explanation = "일상생활의 체형 불균형을 방지하고 트레이닝을 할 때 부상 방지에 큰 도움을 줌."),
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/dc19/12cc/4957af1d5959ceb542be3eed3988ea03?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=OvZ-n0W9Z8vmvladE0yjAILDvb3hDgNk7C35nz75zsNuJUr5l3teuQw67qXWrq~mpu331Fgpg~dseIONet220iEIagRcth1mp2k9YfJMuR43jZO1YRf~YIB64Cc5sWR8pCIpgw1Kk9-gJ9mMqEhunYm6UbHUmJEpfG8U-lZyvLrlwgOvyP486iGr4~b59O7e9V9xT1U8xKbGNlbu1HU2mOda~aiUea19d5JYr8l6RR1H0QKUHhH0vs7uh2qmUyJrqZOVJ7YjAdzczXcusOr7S-f5dzNd~EMtqPJbFTl0Hwz~jkrWnlTgmfECjUi73Usk03GNpNE68bjiHkgZfj4hhw__", "전신운동 루틴", duration = 30, explanation = "초기의 근육발달과 신체의 밸런스를 높이는데 중점이 되는 운동. 다양한 근육을 활용하기 때문에 칼로리 소모도 크고, 시간 대비 효과적인 운동량을 가질 수 있음.")
-//                        )
-//                        adapter.routineList = horizonDataList
-//                        binding.rvHomeBeginnerHorizontal.adapter = adapter
-//                    }
-//                    1 -> {
-//                        horizonDataList = arrayListOf(
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/c35a/0add/45861c3e627195b650faca5d387128ac?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=h0znnXkKs1~XWt998q4i6d2kBHyHdRBGxk0iWIyQBK61O9G3YPSnZx8lWQqJ2lOq~CsXlRAITgqJ5oNivviV9oYUGcw2KwgJQ~yyvR2W1sJzppw9VkFdFCU7rp04Z5~fG7e0-MAvm9~9p1kJ5M9gj4TWBQP~KVWZeJP0fyAncoMxnqQxUg3nYcBR-W-aO0IPodnPuxhGHUJ8bDX3oGkFFuvx8GeNQXL4E6lfobblrkYhkdq91P0EdC7trA7QhQ4RrzIjX4OtIOZx~6QxPFItwa1OOAEFgcB9GgTOS4n6CY7JhINavwtFxoWCCzig7BCreoxYmub-8scnv02TUGRUmw__", "유산소 루틴", duration = 5, explanation = "일상생활의 체형 불균형을 방지하고 트레이닝을 할 때 부상 방지에 큰 도움을 줌."),
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/dc19/12cc/4957af1d5959ceb542be3eed3988ea03?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=OvZ-n0W9Z8vmvladE0yjAILDvb3hDgNk7C35nz75zsNuJUr5l3teuQw67qXWrq~mpu331Fgpg~dseIONet220iEIagRcth1mp2k9YfJMuR43jZO1YRf~YIB64Cc5sWR8pCIpgw1Kk9-gJ9mMqEhunYm6UbHUmJEpfG8U-lZyvLrlwgOvyP486iGr4~b59O7e9V9xT1U8xKbGNlbu1HU2mOda~aiUea19d5JYr8l6RR1H0QKUHhH0vs7uh2qmUyJrqZOVJ7YjAdzczXcusOr7S-f5dzNd~EMtqPJbFTl0Hwz~jkrWnlTgmfECjUi73Usk03GNpNE68bjiHkgZfj4hhw__", "코어운동 루틴", duration = 30, explanation = "초기의 근육발달과 신체의 밸런스를 높이는데 중점이 되는 운동. 다양한 근육을 활용하기 때문에 칼로리 소모도 크고, 시간 대비 효과적인 운동량을 가질 수 있음.")
-//                        )
-//                        adapter.routineList = horizonDataList
-//                        binding.rvHomeBeginnerHorizontal.adapter = adapter
-//                    }
-//                    2 -> {
-//                        horizonDataList = arrayListOf(
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/c35a/0add/45861c3e627195b650faca5d387128ac?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=h0znnXkKs1~XWt998q4i6d2kBHyHdRBGxk0iWIyQBK61O9G3YPSnZx8lWQqJ2lOq~CsXlRAITgqJ5oNivviV9oYUGcw2KwgJQ~yyvR2W1sJzppw9VkFdFCU7rp04Z5~fG7e0-MAvm9~9p1kJ5M9gj4TWBQP~KVWZeJP0fyAncoMxnqQxUg3nYcBR-W-aO0IPodnPuxhGHUJ8bDX3oGkFFuvx8GeNQXL4E6lfobblrkYhkdq91P0EdC7trA7QhQ4RrzIjX4OtIOZx~6QxPFItwa1OOAEFgcB9GgTOS4n6CY7JhINavwtFxoWCCzig7BCreoxYmub-8scnv02TUGRUmw__", "고관절스트레칭 루틴", duration = 5, explanation = "일상생활의 체형 불균형을 방지하고 트레이닝을 할 때 부상 방지에 큰 도움을 줌."),
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/dc19/12cc/4957af1d5959ceb542be3eed3988ea03?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=OvZ-n0W9Z8vmvladE0yjAILDvb3hDgNk7C35nz75zsNuJUr5l3teuQw67qXWrq~mpu331Fgpg~dseIONet220iEIagRcth1mp2k9YfJMuR43jZO1YRf~YIB64Cc5sWR8pCIpgw1Kk9-gJ9mMqEhunYm6UbHUmJEpfG8U-lZyvLrlwgOvyP486iGr4~b59O7e9V9xT1U8xKbGNlbu1HU2mOda~aiUea19d5JYr8l6RR1H0QKUHhH0vs7uh2qmUyJrqZOVJ7YjAdzczXcusOr7S-f5dzNd~EMtqPJbFTl0Hwz~jkrWnlTgmfECjUi73Usk03GNpNE68bjiHkgZfj4hhw__", "허리재활 루틴", duration = 30, explanation = "초기의 근육발달과 신체의 밸런스를 높이는데 중점이 되는 운동. 다양한 근육을 활용하기 때문에 칼로리 소모도 크고, 시간 대비 효과적인 운동량을 가질 수 있음.")
-//                        )
-//                        adapter.routineList = horizonDataList
-//                        binding.rvHomeBeginnerHorizontal.adapter = adapter
-//                    }
-//                    3 -> {
-//                        horizonDataList = arrayListOf(
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/c35a/0add/45861c3e627195b650faca5d387128ac?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=h0znnXkKs1~XWt998q4i6d2kBHyHdRBGxk0iWIyQBK61O9G3YPSnZx8lWQqJ2lOq~CsXlRAITgqJ5oNivviV9oYUGcw2KwgJQ~yyvR2W1sJzppw9VkFdFCU7rp04Z5~fG7e0-MAvm9~9p1kJ5M9gj4TWBQP~KVWZeJP0fyAncoMxnqQxUg3nYcBR-W-aO0IPodnPuxhGHUJ8bDX3oGkFFuvx8GeNQXL4E6lfobblrkYhkdq91P0EdC7trA7QhQ4RrzIjX4OtIOZx~6QxPFItwa1OOAEFgcB9GgTOS4n6CY7JhINavwtFxoWCCzig7BCreoxYmub-8scnv02TUGRUmw__", "지지력 운동 루틴", duration = 5, explanation = "일상생활의 체형 불균형을 방지하고 트레이닝을 할 때 부상 방지에 큰 도움을 줌."),
-//                            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/dc19/12cc/4957af1d5959ceb542be3eed3988ea03?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=OvZ-n0W9Z8vmvladE0yjAILDvb3hDgNk7C35nz75zsNuJUr5l3teuQw67qXWrq~mpu331Fgpg~dseIONet220iEIagRcth1mp2k9YfJMuR43jZO1YRf~YIB64Cc5sWR8pCIpgw1Kk9-gJ9mMqEhunYm6UbHUmJEpfG8U-lZyvLrlwgOvyP486iGr4~b59O7e9V9xT1U8xKbGNlbu1HU2mOda~aiUea19d5JYr8l6RR1H0QKUHhH0vs7uh2qmUyJrqZOVJ7YjAdzczXcusOr7S-f5dzNd~EMtqPJbFTl0Hwz~jkrWnlTgmfECjUi73Usk03GNpNE68bjiHkgZfj4hhw__", "체형 교정 루틴", duration = 30, explanation = "초기의 근육발달과 신체의 밸런스를 높이는데 중점이 되는 운동. 다양한 근육을 활용하기 때문에 칼로리 소모도 크고, 시간 대비 효과적인 운동량을 가질 수 있음.")
-//                        )
-//                        adapter.routineList = horizonDataList
-//                        binding.rvHomeBeginnerHorizontal.adapter = adapter
-//                    }
-//                }
-//            }
-//            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-//            override fun onTabReselected(tab: TabLayout.Tab?) {}
-//        })
+        binding.tabRoutine.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> {
+                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(0..3))
+                        binding.rvHomeBeginnerHorizontal.adapter = adapter
+                    }
+                    1 -> {
+                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(4..6))
+                        binding.rvHomeBeginnerHorizontal.adapter = adapter
+                    }
+                    2 -> {
+                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(7..9))
+                        binding.rvHomeBeginnerHorizontal.adapter = adapter
+                    }
+                    3 -> {
+                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(10..10))
+                        binding.rvHomeBeginnerHorizontal.adapter = adapter
+                    }
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
     }
     suspend fun getExerciseData(db: ExerciseDatabase) : List<HomeRVBeginnerDataClass> {
         return withContext(Dispatchers.IO) {
-            ExerciseRepository(db.ExerciseDao(),NetworkService).getHomeRVBeginnerData()
+            ExerciseRepository(db.ExerciseDao()).getHomeRVBeginnerData()
         }
     }
+
+
 }
 

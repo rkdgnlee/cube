@@ -1,20 +1,23 @@
 package com.example.mhg.Adapter
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mhg.Dialog.PlayBottomSheetDialogFragment
+import com.example.mhg.HomeRoutineDetailFragment
 import com.example.mhg.R
 import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.databinding.RoutineListBinding
 
-class HomeHorizontalRecyclerViewAdapter(var routineList : List<HomeRVBeginnerDataClass>): RecyclerView.Adapter<HomeHorizontalRecyclerViewAdapter.MyViewHolder>() {
+class HomeHorizontalRecyclerViewAdapter(private val fragment: Fragment, var routineList : List<String>): RecyclerView.Adapter<HomeHorizontalRecyclerViewAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivhomehorizonal = view.findViewById<ImageView>(R.id.ivHomeHorizontal)
@@ -34,28 +37,42 @@ class HomeHorizontalRecyclerViewAdapter(var routineList : List<HomeRVBeginnerDat
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = routineList[position]
+
+        // -----! item하나의 기능 구현 시작 !-----
+        holder.tvhomehorizontal.text = currentItem
 //        Glide.with(holder.itemView.context)
 //            .load(currentItem.imgUrl)
 //            .diskCacheStrategy(DiskCacheStrategy.ALL)
 //            .into(holder.ivhomehorizonal)
-        holder.tvhomehorizontal.text = currentItem.exerciseName
+
 
         holder.btnhomeHorzontal.setOnClickListener {
-            showBottomSheetDialog(holder.itemView.context as FragmentActivity, currentItem)
-
-
+            showDetailFragment(currentItem)
+            Log.w(TAG+"타입", currentItem)
         }
     }
-    private fun showBottomSheetDialog(context: FragmentActivity, routine: HomeRVBeginnerDataClass) {
-        val bottomsheetfragment = PlayBottomSheetDialogFragment()
-        val fragmentManager = context.supportFragmentManager
+//    private fun showBottomSheetDialog(context: FragmentActivity, type: String) {
+//        val bottomsheetfragment = PlayBottomSheetDialogFragment()
+//        val fragmentManager = context.supportFragmentManager
+//
+//        val bundle = Bundle()
+//        bundle.putString("routineList", type)
+//        bottomsheetfragment.arguments = bundle
+//
+//        bottomsheetfragment.show(fragmentManager,bottomsheetfragment.tag)
+//    }
+
+    private fun showDetailFragment(type: String) {
+        val HomeRoutineDetialFragment = HomeRoutineDetailFragment()
 
         val bundle = Bundle()
-        bundle.putParcelable("routineList", routine)
-        bottomsheetfragment.arguments = bundle
-
-        bottomsheetfragment.show(fragmentManager,bottomsheetfragment.tag)
-
-
+        bundle.putString("type", type)
+        HomeRoutineDetialFragment.arguments = bundle
+        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flHome, HomeRoutineDetialFragment)
+            addToBackStack(null)
+            commit()
+        }
     }
+    // -----! item하나의 기능 구현 끝 !-----
 }

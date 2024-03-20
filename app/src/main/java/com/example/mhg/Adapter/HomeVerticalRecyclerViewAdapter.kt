@@ -38,6 +38,8 @@ class HomeVerticalRecyclerViewAdapter(var warmupList : List<HomeRVBeginnerDataCl
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+
+        // -----! recyclerview에서 운동군 보여주기 !------
         val currentItem = warmupList[position]
         holder.tvhomeverticalDuration.text = currentItem.videoTime
         holder.tvhomeverticalname.text = currentItem.exerciseName
@@ -46,7 +48,7 @@ class HomeVerticalRecyclerViewAdapter(var warmupList : List<HomeRVBeginnerDataCl
 //            .diskCacheStrategy(DiskCacheStrategy.ALL)
 //            .into(holder.ivhomevertical)
 
-        holder.btnPlayVertical.setOnClickListener {
+        holder.ivhomevertical.setOnClickListener {
             showBottomSheetDialog(holder.itemView.context as FragmentActivity, currentItem)
         }
 

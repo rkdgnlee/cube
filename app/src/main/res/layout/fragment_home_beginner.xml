@@ -191,43 +191,81 @@
                 android:orientation="horizontal" />
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilHomeBeginner"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                android:layout_width="140dp"
-                android:layout_height="60dp"
-                android:layout_gravity="right"
-                android:textColorHint="@color/black"
-                app:boxBackgroundColor="@color/white"
-                app:boxBackgroundMode="outline"
-                app:boxCollapsedPaddingTop="0dp"
-                app:boxStrokeColor="@color/black"
-                app:counterTextColor="@color/white"
-                app:endIconMode="dropdown_menu"
-                app:endIconTint="@color/black"
-                app:expandedHintEnabled="true"
-                app:helperTextTextColor="@color/black"
-                app:hintTextColor="@color/black"
-                app:startIconTint="@color/textgrey">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <AutoCompleteTextView
-                    android:id="@+id/actHomeBeginner"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#FFFFFF"
-                    android:backgroundTint="#FFFFFF"
-                    android:editable="false"
-                    android:gravity="center"
-                    android:inputType="none"
-                    android:paddingTop="12dp"
-                    android:paddingRight="0dp"
-                    android:paddingBottom="12dp"
-                    android:popupBackground="@color/white"
-                    android:textColor="#000000"
-                    android:textColorHighlight="#000000"
-                    android:textColorHint="#000000"
-                    android:textSize="18sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilHomeBeginner"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="140dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="right"
+                    android:textColorHint="@color/black"
+                    app:boxBackgroundColor="@color/white"
+                    app:boxBackgroundMode="outline"
+                    app:boxCollapsedPaddingTop="0dp"
+                    app:boxStrokeColor="@color/black"
+                    app:counterTextColor="@color/white"
+                    app:endIconMode="dropdown_menu"
+                    app:endIconTint="@color/black"
+                    app:expandedHintEnabled="true"
+                    app:helperTextTextColor="@color/black"
+                    app:hintTextColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:startIconTint="@color/textgrey">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actHomeBeginner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#FFFFFF"
+                        android:backgroundTint="#FFFFFF"
+                        android:editable="false"
+                        android:gravity="center"
+                        android:inputType="none"
+                        android:paddingTop="12dp"
+                        android:paddingRight="0dp"
+                        android:paddingBottom="12dp"
+                        android:popupBackground="@color/white"
+                        android:textColor="#000000"
+                        android:textColorHighlight="#000000"
+                        android:textColorHint="#000000"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textView37"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="TextView" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/textView45"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="개의 운동이 있습니다."
+                    android:textColor="@color/textgrey"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tvExerciseCount" />
+
+                <TextView
+                    android:id="@+id/tvExerciseCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="50"
+                    android:textColor="@color/textgrey"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvHomeBeginnerVertical"

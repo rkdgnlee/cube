@@ -1,28 +1,23 @@
 package com.example.mhg.Dialog
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
 import com.example.mhg.PersonalSetupActivity
 import com.example.mhg.R
-import com.example.mhg.Room.ExerciseDao
 import com.example.mhg.Room.ExerciseDatabase
 import com.example.mhg.Room.ExerciseRepository
 import com.example.mhg.databinding.DialogfragmentExerciseLoadBinding
@@ -53,8 +48,7 @@ class ExerciseLoadDialogFragment : DialogFragment() {
             Log.w(TAG, "jsonArr: $jsonArr")
             if (jsonArr != null) {
                 try {
-                    ExerciseRepository(db.ExerciseDao(), NetworkService).StoreExercises(jsonArr)
-                    Log.w(TAG + "db내용", "${ExerciseRepository(db.ExerciseDao(), NetworkService).getHomeRVBeginnerData()}")
+                    ExerciseRepository(db.ExerciseDao()).StoreExercises(jsonArr)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error storing exercises", e)
                 }

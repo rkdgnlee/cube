@@ -18,12 +18,15 @@ data class HomeRVBeginnerDataClass(
     var exerciseCaution: String? = "",
     var videoAlternativeName: String? = "",
     var videoFilepath: String? = "",
-    var videoTime: String? = ""
-
+    var videoTime: String? = "",
+    var exerciseTypeId: String? = "",
+    var exerciseTypeName: String? = "",
 ) : Parcelable {
 
 //담는거
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -59,6 +62,8 @@ data class HomeRVBeginnerDataClass(
             dest.writeString(videoAlternativeName)
             dest.writeString(videoFilepath)
             dest.writeString(videoTime)
+            dest.writeString(exerciseTypeId)
+            dest.writeString(exerciseTypeName)
     }
 // 불러오는 거
     companion object CREATOR : Parcelable.Creator<HomeRVBeginnerDataClass> {

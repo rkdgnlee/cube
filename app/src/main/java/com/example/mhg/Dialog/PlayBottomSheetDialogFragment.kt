@@ -79,7 +79,7 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
         // ----- 화면 높이 설정 코드 끝 -----
 
         val bundle = arguments
-        val routine : HomeRVBeginnerDataClass? = bundle?.getParcelable("routineList")
+        val routine : HomeRVBeginnerDataClass? = bundle?.getParcelable("typeList")
         routine?.let {
             binding.tvPlayExerciseName.text = it.exerciseName
             binding.tvPlayRoutineDuration.text = it.videoTime

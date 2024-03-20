@@ -13,6 +13,9 @@ interface ExerciseDao{
     @Query("SELECT * FROM exercise WHERE exercise_name = :name")
     suspend fun findByName(name:String) : Exercise?
 
+    @Query("SELECT * FROM exercise WHERE exercise_type_name = :type")
+    suspend fun findByType(type:String) : List<Exercise>
+
     @Insert
     suspend fun insert(exercise: Exercise)
 
