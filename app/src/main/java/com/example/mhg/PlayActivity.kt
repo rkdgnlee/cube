@@ -19,7 +19,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 
 class PlayActivity : AppCompatActivity() {
     lateinit var binding : ActivityPlayBinding
-    private var videoUrl = "https://gym.tangostar.co.kr/data/contents/videos/%EB%93%B1%20%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%B9%AD%20%EC%9D%98%EC%9E%90.mp4"
+    private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
 
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var player : SimpleExoPlayer? = null
@@ -33,13 +33,20 @@ class PlayActivity : AppCompatActivity() {
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val exerciseData: HomeRVBeginnerDataClass? = intent.getParcelableExtra("ExerciseData")
+        val exerciseData: HomeRVBeginnerDataClass? = intent.getParcelableExtra("exercise")
         Log.w(TAG, "$exerciseData")
 
 //        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
         // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = exerciseData?.videoFilepath.toString()
+        Log.w("동영상url", videoUrl)
+        binding.tvPlayExerciseName.text = exerciseData?.exerciseName.toString()
+        binding.tvPlayExerciseDscript.text = exerciseData?.exerciseDescription.toString()
+        binding.tvPlayExerciseRelateSymptom.text = exerciseData?.relatedSymptom.toString()
+        binding.tvPlayExerciseRelateJoint.text = exerciseData?.relatedJoint.toString()
+        binding.tvPlayExerciseRelateSymptom.text = exerciseData?. relatedSymptom.toString()
+
         binding.tvPlayExerciseStage.text = exerciseData?.exerciseStage.toString()
         binding.tvPlayExerciseFrequency.text = exerciseData?.exerciseFequency.toString()
         binding.tvPlayExerciseIntensity.text = exerciseData?.exerciseIntensity.toString()
@@ -51,16 +58,16 @@ class PlayActivity : AppCompatActivity() {
         playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
 
-        // -----! 전체화면 구현 로직 시작 !-----
-        val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
-
-        fullscreenButton.setOnClickListener {
-            val intent = Intent(this, PlayFullScreenActivity::class.java)
-            intent.putExtra("video_url", videoUrl)
-            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
-
-            startActivityForResult(intent, 8080)
-        }
+//        // -----! 전체화면 구현 로직 시작 !-----
+//        val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
+//
+//        fullscreenButton.setOnClickListener {
+//            val intent = Intent(this, PlayFullScreenActivity::class.java)
+//            intent.putExtra("video_url", videoUrl)
+//            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
+//
+//            startActivityForResult(intent, 8080)
+//        }
 
     }
 

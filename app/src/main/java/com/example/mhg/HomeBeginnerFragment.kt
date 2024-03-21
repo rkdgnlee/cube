@@ -80,8 +80,8 @@ class HomeBeginnerFragment : Fragment() {
             // -----! horizontal 어댑터 끝 !-----
 
             // -----! vertical 어댑터 시작 !-----
-            val adapter2 = HomeVerticalRecyclerViewAdapter(verticalDataList)
-            adapter2.warmupList = verticalDataList
+            val adapter2 = HomeVerticalRecyclerViewAdapter(verticalDataList, "home")
+            adapter2.verticalList = verticalDataList
             binding.rvHomeBeginnerVertical.adapter = adapter2
             val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvHomeBeginnerVertical.layoutManager = linearLayoutManager2
@@ -114,6 +114,8 @@ class HomeBeginnerFragment : Fragment() {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     when(s.toString()) {
                         "인기순" -> {
+
+                            // TODO 추후에 이런 필터링을 거치려면, DATA를 받아올 때 운동이 있을 때, 수정날짜? 갱신날짜같은 걸 넣어서 받아올 때, 그것만 일주일마다 갱신되게? 유지보수 하면 될 듯?
                             verticalDataList.sortByDescending { it.exerciseName }
                         }
                         "조회순" -> {

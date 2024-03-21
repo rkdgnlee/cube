@@ -3,20 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="120dp">
+    android:layout_height="104dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="86dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="16dp"
+        android:layout_marginBottom="4dp"
+        app:cardCornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clTypeList"
@@ -25,24 +26,25 @@
 
             <ImageView
                 android:id="@+id/ivExerciseDetail"
-                android:layout_width="104dp"
-                android:layout_height="104dp"
-                android:background="#FFFFFF"
-                android:scaleType="centerCrop"
+                android:layout_width="90dp"
+                android:layout_height="0dp"
+                android:background="@drawable/home_vertical_image_shape"
+                android:scaleType="fitEnd"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/setuprehibilitation" />
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/setupstrength" />
 
             <TextView
                 android:id="@+id/tvExerciseDetailName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:text="목 관절 운동 프로그램(2)"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@+id/ivExerciseDetail"
                 app:layout_constraintTop_toTopOf="@+id/ivExerciseDetail" />
 
@@ -50,7 +52,7 @@
                 android:id="@+id/tvExerciseDetailDscript"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginBottom="8dp"
                 android:maxLength="45"
@@ -59,8 +61,10 @@
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnExerciseDetailPick"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/tvExerciseDetailName"
-                app:layout_constraintTop_toBottomOf="@+id/tvExerciseDetailName" />
+                app:layout_constraintTop_toBottomOf="@+id/tvExerciseDetailName"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageButton
                 android:id="@+id/ibtnExerciseDetailPick"

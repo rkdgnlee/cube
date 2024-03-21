@@ -34,7 +34,7 @@
         app:sv_stepLineWidth="3dp"
         app:sv_stepNumberTextSize="15sp"
         app:sv_stepPadding="0dp"
-        app:sv_stepsNumber="5" />
+        app:sv_stepsNumber="4" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vp2Setup"

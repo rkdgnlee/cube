@@ -11,12 +11,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
+import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentPersonalSetup1Binding
 
 
 class PersonalSetup1Fragment : Fragment() {
     lateinit var binding : FragmentPersonalSetup1Binding
+    val viewModel: UserViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,9 +81,14 @@ class PersonalSetup1Fragment : Fragment() {
         val animatorSet = AnimatorSet()
         animatorSet.playTogether(fadeIn, moveUp)
         animatorSet.start()
-
-
-
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (binding.rbtnMale.isChecked) {
+            viewModel.User.value?.put("user_gender", "M")
+        } else {
+            viewModel.User.value?.put("user_gender", "F")
+        }
+    }
 }

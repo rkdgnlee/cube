@@ -188,8 +188,8 @@ class ReportSkeletonFragment : Fragment() {
         // ---- 하단 완료 목록 코드 시작 ----
         // 완료 목록 데이터 리스트 가져와야 함
         val verticaldatalist = ArrayList<HomeRVBeginnerDataClass>()
-        val adapter = HomeVerticalRecyclerViewAdapter(verticaldatalist)
-        adapter.warmupList = verticaldatalist
+        val adapter = HomeVerticalRecyclerViewAdapter(verticaldatalist, "home")
+        adapter.verticalList = verticaldatalist
         binding.rvSkeletonVertical.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvSkeletonVertical.layoutManager = linearLayoutManager

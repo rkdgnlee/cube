@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:background="#65000000"
+    android:background="@color/background_shadow"
     android:layoutDirection="ltr"
     android:orientation="vertical"
     tools:targetApi="28">
@@ -17,40 +17,15 @@
         android:orientation="horizontal"
         android:paddingTop="4dp">
 
-        <View
-            android:id="@+id/view2"
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@id/exo_rew"
-            style="@style/ExoMediaButton.Rewind" />
-
         <ImageButton
             android:id="@id/exo_play"
-            style="@style/ExoMediaButton.Play" />
+            style="@style/ExoMediaButton.Play"
+            android:background="#00000000" />
 
         <ImageButton
             android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause" />
 
-        <ImageButton
-            android:id="@id/exo_ffwd"
-            style="@style/ExoMediaButton.FastForward" />
-
-
-        <View
-            android:id="@+id/view3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@id/exo_fullscreen"
-            style="@style/ExoMediaButton.FullScreen"
-            android:layout_gravity="right"
-            android:backgroundTint="@color/white" />
 
     </LinearLayout>
 

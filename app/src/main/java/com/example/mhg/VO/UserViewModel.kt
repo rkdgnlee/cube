@@ -32,13 +32,4 @@ class UserViewModel: ViewModel() {
     val pwCompare = MutableLiveData(false)
     val emailCondition = MutableLiveData(false)
     val mobileAuthCondition = MutableLiveData(false)
-
-    fun checkConditions(): Boolean {
-        return idCondition.value == true &&
-                nameCondition.value == true &&
-                mobileCondition.value == true &&
-                pwCondition.value == true &&
-                pwCompare.value == true &&
-                emailCondition.value == true
-        }
 }

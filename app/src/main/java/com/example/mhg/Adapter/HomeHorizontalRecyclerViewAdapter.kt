@@ -63,13 +63,14 @@ class HomeHorizontalRecyclerViewAdapter(private val fragment: Fragment, var rout
 //    }
 
     private fun showDetailFragment(type: String) {
-        val HomeRoutineDetialFragment = HomeRoutineDetailFragment()
+        val HomeRoutineDetailFragment = HomeRoutineDetailFragment()
 
         val bundle = Bundle()
         bundle.putString("type", type)
-        HomeRoutineDetialFragment.arguments = bundle
+        HomeRoutineDetailFragment.arguments = bundle
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flHome, HomeRoutineDetialFragment)
+            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+            replace(R.id.flHome, HomeRoutineDetailFragment)
             addToBackStack(null)
             commit()
         }

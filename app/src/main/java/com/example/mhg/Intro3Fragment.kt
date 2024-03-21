@@ -200,7 +200,7 @@ class Intro3Fragment : Fragment() {
 
                     override fun onSuccess(result: NidProfileResponse) {
                         val JsonObj = JSONObject()
-                        val naver_mobile = result.profile?.mobile.toString().replaceFirst("010", "+82 10")
+                        val naver_mobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
                         val naver_gender : String
                         naver_gender = if (result.profile?.gender.toString() == "M") {
                             "MALE"
@@ -253,10 +253,10 @@ class Intro3Fragment : Fragment() {
                             }
                             else if (user != null) {
                                 val JsonObj = JSONObject()
-
+                                val kakao_mobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("010", "+8210")
                                 JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 JsonObj.put("user_gender", user.kakaoAccount?.gender.toString())
-                                JsonObj.put("user_mobile", user.kakaoAccount?.phoneNumber.toString())
+                                JsonObj.put("user_mobile", kakao_mobile)
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
                                 JsonObj.put("kakao_login_id" , user.id.toString())

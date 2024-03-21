@@ -1,6 +1,7 @@
 package com.example.mhg
 
 import android.R.attr.button
+import android.R.attr.visible
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.graphics.Color
@@ -15,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -31,17 +33,19 @@ import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
+import com.google.firebase.auth.ktx.auth
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 
 class SignIn4Fragment : Fragment() {
     lateinit var binding: FragmentSignIn4Binding
-
+    private lateinit var firebaseAuth : FirebaseAuth
     val viewModel : UserViewModel by activityViewModels()
     val auth = Firebase.auth
     var verificationId = ""
@@ -151,6 +155,31 @@ class SignIn4Fragment : Fragment() {
                 }
             }
         }
+
+        // -----! 키보드만큼 버튼을 올리고 내리기 !-----
+//        binding.etMobile.setOnFocusChangeListener { _, hasFocus ->
+//            if (hasFocus) {
+//                binding.root.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+//                    var viewHeight = -1
+//                    override fun onGlobalLayout() {
+//                        val visibleFrameSize = Rect()
+//                        binding.root.getWindowVisibleDisplayFrame(visibleFrameSize)
+//                        val visibleFrameHeight = visibleFrameSize.bottom - visibleFrameSize.top
+//                        val currentViewHeight = binding.root.height
+//                        if (currentViewHeight > viewHeight) {
+//                            viewHeight = currentViewHeight
+//                        }
+//                        val keyboardHeight = viewHeight - visibleFrameHeight
+//                        binding.btnSignIn.translationY = -keyboardHeight.toFloat()
+//                        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+//                    }
+//                })
+//            } else {
+//                binding.btnSignIn.translationY = 0f
+//            }
+//        }
+
+
     }
 
     fun phoneNumber82(msg: String) : String {
@@ -203,4 +232,11 @@ class SignIn4Fragment : Fragment() {
         bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        val firebaseAuth = Firebase.auth
+        if (firebaseAuth.currentUser != null) {
+            Firebase.auth.signOut()
+        }
+    }
 }

@@ -10,7 +10,7 @@
         android:background="@drawable/shadow">
 
         <Button
-            android:id="@+id/btnPlay"
+            android:id="@+id/btnExercisePlay"
             app:cornerRadius="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

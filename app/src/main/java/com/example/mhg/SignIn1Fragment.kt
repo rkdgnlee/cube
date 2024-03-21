@@ -15,7 +15,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
+import com.example.mhg.Dialog.AgreementBottomSheetDialogFragment
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentSignIn1Binding
 import org.json.JSONObject
@@ -41,7 +43,7 @@ class SignIn1Fragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        showAgreementBottomSheet(requireActivity())
         val namePatternKor =  "^[가-힣]{2,8}\$"
         val namePatternEng = "^[a-zA-Z\\s]{4,20}$"
         val NamePatternKor = Pattern.compile(namePatternKor)
@@ -105,5 +107,12 @@ class SignIn1Fragment : Fragment() {
         } else {
             throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
+    }
+    private fun showAgreementBottomSheet(context: FragmentActivity) {
+        val bottomSheetFragment = AgreementBottomSheetDialogFragment()
+        bottomSheetFragment.isCancelable = false
+        val fragmentManager = context.supportFragmentManager
+        bottomSheetFragment.show(fragmentManager, bottomSheetFragment.tag)
+
     }
 }

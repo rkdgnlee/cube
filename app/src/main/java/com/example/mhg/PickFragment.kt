@@ -36,7 +36,12 @@ class PickFragment : Fragment(), onPickDetailClickListener {
 
 
         binding.btnPickAdd.setOnClickListener {
-
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                replace(R.id.flPick, PickAddFragment())
+                addToBackStack(null)
+                commit()
+            }
         }
 
         return binding.root

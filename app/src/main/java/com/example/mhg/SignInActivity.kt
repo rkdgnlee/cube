@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.mhg.Dialog.AgreementBottomSheetDialogFragment
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivitySignInBinding
 import org.json.JSONObject
@@ -66,7 +67,6 @@ class SignInActivity :
                 when (position) {
                     0 -> {
                         binding.tvSignInPrevious.text = ""
-
                     }
                     2 -> {
                         val fadeIn = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn3), "alpha", 0f, 1f)
@@ -124,6 +124,7 @@ class SignInActivity :
 //            }
 //        })
     }
+
 
 }
 

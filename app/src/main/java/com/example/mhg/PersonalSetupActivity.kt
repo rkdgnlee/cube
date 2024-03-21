@@ -1,5 +1,6 @@
 package com.example.mhg
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,14 +8,15 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.mhg.VO.UserVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivityPersonalSetupBinding
+import com.example.mhg.`object`.NetworkService.fetchUPDATEJson
+import com.example.mhg.`object`.Singleton_t_user
 
 class PersonalSetupActivity : AppCompatActivity() {
     lateinit var binding: ActivityPersonalSetupBinding
@@ -27,37 +29,32 @@ class PersonalSetupActivity : AppCompatActivity() {
         // ---- viewmodel 초기화 및 viewpager2 초기화 ----
 //        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         initViewPager()
-        val Next =
+        val t_userData = Singleton_t_user.getInstance(this)
 
 
         binding.btnSetupNext.setOnSingleClickListener {
+
             // ---- 설정 완료 시, 선택한 데이터 저장 및 페이지 이동 코드 시작 ----
             if (binding.btnSetupNext.text == "Finish") {
 
-                // ---- view model에 값을 넣기 (4p) 시작 ----
-                val fragment =
-                    supportFragmentManager.findFragmentByTag("f${binding.vp2Setup.currentItem}")
-                if (fragment is PersonalSetup4Fragment) {
-                    if (fragment.binding.rbtnhealth.isChecked) {
-//                        viewModel.User.value?.exercisePurpose = "health"
-                    } else if (fragment.binding.rbtnDiet.isChecked) {
-//                        viewModel.User.value?.exercisePurpose = "diet"
-                    } else if (fragment.binding.rbtnRehabil.isChecked) {
-//                        viewModel.User.value?.exercisePurpose = "Rehabil"
-                    } else {
-//                        viewModel.User.value?.exercisePurpose = "strength"
+                // -----! singletom에 넣고, update 통신 !-----
+                val user_mobile = t_userData.jsonObject?.optString("user_mobile")
+                Log.w(TAG+" user_mobile", "$user_mobile")
+                if (user_mobile != null) {
+                    fetchUPDATEJson(getString(R.string.IP_ADDRESS_t_user), viewModel.User.value.toString(), user_mobile = user_mobile) {
+                        t_userData.jsonObject!!.put("user_gender", viewModel.User.value?.optString("user_gender"))
+                        t_userData.jsonObject!!.put("user_height", viewModel.User.value?.optString("user_height"))
+                        t_userData.jsonObject!!.put("user_weight", viewModel.User.value?.optString("user_weight"))
+                        Log.w(TAG+" 싱글톤객체추가", t_userData.jsonObject!!.optString("user_weight"))
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                        ActivityCompat.finishAffinity(this)
                     }
-//                    Log.d("다섯 번째", "${viewModel.User.value?.exercisePurpose}")
                 }
-
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-                ActivityCompat.finishAffinity(this)
-//                Log.d("최종", "성별: ${viewModel.User.value?.user_gender} 몸무게: ${viewModel.User.value?.height}  이름: ${viewModel.User.value?.user_name} ")
-                // ---- view model에 값을 넣기 (4p) 끝 ----
+                // -----! view model에 값을 넣기 끝 !-----
             }
-            // ---- 설정 완료 시, 선택한 데이터 저장 및 페이지 이동 코드 끝 ----
+            // -----! 설정 완료 시, 선택한 데이터 저장 및 페이지 이동 코드 끝 !-----
 
             binding.vp2Setup.currentItem = binding.vp2Setup.currentItem + 1
             binding.stepView.go(binding.stepView.currentStep + 1, true)
@@ -72,53 +69,18 @@ class PersonalSetupActivity : AppCompatActivity() {
             finish()
             ActivityCompat.finishAffinity(this)
         }
-        // ---- 페이지 변경될 때마다 call back 메소드 시작 ----
+        // -----! 페이지 변경될 때마다 call back 메소드 시작 !-----
         binding.vp2Setup.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                if (position == 4) {
+                if (position == 3) {
                     binding.btnSetupNext.text = "Finish"
                 } else {
                     binding.btnSetupNext.text = "Next"
                 }
-
-                // ---- view model에 값을 넣기 (0p ~ 3p) 시작 ----
-                val previousPosition = position - 1
-                if (previousPosition >= 0) {
-                    val fragment = supportFragmentManager.findFragmentByTag("f$previousPosition")
-
-//                        viewModel.User.value = DataInstance
-//                        Log.d("첫번째", "${viewModel.User.value?.user_name}")
-                    if (fragment is PersonalSetup1Fragment) {
-                        if (fragment.binding.rbtnMale.isChecked) {
-//                            viewModel.User.value?.user_gender = "male"
-                        } else {
-//                            viewModel.User.value?.user_gender = "female"
-                        }
-                    } else if (fragment is PersonalSetup2Fragment) {
-//                        viewModel.User.value?.height = fragment.binding.npPersonalSetup2.value.toDouble()
-//                        Log.d("세 번째", "${viewModel.User.value?.height}")
-                    } else if (fragment is PersonalSetup3Fragment) {
-//                        viewModel.User.value?.weight = fragment.binding.npPerssonalSetup3.value.toDouble()
-//                        Log.d("네 번째", "${viewModel.User.value?.weight}")
-                    } else if (fragment is PersonalSetup4Fragment) {
-                        if (fragment.binding.rbtnhealth.isChecked) {
-//                            viewModel.User.value?.exercisePurpose = "health"
-                        } else if (fragment.binding.rbtnDiet.isChecked) {
-//                            viewModel.User.value?.exercisePurpose = "diet"
-                        } else if (fragment.binding.rbtnRehabil.isChecked) {
-//                            viewModel.User.value?.exercisePurpose = "Rehabil"
-                        } else {
-//                            viewModel.User.value?.exercisePurpose = "strength"
-                        }
-                    }
-                    // ---- view model에 값을 넣기 (0p ~ 3p) 끝 ----
-
-                }
-
             }
         })
-        // ---- 페이지 변경될 때마다 call back 메소드 끝 ----
+        // -----! 페이지 변경될 때마다 call back 메소드 끝 !-----
     }
     private fun initViewPager() {
         val viewPager = binding.vp2Setup

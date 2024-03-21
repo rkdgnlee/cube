@@ -78,37 +78,40 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
 
         // ----- 화면 높이 설정 코드 끝 -----
 
+        // -----! bundle에서 꺼내서 데이터 보여주기 시작 !-----
         val bundle = arguments
         val routine : HomeRVBeginnerDataClass? = bundle?.getParcelable("typeList")
         routine?.let {
-            binding.tvPlayExerciseName.text = it.exerciseName
-            binding.tvPlayRoutineDuration.text = it.videoTime
-            binding.tvPlayExerciseDescription.text = it.exerciseDescription
-            binding.tvPlayRelatedJoint.text = it.relatedJoint
-            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
-            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
+//            binding.tvPlayExerciseName.text = it.exerciseName
+//            binding.tvPlayRoutineDuration.text = it.videoTime
+//            binding.tvPlayExerciseDescription.text = it.exerciseDescription
+//            binding.tvPlayRelatedJoint.text = it.relatedJoint
+//            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
+//            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
         }
         val warmup : HomeRVBeginnerDataClass? = bundle?.getParcelable("warmupList")
         warmup?.let {
-            binding.tvPlayExerciseName.text = it.exerciseName
-            binding.tvPlayRoutineDuration.text = it.videoTime
-            binding.tvPlayExerciseDescription.text = it.exerciseDescription
-            binding.tvPlayRelatedJoint.text = it.relatedJoint
-            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
-            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
+//            binding.tvPlayExerciseName.text = it.exerciseName
+//            binding.tvPlayRoutineDuration.text = it.videoTime
+//            binding.tvPlayExerciseDescription.text = it.exerciseDescription
+//            binding.tvPlayRelatedJoint.text = it.relatedJoint
+//            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
+//            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
         }
-        binding.btnPlay.setOnClickListener {
-            val intent = Intent(requireContext(), PlayActivity::class.java)
-            if (routine != null) {
-                intent.putExtra("ExerciseData", routine)
-                Log.w(TAG + "운동데이터", "${routine.relatedSymptom}")
-            } else if (warmup != null){
-                intent.putExtra("ExerciseData", warmup)
-                Log.w(TAG + "운동데이터", "${warmup.relatedSymptom}")
-            }
-            startActivity(intent)
+        // -----! bundle에서 꺼내서 데이터 보여주기 끝 !-----
 
-        }
+//        binding.btnPlay.setOnClickListener {
+//            val intent = Intent(requireContext(), PlayActivity::class.java)
+//            if (routine != null) {
+//                intent.putExtra("ExerciseData", routine)
+//                Log.w(TAG + "운동데이터", "${routine.relatedSymptom}")
+//            } else if (warmup != null){
+//                intent.putExtra("ExerciseData", warmup)
+//                Log.w(TAG + "운동데이터", "${warmup.relatedSymptom}")
+//            }
+//            startActivity(intent)
+//
+//        }
 
 
     }
