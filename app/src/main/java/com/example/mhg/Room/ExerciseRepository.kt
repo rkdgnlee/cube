@@ -4,7 +4,7 @@ import com.example.mhg.VO.HomeRVBeginnerDataClass
 import org.json.JSONArray
 
 class ExerciseRepository(private val exerciseDao: ExerciseDao) {
-    suspend fun getExerciseDataByType(exerciseType: String): List<HomeRVBeginnerDataClass> {
+    suspend fun getExerciseDataByType(exerciseType: String): MutableList<HomeRVBeginnerDataClass> {
         return exerciseDao.findByType(exerciseType).map {exercise ->
             HomeRVBeginnerDataClass(
                 imgUrl = null,
@@ -25,10 +25,10 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
                 exerciseTypeId = exercise.exercise_type_id,
                 exerciseTypeName = exercise.exercise_type_name
             )
-        }
+        }.toMutableList()
     }
 
-    suspend fun getHomeRVBeginnerData(): List<HomeRVBeginnerDataClass> {
+    suspend fun getHomeRVBeginnerData(): MutableList<HomeRVBeginnerDataClass> {
         return exerciseDao.getAll().map { exercise ->
             HomeRVBeginnerDataClass(
                 imgUrl = null,  // 이미지 URL은 데이터베이스에 없으므로 null 또는 기본 이미지 URL을 설정
@@ -49,7 +49,7 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
                 exerciseTypeId = exercise.exercise_type_id,
                 exerciseTypeName = exercise.exercise_type_name
             )
-        }
+        }.toMutableList()
     }
     suspend fun StoreExercises(jsonArr: JSONArray) {
         for (i in 0 until jsonArr.length()) {

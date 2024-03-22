@@ -37,6 +37,7 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener {
             RoutingVO("기기 연결이 완료 됐습니다.", "profile")
         )
 
+        // -----! alarm touchhelper 연동 시작 !-----
         val AlarmRecyclerViewAdapter = AlarmRecyclerViewAdapter(alarmList, this)
         val SwipeHelperCallback = SwipeHelperCallback().apply {
             setClamp(260f)
@@ -51,6 +52,8 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener {
                 false
             }
         }
+        // -----! alarm touchhelper 연동 끝 !-----
+
         binding.btnAlarmSetting.setOnClickListener {
             val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
                 putExtra(Settings.EXTRA_APP_PACKAGE, packageName)

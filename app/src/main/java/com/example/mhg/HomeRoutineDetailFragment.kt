@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class HomeRoutineDetailFragment : Fragment() {
     lateinit var binding: FragmentHomeRoutineDetailBinding
-    lateinit var ExerciseList : List<HomeRVBeginnerDataClass> // 각 key값을 통해 map으로 가져온 데이터
+    lateinit var ExerciseList : MutableList<HomeRVBeginnerDataClass> // 각 key값을 통해 map으로 가져온 데이터
     val viewModel : UserViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,7 +61,7 @@ class HomeRoutineDetailFragment : Fragment() {
 //        }
 //        return exerciseDataMap
 //    }
-    suspend fun getExerciseDataByType(db: ExerciseDatabase, exerciseType: String): List<HomeRVBeginnerDataClass> {
+    suspend fun getExerciseDataByType(db: ExerciseDatabase, exerciseType: String): MutableList<HomeRVBeginnerDataClass> {
         return ExerciseRepository(db.ExerciseDao()).getExerciseDataByType(exerciseType)
     }
 

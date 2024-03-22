@@ -24,7 +24,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/ivPickAdd"
+                android:id="@+id/ivPickBasket"
                 android:layout_width="90dp"
                 android:layout_height="0dp"
                 android:scaleType="centerCrop"
@@ -34,7 +34,7 @@
                 app:srcCompat="@drawable/home_warmup" />
 
             <TextView
-                android:id="@+id/tvPickAddName"
+                android:id="@+id/tvPickBasketName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -44,31 +44,33 @@
                 android:textColor="#000000"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/cbPickAdd"
-                app:layout_constraintStart_toEndOf="@+id/ivPickAdd"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnPickBasket"
+                app:layout_constraintStart_toEndOf="@+id/ivPickBasket"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvPickAddDscript"
+                android:id="@+id/tvPickBasketDscript"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="TextView"
                 android:textColor="@color/textgrey"
-                app:layout_constraintEnd_toStartOf="@+id/cbPickAdd"
-                app:layout_constraintStart_toStartOf="@+id/tvPickAddName"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickAddName" />
+                app:layout_constraintEnd_toStartOf="@+id/ibtnPickBasket"
+                app:layout_constraintStart_toStartOf="@+id/tvPickBasketName"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickBasketName" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/cbPickAdd"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="12dp"
-                android:theme="@style/Theme.App.Checkbox"
+            <ImageButton
+                android:id="@+id/ibtnPickBasket"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="16dp"
+                android:background="#FFFFFF"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:useMaterialThemeColors="true" />
+                app:srcCompat="@drawable/add_icon" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

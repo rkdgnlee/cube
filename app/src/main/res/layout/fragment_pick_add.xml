@@ -24,7 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="3dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="44dp"
                 app:dividerColor="@color/skeletongrey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -35,7 +35,7 @@
                 android:layout_width="128dp"
                 android:layout_height="3dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="44dp"
                 app:dividerColor="@color/orange"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -47,7 +47,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="84dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/pickadd_textview_background"
                 android:ems="10"
@@ -55,9 +55,9 @@
                 android:inputType="text"
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.159"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider9" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView15"
@@ -274,13 +274,14 @@
                 android:id="@+id/rvPickadd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:orientation="vertical"
                 android:overScrollMode="never"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView44"
+                app:layout_constraintTop_toBottomOf="@+id/btnPickAddGoBasket"
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
@@ -289,7 +290,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="운동 추가"
+                android:text="운동 목록"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/cardView16"
                 app:layout_constraintTop_toBottomOf="@+id/cardView16" />
@@ -305,6 +306,24 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/materialDivider9"
                 app:layout_constraintStart_toStartOf="@+id/materialDivider9" />
+
+            <Button
+                android:id="@+id/btnPickAddGoBasket"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@color/orange"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="운동 추가"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/exercise_list_add"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/textView44"
+                app:layout_constraintTop_toBottomOf="@+id/cardView16" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

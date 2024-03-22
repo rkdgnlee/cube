@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.OnAlarmClickListener
 import com.example.mhg.VO.RoutingVO
-import com.example.mhg.databinding.AlarmlistBinding
+import com.example.mhg.databinding.RvAlarmListBinding
 
 
 class AlarmRecyclerViewAdapter(var alarmList: MutableList<RoutingVO>, private val listener: OnAlarmClickListener) : RecyclerView.Adapter<AlarmRecyclerViewAdapter.MyViewHolder>() {
@@ -14,7 +14,7 @@ class AlarmRecyclerViewAdapter(var alarmList: MutableList<RoutingVO>, private va
         alarmList.removeAt(position)
         notifyItemRemoved(position)
     }
-    inner class MyViewHolder(private val binding: AlarmlistBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MyViewHolder(private val binding: RvAlarmListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(alarm : RoutingVO, listener: OnAlarmClickListener) {
             binding.tvAlarm.text = alarm.title
             binding.tvAlarmDelete.setOnClickListener {
@@ -28,7 +28,7 @@ class AlarmRecyclerViewAdapter(var alarmList: MutableList<RoutingVO>, private va
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder=MyViewHolder(
-        AlarmlistBinding.inflate (
+        RvAlarmListBinding.inflate (
             LayoutInflater.from(parent.context),
             parent,
             false

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.HomeRoutineDetailFragment
 import com.example.mhg.R
 import com.example.mhg.VO.HomeRVBeginnerDataClass
-import com.example.mhg.databinding.RoutineListBinding
+import com.example.mhg.databinding.RvHorizontalListBinding
 
 class HomeHorizontalRecyclerViewAdapter(private val fragment: Fragment, var routineList : List<String>): RecyclerView.Adapter<HomeHorizontalRecyclerViewAdapter.MyViewHolder>() {
 
@@ -27,7 +27,7 @@ class HomeHorizontalRecyclerViewAdapter(private val fragment: Fragment, var rout
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = RoutineListBinding.inflate(inflater, parent, false)
+        val binding = RvHorizontalListBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding.root)
     }
 

@@ -10,7 +10,7 @@ import com.example.mhg.Dialog.PickBottomSheetDialogFragment
 import com.example.mhg.Dialog.PlayBottomSheetDialogFragment
 import com.example.mhg.PickDetailFragment
 import com.example.mhg.VO.RoutingVO
-import com.example.mhg.databinding.PicklistBinding
+import com.example.mhg.databinding.RvPickListBinding
 import com.example.mhg.onPickDetailClickListener
 import kotlinx.coroutines.NonDisposableHandle.parent
 
@@ -27,7 +27,7 @@ class PickRecyclerViewAdapter(var pickList: MutableList<RoutingVO>, private val 
 
 
 
-    inner class MyViewHolder(private val binding: PicklistBinding, private val context: FragmentActivity) : RecyclerView.ViewHolder(binding.root) {
+    inner class MyViewHolder(private val binding: RvPickListBinding, private val context: FragmentActivity) : RecyclerView.ViewHolder(binding.root) {
         fun bind(pick : RoutingVO) {
             binding.tvPickTitle.text = pick.title
             binding.ivMore.setOnClickListener {
@@ -39,7 +39,7 @@ class PickRecyclerViewAdapter(var pickList: MutableList<RoutingVO>, private val 
         }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder = MyViewHolder(
-        PicklistBinding.inflate (
+        RvPickListBinding.inflate (
             LayoutInflater.from(parent.context),
             parent,
             false
