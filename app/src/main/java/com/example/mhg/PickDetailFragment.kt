@@ -9,11 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
+import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.databinding.FragmentPickDetailBinding
 
 
 class PickDetailFragment : Fragment() {
     lateinit var binding : FragmentPickDetailBinding
+    val viewModel : ExerciseViewModel by activityViewModels()
     companion object {
         private const val ARG_TITLE = "title"
         fun newInstance(title: String): PickDetailFragment {
@@ -49,9 +52,19 @@ class PickDetailFragment : Fragment() {
 
         // ----- 운동 즐겨찾기 리스트 가져오기 끝 -----
 
-        val pickList = mutableListOf(
-            title, "몸풀기 루틴", "운동 마무리", "인터벌"   // 즐겨찾기 추가 해야 함
-        )
+        val pickList = mutableListOf<String>()
+        val jsonArray = viewModel.exerciseList.value
+        // -----! viewmodel의 list관리 시작 !-----
+        // TODO 추후에 데이터 받아와서 여기다가 넣어야 함.
+        viewModel.exerciseList.observe(viewLifecycleOwner) {basketList ->
+            for (i in 0 until jsonArray!!.length()) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                val exerciseName = jsonObject.getString("exercise_name")
+                pickList.add(exerciseName)
+            }
+        }
+        // -----! viewmodel의 list관리 끝 !-----
+
         val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList)
         binding.actPickDetail.setAdapter(adapter)
 //        binding.actPickDetail.addTextChangedListener(object: TextWatcher {

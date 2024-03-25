@@ -15,7 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivityPersonalSetupBinding
-import com.example.mhg.`object`.NetworkService.fetchUPDATEJson
+import com.example.mhg.`object`.NetworkService.fetchUserUPDATEJson
 import com.example.mhg.`object`.Singleton_t_user
 
 class PersonalSetupActivity : AppCompatActivity() {
@@ -41,7 +41,7 @@ class PersonalSetupActivity : AppCompatActivity() {
                 val user_mobile = t_userData.jsonObject?.optString("user_mobile")
                 Log.w(TAG+" user_mobile", "$user_mobile")
                 if (user_mobile != null) {
-                    fetchUPDATEJson(getString(R.string.IP_ADDRESS_t_user), viewModel.User.value.toString(), user_mobile = user_mobile) {
+                    fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), viewModel.User.value.toString(), user_mobile = user_mobile) {
                         t_userData.jsonObject!!.put("user_gender", viewModel.User.value?.optString("user_gender"))
                         t_userData.jsonObject!!.put("user_height", viewModel.User.value?.optString("user_height"))
                         t_userData.jsonObject!!.put("user_weight", viewModel.User.value?.optString("user_weight"))

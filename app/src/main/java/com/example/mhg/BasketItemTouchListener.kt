@@ -1,7 +1,7 @@
 package com.example.mhg
 
-import com.example.mhg.VO.HomeRVBeginnerDataClass
+import com.example.mhg.VO.ExerciseItemVO
 
 interface BasketItemTouchListener {
-    fun onBasketItemClick(item: HomeRVBeginnerDataClass)
+    fun onBasketItemClick(item: ExerciseItemVO)
 }

@@ -2,7 +2,7 @@ package com.example.mhg
 
 import android.R
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
+import android.content.ContentValues
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,21 +17,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeHorizontalRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
-import com.example.mhg.Room.ExerciseDatabase
-import com.example.mhg.Room.ExerciseRepository
-import com.example.mhg.VO.HomeRVBeginnerDataClass
+
+import com.example.mhg.VO.ExerciseItemVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBeginnerBinding
+import com.example.mhg.`object`.NetworkService
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class HomeBeginnerFragment : Fragment() {
     lateinit var binding: FragmentHomeBeginnerBinding
 
-    lateinit var ExerciseList : List<HomeRVBeginnerDataClass>
+    lateinit var ExerciseList : MutableList<ExerciseItemVO>
     private val exerciseTypeList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")
     val viewModel : UserViewModel by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,89 +56,111 @@ class HomeBeginnerFragment : Fragment() {
         binding.tvHomeGoal.text
         // ----- 로그인 시 변경 할 부분 끝 -----
 
-        val db = ExerciseDatabase.getInstance(requireContext())
+
         lifecycleScope.launch {
 
             // -----! db에서 받아서 뿌려주기 시작 !-----
+            val responseArrayList = NetworkService.fetchExerciseJson(getString(com.example.mhg.R.string.IP_ADDRESS_t_Exercise_Description))
+            try {
+                // -----! horizontal 어댑터 시작 !-----
+                val adapter = HomeHorizontalRecyclerViewAdapter(
+                    this@HomeBeginnerFragment,
+                    exerciseTypeList
+                )
+                adapter.routineList = exerciseTypeList.slice(0..3)
+                binding.rvHomeBeginnerHorizontal.adapter = adapter
+                val linearlayoutmanager =
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                binding.rvHomeBeginnerHorizontal.layoutManager = linearlayoutmanager
+                // -----! horizontal 어댑터 끝 !-----
+
+                // -----! vertical 어댑터 시작 !-----
+                val verticalDataList = responseArrayList.toMutableList()
 
 
-            ExerciseList = getExerciseData(db)
-            val verticalDataList = ArrayList<HomeRVBeginnerDataClass>()
-            for(i in 0 until ExerciseList.size) {
-                verticalDataList.add(ExerciseList[i])
-//                Log.w(TAG, "$verticalDataList")
+                val adapter2 = HomeVerticalRecyclerViewAdapter(verticalDataList, "home")
+                adapter2.verticalList = verticalDataList
+                binding.rvHomeBeginnerVertical.adapter = adapter2
+                val linearLayoutManager2 =
+                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding.rvHomeBeginnerVertical.layoutManager = linearLayoutManager2
+                // -----! vertical 어댑터 끝 !-----
+
+
+                // -----! db에서 받아서 뿌려주기 끝 !-----
+                binding.tvExerciseCount.text = verticalDataList.size.toString()
+                binding.nsv.isNestedScrollingEnabled = false
+                binding.rvHomeBeginnerVertical.isNestedScrollingEnabled = false
+                binding.rvHomeBeginnerVertical.overScrollMode = 0
+
+                // -----! 메인 유저 체중/달성률/업적 control 시작 !-----
+                binding.tvHomeWeight.text = viewModel.User.value?.optString("user_weight")
+
+                binding.tvHomeGoal
+
+
+                // -----! 메인 유저 별 체중 달성률 업적 control 끝 !-----
+
+                // ----- autoCompleteTextView를 통해 sort 하는 코드 시작 -----
+                val sort_list = listOf("인기순", "조회순", "최신순", "오래된순")
+                val adapter3 = ArrayAdapter(
+                    requireContext(),
+                    R.layout.simple_dropdown_item_1line,
+                    sort_list
+                )
+                binding.actHomeBeginner.setAdapter(adapter3)
+                binding.actHomeBeginner.setText(sort_list.firstOrNull(), false)
+
+                binding.actHomeBeginner.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
+
+                    @SuppressLint("NotifyDataSetChanged")
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        when (s.toString()) {
+                            "인기순" -> {
+
+                                // TODO 추후에 이런 필터링을 거치려면, DATA를 받아올 때 운동이 있을 때, 수정날짜? 갱신날짜같은 걸 넣어서 받아올 때, 그것만 일주일마다 갱신되게? 유지보수 하면 될 듯?
+                                verticalDataList.sortByDescending { it.exerciseName }
+                            }
+
+                            "조회순" -> {
+                                verticalDataList.sortByDescending { it.videoTime }
+                            }
+
+                            "최신순" -> {
+                                verticalDataList.sortBy { it.relatedMuscle }
+                            }
+
+                            "오래된순" -> {
+
+                            }
+                        }
+                        adapter2.notifyDataSetChanged()
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {}
+                })
+            } catch (e: Exception) {
+                Log.e(ContentValues.TAG, "Error storing exercises", e)
             }
 
-            // -----! horizontal 어댑터 시작 !-----
-            val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment, exerciseTypeList)
-            adapter.routineList = exerciseTypeList.slice(0..3)
-            binding.rvHomeBeginnerHorizontal.adapter = adapter
-            val linearlayoutmanager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            binding.rvHomeBeginnerHorizontal.layoutManager = linearlayoutmanager
-            // -----! horizontal 어댑터 끝 !-----
+            // ----- 각각의 arrayList에 데이터 담는 공간 시작 ----
 
-            // -----! vertical 어댑터 시작 !-----
-            val adapter2 = HomeVerticalRecyclerViewAdapter(verticalDataList, "home")
-            adapter2.verticalList = verticalDataList
-            binding.rvHomeBeginnerVertical.adapter = adapter2
-            val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvHomeBeginnerVertical.layoutManager = linearLayoutManager2
-            // -----! vertical 어댑터 끝 !-----
+            // ---- 각각의 arrayList에 데이터 담는 공간 끝 -----
 
 
-            // -----! db에서 받아서 뿌려주기 끝 !-----
-            binding.tvExerciseCount.text = verticalDataList.size.toString()
-            binding.nsv.isNestedScrollingEnabled = false
-            binding.rvHomeBeginnerVertical.isNestedScrollingEnabled = false
-            binding.rvHomeBeginnerVertical.overScrollMode = 0
-
-            // -----! 메인 유저 체중/달성률/업적 control 시작 !-----
-            binding.tvHomeWeight.text = viewModel.User.value?.optString("user_weight")
-
-            binding.tvHomeGoal
-
-
-            // -----! 메인 유저 별 체중 달성률 업적 control 끝 !-----
-
-            // ----- autoCompleteTextView를 통해 sort 하는 코드 시작 -----
-            val sort_list = listOf("인기순", "조회순", "최신순", "오래된순")
-            val adapter3 = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, sort_list)
-            binding.actHomeBeginner.setAdapter(adapter3)
-            binding.actHomeBeginner.setText(sort_list.firstOrNull(), false)
-
-            binding.actHomeBeginner.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                @SuppressLint("NotifyDataSetChanged")
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    when(s.toString()) {
-                        "인기순" -> {
-
-                            // TODO 추후에 이런 필터링을 거치려면, DATA를 받아올 때 운동이 있을 때, 수정날짜? 갱신날짜같은 걸 넣어서 받아올 때, 그것만 일주일마다 갱신되게? 유지보수 하면 될 듯?
-                            verticalDataList.sortByDescending { it.exerciseName }
-                        }
-                        "조회순" -> {
-                            verticalDataList.sortByDescending { it.videoTime }
-                        }
-                        "최신순" -> {
-                            verticalDataList.sortBy { it.relatedMuscle }
-                        }
-                        "오래된순" -> {
-
-                        }
-                    }
-                    adapter2.notifyDataSetChanged()
-                }
-                override fun afterTextChanged(s: Editable?) {}
-            })
-        }
-
-        // ----- 각각의 arrayList에 데이터 담는 공간 시작 ----
-
-        // ---- 각각의 arrayList에 데이터 담는 공간 끝 -----
-
-
-
-        // ---- vertical RV에 들어갈 데이터 담는 공간 시작 ----
+            // ---- vertical RV에 들어갈 데이터 담는 공간 시작 ----
 
 //        val verticaldatalist = arrayListOf(
 //            HomeRVBeginnerDataClass("https://s3-alpha-sig.figma.com/img/77a1/e5c8/74f51112ca347020d9f125ef9dfd7b0e?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=RmOHalSCMCkCHq9fkTS1Ql-awL16xeVT3VnQYJJ6tK3A0~3XGAHMgH74ZKhohnq5ubnSXaeI7FaTQ-o6ox5PnKVbFNmnngJkw38~JigqQL-iwqsAzafPhz8FOisUy6KaMqhZmxHzLOkqlvgSItJr3FePdzBOh~exOJD1T1Y9mETlV0AKMuRyI~rvlhEPT8cd5UcDjRYjGwiymtoKyIXhBv78h0-WMYnVKVrmcg4ssZnWJYPhVIuwDeVIFE-d23FCqxT7yOQZLb7LhhWKSdTX85gG3DZStjCItIpp95Ksm8ehIzx6dHK51jVcFOCIZLygbWJmTPKEgy5jjrMZUbnbFA__", "Warm up", 3),
@@ -151,39 +171,51 @@ class HomeBeginnerFragment : Fragment() {
 //            HomeRVBeginnerDataClass("https://src.hidoc.co.kr/image/lib/2023/9/1/1693553295231_0.jpg", "Warm up", 25),
 //            HomeRVBeginnerDataClass("https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201912/13/ed91135f-1189-429d-ae2a-507664b03924.jpg", "Warm up", 12),
 //        )
-        // ----- autoCompleteTextView를 통해 sort 하는 코드 끝 -----
+            // ----- autoCompleteTextView를 통해 sort 하는 코드 끝 -----
 
-        binding.tabRoutine.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> {
-                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(0..3))
-                        binding.rvHomeBeginnerHorizontal.adapter = adapter
-                    }
-                    1 -> {
-                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(4..6))
-                        binding.rvHomeBeginnerHorizontal.adapter = adapter
-                    }
-                    2 -> {
-                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(7..9))
-                        binding.rvHomeBeginnerHorizontal.adapter = adapter
-                    }
-                    3 -> {
-                        val adapter = HomeHorizontalRecyclerViewAdapter(this@HomeBeginnerFragment ,exerciseTypeList.slice(10..10))
-                        binding.rvHomeBeginnerHorizontal.adapter = adapter
+            binding.tabRoutine.addOnTabSelectedListener(object :
+                TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    when (tab?.position) {
+                        0 -> {
+                            val adapter = HomeHorizontalRecyclerViewAdapter(
+                                this@HomeBeginnerFragment,
+                                exerciseTypeList.slice(0..3)
+                            )
+                            binding.rvHomeBeginnerHorizontal.adapter = adapter
+                        }
+
+                        1 -> {
+                            val adapter = HomeHorizontalRecyclerViewAdapter(
+                                this@HomeBeginnerFragment,
+                                exerciseTypeList.slice(4..6)
+                            )
+                            binding.rvHomeBeginnerHorizontal.adapter = adapter
+                        }
+
+                        2 -> {
+                            val adapter = HomeHorizontalRecyclerViewAdapter(
+                                this@HomeBeginnerFragment,
+                                exerciseTypeList.slice(7..9)
+                            )
+                            binding.rvHomeBeginnerHorizontal.adapter = adapter
+                        }
+
+                        3 -> {
+                            val adapter = HomeHorizontalRecyclerViewAdapter(
+                                this@HomeBeginnerFragment,
+                                exerciseTypeList.slice(10..10)
+                            )
+                            binding.rvHomeBeginnerHorizontal.adapter = adapter
+                        }
                     }
                 }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
-    }
-    suspend fun getExerciseData(db: ExerciseDatabase) : List<HomeRVBeginnerDataClass> {
-        return withContext(Dispatchers.IO) {
-            ExerciseRepository(db.ExerciseDao()).getHomeRVBeginnerData()
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+                override fun onTabReselected(tab: TabLayout.Tab?) {}
+            })
         }
-    }
 
-
+        }
 }
 

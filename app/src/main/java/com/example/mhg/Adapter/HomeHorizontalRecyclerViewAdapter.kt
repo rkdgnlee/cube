@@ -10,11 +10,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.HomeRoutineDetailFragment
 import com.example.mhg.R
-import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.databinding.RvHorizontalListBinding
 
 class HomeHorizontalRecyclerViewAdapter(private val fragment: Fragment, var routineList : List<String>): RecyclerView.Adapter<HomeHorizontalRecyclerViewAdapter.MyViewHolder>() {

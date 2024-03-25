@@ -2,14 +2,16 @@ package com.example.mhg.VO
 
 import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-data class HomeRVBeginnerDataClass(
+@Parcelize
+data class ExerciseItemVO(
     var imgUrl: String? = "",
-    var exerciseName: String?,
+    var exerciseName: String? = "",
     var exerciseDescription: String? = "",
     var relatedJoint: String? = "",
-    var relatedMuscle: String?,
-    var relatedSymptom: String?,
+    var relatedMuscle: String? = "",
+    var relatedSymptom: String? = "",
     var exerciseStage: String? = "",
     var exerciseFequency: String? = "",
     var exerciseIntensity: String? = "",
@@ -21,10 +23,12 @@ data class HomeRVBeginnerDataClass(
     var videoTime: String? = "",
     var exerciseTypeId: String? = "",
     var exerciseTypeName: String? = "",
+    var exerciseMethodId: String? = ""
 ) : Parcelable {
 
 //담는거
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -64,14 +68,15 @@ data class HomeRVBeginnerDataClass(
             dest.writeString(videoTime)
             dest.writeString(exerciseTypeId)
             dest.writeString(exerciseTypeName)
+            dest.writeString(exerciseMethodId)
     }
 // 불러오는 거
-    companion object CREATOR : Parcelable.Creator<HomeRVBeginnerDataClass> {
-        override fun createFromParcel(parcel: Parcel): HomeRVBeginnerDataClass {
-            return HomeRVBeginnerDataClass(parcel)
+    companion object CREATOR : Parcelable.Creator<ExerciseItemVO> {
+        override fun createFromParcel(parcel: Parcel): ExerciseItemVO {
+            return ExerciseItemVO(parcel)
         }
 
-        override fun newArray(size: Int): Array<HomeRVBeginnerDataClass?> {
+        override fun newArray(size: Int): Array<ExerciseItemVO?> {
             return arrayOfNulls(size)
         }
     }

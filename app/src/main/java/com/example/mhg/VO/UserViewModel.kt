@@ -23,22 +23,10 @@ class UserViewModel: ViewModel() {
 
     val UserHistory = MutableLiveData(JSONObject())
 
-
-    // 즐겨찾기
-    val UserBasket = MutableLiveData<ArrayList<HomeRVBeginnerDataClass>>()
     init {
         User.value = JSONObject()
-        UserBasket.value = ArrayList()
     }
 
-    fun addItem(item : HomeRVBeginnerDataClass) {
-        UserBasket.value?.add(item)
-        UserBasket.value = UserBasket.value
-    }
-    fun deleteItem(item: HomeRVBeginnerDataClass) {
-        UserBasket.value?.remove(item)
-        UserBasket.value = UserBasket.value
-    }
 
     val idCondition = MutableLiveData(false)
     val nameCondition = MutableLiveData(false)

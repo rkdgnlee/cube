@@ -18,8 +18,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.mhg.PersonalSetupActivity
 import com.example.mhg.R
-import com.example.mhg.Room.ExerciseDatabase
-import com.example.mhg.Room.ExerciseRepository
 import com.example.mhg.databinding.DialogfragmentExerciseLoadBinding
 import com.example.mhg.`object`.NetworkService
 import kotlinx.coroutines.Dispatchers
@@ -42,27 +40,27 @@ class ExerciseLoadDialogFragment : DialogFragment() {
     ): View {
         binding = DialogfragmentExerciseLoadBinding.inflate(inflater)
         // ----! local Room에 연결 코루틴 !-----
-        val db = ExerciseDatabase.getInstance(requireContext())
-        lifecycleScope.launch {
-            val jsonArr = NetworkService.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
-            Log.w(TAG, "jsonArr: $jsonArr")
-            if (jsonArr != null) {
-                try {
-                    ExerciseRepository(db.ExerciseDao()).StoreExercises(jsonArr)
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error storing exercises", e)
-                }
-            }
-            // -----! 통신완료된 상태에서 메인스레드 접근 !-----
-            withContext(Dispatchers.Main) {
-                binding.tvExerciseLoad.text = "완료됐습니다!\n페이지를 이동할게요!"
-                binding.progressBar3.progress = binding.progressBar3.max
-                delay(500)
-                val intent = Intent(requireContext(), PersonalSetupActivity::class.java)
-                startActivity(intent)
-                dismiss()
-            }
-        }
+//        val db = ExerciseDatabase.getInstance(requireContext())
+//        lifecycleScope.launch {
+//            val jsonArr = NetworkService.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+//            Log.w(TAG, "jsonArr: $jsonArr")
+//            if (jsonArr != null) {
+//                try {
+//                    ExerciseRepository(db.ExerciseDao()).StoreExercises(jsonArr)
+//                } catch (e: Exception) {
+//                    Log.e(TAG, "Error storing exercises", e)
+//                }
+//            }
+//            // -----! 통신완료된 상태에서 메인스레드 접근 !-----
+//            withContext(Dispatchers.Main) {
+//                binding.tvExerciseLoad.text = "완료됐습니다!\n페이지를 이동할게요!"
+//                binding.progressBar3.progress = binding.progressBar3.max
+//                delay(500)
+//                val intent = Intent(requireContext(), PersonalSetupActivity::class.java)
+//                startActivity(intent)
+//                dismiss()
+//            }
+//        }
         return binding.root
     }
 

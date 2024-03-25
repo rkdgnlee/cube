@@ -7,9 +7,8 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageButton
 import androidx.annotation.RequiresApi
-import com.example.mhg.VO.HomeRVBeginnerDataClass
+import com.example.mhg.VO.ExerciseItemVO
 import com.example.mhg.databinding.ActivityPlayBinding
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -33,7 +32,7 @@ class PlayActivity : AppCompatActivity() {
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val exerciseData: HomeRVBeginnerDataClass? = intent.getParcelableExtra("exercise")
+        val exerciseData: ExerciseItemVO? = intent.getParcelableExtra("exercise")
         Log.w(TAG, "$exerciseData")
 
 //        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE

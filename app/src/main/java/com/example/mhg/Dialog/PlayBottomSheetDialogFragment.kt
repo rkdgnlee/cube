@@ -1,26 +1,14 @@
 package com.example.mhg.Dialog
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
-import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.FrameLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.example.mhg.PlayActivity
 import com.example.mhg.R
-import com.example.mhg.VO.HomeRVBeginnerDataClass
+import com.example.mhg.VO.ExerciseItemVO
 import com.example.mhg.databinding.DialogfragmentPlayBottomSheetBinding
-import com.example.mhg.databinding.PlaybuttonBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
@@ -80,7 +68,7 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
 
         // -----! bundle에서 꺼내서 데이터 보여주기 시작 !-----
         val bundle = arguments
-        val routine : HomeRVBeginnerDataClass? = bundle?.getParcelable("typeList")
+        val routine : ExerciseItemVO? = bundle?.getParcelable("typeList")
         routine?.let {
 //            binding.tvPlayExerciseName.text = it.exerciseName
 //            binding.tvPlayRoutineDuration.text = it.videoTime
@@ -89,7 +77,7 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
 //            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
 //            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
         }
-        val warmup : HomeRVBeginnerDataClass? = bundle?.getParcelable("warmupList")
+        val warmup : ExerciseItemVO? = bundle?.getParcelable("warmupList")
         warmup?.let {
 //            binding.tvPlayExerciseName.text = it.exerciseName
 //            binding.tvPlayRoutineDuration.text = it.videoTime

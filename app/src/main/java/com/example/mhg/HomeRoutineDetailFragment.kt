@@ -11,16 +11,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
-import com.example.mhg.Room.ExerciseDatabase
-import com.example.mhg.Room.ExerciseRepository
-import com.example.mhg.VO.HomeRVBeginnerDataClass
+import com.example.mhg.VO.ExerciseItemVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeRoutineDetailBinding
+import com.example.mhg.`object`.NetworkService.fetchExerciseJsonByType
 import kotlinx.coroutines.launch
 
 class HomeRoutineDetailFragment : Fragment() {
     lateinit var binding: FragmentHomeRoutineDetailBinding
-    lateinit var ExerciseList : MutableList<HomeRVBeginnerDataClass> // 각 key값을 통해 map으로 가져온 데이터
+    lateinit var exerciseList : MutableList<ExerciseItemVO> // 각 key값을 통해 map으로 가져온 데이터
     val viewModel : UserViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +31,7 @@ class HomeRoutineDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val db = ExerciseDatabase.getInstance(requireContext())
+
 
         val bundle = arguments
         val type : String? = bundle?.getString("type")
@@ -41,28 +40,22 @@ class HomeRoutineDetailFragment : Fragment() {
         lifecycleScope.launch {
 
             // -----! db에서 받아서 뿌려주기 시작 !-----
-            ExerciseList = getExerciseDataByType(db, type.toString()) // 각 key값을 통해 map으로 가져온 데이터
-            Log.w(TAG+"db에서 가져옴", "$ExerciseList")
-            binding.tvExerciseAmount.text = ExerciseList.size.toString()
+            exerciseList = fetchExerciseJsonByType(getString(R.string.IP_ADDRESS_t_Exercise_Description), getTypeIndex(type).toString()) // 각 key값을 통해 map으로 가져온 데이터
+            Log.w("$TAG+조건", "${exerciseList.size}")
+            binding.tvExerciseAmount.text = exerciseList.size.toString()
 
             val linearlayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvHomeRoutineDetail.layoutManager = linearlayoutManager
-            val adapter = HomeVerticalRecyclerViewAdapter(ExerciseList, "type")
-            adapter.verticalList = ExerciseList
+            val adapter = HomeVerticalRecyclerViewAdapter(exerciseList, "type")
+            adapter.verticalList = exerciseList
             binding.rvHomeRoutineDetail.adapter = adapter
 
 
         }
     }
-//    suspend fun getExerciseDataByTypeList(db: ExerciseDatabase, exerciseTypeList: List<String>): Map<String, List<HomeRVBeginnerDataClass>> {
-//        val exerciseDataMap = mutableMapOf<String, List<HomeRVBeginnerDataClass>>()
-//        for (type in exerciseTypeList) {
-//            exerciseDataMap[type] = ExerciseRepository(db.ExerciseDao()).getExerciseDataByType(type)
-//        }
-//        return exerciseDataMap
-//    }
-    suspend fun getExerciseDataByType(db: ExerciseDatabase, exerciseType: String): MutableList<HomeRVBeginnerDataClass> {
-        return ExerciseRepository(db.ExerciseDao()).getExerciseDataByType(exerciseType)
-    }
 
+    fun getTypeIndex(type: String?) : Int? {
+        val exerciseTypeList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")
+        return type?.let { exerciseTypeList.indexOf(it) + 1 }
+    }
 }

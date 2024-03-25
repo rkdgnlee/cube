@@ -2,11 +2,8 @@ package com.example.mhg.`object`
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import com.google.firebase.inject.Deferred
-import com.google.gson.JsonArray
+import com.example.mhg.VO.ExerciseItemVO
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -15,13 +12,12 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
 object NetworkService{
     // TODO 매니저님이 짜준 로직 대로, JSON, METHOD 바꿔야함
-    fun fetchINSERTJson(myUrl : String, json: String, callback: () -> Unit){
+    fun fetchUserINSERTJson(myUrl : String, json: String, callback: () -> Unit){
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
@@ -40,7 +36,7 @@ object NetworkService{
             }
         })
     }
-    fun fetchUPDATEJson(myUrl : String, json: String, user_mobile:String, callback: () -> Unit) {
+    fun fetchUserUPDATEJson(myUrl : String, json: String, user_mobile:String, callback: () -> Unit) {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
@@ -60,7 +56,7 @@ object NetworkService{
         })
     }
 
-    fun fetchDeleteJson(myUrl : String, user_mobile:String, callback: () -> Unit) {
+    fun fetchUserDeleteJson(myUrl : String, user_mobile:String, callback: () -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}delete.php?user_mobile=$user_mobile")
@@ -79,7 +75,7 @@ object NetworkService{
         })
     }
 
-    suspend fun fetchExerciseJson(myUrl: String): JSONArray? {
+    suspend fun fetchExerciseJson(myUrl: String): List<ExerciseItemVO> {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}read.php")
@@ -93,9 +89,76 @@ object NetworkService{
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
 
                 jsonObj__?.optJSONArray("data")
-
+                val exerciseDataList = mutableListOf<ExerciseItemVO>()
+                val jsonArr = jsonObj__?.optJSONArray("data")
+                if (jsonArr != null) {
+                    for (i in 0 until jsonArr.length()) {
+                        val jsonObject = jsonArr.getJSONObject(i)
+                        val exerciseData = ExerciseItemVO(
+                            exerciseName = jsonObject.optString("exercise_name"),
+                            exerciseDescription = jsonObject.getString("exercise_description"),
+                            relatedJoint = jsonObject.getString("related_joint"),
+                            relatedMuscle = jsonObject.getString("related_muscle"),
+                            relatedSymptom = jsonObject.getString("related_symptom"),
+                            exerciseStage = jsonObject.getString("exercise_stage"),
+                            exerciseFequency = jsonObject.getString("exercise_frequency"),
+                            exerciseIntensity = jsonObject.getString("exercise_intensity"),
+                            exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
+                            exerciseMethod = jsonObject.getString("exercise_method"),
+                            exerciseCaution = jsonObject.getString("exercise_caution"),
+                            videoAlternativeName = jsonObject.getString("video_alternative_name"),
+                            videoFilepath = jsonObject.getString("video_filepath"),
+                            videoTime = jsonObject.getString("video_time"),
+                            exerciseTypeId = jsonObject.getString("exercise_type_id"),
+                            exerciseTypeName = jsonObject.getString("exercise_type_name")
+                        )
+                        exerciseDataList.add(exerciseData)
+                    }
+                }
+                exerciseDataList
             }
         }
     }
 
+    suspend fun fetchExerciseJsonByType(myUrl: String, id: String) : MutableList<ExerciseItemVO> {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}read.php?exercise_type_id=$id")
+            .get()
+            .build()
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let {JSONObject(it)}
+                val exerciseDataList = mutableListOf<ExerciseItemVO>()
+                val jsonArr = jsonObj__?.optJSONArray("data")
+                if (jsonArr != null) {
+                    for (i in 0 until jsonArr.length()) {
+                        val jsonObject = jsonArr.getJSONObject(i)
+                        val exerciseData = ExerciseItemVO(
+                            exerciseName = jsonObject.optString("exercise_name"),
+                            exerciseDescription = jsonObject.getString("exercise_description"),
+                            relatedJoint = jsonObject.getString("related_joint"),
+                            relatedMuscle = jsonObject.getString("related_muscle"),
+                            relatedSymptom = jsonObject.getString("related_symptom"),
+                            exerciseStage = jsonObject.getString("exercise_stage"),
+                            exerciseFequency = jsonObject.getString("exercise_frequency"),
+                            exerciseIntensity = jsonObject.getString("exercise_intensity"),
+                            exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
+                            exerciseMethod = jsonObject.getString("exercise_method"),
+                            exerciseCaution = jsonObject.getString("exercise_caution"),
+                            videoAlternativeName = jsonObject.getString("video_alternative_name"),
+                            videoFilepath = jsonObject.getString("video_filepath"),
+                            videoTime = jsonObject.getString("video_time"),
+                            exerciseTypeId = jsonObject.getString("exercise_type_id"),
+                            exerciseTypeName = jsonObject.getString("exercise_type_name")
+                        )
+                        exerciseDataList.add(exerciseData)
+                    }
+                }
+                exerciseDataList
+                }
+            }
+    }
 }

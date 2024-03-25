@@ -2,7 +2,7 @@ package com.example.mhg.Adapter
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.util.SparseBooleanArray
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -23,25 +23,24 @@ import com.example.mhg.BasketItemTouchListener
 import com.example.mhg.ItemTouchCallback
 import com.example.mhg.PlayActivity
 import com.example.mhg.R
-import com.example.mhg.VO.HomeRVBeginnerDataClass
+import com.example.mhg.VO.ExerciseItemVO
 import com.example.mhg.databinding.RvAddListBinding
 import com.example.mhg.databinding.RvBasketListBinding
 import com.example.mhg.databinding.RvHomeListBinding
 import com.example.mhg.databinding.RvTypeListBinding
-import org.json.JSONObject
 import java.lang.IllegalArgumentException
 import java.util.Collections
 
 
 class HomeVerticalRecyclerViewAdapter(
-    var verticalList : MutableList<HomeRVBeginnerDataClass>,
+    var verticalList : MutableList<ExerciseItemVO>,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     ItemTouchCallback.AddItemTouchListener
 {
     var basketListener: BasketItemTouchListener? = null
     lateinit var addListener: OnStartDragListener
-    private val checkedItems = SparseBooleanArray()
+
 
 
     inner class homeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -62,6 +61,8 @@ class HomeVerticalRecyclerViewAdapter(
         val tvPickAddName = view.findViewById<TextView>(R.id.tvPickAddName)
         val tvPickAddDscript = view.findViewById<TextView>(R.id.tvPickAddDscript)
         val ivPickAddDrag = view.findViewById<ImageView>(R.id.ivPickAddDrag)
+        val btnPickAddDelete = view.findViewById<Button>(R.id.btnPickAddDelete)
+        val clAdd = view.findViewById<ConstraintLayout>(R.id.clAdd)
     }
 
     inner class basketViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -69,6 +70,7 @@ class HomeVerticalRecyclerViewAdapter(
         val tvPickBasketName = view.findViewById<TextView>(R.id.tvPickBasketName)
         val tvPickBasketDscript = view.findViewById<TextView>(R.id.tvPickBasketDscript)
         val ibtnPickBasket = view.findViewById<ImageButton>(R.id.ibtnPickBasket)
+
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -182,9 +184,15 @@ class HomeVerticalRecyclerViewAdapter(
 
             holder.ivPickAddDrag.setOnTouchListener { view, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
-                    addListener.onStartDrag(this)
+                    addListener.onStartDrag(holder)
                 }
                 return@setOnTouchListener false
+
+            }
+
+            holder.btnPickAddDelete.setOnClickListener {
+                verticalList.removeAt(holder.position)
+                notifyItemRemoved(holder.position)
             }
 
 
@@ -201,35 +209,37 @@ class HomeVerticalRecyclerViewAdapter(
 
 
 
-
         } // -----! pickbasket 수직 rv 끝 !-----
 
     }
-    fun getCheckedItems(): JSONObject {
-        val checkedData = JSONObject()
-        for (i in 0 until checkedItems.size()) {
-            if (checkedItems.valueAt(i)) {
-                val checkedItem = verticalList[i]
-                val itemData = JSONObject()
-                itemData.put("exercise_name","${checkedItem.exerciseName}")
-                itemData.put("exercise_description","${checkedItem.exerciseDescription}")
-                checkedData.put(i.toString(), itemData)
-            }
-        }
-        return checkedData
-    }
+//    fun getCheckedItems(): JSONObject {
+//        val checkedData = JSONObject()
+//        for (i in 0 until checkedItems.size()) {
+//            if (checkedItems.valueAt(i)) {
+//                val checkedItem = verticalList[i]
+//                val itemData = JSONObject()
+//                itemData.put("exercise_name","${checkedItem.exerciseName}")
+//                itemData.put("exercise_description","${checkedItem.exerciseDescription}")
+//                checkedData.put(i.toString(), itemData)
+//            }
+//        }
+//        return checkedData
+//    }
 
-
+    // -----! 탭 감지 !-----
     interface OnStartDragListener {
-        fun onStartDrag(viewHolder: HomeVerticalRecyclerViewAdapter)
+        fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
     }
+    // -----! 순서 변경 시작 !-----
     fun startDrag(listener: OnStartDragListener) {
         this.addListener = listener
     }
     override fun onItemMoved(from: Int, to: Int) {
         Collections.swap(verticalList, from, to)
         notifyItemMoved(from, to)
+        Log.w("순서 변경", "리스트목록: $verticalList")
     }
+    // -----! 순서 끝 !-----
     override fun onItemSwiped(position: Int) {
         verticalList.removeAt(position)
         notifyItemRemoved(position)

@@ -1,11 +1,12 @@
 package com.example.mhg
 
 import android.R.attr.button
+import android.R.attr.start
 import android.R.attr.visible
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.telephony.PhoneNumberFormattingTextWatcher
@@ -16,19 +17,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
-import androidx.viewpager2.widget.ViewPager2
-import com.example.mhg.Dialog.ExerciseLoadDialogFragment
-import com.example.mhg.Dialog.PlayBottomSheetDialogFragment
 import com.example.mhg.Dialog.SignInBottomSheetDialogFragment
-import com.example.mhg.VO.HomeRVBeginnerDataClass
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentSignIn4Binding
-import com.example.mhg.`object`.NetworkService.fetchINSERTJson
+import com.example.mhg.`object`.NetworkService.fetchUserINSERTJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
@@ -139,17 +135,16 @@ class SignIn4Fragment : Fragment() {
                 Log.w(TAG+"VIEWMODEL", "$JsonObj")
 
                 // -----! json에 데이터 추가 후 singleton 담기  !-----
-                fetchINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
+                fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                     // -----! 백엔드 작업 후, singleton에 넣을 때 main thread에서 실행 !-----
                     activity?.runOnUiThread{
                         val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                         t_userInstance?.jsonObject = JsonObj
                         Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
 
-                        // -----! 바로 운동 데이터 DialogFragment펼쳐서 받아오기 !-----
+                        val intent = Intent(requireContext() ,MainActivity::class.java)
+                        startActivity(intent)
 
-                        val dialogFragment = ExerciseLoadDialogFragment()
-                        dialogFragment.show(requireActivity().supportFragmentManager, "DialogFragment")
 
                     }
                 }

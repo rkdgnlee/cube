@@ -81,7 +81,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btnPickDetail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
+            app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplain" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnPickDetail"
@@ -96,6 +96,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvPickDetailExplainTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="설명제목"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
+
+        <TextView
+            android:id="@+id/tvPickDetailExplain"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="운동설명"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/tilPickDetail"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/tvPickDetailExplainTitle"
+            app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplainTitle" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
