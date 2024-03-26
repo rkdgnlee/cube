@@ -5,7 +5,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ExerciseItemVO(
+data class ExerciseVO(
     var imgUrl: String? = "",
     var exerciseName: String? = "",
     var exerciseDescription: String? = "",
@@ -23,7 +23,7 @@ data class ExerciseItemVO(
     var videoTime: String? = "",
     var exerciseTypeId: String? = "",
     var exerciseTypeName: String? = "",
-    var exerciseMethodId: String? = ""
+    var exerciseMethodId: String? = "",
 ) : Parcelable {
 
 //담는거
@@ -71,12 +71,12 @@ data class ExerciseItemVO(
             dest.writeString(exerciseMethodId)
     }
 // 불러오는 거
-    companion object CREATOR : Parcelable.Creator<ExerciseItemVO> {
-        override fun createFromParcel(parcel: Parcel): ExerciseItemVO {
-            return ExerciseItemVO(parcel)
+    companion object CREATOR : Parcelable.Creator<ExerciseVO> {
+        override fun createFromParcel(parcel: Parcel): ExerciseVO {
+            return ExerciseVO(parcel)
         }
 
-        override fun newArray(size: Int): Array<ExerciseItemVO?> {
+        override fun newArray(size: Int): Array<ExerciseVO?> {
             return arrayOfNulls(size)
         }
     }

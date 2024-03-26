@@ -7,10 +7,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
+import com.example.mhg.VO.ExerciseViewModel
+import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivityPlayFullScreenBinding
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
@@ -18,7 +23,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 class PlayFullScreenActivity : AppCompatActivity() {
         lateinit var binding: ActivityPlayFullScreenBinding
         private var videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-
+        val viewModel: ExerciseViewModel by viewModels()
         private var simpleExoPlayer: SimpleExoPlayer? = null
         private var player : SimpleExoPlayer? = null
         private var playWhenReady = true
@@ -35,6 +40,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
             playbackPosition = intent.getLongExtra("current_position", 0L)
             initPlayer()
 
+
+            // -----! 재생목록이 있을 경우 가져오기 시작 !-----
+            val resourceList = listOf(
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            )
+
+            // -----! 재생목록이 있을 경우 가져오기 끝 !-----
 
             // -----! 원래 화면으로 돌아감 !-----
             val fullscreenButton = binding.pvFullScreen.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
@@ -65,10 +79,21 @@ class PlayFullScreenActivity : AppCompatActivity() {
             simpleExoPlayer?.seekTo(playbackPosition)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
+        // -----! 동영상 재생목록에 넣기 !-----
         private fun buildMediaSource() : MediaSource {
             val dataSourceFactory = DefaultDataSourceFactory(this, "sample")
-            return ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(videoUrl))
+            val concatenatingMediaSource = ConcatenatingMediaSource()
+            val resourceList = listOf(
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            )
+            resourceList.forEach { url ->
+                val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(url))
+                concatenatingMediaSource.addMediaSource(mediaSource)
+            }
+            return concatenatingMediaSource
 
         }
         // 일시중지
@@ -109,4 +134,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         simpleExoPlayer?.seekTo(currentPosition ?: 0)
         super.onBackPressed()
     }
+
+
 }

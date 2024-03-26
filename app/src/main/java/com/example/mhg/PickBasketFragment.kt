@@ -13,15 +13,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseViewModel
-import com.example.mhg.VO.ExerciseItemVO
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.databinding.FragmentPickBasketBinding
 import com.example.mhg.`object`.NetworkService.fetchExerciseJson
+import com.example.mhg.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 
 
 class PickBasketFragment : Fragment(), BasketItemTouchListener {
     lateinit var binding: FragmentPickBasketBinding
-    lateinit var ExerciseList : List<ExerciseItemVO>
+    lateinit var ExerciseList : List<ExerciseVO>
     val viewModel : ExerciseViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +34,7 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val t_userData = Singleton_t_user.getInstance(requireContext())
         lifecycleScope.launch {
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
             Log.w(ContentValues.TAG, "jsonArr: $responseArrayList")
@@ -64,7 +66,7 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
 
     }
 
-    override fun onBasketItemClick(item: ExerciseItemVO) {
+    override fun onBasketItemClick(item: ExerciseVO) {
         viewModel.addExercise(item)
         Toast.makeText(requireContext(), "${item.exerciseName}, 추가됐습니다!", Toast.LENGTH_SHORT).show()
         Log.w("장바구니viewmodel", "${viewModel.exerciseUnits}")

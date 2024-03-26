@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeHorizontalRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 
-import com.example.mhg.VO.ExerciseItemVO
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBeginnerBinding
 import com.example.mhg.`object`.NetworkService
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 class HomeBeginnerFragment : Fragment() {
     lateinit var binding: FragmentHomeBeginnerBinding
 
-    lateinit var ExerciseList : MutableList<ExerciseItemVO>
+    lateinit var ExerciseList : MutableList<ExerciseVO>
     private val exerciseTypeList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")
     val viewModel : UserViewModel by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {

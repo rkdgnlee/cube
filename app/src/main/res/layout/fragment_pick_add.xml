@@ -53,6 +53,7 @@
                 android:ems="10"
                 android:hint="루틴 이름"
                 android:inputType="text"
+                android:maxLength="20"
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -84,17 +85,19 @@
                         android:ems="10"
                         android:hint="제목"
                         android:inputType="text"
+                        android:maxLength="15"
                         android:textSize="16sp" />
 
                     <EditText
                         android:id="@+id/etPickAddExplain"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:background="#FFFFFF"
                         android:ems="10"
                         android:hint="설명을 입력해주세요"
                         android:inputType="text"
+                        android:maxLength="40"
                         android:textSize="20sp" />
                 </LinearLayout>
 

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.mhg.VO.ExerciseItemVO
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.databinding.ActivityPlayBinding
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -25,6 +25,8 @@ class PlayActivity : AppCompatActivity() {
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition = 0L
+
+
     
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +34,7 @@ class PlayActivity : AppCompatActivity() {
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val exerciseData: ExerciseItemVO? = intent.getParcelableExtra("exercise")
+        val exerciseData: ExerciseVO? = intent.getParcelableExtra("exercise")
         Log.w(TAG, "$exerciseData")
 
 //        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -56,7 +58,12 @@ class PlayActivity : AppCompatActivity() {
 
         playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
-
+        binding.btnExercisePlay.setOnClickListener {
+            val intent = Intent(this, PlayFullScreenActivity::class.java)
+            intent.putExtra("video_url", videoUrl)
+            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
+            startActivityForResult(intent, 8080)
+        }
 //        // -----! 전체화면 구현 로직 시작 !-----
 //        val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
 //

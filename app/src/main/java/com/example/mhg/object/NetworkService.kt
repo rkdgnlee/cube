@@ -2,7 +2,7 @@ package com.example.mhg.`object`
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import com.example.mhg.VO.ExerciseItemVO
+import com.example.mhg.VO.ExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -74,8 +74,8 @@ object NetworkService{
             }
         })
     }
-
-    suspend fun fetchExerciseJson(myUrl: String): List<ExerciseItemVO> {
+    // 전체 조회
+    suspend fun fetchExerciseJson(myUrl: String): List<ExerciseVO> {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}read.php")
@@ -89,12 +89,12 @@ object NetworkService{
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
 
                 jsonObj__?.optJSONArray("data")
-                val exerciseDataList = mutableListOf<ExerciseItemVO>()
+                val exerciseDataList = mutableListOf<ExerciseVO>()
                 val jsonArr = jsonObj__?.optJSONArray("data")
                 if (jsonArr != null) {
                     for (i in 0 until jsonArr.length()) {
                         val jsonObject = jsonArr.getJSONObject(i)
-                        val exerciseData = ExerciseItemVO(
+                        val exerciseData = ExerciseVO(
                             exerciseName = jsonObject.optString("exercise_name"),
                             exerciseDescription = jsonObject.getString("exercise_description"),
                             relatedJoint = jsonObject.getString("related_joint"),
@@ -119,8 +119,8 @@ object NetworkService{
             }
         }
     }
-
-    suspend fun fetchExerciseJsonByType(myUrl: String, id: String) : MutableList<ExerciseItemVO> {
+    /// type 별 조회
+    suspend fun fetchExerciseJsonByType(myUrl: String, id: String) : MutableList<ExerciseVO> {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}read.php?exercise_type_id=$id")
@@ -131,12 +131,12 @@ object NetworkService{
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
                 val jsonObj__ = responseBody?.let {JSONObject(it)}
-                val exerciseDataList = mutableListOf<ExerciseItemVO>()
+                val exerciseDataList = mutableListOf<ExerciseVO>()
                 val jsonArr = jsonObj__?.optJSONArray("data")
                 if (jsonArr != null) {
                     for (i in 0 until jsonArr.length()) {
                         val jsonObject = jsonArr.getJSONObject(i)
-                        val exerciseData = ExerciseItemVO(
+                        val exerciseData = ExerciseVO(
                             exerciseName = jsonObject.optString("exercise_name"),
                             exerciseDescription = jsonObject.getString("exercise_description"),
                             relatedJoint = jsonObject.getString("related_joint"),
@@ -159,6 +159,67 @@ object NetworkService{
                 }
                 exerciseDataList
                 }
+        }
+    }
+    // 즐겨찾기 넣기
+    fun fetchPickItemInsertJson(myUrl : String, json: String, callback: () -> Unit) {
+        val client = OkHttpClient()
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+        val request = Request.Builder()
+            .url("${myUrl}create.php")
+            .post(body) // post방식으로 insert 들어감
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("$TAG, 응답실패", "Failed to execute request!")
             }
+            override fun onResponse(call: Call, response: Response)  {
+                val responseBody = response.body?.string()
+                Log.e("$TAG, 응답성공", "$responseBody")
+                callback()
+            }
+        })
+    }
+
+    // 즐겨찾기 목록 조회
+    suspend fun fetchPickListJsonById(myUrl: String, id: String): MutableList<String> {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}read.php?user_id=$id")
+            .get()
+            .build()
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use {response ->
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3/picklistfetch", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                val jsonArray = jsonObj__?.getJSONArray("data")
+                val pickData = mutableListOf<String>()
+                if (jsonArray != null) {
+                    for (i in 0 until jsonArray.length()) {
+                        pickData.add(jsonArray.getString(i))
+                    }
+                }
+                pickData
+            }
+        }
+    }
+    // TODO: json 으로 받아올 수 있게 변환해야 함 responsebody를
+    suspend fun fetchPickItemJsonById(myUrl: String, PickName: String, id: String) : JSONObject? {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}read.php?")
+            .get()
+            .build()
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3/pickitemfetch", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                val jsonObj = jsonObj__?.getJSONObject("data")
+                jsonObj
+            }
+        }
     }
 }

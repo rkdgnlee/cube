@@ -23,7 +23,7 @@ import com.example.mhg.BasketItemTouchListener
 import com.example.mhg.ItemTouchCallback
 import com.example.mhg.PlayActivity
 import com.example.mhg.R
-import com.example.mhg.VO.ExerciseItemVO
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.databinding.RvAddListBinding
 import com.example.mhg.databinding.RvBasketListBinding
 import com.example.mhg.databinding.RvHomeListBinding
@@ -33,7 +33,7 @@ import java.util.Collections
 
 
 class HomeVerticalRecyclerViewAdapter(
-    var verticalList : MutableList<ExerciseItemVO>,
+    var verticalList : MutableList<ExerciseVO>,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     ItemTouchCallback.AddItemTouchListener
@@ -169,11 +169,11 @@ class HomeVerticalRecyclerViewAdapter(
                 holder.ibtnExerciseDetailPick.setImageResource(imageResource)
                 favorite = !favorite
             }
-            Glide.with(holder.itemView.context)
-                .load(R.drawable.home_warmup)
-                .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.ivExerciseDetail)
+//            Glide.with(holder.itemView.context)
+//                .load(R.drawable.home_warmup)
+//                .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .into(holder.ivExerciseDetail)
 
             // -----! RoutineDetail의 수직 RV 끝 !-----
 

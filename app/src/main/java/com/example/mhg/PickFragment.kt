@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.PickRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.databinding.FragmentPickBinding
+import com.example.mhg.`object`.Singleton_t_user
 
 
 class PickFragment : Fragment(), onPickDetailClickListener {
@@ -21,27 +22,28 @@ class PickFragment : Fragment(), onPickDetailClickListener {
     ): View {
         binding = FragmentPickBinding.inflate(inflater)
 
-        val pickList = mutableListOf<String>()
-        val jsonArray = viewModel.exerciseList.value
         // -----! viewmodel의 list관리 시작 !-----
-        // TODO 추후에 데이터 받아와서 여기다가 넣어야 함.
-        viewModel.exerciseList.observe(viewLifecycleOwner) {basketList ->
-            for (i in 0 until jsonArray!!.length()) {
-                val jsonObject = jsonArray.getJSONObject(i)
-                val exerciseName = jsonObject.getString("exercise_name")
-                pickList.add(exerciseName)
+        val pickList = mutableListOf<String>()
+        viewModel.pickList.observe(viewLifecycleOwner) { jsonArray ->
+            pickList.clear()
+            for (i in 0 until jsonArray.length()) {
+                val pickObject = jsonArray.getJSONObject(i)
+                pickList.add(pickObject.getString("pickName"))
             }
         }
         // -----! viewmodel의 list관리 끝 !-----
 
 
-        val PickRecyclerViewAdapter = PickRecyclerViewAdapter(pickList, this)
+
+
+        val PickRecyclerViewAdapter = PickRecyclerViewAdapter(pickList, this, requireActivity())
         binding.rvPick.adapter = PickRecyclerViewAdapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvPick.layoutManager = linearLayoutManager
 
 
         binding.btnPickAdd.setOnClickListener {
+            viewModel.exerciseUnits.value?.clear()
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flPick, PickAddFragment())

@@ -7,118 +7,238 @@
     tools:context=".PickDetailFragment">
 
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvPickDetail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        android:overScrollMode="always"
+        android:scrollbars="none">
 
-        <TextView
-            android:id="@+id/textView22"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            android:background="@drawable/shadow2"
-            android:gravity="center"
-            android:text="즐겨찾기"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilPickDetail"
-            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:background="#FFFFFF"
-            android:gravity="center"
-            android:paddingBottom="0dp"
-            android:textColorHint="@color/black"
-            app:boxBackgroundColor="@color/white"
-            app:boxBackgroundMode="outline"
-            app:boxCollapsedPaddingTop="0dp"
-            app:boxStrokeColor="@color/black"
-            app:counterTextColor="@color/white"
-            app:endIconDrawable="@drawable/pick_detail_icon"
-            app:endIconMinSize="24dp"
-            app:endIconMode="dropdown_menu"
-            app:endIconScaleType="centerCrop"
-            app:endIconTint="@color/textgrey_soft"
-            app:expandedHintEnabled="true"
-            app:helperTextTextColor="@color/black"
-            app:hintTextColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView22"
-            app:startIconTint="@color/textgrey">
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:background="@drawable/shadow2"
+                android:gravity="center"
+                android:text="즐겨찾기"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <AutoCompleteTextView
-                android:id="@+id/actPickDetail"
-                android:layout_width="196dp"
-                android:layout_height="64dp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPickDetail"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginTop="12dp"
                 android:background="#FFFFFF"
-                android:backgroundTint="#FFFFFF"
-                android:editable="false"
-                android:gravity="left|center_vertical"
-                android:inputType="none"
-                android:maxLength="10"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:popupBackground="@color/white"
-                android:text="안녕하세요안녕하세요"
+                android:gravity="center"
+                android:paddingBottom="0dp"
+                android:textColorHint="@color/black"
+                app:boxBackgroundColor="@color/white"
+                app:boxBackgroundMode="outline"
+                app:boxCollapsedPaddingTop="0dp"
+                app:boxStrokeColor="@color/black"
+                app:counterTextColor="@color/white"
+                app:endIconDrawable="@drawable/pick_detail_icon"
+                app:endIconMinSize="24dp"
+                app:endIconMode="dropdown_menu"
+                app:endIconScaleType="centerCrop"
+                app:endIconTint="@color/textgrey_soft"
+                app:expandedHintEnabled="true"
+                app:helperTextTextColor="@color/black"
+                app:hintTextColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView22"
+                app:startIconTint="@color/textgrey">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actPickDetail"
+                    android:layout_width="196dp"
+                    android:layout_height="64dp"
+                    android:background="#FFFFFF"
+                    android:backgroundTint="#FFFFFF"
+                    android:editable="false"
+                    android:gravity="left|center_vertical"
+                    android:inputType="none"
+                    android:maxLength="10"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:popupBackground="@color/white"
+                    android:text="안녕하세요안녕하세요"
+                    android:textColor="#000000"
+                    android:textColorHighlight="#000000"
+                    android:textColorHint="#000000"
+                    android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPickDetail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:overScrollMode="never"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPickStart"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/tvPickDetailExplainTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="피땀흘려 연구했읍니다"
                 android:textColor="#000000"
-                android:textColorHighlight="#000000"
-                android:textColorHint="#000000"
-                android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPickDetail"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/btnPickDetail"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplain" />
+            <TextView
+                android:id="@+id/tvPickDetailExplain"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="운동설명"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/tilPickDetail"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/tvPickDetailExplainTitle"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplainTitle" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPickDetail"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="112dp"
-            android:background="@drawable/pick_favorite_add_button"
-            android:elevation="16dp"
-            android:text="+ 추가하기"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent" />
+            <Button
+                android:id="@+id/btnPickStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/orange"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="운동 시작"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailUnitCount" />
 
-        <TextView
-            android:id="@+id/tvPickDetailExplainTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:text="설명제목"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
+            <ImageButton
+                android:id="@+id/btnPickDetailBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="#FFFFFF"
+                android:scaleType="fitCenter"
+                android:src="@drawable/report_calendar_button_left"
+                app:layout_constraintBottom_toBottomOf="@+id/textView22"
+                app:layout_constraintStart_toStartOf="@+id/textView22"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.3" />
 
-        <TextView
-            android:id="@+id/tvPickDetailExplain"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="운동설명"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/tilPickDetail"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/tvPickDetailExplainTitle"
-            app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplainTitle" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/textView43"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="설명 제목"
+                android:textColor="@color/textgrey_soft"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
 
+            <TextView
+                android:id="@+id/textView49"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="설명"
+                android:textColor="@color/textgrey_soft"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+            <TextView
+                android:id="@+id/tvPickDetailUnitAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="5"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                app:layout_constraintStart_toEndOf="@+id/textView57"
+                app:layout_constraintTop_toTopOf="@+id/textView57"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/tvPickDetailUnitCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="31"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView58"
+                app:layout_constraintStart_toEndOf="@+id/textView58"
+                app:layout_constraintTop_toTopOf="@+id/textView58" />
+
+            <TextView
+                android:id="@+id/textView57"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="총 "
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/textView49"
+                app:layout_constraintTop_toBottomOf="@+id/textView49" />
+
+            <TextView
+                android:id="@+id/textView58"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="개의 운동으로 "
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitAmount"
+                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitAmount"
+                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitAmount" />
+
+            <TextView
+                android:id="@+id/textView59"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="분이 소요됩니다"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitCount"
+                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitCount"
+                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitCount" />
+
+            <TextView
+                android:id="@+id/tvPickDetailEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="👍"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView59"
+                app:layout_constraintStart_toEndOf="@+id/textView59"
+                app:layout_constraintTop_toTopOf="@+id/textView59" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </FrameLayout>

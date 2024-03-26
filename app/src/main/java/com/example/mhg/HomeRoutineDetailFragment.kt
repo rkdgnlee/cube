@@ -11,7 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
-import com.example.mhg.VO.ExerciseItemVO
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeRoutineDetailBinding
 import com.example.mhg.`object`.NetworkService.fetchExerciseJsonByType
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class HomeRoutineDetailFragment : Fragment() {
     lateinit var binding: FragmentHomeRoutineDetailBinding
-    lateinit var exerciseList : MutableList<ExerciseItemVO> // 각 key값을 통해 map으로 가져온 데이터
+    lateinit var exerciseList : MutableList<ExerciseVO> // 각 key값을 통해 map으로 가져온 데이터
     val viewModel : UserViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

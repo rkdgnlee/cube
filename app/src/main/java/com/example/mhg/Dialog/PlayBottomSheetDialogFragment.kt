@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.mhg.R
-import com.example.mhg.VO.ExerciseItemVO
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.databinding.DialogfragmentPlayBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -68,7 +68,7 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
 
         // -----! bundle에서 꺼내서 데이터 보여주기 시작 !-----
         val bundle = arguments
-        val routine : ExerciseItemVO? = bundle?.getParcelable("typeList")
+        val routine : ExerciseVO? = bundle?.getParcelable("typeList")
         routine?.let {
 //            binding.tvPlayExerciseName.text = it.exerciseName
 //            binding.tvPlayRoutineDuration.text = it.videoTime
@@ -77,7 +77,7 @@ class PlayBottomSheetDialogFragment: BottomSheetDialogFragment() {
 //            binding.tvPlayRelatedMuscle.text = it.relatedMuscle
 //            binding.tvPlayRelatedSymptom.text = it.relatedSymptom
         }
-        val warmup : ExerciseItemVO? = bundle?.getParcelable("warmupList")
+        val warmup : ExerciseVO? = bundle?.getParcelable("warmupList")
         warmup?.let {
 //            binding.tvPlayExerciseName.text = it.exerciseName
 //            binding.tvPlayRoutineDuration.text = it.videoTime

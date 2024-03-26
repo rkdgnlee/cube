@@ -7,17 +7,28 @@ import org.json.JSONObject
 
 class ExerciseViewModel: ViewModel() {
     // 즐겨찾기
-    val exerciseItem = MutableLiveData(JSONObject())
-    val exerciseList = MutableLiveData(JSONArray())
-    val exerciseUnits = MutableLiveData(mutableListOf<ExerciseItemVO>())
+    val exerciseUnits = MutableLiveData(mutableListOf<ExerciseVO>())
+    val pickItem = MutableLiveData(JSONObject())
+    val pickList = MutableLiveData(JSONArray())
+    val pickItems = MutableLiveData(mutableListOf<PickItemVO>())
     init {
-        exerciseList.value = JSONArray()
-        exerciseItem.value = JSONObject()
         exerciseUnits.value = mutableListOf()
+        pickItem.value = JSONObject()
+        pickList.value = JSONArray()
+        pickItems.value = mutableListOf()
     }
 
-    fun addExercise(exercise: ExerciseItemVO) {
+    fun addExercise(exercise: ExerciseVO) {
         exerciseUnits.value?.add(exercise)
+    }
+    fun addPick(pickName: String, pickId: String) {
+        val pickObject = JSONObject().apply {
+            put("pickName", pickName)
+            put("pickId", pickId)
+        }
+        val currentList = pickList.value ?: JSONArray()
+        currentList.put(pickObject)
+        pickList.value= currentList
     }
     // 운동과 여러가지
 //    fun addExerciseBasket(exerciseItem: ExerciseBasketVO) {

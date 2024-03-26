@@ -8,15 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseViewModel
-
+import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickAddBinding
+import com.example.mhg.`object`.Singleton_t_user
 import com.google.gson.Gson
-import com.google.gson.JsonArray
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
@@ -38,7 +40,7 @@ class PickAddFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val t_userData = Singleton_t_user.getInstance(requireContext())
         binding.nsvPickAdd.isNestedScrollingEnabled = true
         binding.rvPickadd.isNestedScrollingEnabled = false
         binding.rvPickadd.overScrollMode = View.OVER_SCROLL_NEVER
@@ -78,32 +80,54 @@ class PickAddFragment : Fragment() {
         }
 
         binding.btnPickAddExercise.setOnClickListener {
-
+            viewModel.pickItem.value
             // -----! 즐겨찾기 하나 만들기 시작 !-----
-            viewModel.exerciseItem.value?.put("basket_name", binding.etPickAddName.text)
-            viewModel.exerciseItem.value?.put("basket_explain_title", binding.etPickAddName.text)
-            viewModel.exerciseItem.value?.put("basket_explain", binding.etPickAddName.text)
+            val pickItemVO = PickItemVO(
+                pickName = binding.etPickAddName.text.toString(),
+                pickExplainTitle = binding.etPickAddExplainTitle.text.toString(),
+                pickExplain = binding.etPickAddExplain.text.toString(),
+                pickDisclosure = when {
+                    binding.clPickAddPublic.visibility == View.VISIBLE -> "public"
+                    binding.clPickAddUnlisted.visibility == View.VISIBLE -> "unlisted"
+                    else -> "private"
+                },
+                exercises = viewModel.exerciseUnits.value
+            )
+            // 나중에Detail에서 꺼내볼 vm 만들기
+            viewModel.pickItems.value?.add(pickItemVO)
+            // -----! json으로 형식을 변환 !-----
+            val jsonObj = JSONObject(Gson().toJson(pickItemVO))
+            Log.w("즐겨찾기 하나 만들기", "${jsonObj.optString("pickName")}, ${jsonObj.optString("pickExplain")}, ${jsonObj.optString("exercises")}")
+            viewModel.pickItem.value = jsonObj
 
-            if (binding.clPickAddPublic.visibility == View.VISIBLE) {
-                viewModel.exerciseItem.value?.put("basket_disclosure", "public")
-            } else if (binding.clPickAddUnlisted.visibility == View.VISIBLE) {
-                viewModel.exerciseItem.value?.put("basket_disclosure", "unlisted")
-            } else {
-                viewModel.exerciseItem.value?.put("basket_disclosure", "private")
-            }
-            viewModel.exerciseItem.value?.put("basket_exercises", "${viewModel.exerciseUnits}")
-            val jsonObj = JSONObject()
 
+            // TODO 기능 구현을 위한 하드 코딩 (지워야 함)
+            viewModel.addPick(jsonObj.optString("pickName"), "4")
+            Log.w("뷰모델picklist", "${viewModel.pickList.value}")
             // -----! 즐겨찾기 하나 넣을 때, key값 = basket_name으로 !-----
-            jsonObj.put("${viewModel.exerciseItem.value?.optString("basket_name")}", viewModel.exerciseItem)
-            Log.w("즐겨찾기 하나", "${jsonObj}")
-            // TODO: JSON으로 만든 것 보내기
-            // -----! 즐겨찾기 하나 만들기 끝 !-----
+//            lifecycleScope.launch {
+//                 fetchPickItemInsertJson(getString(R.string.IP_ADDRESS_t_Exercise_Description), jsonObj_.toString()) {
+//                // -----! 즐겨찾기 리스트에 업데이트 시작 !-----
+//                // TODO 즐겨찾기가 추가되면서 CALLBACK으로 해당 내용다시 VIEWMODEL에 담기. PICKLIST로
+//            fetchPickListJsonById(getString(R.string.IP_ADDRESS_t_Exercise_Description), t_userData.jsonObject?.getString("user_mobile").toString())
 
-            // -----! 즐겨찾기 목록에 업데이트 !-----
-            // TODO -----! 즐겨찾기가 추가되면서 응답으로 갱신된 업데이트 목록 추가(select를 해서)
 
-            viewModel.exerciseList.value?.put(jsonObj)
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flPick, PickDetailFragment.newInstance(viewModel.pickItem.value!!.optString("pickName")))
+                    commit()
+                }
+//            }
+//                // -----! 즐겨찾기 하나 만들기 끝 !-----
+//            }
+
+
+
+
+
+
+
+
+
 
 
 

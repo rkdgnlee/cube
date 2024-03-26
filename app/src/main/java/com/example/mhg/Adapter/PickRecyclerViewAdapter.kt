@@ -1,48 +1,56 @@
 package com.example.mhg.Adapter
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mhg.Dialog.PickBottomSheetDialogFragment
+import com.example.mhg.R
+import com.example.mhg.VO.PickItemVO
 import com.example.mhg.VO.RoutingVO
 import com.example.mhg.databinding.RvPickListBinding
 import com.example.mhg.onPickDetailClickListener
 
 
-class PickRecyclerViewAdapter(var pickList: MutableList<String>, private val listener: onPickDetailClickListener ) : RecyclerView.Adapter<PickRecyclerViewAdapter.MyViewHolder>() {
-//    fun showBottomSheetDialog(context: FragmentActivity, pick: ExerciseViewModel) {
-//        val bottomsheetfragment = PickBottomSheetDialogFragment()
-//        val fragmentManager = context.supportFragmentManager
-//        val bundle = Bundle()
-//        bundle.putParcelable("picklist", pick.exercises.value?.get(0))
-//        bottomsheetfragment.arguments = bundle
-//        bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
-//    }
+class PickRecyclerViewAdapter(var pickList: MutableList<String>,val listener: onPickDetailClickListener, private val activity: FragmentActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class listViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val tvPickTitle = view.findViewById<TextView>(R.id.tvPickTitle)
+        val ivMore = view.findViewById<ImageView>(R.id.ivMore)
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = RvPickListBinding.inflate(inflater, parent, false)
+        return listViewHolder(binding.root)
+    }
+    override fun getItemCount(): Int {
+        return pickList.size
+    }
 
-    inner class MyViewHolder(private val binding: RvPickListBinding, private val context: FragmentActivity) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(pick : RoutingVO) {
-            binding.tvPickTitle.text = pick.title
-            binding.ivMore.setOnClickListener {
-//                showBottomSheetDialog(context, pick)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val currentItem = pickList[position]
+
+        if (holder is listViewHolder) {
+            holder.tvPickTitle.text = currentItem
+            holder.tvPickTitle.setOnClickListener {
+                listener.onPickClick(currentItem)
             }
-            binding.tvPickTitle.setOnClickListener {
-                listener.onPickClick(pick.title)
+            holder.ivMore.setOnClickListener {
+                showBottomSheetDialog(activity, pickList[position])
             }
         }
     }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder = MyViewHolder(
-        RvPickListBinding.inflate (
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        ), parent.context as FragmentActivity
-    )
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val currentItem = pickList.value!![position]
-    }
-
-    override fun getItemCount(): Int {
-        return pickList.value!!.length()
+    fun showBottomSheetDialog(context: FragmentActivity, pick: String) {
+        val bottomsheetfragment = PickBottomSheetDialogFragment()
+        val fragmentManager = context.supportFragmentManager
+        val bundle = Bundle()
+        bundle.putString("pickItemName", pick)
+        bottomsheetfragment.arguments = bundle
+        bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
     }
 }
