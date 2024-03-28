@@ -1,19 +1,28 @@
 package com.example.mhg
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.Color
+import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.UserViewModel
@@ -29,7 +38,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 class PlayFullScreenActivity : AppCompatActivity() {
         lateinit var binding: ActivityPlayFullScreenBinding
         lateinit var resultLauncher: ActivityResultLauncher<Intent>
-        private var videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
         val viewModel: ExerciseViewModel by viewModels()
         private var simpleExoPlayer: SimpleExoPlayer? = null
         private var player : SimpleExoPlayer? = null
@@ -43,21 +51,20 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setContentView(binding.root)
 
 //            // -----! landscape로 방향 설정 & 재생시간 받아오기 !-----
-//            videoUrl = intent.getStringExtra("video_url").toString()
-//            playbackPosition = intent.getLongExtra("current_position", 0L)
-//            initPlayer()
+
+            val videoUrl = intent.getStringExtra("video_url")
+            if (videoUrl != null) {
+                val url_list = ArrayList<String>()
+                url_list.add(videoUrl)
+                playbackPosition = intent.getLongExtra("current_position", 0L)
+                initPlayer(url_list)
+            }
+
 
            // -----! 받아온 즐겨찾기 재생 목록 시작 !-----
             val resourceList = intent.getStringArrayListExtra("resourceList")
             if (resourceList != null) {
-                simpleExoPlayer = SimpleExoPlayer.Builder(this).build()
-                binding.pvFullScreen.player = simpleExoPlayer
-                buildMediaSource(resourceList).let {
-                    simpleExoPlayer?.prepare(it)
-                    Log.w("resourcelist in fullscreen", "$resourceList")
-                }
-                simpleExoPlayer?.seekTo(playbackPosition)
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                initPlayer(resourceList)
 
                 // -----! 영상 간 1초의 간격 !-----
                 simpleExoPlayer!!.addListener(object : Player.Listener {
@@ -75,16 +82,21 @@ class PlayFullScreenActivity : AppCompatActivity() {
             // -----! 받아온 즐겨찾기 재생 목록 끝 !-----
             val exitButton = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_exit)
             exitButton.setOnClickListener {
-                onBackPressed()
+                showExitDialog()
             }
-
-            // -----! 원래 화면으로 돌아감 !-----
-//            val fullscreenButton = binding.pvFullScreen.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
-//            fullscreenButton.setOnClickListener {
-//                onBackPressed()
-//            }
-
         }
+        private fun initPlayer(resourceList: ArrayList<String>) {
+            simpleExoPlayer = SimpleExoPlayer.Builder(this).build()
+            binding.pvFullScreen.player = simpleExoPlayer
+            buildMediaSource(resourceList).let {
+                simpleExoPlayer?.prepare(it)
+                Log.w("resourcelist in fullscreen", "$resourceList")
+            }
+            simpleExoPlayer?.seekTo(playbackPosition)
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+
+
         private fun fullScreen(fullScreenOption : Int) {
             window.decorView.systemUiVisibility = (
                     fullScreenOption
@@ -98,15 +110,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
             super.onWindowFocusChanged(hasFocus)
             if(hasFocus) fullScreen(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
-//        private fun initPlayer(){
-//            simpleExoPlayer = SimpleExoPlayer.Builder(this).build()
-//            binding.pvFullScreen.player = simpleExoPlayer
-//            buildMediaSource().let {
-//                simpleExoPlayer?.prepare(it)
-//            }
-//            simpleExoPlayer?.seekTo(playbackPosition)
-//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-//        }
         // -----! 동영상 재생목록에 넣기 !-----
         private fun buildMediaSource(resourceList: ArrayList<String>) : MediaSource {
             val dataSourceFactory = DefaultDataSourceFactory(this, "MHG")
@@ -117,8 +120,26 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 concatenatingMediaSource.addMediaSource(mediaSource)
             }
             return concatenatingMediaSource
-
         }
+
+    private fun showExitDialog() {
+        val dialog = AlertDialog.Builder(this).apply {
+            setTitle("알림")
+            setMessage("운동을 종료하시겠습니까 ?")
+            setPositiveButton("예") { dialog, _ ->
+
+                // TODO feedback activity에서 운동 기록 데이터 백그라운드 작업 전송 필요
+                val intent= Intent(this@PlayFullScreenActivity, FeedbackActivity::class.java)
+                startActivity(intent)
+
+            }
+            setNegativeButton("아니오") { dialog, _ ->
+            }
+            create()
+        }
+        dialog.show()
+    }
+
         // 일시중지
         override fun onResume() {
             super.onResume()
@@ -146,17 +167,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-
-        val currentPosition = simpleExoPlayer?.currentPosition
-        val video_url = videoUrl
-        // TODO 시청기록에 대해 보내기 간단한 INSERT
-//        val intent = Intent(this,PlayActivity::class.java)
-//        intent.putExtra("current_position", currentPosition)
-//        intent.putExtra("video_url", video_url)
-//        setResult(Activity.RESULT_OK, intent)
-
-        simpleExoPlayer?.seekTo(currentPosition ?: 0)
         super.onBackPressed()
+
     }
 
 

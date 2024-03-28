@@ -146,31 +146,6 @@ class SignIn4Fragment : Fragment() {
                 }
             }
         }
-
-        // -----! 키보드만큼 버튼을 올리고 내리기 !-----
-//        binding.etMobile.setOnFocusChangeListener { _, hasFocus ->
-//            if (hasFocus) {
-//                binding.root.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
-//                    var viewHeight = -1
-//                    override fun onGlobalLayout() {
-//                        val visibleFrameSize = Rect()
-//                        binding.root.getWindowVisibleDisplayFrame(visibleFrameSize)
-//                        val visibleFrameHeight = visibleFrameSize.bottom - visibleFrameSize.top
-//                        val currentViewHeight = binding.root.height
-//                        if (currentViewHeight > viewHeight) {
-//                            viewHeight = currentViewHeight
-//                        }
-//                        val keyboardHeight = viewHeight - visibleFrameHeight
-//                        binding.btnSignIn.translationY = -keyboardHeight.toFloat()
-//                        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-//                    }
-//                })
-//            } else {
-//                binding.btnSignIn.translationY = 0f
-//            }
-//        }
-
-
     }
 
     fun phoneNumber82(msg: String) : String {

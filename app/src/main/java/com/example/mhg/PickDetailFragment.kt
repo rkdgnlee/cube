@@ -26,6 +26,7 @@ class PickDetailFragment : Fragment() {
     lateinit var binding : FragmentPickDetailBinding
     val viewModel : ExerciseViewModel by activityViewModels()
     lateinit var title : String
+
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     companion object {
         private const val ARG_TITLE = "title"
@@ -42,15 +43,13 @@ class PickDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-
-
             }
         }
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPickDetailBinding.inflate(inflater)
         return binding.root
 
@@ -68,16 +67,18 @@ class PickDetailFragment : Fragment() {
         binding.actPickDetail.setText(title)
         val t_userData = Singleton_t_user.getInstance(requireContext())
 
+
 //        // ----- 운동 picklist 가져오기 시작 -----
+        val appClass = requireContext().applicationContext as AppClass
         val pickList = mutableListOf<String>()
-        viewModel.pickList.observe(viewLifecycleOwner) { jsonArray ->
+        appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
             pickList.clear()
-            for (i in 0 until jsonArray.length()) {
-                val pickObject = jsonArray.getJSONObject(i)
-                pickList.add(pickObject.getString("pickName"))
+            for (i in 0 until jsonArray.size) {
+                pickList.add(jsonArray[i])
             }
             setPickDetail()
         }
+
         val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList)
         binding.actPickDetail.setAdapter(adapter)
         binding.actPickDetail.addTextChangedListener(object: TextWatcher {
@@ -86,6 +87,7 @@ class PickDetailFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 title = s.toString()
                 setPickDetail()
+
             }
         })
         // ----- 운동 즐겨찾기 리스트 가져오기 끝 -----
@@ -114,28 +116,36 @@ class PickDetailFragment : Fragment() {
     }
     @SuppressLint("NotifyDataSetChanged")
     private fun setPickDetail() {
-        val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
-        binding.tvPickDetailExplainTitle.text = currentItem?.pickExplainTitle.toString()
-        binding.tvPickDetailExplain.text = currentItem?.pickExplain.toString()
-        val RvAdapter = HomeVerticalRecyclerViewAdapter(currentItem?.exercises!!, "type")
-        RvAdapter.verticalList = currentItem.exercises
-        val linearLayoutManager2 =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.rvPickDetail.layoutManager = linearLayoutManager2
-        binding.rvPickDetail.adapter = RvAdapter
-        RvAdapter.notifyDataSetChanged()
 
-        binding.tvPickDetailUnitNumber.text = currentItem.exercises.size.toString()
-        Log.w("운동갯수", "${currentItem.exercises.size}")
+        val appClass = requireContext().applicationContext as AppClass
+        val currentItem2 = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
 
-        var totalTime = 0
-        for (i in 0 until currentItem.exercises.size) {
-            val exercises = currentItem.exercises.get(i)
-            Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
-            totalTime += exercises.videoTime!!.toInt()
+        if (currentItem2 != null) {
+            binding.tvPickDetailExplainTitle.text = currentItem2.pickExplainTitle.toString()
+            binding.tvPickDetailExplain.text = currentItem2.pickExplain.toString()
+            val RvAdapter = HomeVerticalRecyclerViewAdapter(currentItem2.exercises!!, "type")
+            RvAdapter.verticalList = currentItem2.exercises
+            val linearLayoutManager2 =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.rvPickDetail.layoutManager = linearLayoutManager2
+            binding.rvPickDetail.adapter = RvAdapter
+            RvAdapter.notifyDataSetChanged()
+
+            binding.tvPickDetailUnitNumber.text = currentItem2.exercises.size.toString()
+
+            var totalTime = 0
+            for (i in 0 until currentItem2.exercises.size) {
+                val exercises = currentItem2.exercises.get(i)
+                Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
+                totalTime += exercises.videoTime!!.toInt()
+            }
+            Log.w("총 시간", "$totalTime")
+            binding.tvPickDetailUnitTime.text = (totalTime.div(60)).toString()
         }
-        Log.w("총 시간", "$totalTime")
-        binding.tvPickDetailUnitTime.text = (totalTime.div(60)).toString()
+
+
+
+
     }
 
     private fun StorePickUrl() : MutableList<String> {

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".FeedbackActivity">
+
+            <TextView
+                android:id="@+id/textView55"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                android:text="운동은 어떠셨나요 ?\n당신의 의견을 들려주세요 !"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView64"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="운동 강도"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/rgFeedback"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/rgFeedback"
+        app:layout_constraintTop_toBottomOf="@+id/rgFeedback" />
+
+    <TextView
+        android:id="@+id/textView61"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="운동 피로도"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/nsIntense"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="@+id/nsIntense"
+        app:layout_constraintTop_toBottomOf="@+id/nsIntense" />
+
+    <!--    <com.airbnb.lottie.LottieAnimationView-->
+<!--        android:id="@+id/lavCongratulation"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:lottie_autoPlay="true"-->
+<!--        app:lottie_rawRes="@raw/congratulation"-->
+<!--        app:lottie_enableMergePathsForKitKatAndAbove="true"-->
+<!--        app:lottie_loop="true" />-->
+    <TextView
+        android:id="@+id/textView62"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="운동 만족도"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="@+id/nsFatigue"
+        app:layout_constraintTop_toBottomOf="@+id/nsFatigue" />
+
+    <TextView
+        android:id="@+id/textView63"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="그 외 피드백"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/nsSatisfic"
+        app:layout_constraintStart_toStartOf="@+id/nsSatisfic"
+        app:layout_constraintTop_toBottomOf="@+id/nsSatisfic" />
+
+    <com.litao.slider.NiftySlider
+        android:id="@+id/nsIntense"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="16dp"
+        android:stepSize="1"
+        android:value="5"
+        android:valueFrom="0"
+        android:valueTo="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView64"
+        app:thumbColor="@color/orange"
+        app:thumbRadius="12dp"
+        app:thumbWidth="16dp"
+        app:tickRadius="6dp"
+        app:ticksColor="@color/orange"
+        app:ticksColorInactive="@color/skeletongrey"
+        app:ticksVisible="true"
+        app:trackColor="@color/orange"
+        app:trackColorInactive="@color/skeletongrey"
+        app:trackHeight="16dp" />
+
+    <com.litao.slider.NiftySlider
+        android:id="@+id/nsFatigue"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="16dp"
+        android:stepSize="1"
+        android:value="5"
+        android:valueFrom="0"
+        android:valueTo="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView61"
+        app:thumbColor="@color/orange"
+        app:thumbRadius="12dp"
+        app:thumbWidth="16dp"
+        app:tickRadius="6dp"
+        app:ticksColor="@color/orange"
+        app:ticksColorInactive="@color/skeletongrey"
+        app:ticksVisible="true"
+        app:trackColor="@color/orange"
+        app:trackColorInactive="@color/skeletongrey"
+        app:trackHeight="16dp" />
+
+    <com.litao.slider.NiftySlider
+        android:id="@+id/nsSatisfic"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="16dp"
+        android:stepSize="1"
+        android:value="5"
+        android:valueFrom="0"
+        android:valueTo="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView62"
+        app:thumbColor="@color/orange"
+        app:thumbRadius="12dp"
+        app:thumbWidth="16dp"
+        app:tickRadius="6dp"
+        app:ticksColor="@color/orange"
+        app:ticksColorInactive="@color/skeletongrey"
+        app:ticksVisible="true"
+        app:trackColor="@color/orange"
+        app:trackColorInactive="@color/skeletongrey"
+        app:trackHeight="16dp" />
+
+            <RadioGroup
+                android:id="@+id/rgFeedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView60">
+
+                <RadioButton
+                    android:id="@+id/rbtnFeedbackIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="실내"
+                    android:textSize="18sp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+                <RadioButton
+                    android:id="@+id/rbtnFeedbackOut"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:text="야외"
+                    android:textSize="18sp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+                <RadioButton
+                    android:id="@+id/rbtnFeedbackFacility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="전문 운동 시설"
+                    android:textSize="18sp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+                <RadioButton
+                    android:id="@+id/rbtnFeddbackOther"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:text="기타"
+                    android:textSize="18sp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+            </RadioGroup>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView63">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tietFeedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="86dp"
+                    android:layout_margin="16dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnfeedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/orange"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="16dp"
+                android:text="완료"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:cornerRadius="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+                app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textView60"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="운동 장소"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView55" />
+        </androidx.constraintlayout.widget.ConstraintLayout>

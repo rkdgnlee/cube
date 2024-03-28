@@ -25,7 +25,10 @@
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimary">@color/orange</item>
     </style>
-
+    <style name="Theme.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/orange</item>
+    </style>
 
     <style name="Theme.App" parent="Theme.Material3.Light.Dialog.Alert">
         <item name="checkboxStyle">@style/Theme.App.Checkbox</item>

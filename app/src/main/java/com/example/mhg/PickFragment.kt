@@ -25,11 +25,11 @@ class PickFragment : Fragment(), onPickDetailClickListener {
 
         // -----! viewmodel의 list관리 시작 !-----
         val pickList = mutableListOf<String>()
-        viewModel.pickList.observe(viewLifecycleOwner) { jsonArray ->
+        val appClass = requireContext().applicationContext as AppClass
+        appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
             pickList.clear()
-            for (i in 0 until jsonArray.length()) {
-                val pickObject = jsonArray.getJSONObject(i)
-                pickList.add(pickObject.getString("pickName"))
+            for (i in 0 until jsonArray.size) {
+                pickList.add(jsonArray[i])
             }
             // 아무것도 없을 때 나오는 캐릭터
             if (pickList.size != 0) {
@@ -38,6 +38,7 @@ class PickFragment : Fragment(), onPickDetailClickListener {
                 binding.ivPickNull.visibility = View.VISIBLE
             }
         }
+
         // -----! viewmodel의 list관리 끝 !-----
 
 

@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +17,6 @@ import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickAddBinding
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.gson.Gson
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
@@ -93,8 +91,16 @@ class PickAddFragment : Fragment() {
                 },
                 exercises = viewModel.exerciseUnits.value?.toMutableList()
             )
-            // 나중에Detail에서 꺼내볼 vm 만들기
+            // -----! 나중에Detail에서 꺼내볼 vm 만들기 !-----
             viewModel.pickItems.value?.add(pickItemVO)
+
+            val appClass = requireContext().applicationContext as AppClass
+            appClass.pickItem = pickItemVO
+            appClass.pickList.value?.add(appClass.pickItem.pickName.toString())
+            appClass.pickItems.value?.add(appClass.pickItem)
+
+
+
             // -----! json으로 형식을 변환 !-----
             val jsonObj = JSONObject(Gson().toJson(pickItemVO))
             Log.w("즐겨찾기 하나 만들기", "${jsonObj.optString("pickName")}, ${jsonObj.optString("pickExplain")}, ${jsonObj.optString("exercises")}")
@@ -119,17 +125,6 @@ class PickAddFragment : Fragment() {
 //            }
 //                // -----! 즐겨찾기 하나 만들기 끝 !-----
 //            }
-
-
-
-
-
-
-
-
-
-
-
 
             // -----! 운동 만들기 버튼 클릭 끝 !-----
         }

@@ -56,6 +56,8 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+    implementation("com.airbnb.android:lottie:6.4.0")
+    implementation("io.github.litao0621:nifty-slider:1.4.6")
 
 // 로그인 api
     implementation("com.navercorp.nid:oauth:5.9.0")
@@ -63,9 +65,9 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation("com.kakao.sdk:v2-auth:2.19.0")
     implementation("com.google.gms:google-services:4.4.1")
-    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
-    implementation("com.google.firebase:firebase-analytics:21.5.1")
+    implementation("com.google.firebase:firebase-analytics:21.6.1")
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
