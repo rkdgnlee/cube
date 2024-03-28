@@ -91,7 +91,7 @@ class PickAddFragment : Fragment() {
                     binding.clPickAddUnlisted.visibility == View.VISIBLE -> "unlisted"
                     else -> "private"
                 },
-                exercises = viewModel.exerciseUnits.value
+                exercises = viewModel.exerciseUnits.value?.toMutableList()
             )
             // 나중에Detail에서 꺼내볼 vm 만들기
             viewModel.pickItems.value?.add(pickItemVO)

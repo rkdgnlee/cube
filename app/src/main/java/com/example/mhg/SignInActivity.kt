@@ -87,6 +87,7 @@ class SignInActivity :
                         animatorSet.playTogether(fadeIn, moveUp)
                         animatorSet.start()
                         binding.tvSignInNext.text = ""
+
                     }
                     else -> {
                         binding.tvSignInNext.text = "다음"
@@ -97,9 +98,6 @@ class SignInActivity :
         })
         binding.tvSignInPrevious.setOnSingleClickListener {
             binding.vp2SignIn.currentItem = binding.vp2SignIn.currentItem - 1
-            if (binding.vp2SignIn.currentItem == 0) {
-
-            }
         }
         binding.tvSignInNext.setOnSingleClickListener {
             binding.vp2SignIn.currentItem = binding.vp2SignIn.currentItem + 1

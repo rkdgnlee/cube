@@ -12,7 +12,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
-        app:cardCornerRadius="20dp"
+        app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,12 +29,25 @@
                 android:layout_width="90dp"
                 android:layout_height="0dp"
                 android:background="@drawable/home_vertical_image_shape"
-                android:scaleType="fitEnd"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/setupstrength" />
+                app:srcCompat="@drawable/setupdiet" />
+
+            <com.mackhartley.roundedprogressbar.RoundedProgressBar
+                android:id="@+id/rpbExerciseHistory"
+                android:layout_width="0dp"
+                android:layout_height="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ivExerciseDetail"
+                app:layout_constraintStart_toStartOf="parent"
+                app:rpbBackgroundColor="#00FFFFFF"
+                app:rpbCornerRadius="0dp"
+                app:rpbProgress="30"
+                app:rpbProgressColor="#FF0000"
+                app:rpbTextSize="0dp" />
 
             <TextView
                 android:id="@+id/tvExerciseDetailName"

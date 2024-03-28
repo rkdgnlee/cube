@@ -21,7 +21,8 @@ import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBeginnerBinding
-import com.example.mhg.`object`.NetworkService
+import com.example.mhg.`object`.NetworkExerciseService.fetchExerciseJson
+import com.example.mhg.`object`.NetworkUserService
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
@@ -60,7 +61,7 @@ class HomeBeginnerFragment : Fragment() {
         lifecycleScope.launch {
 
             // -----! db에서 받아서 뿌려주기 시작 !-----
-            val responseArrayList = NetworkService.fetchExerciseJson(getString(com.example.mhg.R.string.IP_ADDRESS_t_Exercise_Description))
+            val responseArrayList = fetchExerciseJson(getString(com.example.mhg.R.string.IP_ADDRESS_t_Exercise_Description))
             try {
                 // -----! horizontal 어댑터 시작 !-----
                 val adapter = HomeHorizontalRecyclerViewAdapter(

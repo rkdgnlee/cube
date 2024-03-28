@@ -11,8 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.mhg.databinding.FragmentProfileEditBinding
-import com.example.mhg.`object`.NetworkService.fetchUserDeleteJson
-import com.example.mhg.`object`.NetworkService.fetchUserUPDATEJson
+import com.example.mhg.`object`.NetworkUserService.fetchUserDeleteJson
+import com.example.mhg.`object`.NetworkUserService.fetchUserUPDATEJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase

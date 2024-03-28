@@ -8,14 +8,13 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivityPersonalSetupBinding
-import com.example.mhg.`object`.NetworkService.fetchUserUPDATEJson
+import com.example.mhg.`object`.NetworkUserService.fetchUserUPDATEJson
 import com.example.mhg.`object`.Singleton_t_user
 
 class PersonalSetupActivity : AppCompatActivity() {

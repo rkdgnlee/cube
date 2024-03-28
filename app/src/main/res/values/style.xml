@@ -28,7 +28,7 @@
 
 
     <style name="Theme.App" parent="Theme.Material3.Light.Dialog.Alert">
-        ...
+        <item name="checkboxStyle">@style/Theme.App.Checkbox</item>
         <item name="colorAccent">@color/orange</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorPrimary">@color/white</item>
@@ -58,5 +58,11 @@
         <item name="android:background">@drawable/fullscreen_button</item>
     </style>
 
+    <style name="DialogFragmentStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:radius">16dp</item>
+    </style>
 
 </resources>

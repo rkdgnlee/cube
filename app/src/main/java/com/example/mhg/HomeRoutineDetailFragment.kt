@@ -14,7 +14,8 @@ import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeRoutineDetailBinding
-import com.example.mhg.`object`.NetworkService.fetchExerciseJsonByType
+import com.example.mhg.`object`.NetworkExerciseService.fetchExerciseJsonByType
+
 import kotlinx.coroutines.launch
 
 class HomeRoutineDetailFragment : Fragment() {

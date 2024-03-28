@@ -1,6 +1,6 @@
 package com.example.mhg.`object`
 
-import android.content.ContentValues.TAG
+import android.content.ContentValues
 import android.util.Log
 import com.example.mhg.VO.ExerciseVO
 import kotlinx.coroutines.Dispatchers
@@ -15,65 +15,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-object NetworkService{
-    // TODO 매니저님이 짜준 로직 대로, JSON, METHOD 바꿔야함
-    fun fetchUserINSERTJson(myUrl : String, json: String, callback: () -> Unit){
-        val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
-        val request = Request.Builder()
-            .url("${myUrl}create.php")
-            .post(body) // post방식으로 insert 들어감
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("$TAG, 응답실패", "Failed to execute request!")
-            }
-            override fun onResponse(call: Call, response: Response)  {
-                val responseBody = response.body?.string()
-                Log.e("$TAG, 응답성공", "$responseBody")
-                callback()
-            }
-        })
-    }
-    fun fetchUserUPDATEJson(myUrl : String, json: String, user_mobile:String, callback: () -> Unit) {
-        val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
-        val request = Request.Builder()
-            .url("${myUrl}update.php?user_mobile=$user_mobile")
-            .patch(body)
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("$TAG, 응답실패", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.e("$TAG, 응답성공", "$responseBody")
-                callback()
-            }
-        })
-    }
-
-    fun fetchUserDeleteJson(myUrl : String, user_mobile:String, callback: () -> Unit) {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("${myUrl}delete.php?user_mobile=$user_mobile")
-            .delete()
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("$TAG, 응답실패", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.e("$TAG, 응답성공", "$responseBody")
-                callback()
-            }
-        })
-    }
+object NetworkExerciseService {
     // 전체 조회
     suspend fun fetchExerciseJson(myUrl: String): List<ExerciseVO> {
         val client = OkHttpClient()
@@ -130,7 +72,7 @@ object NetworkService{
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
-                val jsonObj__ = responseBody?.let {JSONObject(it)}
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
                 val exerciseDataList = mutableListOf<ExerciseVO>()
                 val jsonArr = jsonObj__?.optJSONArray("data")
                 if (jsonArr != null) {
@@ -158,7 +100,7 @@ object NetworkService{
                     }
                 }
                 exerciseDataList
-                }
+            }
         }
     }
     // 즐겨찾기 넣기
@@ -172,11 +114,11 @@ object NetworkService{
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("$TAG, 응답실패", "Failed to execute request!")
+                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
             }
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
-                Log.e("$TAG, 응답성공", "$responseBody")
+                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
                 callback()
             }
         })

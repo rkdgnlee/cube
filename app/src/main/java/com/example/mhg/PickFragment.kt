@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isInvisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.PickRecyclerViewAdapter
@@ -29,6 +30,12 @@ class PickFragment : Fragment(), onPickDetailClickListener {
             for (i in 0 until jsonArray.length()) {
                 val pickObject = jsonArray.getJSONObject(i)
                 pickList.add(pickObject.getString("pickName"))
+            }
+            // 아무것도 없을 때 나오는 캐릭터
+            if (pickList.size != 0) {
+                binding.ivPickNull.visibility= View.GONE
+            } else {
+                binding.ivPickNull.visibility = View.VISIBLE
             }
         }
         // -----! viewmodel의 list관리 끝 !-----

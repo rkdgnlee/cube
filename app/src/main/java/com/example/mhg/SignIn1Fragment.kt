@@ -110,7 +110,7 @@ class SignIn1Fragment : Fragment() {
     }
     private fun showAgreementBottomSheet(context: FragmentActivity) {
         val bottomSheetFragment = AgreementBottomSheetDialogFragment()
-        bottomSheetFragment.isCancelable = false
+//        bottomSheetFragment.isCancelable = false
         val fragmentManager = context.supportFragmentManager
         bottomSheetFragment.show(fragmentManager, bottomSheetFragment.tag)
 

@@ -132,7 +132,7 @@
                 app:cornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailUnitCount" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailUnitTime" />
 
             <ImageButton
                 android:id="@+id/btnPickDetailBack"
@@ -170,26 +170,26 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView43" />
 
             <TextView
-                android:id="@+id/tvPickDetailUnitAmount"
+                android:id="@+id/tvPickDetailUnitNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="5"
+                android:layout_marginStart="4dp"
+                android:text="0"
                 android:textColor="#000000"
-                android:textSize="20sp"
+                android:textSize="19sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView57"
                 app:layout_constraintStart_toEndOf="@+id/textView57"
                 app:layout_constraintTop_toTopOf="@+id/textView57"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="0.5" />
 
             <TextView
-                android:id="@+id/tvPickDetailUnitCount"
+                android:id="@+id/tvPickDetailUnitTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="31"
+                android:text="00"
                 android:textColor="#000000"
-                android:textSize="20sp"
+                android:textSize="19sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView58"
                 app:layout_constraintStart_toEndOf="@+id/textView58"
                 app:layout_constraintTop_toTopOf="@+id/textView58" />
@@ -210,12 +210,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="개의 운동으로 "
+                android:text="개의 운동으로 약"
                 android:textColor="#000000"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitAmount"
-                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitAmount"
-                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitAmount" />
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitNumber"
+                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitNumber"
+                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitNumber" />
 
             <TextView
                 android:id="@+id/textView59"
@@ -225,16 +225,16 @@
                 android:text="분이 소요됩니다"
                 android:textColor="#000000"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitCount"
-                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitCount"
-                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitCount" />
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitTime"
+                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitTime"
+                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitTime" />
 
             <TextView
                 android:id="@+id/tvPickDetailEmoji"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="👍"
+                android:text="🔥"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView59"
                 app:layout_constraintStart_toEndOf="@+id/textView59"

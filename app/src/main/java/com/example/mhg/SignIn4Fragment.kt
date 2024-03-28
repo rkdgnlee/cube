@@ -1,8 +1,5 @@
 package com.example.mhg
 
-import android.R.attr.button
-import android.R.attr.start
-import android.R.attr.visible
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -24,7 +21,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.mhg.Dialog.SignInBottomSheetDialogFragment
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentSignIn4Binding
-import com.example.mhg.`object`.NetworkService.fetchUserINSERTJson
+import com.example.mhg.`object`.NetworkUserService.fetchUserINSERTJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
@@ -34,7 +31,6 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
-import com.google.firebase.auth.ktx.auth
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 

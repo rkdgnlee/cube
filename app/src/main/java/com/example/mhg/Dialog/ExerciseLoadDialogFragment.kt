@@ -1,29 +1,18 @@
 package com.example.mhg.Dialog
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
-import com.example.mhg.PersonalSetupActivity
-import com.example.mhg.R
 import com.example.mhg.databinding.DialogfragmentExerciseLoadBinding
-import com.example.mhg.`object`.NetworkService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class ExerciseLoadDialogFragment : DialogFragment() {

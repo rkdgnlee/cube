@@ -13,11 +13,8 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.viewModels
-import com.example.mhg.Dialog.ExerciseLoadDialogFragment
-import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentIntro3Binding
-import com.example.mhg.`object`.NetworkService.fetchUserINSERTJson
+import com.example.mhg.`object`.NetworkUserService.fetchUserINSERTJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -39,13 +36,7 @@ import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
 import org.json.JSONObject
-import java.io.IOException
 import java.lang.Exception
 
 @Suppress("NAME_SHADOWING")

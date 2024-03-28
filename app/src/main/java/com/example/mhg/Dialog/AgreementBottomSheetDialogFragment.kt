@@ -34,7 +34,6 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
             val isChecked = binding.cbAgreementAll.isChecked
             binding.cbAgreement1.isChecked = isChecked
             binding.cbAgreement2.isChecked = isChecked
-            binding.cbAgreement3.isChecked = isChecked
             binding.cbAgreement4.isChecked = isChecked
         }
 
@@ -59,17 +58,14 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         // -----! 약관 링크 버튼 시작 !-----
         binding.ibtnAgreement1.setOnClickListener {
-
+            val dialog = AgreementDialogFragment.newInstance("agreement1")
+            dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
         }
         binding.ibtnAgreement2.setOnClickListener {
-
+            val dialog = AgreementDialogFragment.newInstance("agreement2")
+            dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
         }
-        binding.ibtnAgreement3.setOnClickListener {
 
-        }
-        binding.ibtnAgreement4.setOnClickListener {
-
-        }
         // -----! 약관 링크 버튼 끝 !-----
     }
 

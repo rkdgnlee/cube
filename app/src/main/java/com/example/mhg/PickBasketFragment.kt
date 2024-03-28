@@ -15,7 +15,7 @@ import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.databinding.FragmentPickBasketBinding
-import com.example.mhg.`object`.NetworkService.fetchExerciseJson
+import com.example.mhg.`object`.NetworkExerciseService.fetchExerciseJson
 import com.example.mhg.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 
