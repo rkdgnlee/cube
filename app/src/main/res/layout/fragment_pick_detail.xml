@@ -22,7 +22,7 @@
             android:background="#FFFFFF">
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/tvPickEdit"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
                 android:background="@drawable/shadow2"
@@ -58,7 +58,7 @@
                 app:hintTextColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView22"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEdit"
                 app:startIconTint="@color/textgrey">
 
                 <AutoCompleteTextView
@@ -85,13 +85,13 @@
                 android:id="@+id/rvPickDetail"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:overScrollMode="never"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnPickStart"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/textView56"
+                app:layout_constraintVertical_bias="0.014" />
 
             <TextView
                 android:id="@+id/tvPickDetailExplainTitle"
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
-                android:text="피땀흘려 연구했읍니다"
+                android:text="회전 근개 및 날개 집중 스트레칭"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@+id/textView43"
@@ -110,10 +110,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="운동설명"
+                android:layout_marginEnd="16dp"
+                android:text="어깨 가동범위를 점진적으로 늘려가며.."
                 android:textColor="#000000"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="@+id/tilPickDetail"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/tvPickDetailExplainTitle"
                 app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplainTitle" />
@@ -121,7 +122,7 @@
             <Button
                 android:id="@+id/btnPickStart"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_margin="16dp"
                 android:backgroundTint="@color/orange"
                 android:insetTop="0dp"
@@ -130,9 +131,9 @@
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailUnitTime" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <ImageButton
                 android:id="@+id/btnPickDetailBack"
@@ -141,8 +142,8 @@
                 android:background="#FFFFFF"
                 android:scaleType="fitCenter"
                 android:src="@drawable/report_calendar_button_left"
-                app:layout_constraintBottom_toBottomOf="@+id/textView22"
-                app:layout_constraintStart_toStartOf="@+id/textView22"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
+                app:layout_constraintStart_toStartOf="@+id/tvPickEdit"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.3" />
 
@@ -170,75 +171,94 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView43" />
 
             <TextView
-                android:id="@+id/tvPickDetailUnitNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="0"
-                android:textColor="#000000"
-                android:textSize="19sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView57"
-                app:layout_constraintStart_toEndOf="@+id/textView57"
-                app:layout_constraintTop_toTopOf="@+id/textView57"
-                app:layout_constraintVertical_bias="0.5" />
+                android:id="@+id/textView56"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:text="편집"
+                android:textColor="@color/orange"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView16"
+                app:layout_constraintTop_toTopOf="@+id/imageView16" />
 
-            <TextView
-                android:id="@+id/tvPickDetailUnitTime"
+            <ImageView
+                android:id="@+id/imageView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="00"
-                android:textColor="#000000"
-                android:textSize="19sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView58"
-                app:layout_constraintStart_toEndOf="@+id/textView58"
-                app:layout_constraintTop_toTopOf="@+id/textView58" />
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:src="@drawable/icon_edit_note"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llPickDetail" />
 
-            <TextView
-                android:id="@+id/textView57"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/llPickDetail"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="총 "
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/textView49"
-                app:layout_constraintTop_toBottomOf="@+id/textView49" />
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplain">
 
-            <TextView
-                android:id="@+id/textView58"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="개의 운동으로 약"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitNumber"
-                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitNumber"
-                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitNumber" />
+                <TextView
+                    android:id="@+id/tvPickDetailUnitNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="0"
+                    android:textColor="#000000"
+                    android:textSize="19sp" />
 
-            <TextView
-                android:id="@+id/textView59"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="분이 소요됩니다"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPickDetailUnitTime"
-                app:layout_constraintStart_toEndOf="@+id/tvPickDetailUnitTime"
-                app:layout_constraintTop_toTopOf="@+id/tvPickDetailUnitTime" />
+                <TextView
+                    android:id="@+id/textView58"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="개의 운동으로 약"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/tvPickDetailEmoji"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="🔥"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView59"
-                app:layout_constraintStart_toEndOf="@+id/textView59"
-                app:layout_constraintTop_toTopOf="@+id/textView59" />
+                <TextView
+                    android:id="@+id/textView57"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  총 "
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvPickDetailUnitTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00"
+                    android:textColor="#000000"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/textView59"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="분이 소요됩니다"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvPickDetailEmoji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="🔥"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

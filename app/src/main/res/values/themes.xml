@@ -7,6 +7,7 @@
 
     <style name="Theme.MHJ" parent="Base.Theme.MHG" >
         <item name="android:colorPrimary">@color/orange</item>
+        <item name="colorControlNormal">@color/orange</item>
         <item name="android:statusBarColor">@color/white</item>
 <!--        <item name="android:windowFullscreen">true</item>-->
         <item name="android:windowBackground">@color/white</item>

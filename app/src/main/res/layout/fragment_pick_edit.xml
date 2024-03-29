@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PickDetailFragment">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvPickDetail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        android:overScrollMode="always"
+        android:scrollbars="none">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:id="@+id/tvPickEdit"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:background="@drawable/shadow2"
+                android:gravity="center"
+                android:text="즐겨찾기 편집"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/tvPickEditName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:background="#FFFFFF"
+                android:text="어깨 루틴"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.501"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEdit" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPickDetail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView56"
+                app:layout_constraintVertical_bias="0.014" />
+
+            <EditText
+                android:id="@+id/tvPickEditExplainTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="#FFFFFF"
+                android:text="회전 근개 및 날개 집중 스트레칭"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView43"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/textView43"
+                app:layout_constraintTop_toTopOf="@+id/textView43" />
+
+            <EditText
+                android:id="@+id/tvPickEditExplain"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="#FFFFFF"
+                android:text="어깨 가동범위를 점진적으로 늘려가며.."
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView49"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/tvPickEditExplainTitle"
+                app:layout_constraintTop_toTopOf="@+id/textView49" />
+
+            <Button
+                android:id="@+id/btnPickStart"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/orange"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="완료"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnPickDetailBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="#FFFFFF"
+                android:scaleType="fitCenter"
+                android:src="@drawable/report_calendar_button_left"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
+                app:layout_constraintStart_toStartOf="@+id/tvPickEdit"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.3" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_marginTop="4dp"
+                app:dividerColor="@color/textgrey_soft"
+                app:layout_constraintEnd_toEndOf="@+id/tvPickEditExplainTitle"
+                app:layout_constraintStart_toStartOf="@+id/tvPickEditExplainTitle"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEditExplainTitle" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_marginTop="4dp"
+                app:dividerColor="@color/textgrey_soft"
+                app:layout_constraintEnd_toEndOf="@+id/tvPickEditExplain"
+                app:layout_constraintStart_toStartOf="@+id/tvPickEditExplain"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEditExplain" />
+
+            <TextView
+                android:id="@+id/textView43"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="27dp"
+                android:text="설명 제목"
+                android:textColor="@color/textgrey_soft"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEditName" />
+
+            <TextView
+                android:id="@+id/textView49"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:text="설명"
+                android:textColor="@color/textgrey_soft"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+            <TextView
+                android:id="@+id/textView56"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:text="운동 추가"
+                android:textColor="@color/orange"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/imageView16"
+                app:layout_constraintTop_toTopOf="@+id/imageView16"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <ImageView
+                android:id="@+id/imageView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="46dp"
+                android:src="@drawable/icon_add"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView49" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

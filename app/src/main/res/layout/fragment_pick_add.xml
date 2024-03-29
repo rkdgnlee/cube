@@ -47,7 +47,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="48dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/pickadd_textview_background"
                 android:ems="10"
@@ -56,7 +56,6 @@
                 android:maxLength="20"
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider9" />
 
@@ -64,7 +63,7 @@
                 android:id="@+id/cardView15"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="48dp"
                 app:cardCornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="@+id/etPickAddName"
                 app:layout_constraintStart_toStartOf="@+id/etPickAddName"
@@ -98,6 +97,7 @@
                         android:hint="설명을 입력해주세요"
                         android:inputType="text"
                         android:maxLength="40"
+                        android:scrollHorizontally="false"
                         android:textSize="20sp" />
                 </LinearLayout>
 
@@ -107,7 +107,7 @@
                 android:id="@+id/textView40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="36dp"
                 android:text="공개범위 설정"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -273,60 +273,17 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPickadd"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="vertical"
-                android:overScrollMode="never"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnPickAddGoBasket"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/textView44"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="운동 목록"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/cardView16"
-                app:layout_constraintTop_toBottomOf="@+id/cardView16" />
-
             <TextView
                 android:id="@+id/textView46"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginBottom="4dp"
-                android:text="즐겨찾기 추가"
+                android:text="즐겨찾기 만들기"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/materialDivider9"
                 app:layout_constraintStart_toStartOf="@+id/materialDivider9" />
-
-            <Button
-                android:id="@+id/btnPickAddGoBasket"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:backgroundTint="@color/orange"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="운동 추가"
-                android:textSize="18sp"
-                app:cornerRadius="16dp"
-                app:icon="@drawable/exercise_list_add"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/textView44"
-                app:layout_constraintTop_toBottomOf="@+id/cardView16" />
 
             <Button
                 android:id="@+id/btnPickAddExercise"
@@ -334,15 +291,16 @@
                 android:layout_height="64dp"
                 android:layout_gravity="bottom"
                 android:layout_margin="16dp"
+                android:layout_marginBottom="412dp"
                 android:backgroundTint="@color/orange"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="만들기"
+                android:text="완료"
                 android:textSize="20sp"
                 app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvPickadd" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
