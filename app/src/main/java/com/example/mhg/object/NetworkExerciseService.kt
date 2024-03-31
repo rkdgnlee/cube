@@ -3,6 +3,7 @@ package com.example.mhg.`object`
 import android.content.ContentValues
 import android.util.Log
 import com.example.mhg.VO.ExerciseVO
+import com.example.mhg.VO.PickItemVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -12,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
@@ -124,11 +126,11 @@ object NetworkExerciseService {
         })
     }
 
-    // 즐겨찾기 목록 조회
-    suspend fun fetchPickListJsonById(myUrl: String, id: String): MutableList<String> {
+    // 즐겨찾기 목록 조회 (PickItems에 담기)
+    suspend fun fetchPickItemsJsonByMobile(myUrl: String, mobile: String): JSONArray? {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_id=$id")
+            .url("${myUrl}read.php?user_mobile=$mobile")
             .get()
             .build()
         return withContext(Dispatchers.IO) {
@@ -137,31 +139,9 @@ object NetworkExerciseService {
                 Log.e("OKHTTP3/picklistfetch", "Success to execute request!: $responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
                 val jsonArray = jsonObj__?.getJSONArray("data")
-                val pickData = mutableListOf<String>()
-                if (jsonArray != null) {
-                    for (i in 0 until jsonArray.length()) {
-                        pickData.add(jsonArray.getString(i))
-                    }
-                }
-                pickData
+                jsonArray
             }
         }
     }
-    // TODO: json 으로 받아올 수 있게 변환해야 함 responsebody를
-    suspend fun fetchPickItemJsonById(myUrl: String, PickName: String, id: String) : JSONObject? {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("${myUrl}read.php?")
-            .get()
-            .build()
-        return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                Log.e("OKHTTP3/pickitemfetch", "Success to execute request!: $responseBody")
-                val jsonObj__ = responseBody?.let { JSONObject(it) }
-                val jsonObj = jsonObj__?.getJSONObject("data")
-                jsonObj
-            }
-        }
-    }
+
 }

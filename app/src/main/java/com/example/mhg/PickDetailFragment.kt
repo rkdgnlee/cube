@@ -15,11 +15,15 @@ import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseViewModel
+import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickDetailBinding
+import com.example.mhg.`object`.NetworkExerciseService
 import com.example.mhg.`object`.Singleton_t_user
+import kotlinx.coroutines.launch
 
 
 class PickDetailFragment : Fragment() {
@@ -43,14 +47,27 @@ class PickDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
+
+
             }
         }
+
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPickDetailBinding.inflate(inflater)
+
+        val appClass = requireContext().applicationContext as AppClass
+        val currentItem = appClass.pickItems.value?.find { it.pickName == title }
+        if (currentItem != null) {
+            if (currentItem.exercises!!.size != 0) {
+                binding.ivPickDetailNull.visibility = View.GONE
+            } else {
+                binding.ivPickDetailNull.visibility = View.VISIBLE
+            }
+        }
         return binding.root
 
     }
@@ -65,10 +82,16 @@ class PickDetailFragment : Fragment() {
 
         title = requireArguments().getString(ARG_TITLE).toString()
         binding.actPickDetail.setText(title)
+
+
+        // -----! singleton에서 전화번호 가져오기 시작 !-----
         val t_userData = Singleton_t_user.getInstance(requireContext())
+        val user_mobile = t_userData.jsonObject?.optString("user_mobile")
+        // -----! singleton에서 전화번호 가져오기 끝 !-----
 
 
-//        // ----- 운동 picklist 가져오기 시작 -----
+
+        // ----- 운동 picklist, 제목 가져오기 시작 -----
         val appClass = requireContext().applicationContext as AppClass
         val pickList = mutableListOf<String>()
         appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
@@ -78,6 +101,8 @@ class PickDetailFragment : Fragment() {
             }
             setPickDetail()
         }
+
+
 
         val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList)
         binding.actPickDetail.setAdapter(adapter)
@@ -90,7 +115,7 @@ class PickDetailFragment : Fragment() {
 
             }
         })
-        // ----- 운동 즐겨찾기 리스트 가져오기 끝 -----
+        // ----- 운동 picklist, 제목 가져오기 끝 -----
 
         // -----! 즐겨찾기로 운동 시작 !-----
         binding.btnPickStart.setOnClickListener {
@@ -118,34 +143,30 @@ class PickDetailFragment : Fragment() {
     private fun setPickDetail() {
 
         val appClass = requireContext().applicationContext as AppClass
-        val currentItem2 = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
+        val currentItem = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
 
-        if (currentItem2 != null) {
-            binding.tvPickDetailExplainTitle.text = currentItem2.pickExplainTitle.toString()
-            binding.tvPickDetailExplain.text = currentItem2.pickExplain.toString()
-            val RvAdapter = HomeVerticalRecyclerViewAdapter(currentItem2.exercises!!, "type")
-            RvAdapter.verticalList = currentItem2.exercises
+        if (currentItem != null) {
+            binding.tvPickDetailExplainTitle.text = currentItem.pickExplainTitle.toString()
+            binding.tvPickDetailExplain.text = currentItem.pickExplain.toString()
+            val RvAdapter = HomeVerticalRecyclerViewAdapter(currentItem.exercises!!, "type")
+            RvAdapter.verticalList = currentItem.exercises
             val linearLayoutManager2 =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvPickDetail.layoutManager = linearLayoutManager2
             binding.rvPickDetail.adapter = RvAdapter
             RvAdapter.notifyDataSetChanged()
 
-            binding.tvPickDetailUnitNumber.text = currentItem2.exercises.size.toString()
+            binding.tvPickDetailUnitNumber.text = currentItem.exercises.size.toString()
 
             var totalTime = 0
-            for (i in 0 until currentItem2.exercises.size) {
-                val exercises = currentItem2.exercises.get(i)
+            for (i in 0 until currentItem.exercises.size) {
+                val exercises = currentItem.exercises.get(i)
                 Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
                 totalTime += exercises.videoTime!!.toInt()
             }
             Log.w("총 시간", "$totalTime")
             binding.tvPickDetailUnitTime.text = (totalTime.div(60)).toString()
         }
-
-
-
-
     }
 
     private fun StorePickUrl() : MutableList<String> {
