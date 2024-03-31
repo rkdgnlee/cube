@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,8 +16,10 @@ import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickAddBinding
+import com.example.mhg.`object`.NetworkExerciseService
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
@@ -38,47 +41,10 @@ class PickAddFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val t_userData = Singleton_t_user.getInstance(requireContext())
-        binding.nsvPickAdd.isNestedScrollingEnabled = true
-        binding.rvPickadd.isNestedScrollingEnabled = false
-        binding.rvPickadd.overScrollMode = View.OVER_SCROLL_NEVER
-        binding.btnPickAddGoBasket.setOnClickListener{
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flPick, PickBasketFragment())
-                    .addToBackStack(null)
-                    .commit()
-            }
-        }
-        // -----! viewmodel의 추가되는 값 관찰하기 !-----
-        viewModel.exerciseUnits.observe(viewLifecycleOwner) { basketUnits ->
-            val adapter = HomeVerticalRecyclerViewAdapter(basketUnits, "add")
-            adapter.verticalList = basketUnits
 
-            val linearLayoutManager2 =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvPickadd.layoutManager = linearLayoutManager2
-
-            // -----! item에 swipe 및 dragNdrop 연결 !-----
-            val callback = ItemTouchCallback(adapter).apply {
-//                setClamp(260f)
-//                removePreviousClamp(binding.rvPickadd)
-            }
-
-            val touchHelper = ItemTouchHelper(callback)
-            touchHelper.attachToRecyclerView(binding.rvPickadd)
-            binding.rvPickadd.adapter = adapter
-            adapter.startDrag(object: HomeVerticalRecyclerViewAdapter.OnStartDragListener {
-                override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-                    touchHelper.startDrag(viewHolder)
-                }
-            })
-            adapter.notifyDataSetChanged()
-            // -----! swipe, drag 연동 !-----
-        }
 
         binding.btnPickAddExercise.setOnClickListener {
-            viewModel.pickItem.value
+
             // -----! 즐겨찾기 하나 만들기 시작 !-----
             val pickItemVO = PickItemVO(
                 pickName = binding.etPickAddName.text.toString(),
@@ -100,7 +66,6 @@ class PickAddFragment : Fragment() {
             appClass.pickItems.value?.add(appClass.pickItem)
 
 
-
             // -----! json으로 형식을 변환 !-----
             val jsonObj = JSONObject(Gson().toJson(pickItemVO))
             Log.w("즐겨찾기 하나 만들기", "${jsonObj.optString("pickName")}, ${jsonObj.optString("pickExplain")}, ${jsonObj.optString("exercises")}")
@@ -116,8 +81,6 @@ class PickAddFragment : Fragment() {
 //                // -----! 즐겨찾기 리스트에 업데이트 시작 !-----
 //                // TODO 즐겨찾기가 추가되면서 CALLBACK으로 해당 내용다시 VIEWMODEL에 담기. PICKLIST로
 //            fetchPickListJsonById(getString(R.string.IP_ADDRESS_t_Exercise_Description), t_userData.jsonObject?.getString("user_mobile").toString())
-
-
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flPick, PickDetailFragment.newInstance(viewModel.pickItem.value!!.optString("pickName")))
                     commit()
@@ -128,6 +91,7 @@ class PickAddFragment : Fragment() {
 
             // -----! 운동 만들기 버튼 클릭 끝 !-----
         }
+
 
         // -----! 공개 설정 코드 시작 !-----
         var rangeExpanded = false

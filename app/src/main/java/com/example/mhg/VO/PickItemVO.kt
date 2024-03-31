@@ -2,7 +2,9 @@ package com.example.mhg.VO
 
 import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class PickItemVO (
     val pickName : String? = "",
     val pickExplainTitle : String? = "",

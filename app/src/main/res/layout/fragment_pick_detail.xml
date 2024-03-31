@@ -81,18 +81,6 @@
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPickDetail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:overScrollMode="never"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView56"
-                app:layout_constraintVertical_bias="0.014" />
-
             <TextView
                 android:id="@+id/tvPickDetailExplainTitle"
                 android:layout_width="wrap_content"
@@ -171,7 +159,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView43" />
 
             <TextView
-                android:id="@+id/textView56"
+                android:id="@+id/tvPickDetailGoEdit"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
@@ -180,13 +168,13 @@
                 android:text="편집"
                 android:textColor="@color/orange"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView16"
+                app:layout_constraintBottom_toBottomOf="@+id/imagView16"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView16"
-                app:layout_constraintTop_toTopOf="@+id/imageView16" />
+                app:layout_constraintStart_toEndOf="@+id/imagView16"
+                app:layout_constraintTop_toTopOf="@+id/imagView16" />
 
             <ImageView
-                android:id="@+id/imageView16"
+                android:id="@+id/imagView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -257,6 +245,34 @@
                     android:layout_marginStart="4dp"
                     android:text="🔥"
                     android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/btnPickStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailGoEdit">
+
+                <ImageView
+                    android:id="@+id/ivPickDetailNull"
+                    android:layout_width="wrap_content"
+                    android:layout_height="300dp"
+                    android:src="@drawable/pick_null_image" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPickDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginRight="370dp"
+                    android:overScrollMode="never"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

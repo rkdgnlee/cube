@@ -7,11 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.PickRecyclerViewAdapter
 import com.example.mhg.VO.ExerciseViewModel
+import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickBinding
+import com.example.mhg.`object`.NetworkExerciseService.fetchPickItemsJsonByMobile
 import com.example.mhg.`object`.Singleton_t_user
+import kotlinx.coroutines.launch
 
 
 class PickFragment : Fragment(), onPickDetailClickListener {
@@ -23,42 +27,66 @@ class PickFragment : Fragment(), onPickDetailClickListener {
     ): View {
         binding = FragmentPickBinding.inflate(inflater)
 
-        // -----! viewmodel의 list관리 시작 !-----
-        val pickList = mutableListOf<String>()
-        val appClass = requireContext().applicationContext as AppClass
-        appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
-            pickList.clear()
-            for (i in 0 until jsonArray.size) {
-                pickList.add(jsonArray[i])
+        // -----! singleton에서 전화번호 가져오기 시작 !-----
+        val t_userData = Singleton_t_user.getInstance(requireContext())
+        val user_mobile = t_userData.jsonObject?.optString("user_mobile")
+        // -----! singleton에서 전화번호 가져오기 끝 !-----
+
+        lifecycleScope.launch {
+
+            // -----! 핸드폰 번호로 PickItems 가져오기 시작 !-----
+            val allDataList = fetchPickItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_Exercise_Description), "01011112222") // user_mobile 넣기
+
+            val pickList = mutableListOf<String>()
+            val appClass = requireContext().applicationContext as AppClass
+
+            // -----! appClass list관리 시작 !-----
+            if (allDataList != null) {
+                for (i in 0 .. allDataList.length()) {
+                    pickList.add(allDataList.getJSONObject(i).getString("favorite_name"))
+//                    val pickItemVO = PickItemVO()
+                        // TODO 여기다가 받아온 값 넣으면 됨
+
+
+
+                }
             }
-            // 아무것도 없을 때 나오는 캐릭터
-            if (pickList.size != 0) {
-                binding.ivPickNull.visibility= View.GONE
-            } else {
-                binding.ivPickNull.visibility = View.VISIBLE
+
+            appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
+                pickList.clear()
+                for (i in 0 until jsonArray.size) {
+                    pickList.add(jsonArray[i])
+                }
+                // 아무것도 없을 때 나오는 캐릭터
+                if (pickList.size != 0) {
+                    binding.ivPickNull.visibility= View.GONE
+                } else {
+                    binding.ivPickNull.visibility = View.VISIBLE
+                }
+            } // -----! appClass list관리 끝 !-----
+
+            val PickRecyclerViewAdapter = PickRecyclerViewAdapter(pickList, this@PickFragment, requireActivity())
+            binding.rvPick.adapter = PickRecyclerViewAdapter
+            val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.rvPick.layoutManager = linearLayoutManager
+
+            binding.btnPickAdd.setOnClickListener {
+                viewModel.exerciseUnits.value?.clear()
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                    replace(R.id.flPick, PickAddFragment())
+                    addToBackStack(null)
+                    commit()
+                }
             }
+            // -----! 핸드폰 번호로 PickItems 가져오기 끝 !-----
         }
 
-        // -----! viewmodel의 list관리 끝 !-----
 
 
 
 
-        val PickRecyclerViewAdapter = PickRecyclerViewAdapter(pickList, this, requireActivity())
-        binding.rvPick.adapter = PickRecyclerViewAdapter
-        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.rvPick.layoutManager = linearLayoutManager
 
-
-        binding.btnPickAdd.setOnClickListener {
-            viewModel.exerciseUnits.value?.clear()
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flPick, PickAddFragment())
-                addToBackStack(null)
-                commit()
-            }
-        }
 
         return binding.root
     }

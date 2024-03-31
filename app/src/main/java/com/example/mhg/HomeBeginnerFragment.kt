@@ -130,37 +130,26 @@ class HomeBeginnerFragment : Fragment() {
                     ) {
                         when (s.toString()) {
                             "인기순" -> {
-
                                 // TODO 추후에 이런 필터링을 거치려면, DATA를 받아올 때 운동이 있을 때, 수정날짜? 갱신날짜같은 걸 넣어서 받아올 때, 그것만 일주일마다 갱신되게? 유지보수 하면 될 듯?
                                 verticalDataList.sortByDescending { it.exerciseName }
                             }
-
                             "조회순" -> {
                                 verticalDataList.sortByDescending { it.videoTime }
                             }
-
                             "최신순" -> {
                                 verticalDataList.sortBy { it.relatedMuscle }
                             }
-
                             "오래된순" -> {
 
                             }
                         }
                         adapter2.notifyDataSetChanged()
                     }
-
                     override fun afterTextChanged(s: Editable?) {}
                 })
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Error storing exercises", e)
             }
-
-            // ----- 각각의 arrayList에 데이터 담는 공간 시작 ----
-
-            // ---- 각각의 arrayList에 데이터 담는 공간 끝 -----
-
-
             // ---- vertical RV에 들어갈 데이터 담는 공간 시작 ----
 
 //        val verticaldatalist = arrayListOf(
@@ -216,7 +205,6 @@ class HomeBeginnerFragment : Fragment() {
                 override fun onTabReselected(tab: TabLayout.Tab?) {}
             })
         }
-
         }
 }
 

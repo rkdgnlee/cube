@@ -52,18 +52,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tabLayout">
+                app:layout_constraintTop_toBottomOf="@+id/tlPickBasket">
 
             </androidx.recyclerview.widget.RecyclerView>
 
             <AutoCompleteTextView
-                android:id="@+id/editTextText"
+                android:id="@+id/actvPickBasket"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/pickadd_textview_background"
+                android:completionThreshold="2"
                 android:ems="10"
                 android:hint="검색어를 입력해주세요"
                 android:inputType="text"
@@ -73,7 +74,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView48" />
 
             <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
+                android:id="@+id/tlPickBasket"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginStart="16dp"
@@ -82,7 +83,7 @@
                 android:scrollIndicators="bottom"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextText"
+                app:layout_constraintTop_toBottomOf="@+id/actvPickBasket"
                 app:tabIndicatorColor="@color/orange"
                 app:tabIndicatorFullWidth="true"
                 app:tabSelectedTextColor="#000000"

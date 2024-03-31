@@ -8,7 +8,7 @@
 
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvPickDetail"
+        android:id="@+id/nsvPickEdit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fadeScrollbars="false"
@@ -34,7 +34,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/tvPickEditName"
+                android:id="@+id/etPickEditName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="36dp"
@@ -47,24 +47,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvPickEdit" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPickDetail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:overScrollMode="never"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView56"
-                app:layout_constraintVertical_bias="0.014" />
-
             <EditText
-                android:id="@+id/tvPickEditExplainTitle"
+                android:id="@+id/etPickEditExplainTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="48dp"
                 android:background="#FFFFFF"
                 android:text="회전 근개 및 날개 집중 스트레칭"
                 android:textColor="#000000"
@@ -76,10 +64,10 @@
                 app:layout_constraintTop_toTopOf="@+id/textView43" />
 
             <EditText
-                android:id="@+id/tvPickEditExplain"
+                android:id="@+id/etPickEditExplain"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="48dp"
                 android:background="#FFFFFF"
                 android:text="어깨 가동범위를 점진적으로 늘려가며.."
                 android:textColor="#000000"
@@ -87,11 +75,11 @@
                 app:layout_constraintBottom_toBottomOf="@+id/textView49"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/tvPickEditExplainTitle"
+                app:layout_constraintStart_toStartOf="@+id/etPickEditExplainTitle"
                 app:layout_constraintTop_toTopOf="@+id/textView49" />
 
             <Button
-                android:id="@+id/btnPickStart"
+                android:id="@+id/btnPickEditFinish"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_margin="16dp"
@@ -106,35 +94,27 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <ImageButton
-                android:id="@+id/btnPickDetailBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="#FFFFFF"
-                android:scaleType="fitCenter"
-                android:src="@drawable/report_calendar_button_left"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
-                app:layout_constraintStart_toStartOf="@+id/tvPickEdit"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.3" />
-
             <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider10"
                 android:layout_width="0dp"
                 android:layout_height="2dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
                 app:dividerColor="@color/textgrey_soft"
-                app:layout_constraintEnd_toEndOf="@+id/tvPickEditExplainTitle"
-                app:layout_constraintStart_toStartOf="@+id/tvPickEditExplainTitle"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickEditExplainTitle" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/etPickEditExplainTitle"
+                app:layout_constraintTop_toBottomOf="@+id/etPickEditExplainTitle" />
 
             <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider11"
                 android:layout_width="0dp"
                 android:layout_height="2dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
                 app:dividerColor="@color/textgrey_soft"
-                app:layout_constraintEnd_toEndOf="@+id/tvPickEditExplain"
-                app:layout_constraintStart_toStartOf="@+id/tvPickEditExplain"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickEditExplain" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/etPickEditExplain"
+                app:layout_constraintTop_toBottomOf="@+id/etPickEditExplain" />
 
             <TextView
                 android:id="@+id/textView43"
@@ -146,7 +126,7 @@
                 android:textColor="@color/textgrey_soft"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickEditName" />
+                app:layout_constraintTop_toBottomOf="@+id/etPickEditName" />
 
             <TextView
                 android:id="@+id/textView49"
@@ -160,7 +140,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView43" />
 
             <TextView
-                android:id="@+id/textView56"
+                android:id="@+id/tvPickEditGoBasket"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
@@ -169,15 +149,15 @@
                 android:text="운동 추가"
                 android:textColor="@color/orange"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView16"
+                app:layout_constraintBottom_toBottomOf="@+id/imagView16"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/imageView16"
-                app:layout_constraintTop_toTopOf="@+id/imageView16"
+                app:layout_constraintStart_toEndOf="@+id/imagView16"
+                app:layout_constraintTop_toTopOf="@+id/imagView16"
                 app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
-                android:id="@+id/imageView16"
+                android:id="@+id/imagView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -185,6 +165,69 @@
                 android:src="@drawable/icon_add"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView49" />
+
+            <ImageView
+                android:id="@+id/imageView15"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etPickEditName"
+                app:layout_constraintStart_toEndOf="@+id/etPickEditName"
+                app:layout_constraintTop_toTopOf="@+id/etPickEditName" />
+
+            <ImageView
+                android:id="@+id/imageView17"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etPickEditExplainTitle"
+                app:layout_constraintStart_toEndOf="@+id/etPickEditExplainTitle"
+                app:layout_constraintTop_toTopOf="@+id/etPickEditExplainTitle" />
+
+            <ImageView
+                android:id="@+id/imageView18"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etPickEditExplain"
+                app:layout_constraintStart_toEndOf="@+id/etPickEditExplain"
+                app:layout_constraintTop_toTopOf="@+id/etPickEditExplain" />
+
+            <TextView
+                android:id="@+id/tvPickEditBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="취소"
+                android:textColor="@color/setuptextgrey"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvPickEdit"
+                app:layout_constraintVertical_bias="0.4" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/btnPickEditFinish"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEditGoBasket"
+                app:layout_constraintVertical_bias="0.0">
+
+                <ImageView
+                    android:id="@+id/ivPickEditNull"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:src="@drawable/pick_null_image" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPickEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:overScrollMode="never" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
