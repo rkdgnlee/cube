@@ -8,7 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/mainwhite">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView11"
@@ -32,7 +33,8 @@
                 android:hint="이메일"
                 android:inputType="text"
                 android:padding="16dp"
-                android:paddingLeft="16dp" />
+                android:paddingLeft="16dp"
+                android:textColor="@color/mainblack" />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -41,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="이메일을 입력해주세요 !"
-            android:textColor="@color/textgrey"
+            android:textColor="@color/grey500"
             android:textSize="22sp"
             app:layout_constraintBottom_toTopOf="@+id/cardView11"
             app:layout_constraintEnd_toEndOf="@+id/cardView11"

@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/mainwhite"
     tools:context=".SignInActivity">
 
     <TextView
@@ -15,7 +16,7 @@
         android:layout_marginTop="56dp"
         android:layout_marginEnd="24dp"
         android:text="다음"
-        android:textColor="@color/setuptextgrey"
+        android:textColor="@color/grey800"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.75"
@@ -30,7 +31,7 @@
         android:layout_marginTop="56dp"
         android:layout_marginEnd="24dp"
         android:text="이전"
-        android:textColor="@color/setuptextgrey"
+        android:textColor="@color/grey800"
         android:textSize="22sp"
         app:layout_constraintEnd_toStartOf="@+id/diSignIn"
         app:layout_constraintHorizontal_bias="0.25"
@@ -56,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:foregroundGravity="center"
-        app:dotsColor="@color/button_grey"
+        app:dotsColor="@color/grey600"
         app:dotsCornerRadius="24dp"
         app:dotsElevation="4dp"
         app:dotsSize="32dp"
@@ -64,6 +65,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/vp2SignIn"
-        app:selectedDotColor="@color/orange" />
+        app:selectedDotColor="@color/mainColor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

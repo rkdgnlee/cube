@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="104dp">
+    android:layout_height="104dp"
+    android:background="@color/mainwhite">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -22,7 +23,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clTypeList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/mainwhite">
 
             <ImageView
                 android:id="@+id/ivExerciseDetail"
@@ -56,7 +58,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
                 android:text="목 관절 운동 프로그램(2)"
-                android:textColor="@color/black"
+                android:textColor="@color/mainblack"
                 android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@+id/ivExerciseDetail"
                 app:layout_constraintTop_toTopOf="@+id/ivExerciseDetail" />
@@ -70,7 +72,7 @@
                 android:layout_marginBottom="8dp"
                 android:maxLength="45"
                 android:text="어깨 및 삼각근, 위팔 두갈래근에 도움이 되는 운동"
-                android:textColor="@color/textgrey_soft"
+                android:textColor="@color/grey500"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnExerciseDetailPick"
@@ -83,7 +85,7 @@
                 android:id="@+id/ibtnExerciseDetailPick"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:backgroundTint="#FFFFFF"
+    android:background="@color/mainwhite"
     tools:context=".ReportFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,15 +19,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tabIconTint="@color/white"
+            app:tabIconTint="@color/mainwhite"
             app:tabIndicatorAnimationDuration="580"
             app:tabIndicatorAnimationMode="elastic"
-            app:tabIndicatorColor="@color/orange"
+            app:tabIndicatorColor="@color/mainColor"
             app:tabMode="fixed"
             app:tabRippleColor="#FFFFFF"
-            app:tabSelectedTextColor="@color/orange"
+            app:tabSelectedTextColor="@color/mainColor"
             app:tabTextAppearance="@style/tabTextSize"
-            app:tabTextColor="@color/setuptextgrey">
+            app:tabTextColor="@color/grey600">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

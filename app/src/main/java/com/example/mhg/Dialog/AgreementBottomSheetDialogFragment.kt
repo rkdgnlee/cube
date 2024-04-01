@@ -40,13 +40,13 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         val checkListener = CompoundButton.OnCheckedChangeListener{ _, _ ->
             if (binding.cbAgreement1.isChecked && binding.cbAgreement2.isChecked) {
-                binding.btnAgreementFinish.setBackgroundColor(binding.btnAgreementFinish.resources.getColor(R.color.orange))
-                binding.btnAgreementFinish.setTextColor(binding.btnAgreementFinish.resources.getColor(R.color.white))
+                binding.btnAgreementFinish.setBackgroundColor(binding.btnAgreementFinish.resources.getColor(R.color.mainColor))
+                binding.btnAgreementFinish.setTextColor(binding.btnAgreementFinish.resources.getColor(R.color.mainwhite))
                 binding.btnAgreementFinish.isEnabled = true
             } else {
-                binding.btnAgreementFinish.setBackgroundColor(binding.btnAgreementFinish.resources.getColor(R.color.textgrey_soft))
+                binding.btnAgreementFinish.setBackgroundColor(binding.btnAgreementFinish.resources.getColor(R.color.grey600))
                 binding.btnAgreementFinish.isEnabled = false
-                binding.btnAgreementFinish.setTextColor(binding.btnAgreementFinish.resources.getColor(R.color.black))
+                binding.btnAgreementFinish.setTextColor(binding.btnAgreementFinish.resources.getColor(R.color.mainblack))
             }
         }
         binding.cbAgreement1.setOnCheckedChangeListener(checkListener)

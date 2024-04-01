@@ -11,16 +11,16 @@
 
         <Button
             android:id="@+id/btnExercisePlay"
-            app:cornerRadius="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="16dp"
-            android:backgroundTint="@color/orange"
+            android:backgroundTint="@color/mainColor"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="운동 시작하기"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:cornerRadius="16dp" />
 
 </FrameLayout>

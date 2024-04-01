@@ -8,7 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/mainwhite">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView10"
@@ -34,6 +35,7 @@
                 android:padding="16dp"
                 android:paddingLeft="16dp"
                 android:textAlignment="gravity"
+                android:textColor="@color/mainblack"
                 android:textSize="20dp" />
         </androidx.cardview.widget.CardView>
 
@@ -43,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="이름을 입력해주세요 !"
-            android:textColor="@color/textgrey"
+            android:textColor="@color/grey500"
             android:textSize="22sp"
             app:layout_constraintBottom_toTopOf="@+id/cardView10"
             app:layout_constraintEnd_toEndOf="@+id/cardView10"

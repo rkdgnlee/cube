@@ -17,7 +17,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFFFF">
+            android:background="@color/mainwhite">
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider9"
@@ -25,7 +25,7 @@
                 android:layout_height="3dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="44dp"
-                app:dividerColor="@color/skeletongrey"
+                app:dividerColor="@color/mainColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
                 android:layout_height="3dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="44dp"
-                app:dividerColor="@color/orange"
+                app:dividerColor="@color/mainColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -55,6 +55,7 @@
                 android:inputType="text"
                 android:maxLength="20"
                 android:padding="16dp"
+                android:textColor="@color/mainblack"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider9" />
@@ -85,6 +86,7 @@
                         android:hint="제목"
                         android:inputType="text"
                         android:maxLength="15"
+                        android:textColor="@color/mainblack"
                         android:textSize="16sp" />
 
                     <EditText
@@ -98,6 +100,7 @@
                         android:inputType="text"
                         android:maxLength="40"
                         android:scrollHorizontally="false"
+                        android:textColor="@color/mainblack"
                         android:textSize="20sp" />
                 </LinearLayout>
 
@@ -146,6 +149,7 @@
                             android:layout_marginStart="4dp"
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
+                            android:background="@color/mainwhite"
                             android:src="@drawable/pick_public"
                             app:layout_constraintBottom_toBottomOf="@+id/tvPickAddPublic"
                             app:layout_constraintEnd_toStartOf="@+id/tvPickAddPublic"
@@ -159,6 +163,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:text="공개"
+                            android:textColor="@color/mainblack"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.12"
@@ -172,7 +177,7 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginBottom="8dp"
                             android:text="모든사용자가 검색하고 볼 수 있습니다."
-                            android:textColor="@color/textgrey_soft"
+                            android:textColor="@color/grey600"
                             android:textSize="12sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/tvPickAddPublic"
@@ -192,6 +197,7 @@
                             android:layout_marginStart="4dp"
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
+                            android:background="@color/mainwhite"
                             android:src="@drawable/pick_unlisted"
                             app:layout_constraintBottom_toBottomOf="@+id/tvPickAddUnlisted"
                             app:layout_constraintEnd_toStartOf="@+id/tvPickAddUnlisted"
@@ -205,6 +211,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:text="일부공개"
+                            android:textColor="@color/mainblack"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.13"
@@ -218,7 +225,7 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginBottom="8dp"
                             android:text="내가 링크를 공유한 사용자를 볼 수 있습니다."
-                            android:textColor="@color/textgrey_soft"
+                            android:textColor="@color/grey600"
                             android:textSize="12sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/tvPickAddUnlisted"
@@ -237,6 +244,7 @@
                             android:layout_marginStart="4dp"
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
+                            android:background="@color/mainwhite"
                             android:src="@drawable/pick_private"
                             app:layout_constraintBottom_toBottomOf="@+id/tvPickAddPrivate"
                             app:layout_constraintEnd_toStartOf="@+id/tvPickAddPrivate"
@@ -250,6 +258,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:text="비공개"
+                            android:textColor="@color/mainblack"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.13"
@@ -263,7 +272,7 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginBottom="8dp"
                             android:text="본인만 볼 수 있습니다."
-                            android:textColor="@color/textgrey_soft"
+                            android:textColor="@color/grey600"
                             android:textSize="12sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/tvPickAddPrivate"
@@ -280,6 +289,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginBottom="4dp"
                 android:text="즐겨찾기 만들기"
+                android:textColor="@color/mainblack"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/materialDivider9"
@@ -291,11 +301,12 @@
                 android:layout_height="64dp"
                 android:layout_gravity="bottom"
                 android:layout_margin="16dp"
-                android:layout_marginBottom="412dp"
-                android:backgroundTint="@color/orange"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/mainColor"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="완료"
+                android:textColor="@color/mainwhite"
                 android:textSize="20sp"
                 app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"

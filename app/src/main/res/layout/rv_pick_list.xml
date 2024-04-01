@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="70dp"
-    android:background="#FFFFFF">
+    android:background="@color/mainwhite">
 
     <TextView
         android:id="@+id/tvPickTitle"
@@ -14,7 +14,7 @@
         android:gravity="center_vertical"
         android:maxLength="20"
         android:text="TextView"
-        android:textColor="#000000"
+        android:textColor="@color/mainblack"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/materialDivider2"
         app:layout_constraintEnd_toStartOf="@+id/ivMore"
@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/more_button" />
+        app:srcCompat="@drawable/icon_more" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/materialDivider2"
@@ -40,7 +40,7 @@
         android:layout_height="2dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        app:dividerColor="@color/button_grey"
+        app:dividerColor="@color/grey500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

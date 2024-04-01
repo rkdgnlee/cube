@@ -5,7 +5,7 @@
     android:id="@+id/flHome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/mainwhite"
     tools:context=".HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,21 +21,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tabIconTint="@color/white"
+            app:tabIconTint="@color/mainwhite"
             app:tabIndicatorAnimationDuration="580"
             app:tabIndicatorAnimationMode="elastic"
-            app:tabIndicatorColor="@color/orange"
+            app:tabIndicatorColor="@color/mainColor"
             app:tabMode="fixed"
-            app:tabRippleColor="#FFFFFF"
-            app:tabSelectedTextColor="@color/orange"
+            app:tabRippleColor="@color/mainwhite"
+            app:tabSelectedTextColor="@color/mainColor"
             app:tabTextAppearance="@style/tabTextSize"
-            app:tabTextColor="@color/setuptextgrey">
+            app:tabTextColor="@color/grey800">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:backgroundTint="#FFFFFF"
+                android:background="@color/mainwhite"
+                android:backgroundTint="@color/mainwhite"
                 android:backgroundTintMode="add"
                 android:elevation="12dp"
                 android:focusable="auto"

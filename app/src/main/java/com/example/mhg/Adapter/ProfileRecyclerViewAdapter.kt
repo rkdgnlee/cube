@@ -1,11 +1,13 @@
 package com.example.mhg.Adapter
 
+import android.app.UiModeManager.MODE_NIGHT_YES
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.IntroActivity
 import com.example.mhg.MainActivity
@@ -62,6 +64,17 @@ class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 myViewHolder.btnprofiletitle.text = currentItem.title
                 myViewHolder.btnprofiletitle.setOnClickListener {
 
+                    if (currentItem.title == "모드설정") {
+                        var lightMode = true
+                        myViewHolder.btnprofiletitle.setOnClickListener {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                            lightMode = if (lightMode) {
+                                false
+                            } else {
+                                true
+                            }
+                        }
+                    }
                 }
 
             }

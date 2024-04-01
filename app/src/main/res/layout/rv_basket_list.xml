@@ -21,7 +21,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/mainwhite">
 
             <ImageView
                 android:id="@+id/ivPickBasket"
@@ -41,7 +42,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="42dp"
                 android:text="TextView"
-                android:textColor="#000000"
+                android:textColor="@color/mainblack"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnBasketMinus"
@@ -54,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="TextView"
-                android:textColor="@color/textgrey"
+                android:textColor="@color/grey500"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnBasketMinus"
                 app:layout_constraintStart_toStartOf="@+id/tvPickBasketName"
                 app:layout_constraintTop_toBottomOf="@+id/tvPickBasketName" />
@@ -65,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:text="0"
-                android:textColor="#000000"
+                android:textColor="@color/mainblack"
                 android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="@+id/ibtnBasketPlus"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnBasketPlus"
@@ -76,7 +77,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginEnd="12dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -88,7 +89,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginEnd="4dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="@+id/tvBasketCount"
                 app:layout_constraintEnd_toStartOf="@+id/tvBasketCount"

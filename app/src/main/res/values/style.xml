@@ -2,40 +2,38 @@
 <resources>
 
     <style name="OrangeRadioButton" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@color/orange</item>
-        <item name="colorControlNormal">@color/white</item>
-        <item name="colorOnContainer">@color/skeletongrey</item>
+        <item name="colorAccent">@color/mainColor</item>
+        <item name="colorControlNormal">@color/grey230</item>
+        <item name="colorOnContainer">@color/grey800</item>
         <item name="android:elevation">4dp</item>
     </style>
-
-
-
+    
     <style name="tabTextSize" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="Theme.App.Button" parent="Widget.AppCompat.Button">
-        <item name="colorAccent">@color/orange</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="colorPrimary">@color/white</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="colorAccent">@color/mainColor</item>
+        <item name="colorOnPrimary">@color/mainblack</item>
+        <item name="colorPrimary">@color/mainwhite</item>
+        <item name="android:windowBackground">@color/mainwhite</item>
     </style>
 
     <style name="Theme.App.Checkbox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorPrimary">@color/orange</item>
+        <item name="colorOnPrimary">@color/mainwhite</item>
+        <item name="colorPrimary">@color/mainColor</item>
     </style>
     <style name="Theme.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorPrimary">@color/orange</item>
+        <item name="colorOnPrimary">@color/mainwhite</item>
+        <item name="colorPrimary">@color/mainColor</item>
     </style>
 
     <style name="Theme.App" parent="Theme.Material3.Light.Dialog.Alert">
         <item name="checkboxStyle">@style/Theme.App.Checkbox</item>
-        <item name="colorAccent">@color/orange</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="colorPrimary">@color/white</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="colorAccent">@color/mainColor</item>
+        <item name="colorOnPrimary">@color/mainblack</item>
+        <item name="colorPrimary">@color/mainwhite</item>
+        <item name="android:windowBackground">@color/mainwhite</item>
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
@@ -67,5 +65,9 @@
         <item name="android:padding">0dp</item>
         <item name="android:radius">16dp</item>
     </style>
+
+<!--    <style name="Theme.MHG.Dark." parent="Base.Theme.MHG">-->
+<!--        <item name="android:windowBackground">@color/grey800</item>-->
+<!--    </style>-->
 
 </resources>

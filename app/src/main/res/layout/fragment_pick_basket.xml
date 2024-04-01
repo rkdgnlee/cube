@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/setuptextgrey"
+    android:background="@color/mainwhite"
     tools:context=".PickBasketFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -15,7 +15,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF">
+            android:background="@color/mainwhite">
 
             <TextView
                 android:id="@+id/textView48"
@@ -24,6 +24,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="원하는 운동을 탭해주세요 ❗"
+                android:textColor="@color/mainblack"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ibtnPickBasketBack" />
@@ -34,11 +35,11 @@
                 android:layout_height="64dp"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="16dp"
-                android:backgroundTint="@color/orange"
+                android:backgroundTint="@color/mainColor"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="완료"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 app:cornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,6 +70,7 @@
                 android:hint="검색어를 입력해주세요"
                 android:inputType="text"
                 android:padding="12dp"
+                android:textColor="@color/mainblack"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView48" />
@@ -79,16 +81,16 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:scrollIndicators="bottom"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/actvPickBasket"
-                app:tabIndicatorColor="@color/orange"
+                app:tabIndicatorColor="@color/mainColor"
                 app:tabIndicatorFullWidth="true"
                 app:tabRippleColor="#FFFFFF"
-                app:tabSelectedTextColor="#000000"
-                app:tabTextColor="@color/textgrey_soft">
+                app:tabSelectedTextColor="@color/mainblack"
+                app:tabTextColor="@color/grey800">
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -117,7 +119,7 @@
                 android:layout_height="44dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:scaleType="fitCenter"
                 android:src="@drawable/report_calendar_button_left"
                 app:layout_constraintEnd_toStartOf="@+id/textView65"
@@ -131,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="운동 추가"
-                android:textColor="@color/black"
+                android:textColor="@color/mainblack"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.501"

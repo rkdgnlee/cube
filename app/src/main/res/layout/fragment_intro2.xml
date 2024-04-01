@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/skeletongrey"
+    android:background="@color/grey230"
     tools:context=".Intro2Fragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,7 @@
             android:layout_marginTop="32dp"
             android:gravity="center"
             android:text="다양한 자세를 하나의 기구로\n운동해 보세요"
-            android:textColor="#4D4D4D"
+            android:textColor="@color/grey800"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

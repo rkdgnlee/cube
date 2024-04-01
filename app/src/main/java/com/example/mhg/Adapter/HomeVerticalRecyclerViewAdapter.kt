@@ -13,16 +13,21 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.BasketItemTouchListener
 import com.example.mhg.ItemTouchCallback
 import com.example.mhg.PlayActivity
 import com.example.mhg.R
 import com.example.mhg.VO.ExerciseVO
+import com.example.mhg.VO.ExerciseViewModel
+import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.RvAddListBinding
 import com.example.mhg.databinding.RvBasketListBinding
 import com.example.mhg.databinding.RvHomeListBinding
 import com.example.mhg.databinding.RvTypeListBinding
+import com.kakao.sdk.user.model.User
 import java.lang.IllegalArgumentException
 import java.util.Collections
 
@@ -35,8 +40,6 @@ class HomeVerticalRecyclerViewAdapter(
 {
     var basketListener: BasketItemTouchListener? = null
     lateinit var addListener: OnStartDragListener
-
-
 
     inner class homeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivhomevertical = view.findViewById<ImageView>(R.id.ivHomeVerticalImage)
@@ -199,6 +202,7 @@ class HomeVerticalRecyclerViewAdapter(
         } else if (holder is basketViewHolder) {
             holder.tvPickBasketName.text = currentItem.exerciseName
             holder.tvPickBasketDscript.text = currentItem.exerciseDescription
+
             holder.ibtnPickBasket.setOnClickListener {
                 basketListener?.onBasketItemClick(currentItem)
             }

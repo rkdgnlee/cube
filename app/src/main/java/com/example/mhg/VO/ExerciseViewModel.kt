@@ -11,11 +11,14 @@ class ExerciseViewModel: ViewModel() {
     val pickItem = MutableLiveData(JSONObject())
     val pickList = MutableLiveData(JSONArray())
     val pickItems = MutableLiveData(mutableListOf<PickItemVO>())
+
+    val itemQuantities = MutableLiveData<Map<String, Int>>(emptyMap())
     init {
         exerciseUnits.value = mutableListOf()
         pickItem.value = JSONObject()
         pickList.value = JSONArray()
         pickItems.value = mutableListOf()
+
     }
 
     fun addExercise(exercises: List<ExerciseVO>) {
@@ -25,9 +28,17 @@ class ExerciseViewModel: ViewModel() {
                 exerciseUnits.value?.add(exercise)
             }
         }
-
-//        exerciseUnits.value = updatedList
     }
+    fun setQuantityForItem(itemId: String, quantity: Int) {
+        itemQuantities.value = itemQuantities.value?.toMutableMap()?.apply {
+            put(itemId, quantity)
+        }
+    }
+
+    fun getQuantityForItem(itemId: String): Int {
+        return itemQuantities.value?.get(itemId)?: 0
+    }
+
     fun addPick(pickName: String, pickId: String) {
         val pickObject = JSONObject().apply {
             put("pickName", pickName)

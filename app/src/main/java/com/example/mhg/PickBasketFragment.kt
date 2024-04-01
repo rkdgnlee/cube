@@ -128,7 +128,7 @@ class PickBasketFragment : Fragment() {
 
     }
     private fun linkAdapter(list : MutableList<ExerciseVO>) {
-        adapter = HomeVerticalRecyclerViewAdapter(list, "basket")
+        adapter = HomeVerticalRecyclerViewAdapter(list,"basket")
         adapter.verticalList = list
 //        adapter.basketListener = this@PickBasketFragment
         val linearLayoutManager2 =

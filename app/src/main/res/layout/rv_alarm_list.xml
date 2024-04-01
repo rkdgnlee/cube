@@ -30,7 +30,7 @@
         android:id="@+id/clSwipe"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="#FFFFFF">
+        android:background="@color/mainwhite">
 
         <TextView
             android:id="@+id/tvAlarm"
@@ -41,7 +41,7 @@
             android:gravity="left|center_vertical"
             android:maxLength="60"
             android:text="알림 1알림 1알림 1알림 1알림 1알림 1알림 1알림1알림1알림1알림1알림1알림1알림"
-            android:textColor="@color/black"
+            android:textColor="@color/mainblack"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +54,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:text="5 Mins"
-            android:textColor="@color/setuptextgrey"
+            android:textColor="@color/grey500"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="ago"
-            android:textColor="@color/setuptextgrey"
+            android:textColor="@color/grey500"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView33"
             app:layout_constraintStart_toEndOf="@+id/textView33" />
@@ -72,7 +72,7 @@
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="0dp"
             android:layout_height="2dp"
-            android:background="@color/skeletongrey"
+            android:background="@color/grey300"
             app:dividerThickness="3dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

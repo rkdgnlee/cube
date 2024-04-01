@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/mainwhite"
     tools:context=".PersonalSetup3Fragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="52dp"
             android:text="몸무게를 입력해주세요"
-            android:textColor="@color/setuptextgrey"
+            android:textColor="@color/grey600"
             android:textSize="32sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +35,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView7"
             app:layout_constraintVertical_bias="0.432"
-            app:np_dividerColor="@color/orange"
+            app:np_dividerColor="@color/mainColor"
             app:np_dividerDistance="137dp"
             app:np_dividerThickness="3dp"
             app:np_itemSpacing="50dp"
@@ -43,10 +43,10 @@
             app:np_min="30"
             app:np_orientation="horizontal"
             app:np_selectedTextAlign="selectedTextAlignCenter"
-            app:np_selectedTextColor="@color/orange"
+            app:np_selectedTextColor="@color/mainColor"
             app:np_selectedTextSize="38dp"
             app:np_textAlign="textAlignCenter"
-            app:np_textColor="@color/setuptextgrey"
+            app:np_textColor="@color/grey600"
             app:np_textSize="28dp"
             app:np_value="65"
             app:np_wheelItemCount="8" />

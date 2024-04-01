@@ -12,7 +12,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFFFF">
+            android:background="@color/mainwhite">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
@@ -34,6 +34,7 @@
                     android:gravity="center"
                     android:text="2023.08.16 "
                     android:textAlignment="center"
+                    android:textColor="@color/mainblack"
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -67,7 +68,7 @@
                     android:id="@+id/btnReportCalendar"
                     android:layout_width="80dp"
                     android:layout_height="50dp"
-                    android:backgroundTint="#FFFFFF"
+                    android:backgroundTint="@color/mainwhite"
                     android:elevation="8dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
@@ -75,7 +76,7 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="24dp"
-                    app:iconTint="#000000" />
+                    app:iconTint="@color/mainblack" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -120,7 +121,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="8dp"
                     android:text="평균"
-                    android:textColor="@color/setuptextgrey"
+                    android:textColor="@color/grey600"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -141,6 +142,7 @@
                 android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:text="완료 운동"
+                android:textColor="@color/mainblack"
                 android:textSize="18dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -164,6 +166,7 @@
                 android:layout_marginTop="24dp"
                 android:gravity="center|right"
                 android:text="목"
+                android:textColor="@color/grey800"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@+id/cardView3"
                 app:layout_constraintTop_toTopOf="@+id/cardView3" />
@@ -176,6 +179,7 @@
                 android:layout_marginTop="32dp"
                 android:gravity="center|right"
                 android:text="어깨"
+                android:textColor="@color/grey800"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@+id/cardView3"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
@@ -187,6 +191,7 @@
                 android:layout_marginStart="24dp"
                 android:gravity="center|right"
                 android:text="팔꿈치"
+                android:textColor="@color/grey800"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/textView26"
                 app:layout_constraintStart_toEndOf="@+id/cardView3"
@@ -201,6 +206,7 @@
                 android:layout_marginBottom="32dp"
                 android:gravity="center|right"
                 android:text="골반"
+                android:textColor="@color/grey800"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/textView27"
                 app:layout_constraintStart_toEndOf="@+id/cardView3" />
@@ -213,6 +219,7 @@
                 android:layout_marginBottom="24dp"
                 android:gravity="center|right"
                 android:text="발목"
+                android:textColor="@color/grey800"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/cardView3"
                 app:layout_constraintStart_toEndOf="@+id/cardView3" />

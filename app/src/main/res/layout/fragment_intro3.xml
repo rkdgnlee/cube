@@ -5,7 +5,7 @@
     android:id="@+id/flIntro3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/mainwhite"
     tools:context=".Intro3Fragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout

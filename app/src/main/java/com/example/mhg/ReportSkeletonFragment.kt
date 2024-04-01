@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
@@ -34,7 +35,7 @@ import kotlin.random.Random
 
 class ReportSkeletonFragment : Fragment() {
     lateinit var binding : FragmentReportSkeletonBinding
-    val viewModel: UserViewModel by viewModels()
+    val viewModel: UserViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -138,17 +139,17 @@ class ReportSkeletonFragment : Fragment() {
         }
         val lineDataSet = LineDataSet(entries, "")
         lineDataSet.apply {
-            color = resources.getColor(R.color.orange, null)
+            color = resources.getColor(R.color.mainColor, null)
             circleRadius = 3F
             lineWidth = 3F
             mode = LineDataSet.Mode.CUBIC_BEZIER
             valueTextSize = 0F
-            setCircleColors(resources.getColor(R.color.orange))
+            setCircleColors(resources.getColor(R.color.mainColor))
 
         }
         xAxis.apply {
             textSize = 12f
-            textColor = resources.getColor(R.color.textgrey)
+            textColor = resources.getColor(R.color.grey600)
             labelRotationAngle = 2F
             setDrawAxisLine(true)
             setDrawGridLines(false)
@@ -185,7 +186,7 @@ class ReportSkeletonFragment : Fragment() {
         // ---- 하단 완료 목록 코드 시작 ----
         // 완료 목록 데이터 리스트 가져와야 함
         val verticaldatalist = ArrayList<ExerciseVO>()
-        val adapter = HomeVerticalRecyclerViewAdapter(verticaldatalist, "home")
+        val adapter = HomeVerticalRecyclerViewAdapter(verticaldatalist ,"home")
         adapter.verticalList = verticaldatalist
         binding.rvSkeletonVertical.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

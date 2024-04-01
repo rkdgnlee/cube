@@ -19,6 +19,7 @@ import com.example.mhg.Adapter.HomeHorizontalRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 
 import com.example.mhg.VO.ExerciseVO
+import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBeginnerBinding
 import com.example.mhg.`object`.NetworkExerciseService.fetchExerciseJson
@@ -79,7 +80,7 @@ class HomeBeginnerFragment : Fragment() {
                 val verticalDataList = responseArrayList.toMutableList()
 
 
-                val adapter2 = HomeVerticalRecyclerViewAdapter(verticalDataList, "home")
+                val adapter2 = HomeVerticalRecyclerViewAdapter(verticalDataList,"home" )
                 adapter2.verticalList = verticalDataList
                 binding.rvHomeBeginnerVertical.adapter = adapter2
                 val linearLayoutManager2 =

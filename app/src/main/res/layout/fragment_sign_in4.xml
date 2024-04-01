@@ -14,18 +14,20 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/mainwhite">
 
             <Button
                 android:id="@+id/btnAuthSend"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginEnd="32dp"
-                android:backgroundTint="@color/orange"
+                android:backgroundTint="@color/mainColor"
                 android:enabled="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="인증문자 발송"
+                android:textColor="@color/mainwhite"
                 android:textSize="16sp"
                 app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/cardView12"
@@ -47,9 +49,11 @@
                     android:id="@+id/tvTelecom"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/mainwhite"
                     android:padding="16dp"
                     android:paddingLeft="16dp"
                     android:text="통신사"
+                    android:textColor="#000000"
                     android:textSize="18sp" />
 
                 <ImageView
@@ -82,7 +86,8 @@
                     android:hint="핸드폰 번호"
                     android:inputType="phone"
                     android:padding="16dp"
-                    android:paddingLeft="16dp" />
+                    android:paddingLeft="16dp"
+                    android:textColor="@color/mainblack" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -104,7 +109,8 @@
                     android:hint="인증 번호"
                     android:inputType="number"
                     android:padding="16dp"
-                    android:paddingLeft="16dp" />
+                    android:paddingLeft="16dp"
+                    android:textColor="@color/mainblack" />
 
             </androidx.cardview.widget.CardView>
 
@@ -113,11 +119,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginEnd="32dp"
-                android:backgroundTint="@color/orange"
+                android:backgroundTint="@color/mainColor"
                 android:enabled="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="인증번호 확인"
+                android:textColor="@color/mainwhite"
                 android:textSize="16sp"
                 app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/cvAuthNumber"
@@ -130,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="핸드폰 인증"
-                android:textColor="@color/textgrey"
+                android:textColor="@color/grey800"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/cardView13"
                 app:layout_constraintEnd_toEndOf="@+id/cardView13"
@@ -149,7 +156,7 @@
                 android:paddingLeft="36dp"
                 android:paddingRight="36dp"
                 android:text="가입완료"
-                android:textColor="@color/white"
+                android:textColor="@color/mainwhite"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

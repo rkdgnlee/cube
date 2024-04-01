@@ -5,7 +5,7 @@
     android:id="@+id/flPick"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/mainwhite"
     tools:context=".PickFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -24,6 +24,7 @@
                 android:background="@drawable/shadow2"
                 android:gravity="center"
                 android:text="즐겨찾기"
+                android:textColor="@color/mainblack"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -41,9 +42,9 @@
                 <ImageView
                     android:id="@+id/ivPickNull"
                     android:layout_width="wrap_content"
-                    android:layout_height="300dp"
-                    android:background="#FFFFFF"
-                    android:src="@drawable/pick_null_image" />
+                    android:layout_height="270dp"
+                    android:background="@color/mainwhite"
+                    android:src="@drawable/image_pick_null" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvPick"
@@ -59,6 +60,7 @@
                 android:background="@drawable/pick_favorite_add_button"
                 android:elevation="16dp"
                 android:text="+ 추가하기"
+                android:textColor="@color/mainblack"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/mainwhite"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:elevation="0dp"
@@ -27,7 +27,7 @@
         app:itemIconSize="45dp"
         app:itemIconTint="@drawable/menu_selector_color"
         app:itemPaddingTop="28dp"
-        app:itemRippleColor="#00FFFFFF"
+        app:itemRippleColor="@color/mainwhite"
         app:itemTextAppearanceActiveBoldEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,14 +65,13 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="24dp"
-        android:background="#FFFFFF"
-        android:backgroundTint="#FFFFFF"
+        android:background="@color/mainwhite"
         android:backgroundTintMode="add"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.827"
         app:layout_constraintStart_toEndOf="@+id/imageView4"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/home_notification" />
+        app:srcCompat="@drawable/icon_notification" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="700dp"
-    android:background="#FFFFFF"
+    android:background="@color/mainwhite"
     tools:context=".PersonalSetup4Fragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="56dp"
             android:text="당신의 운동 목적을 골라주세요"
-            android:textColor="@color/setuptextgrey"
+            android:textColor="@color/grey800"
             android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

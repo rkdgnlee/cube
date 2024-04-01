@@ -19,7 +19,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFFFF">
+            android:background="@color/mainwhite">
 
             <TextView
                 android:id="@+id/tvPickEdit"
@@ -28,6 +28,7 @@
                 android:background="@drawable/shadow2"
                 android:gravity="center"
                 android:text="즐겨찾기 편집"
+                android:textColor="@color/mainblack"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -38,9 +39,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="36dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:text="어깨 루틴"
-                android:textColor="#000000"
+                android:textColor="@color/mainblack"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.501"
@@ -53,9 +54,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="48dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:text="회전 근개 및 날개 집중 스트레칭"
-                android:textColor="#000000"
+                android:textColor="@color/mainblack"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView43"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -68,9 +69,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="48dp"
-                android:background="#FFFFFF"
+                android:background="@color/mainwhite"
                 android:text="어깨 가동범위를 점진적으로 늘려가며.."
-                android:textColor="#000000"
+                android:textColor="@color/mainblack"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView49"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +84,7 @@
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_margin="16dp"
-                android:backgroundTint="@color/orange"
+                android:backgroundTint="@color/mainColor"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="완료"
@@ -100,7 +101,7 @@
                 android:layout_height="2dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
-                app:dividerColor="@color/textgrey_soft"
+                app:dividerColor="@color/grey300"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/etPickEditExplainTitle"
                 app:layout_constraintTop_toBottomOf="@+id/etPickEditExplainTitle" />
@@ -111,7 +112,7 @@
                 android:layout_height="2dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
-                app:dividerColor="@color/textgrey_soft"
+                app:dividerColor="@color/grey300"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/etPickEditExplain"
                 app:layout_constraintTop_toBottomOf="@+id/etPickEditExplain" />
@@ -123,7 +124,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="27dp"
                 android:text="설명 제목"
-                android:textColor="@color/textgrey_soft"
+                android:textColor="@color/grey600"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etPickEditName" />
@@ -134,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="36dp"
                 android:text="설명"
-                android:textColor="@color/textgrey_soft"
+                android:textColor="@color/grey600"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/textView43"
                 app:layout_constraintTop_toBottomOf="@+id/textView43" />
@@ -147,7 +148,7 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="16dp"
                 android:text="운동 추가"
-                android:textColor="@color/orange"
+                android:textColor="@color/mainColor"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imagView16"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -199,7 +200,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="취소"
-                android:textColor="@color/setuptextgrey"
+                android:textColor="@color/grey800"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
                 app:layout_constraintStart_toStartOf="parent"
@@ -219,8 +220,9 @@
                 <ImageView
                     android:id="@+id/ivPickEditNull"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:src="@drawable/pick_null_image" />
+                    android:layout_height="270dp"
+                    android:background="@color/mainwhite"
+                    android:src="@drawable/image_pick_null" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvPickEdit"

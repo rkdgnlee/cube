@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="@color/mainwhite">
 
         <TextView
             android:id="@+id/textView28"
@@ -18,7 +18,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="36dp"
             android:text="밸런스"
-            android:textColor="@color/setuptextgrey"
+            android:textColor="@color/grey800"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +31,7 @@
             android:layout_marginStart="196dp"
             android:layout_marginTop="76dp"
             android:text="종합"
-            android:textColor="@color/textgrey_soft"
+            android:textColor="@color/grey500"
             android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/textView28"
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="점"
-            android:textColor="@color/textgrey_soft"
+            android:textColor="@color/grey500"
             android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/tvReportDetailScore"
@@ -89,7 +89,7 @@
                 android:id="@+id/btnReportDetailAdd"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:backgroundTint="@color/button_grey"
+                android:backgroundTint="@color/mainwhite"
                 android:backgroundTintMode="add"
                 android:elevation="8dp"
                 android:insetTop="0dp"
@@ -155,13 +155,13 @@
             app:cardElevation="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView6" >
+            app:layout_constraintTop_toBottomOf="@+id/cardView6">
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:backgroundTint="@color/button_grey"
+                android:backgroundTint="@color/grey300"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="리포트 받기"

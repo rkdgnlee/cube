@@ -71,7 +71,7 @@ class SignIn2Fragment : Fragment() {
                     viewModel.User.value?.put("user_id", s.toString())
                     Log.w(ContentValues.TAG, "${viewModel.User.value?.getString("user_id")}")
                 } else {
-                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.orange))
+                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(R.color.mainColor))
                     binding.tvIdCondition.text = "조건에 일치하지 않습니다"
                 }
             }
@@ -96,7 +96,7 @@ class SignIn2Fragment : Fragment() {
                     binding.tvPwCondition.text = "조건에 일치합니다"
 
                 } else {
-                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(R.color.orange))
+                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(R.color.mainColor))
                     binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ? .)를 모두 포함해서 8~20자리를 입력해주세요"
 
                 }
@@ -120,7 +120,7 @@ class SignIn2Fragment : Fragment() {
                     binding.tvPwCompare.setTextColor(binding.tvPwCompare.resources.getColor(R.color.success_green))
                     binding.tvPwCompare.text = "비밀번호가 일치합니다"
                 } else {
-                    binding.tvPwCompare.setTextColor(binding.tvPwCompare.resources.getColor(R.color.orange))
+                    binding.tvPwCompare.setTextColor(binding.tvPwCompare.resources.getColor(R.color.mainColor))
                     binding.tvPwCompare.text = "비밀번호가 일치하지 않습니다"
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----

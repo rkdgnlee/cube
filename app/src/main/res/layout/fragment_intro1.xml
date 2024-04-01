@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/mainwhite">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/skeletongrey">
+        android:background="@color/grey230">
 
         <TextView
             android:id="@+id/textView2"
@@ -56,7 +56,7 @@
             android:layout_marginTop="56dp"
             android:gravity="center"
             android:text="큐짐 하나로 집에서도\n트레이닝을 시작해 보세요"
-            android:textColor="#4D4D4D"
+            android:textColor="@color/grey800"
             android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/ivIntro1Skeleton"
