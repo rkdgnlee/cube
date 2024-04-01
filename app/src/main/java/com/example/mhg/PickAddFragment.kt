@@ -1,6 +1,7 @@
 package com.example.mhg
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -43,9 +44,9 @@ class PickAddFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.btnPickAddExercise.setOnClickListener {
 
-            // -----! 즐겨찾기 하나 만들기 시작 !-----
+        // -----! 즐겨찾기 하나 만들기 시작 !-----
+        binding.btnPickAddExercise.setOnClickListener {
             val pickItemVO = PickItemVO(
                 pickName = binding.etPickAddName.text.toString(),
                 pickExplainTitle = binding.etPickAddExplainTitle.text.toString(),
@@ -82,7 +83,8 @@ class PickAddFragment : Fragment() {
 //                // TODO 즐겨찾기가 추가되면서 CALLBACK으로 해당 내용다시 VIEWMODEL에 담기. PICKLIST로
 //            fetchPickListJsonById(getString(R.string.IP_ADDRESS_t_Exercise_Description), t_userData.jsonObject?.getString("user_mobile").toString())
                 requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flPick, PickDetailFragment.newInstance(viewModel.pickItem.value!!.optString("pickName")))
+                    replace(R.id.flPick, PickDetailFragment.newInstance(pickItemVO.pickName.toString()))
+                    Log.w("$TAG, title", pickItemVO.pickName.toString())
                     commit()
                 }
 //            }

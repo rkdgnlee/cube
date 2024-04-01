@@ -9,6 +9,7 @@ data class ExerciseVO(
     var imgUrl: String? = "",
     var exerciseName: String? = "",
     var exerciseDescription: String? = "",
+    var exerciseDescriptionId: String? = "",
     var relatedJoint: String? = "",
     var relatedMuscle: String? = "",
     var relatedSymptom: String? = "",
@@ -23,7 +24,7 @@ data class ExerciseVO(
     var videoTime: String? = "",
     var exerciseTypeId: String? = "",
     var exerciseTypeName: String? = "",
-    var exerciseMethodId: String? = "",
+    var quantity: Int = 0
 ) : Parcelable {
 
 //담는거
@@ -46,6 +47,7 @@ data class ExerciseVO(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readInt()
     )
 
     override fun describeContents(): Int = 0
@@ -54,6 +56,7 @@ data class ExerciseVO(
             dest.writeString(imgUrl)
             dest.writeString(exerciseName)
             dest.writeString(exerciseDescription)
+            dest.writeString(exerciseDescriptionId)
             dest.writeString(relatedJoint)
             dest.writeString(relatedMuscle)
             dest.writeString(relatedSymptom)
@@ -68,7 +71,8 @@ data class ExerciseVO(
             dest.writeString(videoTime)
             dest.writeString(exerciseTypeId)
             dest.writeString(exerciseTypeName)
-            dest.writeString(exerciseMethodId)
+            dest.writeInt(quantity)
+
     }
 // 불러오는 거
     companion object CREATOR : Parcelable.Creator<ExerciseVO> {

@@ -2,6 +2,7 @@ package com.example.mhg.Adapter
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -13,12 +14,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.example.mhg.BasketItemTouchListener
 import com.example.mhg.ItemTouchCallback
 import com.example.mhg.PlayActivity
@@ -69,8 +64,10 @@ class HomeVerticalRecyclerViewAdapter(
         val ivPickBasket = view.findViewById<ImageView>(R.id.ivPickBasket)
         val tvPickBasketName = view.findViewById<TextView>(R.id.tvPickBasketName)
         val tvPickBasketDscript = view.findViewById<TextView>(R.id.tvPickBasketDscript)
-        val ibtnPickBasket = view.findViewById<ImageButton>(R.id.ibtnPickBasket)
-
+        val ibtnPickBasket = view.findViewById<ImageButton>(R.id.ibtnBasketPlus)
+        val tvBasketCount = view.findViewById<TextView>(R.id.tvBasketCount)
+        val ibtnBasketPlus = view.findViewById<ImageButton>(R.id.ibtnBasketPlus)
+        val ibtnBasketMinus = view.findViewById<ImageButton>(R.id.ibtnBasketMinus)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -111,7 +108,7 @@ class HomeVerticalRecyclerViewAdapter(
         return verticalList.size
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)  {
         val currentItem = verticalList[position]
         // -----! homeBeginner의 수직 RV 시작 !-----
@@ -204,13 +201,28 @@ class HomeVerticalRecyclerViewAdapter(
             holder.tvPickBasketDscript.text = currentItem.exerciseDescription
             holder.ibtnPickBasket.setOnClickListener {
                 basketListener?.onBasketItemClick(currentItem)
+            }
 
+            holder.ibtnBasketPlus.setOnClickListener {
+                currentItem.quantity += 1
+                holder.tvBasketCount.text = ( holder.tvBasketCount.text.toString().toInt() + 1 ). toString()
+            }
+            holder.ibtnBasketMinus.setOnClickListener {
+                if (currentItem.quantity > 0) {
+                    currentItem.quantity -= 1
+                    holder.tvBasketCount.text = currentItem.quantity.toString()
+                }
             }
 
 
 
         } // -----! pickbasket 수직 rv 끝 !-----
 
+    }
+    fun getSelectedItems(): MutableList<ExerciseVO> {
+        return verticalList.filter {
+            it.quantity >= 1
+        }.toMutableList()
     }
 //    fun getCheckedItems(): JSONObject {
 //        val checkedData = JSONObject()

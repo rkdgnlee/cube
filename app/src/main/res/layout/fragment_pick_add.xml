@@ -63,7 +63,7 @@
                 android:id="@+id/cardView15"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="36dp"
                 app:cardCornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="@+id/etPickAddName"
                 app:layout_constraintStart_toStartOf="@+id/etPickAddName"

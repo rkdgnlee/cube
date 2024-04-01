@@ -1,6 +1,9 @@
 package com.example.mhg
 
+import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.PickRecyclerViewAdapter
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickBinding
@@ -21,6 +25,7 @@ import kotlinx.coroutines.launch
 class PickFragment : Fragment(), onPickDetailClickListener {
     lateinit var binding : FragmentPickBinding
     val viewModel : ExerciseViewModel by activityViewModels()
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,40 +40,43 @@ class PickFragment : Fragment(), onPickDetailClickListener {
         lifecycleScope.launch {
 
             // -----! 핸드폰 번호로 PickItems 가져오기 시작 !-----
-            val allDataList = fetchPickItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_Exercise_Description), "01011112222") // user_mobile 넣기
-
-            val pickList = mutableListOf<String>()
+            val allDataList = fetchPickItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), "01011112222") // user_mobile 넣기
             val appClass = requireContext().applicationContext as AppClass
 
             // -----! appClass list관리 시작 !-----
             if (allDataList != null) {
-                for (i in 0 .. allDataList.length()) {
-                    pickList.add(allDataList.getJSONObject(i).getString("favorite_name"))
-//                    val pickItemVO = PickItemVO()
+                appClass.pickList.value?.clear()
+                appClass.pickItems.value?.clear()
+                viewModel.exerciseUnits.value?.clear()
+                for (i in 0 until allDataList.length()) {
+                    appClass.pickList.value?.add(allDataList.getJSONObject(i).getString("favorite_name"))
+                    val pickItemVO = PickItemVO(
+                        pickName = allDataList.getJSONObject(i).optString("favorite_name"),
+                        pickExplain = allDataList.getJSONObject(i).optString("favorite_name"),
+                        pickExplainTitle = allDataList.getJSONObject(i).optString("favorite_name"),
+                        pickDisclosure = allDataList.getJSONObject(i).optString("favorite_name"),
+//                        exercises = allDataList.getJSONObject(i).optString("exercise_description_ids")
+                        exercises = mutableListOf()
+                    )
+                    appClass.pickItems.value?.add(pickItemVO)
+                    Log.w("$TAG, pickitem", "${appClass.pickItems.value}")
                         // TODO 여기다가 받아온 값 넣으면 됨
-
-
-
                 }
             }
-
             appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
-                pickList.clear()
-                for (i in 0 until jsonArray.size) {
-                    pickList.add(jsonArray[i])
-                }
                 // 아무것도 없을 때 나오는 캐릭터
-                if (pickList.size != 0) {
+                if (jsonArray.size != 0) {
                     binding.ivPickNull.visibility= View.GONE
                 } else {
                     binding.ivPickNull.visibility = View.VISIBLE
                 }
             } // -----! appClass list관리 끝 !-----
 
-            val PickRecyclerViewAdapter = PickRecyclerViewAdapter(pickList, this@PickFragment, requireActivity())
+            val PickRecyclerViewAdapter = PickRecyclerViewAdapter(appClass.pickList.value!!, this@PickFragment, requireActivity())
             binding.rvPick.adapter = PickRecyclerViewAdapter
             val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvPick.layoutManager = linearLayoutManager
+            PickRecyclerViewAdapter.notifyDataSetChanged()
 
             binding.btnPickAdd.setOnClickListener {
                 viewModel.exerciseUnits.value?.clear()

@@ -6,11 +6,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PickItemVO (
-    val pickName : String? = "",
-    val pickExplainTitle : String? = "",
-    val pickExplain : String? = "",
+    var pickName : String? = "",
+    var pickExplainTitle : String? = "",
+    var pickExplain : String? = "",
     val pickDisclosure: String? = "",
-    val exercises : MutableList<ExerciseVO>?
+    var exercises : MutableList<ExerciseVO>?
 ) : Parcelable {
     constructor(parcel: Parcel): this(
         parcel.readString(),

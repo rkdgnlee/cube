@@ -2,6 +2,7 @@ package com.example.mhg
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -29,7 +30,7 @@ import kotlinx.coroutines.launch
 class PickDetailFragment : Fragment() {
     lateinit var binding : FragmentPickDetailBinding
     val viewModel : ExerciseViewModel by activityViewModels()
-    lateinit var title : String
+    var title = ""
 
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     companion object {
@@ -58,16 +59,6 @@ class PickDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPickDetailBinding.inflate(inflater)
-
-        val appClass = requireContext().applicationContext as AppClass
-        val currentItem = appClass.pickItems.value?.find { it.pickName == title }
-        if (currentItem != null) {
-            if (currentItem.exercises!!.size != 0) {
-                binding.ivPickDetailNull.visibility = View.GONE
-            } else {
-                binding.ivPickDetailNull.visibility = View.VISIBLE
-            }
-        }
         return binding.root
 
     }
@@ -80,19 +71,28 @@ class PickDetailFragment : Fragment() {
         binding.rvPickDetail.isNestedScrollingEnabled = false
         binding.rvPickDetail.overScrollMode = View.OVER_SCROLL_NEVER
 
+
         title = requireArguments().getString(ARG_TITLE).toString()
         binding.actPickDetail.setText(title)
+        val appClass = requireContext().applicationContext as AppClass
 
+        appClass.pickItems.observe(viewLifecycleOwner) {items ->
+            val currentItem = appClass.pickItems.value?.find { it.pickName == title }
+            if (currentItem != null) {
+                if (currentItem.exercises!!.size != 0) {
+                    binding.ivPickDetailNull.visibility = View.GONE
+                } else {
+                    binding.ivPickDetailNull.visibility = View.VISIBLE
+                }
+            }
+        }
 
         // -----! singleton에서 전화번호 가져오기 시작 !-----
         val t_userData = Singleton_t_user.getInstance(requireContext())
         val user_mobile = t_userData.jsonObject?.optString("user_mobile")
         // -----! singleton에서 전화번호 가져오기 끝 !-----
 
-
-
         // ----- 운동 picklist, 제목 가져오기 시작 -----
-        val appClass = requireContext().applicationContext as AppClass
         val pickList = mutableListOf<String>()
         appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
             pickList.clear()
@@ -101,9 +101,6 @@ class PickDetailFragment : Fragment() {
             }
             setPickDetail()
         }
-
-
-
         val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList)
         binding.actPickDetail.setAdapter(adapter)
         binding.actPickDetail.addTextChangedListener(object: TextWatcher {
@@ -124,8 +121,6 @@ class PickDetailFragment : Fragment() {
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
             startForResult.launch(intent)
-
-
         }
         // -----! 즐겨찾기로 운동 끝 !-----
 
@@ -138,29 +133,41 @@ class PickDetailFragment : Fragment() {
             }
             it.isClickable = true
         }
+
+        // -----! 편집 버튼 시작 !-----
+        binding.btnPickDetailGoEdit.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                replace(R.id.flMain, PickEditFragment.newInstance(title))
+                commit()
+            }
+        }
+
+        // -----! 편집 버튼 끝 !-----
+
     }
     @SuppressLint("NotifyDataSetChanged")
-    private fun setPickDetail() {
+     private fun setPickDetail(){
 
         val appClass = requireContext().applicationContext as AppClass
         val currentItem = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
-
+        Log.w("$TAG, currentItem", "$currentItem")
         if (currentItem != null) {
             binding.tvPickDetailExplainTitle.text = currentItem.pickExplainTitle.toString()
             binding.tvPickDetailExplain.text = currentItem.pickExplain.toString()
             val RvAdapter = HomeVerticalRecyclerViewAdapter(currentItem.exercises!!, "type")
-            RvAdapter.verticalList = currentItem.exercises
+            RvAdapter.verticalList = currentItem.exercises!!
             val linearLayoutManager2 =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvPickDetail.layoutManager = linearLayoutManager2
             binding.rvPickDetail.adapter = RvAdapter
             RvAdapter.notifyDataSetChanged()
 
-            binding.tvPickDetailUnitNumber.text = currentItem.exercises.size.toString()
+            binding.tvPickDetailUnitNumber.text = currentItem.exercises!!.size.toString()
 
             var totalTime = 0
-            for (i in 0 until currentItem.exercises.size) {
-                val exercises = currentItem.exercises.get(i)
+            for (i in 0 until currentItem.exercises!!.size) {
+                val exercises = currentItem.exercises!!.get(i)
                 Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
                 totalTime += exercises.videoTime!!.toInt()
             }
@@ -171,9 +178,10 @@ class PickDetailFragment : Fragment() {
 
     private fun StorePickUrl() : MutableList<String> {
         val resourceList = mutableListOf<String>()
+        val title = requireArguments().getString(ARG_TITLE).toString()
         val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
         for (i in 0 until currentItem?.exercises!!.size) {
-            val exercises = currentItem.exercises.get(i)
+            val exercises = currentItem.exercises!!.get(i)
             resourceList.add(exercises.videoFilepath.toString())
             Log.w("url연속으로 다 들어갔는지", "$resourceList")
         }

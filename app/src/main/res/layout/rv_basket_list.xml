@@ -44,7 +44,7 @@
                 android:textColor="#000000"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/ibtnPickBasket"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnBasketMinus"
                 app:layout_constraintStart_toEndOf="@+id/ivPickBasket"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,21 +55,45 @@
                 android:layout_marginTop="4dp"
                 android:text="TextView"
                 android:textColor="@color/textgrey"
-                app:layout_constraintEnd_toStartOf="@+id/ibtnPickBasket"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnBasketMinus"
                 app:layout_constraintStart_toStartOf="@+id/tvPickBasketName"
                 app:layout_constraintTop_toBottomOf="@+id/tvPickBasketName" />
 
+            <TextView
+                android:id="@+id/tvBasketCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="0"
+                android:textColor="#000000"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnBasketPlus"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnBasketPlus"
+                app:layout_constraintTop_toTopOf="@+id/ibtnBasketPlus" />
+
             <ImageButton
-                android:id="@+id/ibtnPickBasket"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
+                android:id="@+id/ibtnBasketPlus"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="12dp"
                 android:background="#FFFFFF"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/add_icon" />
+                app:srcCompat="@drawable/icon_plus" />
+
+            <ImageButton
+                android:id="@+id/ibtnBasketMinus"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="4dp"
+                android:background="#FFFFFF"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="@+id/tvBasketCount"
+                app:layout_constraintEnd_toStartOf="@+id/tvBasketCount"
+                app:layout_constraintTop_toTopOf="@+id/tvBasketCount"
+                app:srcCompat="@drawable/icon_minus" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

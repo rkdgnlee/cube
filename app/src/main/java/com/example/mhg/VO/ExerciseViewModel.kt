@@ -18,8 +18,15 @@ class ExerciseViewModel: ViewModel() {
         pickItems.value = mutableListOf()
     }
 
-    fun addExercise(exercise: ExerciseVO) {
-        exerciseUnits.value?.add(exercise)
+    fun addExercise(exercises: List<ExerciseVO>) {
+        val updatedList = exerciseUnits.value?.toMutableList()
+        for (exercise in exercises) {
+            repeat(exercise.quantity) {
+                exerciseUnits.value?.add(exercise)
+            }
+        }
+
+//        exerciseUnits.value = updatedList
     }
     fun addPick(pickName: String, pickId: String) {
         val pickObject = JSONObject().apply {
