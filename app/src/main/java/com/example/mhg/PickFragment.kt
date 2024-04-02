@@ -65,11 +65,11 @@ class PickFragment : Fragment(), onPickDetailClickListener {
             }
             appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
                 // 아무것도 없을 때 나오는 캐릭터
-                if (jsonArray.size != 0) {
-                    binding.ivPickNull.visibility= View.GONE
-                } else {
-                    binding.ivPickNull.visibility = View.VISIBLE
-                }
+//                if (jsonArray.size != 0) {
+//                    binding.ivPickNull.visibility= View.GONE
+//                } else {
+//                    binding.ivPickNull.visibility = View.VISIBLE
+//                }
             } // -----! appClass list관리 끝 !-----
 
             val PickRecyclerViewAdapter = PickRecyclerViewAdapter(appClass.pickList.value!!, this@PickFragment, requireActivity())

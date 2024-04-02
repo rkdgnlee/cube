@@ -62,15 +62,16 @@ class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 val myViewHolder = holder as MyViewHolder
                 val currentItem = profilemenulist[position]
                 myViewHolder.btnprofiletitle.text = currentItem.title
+                var lightMode = true
                 myViewHolder.btnprofiletitle.setOnClickListener {
-
                     if (currentItem.title == "모드설정") {
-                        var lightMode = true
-                        myViewHolder.btnprofiletitle.setOnClickListener {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                            lightMode = if (lightMode) {
+                        lightMode = when (lightMode) {
+                            true -> {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                                 false
-                            } else {
+                            }
+                            false -> {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                                 true
                             }
                         }

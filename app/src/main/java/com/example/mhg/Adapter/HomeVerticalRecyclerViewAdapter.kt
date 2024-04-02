@@ -203,17 +203,16 @@ class HomeVerticalRecyclerViewAdapter(
             holder.tvPickBasketName.text = currentItem.exerciseName
             holder.tvPickBasketDscript.text = currentItem.exerciseDescription
 
-            holder.ibtnPickBasket.setOnClickListener {
-                basketListener?.onBasketItemClick(currentItem)
-            }
-
             holder.ibtnBasketPlus.setOnClickListener {
                 currentItem.quantity += 1
+                basketListener?.onBasketItemIncrement(currentItem)
                 holder.tvBasketCount.text = ( holder.tvBasketCount.text.toString().toInt() + 1 ). toString()
+
             }
             holder.ibtnBasketMinus.setOnClickListener {
                 if (currentItem.quantity > 0) {
                     currentItem.quantity -= 1
+                    basketListener?.onBasketItemDecrement(currentItem)
                     holder.tvBasketCount.text = currentItem.quantity.toString()
                 }
             }

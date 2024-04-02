@@ -4,4 +4,7 @@ import com.example.mhg.VO.ExerciseVO
 
 interface BasketItemTouchListener {
     fun onBasketItemClick(item: ExerciseVO)
+
+    fun onBasketItemIncrement(item:ExerciseVO)
+    fun onBasketItemDecrement(item:ExerciseVO)
 }

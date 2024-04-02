@@ -127,6 +127,7 @@ class SignIn4Fragment : Fragment() {
                 val JsonObj = viewModel.User.value
                 val user_mobile = binding.etMobile.text.toString().replaceFirst("010", "+8210")
                 JsonObj?.put("user_mobile", user_mobile)
+
                 Log.w(TAG, "${JsonObj?.getString("user_mobile")}")
                 Log.w(TAG+"VIEWMODEL", "$JsonObj")
 

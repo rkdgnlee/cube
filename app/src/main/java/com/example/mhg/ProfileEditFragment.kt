@@ -38,11 +38,11 @@ class ProfileEditFragment : Fragment() {
         binding = FragmentProfileEditBinding.inflate(inflater)
 
         val t_userData = Singleton_t_user.getInstance(requireContext())
-        val user_id = t_userData.jsonObject?.getString("user_id")
+
         val user_password = t_userData.jsonObject?.getString("user_password")
         val user_email = t_userData.jsonObject?.getString("user_email")
         val user_mobile = t_userData.jsonObject?.getString("user_mobile")
-        Log.w("$TAG, update", "user_id: $user_id, user_email: $user_email, user_mobile: $user_mobile")
+        Log.w("$TAG, update", "user_email: $user_email, user_mobile: $user_mobile")
 
         binding.etPWProfileEdit.setText(user_password ?: "")
 
@@ -62,7 +62,7 @@ class ProfileEditFragment : Fragment() {
             JsonObj.put("user_email", etUser_email )
             JsonObj.put("user_mobile", etUser_mobile )
             if (user_mobile != null) {
-                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), user_mobile = user_mobile) {
+                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), t_userData.jsonObject!!.optString("user_mobile")) {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flMain, ProfileFragment())
                         commit()

@@ -86,9 +86,9 @@ class PersonalSetup1Fragment : Fragment() {
     override fun onPause() {
         super.onPause()
         if (binding.rbtnMale.isChecked) {
-            viewModel.User.value?.put("user_gender", "M")
+            viewModel.User.value?.put("user_gender", "남자")
         } else {
-            viewModel.User.value?.put("user_gender", "F")
+            viewModel.User.value?.put("user_gender", "여자")
         }
     }
 }

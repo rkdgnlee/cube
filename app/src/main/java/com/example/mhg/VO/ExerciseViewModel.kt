@@ -21,18 +21,21 @@ class ExerciseViewModel: ViewModel() {
 
     }
 
+    // 확인버튼 눌렀을 때 전체 다 담기
     fun addExercise(exercises: List<ExerciseVO>) {
-        val updatedList = exerciseUnits.value?.toMutableList()
         for (exercise in exercises) {
             repeat(exercise.quantity) {
                 exerciseUnits.value?.add(exercise)
             }
         }
     }
-    fun setQuantityForItem(itemId: String, quantity: Int) {
-        itemQuantities.value = itemQuantities.value?.toMutableMap()?.apply {
-            put(itemId, quantity)
-        }
+
+    // +- 수량 체크
+    fun setQuantity(itemId: String, quantity: Int) {
+//        itemQuantities.value = itemQuantities.value?.toMutableMap()?.apply {
+//            put(itemId, quantity)
+//        }
+//        exerciseUnits.value.
     }
 
     fun getQuantityForItem(itemId: String): Int {

@@ -37,13 +37,12 @@ class AgreementDialogFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAgreementDialogBinding.inflate(layoutInflater)
+        binding = FragmentAgreementDialogBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.btnAgreement.setOnClickListener {
             dismiss()
         }
@@ -83,10 +82,8 @@ class AgreementDialogFragment : DialogFragment() {
         binding = FragmentAgreementDialogBinding.inflate(layoutInflater)
         builder.setView(binding.root)
 
-        // TextView에 약관 텍스트를 설정합니다.
         binding.tvAgreement.text = agreementText
 
-        // Dialog를 반환합니다.
         return builder.create()
     }
 

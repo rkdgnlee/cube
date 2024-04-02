@@ -13,8 +13,11 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.finishAffinity
 import com.example.mhg.databinding.FragmentIntro3Binding
 import com.example.mhg.`object`.NetworkUserService.fetchUserINSERTJson
+import com.example.mhg.`object`.NetworkUserService.fetchUserSELECTJson
+import com.example.mhg.`object`.NetworkUserService.fetchUserUPDATEJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -168,11 +171,10 @@ class Intro3Fragment : Fragment() {
                         val naver_mobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
                         val naver_gender : String
                         naver_gender = if (result.profile?.gender.toString() == "M") {
-                            "MALE"
+                            "남자"
                         } else {
-                            "FEMALE"
+                            "여자"
                         }
-
                         JsonObj.put("user_name", result.profile?.name.toString())
                         JsonObj.put("user_gender", naver_gender)
                         JsonObj.put("user_mobile", naver_mobile)
@@ -181,13 +183,24 @@ class Intro3Fragment : Fragment() {
                         JsonObj.put("naver_login_id" , result.profile?.id.toString())
 
                         Log.i("$TAG, 네이버", JsonObj.getString("user_mobile"))
-                        fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
-                            val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                            t_userInstance?.jsonObject = JsonObj
-                            Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-                            MainInit()
-
+                        fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), naver_mobile.toString()) { jsonObj ->
+                            if (jsonObj?.getInt("status") == 404) {
+                                fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
+                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                                    t_userInstance?.jsonObject = JsonObj
+                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                    PersonalSetupInit()
+                                }
+                            } else {
+                                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), naver_mobile) {
+                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                                    t_userInstance?.jsonObject = JsonObj
+                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                    MainInit()
+                                }
+                            }
                         }
+
                     }
                 })
                 // ---- 네이버 로그인 성공 동작 끝 ----
@@ -218,20 +231,37 @@ class Intro3Fragment : Fragment() {
                             }
                             else if (user != null) {
                                 val JsonObj = JSONObject()
-                                val kakao_mobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("010", "+8210")
+                                val kakao_mobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-                                JsonObj.put("user_gender", user.kakaoAccount?.gender.toString())
+
+                                val kakao_user_gender = if (user.kakaoAccount?.gender.toString()== "MALE") {
+                                    "남자"
+                                } else {
+                                    "여자"
+                                }
+                                JsonObj.put("user_gender", kakao_user_gender)
                                 JsonObj.put("user_mobile", kakao_mobile)
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
                                 JsonObj.put("kakao_login_id" , user.id.toString())
 
                                 Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_mobile"))
-                                fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
-                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                                    t_userInstance?.jsonObject = JsonObj
-                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-                                    MainInit()
+                                fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), kakao_mobile) { jsonObj ->
+                                    if (jsonObj?.getInt("status") == 404) {
+                                        fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
+                                            val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                                            t_userInstance?.jsonObject = JsonObj
+                                            Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                            PersonalSetupInit()
+                                        }
+                                    } else {
+                                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), kakao_mobile) {
+                                            val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
+                                            t_userInstance?.jsonObject = JsonObj
+                                            Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                            MainInit()
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -254,6 +284,11 @@ class Intro3Fragment : Fragment() {
     private fun MainInit() {
         val intent = Intent(requireContext() ,MainActivity::class.java)
         startActivity(intent)
+    }
+    private fun PersonalSetupInit() {
+        val intent = Intent(requireContext(), PersonalSetupActivity::class.java)
+        startActivity(intent)
+
     }
 //    private fun setToken(context: Context, key: String, value: String) {
 //        val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC

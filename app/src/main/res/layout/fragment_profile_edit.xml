@@ -9,7 +9,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/mainwhite">
+        android:background="@color/mainwhite"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/textView39"
@@ -26,12 +27,15 @@
 
         <EditText
             android:id="@+id/etPWProfileEdit"
-            android:layout_width="200dp"
-            android:layout_height="70dp"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="44dp"
+            android:background="@drawable/pickadd_textview_background"
             android:ems="10"
             android:hint="PW"
             android:inputType="textPassword"
+            android:maxLength="20"
+            android:padding="16dp"
             app:layout_constraintEnd_toEndOf="@+id/textView39"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="@+id/textView39"
@@ -39,12 +43,15 @@
 
         <EditText
             android:id="@+id/etEmailProfileEdit"
-            android:layout_width="200dp"
-            android:layout_height="70dp"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="32dp"
+            android:background="@drawable/pickadd_textview_background"
             android:ems="10"
             android:hint="EMAIL"
             android:inputType="textEmailAddress"
+            android:maxLength="20"
+            android:padding="16dp"
             app:layout_constraintEnd_toEndOf="@+id/etPWProfileEdit"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/etPWProfileEdit"
@@ -52,12 +59,15 @@
 
         <EditText
             android:id="@+id/etPhoneProfileEdit"
-            android:layout_width="200dp"
-            android:layout_height="70.dp"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="32dp"
+            android:background="@drawable/pickadd_textview_background"
             android:ems="10"
             android:hint="PHONE"
             android:inputType="phone"
+            android:maxLength="15"
+            android:padding="16dp"
             app:layout_constraintEnd_toEndOf="@+id/etEmailProfileEdit"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/etEmailProfileEdit"

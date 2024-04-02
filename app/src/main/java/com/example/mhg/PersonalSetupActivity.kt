@@ -16,6 +16,8 @@ import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.ActivityPersonalSetupBinding
 import com.example.mhg.`object`.NetworkUserService.fetchUserUPDATEJson
 import com.example.mhg.`object`.Singleton_t_user
+import org.json.JSONObject
+import java.net.URLEncoder
 
 class PersonalSetupActivity : AppCompatActivity() {
     lateinit var binding: ActivityPersonalSetupBinding
@@ -38,9 +40,19 @@ class PersonalSetupActivity : AppCompatActivity() {
 
                 // -----! singletom에 넣고, update 통신 !-----
                 val user_mobile = t_userData.jsonObject?.optString("user_mobile")
-                Log.w(TAG+" user_mobile", "$user_mobile")
+                val JsonObj = JSONObject()
+                JsonObj.put("user_gender", viewModel.User.value?.optString("user_gender"))
+                Log.w("$TAG, 성별", viewModel.User.value?.optString("user_gender").toString())
+                JsonObj.put("user_height", viewModel.User.value?.optString("user_height"))
+                Log.w("$TAG, 키", viewModel.User.value?.optString("user_height").toString())
+                JsonObj.put("user_weight", viewModel.User.value?.optString("user_weight"))
+                Log.w("$TAG, 몸무게", viewModel.User.value?.optString("user_weight").toString())
+                Log.w("$TAG, JSON몸통", "$JsonObj")
+
                 if (user_mobile != null) {
-                    fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), viewModel.User.value.toString(), user_mobile = user_mobile) {
+                    val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
+                    Log.w(TAG+" encodedUserMobile", encodedUserMobile)
+                    fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
                         t_userData.jsonObject!!.put("user_gender", viewModel.User.value?.optString("user_gender"))
                         t_userData.jsonObject!!.put("user_height", viewModel.User.value?.optString("user_height"))
                         t_userData.jsonObject!!.put("user_weight", viewModel.User.value?.optString("user_weight"))

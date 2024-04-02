@@ -23,7 +23,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
 
-class PickBasketFragment : Fragment() {
+class PickBasketFragment : Fragment(), BasketItemTouchListener {
     lateinit var binding: FragmentPickBasketBinding
     private lateinit var adapter: HomeVerticalRecyclerViewAdapter
     val viewModel : ExerciseViewModel by activityViewModels()
@@ -54,12 +54,14 @@ class PickBasketFragment : Fragment() {
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
             Log.w(TAG, "jsonArr: $responseArrayList")
             try {
-                val allDataList = responseArrayList.toMutableList()
+                viewModel.exerciseUnits.value = responseArrayList.toMutableList()
+//
+                val allDataList = viewModel.exerciseUnits.value
 
                 // -----! RV 필터링 시작 !-----
                 val recommendlist = mutableListOf<ExerciseVO>()
-                val filterList = allDataList.filter { it.exerciseName!!.contains("(1)") }
-                for (i in 0 until filterList.size) {
+                val filterList = allDataList?.filter { it.exerciseName!!.contains("(1)") }
+                for (i in 0 until filterList?.size!!) {
                     recommendlist.add(filterList[i])
                     linkAdapter(recommendlist)
                 }
@@ -136,9 +138,17 @@ class PickBasketFragment : Fragment() {
         binding.rvPickBasket.layoutManager = linearLayoutManager2
         binding.rvPickBasket.adapter = adapter
     }
-//    override fun onBasketItemClick(item: ExerciseVO) {
-//        viewModel.addExercise(item)
-//        Toast.makeText(requireContext(), "${item.exerciseName}, 추가됐습니다!", Toast.LENGTH_SHORT).show()
-//        Log.w("장바구니viewmodel", "${viewModel.exerciseUnits.value}")
-//    }
+    override fun onBasketItemClick(item: ExerciseVO) {}
+
+    override fun onBasketItemIncrement(item: ExerciseVO) {
+//        viewModel.setQuantityForItem(item.exerciseDescriptionId.toString(), +1)
+        Toast.makeText(requireContext(), "${item.exerciseName}, 추가됐습니다!", Toast.LENGTH_SHORT).show()
+        Log.w("장바구니viewmodel", "${viewModel.exerciseUnits.value}")
+    }
+
+    override fun onBasketItemDecrement(item: ExerciseVO) {
+//        viewModel.setQuantityForItem(item.exerciseDescriptionId.toString(), -1)
+        Toast.makeText(requireContext(), "${item.exerciseName}, 추가됐습니다!", Toast.LENGTH_SHORT).show()
+        Log.w("장바구니viewmodel", "${viewModel.exerciseUnits.value}")
+    }
 }

@@ -41,6 +41,7 @@ object NetworkExerciseService {
                         val exerciseData = ExerciseVO(
                             exerciseName = jsonObject.optString("exercise_name"),
                             exerciseDescription = jsonObject.getString("exercise_description"),
+                            exerciseDescriptionId = jsonObject.getString("exercise_description_id"),
                             relatedJoint = jsonObject.getString("related_joint"),
                             relatedMuscle = jsonObject.getString("related_muscle"),
                             relatedSymptom = jsonObject.getString("related_symptom"),
@@ -83,6 +84,7 @@ object NetworkExerciseService {
                         val exerciseData = ExerciseVO(
                             exerciseName = jsonObject.optString("exercise_name"),
                             exerciseDescription = jsonObject.getString("exercise_description"),
+                            exerciseDescriptionId = jsonObject.getString("exercise_description_id"),
                             relatedJoint = jsonObject.getString("related_joint"),
                             relatedMuscle = jsonObject.getString("related_muscle"),
                             relatedSymptom = jsonObject.getString("related_symptom"),
