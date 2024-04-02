@@ -52,10 +52,10 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
         title = requireArguments().getString(ARG_TITLE).toString()
         lifecycleScope.launch {
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
-            Log.w(TAG, "jsonArr: $responseArrayList")
+            Log.w(TAG, "jsonArr: ${responseArrayList[0]}")
             try {
                 viewModel.exerciseUnits.value = responseArrayList.toMutableList()
-//
+
                 val allDataList = viewModel.exerciseUnits.value
 
                 // -----! RV 필터링 시작 !-----
@@ -63,6 +63,9 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
                 val filterList = allDataList?.filter { it.exerciseName!!.contains("(1)") }
                 for (i in 0 until filterList?.size!!) {
                     recommendlist.add(filterList[i])
+                    recommendlist.map { exercise ->
+                        exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                    }
                     linkAdapter(recommendlist)
                 }
                 Log.w(TAG, "filterList: $filterList")
@@ -70,23 +73,35 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
                     override fun onTabSelected(tab: TabLayout.Tab?) {
                         when (tab?.position) {
                             0 -> {
+                                recommendlist.map { exercise ->
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                }
                                 linkAdapter(recommendlist)
                             }
                             1 -> {
                                 val keywords = listOf("목", "어깨", "팔꿉", "손목", "몸통", "복부" )
-                                val topBodyList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
-                                Log.w(TAG, "topBodyList: $topBodyList")
-                                linkAdapter(topBodyList)
+                                val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
+                                filteredList.map { exercise ->
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                }
+                                Log.w(TAG, "topBodyList: ${filteredList[0]}")
+                                linkAdapter(filteredList)
                             }
                             2 -> {
                                 val keywords = listOf("엉덩", "무릎", "발목" )
-                                val topBodyList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
-                                linkAdapter(topBodyList)
+                                val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
+                                filteredList.map { exercise ->
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                }
+                                linkAdapter(filteredList)
                             }
                             3 -> {
                                 val keywords = listOf("전신", "유산소", "코어", "몸통" )
-                                val topBodyList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
-                                linkAdapter(topBodyList)
+                                val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
+                                filteredList.map { exercise ->
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                }
+                                linkAdapter(filteredList)
                             }
                         }
                     }
@@ -141,14 +156,14 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
     override fun onBasketItemClick(item: ExerciseVO) {}
 
     override fun onBasketItemIncrement(item: ExerciseVO) {
-//        viewModel.setQuantityForItem(item.exerciseDescriptionId.toString(), +1)
-        Toast.makeText(requireContext(), "${item.exerciseName}, 추가됐습니다!", Toast.LENGTH_SHORT).show()
-        Log.w("장바구니viewmodel", "${viewModel.exerciseUnits.value}")
+        viewModel.setQuantity(item.exerciseDescriptionId.toString(), +1)
+        Log.w("장바구니viewmodel", "desId: ${item.exerciseDescriptionId}, 횟수: ${item.quantity}")
     }
 
     override fun onBasketItemDecrement(item: ExerciseVO) {
-//        viewModel.setQuantityForItem(item.exerciseDescriptionId.toString(), -1)
-        Toast.makeText(requireContext(), "${item.exerciseName}, 추가됐습니다!", Toast.LENGTH_SHORT).show()
-        Log.w("장바구니viewmodel", "${viewModel.exerciseUnits.value}")
+        if (item.quantity.toInt() > 0) {
+            viewModel.setQuantity(item.exerciseDescriptionId.toString(), -1)
+        }
+        Log.w("장바구니viewmodel", "desId: ${item.exerciseDescriptionId}, 횟수: ${item.quantity}")
     }
 }

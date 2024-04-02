@@ -32,14 +32,18 @@ class ExerciseViewModel: ViewModel() {
 
     // +- 수량 체크
     fun setQuantity(itemId: String, quantity: Int) {
-//        itemQuantities.value = itemQuantities.value?.toMutableMap()?.apply {
-//            put(itemId, quantity)
-//        }
-//        exerciseUnits.value.
+        val updatedExerciseUnits = exerciseUnits.value?.map {exercise ->
+            if (exercise.exerciseDescriptionId.toString()== itemId) {
+                exercise.quantity = quantity
+            }
+            exercise
+        }
+        exerciseUnits.value = updatedExerciseUnits?.toMutableList()
     }
 
     fun getQuantityForItem(itemId: String): Int {
-        return itemQuantities.value?.get(itemId)?: 0
+        val item = exerciseUnits.value?.find { it.exerciseDescriptionId.toString() == itemId }
+        return item?.quantity ?:0
     }
 
     fun addPick(pickName: String, pickId: String) {

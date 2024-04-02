@@ -41,6 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.lang.Exception
+import java.net.URLEncoder
 
 @Suppress("NAME_SHADOWING")
 class Intro3Fragment : Fragment() {
@@ -168,22 +169,23 @@ class Intro3Fragment : Fragment() {
 
                     override fun onSuccess(result: NidProfileResponse) {
                         val JsonObj = JSONObject()
-                        val naver_mobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
-                        val naver_gender : String
-                        naver_gender = if (result.profile?.gender.toString() == "M") {
+                        val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
+                        val naverGender : String
+                        naverGender = if (result.profile?.gender.toString() == "M") {
                             "남자"
                         } else {
                             "여자"
                         }
                         JsonObj.put("user_name", result.profile?.name.toString())
-                        JsonObj.put("user_gender", naver_gender)
-                        JsonObj.put("user_mobile", naver_mobile)
+                        JsonObj.put("user_gender", naverGender)
+                        JsonObj.put("user_mobile", naverMobile)
                         JsonObj.put("user_email", result.profile?.email.toString())
                         JsonObj.put("user_birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
                         JsonObj.put("naver_login_id" , result.profile?.id.toString())
 
                         Log.i("$TAG, 네이버", JsonObj.getString("user_mobile"))
-                        fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), naver_mobile.toString()) { jsonObj ->
+                        val encodedUserMobile = URLEncoder.encode(naverMobile, "UTF-8")
+                        fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
                             if (jsonObj?.getInt("status") == 404) {
                                 fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                     val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
@@ -192,7 +194,7 @@ class Intro3Fragment : Fragment() {
                                     PersonalSetupInit()
                                 }
                             } else {
-                                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), naver_mobile) {
+                                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
                                     val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                                     t_userInstance?.jsonObject = JsonObj
                                     Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
@@ -231,22 +233,23 @@ class Intro3Fragment : Fragment() {
                             }
                             else if (user != null) {
                                 val JsonObj = JSONObject()
-                                val kakao_mobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
+                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
 
-                                val kakao_user_gender = if (user.kakaoAccount?.gender.toString()== "MALE") {
+                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "MALE") {
                                     "남자"
                                 } else {
                                     "여자"
                                 }
-                                JsonObj.put("user_gender", kakao_user_gender)
-                                JsonObj.put("user_mobile", kakao_mobile)
+
+                                JsonObj.put("user_gender", kakaoUserGender)
+                                JsonObj.put("user_mobile", kakaoMobile)
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
                                 JsonObj.put("kakao_login_id" , user.id.toString())
-
+                                val encodedUserMobile = URLEncoder.encode(kakaoMobile, "UTF-8")
                                 Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_mobile"))
-                                fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), kakao_mobile) { jsonObj ->
+                                fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
                                     if (jsonObj?.getInt("status") == 404) {
                                         fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                             val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
@@ -255,7 +258,7 @@ class Intro3Fragment : Fragment() {
                                             PersonalSetupInit()
                                         }
                                     } else {
-                                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), kakao_mobile) {
+                                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
                                             val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                                             t_userInstance?.jsonObject = JsonObj
                                             Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")

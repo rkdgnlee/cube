@@ -19,7 +19,7 @@ object NetworkUserService{
     fun fetchUserSELECTJson(myUrl: String, mobile: String, callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_mobile=%2B$mobile")
+            .url("${myUrl}read.php?user_mobile=$mobile")
             .get()
             .build()
 
@@ -54,11 +54,11 @@ object NetworkUserService{
             }
         })
     }
-    fun fetchUserUPDATEJson(myUrl : String, json: String, user_mobile: String, callback: () -> Unit) {
+    fun fetchUserUPDATEJson(myUrl : String, json: String, mobile: String, callback: () -> Unit) {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json )
         val request = Request.Builder()
-            .url("${myUrl}update.php?user_mobile=$user_mobile")
+            .url("${myUrl}update.php?user_mobile=$mobile")
             .patch(body)
             .build()
         client.newCall(request).enqueue(object : Callback {
