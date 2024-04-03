@@ -2,6 +2,7 @@ package com.example.mhg.`object`
 
 import android.content.ContentValues
 import android.util.Log
+import com.example.mhg.R
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.PickItemVO
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
@@ -108,11 +110,11 @@ object NetworkExerciseService {
         }
     }
     // 즐겨찾기 넣기
-    fun fetchPickItemInsertJson(myUrl : String, json: String, callback: () -> Unit) {
+    fun insertPickItemJson(myUrl: String, json: String, callback: () -> Unit) {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
-            .url("${myUrl}create.php")
+            .url("${myUrl}/favorite_add.php")
             .post(body) // post방식으로 insert 들어감
             .build()
 
@@ -127,7 +129,26 @@ object NetworkExerciseService {
             }
         })
     }
+    fun updatePickItemJson(myUrl: String, favorite_sn: String, json:String, callback: (JSONObject?) -> Unit) {
+        val client = OkHttpClient()
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+        val request = Request.Builder()
+            .url("$myUrl/update.php?favorite_sn=$favorite_sn")
+            .patch(body)
+            .build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+            }
 
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                callback(jsonObj__)
+            }
+        })
+    }
     // 즐겨찾기 목록 조회 (PickItems에 담기)
     suspend fun fetchPickItemsJsonByMobile(myUrl: String, mobile: String): JSONArray? {
         val client = OkHttpClient()
@@ -140,7 +161,11 @@ object NetworkExerciseService {
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3/picklistfetch", "Success to execute request!: $responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
-                val jsonArray = jsonObj__?.getJSONArray("data")
+                val jsonArray = try {
+                    jsonObj__?.getJSONArray("data")
+                } catch (e: JSONException) {
+                    JSONArray()
+                }
                 jsonArray
             }
         }

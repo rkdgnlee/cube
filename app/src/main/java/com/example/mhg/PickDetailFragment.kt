@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +25,7 @@ import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickDetailBinding
 import com.example.mhg.`object`.NetworkExerciseService
 import com.example.mhg.`object`.Singleton_t_user
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 
@@ -111,18 +113,35 @@ class PickDetailFragment : Fragment() {
                 setPickDetail()
 
             }
-        })
-        // ----- 운동 picklist, 제목 가져오기 끝 -----
+        }) // ----- 운동 picklist, 제목 가져오기 끝 -----
 
-        // -----! 즐겨찾기로 운동 시작 !-----
-        binding.btnPickStart.setOnClickListener {
-            val resourceList = StorePickUrl()
-            Log.w("list in intent", "$resourceList")
-            val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-            intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
-            startForResult.launch(intent)
+        // -----! 운동 url list 만들기 시작 !-----
+        val currentItem = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
+        if (currentItem?.exercises?.isEmpty() == true) {
+            binding.llPickDetail.visibility = View.GONE
+        } else {
+            binding.llPickDetail.visibility = View.VISIBLE
         }
-        // -----! 즐겨찾기로 운동 끝 !-----
+        binding.btnPickStart.setOnClickListener {
+            if (currentItem?.exercises?.isNotEmpty() == true) {
+                val resourceList = storePickUrl(appClass)
+                Log.w("url in resourceList", "$resourceList")
+                val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
+                intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
+                startForResult.launch(intent)
+            } else {
+                val snackbar = Snackbar.make(requireView(), "운동을 추가해주세요 ! ", Snackbar.LENGTH_SHORT)
+                snackbar.setAction("확인", object: View.OnClickListener {
+                    override fun onClick(v: View?) {
+                        snackbar.dismiss()
+                    }
+                })
+                snackbar.setTextColor(Color.WHITE)
+                snackbar.setActionTextColor(Color.WHITE)
+                snackbar.show()
+            }
+        } // -----! 운동 url list 만들기 끝 !-----
+
 
         binding.btnPickDetailBack.setOnClickListener {
             if (!it.isClickable) { return@setOnClickListener }
@@ -176,14 +195,15 @@ class PickDetailFragment : Fragment() {
         }
     }
 
-    private fun StorePickUrl() : MutableList<String> {
+    private fun storePickUrl(appClass : AppClass) : MutableList<String> {
         val resourceList = mutableListOf<String>()
         val title = requireArguments().getString(ARG_TITLE).toString()
-        val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
-        for (i in 0 until currentItem?.exercises!!.size) {
+        val currentItem = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
+        Log.w("PreviousStoreURL", "$currentItem")
+        for (i in 0 until currentItem!!.exercises!!.size) {
             val exercises = currentItem.exercises!!.get(i)
             resourceList.add(exercises.videoFilepath.toString())
-            Log.w("url연속으로 다 들어갔는지", "$resourceList")
+            Log.w("Finish?storeUrl", "$resourceList")
         }
         return  resourceList
     }

@@ -16,7 +16,7 @@ class AppClass : Application() {
         super.onCreate()
 
         // 데이터 초기화
-        pickItem = PickItemVO("", "", "", "", mutableListOf())
+        pickItem = PickItemVO("","", "", "", "", mutableListOf())
         pickList = MutableLiveData(mutableListOf())
         pickItems = MutableLiveData(mutableListOf())
     }

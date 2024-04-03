@@ -7,14 +7,7 @@
     tools:context=".PickDetailFragment">
 
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvPickDetail"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fadeScrollbars="false"
-        android:fillViewport="true"
-        android:overScrollMode="always"
-        android:scrollbars="none">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -69,12 +62,13 @@
                     android:id="@+id/actPickDetail"
                     android:layout_width="196dp"
                     android:layout_height="64dp"
+                    android:layout_gravity="left"
                     android:background="@color/mainwhite"
                     android:backgroundTint="@color/mainwhite"
                     android:editable="false"
-                    android:gravity="left|center_vertical"
+                    android:gravity="center|center_vertical"
                     android:inputType="none"
-                    android:maxLength="30"
+                    android:maxLength="14"
                     android:paddingTop="12dp"
                     android:paddingBottom="12dp"
                     android:popupBackground="@color/mainwhite"
@@ -89,8 +83,8 @@
                 android:id="@+id/tvPickDetailExplainTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
                 android:background="@color/mainwhite"
                 android:text="회전 근개 및 날개 집중 스트레칭"
                 android:textColor="@color/mainblack"
@@ -124,10 +118,10 @@
                 android:text="운동 시작"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
-                app:cornerRadius="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:cornerRadius="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llPickDetail" />
 
             <ImageButton
                 android:id="@+id/btnPickDetailBack"
@@ -135,7 +129,7 @@
                 android:layout_height="48dp"
                 android:background="@color/mainwhite"
                 android:scaleType="fitCenter"
-                android:src="@drawable/report_calendar_button_left"
+                android:src="@drawable/icon_arrow_left"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
                 app:layout_constraintStart_toStartOf="@+id/tvPickEdit"
                 app:layout_constraintTop_toTopOf="parent"
@@ -146,7 +140,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="12dp"
                 android:text="설명 제목"
                 android:textColor="@color/grey600"
                 android:textSize="16sp"
@@ -169,7 +163,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -228,36 +222,6 @@
                     android:textSize="16sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toTopOf="@+id/btnPickStart"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnPickDetailGoEdit"
-                app:layout_constraintVertical_bias="0.0">
-
-                <ImageView
-                    android:id="@+id/ivPickDetailNull"
-                    android:layout_width="wrap_content"
-                    android:layout_height="270dp"
-                    android:background="@color/mainwhite"
-                    android:src="@drawable/image_pick_null" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvPickDetail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="0dp"
-                    android:layout_marginRight="370dp"
-                    android:overScrollMode="never"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </LinearLayout>
-
             <Button
                 android:id="@+id/btnPickDetailGoEdit"
                 android:layout_width="0dp"
@@ -285,11 +249,50 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:src="@drawable/icon_edit_note"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llPickDetail" />
+                app:layout_constraintTop_toBottomOf="@+id/btnPickStart" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsvPickDetail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fadeScrollbars="false"
+                android:fillViewport="true"
+                android:overScrollMode="always"
+                android:scrollbars="none"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPickDetailGoEdit">>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/ivPickDetailNull"
+                        android:layout_width="wrap_content"
+                        android:layout_height="270dp"
+                        android:background="@color/mainwhite"
+                        android:src="@drawable/image_pick_null" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvPickDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="0dp"
+                        android:layout_marginRight="370dp"
+                        android:overScrollMode="never"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+
 </FrameLayout>

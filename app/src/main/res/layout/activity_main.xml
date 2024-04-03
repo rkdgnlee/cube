@@ -10,7 +10,6 @@
     android:elevation="0dp"
     tools:context=".MainActivity">
 
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bnbMain"
         android:layout_width="0dp"

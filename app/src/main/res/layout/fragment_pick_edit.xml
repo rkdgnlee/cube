@@ -36,10 +36,11 @@
 
             <EditText
                 android:id="@+id/etPickEditName"
-                android:layout_width="wrap_content"
+                android:layout_width="86dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="36dp"
                 android:background="@color/mainwhite"
+                android:gravity="center"
                 android:text="어깨 루틴"
                 android:textColor="@color/mainblack"
                 android:textSize="18sp"

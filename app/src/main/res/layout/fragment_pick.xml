@@ -46,10 +46,17 @@
 <!--                    android:background="@color/mainwhite"-->
 <!--                    android:src="@drawable/image_pick_null" />-->
 
+                <ImageView
+                    android:id="@+id/ivPickNull"
+                    android:layout_width="wrap_content"
+                    android:layout_height="300dp"
+                    android:src="@drawable/image_pick_null" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvPick"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatButton

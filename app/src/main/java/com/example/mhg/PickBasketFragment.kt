@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
@@ -54,15 +55,14 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
             Log.w(TAG, "jsonArr: ${responseArrayList[0]}")
             try {
-                viewModel.exerciseUnits.value = responseArrayList.toMutableList()
-
-                val allDataList = viewModel.exerciseUnits.value
+                viewModel.allExercises.value = responseArrayList.toMutableList()
+                val allDataList = responseArrayList.toMutableList()
 
                 // -----! RV 필터링 시작 !-----
                 val recommendlist = mutableListOf<ExerciseVO>()
-                val filterList = allDataList?.filter { it.exerciseName!!.contains("(1)") }
-                for (i in 0 until filterList?.size!!) {
-                    recommendlist.add(filterList[i])
+                val filterList = allDataList.filter { it.exerciseName!!.contains("(1)") }
+                for (element in filterList) {
+                    recommendlist.add(element)
                     recommendlist.map { exercise ->
                         exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
                     }
@@ -96,6 +96,7 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
                                 linkAdapter(filteredList)
                             }
                             3 -> {
+
                                 val keywords = listOf("전신", "유산소", "코어", "몸통" )
                                 val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
                                 filteredList.map { exercise ->
@@ -122,17 +123,17 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
         binding.btnPickBasketFinish.setOnClickListener {
 
             // -----! 어댑터의 리스트를 담아서 exerciseunit에 담기 시작 !-----
-            val selectedItems = adapter.getSelectedItems() // + 숫자 추가해놓은 곳에서 가져오기
-            Log.w("기존 VM ExerciseUnit", "${viewModel.exerciseUnits.value}")
-            viewModel.addExercise(selectedItems)
-
-            Log.w("VM ExerciseUnit", "추가되는 항목: ${viewModel.exerciseUnits.value?.get(1)?.exerciseDescription}, 개수: ${viewModel.exerciseUnits.value?.get(0)?.quantity}")
+            val selectedItems = viewModel.getExerciseBasketUnit() // + 숫자 추가해놓은 곳에서 가져오기
+            Log.w("기존 VM ExerciseUnit", "${selectedItems}")
+            viewModel.addExercises(selectedItems)
             // -----! 어댑터의 리스트를 담아서 exerciseunit에 담기 끝 !-----
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, PickEditFragment.newInstance(title))
                 commit()
             }
+            viewModel.exerciseBasketUnits.value?.clear()
+
         }
         binding.ibtnPickBasketBack.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -147,23 +148,20 @@ class PickBasketFragment : Fragment(), BasketItemTouchListener {
     private fun linkAdapter(list : MutableList<ExerciseVO>) {
         adapter = HomeVerticalRecyclerViewAdapter(list,"basket")
         adapter.verticalList = list
-//        adapter.basketListener = this@PickBasketFragment
+        adapter.basketListener = this@PickBasketFragment
         val linearLayoutManager2 =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvPickBasket.layoutManager = linearLayoutManager2
         binding.rvPickBasket.adapter = adapter
     }
-    override fun onBasketItemClick(item: ExerciseVO) {}
 
-    override fun onBasketItemIncrement(item: ExerciseVO) {
-        viewModel.setQuantity(item.exerciseDescriptionId.toString(), +1)
-        Log.w("장바구니viewmodel", "desId: ${item.exerciseDescriptionId}, 횟수: ${item.quantity}")
-    }
 
-    override fun onBasketItemDecrement(item: ExerciseVO) {
-        if (item.quantity.toInt() > 0) {
-            viewModel.setQuantity(item.exerciseDescriptionId.toString(), -1)
+    override fun onBasketItemQuantityChanged(descriptionId: String, newQuantity: Int) {
+        val exercise = viewModel.allExercises.value?.find { it.exerciseDescriptionId.toString() == descriptionId }
+        if (exercise != null) {
+            viewModel.addExerciseBasketUnit(exercise, newQuantity)
         }
-        Log.w("장바구니viewmodel", "desId: ${item.exerciseDescriptionId}, 횟수: ${item.quantity}")
+        viewModel.setQuantity(descriptionId, newQuantity)
+        Log.w("장바구니viewmodel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == descriptionId }?.exerciseDescriptionId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == descriptionId }?.quantity}")
     }
 }

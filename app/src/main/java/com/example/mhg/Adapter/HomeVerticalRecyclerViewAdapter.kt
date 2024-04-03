@@ -205,29 +205,32 @@ class HomeVerticalRecyclerViewAdapter(
 
             holder.ibtnBasketPlus.setOnClickListener {
                 currentItem.quantity += 1
-                basketListener?.onBasketItemIncrement(currentItem)
+                basketListener?.onBasketItemQuantityChanged(currentItem.exerciseDescriptionId.toString(), currentItem.quantity)
+                Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentItem.exerciseDescriptionId.toString(), currentItem.quantity)}")
                 holder.tvBasketCount.text = ( holder.tvBasketCount.text.toString().toInt() + 1 ). toString()
 
             }
             holder.ibtnBasketMinus.setOnClickListener {
                 if (currentItem.quantity > 0) {
                     currentItem.quantity -= 1
-                    basketListener?.onBasketItemDecrement(currentItem)
+                    basketListener?.onBasketItemQuantityChanged(currentItem.exerciseDescriptionId.toString(), currentItem.quantity)
+                    Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentItem.exerciseDescriptionId.toString(), currentItem.quantity)}")
                     holder.tvBasketCount.text = currentItem.quantity.toString()
                 }
             }
+            holder.tvBasketCount.text = currentItem.quantity.toString()
 
 
 
         } // -----! pickbasket 수직 rv 끝 !-----
 
     }
-    fun getSelectedItems(): MutableList<ExerciseVO> {
-        return verticalList.filter {
-            it.quantity >= 1
-        }.toMutableList()
-    }
-//    fun getCheckedItems(): JSONObject {
+//    fun getSelectedItems(): MutableList<ExerciseVO> {
+//        return verticalList.filter {
+//            it.quantity >= 1
+//        }.toMutableList()
+//    }
+////    fun getCheckedItems(): JSONObject {
 //        val checkedData = JSONObject()
 //        for (i in 0 until checkedItems.size()) {
 //            if (checkedItems.valueAt(i)) {

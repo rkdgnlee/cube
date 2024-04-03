@@ -27,8 +27,6 @@ class MainActivity : AppCompatActivity() {
 
 
         val t_userData = Singleton_t_user.getInstance(this)
-
-
         viewModel.User.value = t_userData.jsonObject
         Log.e("싱글톤>뷰모델", "${viewModel.User.value}")
 

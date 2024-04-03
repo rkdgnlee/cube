@@ -18,6 +18,7 @@ import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickAddBinding
 import com.example.mhg.`object`.NetworkExerciseService
+import com.example.mhg.`object`.NetworkExerciseService.insertPickItemJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
@@ -42,7 +43,7 @@ class PickAddFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val t_userData = Singleton_t_user.getInstance(requireContext())
 
 
         // -----! 즐겨찾기 하나 만들기 시작 !-----
@@ -68,28 +69,29 @@ class PickAddFragment : Fragment() {
 
 
             // -----! json으로 형식을 변환 !-----
-            val jsonObj = JSONObject(Gson().toJson(pickItemVO))
-            Log.w("즐겨찾기 하나 만들기", "${jsonObj.optString("pickName")}, ${jsonObj.optString("pickExplain")}, ${jsonObj.optString("exercises")}")
+
+            val jsonObj = JSONObject()
+            jsonObj.put("favorite_name", pickItemVO.pickName)
+            jsonObj.put("favorite_explain_title", pickItemVO.pickExplainTitle)
+            jsonObj.put("favorite_explain", pickItemVO.pickExplain)
+
+            jsonObj.put("user_mobile", t_userData.jsonObject?.optString("user_mobile"))
+            Log.w("즐겨찾기 하나 만들기", "$jsonObj")
             viewModel.pickItem.value = jsonObj
 
-
             // TODO 기능 구현을 위한 하드 코딩 (지워야 함)
-            viewModel.addPick(jsonObj.optString("pickName"), "4")
-            Log.w("뷰모델picklist", "${viewModel.pickList.value}")
-            // -----! 즐겨찾기 하나 넣을 때, key값 = basket_name으로 !-----
-//            lifecycleScope.launch {
-//                 fetchPickItemInsertJson(getString(R.string.IP_ADDRESS_t_Exercise_Description), jsonObj_.toString()) {
-//                // -----! 즐겨찾기 리스트에 업데이트 시작 !-----
-//                // TODO 즐겨찾기가 추가되면서 CALLBACK으로 해당 내용다시 VIEWMODEL에 담기. PICKLIST로
-//            fetchPickListJsonById(getString(R.string.IP_ADDRESS_t_Exercise_Description), t_userData.jsonObject?.getString("user_mobile").toString())
+            viewModel.addPick(jsonObj.optString("pickName"), "")
+
+            insertPickItemJson(getString(R.string.IP_ADDRESS_t_favorite),jsonObj.toString()) {
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flPick, PickDetailFragment.newInstance(pickItemVO.pickName.toString()))
                     Log.w("$TAG, title", pickItemVO.pickName.toString())
                     commit()
                 }
-//            }
-//                // -----! 즐겨찾기 하나 만들기 끝 !-----
-//            }
+            }
+
+            // -----! 즐겨찾기 하나 만들기 끝 !-----
+
 
             // -----! 운동 만들기 버튼 클릭 끝 !-----
         }

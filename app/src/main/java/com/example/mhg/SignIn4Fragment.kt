@@ -180,6 +180,7 @@ class SignIn4Fragment : Fragment() {
                                 snackbar.dismiss()
                             }
                         })
+                        snackbar.setActionTextColor(Color.WHITE)
                         snackbar.show()
                     }
                 } else {

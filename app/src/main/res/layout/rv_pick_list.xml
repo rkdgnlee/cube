@@ -37,9 +37,9 @@
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/materialDivider2"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:dividerColor="@color/grey500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

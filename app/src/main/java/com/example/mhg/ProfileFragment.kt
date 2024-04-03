@@ -2,24 +2,17 @@ package com.example.mhg
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.RoundedCorner
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,17 +20,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.Request
 import com.bumptech.glide.request.RequestOptions
 import com.example.mhg.Adapter.ProfileRecyclerViewAdapter
 import com.example.mhg.VO.RoutingVO
 import com.example.mhg.databinding.FragmentProfileBinding
 import com.example.mhg.`object`.Singleton_t_user
-import com.google.android.gms.dynamic.SupportFragmentWrapper
-import java.io.IOException
-import java.time.LocalDate
-import java.util.Calendar
-import java.util.Date
 
 
 class ProfileFragment : Fragment() {
@@ -75,6 +62,8 @@ class ProfileFragment : Fragment() {
 
         // ----- 이미지 로드 시작 -----
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+
+
         val imageUri = sharedPreferences.getString("imageUri", null)
         if (imageUri != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -96,7 +85,7 @@ class ProfileFragment : Fragment() {
             RoutingVO("작성글 보기", "6"),
             RoutingVO("개인정보처리방침", "7"),
         )
-        val adapter = ProfileRecyclerViewAdapter()
+        val adapter = ProfileRecyclerViewAdapter(this@ProfileFragment)
         adapter.profilemenulist = profilemenulist
         binding.rvProfile.adapter = adapter
         binding.rvProfile.layoutManager =

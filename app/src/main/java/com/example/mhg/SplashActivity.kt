@@ -17,6 +17,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -58,6 +59,14 @@ class SplashActivity : AppCompatActivity() {
             binding = ActivitySplashBinding.inflate(layoutInflater)
             val t_userData = Singleton_t_user.getInstance(this)
 
+            // -----! 다크모드 및 설정 불러오기 시작 !-----
+            val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
+            val darkmode = sharedPref.getBoolean("darkMode", false)
+            AppCompatDelegate.setDefaultNightMode(
+                if (darkmode) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
+            // -----! 다크모드 및 설정 불러오기 끝 !-----
 
             // ----- API 초기화 시작 -----
             NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "Multi Home Gym")

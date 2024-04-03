@@ -1,14 +1,18 @@
 package com.example.mhg.Adapter
 
-import android.app.UiModeManager.MODE_NIGHT_YES
+import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mhg.DeviceSettingsFragment
+import com.example.mhg.HomeRoutineDetailFragment
 import com.example.mhg.IntroActivity
 import com.example.mhg.MainActivity
 import com.example.mhg.R
@@ -21,11 +25,11 @@ import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
-
 import java.lang.IllegalArgumentException
 
 
-class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> () {
+
+class ProfileRecyclerViewAdapter(private val fragment: Fragment) : RecyclerView.Adapter<RecyclerView.ViewHolder> () {
     var profilemenulist = mutableListOf<RoutingVO>()
     private val VIEW_TYPE_NORMAL = 0
     private val VIEW_TYPE_LAST_ITEM = 1
@@ -62,19 +66,10 @@ class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 val myViewHolder = holder as MyViewHolder
                 val currentItem = profilemenulist[position]
                 myViewHolder.btnprofiletitle.text = currentItem.title
-                var lightMode = true
+
                 myViewHolder.btnprofiletitle.setOnClickListener {
                     if (currentItem.title == "모드설정") {
-                        lightMode = when (lightMode) {
-                            true -> {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                                false
-                            }
-                            false -> {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                                true
-                            }
-                        }
+                        showDeviceSettingsFragment()
                     }
                 }
 
@@ -118,7 +113,15 @@ class ProfileRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     }
 
-
+    private fun showDeviceSettingsFragment() {
+        val DeviceSettingsFragment = DeviceSettingsFragment()
+        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+            replace(R.id.flProfile, DeviceSettingsFragment)
+            addToBackStack(null)
+            commit()
+        }
+    }
 
 
 

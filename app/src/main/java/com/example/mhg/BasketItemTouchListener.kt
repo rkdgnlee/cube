@@ -3,8 +3,5 @@ package com.example.mhg
 import com.example.mhg.VO.ExerciseVO
 
 interface BasketItemTouchListener {
-    fun onBasketItemClick(item: ExerciseVO)
-
-    fun onBasketItemIncrement(item:ExerciseVO)
-    fun onBasketItemDecrement(item:ExerciseVO)
+    fun onBasketItemQuantityChanged(descriptionId: String, newQuantity: Int)
 }

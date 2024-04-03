@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PickItemVO (
+    var pickSn : String? = "",
     var pickName : String? = "",
     var pickExplainTitle : String? = "",
     var pickExplain : String? = "",
@@ -17,11 +18,13 @@ data class PickItemVO (
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
         parcel.createTypedArrayList(ExerciseVO.CREATOR)
     )
     override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(pickSn)
         dest.writeString(pickName)
         dest.writeString(pickExplainTitle)
         dest.writeString(pickExplain)

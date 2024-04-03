@@ -101,7 +101,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
-            android:background="@drawable/pickadd_textview_background"
             app:cardCornerRadius="16dp"
             app:layout_constraintEnd_toEndOf="@+id/cardView8"
             app:layout_constraintStart_toStartOf="@+id/cardView8"

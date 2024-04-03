@@ -42,14 +42,14 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="left|center_vertical"
-                    android:background="@drawable/report_calendar_button_left" />
+                    android:background="@drawable/icon_arrow_left" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnReportDateRight"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="right|center_vertical"
-                    android:background="@drawable/report_calendar_button_right" />
+                    android:background="@drawable/icon_arrow_right" />
 
             </androidx.cardview.widget.CardView>
 
