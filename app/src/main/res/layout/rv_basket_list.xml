@@ -39,32 +39,30 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="42dp"
+                android:layout_marginBottom="46dp"
                 android:text="TextView"
                 android:textColor="@color/mainblack"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnBasketMinus"
                 app:layout_constraintStart_toEndOf="@+id/ivPickBasket"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvPickBasketDscript"
+                android:id="@+id/tvPickBasketDuration"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="TextView"
-                android:textColor="@color/grey500"
-                app:layout_constraintEnd_toStartOf="@+id/ibtnBasketMinus"
-                app:layout_constraintStart_toStartOf="@+id/tvPickBasketName"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickBasketName" />
+                android:text="5"
+                android:textColor="@color/mainblack"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tvPickBasketSymptom"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickBasketSymptom" />
 
             <TextView
                 android:id="@+id/tvBasketCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="2dp"
                 android:text="0"
                 android:textColor="@color/mainblack"
                 android:textSize="22sp"
@@ -76,7 +74,7 @@
                 android:id="@+id/ibtnBasketPlus"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginEnd="8dp"
                 android:background="@color/mainwhite"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -88,7 +86,7 @@
                 android:id="@+id/ibtnBasketMinus"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="2dp"
                 android:background="@color/mainwhite"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="@+id/tvBasketCount"
@@ -96,6 +94,82 @@
                 app:layout_constraintTop_toTopOf="@+id/tvBasketCount"
                 app:srcCompat="@drawable/icon_minus" />
 
+            <TextView
+                android:id="@+id/textView56"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:text="seconds"
+                android:textColor="@color/mainblack"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickBasketDuration"
+                app:layout_constraintStart_toEndOf="@+id/tvPickBasketDuration"
+                app:layout_constraintTop_toTopOf="@+id/tvPickBasketDuration"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/tvPickBasketSymptom"
+                android:layout_width="0dp"
+                android:layout_height="16sp"
+                android:layout_marginTop="4dp"
+                android:maxLength="30"
+                android:text="TextView"
+                android:textColor="@color/grey500"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@+id/tvPickBasketName"
+                app:layout_constraintStart_toStartOf="@+id/tvPickBasketName"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickBasketName" />
+
+            <TextView
+                android:id="@+id/tvPickBasketJoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:text="관절"
+                android:textColor="@color/mainblack"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/linearLayout3"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickBasketSymptom"
+                app:layout_constraintVertical_bias="0.333" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvBasketCount"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickBasketSymptom"
+                app:layout_constraintVertical_bias="0.333">
+
+                <ImageView
+                    android:id="@+id/ivPickBasketWarmup"
+                    android:layout_width="16sp"
+                    android:layout_height="16sp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_stretching" />
+
+                <ImageView
+                    android:id="@+id/ivPickBasketStrength"
+                    android:layout_width="16sp"
+                    android:layout_height="16sp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_strength" />
+
+                <ImageView
+                    android:id="@+id/ivPickBasketMaintain"
+                    android:layout_width="16sp"
+                    android:layout_height="16sp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_fitness" />
+
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

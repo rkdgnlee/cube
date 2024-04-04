@@ -43,7 +43,7 @@ object NetworkExerciseService {
                         val exerciseData = ExerciseVO(
                             exerciseName = jsonObject.optString("exercise_name"),
                             exerciseDescription = jsonObject.getString("exercise_description"),
-                            exerciseDescriptionId = jsonObject.getString("exercise_description_id"),
+                            exerciseDescriptionId = jsonObject.getInt("exercise_description_id"),
                             relatedJoint = jsonObject.getString("related_joint"),
                             relatedMuscle = jsonObject.getString("related_muscle"),
                             relatedSymptom = jsonObject.getString("related_symptom"),
@@ -86,7 +86,7 @@ object NetworkExerciseService {
                         val exerciseData = ExerciseVO(
                             exerciseName = jsonObject.optString("exercise_name"),
                             exerciseDescription = jsonObject.getString("exercise_description"),
-                            exerciseDescriptionId = jsonObject.getString("exercise_description_id"),
+                            exerciseDescriptionId = jsonObject.getInt("exercise_description_id"),
                             relatedJoint = jsonObject.getString("related_joint"),
                             relatedMuscle = jsonObject.getString("related_muscle"),
                             relatedSymptom = jsonObject.getString("related_symptom"),
@@ -170,5 +170,25 @@ object NetworkExerciseService {
             }
         }
     }
-
+    suspend fun fetchPickItemJsonBySn(myUrl: String, sn: String): JSONObject? {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}read.php?favorite_sn=$sn")
+            .get()
+            .build()
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use {response ->
+                val responseBody = response.body?.string()
+                Log.e("OKHTTP3/picklistfetch", "Success to execute request!: $responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+//                val jsonArray = try {
+//                    jsonObj__?.getJSONArray("data")
+//                } catch (e: JSONException) {
+//                    JSONArray()
+//                }
+//                jsonArray
+                jsonObj__ // TODO BODY에서 가져와서 전부다 쓸껀지, 아니면 EXERCISE JSONArray만 따로 쓸건지 판단해서 수정하기. 그리고 받아와서
+            }
+        }
+    }
 }

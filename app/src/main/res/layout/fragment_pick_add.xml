@@ -24,18 +24,19 @@
                 android:layout_width="0dp"
                 android:layout_height="3dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="44dp"
-                app:dividerColor="@color/mainColor"
+                android:layout_marginTop="56dp"
+                app:dividerColor="@color/grey300"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.divider.MaterialDivider
-                android:layout_width="128dp"
+                android:id="@+id/materialDivider15"
+                android:layout_width="156dp"
                 android:layout_height="3dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="44dp"
+                android:layout_marginTop="56dp"
                 app:dividerColor="@color/mainColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -54,9 +55,11 @@
                 android:hint="즐겨찾기 이름"
                 android:inputType="text"
                 android:maxLength="20"
-                android:padding="16dp"
+                android:padding="16sp"
                 android:textColor="@color/mainblack"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider9" />
 
@@ -64,17 +67,19 @@
                 android:id="@+id/textView40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
                 android:text="공개범위 설정"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/etPickAddExplain"
-                app:layout_constraintTop_toBottomOf="@+id/etPickAddExplain" />
+                app:layout_constraintStart_toStartOf="@+id/cardView15"
+                app:layout_constraintTop_toBottomOf="@+id/cardView15" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView16"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:cardCornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -237,13 +242,12 @@
                 android:id="@+id/textView46"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
                 android:layout_marginBottom="4dp"
                 android:text="즐겨찾기 만들기"
                 android:textColor="@color/mainblack"
                 android:textSize="18sp"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/materialDivider9"
+                app:layout_constraintEnd_toEndOf="@+id/materialDivider15"
                 app:layout_constraintStart_toStartOf="@+id/materialDivider9" />
 
             <Button
@@ -264,43 +268,59 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
-                android:id="@+id/etPickAddExplainTitle"
-                android:layout_width="0dp"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView17"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_marginTop="48dp"
+                app:cardCornerRadius="16dp"
+                app:layout_constraintStart_toStartOf="@+id/etPickAddName"
+                app:layout_constraintTop_toBottomOf="@+id/etPickAddName">
+
+                <EditText
+                    android:id="@+id/etPickAddExplainTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="@drawable/background_stroke_2dp_sub_color"
+                    android:ems="10"
+                    android:hint="소개글 제목"
+                    android:inputType="text"
+                    android:maxLength="15"
+                    android:padding="12dp"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView15"
+                android:layout_width="0dp"
+                android:layout_height="128dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/background_stroke_2dp_sub_color"
-                android:ems="10"
-                android:hint="제목"
-                android:inputType="text"
-                android:maxLength="15"
-                android:padding="16dp"
-                android:textColor="@color/mainblack"
-                android:textSize="16sp"
+                app:cardCornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPickAddName" />
+                app:layout_constraintTop_toBottomOf="@+id/cardView17">
 
-            <EditText
-                android:id="@+id/etPickAddExplain"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:background="@drawable/background_stroke_2dp_sub_color"
-                android:ems="10"
-                android:hint="설명을 입력해주세요"
-                android:inputType="text"
-                android:maxLength="40"
-                android:padding="16dp"
-                android:scrollHorizontally="false"
-                android:textColor="@color/mainblack"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="@+id/etPickAddExplainTitle"
-                app:layout_constraintStart_toStartOf="@+id/etPickAddExplainTitle"
-                app:layout_constraintTop_toBottomOf="@+id/etPickAddExplainTitle" />
+                <EditText
+                    android:id="@+id/etPickAddExplain"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/background_stroke_2dp_sub_color"
+                    android:ems="10"
+                    android:gravity="start"
+                    android:hint="소개글 상세 설명"
+                    android:inputType="text|textMultiLine"
+                    android:maxLength="254"
+                    android:padding="12dp"
+                    android:scrollHorizontally="false"
+                    android:singleLine="true"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

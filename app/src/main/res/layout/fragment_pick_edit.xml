@@ -36,11 +36,12 @@
 
             <EditText
                 android:id="@+id/etPickEditName"
-                android:layout_width="86dp"
+                android:layout_width="156dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="36dp"
+                android:layout_marginTop="16dp"
                 android:background="@color/mainwhite"
                 android:gravity="center"
+                android:maxLength="15"
                 android:text="어깨 루틴"
                 android:textColor="@color/mainblack"
                 android:textSize="18sp"
@@ -134,7 +135,7 @@
                 android:id="@+id/textView49"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="36dp"
+                android:layout_marginTop="24dp"
                 android:text="설명"
                 android:textColor="@color/grey600"
                 android:textSize="16sp"

@@ -18,6 +18,10 @@ import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentReportSkeletonBinding
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -115,75 +119,7 @@ class ReportSkeletonFragment : Fragment() {
         }
         // ---- 달력 코드 끝 ----
 
-
-        // ---- 그래프 코드 시작 ----
-        val lineChart = binding.lcReport
-        val xAxis = lineChart.xAxis
-        val yAxisleft = lineChart.axisLeft
-        val yAxisright = lineChart.axisRight
-        val legend = lineChart.legend
-
-        val datalist : MutableList<ChartVO> = mutableListOf()
-        for (i in 0 until 12) {
-            val currentMonth = (month +i) % 12
-            if (currentMonth == 0) {
-                datalist.add(ChartVO("12월", Random.nextInt(99)))
-            } else {
-                datalist.add(ChartVO("${currentMonth}월", Random.nextInt(99)))
-            }
-        }
-        val entries : MutableList<Entry> = mutableListOf()
-        for (i in datalist.indices) {
-            // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
-            entries.add(Entry(i.toFloat(), datalist[i].commitNum.toFloat()))
-        }
-        val lineDataSet = LineDataSet(entries, "")
-        lineDataSet.apply {
-            color = resources.getColor(R.color.mainColor, null)
-            circleRadius = 3F
-            lineWidth = 3F
-            mode = LineDataSet.Mode.CUBIC_BEZIER
-            valueTextSize = 0F
-            setCircleColors(resources.getColor(R.color.mainColor))
-
-        }
-        xAxis.apply {
-            textSize = 12f
-            textColor = resources.getColor(R.color.grey600)
-            labelRotationAngle = 2F
-            setDrawAxisLine(true)
-            setDrawGridLines(false)
-            xAxis.valueFormatter = (IndexAxisValueFormatter(datalist.map { it.date }))
-            setLabelCount(12, true)
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
-            axisLineWidth = 1.5f
-        }
-        yAxisleft.apply {
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            setDrawZeroLine(false)
-            setLabelCount(0, false)
-            setDrawLabels(false)
-        }
-        yAxisright.apply {
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            setLabelCount(0, false)
-            setDrawLabels(false)
-        }
-        legend.apply {
-            legend.formSize = 0f
-        }
-        lineChart.apply {
-            data = LineData(lineDataSet)
-            notifyDataSetChanged()
-            description.text = ""
-            setScaleEnabled(false)
-            invalidate()
-        }
-        // ---- 그래프 코드 끝 ----
-
-        // ---- 하단 완료 목록 코드 시작 ----
+    // ---- 하단 완료 목록 코드 시작 ----
         // 완료 목록 데이터 리스트 가져와야 함
         val verticaldatalist = ArrayList<ExerciseVO>()
         val adapter = HomeVerticalRecyclerViewAdapter(verticaldatalist ,"home")
@@ -194,33 +130,138 @@ class ReportSkeletonFragment : Fragment() {
 
         // ---- 하단 완료 목록 코드 끝 ----
 
+        // ---- 꺾은선 그래프 코드 시작 ----
+        val lineChart = binding.lcReport
+        val lcXAxis = lineChart.xAxis
+        val lcYAxisLeft = lineChart.axisLeft
+        val lcYAxisRight = lineChart.axisRight
+        val lcLegend = lineChart.legend
+
+        val lcDataList : MutableList<ChartVO> = mutableListOf()
+        val startMonth = (month + 8) % 12
+            for (i in 0 until 12) {
+                val currentMonth = (startMonth + i) % 12
+                val monthLabel = if (currentMonth == 0) "12월" else "${currentMonth}월"
+                lcDataList.add(ChartVO(monthLabel, Random.nextInt(99)))
+            }
+        val lcEntries : MutableList<Entry> = mutableListOf()
+        for (i in lcDataList.indices) {
+            // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
+            lcEntries.add(Entry(i.toFloat(), lcDataList[i].commitNum.toFloat()))
+        }
+        val lcLineDataSet = LineDataSet(lcEntries, "")
+        lcLineDataSet.apply {
+            color = resources.getColor(R.color.mainColor, null)
+            circleRadius = 3F
+            lineWidth = 3F
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+            valueTextSize = 0F
+            setCircleColors(resources.getColor(R.color.mainColor))
+
+        }
+
+        lcXAxis.apply {
+            textSize = 12f
+            textColor = resources.getColor(R.color.grey600)
+            labelRotationAngle = 2F
+            setDrawAxisLine(true)
+            setDrawGridLines(false)
+            lcXAxis.valueFormatter = (IndexAxisValueFormatter(lcDataList.map { it.date }))
+            setLabelCount(12, true)
+            lcXAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
+            axisLineWidth = 1.5f
+        }
+        lcYAxisLeft.apply {
+            setDrawGridLines(false)
+            setDrawAxisLine(true)
+            setDrawZeroLine(false)
+            setLabelCount(6, false)
+            setDrawLabels(true)
+            textColor = resources.getColor(R.color.grey600)
+            axisLineWidth = 1.5f
+        }
+        lcYAxisRight.apply {
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+            setLabelCount(0, false)
+            setDrawLabels(false)
+        }
+        lcLegend.apply {
+            lcLegend.formSize = 0f
+        }
+        lineChart.apply {
+            data = LineData(lcLineDataSet)
+            notifyDataSetChanged()
+            description.text = ""
+            setScaleEnabled(false)
+            invalidate()
+        }
+        // ---- 꺾은선 그래프 코드 끝 ----
+
+        // ---- 막대 그래프 코드 시작 ----
+        val barChart = binding.bcReport
+        val bcXAxis = barChart.xAxis
+        val bcYAxisLeft = barChart.axisLeft
+        val bcYAxisRight = barChart.axisRight
+        val bcLegend = barChart.legend
+
+        val bcDataList : MutableList<ChartVO> = mutableListOf()
+
+        for (i in 0 until 12) {
+            val currentMonth = (startMonth + i) % 12
+            val monthLabel = if (currentMonth == 0) "12월" else "${currentMonth}월"
+            bcDataList.add(ChartVO(monthLabel, Random.nextInt(99)))
+        }
+        val rcEntries : MutableList<BarEntry> = mutableListOf()
+        for (i in bcDataList.indices) {
+            // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
+            rcEntries.add(BarEntry(i.toFloat(), bcDataList[i].commitNum.toFloat()))
+        }
+        val bcLineDataSet = BarDataSet(rcEntries, "")
+        bcLineDataSet.apply {
+            color = resources.getColor(R.color.mainColor, null)
+            valueTextSize = 0F
+        }
+
+        bcXAxis.apply {
+            textSize = 12f
+            textColor = resources.getColor(R.color.grey600)
+            labelRotationAngle = 1.5F
+            setDrawAxisLine(true)
+            setDrawGridLines(false)
+            bcXAxis.valueFormatter = (IndexAxisValueFormatter(bcDataList.map { it.date }))
+            setLabelCount(12, false)
+            bcXAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
+            axisLineWidth = 1.2f
+        }
+        bcYAxisLeft.apply {
+            setDrawGridLines(false)
+            setDrawAxisLine(true)
+            setDrawZeroLine(false)
+            setLabelCount(6, false)
+
+            setDrawLabels(true)
+            textColor = resources.getColor(R.color.grey600)
+            axisLineWidth = 1.5f
+        }
+        bcYAxisRight.apply {
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+            setLabelCount(0, false)
+            setDrawLabels(false)
+        }
+        bcLegend.apply {
+            bcLegend.formSize = 0f
+        }
+        barChart.apply {
+            data = BarData(bcLineDataSet)
+            notifyDataSetChanged()
+            description.text = ""
+            setScaleEnabled(false)
+            invalidate()
+        }
+        // ---- 막대 그래프 코드 끝 ----
+
 
     }
-    fun fetchUserHistoryJson(myUrl : String, user_mobile:String, callback: () -> Unit) {
-        val client = OkHttpClient()
-//        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull())
-        val request = Request.Builder()
-            .url("${myUrl}users/read.php?user_mobile=$user_mobile")
-            .get()
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("OKHTTP3", "Failed to execute request!")
-            }
-            override fun onResponse(call: Call, response: Response)  {
-                val responseBody = response.body?.string()
-                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
-                val jsonObj__ = responseBody?.let { JSONObject(it) }
-//              TODO  히스토리에 맞게 정보 받아와서 VIEWMODEL에 담아넣기
-                val jsonObj = jsonObj__?.optJSONObject("data")
-                viewModel.UserHistory.value = jsonObj
-//                val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-//                t_userInstance?.jsonObject = jsonObj
-//                Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
-                callback()
-            }
-        })
-    }
-
 }

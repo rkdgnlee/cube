@@ -29,7 +29,6 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
     )= false
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        TODO("Not yet implemented")
     }
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         currentDx = 0f

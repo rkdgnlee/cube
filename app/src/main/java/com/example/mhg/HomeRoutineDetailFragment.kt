@@ -47,7 +47,7 @@ class HomeRoutineDetailFragment : Fragment() {
 
             val linearlayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvHomeRoutineDetail.layoutManager = linearlayoutManager
-            val adapter = HomeVerticalRecyclerViewAdapter(exerciseList,"type")
+            val adapter = HomeVerticalRecyclerViewAdapter(exerciseList,"home")
             adapter.verticalList = exerciseList
             binding.rvHomeRoutineDetail.adapter = adapter
 

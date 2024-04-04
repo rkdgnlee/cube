@@ -3,6 +3,8 @@ package com.example.mhg
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,6 +20,7 @@ import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickAddBinding
 import com.example.mhg.`object`.NetworkExerciseService
+import com.example.mhg.`object`.NetworkExerciseService.fetchPickItemJsonBySn
 import com.example.mhg.`object`.NetworkExerciseService.insertPickItemJson
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.gson.Gson
@@ -44,9 +47,16 @@ class PickAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val t_userData = Singleton_t_user.getInstance(requireContext())
-
-
+        var favoriteNameValidation = false
         // -----! 즐겨찾기 하나 만들기 시작 !-----
+        binding.etPickAddName.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                favoriteNameValidation = if (s?.length!! >= 4) true else false
+                }
+        })
+        binding.btnPickAddExercise.isEnabled = if (favoriteNameValidation) false else true
         binding.btnPickAddExercise.setOnClickListener {
             val pickItemVO = PickItemVO(
                 pickName = binding.etPickAddName.text.toString(),
@@ -79,8 +89,8 @@ class PickAddFragment : Fragment() {
             Log.w("즐겨찾기 하나 만들기", "$jsonObj")
             viewModel.pickItem.value = jsonObj
 
-            // TODO 기능 구현을 위한 하드 코딩 (지워야 함)
-            viewModel.addPick(jsonObj.optString("pickName"), "")
+
+            viewModel.addPick(jsonObj.optString("pickName"), pickItemVO.pickSn.toString())
 
             insertPickItemJson(getString(R.string.IP_ADDRESS_t_favorite),jsonObj.toString()) {
                 requireActivity().supportFragmentManager.beginTransaction().apply {

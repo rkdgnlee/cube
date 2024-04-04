@@ -10,7 +10,7 @@ import com.example.mhg.databinding.DialogfragmentReportSkeletonCalendarBinding
 
 
 class ReportSkeletonCalendarDialogFragment : DialogFragment() {
-    // TODO: Rename and change types of parameters
+
     lateinit var binding: DialogfragmentReportSkeletonCalendarBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

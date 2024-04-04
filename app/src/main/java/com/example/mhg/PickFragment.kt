@@ -35,7 +35,7 @@ class PickFragment : Fragment(), onPickDetailClickListener {
 
         // -----! singleton에서 전화번호 가져오기 시작 !-----
         val t_userData = Singleton_t_user.getInstance(requireContext())
-        val appClass = requireContext().applicationContext as AppClass
+//        val appClass = requireContext().applicationContext as AppClass
         val user_mobile = t_userData.jsonObject?.optString("user_mobile")
         val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
         // -----! singleton에서 전화번호 가져오기 끝 !-----
@@ -47,26 +47,26 @@ class PickFragment : Fragment(), onPickDetailClickListener {
 
             // -----! appClass list관리 시작 !-----
             if (pickList != null) {
-                appClass.pickList.value?.clear()
-                appClass.pickItems.value?.clear()
+                viewModel.pickList.value?.clear()
+                viewModel.pickItems.value?.clear()
                 viewModel.exerciseUnits.value?.clear()
                 for (i in 0 until pickList.length()) {
-                    appClass.pickList.value?.add(pickList.getJSONObject(i).getString("favorite_name"))
+                    viewModel.pickList.value?.add(pickList.getJSONObject(i).getString("favorite_name"))
                     val pickItemVO = PickItemVO(
                         pickSn = pickList.getJSONObject(i).optString("favorite_sn"),
                         pickName = pickList.getJSONObject(i).optString("favorite_name"),
-                        pickExplain = pickList.getJSONObject(i).optString("favorite_name"),
-                        pickExplainTitle = pickList.getJSONObject(i).optString("favorite_name"),
-                        pickDisclosure = pickList.getJSONObject(i).optString("favorite_name"),
+                        pickExplain = pickList.getJSONObject(i).optString("favorite_description"),
+                        pickExplainTitle = pickList.getJSONObject(i).optString("favorite_description"),
+                        pickDisclosure = "",
 //                        exercises = allDataList.getJSONObject(i).optString("exercise_description_ids")
                         exercises = mutableListOf()
                     )
-                    appClass.pickItems.value?.add(pickItemVO)
-                    Log.w("$TAG, pickitem", "${appClass.pickItems.value}")
-                        // TODO 여기다가 받아온 값 넣으면 됨
+                    viewModel.pickItems.value?.add(pickItemVO)
+                    Log.w("$TAG, pickitem", "${viewModel.pickItems.value}")
+
                 }
             }
-            appClass.pickList.observe(viewLifecycleOwner) { jsonArray ->
+            viewModel.pickList.observe(viewLifecycleOwner) { jsonArray ->
 //                 아무것도 없을 때 나오는 캐릭터
                 if (jsonArray.size != 0) {
                     binding.ivPickNull.visibility= View.GONE
@@ -75,7 +75,7 @@ class PickFragment : Fragment(), onPickDetailClickListener {
                 }
             } // -----! appClass list관리 끝 !-----
 
-            val PickRecyclerViewAdapter = PickRecyclerViewAdapter(appClass.pickList.value!!, this@PickFragment, requireActivity())
+            val PickRecyclerViewAdapter = PickRecyclerViewAdapter(viewModel.pickList.value!!, this@PickFragment, requireActivity())
             binding.rvPick.adapter = PickRecyclerViewAdapter
             val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvPick.layoutManager = linearLayoutManager

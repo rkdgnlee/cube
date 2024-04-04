@@ -3,9 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="104dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp">
+    android:layout_height="104dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -42,10 +40,10 @@
             <TextView
                 android:id="@+id/tvHomeVerticalName"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="42dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="46dp"
                 android:text="Warm UpWarm UpWarm Up"
                 android:textColor="@color/mainblack"
                 android:textSize="14sp"
@@ -53,19 +51,19 @@
                 app:layout_constraintEnd_toStartOf="@+id/btnHomeVerticalPlay"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/ivHomeVerticalImage"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvHomeVerticalDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:text="5"
-                android:textColor="@color/grey600"
+                android:textColor="@color/mainblack"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/tvHomeVerticalName"
-                app:layout_constraintTop_toBottomOf="@+id/tvHomeVerticalName" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tvHomeVerticalSymptom"
+                app:layout_constraintTop_toBottomOf="@+id/tvHomeVerticalSymptom"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/textView24"
@@ -73,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
                 android:text="seconds"
-                android:textColor="@color/grey600"
+                android:textColor="@color/mainblack"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvHomeVerticalDuration"
                 app:layout_constraintStart_toEndOf="@+id/tvHomeVerticalDuration"
@@ -90,6 +88,71 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.512" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnHomeVerticalPlay"
+                app:layout_constraintTop_toBottomOf="@+id/tvHomeVerticalSymptom"
+                app:layout_constraintVertical_bias="0.33">
+
+                <ImageView
+                    android:id="@+id/ivHomeVerticalWarmup"
+                    android:layout_width="16sp"
+                    android:layout_height="16sp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_stretching" />
+
+                <ImageView
+                    android:id="@+id/ivHomeVerticalStrength"
+                    android:layout_width="16sp"
+                    android:layout_height="16sp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_strength" />
+
+                <ImageView
+                    android:id="@+id/ivHomeVerticalMaintain"
+                    android:layout_width="16sp"
+                    android:layout_height="16sp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_fitness" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvHomeVerticalJoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="관절"
+                android:textColor="@color/mainblack"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/linearLayout3"
+                app:layout_constraintTop_toBottomOf="@+id/tvHomeVerticalSymptom"
+                app:layout_constraintVertical_bias="0.333" />
+
+            <TextView
+                android:id="@+id/tvHomeVerticalSymptom"
+                android:layout_width="0dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="2dp"
+                android:maxLength="30"
+                android:text="증상들 생략.."
+                android:textColor="@color/grey600"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnHomeVerticalPlay"
+                app:layout_constraintStart_toStartOf="@+id/tvHomeVerticalName"
+                app:layout_constraintTop_toBottomOf="@+id/tvHomeVerticalName" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

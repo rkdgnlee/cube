@@ -54,6 +54,7 @@ object NetworkUserService{
             }
         })
     }
+
     fun fetchUserUPDATEJson(myUrl : String, json: String, mobile: String, callback: () -> Unit) {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json )

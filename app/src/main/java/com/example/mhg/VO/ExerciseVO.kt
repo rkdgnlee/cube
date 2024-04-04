@@ -9,7 +9,7 @@ data class ExerciseVO(
     var imgUrl: String? = "",
     var exerciseName: String? = "",
     var exerciseDescription: String? = "",
-    var exerciseDescriptionId: String? = "",
+    var exerciseDescriptionId: Int = 0,
     var relatedJoint: String? = "",
     var relatedMuscle: String? = "",
     var relatedSymptom: String? = "",
@@ -32,7 +32,7 @@ data class ExerciseVO(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString(),
+        parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -56,7 +56,7 @@ data class ExerciseVO(
             dest.writeString(imgUrl)
             dest.writeString(exerciseName)
             dest.writeString(exerciseDescription)
-            dest.writeString(exerciseDescriptionId)
+            dest.writeInt(exerciseDescriptionId)
             dest.writeString(relatedJoint)
             dest.writeString(relatedMuscle)
             dest.writeString(relatedSymptom)

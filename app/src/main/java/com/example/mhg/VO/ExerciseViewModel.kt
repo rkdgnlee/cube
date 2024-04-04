@@ -11,7 +11,7 @@ class ExerciseViewModel: ViewModel() {
     // 즐겨찾기
     val pickItem = MutableLiveData(JSONObject())  // 운동 목록과 즐겨찾기 제목 등이 저장된 객체 1개
     val pickEditItem = MutableLiveData(JSONObject()) // edit에서 임시로 담아놓을 viewmodel
-    val pickList = MutableLiveData(JSONArray())   // pickItems에서 제목만 가져온 string array
+    val pickList = MutableLiveData(mutableListOf<String>())   // pickItems에서 제목만 가져온 string array
     val pickItems = MutableLiveData(mutableListOf<PickItemVO>()) // pickItem이 여러개 들어간 즐겨찾기 목록(데이터 전부 포함)
 
     val exerciseBasketUnits = MutableLiveData(mutableListOf<ExerciseVO>()) // 장바구니에 담기는 임시 운동 목록(tab 전환 시 값 보존 목적)
@@ -21,7 +21,8 @@ class ExerciseViewModel: ViewModel() {
         exerciseUnits.value = mutableListOf()
         pickItem.value = JSONObject()
         pickEditItem.value = JSONObject()
-        pickList.value = JSONArray()
+        pickList.value = mutableListOf()
+
         pickItems.value = mutableListOf()
         exerciseBasketUnits.value = mutableListOf()
         allExercises.value = listOf()
@@ -61,8 +62,8 @@ class ExerciseViewModel: ViewModel() {
             put("favorite_name", favoriteName)
             put("favorite_sn", favoriteSn)
         }
-        val currentList = pickList.value ?: JSONArray()
-        currentList.put(pickObject)
+        val currentList = pickList.value ?: mutableListOf()
+        currentList.add(pickObject.toString())
         pickList.value= currentList
     }
 

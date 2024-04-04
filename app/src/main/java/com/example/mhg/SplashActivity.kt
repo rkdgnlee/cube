@@ -50,7 +50,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private val PERMISSION_REQUEST_CODE = 5000
-    // TODO 매니저님이 짜준 로직 대로, JSON, METHOD 바꿔야함
+
     @RequiresApi(Build.VERSION_CODES.O)
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -112,6 +112,7 @@ class SplashActivity : AppCompatActivity() {
 
         // ---- 화면 경로 설정 시작 ----
         val Handler = Handler(Looper.getMainLooper())
+        val t_userInstance =  Singleton_t_user.getInstance(baseContext)
         Handler.postDelayed({
 
             // ----- 네이버 토큰 있음 시작 -----
@@ -133,8 +134,11 @@ class SplashActivity : AppCompatActivity() {
                             val jsonObj__ = responseBody?.let { JSONObject(it) }
                             val jsonObj = jsonObj__?.getJSONObject("response")
                             // -----! 전화번호 변환 !-----
-                            val naver_mobile = URLEncoder.encode(jsonObj?.getString("mobile")?.replaceFirst("010", "+82 10"), "UTF-8")
+                            val naver_mobile = URLEncoder.encode(jsonObj?.getString("mobile")?.replaceFirst("010", "+8210"), "UTF-8")
                             if (naver_mobile != null) {
+
+                                t_userInstance.jsonObject = jsonObj
+                                Log.e("OKHTTP3>싱글톤", "${t_userInstance.jsonObject}")
                                 fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), naver_mobile, false) {
                                     MainInit()
                                 }
@@ -168,7 +172,8 @@ class SplashActivity : AppCompatActivity() {
                     else if (user != null) {
                         Log.i(TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
                         val JsonObj = JSONObject()
-                        val kakao_mobile = URLEncoder.encode(user.kakaoAccount?.phoneNumber.toString(), "UTF-8")
+
+                        val kakao_mobile = URLEncoder.encode(user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210"), "UTF-8")
                         JsonObj.put("user_mobile", kakao_mobile)
                         fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("user_mobile"), false) {
                             MainInit()
@@ -269,7 +274,6 @@ class SplashActivity : AppCompatActivity() {
             }
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
-                Log.e("OKHTTP3", "Success to execute request!: $responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
                 val jsonObj = jsonObj__?.optJSONObject("data")
                 val t_userInstance =  Singleton_t_user.getInstance(baseContext)

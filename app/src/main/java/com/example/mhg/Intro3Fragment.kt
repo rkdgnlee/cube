@@ -183,21 +183,21 @@ class Intro3Fragment : Fragment() {
                         JsonObj.put("user_birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
                         JsonObj.put("naver_login_id" , result.profile?.id.toString())
 
-                        Log.i("$TAG, 네이버", JsonObj.getString("user_mobile"))
+                        Log.i("네이버핸드폰번호", JsonObj.getString("user_mobile"))
                         val encodedUserMobile = URLEncoder.encode(naverMobile, "UTF-8")
                         fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
                             if (jsonObj?.getInt("status") == 404) {
                                 fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                     val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                                     t_userInstance?.jsonObject = JsonObj
-                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                    Log.e("네이버>싱글톤1", "${t_userInstance?.jsonObject}")
                                     PersonalSetupInit()
                                 }
                             } else {
                                 fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
                                     val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
                                     t_userInstance?.jsonObject = JsonObj
-                                    Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                    Log.e("네이버>싱글톤2", "${t_userInstance?.jsonObject}")
                                     MainInit()
                                 }
                             }
