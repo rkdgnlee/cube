@@ -90,7 +90,7 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="완료"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/mainwhite"
                 android:textSize="18sp"
                 app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"

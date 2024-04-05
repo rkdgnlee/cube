@@ -45,7 +45,7 @@ class SignInActivity :
         pagerAdapter = SignInViewPagerAdapter(this)
         binding.vp2SignIn.adapter = pagerAdapter
         // -----! google login 했을 시 페이지 지정 시작 !-----
-        val userString = intent.getStringExtra("user")
+        val userString = intent.getStringExtra("google_user")
         if (userString != null) {
             val user = JSONObject(userString)
             viewModel.User.value = user
@@ -66,7 +66,8 @@ class SignInActivity :
                 super.onPageSelected(position)
                 when (position) {
                     0 -> {
-                        binding.tvSignInPrevious.text = ""
+                        binding.tvSignInPrevious.visibility = View.GONE
+                        binding.tvSignInNext.visibility = View.VISIBLE
                     }
                     2 -> {
                         val fadeIn = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn3), "alpha", 0f, 1f)
@@ -76,7 +77,8 @@ class SignInActivity :
                         val animatorSet = AnimatorSet()
                         animatorSet.playTogether(fadeIn, moveUp)
                         animatorSet.start()
-                        binding.tvSignInNext.text = "다음"
+                        binding.tvSignInPrevious.visibility = View.VISIBLE
+                        binding.tvSignInNext.visibility = View.VISIBLE
                     }
                     3 -> {
                         val fadeIn = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn4), "alpha", 0f, 1f)
@@ -86,12 +88,12 @@ class SignInActivity :
                         val animatorSet = AnimatorSet()
                         animatorSet.playTogether(fadeIn, moveUp)
                         animatorSet.start()
-                        binding.tvSignInNext.text = ""
+                        binding.tvSignInNext.visibility = View.GONE
 
                     }
                     else -> {
-                        binding.tvSignInNext.text = "다음"
-                        binding.tvSignInPrevious.text = "이전"
+                        binding.tvSignInNext.visibility = View.GONE
+                        binding.tvSignInPrevious.visibility = View.VISIBLE
                     }
                 }
             }

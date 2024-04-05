@@ -40,7 +40,6 @@ class PlaySkeletonActivity : AppCompatActivity() {
             )
         }
         cameraExecutor = Executors.newSingleThreadExecutor()
-
     }
     private fun takePhoto() {}
     private fun captureVideo() {}
@@ -48,7 +47,7 @@ class PlaySkeletonActivity : AppCompatActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
+            // TODO 아마 여기다가 모델을 붙임. 같은 preview에다가.
             val preview = Preview.Builder()
                 .build()
                 .also {

@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PickItemVO (
-    var pickSn : String? = "",
+    var pickSn : Int = 0,
     var pickName : String? = "",
     var pickExplainTitle : String? = "",
     var pickExplain : String? = "",
@@ -14,7 +14,7 @@ data class PickItemVO (
     var exercises : MutableList<ExerciseVO>?
 ) : Parcelable {
     constructor(parcel: Parcel): this(
-        parcel.readString(),
+        parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -24,7 +24,7 @@ data class PickItemVO (
     override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(pickSn)
+        dest.writeInt(pickSn)
         dest.writeString(pickName)
         dest.writeString(pickExplainTitle)
         dest.writeString(pickExplain)

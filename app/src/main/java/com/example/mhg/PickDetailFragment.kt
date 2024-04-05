@@ -97,24 +97,26 @@ class PickDetailFragment : Fragment() {
         val t_userData = Singleton_t_user.getInstance(requireContext())
         val user_mobile = t_userData.jsonObject?.optString("user_mobile")
         // -----! singleton에서 전화번호 가져오기 끝 !-----
+
+        // -----! 운동 picklist, 제목 가져오기 시작 !-----
         // TODO 여기서 받아온 거 전처리, JSONObject에서 exercise만 접근할 건지.
+
 //        lifecycleScope.launch {
 //            val pickItem = NetworkExerciseService.fetchPickItemJsonBySn(
 //                getString(R.string.IP_ADDRESS_t_favorite),
 //                currentItem?.pickSn.toString()
 //            )?.optString("data")
-//
 //        }
-        // ----- 운동 picklist, 제목 가져오기 시작 -----
-        val pickList = mutableListOf<String>()
-        viewModel.pickList.observe(viewLifecycleOwner) { jsonArray ->
+
+        val pickList = mutableListOf<Pair<Int, String>>()
+        viewModel.pickList.observe(viewLifecycleOwner) { Array ->
             pickList.clear()
-            for (i in 0 until jsonArray.size) {
-                pickList.add(jsonArray[i])
+            for (i in 0 until Array.size) {
+                pickList.add(Array[i])
             }
             setPickDetail()
         }
-        val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList)
+        val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList.map { it.second })
         binding.actPickDetail.setAdapter(adapter)
         binding.actPickDetail.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -122,7 +124,6 @@ class PickDetailFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 title = s.toString()
                 setPickDetail()
-
             }
         }) // ----- 운동 picklist, 제목 가져오기 끝 -----
 
@@ -174,7 +175,11 @@ class PickDetailFragment : Fragment() {
      private fun setPickDetail(){
 
 //        val appClass = requireContext().applicationContext as AppClass
-        val currentItem = viewModel.pickItems.value?.get(viewModel.pickList.value!!.indexOf(title))
+
+         val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
+
+
+
         Log.w("$TAG, currentItem", "$currentItem")
         if (currentItem != null) {
             binding.tvPickDetailExplainTitle.text = currentItem.pickExplainTitle.toString()
@@ -203,7 +208,7 @@ class PickDetailFragment : Fragment() {
     private fun storePickUrl(viewModel : ExerciseViewModel) : MutableList<String> {
         val resourceList = mutableListOf<String>()
         val title = requireArguments().getString(ARG_TITLE).toString()
-        val currentItem = viewModel.pickItems.value?.get(viewModel.pickList.value!!.indexOf(title))
+        val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
         Log.w("PreviousStoreURL", "$currentItem")
         for (i in 0 until currentItem!!.exercises!!.size) {
             val exercises = currentItem.exercises!!.get(i)

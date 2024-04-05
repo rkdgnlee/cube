@@ -31,26 +31,26 @@ class FeedbackActivity : AppCompatActivity() {
 //        })
 
 
-        binding.btnfeedback.setOnClickListener {
-            val jsonObj = JSONObject()
-            when (binding.rgFeedback.checkedRadioButtonId) {
-                1-> jsonObj.put("exercise_place", "실내")
-                2-> jsonObj.put("exercise_place", "야외")
-                3-> jsonObj.put("exercise_place", "운동 시설")
-                else -> jsonObj.put("exercise_place", "기타")
-            }
+//        binding.btnfeedback.setOnClickListener {
+//            val jsonObj = JSONObject()
+//            when (binding.rgFeedback.checkedRadioButtonId) {
+//                1-> jsonObj.put("exercise_place", "실내")
+//                2-> jsonObj.put("exercise_place", "야외")
+//                3-> jsonObj.put("exercise_place", "운동 시설")
+//                else -> jsonObj.put("exercise_place", "기타")
+//            }
+//
+////            jsonObj.put("exercise_intense", binding.nsIntense.value.toString())
+////            jsonObj.put("exercise_fatigue", binding.nsFatigue.value.toString())
+////            jsonObj.put("exercise_satisfic", binding.nsSatisfic.value.toString())
+//            jsonObj.put("other_feedback", binding.tietFeedback.text)
 
-            jsonObj.put("exercise_intense", binding.nsIntense.value.toString())
-            jsonObj.put("exercise_fatigue", binding.nsFatigue.value.toString())
-            jsonObj.put("exercise_satisfic", binding.nsSatisfic.value.toString())
-            jsonObj.put("other_feedback", binding.tietFeedback.text)
-
-            Log.w(TAG+" 피드백", "장소: ${jsonObj.getString("exercise_place")}, 강도: ${jsonObj.getString("exercise_intense")}, 피로도: ${jsonObj.getString("exercise_fatigue")}, 만족도: ${jsonObj.getString("exercise_satisfic")}, 기타사항: ${jsonObj.getString("exercise_place")}")
-
-            val intent = Intent(this@FeedbackActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+//            Log.w(TAG+" 피드백", "장소: ${jsonObj.getString("exercise_place")}, 강도: ${jsonObj.getString("exercise_intense")}, 피로도: ${jsonObj.getString("exercise_fatigue")}, 만족도: ${jsonObj.getString("exercise_satisfic")}, 기타사항: ${jsonObj.getString("exercise_place")}")
+//
+//            val intent = Intent(this@FeedbackActivity, MainActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
 
     }
 }

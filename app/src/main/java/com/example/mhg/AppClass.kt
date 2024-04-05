@@ -12,12 +12,12 @@ class AppClass : Application() {
     lateinit var pickList: MutableLiveData<MutableList<String>>
     lateinit var pickItems: MutableLiveData<MutableList<PickItemVO>>
 
-    override fun onCreate() {
-        super.onCreate()
-
-        // 데이터 초기화
-        pickItem = PickItemVO("","", "", "", "", mutableListOf())
-        pickList = MutableLiveData(mutableListOf())
-        pickItems = MutableLiveData(mutableListOf())
-    }
+//    override fun onCreate() {
+//        super.onCreate()
+//
+//        // 데이터 초기화
+//        pickItem = PickItemVO("","", "", "", "", mutableListOf())
+//        pickList = MutableLiveData(mutableListOf())
+//        pickItems = MutableLiveData(mutableListOf())
+//    }
 }

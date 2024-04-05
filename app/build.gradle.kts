@@ -59,6 +59,8 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.4.0")
     implementation("io.github.litao0621:nifty-slider:1.4.6")
 
+
+
 // 로그인 api
     implementation("com.navercorp.nid:oauth:5.9.0")
     implementation("com.kakao.sdk:v2-common:2.19.0")

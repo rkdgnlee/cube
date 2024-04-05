@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
 import androidx.annotation.RequiresApi
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.databinding.ActivityPlayBinding
@@ -58,12 +59,17 @@ class PlayActivity : AppCompatActivity() {
 
         playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
+        // -----! 하단 운동 시작 버튼 시작 !-----
         binding.btnExercisePlay.setOnClickListener {
-            val intent = Intent(this, PlayFullScreenActivity::class.java)
+//            val intent = Intent(this, PlayFullScreenActivity::class.java)
+//            intent.putExtra("video_url", videoUrl)
+//            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
+//            startActivityForResult(intent, 8080)
+            val intent = Intent(this, PlaySkeletonActivity::class.java)
             intent.putExtra("video_url", videoUrl)
             intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
             startActivityForResult(intent, 8080)
-        }
+        } // -----! 하단 운동 시작 버튼 끝 !-----
 //        // -----! 전체화면 구현 로직 시작 !-----
 //        val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
 //
@@ -74,7 +80,10 @@ class PlayActivity : AppCompatActivity() {
 //
 //            startActivityForResult(intent, 8080)
 //        }
-
+        val exitButton = binding.pvPlay.findViewById<ImageButton>(R.id.exo_exit)
+        exitButton.setOnClickListener {
+            finish()
+        }
     }
 
     private fun initPlayer(){

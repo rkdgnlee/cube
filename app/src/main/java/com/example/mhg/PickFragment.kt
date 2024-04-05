@@ -51,9 +51,9 @@ class PickFragment : Fragment(), onPickDetailClickListener {
                 viewModel.pickItems.value?.clear()
                 viewModel.exerciseUnits.value?.clear()
                 for (i in 0 until pickList.length()) {
-                    viewModel.pickList.value?.add(pickList.getJSONObject(i).getString("favorite_name"))
+                    viewModel.pickList.value?.add(Pair(pickList.getJSONObject(i).optInt("favorite_sn"),pickList.getJSONObject(i).getString("favorite_name")))
                     val pickItemVO = PickItemVO(
-                        pickSn = pickList.getJSONObject(i).optString("favorite_sn"),
+                        pickSn = pickList.getJSONObject(i).optInt("favorite_sn"),
                         pickName = pickList.getJSONObject(i).optString("favorite_name"),
                         pickExplain = pickList.getJSONObject(i).optString("favorite_description"),
                         pickExplainTitle = pickList.getJSONObject(i).optString("favorite_description"),
@@ -75,7 +75,7 @@ class PickFragment : Fragment(), onPickDetailClickListener {
                 }
             } // -----! appClass list관리 끝 !-----
 
-            val PickRecyclerViewAdapter = PickRecyclerViewAdapter(viewModel.pickList.value!!, this@PickFragment, requireActivity())
+            val PickRecyclerViewAdapter = PickRecyclerViewAdapter(viewModel.pickList.value!!.map { it.second }.toMutableList(), this@PickFragment, requireActivity())
             binding.rvPick.adapter = PickRecyclerViewAdapter
             val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvPick.layoutManager = linearLayoutManager

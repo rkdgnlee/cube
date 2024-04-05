@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class PlayFullScreenActivity : AppCompatActivity() {
         lateinit var binding: ActivityPlayFullScreenBinding
@@ -71,10 +72,17 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         super.onPlaybackStateChanged(playbackState)
                         if (playbackState == Player.STATE_ENDED) {
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                simpleExoPlayer?.next()
-                                // TODO : 여기에 History에 대한 걸 넣어야 함 (통신)
-                            }, 1000)
+                            // -----! 모든 영상 종료 시 자동 이동 !-----
+                            if (simpleExoPlayer!!.currentWindowIndex == resourceList.size -1) {
+                                val intent = Intent(this@PlayFullScreenActivity, FeedbackActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }else {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    simpleExoPlayer?.next()
+                                    // TODO : 여기에 History에 대한 걸 넣어야 함 (통신)
+                                }, 1000)
+                            }
                         }
                     }
                 })
@@ -123,21 +131,19 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }
 
     private fun showExitDialog() {
-        val dialog = AlertDialog.Builder(this).apply {
+        MaterialAlertDialogBuilder(this@PlayFullScreenActivity, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
             setTitle("알림")
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
-
-                // TODO feedback activity에서 운동 기록 데이터 백그라운드 작업 전송 필요
-                val intent= Intent(this@PlayFullScreenActivity, FeedbackActivity::class.java)
-                startActivity(intent)
-
+//                // TODO feedback activity에서 운동 기록 데이터 백그라운드 작업 전송 필요
+//                val intent= Intent(this@PlayFullScreenActivity, FeedbackActivity::class.java)
+//                startActivity(intent)
+                finish()
             }
             setNegativeButton("아니오") { dialog, _ ->
             }
             create()
-        }
-        dialog.show()
+        }.show()
     }
 
         // 일시중지

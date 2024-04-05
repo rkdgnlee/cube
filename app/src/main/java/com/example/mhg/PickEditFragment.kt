@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickEditBinding
@@ -180,7 +181,7 @@ class PickEditFragment : Fragment() {
         val index = viewModel.pickItems.value?.indexOfFirst { it.pickName == title }
 
         val pickItem = PickItemVO(
-            pickSn = index?.let { viewModel.pickItems.value!![it].pickSn.toString() },
+            pickSn = index?.let { viewModel.pickItems.value!![it].pickSn }!!,
             pickName = binding.etPickEditName.text.toString(),
             pickExplainTitle = binding.etPickEditExplainTitle.text.toString(),
             pickExplain = binding.etPickEditExplain.text.toString(),
@@ -190,7 +191,7 @@ class PickEditFragment : Fragment() {
 
         if (index != null) {
             viewModel.pickItems.value?.set(index, pickItem)
-            viewModel.pickList.value?.set(index, pickItem.pickName.toString())
+            viewModel.pickList.value?.set(index, Pair(pickItem.pickSn!!.toInt(), pickItem.pickName.toString()))
             title = pickItem.pickName.toString()
         }
 

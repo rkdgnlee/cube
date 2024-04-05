@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.mhg.R
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.PickItemVO
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -190,5 +191,50 @@ object NetworkExerciseService {
                 jsonObj__ // TODO BODY에서 가져와서 전부다 쓸껀지, 아니면 EXERCISE JSONArray만 따로 쓸건지 판단해서 수정하기. 그리고 받아와서
             }
         }
+    }
+    fun jsonToExerciseVO(json: JSONObject): ExerciseVO {
+        // JSONObject에서 필요한 데이터를 추출하고 ExerciseVO 객체를 생성합니다.
+        // 이 예제에서는 모든 필드가 String 타입이라고 가정합니다.
+        return ExerciseVO(
+            imgUrl = json.optString("imgUrl"),
+            exerciseName = json.optString("exercise_name"),
+            exerciseDescription = json.optString("exercise_description"),
+            exerciseDescriptionId = json.optInt("exercise_description_id"),
+            relatedJoint = json.optString("related_joint"),
+            relatedMuscle = json.optString("related_muscle"),
+            relatedSymptom = json.optString("related_symptom"),
+            exerciseStage = json.optString("exercise_stage"),
+            exerciseFequency = json.optString("exercise_frequency"),
+            exerciseIntensity = json.optString("exercise_intensity"),
+            exerciseInitialPosture = json.optString("exercise_initial_posture"),
+            exerciseMethod = json.optString("exercise_method"),
+            exerciseCaution = json.optString("exercise_caution"),
+            videoAlternativeName = json.optString("video_alternative_name"),
+            videoFilepath = json.optString("video_filepath"),
+            videoTime = json.optString("video_time"),
+            exerciseTypeId = json.optString("exercise_type_id"),
+            exerciseTypeName = json.optString("exercise_type_name"),
+            quantity = json.optInt("quantity")
+        )
+    }
+    fun jsonToPickItemVO(json: JSONObject) : PickItemVO {
+        val exercisesJsonArray = json.optJSONArray("exercises")
+        val exercisesList = mutableListOf<ExerciseVO>()
+        if (exercisesJsonArray != null) {
+            for (i in 0 until exercisesJsonArray.length()) {
+                val exerciseJson = exercisesJsonArray.optJSONObject(i)
+                if (exerciseJson != null) {
+                    val exercise = jsonToExerciseVO(exerciseJson)
+                    exercisesList.add(exercise)
+                }
+            }
+        }
+        return PickItemVO(
+            pickSn = json.optInt("favorite_sn"),
+            pickName = json.optString("favorite_name"),
+            pickExplainTitle = json.optString("favorite_description"),
+            pickExplain = json.optString("favorite_description"),
+            exercises = exercisesList,
+        )
     }
 }

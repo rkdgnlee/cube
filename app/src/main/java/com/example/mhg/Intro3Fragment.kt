@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.finishAffinity
 import com.example.mhg.databinding.FragmentIntro3Binding
+import com.example.mhg.`object`.NetworkUserService.StoreUserInSingleton
 import com.example.mhg.`object`.NetworkUserService.fetchUserINSERTJson
 import com.example.mhg.`object`.NetworkUserService.fetchUserSELECTJson
 import com.example.mhg.`object`.NetworkUserService.fetchUserUPDATEJson
@@ -88,7 +89,7 @@ class Intro3Fragment : Fragment() {
 
                                                 Log.e("구글JsonObj", JsonObj.getString("google_login_id"))
                                                 val intent = Intent(requireContext(), SignInActivity::class.java)
-                                                intent.putExtra("user", JsonObj.toString())
+                                                intent.putExtra("google_user", JsonObj.toString())
                                                 startActivity(intent)
 
                                                 // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
@@ -97,7 +98,7 @@ class Intro3Fragment : Fragment() {
                                                 if (googleSignInToken != "") {
                                                     Log.e(TAG, "googleSignInToken : $googleSignInToken")
                                                 } else {
-                                                    Log.e(TAG, "googleSignInToken이 null")
+                                                    Log.e(TAG, "googleSignInToken =  null")
                                                 }
                                                 // ---- Google 토큰에서 가져오기 끝 ----
                                             }
@@ -188,16 +189,14 @@ class Intro3Fragment : Fragment() {
                         fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
                             if (jsonObj?.getInt("status") == 404) {
                                 fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
-                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                                    t_userInstance?.jsonObject = JsonObj
-                                    Log.e("네이버>싱글톤1", "${t_userInstance?.jsonObject}")
+                                    StoreUserInSingleton(requireContext(), JsonObj)
+                                    Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                     PersonalSetupInit()
                                 }
                             } else {
                                 fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
-                                    val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                                    t_userInstance?.jsonObject = JsonObj
-                                    Log.e("네이버>싱글톤2", "${t_userInstance?.jsonObject}")
+                                    StoreUserInSingleton(requireContext(), JsonObj)
+                                    Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                     MainInit()
                                 }
                             }
@@ -235,33 +234,30 @@ class Intro3Fragment : Fragment() {
                                 val JsonObj = JSONObject()
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-
-                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "MALE") {
+                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M") {
                                     "남자"
                                 } else {
                                     "여자"
                                 }
-
                                 JsonObj.put("user_gender", kakaoUserGender)
                                 JsonObj.put("user_mobile", kakaoMobile)
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
-                                JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + user.kakaoAccount?.birthday.toString())
+                                JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 JsonObj.put("kakao_login_id" , user.id.toString())
+
                                 val encodedUserMobile = URLEncoder.encode(kakaoMobile, "UTF-8")
                                 Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_mobile"))
                                 fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
                                     if (jsonObj?.getInt("status") == 404) {
                                         fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
-                                            val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                                            t_userInstance?.jsonObject = JsonObj
-                                            Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                            StoreUserInSingleton(requireContext(), JsonObj)
+                                            Log.e("카카오>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                             PersonalSetupInit()
                                         }
                                     } else {
                                         fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
-                                            val t_userInstance = context?.let { Singleton_t_user.getInstance(requireContext()) }
-                                            t_userInstance?.jsonObject = JsonObj
-                                            Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
+                                            StoreUserInSingleton(requireContext(), JsonObj)
+                                            Log.e("카카오>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                             MainInit()
                                         }
                                     }

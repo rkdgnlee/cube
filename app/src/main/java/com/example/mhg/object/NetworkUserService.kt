@@ -1,6 +1,7 @@
 package com.example.mhg.`object`
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -94,4 +95,7 @@ object NetworkUserService{
         })
     }
 
+    fun StoreUserInSingleton(context: Context, jsonObj :JSONObject) {
+        Singleton_t_user.getInstance(context).jsonObject = jsonObj
+    }
 }
