@@ -47,7 +47,7 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 binding.btnAgreementFinish.setBackgroundColor(binding.btnAgreementFinish.resources.getColor(R.color.grey600))
                 binding.btnAgreementFinish.isEnabled = false
                 binding.btnAgreementFinish.setTextColor(binding.btnAgreementFinish.resources.getColor(R.color.mainblack))
-                binding.cbAgreementAll.isChecked = false
+//                binding.cbAgreementAll.isChecked = false
             }
         }
         binding.cbAgreement1.setOnCheckedChangeListener(checkListener)

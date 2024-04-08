@@ -4,6 +4,9 @@ import android.R
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -15,11 +18,14 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
+import com.example.mhg.Adapter.HomeBannerRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeHorizontalRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.ExerciseViewModel
+import com.example.mhg.VO.HomeBannerItem
 import com.example.mhg.VO.UserViewModel
 import com.example.mhg.databinding.FragmentHomeBeginnerBinding
 import com.example.mhg.`object`.NetworkExerciseService.fetchExerciseJson
@@ -30,7 +36,9 @@ import kotlinx.coroutines.launch
 
 class HomeBeginnerFragment : Fragment() {
     lateinit var binding: FragmentHomeBeginnerBinding
-
+    private var bannerPosition = Int.MAX_VALUE/2
+    private var homeBannerHandler = HomeBannerHandler()
+    private val intervalTime = 2200.toLong()
     lateinit var ExerciseList : MutableList<ExerciseVO>
     private val exerciseTypeList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")
     val viewModel : UserViewModel by activityViewModels()
@@ -44,8 +52,34 @@ class HomeBeginnerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBeginnerBinding.inflate(layoutInflater)
+        val bannerList = arrayListOf<HomeBannerItem>()
 
-        // Inflate the layout for this fragment
+        val ImageUrl1 = "https://images.unsplash.com/photo-1572196459043-5c39f99a7555?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        val ImageUrl2 = "https://images.unsplash.com/photo-1605558162119-2de4d9ff8130?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        val ImageUrl3 = "https://images.unsplash.com/photo-1533422902779-aff35862e462?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        val ImageUrl4 = "https://images.unsplash.com/photo-1587387119725-9d6bac0f22fb?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        val ImageUrl5 = "https://images.unsplash.com/photo-1598449356475-b9f71db7d847?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        bannerList.add(HomeBannerItem(ImageUrl1))
+        bannerList.add(HomeBannerItem(ImageUrl2))
+        bannerList.add(HomeBannerItem(ImageUrl3))
+        bannerList.add(HomeBannerItem(ImageUrl4))
+        bannerList.add(HomeBannerItem(ImageUrl5))
+        val bannerAdapter = activity?.let { HomeBannerRecyclerViewAdapter(bannerList, it) }
+        bannerAdapter?.notifyDataSetChanged()
+        binding.vpHomeBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.vpHomeBanner.adapter = bannerAdapter
+        binding.vpHomeBanner.setCurrentItem(bannerPosition, false)
+        binding.vpHomeBanner.apply {
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrollStateChanged(state: Int) {
+                    super.onPageScrollStateChanged(state)
+                    when (state) {
+                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
+                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
+                    }
+                }
+            })
+        }
         return binding.root
     }
 
@@ -198,5 +232,31 @@ class HomeBeginnerFragment : Fragment() {
             })
         }
         }
+    private fun autoScrollStart(intervalTime: Long) {
+        homeBannerHandler.removeMessages(0)
+        homeBannerHandler.sendEmptyMessageDelayed(0, intervalTime)
+    }
+    private fun autoScrollStop() {
+        homeBannerHandler.removeMessages(0)
+    }
+    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            if (msg.what == 0) {
+                binding.vpHomeBanner.setCurrentItem(++bannerPosition, true)
+                autoScrollStart(intervalTime)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        autoScrollStart(intervalTime)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        autoScrollStop()
+    }
 }
 

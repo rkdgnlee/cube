@@ -15,6 +15,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
@@ -139,10 +140,9 @@ class SignIn4Fragment : Fragment() {
                         t_userInstance?.jsonObject = JsonObj
                         Log.e("OKHTTP3>싱글톤", "${t_userInstance?.jsonObject}")
 
-                        val intent = Intent(requireContext() ,MainActivity::class.java)
+                        val intent = Intent(requireContext() ,PersonalSetupActivity::class.java)
                         startActivity(intent)
-
-
+                        ActivityCompat.finishAffinity(requireActivity())
                     }
                 }
             }

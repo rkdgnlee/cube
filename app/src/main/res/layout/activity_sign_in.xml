@@ -8,6 +8,35 @@
     android:background="@color/mainwhite"
     tools:context=".SignInActivity">
 
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp2SignIn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+    </androidx.viewpager2.widget.ViewPager2>
+
+    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+        android:id="@+id/diSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:foregroundGravity="center"
+        app:dotsColor="@color/grey600"
+        app:dotsCornerRadius="24dp"
+        app:dotsElevation="4dp"
+        app:dotsSize="32dp"
+        app:dotsWidthFactor="2.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/vp2SignIn"
+        app:selectedDotColor="@color/mainColor" />
+
     <TextView
         android:id="@+id/tvSignInNext"
         android:layout_width="wrap_content"
@@ -37,34 +66,5 @@
         app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/vp2SignIn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-    </androidx.viewpager2.widget.ViewPager2>
-
-    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
-        android:id="@+id/diSignIn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:foregroundGravity="center"
-        app:dotsColor="@color/grey600"
-        app:dotsCornerRadius="24dp"
-        app:dotsElevation="4dp"
-        app:dotsSize="32dp"
-        app:dotsWidthFactor="2.5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/vp2SignIn"
-        app:selectedDotColor="@color/mainColor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

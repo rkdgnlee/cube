@@ -20,13 +20,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
+import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.PickItemVO
 import com.example.mhg.databinding.FragmentPickDetailBinding
 import com.example.mhg.`object`.NetworkExerciseService
+import com.example.mhg.`object`.NetworkExerciseService.jsonToExerciseVO
+import com.example.mhg.`object`.NetworkExerciseService.jsonToPickItemVO
 import com.example.mhg.`object`.Singleton_t_user
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 
 class PickDetailFragment : Fragment() {
@@ -73,26 +77,11 @@ class PickDetailFragment : Fragment() {
         binding.rvPickDetail.isNestedScrollingEnabled = false
         binding.rvPickDetail.overScrollMode = View.OVER_SCROLL_NEVER
 
-
         title = requireArguments().getString(ARG_TITLE).toString()
+        val currentSn = viewModel.pickList.value?.find { it.second == title }?.first.toString()
         binding.actPickDetail.setText(title)
 //        val appClass = requireContext().applicationContext as AppClass
-        val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
-        viewModel.pickItems.observe(viewLifecycleOwner) {items ->
 
-            if (currentItem != null) {
-                if (currentItem.exercises!!.size != 0) {
-                    binding.ivPickDetailNull.visibility = View.GONE
-                } else {
-                    binding.ivPickDetailNull.visibility = View.VISIBLE
-                }
-            }
-        }
-        if (currentItem?.exercises?.isEmpty() == true) {
-            binding.llPickDetail.visibility = View.GONE
-        } else {
-            binding.llPickDetail.visibility = View.VISIBLE
-        }
         // -----! singleton에서 전화번호 가져오기 시작 !-----
         val t_userData = Singleton_t_user.getInstance(requireContext())
         val user_mobile = t_userData.jsonObject?.optString("user_mobile")
@@ -100,53 +89,69 @@ class PickDetailFragment : Fragment() {
 
         // -----! 운동 picklist, 제목 가져오기 시작 !-----
         // TODO 여기서 받아온 거 전처리, JSONObject에서 exercise만 접근할 건지.
+        lifecycleScope.launch {
 
-//        lifecycleScope.launch {
-//            val pickItem = NetworkExerciseService.fetchPickItemJsonBySn(
-//                getString(R.string.IP_ADDRESS_t_favorite),
-//                currentItem?.pickSn.toString()
-//            )?.optString("data")
-//        }
+            val snData = NetworkExerciseService.fetchPickItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)
+            val pickItem = if (snData != null) jsonToPickItemVO(snData) else PickItemVO(0, "", "", "", "", mutableListOf())
 
-        val pickList = mutableListOf<Pair<Int, String>>()
-        viewModel.pickList.observe(viewLifecycleOwner) { Array ->
-            pickList.clear()
-            for (i in 0 until Array.size) {
-                pickList.add(Array[i])
+            val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
+            if (currentItem != null) {
+                currentItem.exercises = pickItem.exercises
             }
-            setPickDetail()
-        }
-        val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList.map { it.second })
-        binding.actPickDetail.setAdapter(adapter)
-        binding.actPickDetail.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {  }
-            override fun afterTextChanged(s: Editable?) {
-                title = s.toString()
-                setPickDetail()
-            }
-        }) // ----- 운동 picklist, 제목 가져오기 끝 -----
+            viewModel.pickItems.value = viewModel.pickItems.value
 
-        // -----! 운동 url list 만들기 시작 !-----
-        binding.btnPickStart.setOnClickListener {
-            if (currentItem?.exercises?.isNotEmpty() == true) {
-                val resourceList = storePickUrl(viewModel)
-                Log.w("url in resourceList", "$resourceList")
-                val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-                intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
-                startForResult.launch(intent)
+            if (currentItem?.exercises!!.size == 0) {
+                binding.ivPickDetailNull.visibility = View.VISIBLE
+                binding.llPickDetail.visibility = View.GONE
             } else {
-                val snackbar = Snackbar.make(requireView(), "운동을 추가해주세요 ! ", Snackbar.LENGTH_SHORT)
-                snackbar.setAction("확인", object: View.OnClickListener {
-                    override fun onClick(v: View?) {
-                        snackbar.dismiss()
-                    }
-                })
-                snackbar.setTextColor(Color.WHITE)
-                snackbar.setActionTextColor(Color.WHITE)
-                snackbar.show()
+                binding.ivPickDetailNull.visibility = View.GONE
+                binding.llPickDetail.visibility = View.VISIBLE
             }
-        } // -----! 운동 url list 만들기 끝 !-----
+
+            val pickList = mutableListOf<Pair<Int, String>>()
+            viewModel.pickList.observe(viewLifecycleOwner) { Array ->
+                pickList.clear()
+                for (i in 0 until Array.size) {
+                    pickList.add(Array[i])
+                }
+                setPickDetail(currentItem)
+            }
+            val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList.map { it.second })
+            binding.actPickDetail.setAdapter(adapter)
+            binding.actPickDetail.addTextChangedListener(object: TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {  }
+                override fun afterTextChanged(s: Editable?) {
+                    title = s.toString()
+                    setPickDetail(currentItem)
+                }
+            })
+
+            // -----! 운동 url list 만들기 시작 !-----
+            binding.btnPickStart.setOnClickListener {
+                if (currentItem.exercises?.isNotEmpty() == true) {
+                    val resourceList = storePickUrl(viewModel)
+                    Log.w("url in resourceList", "$resourceList")
+                    val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
+                    intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
+                    startForResult.launch(intent)
+                } else {
+                    val snackbar = Snackbar.make(requireView(), "운동을 추가해주세요 ! ", Snackbar.LENGTH_SHORT)
+                    snackbar.setAction("확인", object: View.OnClickListener {
+                        override fun onClick(v: View?) {
+                            snackbar.dismiss()
+                        }
+                    })
+                    snackbar.setTextColor(Color.WHITE)
+                    snackbar.setActionTextColor(Color.WHITE)
+                    snackbar.show()
+                }
+            } // -----! 운동 url list 만들기 끝 !-----
+        }
+
+        // ----- 운동 picklist, 제목 가져오기 끝 -----
+
+
 
 
         binding.btnPickDetailBack.setOnClickListener {
@@ -172,37 +177,29 @@ class PickDetailFragment : Fragment() {
 
     }
     @SuppressLint("NotifyDataSetChanged")
-     private fun setPickDetail(){
+     private fun setPickDetail(currentItem: PickItemVO){
 
-//        val appClass = requireContext().applicationContext as AppClass
+        Log.w("detail>currentItem", "$currentItem")
+        binding.tvPickDetailExplainTitle.text = currentItem.pickExplain.toString()
+        binding.tvPickDetailExplain.text = currentItem.pickExplain.toString()
+        val RvAdapter = HomeVerticalRecyclerViewAdapter(currentItem.exercises!!, "home")
+        RvAdapter.verticalList = currentItem.exercises!!
+        val linearLayoutManager2 =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.rvPickDetail.layoutManager = linearLayoutManager2
+        binding.rvPickDetail.adapter = RvAdapter
+        RvAdapter.notifyDataSetChanged()
 
-         val currentItem = viewModel.pickItems.value?.find { it.pickName == title }
+        binding.tvPickDetailUnitNumber.text = currentItem.exercises!!.size.toString()
 
-
-
-        Log.w("$TAG, currentItem", "$currentItem")
-        if (currentItem != null) {
-            binding.tvPickDetailExplainTitle.text = currentItem.pickExplainTitle.toString()
-            binding.tvPickDetailExplain.text = currentItem.pickExplain.toString()
-            val RvAdapter = HomeVerticalRecyclerViewAdapter(currentItem.exercises!!, "home")
-            RvAdapter.verticalList = currentItem.exercises!!
-            val linearLayoutManager2 =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvPickDetail.layoutManager = linearLayoutManager2
-            binding.rvPickDetail.adapter = RvAdapter
-            RvAdapter.notifyDataSetChanged()
-
-            binding.tvPickDetailUnitNumber.text = currentItem.exercises!!.size.toString()
-
-            var totalTime = 0
-            for (i in 0 until currentItem.exercises!!.size) {
-                val exercises = currentItem.exercises!!.get(i)
-                Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
-                totalTime += exercises.videoTime!!.toInt()
-            }
-            Log.w("총 시간", "$totalTime")
-            binding.tvPickDetailUnitTime.text = (totalTime.div(60)).toString()
+        var totalTime = 0
+        for (i in 0 until currentItem.exercises!!.size) {
+            val exercises = currentItem.exercises!!.get(i)
+            Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
+            totalTime += exercises.videoTime!!.toInt()
         }
+        Log.w("총 시간", "$totalTime")
+        binding.tvPickDetailUnitTime.text = (totalTime.div(60)).toString()
     }
 
     private fun storePickUrl(viewModel : ExerciseViewModel) : MutableList<String> {
@@ -217,4 +214,22 @@ class PickDetailFragment : Fragment() {
         }
         return  resourceList
     }
+
+//    private fun jsontoPickItemVO(jsonObj : JSONObject) : PickItemVO {
+//        val exerciseUnits = mutableListOf<ExerciseVO>()
+//        val exercises = jsonObj.optJSONArray("exercise_detail_data")
+//        if (exercises != null) {
+//            for (i in 0 until exercises.length()) {
+//                exerciseUnits.add(jsonToExerciseVO(exercises.get(i) as JSONObject))
+//            }
+//        }
+//        val pickItemVO = PickItemVO(
+//            pickName = jsonObj.optString("favorite_name"),
+//            pickExplainTitle = jsonObj.optString("favorite_description"),
+//            pickExplain = jsonObj.optString("favorite_description"),
+//            exercises = exerciseUnits
+//        )
+//        Log.w("jsonObj>pickItemVO", "$pickItemVO")
+//        return pickItemVO
+//    }
 }

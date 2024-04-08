@@ -40,15 +40,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <Button
-        android:id="@+id/btnAgreement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:backgroundTint="@color/mainColor"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="확인"
-        app:cornerRadius="0dp" />
+
 
 </FrameLayout>

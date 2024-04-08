@@ -69,6 +69,10 @@ class SignInActivity :
                         binding.tvSignInPrevious.visibility = View.GONE
                         binding.tvSignInNext.visibility = View.VISIBLE
                     }
+                    1 -> {
+                        binding.tvSignInPrevious.visibility = View.VISIBLE
+                        binding.tvSignInNext.visibility = View.VISIBLE
+                    }
                     2 -> {
                         val fadeIn = ObjectAnimator.ofFloat(findViewById(R.id.tvSignIn3), "alpha", 0f, 1f)
                         fadeIn.duration = 900
@@ -89,11 +93,6 @@ class SignInActivity :
                         animatorSet.playTogether(fadeIn, moveUp)
                         animatorSet.start()
                         binding.tvSignInNext.visibility = View.GONE
-
-                    }
-                    else -> {
-                        binding.tvSignInNext.visibility = View.GONE
-                        binding.tvSignInPrevious.visibility = View.VISIBLE
                     }
                 }
             }

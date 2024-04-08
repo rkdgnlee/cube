@@ -179,16 +179,9 @@ object NetworkExerciseService {
             .build()
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use {response ->
-                val responseBody = response.body?.string()
+                val responseBody = response.body?.string().let { JSONObject(it) }
                 Log.e("OKHTTP3/picklistfetch", "Success to execute request!: $responseBody")
-                val jsonObj__ = responseBody?.let { JSONObject(it) }
-//                val jsonArray = try {
-//                    jsonObj__?.getJSONArray("data")
-//                } catch (e: JSONException) {
-//                    JSONArray()
-//                }
-//                jsonArray
-                jsonObj__ // TODO BODY에서 가져와서 전부다 쓸껀지, 아니면 EXERCISE JSONArray만 따로 쓸건지 판단해서 수정하기. 그리고 받아와서
+                responseBody
             }
         }
     }
@@ -218,23 +211,21 @@ object NetworkExerciseService {
         )
     }
     fun jsonToPickItemVO(json: JSONObject) : PickItemVO {
-        val exercisesJsonArray = json.optJSONArray("exercises")
-        val exercisesList = mutableListOf<ExerciseVO>()
-        if (exercisesJsonArray != null) {
-            for (i in 0 until exercisesJsonArray.length()) {
-                val exerciseJson = exercisesJsonArray.optJSONObject(i)
-                if (exerciseJson != null) {
-                    val exercise = jsonToExerciseVO(exerciseJson)
-                    exercisesList.add(exercise)
-                }
+        val exerciseUnits = mutableListOf<ExerciseVO>()
+        val exercises = json.optJSONArray("exercise_detail_data")
+        if (exercises != null) {
+            for (i in 0 until exercises.length()) {
+                exerciseUnits.add(jsonToExerciseVO(exercises.get(i) as JSONObject))
             }
         }
+        Log.w("exerciseUnits", "$exerciseUnits")
+        val jsonObj_ = json.optJSONObject("favorite info")
         return PickItemVO(
-            pickSn = json.optInt("favorite_sn"),
-            pickName = json.optString("favorite_name"),
-            pickExplainTitle = json.optString("favorite_description"),
-            pickExplain = json.optString("favorite_description"),
-            exercises = exercisesList,
+            pickSn = jsonObj_!!.optInt("favorite_sn"),
+            pickName = jsonObj_.optString("favorite_name"),
+            pickExplainTitle = jsonObj_.optString("favorite_description"),
+            pickExplain = jsonObj_.optString("favorite_description"),
+            exercises = exerciseUnits
         )
     }
 }

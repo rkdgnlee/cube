@@ -43,7 +43,8 @@ class PickFragment : Fragment(), onPickDetailClickListener {
         lifecycleScope.launch {
 
             // -----! 핸드폰 번호로 PickItems 가져오기 시작 !-----
-            val pickList = fetchPickItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), encodedUserMobile) // user_mobile 넣기
+            val pickList = fetchPickItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), user_mobile.toString()) // user_mobile 넣기
+            Log.w(TAG, encodedUserMobile)
 
             // -----! appClass list관리 시작 !-----
             if (pickList != null) {
@@ -58,7 +59,6 @@ class PickFragment : Fragment(), onPickDetailClickListener {
                         pickExplain = pickList.getJSONObject(i).optString("favorite_description"),
                         pickExplainTitle = pickList.getJSONObject(i).optString("favorite_description"),
                         pickDisclosure = "",
-//                        exercises = allDataList.getJSONObject(i).optString("exercise_description_ids")
                         exercises = mutableListOf()
                     )
                     viewModel.pickItems.value?.add(pickItemVO)

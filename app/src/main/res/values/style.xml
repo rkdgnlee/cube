@@ -43,7 +43,7 @@
     </style>
 
 
-
+<!--b bottomsheetdialog 스타일 -->
     <style name="Theme_Design_BottomSheetDialog1" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
     </style>

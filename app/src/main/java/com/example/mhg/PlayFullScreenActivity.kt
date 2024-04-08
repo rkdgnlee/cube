@@ -52,7 +52,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setContentView(binding.root)
 
 //            // -----! landscape로 방향 설정 & 재생시간 받아오기 !-----
-
+//            initPlayer()
             val videoUrl = intent.getStringExtra("video_url")
             if (videoUrl != null) {
                 val url_list = ArrayList<String>()
@@ -60,7 +60,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 playbackPosition = intent.getLongExtra("current_position", 0L)
                 initPlayer(url_list)
             }
-
 
            // -----! 받아온 즐겨찾기 재생 목록 시작 !-----
             val resourceList = intent.getStringArrayListExtra("resourceList")
@@ -96,6 +95,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
         private fun initPlayer(resourceList: ArrayList<String>) {
             simpleExoPlayer = SimpleExoPlayer.Builder(this).build()
             binding.pvFullScreen.player = simpleExoPlayer
+
+            // raw에 있는 것 가져오기
             buildMediaSource(resourceList).let {
                 simpleExoPlayer?.prepare(it)
                 Log.w("resourcelist in fullscreen", "$resourceList")
@@ -103,7 +104,22 @@ class PlayFullScreenActivity : AppCompatActivity() {
             simpleExoPlayer?.seekTo(playbackPosition)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
-
+//private fun initPlayer() {
+//    simpleExoPlayer = SimpleExoPlayer.Builder(this).build()
+//    binding.pvFullScreen.player = simpleExoPlayer
+//
+//    // raw mp4 URI 가져오기
+//    val rawUri = "android.resource://$packageName/" + R.raw.kakaotalk_20240408_102448280
+//
+//    // URI MediaItem변환
+//    val mediaItem = MediaItem.fromUri(rawUri)
+//    val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(this, "ExoPlayer")).createMediaSource(mediaItem)
+//    simpleExoPlayer?.setMediaSource(mediaSource)
+//    simpleExoPlayer?.prepare()
+//
+//    simpleExoPlayer?.seekTo(playbackPosition)
+//    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+//}
 
         private fun fullScreen(fullScreenOption : Int) {
             window.decorView.systemUiVisibility = (

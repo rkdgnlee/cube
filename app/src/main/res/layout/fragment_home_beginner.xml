@@ -22,10 +22,10 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="36dp"
-                android:layout_marginRight="24dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="8dp">
 
@@ -156,6 +156,18 @@
 
             </androidx.cardview.widget.CardView>
 
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vpHomeBanner"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabRoutine"
                 android:layout_width="match_parent"
@@ -193,7 +205,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvHomeBeginnerHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="260dp"
+                android:layout_height="200dp"
                 android:orientation="horizontal" />
 
 

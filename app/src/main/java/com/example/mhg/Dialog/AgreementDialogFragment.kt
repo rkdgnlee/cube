@@ -3,15 +3,18 @@ package com.example.mhg.Dialog
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.paging.LOGGER
 import com.example.mhg.R
 import com.example.mhg.databinding.FragmentAgreementDialogBinding
 import java.io.BufferedReader
@@ -43,9 +46,11 @@ class AgreementDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnAgreement.setOnClickListener {
-            dismiss()
-        }
+        Log.w(TAG, "onViewCreated called")
+//        binding.btnAgreement.setOnClickListener {
+//            Log.w("$TAG, 약관창", "Button Clicked")
+//            dismiss()
+//        }
     }
 
     private fun readAgreementFromFile(fileResId: Int): String {
@@ -87,9 +92,10 @@ class AgreementDialogFragment : DialogFragment() {
         return builder.create()
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    override fun onStart() {
-        super.onStart()
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.6f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.dialog_16))
         val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
