@@ -14,11 +14,6 @@ import com.example.mhg.databinding.FragmentReportDetailBinding
 
 class ReportDetailFragment : Fragment() {
     lateinit var binding: FragmentReportDetailBinding
-    private var REQUEST_ENABLE_BT = 8000
-    private var scanning = false
-    private val handler = Handler()
-
-    private val SCAN_PERIOD : Long = 10000
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,16 +25,6 @@ class ReportDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        val bluetoothAdapter : BluetoothAdapter? = bluetoothManager.adapter
-        if (bluetoothAdapter?.isEnabled == false) {
-            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
-        }
-    }
-    fun getBluetoothAdapter(context: Context): BluetoothAdapter? {
-        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        return bluetoothManager.adapter
     }
 
 }

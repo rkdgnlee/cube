@@ -153,13 +153,8 @@ class SignIn4Fragment : Fragment() {
         val firstNumber: String = msg.substring(0,3)
         var phoneEdit = msg.substring(3)
         when (firstNumber) {
-            "010" -> phoneEdit = "+8210$phoneEdit"
-            "011" -> phoneEdit = "+8211$phoneEdit"
-            "016" -> phoneEdit = "+8216$phoneEdit"
-            "017" -> phoneEdit = "+8217$phoneEdit"
-            "018" -> phoneEdit = "+8218$phoneEdit"
-            "019" -> phoneEdit = "+8219$phoneEdit"
-            "106" -> phoneEdit = "+82106$phoneEdit"
+            "010" -> phoneEdit = "+8210-${phoneEdit.substring(4, 7)}-${phoneEdit.substring(8)}"
+            "106" -> phoneEdit = "+8210-${phoneEdit.substring(4, 7)}-${phoneEdit.substring(8)}"
         }
         return phoneEdit
     }

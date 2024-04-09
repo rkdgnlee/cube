@@ -67,7 +67,6 @@ class PlayActivity : AppCompatActivity() {
 //            startActivityForResult(intent, 8080)
             val intent = Intent(this, PlaySkeletonActivity::class.java)
             intent.putExtra("video_url", videoUrl)
-            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
             startActivityForResult(intent, 8080)
         } // -----! 하단 운동 시작 버튼 끝 !-----
 //        // -----! 전체화면 구현 로직 시작 !-----

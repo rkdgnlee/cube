@@ -46,10 +46,33 @@
 <!--                    android:background="@color/mainwhite"-->
 <!--                    android:src="@drawable/image_pick_null" />-->
 
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflPick"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <include layout="@layout/rv_shimmer_pick_list" />
+
+                        <include layout="@layout/rv_shimmer_pick_list" />
+
+                        <include layout="@layout/rv_shimmer_pick_list" />
+
+                        <include layout="@layout/rv_shimmer_pick_list" />
+
+                        <include layout="@layout/rv_shimmer_pick_list" />
+
+                    </LinearLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <ImageView
                     android:id="@+id/ivPickNull"
-                    android:layout_width="wrap_content"
-                    android:layout_height="300dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
                     android:src="@drawable/image_pick_null" />
 
                 <androidx.recyclerview.widget.RecyclerView

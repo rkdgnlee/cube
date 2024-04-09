@@ -54,8 +54,6 @@ class PickDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-
-
             }
         }
 
@@ -90,7 +88,11 @@ class PickDetailFragment : Fragment() {
         // -----! 운동 picklist, 제목 가져오기 시작 !-----
         // TODO 여기서 받아온 거 전처리, JSONObject에서 exercise만 접근할 건지.
         lifecycleScope.launch {
-
+            binding.sflPickDetail1.startShimmer()
+            binding.sflPickDetail2.startShimmer()
+            binding.sflPickDetail3.startShimmer()
+            binding.sflPickDetail4.startShimmer()
+            binding.ivPickDetailNull.visibility = View.GONE
             val snData = NetworkExerciseService.fetchPickItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)
             val pickItem = if (snData != null) jsonToPickItemVO(snData) else PickItemVO(0, "", "", "", "", mutableListOf())
 
@@ -100,11 +102,25 @@ class PickDetailFragment : Fragment() {
             }
             viewModel.pickItems.value = viewModel.pickItems.value
 
-            if (currentItem?.exercises!!.size == 0) {
-                binding.ivPickDetailNull.visibility = View.VISIBLE
+            if (currentItem?.exercises!!.isEmpty()) {
+                binding.sflPickDetail1.stopShimmer()
+                binding.sflPickDetail2.stopShimmer()
+                binding.sflPickDetail3.stopShimmer()
+                binding.sflPickDetail4.stopShimmer()
+                binding.sflPickDetail1.visibility = View.GONE
+                binding.sflPickDetail2.visibility = View.GONE
+                binding.sflPickDetail3.visibility = View.GONE
+                binding.sflPickDetail4.visibility = View.GONE
                 binding.llPickDetail.visibility = View.GONE
             } else {
-                binding.ivPickDetailNull.visibility = View.GONE
+                binding.sflPickDetail1.stopShimmer()
+                binding.sflPickDetail2.stopShimmer()
+                binding.sflPickDetail3.stopShimmer()
+                binding.sflPickDetail4.stopShimmer()
+                binding.sflPickDetail1.visibility = View.GONE
+                binding.sflPickDetail2.visibility = View.GONE
+                binding.sflPickDetail3.visibility = View.GONE
+                binding.sflPickDetail4.visibility = View.GONE
                 binding.llPickDetail.visibility = View.VISIBLE
             }
 
@@ -148,11 +164,7 @@ class PickDetailFragment : Fragment() {
                 }
             } // -----! 운동 url list 만들기 끝 !-----
         }
-
         // ----- 운동 picklist, 제목 가져오기 끝 -----
-
-
-
 
         binding.btnPickDetailBack.setOnClickListener {
             if (!it.isClickable) { return@setOnClickListener }
@@ -163,7 +175,6 @@ class PickDetailFragment : Fragment() {
             }
             it.isClickable = true
         }
-
         // -----! 편집 버튼 시작 !-----
         binding.btnPickDetailGoEdit.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -171,14 +182,10 @@ class PickDetailFragment : Fragment() {
                 replace(R.id.flMain, PickEditFragment.newInstance(title))
                 commit()
             }
-        }
-
-        // -----! 편집 버튼 끝 !-----
-
+        } // -----! 편집 버튼 끝 !-----
     }
     @SuppressLint("NotifyDataSetChanged")
      private fun setPickDetail(currentItem: PickItemVO){
-
         Log.w("detail>currentItem", "$currentItem")
         binding.tvPickDetailExplainTitle.text = currentItem.pickExplain.toString()
         binding.tvPickDetailExplain.text = currentItem.pickExplain.toString()

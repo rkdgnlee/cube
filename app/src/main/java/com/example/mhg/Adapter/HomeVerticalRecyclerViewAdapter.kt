@@ -302,7 +302,5 @@ class HomeVerticalRecyclerViewAdapter(
 //        bottomsheetfragment.arguments = bundle
 //
 //        bottomsheetfragment.show(fragmentManager,bottomsheetfragment.tag)
-//
-//
 //    }
 }

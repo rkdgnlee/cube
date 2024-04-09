@@ -77,35 +77,67 @@
                     android:textColorHighlight="@color/mainblack"
                     android:textColorHint="@color/mainblack"
                     android:textSize="16sp" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/tvPickDetailExplainTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/linearLayout5"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/mainwhite"
-                android:text="회전 근개 및 날개 집중 스트레칭"
-                android:textColor="@color/mainblack"
-                android:textSize="16sp"
-                app:layout_constraintStart_toEndOf="@+id/textView43"
-                app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
-
-            <TextView
-                android:id="@+id/tvPickDetailExplain"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
-                android:background="@color/mainwhite"
-                android:text="어깨 가동범위를 점진적으로 늘려가며.."
-                android:textColor="@color/mainblack"
-                android:textSize="16sp"
+                android:layout_marginEnd="40dp"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/tvPickDetailExplainTitle"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplainTitle" />
+                app:layout_constraintStart_toEndOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/tilPickDetail">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflPickDetail1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <include layout="@layout/tv_shimmer_pick_detail_textview" />
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <TextView
+                    android:id="@+id/tvPickDetailExplainTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/mainwhite"
+                    android:text="회전 근개 및 날개 집중 스트레칭"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout6"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout5"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout5"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflPickDetail2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <include layout="@layout/tv_shimmer_pick_detail_textview" />
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <TextView
+                    android:id="@+id/tvPickDetailExplain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/mainwhite"
+                    android:text="어깨 가동범위를 점진적으로 늘려가며.."
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnPickStart"
@@ -161,14 +193,22 @@
             <LinearLayout
                 android:id="@+id/llPickDetail"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="24dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPickDetailExplain">
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout6">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflPickDetail3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <include layout="@layout/tv_shimmer_pick_detail_textview" />
+                </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <TextView
                     android:id="@+id/tvPickDetailUnitNumber"
@@ -263,11 +303,30 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/sflPickDetail4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                        </LinearLayout>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
                     <ImageView
                         android:id="@+id/ivPickDetailNull"
-                        android:layout_width="wrap_content"
-                        android:layout_height="270dp"
-                        android:background="@color/mainwhite"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
                         android:src="@drawable/image_pick_null" />
 
                     <androidx.recyclerview.widget.RecyclerView

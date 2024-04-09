@@ -32,7 +32,8 @@ class PickFragment : Fragment(), onPickDetailClickListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPickBinding.inflate(inflater)
-
+        binding.ivPickNull.visibility = View.GONE
+        binding.sflPick.startShimmer()
         // -----! singleton에서 전화번호 가져오기 시작 !-----
         val t_userData = Singleton_t_user.getInstance(requireContext())
 //        val appClass = requireContext().applicationContext as AppClass
@@ -66,12 +67,17 @@ class PickFragment : Fragment(), onPickDetailClickListener {
 
                 }
             }
+
+
             viewModel.pickList.observe(viewLifecycleOwner) { jsonArray ->
 //                 아무것도 없을 때 나오는 캐릭터
-                if (jsonArray.size != 0) {
-                    binding.ivPickNull.visibility= View.GONE
-                } else {
+                if (jsonArray.isEmpty()) {
+                    binding.sflPick.stopShimmer()
+                    binding.sflPick.visibility = View.GONE
                     binding.ivPickNull.visibility = View.VISIBLE
+                } else {
+                    binding.sflPick.stopShimmer()
+                    binding.sflPick.visibility = View.GONE
                 }
             } // -----! appClass list관리 끝 !-----
 
@@ -92,13 +98,6 @@ class PickFragment : Fragment(), onPickDetailClickListener {
             }
             // -----! 핸드폰 번호로 PickItems 가져오기 끝 !-----
         }
-
-
-
-
-
-
-
         return binding.root
     }
     override fun onPickClick(title: String) {

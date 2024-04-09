@@ -57,5 +57,8 @@ class DeviceSettingsFragment : Fragment() {
             }
             it.isClickable = true
         }
+
+        // -----! 운동 정보 사용 !-----
+
     }
 }

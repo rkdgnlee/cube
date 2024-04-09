@@ -53,12 +53,9 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("com.github.MackHartley:RoundedProgressBar:3.0.0")
-    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
-    implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
-    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("com.airbnb.android:lottie:6.4.0")
     implementation("io.github.litao0621:nifty-slider:1.4.6")
-
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
 
 
 // 로그인 api
@@ -95,6 +92,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.android.volley:volley:1.2.1")
 
+
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
@@ -109,14 +107,15 @@ dependencies {
     implementation("androidx.room:room-guava:2.6.1")
     implementation("androidx.room:room-testing:2.6.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("androidx.camera:camera-core:1.3.2")
-    implementation("androidx.camera:camera-video:1.3.2")
-    implementation("androidx.camera:camera-lifecycle:1.3.2")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
     //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:2.6.1")
 
+    // exoplayer
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
 
 
     val paging_version = "3.2.1"

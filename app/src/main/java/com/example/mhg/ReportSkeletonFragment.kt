@@ -33,7 +33,9 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import java.util.TimeZone
 import kotlin.random.Random
 
@@ -99,24 +101,34 @@ class ReportSkeletonFragment : Fragment() {
         binding.btnReportDateLeft.setOnClickListener {
             c.add(Calendar.DAY_OF_MONTH, -1) // 하루를 빼기
             year = c.get(Calendar.YEAR)
-            month = c.get(Calendar.MONTH)+1
+            month = c.get(Calendar.MONTH)
             day = c.get(Calendar.DAY_OF_MONTH)
             selectedDate = "$year. ${month + 1}. $day"
             binding.tvReportDateCurrent.text = selectedDate
         }
-
         binding.btnReportDateRight.setOnClickListener {
             val today = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
             if (!c.after(today)) {
-                 // 하루 더하기
+                // 하루 더하기
                 year = c.get(Calendar.YEAR)
-                month = c.get(Calendar.MONTH)+1
+                month = c.get(Calendar.MONTH)
                 day = c.get(Calendar.DAY_OF_MONTH)
                 c.add(Calendar.DAY_OF_MONTH, + 1)
                 selectedDate = "$year. ${month + 1}. $day"
                 binding.tvReportDateCurrent.text = selectedDate
             }
         }
+//        binding.btnReportDateRight.setOnClickListener {
+//            if (binding.tvReportDateCurrent.text.substring(0, 3).toInt() == year && binding.tvReportDateCurrent.text.substring(6).toInt() + 1 == month && binding.tvReportDateCurrent.text.substring(9, 10).toInt() == day ) { }
+//            else {
+//                year = c.get(Calendar.YEAR)
+//                month = c.get(Calendar.MONTH)+1
+//                day = c.get(Calendar.DAY_OF_MONTH)
+//                c.add(Calendar.DAY_OF_MONTH, + 1)
+//                selectedDate = "$year. ${month + 1}. $day"
+//                binding.tvReportDateCurrent.text = selectedDate
+//            }
+//        }
         // ---- 달력 코드 끝 ----
 
     // ---- 하단 완료 목록 코드 시작 ----

@@ -52,7 +52,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setContentView(binding.root)
 
 //            // -----! landscape로 방향 설정 & 재생시간 받아오기 !-----
-//            initPlayer()
+
             val videoUrl = intent.getStringExtra("video_url")
             if (videoUrl != null) {
                 val url_list = ArrayList<String>()
@@ -185,7 +185,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         outState.putLong("playbackPosition", simpleExoPlayer?.currentPosition ?: 0L)
         outState.putInt("currentWindow", simpleExoPlayer?.currentWindowIndex ?: 0)
         outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
-    }
+        }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
