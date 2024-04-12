@@ -93,6 +93,7 @@ class AgreementDialogFragment : DialogFragment() {
     }
 
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

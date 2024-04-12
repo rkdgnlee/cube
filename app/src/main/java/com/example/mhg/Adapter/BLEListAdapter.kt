@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mhg.R
 import com.example.mhg.databinding.RvBleListBinding
 
-class BLEListAdapter(var devices : MutableList<BluetoothDevice>,
-    private val onDeviceClick: (BluetoothDevice) -> Unit
+class BLEListAdapter(private val onDeviceClick: (BluetoothDevice) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    val devices = mutableListOf<BluetoothDevice>()
     inner class viewHolder(view: View): RecyclerView.ViewHolder(view) {
         val tvBtName = view.findViewById<TextView>(R.id.tvBtName)
         val tvBtAddress = view.findViewById<TextView>(R.id.tvBtAddress)
@@ -38,8 +38,12 @@ class BLEListAdapter(var devices : MutableList<BluetoothDevice>,
             }
         }
     }
-
     override fun getItemCount(): Int {
         return devices.size
+    }
+
+    fun addDevice(device: BluetoothDevice) {
+        devices.add(device)
+        notifyDataSetChanged()
     }
 }

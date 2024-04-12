@@ -62,9 +62,11 @@ class SplashActivity : AppCompatActivity() {
 
             // -----! 다크모드 및 설정 불러오기 시작 !-----
             val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
-            val darkmode = sharedPref.getBoolean("darkMode", false)
+            val darkMode = sharedPref.getBoolean("darkMode", false)
+
+
             AppCompatDelegate.setDefaultNightMode(
-                if (darkmode) AppCompatDelegate.MODE_NIGHT_YES
+                if (darkMode) AppCompatDelegate.MODE_NIGHT_YES
                 else AppCompatDelegate.MODE_NIGHT_NO
             )
             // -----! 다크모드 및 설정 불러오기 끝 !-----

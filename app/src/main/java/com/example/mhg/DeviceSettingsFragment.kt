@@ -27,10 +27,10 @@ class DeviceSettingsFragment : Fragment() {
 
         // -----! 다크모드 시작 !-----
         val sharedPref = context?.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
-        val ModeEditor = sharedPref?.edit()
-        val darkmode = sharedPref?.getBoolean("darkMode", false)
-        if (darkmode != null) {
-            if (darkmode == true) {
+        val modeEditor = sharedPref?.edit()
+        val darkMode = sharedPref?.getBoolean("darkMode", false)
+        if (darkMode != null) {
+            if (darkMode == true) {
                 binding.schDeviceSettingDark.isChecked = true
             } else {
                 binding.schDeviceSettingDark.isChecked = false
@@ -39,12 +39,12 @@ class DeviceSettingsFragment : Fragment() {
         binding.schDeviceSettingDark.setOnCheckedChangeListener{CompoundButton, onSwtich ->
             if (onSwtich) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                ModeEditor?.putBoolean("darkMode", true) ?: true
-                ModeEditor?.apply()
+                modeEditor?.putBoolean("darkMode", true) ?: true
+                modeEditor?.apply()
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                ModeEditor?.putBoolean("darkMode", false) ?: false
-                ModeEditor?.apply()
+                modeEditor?.putBoolean("darkMode", false) ?: false
+                modeEditor?.apply()
             }
         } // -----! 다크모드 끝 !-----
 

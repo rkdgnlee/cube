@@ -39,12 +39,12 @@ class ProfileEditFragment : Fragment() {
 
         val t_userData = Singleton_t_user.getInstance(requireContext())
 
-        val user_password = t_userData.jsonObject?.getString("user_password")
+//        val user_password = t_userData.jsonObject?.getString("user_password")
         val user_email = t_userData.jsonObject?.getString("user_email")
         val user_mobile = t_userData.jsonObject?.getString("user_mobile")
-        Log.w("$TAG, update", "user_email: $user_email, user_mobile: $user_mobile")
+        Log.w("$TAG, update", "user_email: $user_email")
 
-        binding.etPWProfileEdit.setText(user_password ?: "")
+//        binding.etPWProfileEdit.setText(user_password ?: "")
 
         if (user_email != null) {
             binding.etEmailProfileEdit.setText(user_email ?: "")
