@@ -23,7 +23,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
-import com.example.mhg.VO.BtGattViewModel
+import com.example.mhg.VO.BLEViewModel
 import com.example.mhg.databinding.FragmentReportGoalBinding
 import java.lang.Exception
 import java.util.UUID
@@ -31,7 +31,7 @@ import java.util.UUID
 
 class ReportGoalFragment : Fragment() {
     lateinit var binding: FragmentReportGoalBinding
-    private val viewModel: BtGattViewModel by activityViewModels()
+    private val viewModel: BLEViewModel by activityViewModels()
     override fun onAttach(context: Context) {
         super.onAttach(context)
         bluetooth = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
@@ -107,6 +107,8 @@ class ReportGoalFragment : Fragment() {
     private var selectedDevice : BluetoothDevice? = null
     private var gatt: BluetoothGatt? = null
     private var services: List<BluetoothGattService> = emptyList()
+    val REQUEST_CODE = 8080
+    // -----! 첫 블루투스 사용 권한 설정 시작 !-----
     @Deprecated("Deprecated in Java")
     @SuppressLint("MissingPermission")
     override fun onRequestPermissionsResult(
@@ -115,32 +117,32 @@ class ReportGoalFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 8080) {
+        if (requestCode == REQUEST_CODE) {
             if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                onPermissionGranted()
+                Log.w("권한 설정", "Permission True")
+                val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+                if (bluetoothAdapter.isEnabled) {
+                    val dialog = DeviceConnectDialogFragment()
+                    dialog.show(requireActivity().supportFragmentManager, "deviceConnectDialogFragment")
+                }
                 Log.w("BLE권한설정", "ALL PERMISSION PERMITTED !")
             } else {
                 Toast.makeText(requireContext(), "블루투스 권한을 설정해주세요", Toast.LENGTH_SHORT).show()
             }
         }
     }
-    // -----! 최초 권한 및 기존에 권한 승인 시작 !-----
-    // @SuppressLint("MissingPermission")
-    fun onPermissionGranted() {
-// -----! 기기 검색 하는 새 창 !-----
-        val dialog = DeviceConnectDialogFragment()
-        dialog.show(requireActivity().supportFragmentManager, "deviceConnectDialogFragment")
-    }
+
     fun haveAllPermissions(context: Context) =
         ALL_BLE_PERMISSIONS
             .all { context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
-    // -----! 최초 권한 및 기존에 권한 승인 끝 !-----
+    // -----! 첫 블루투스 사용 권한 설정 끝 !-----
 
-    val REQUEST_CODE = 8080
+
     val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         arrayOf(
             Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_SCAN
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
     } else {
         arrayOf(

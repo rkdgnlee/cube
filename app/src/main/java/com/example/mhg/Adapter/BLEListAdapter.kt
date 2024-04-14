@@ -13,7 +13,7 @@ import com.example.mhg.databinding.RvBleListBinding
 
 class BLEListAdapter(private val onDeviceClick: (BluetoothDevice) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-    val devices = mutableListOf<BluetoothDevice>()
+    var devices = mutableListOf<BluetoothDevice>()
     inner class viewHolder(view: View): RecyclerView.ViewHolder(view) {
         val tvBtName = view.findViewById<TextView>(R.id.tvBtName)
         val tvBtAddress = view.findViewById<TextView>(R.id.tvBtAddress)
@@ -30,20 +30,31 @@ class BLEListAdapter(private val onDeviceClick: (BluetoothDevice) -> Unit
         val currentItem = devices[position]
 
         if (holder is viewHolder) {
-            holder.tvBtName.text = currentItem.name.toString()
-            holder.tvBtAddress.text = currentItem.address.toString()
-            holder.clBle.setOnClickListener {
-                onDeviceClick(currentItem)
-
+            if (currentItem.name == null) {
+                holder.tvBtAddress.text = currentItem.address.toString()
+                holder.clBle.setOnClickListener {
+                    onDeviceClick(currentItem)
+                }
+                holder.tvBtName.text = "N/A"
+            } else {
+                holder.tvBtName.text = currentItem.name.toString()
+                holder.tvBtAddress.text = currentItem.address.toString()
+                holder.clBle.setOnClickListener {
+                    onDeviceClick(currentItem)
+                }
             }
+
+
         }
     }
     override fun getItemCount(): Int {
         return devices.size
     }
 
-    fun addDevice(device: BluetoothDevice) {
-        devices.add(device)
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateDevices(device: Set<BluetoothDevice>) {
+        devices.clear()
+        devices.addAll(device)
         notifyDataSetChanged()
     }
 }

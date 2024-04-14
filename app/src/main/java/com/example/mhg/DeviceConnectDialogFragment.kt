@@ -33,7 +33,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.BLEListAdapter
 import com.example.mhg.Dialog.AgreementDialogFragment
-import com.example.mhg.VO.BtGattViewModel
+import com.example.mhg.VO.BLEViewModel
 import com.example.mhg.databinding.FragmentDeviceConnectDialogBinding
 import kotlinx.coroutines.flow.callbackFlow
 import java.lang.Exception
@@ -41,7 +41,7 @@ import java.util.UUID
 
 class DeviceConnectDialogFragment : DialogFragment() {
     lateinit var binding : FragmentDeviceConnectDialogBinding
-    private val viewModel: BtGattViewModel by activityViewModels()
+    private val viewModel: BLEViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,26 +65,30 @@ class DeviceConnectDialogFragment : DialogFragment() {
             dismiss()
         }
 
-        val adapter = BLEListAdapter{device ->
+        val adapter = BLEListAdapter {device ->
             selectedDevice = device
             connect()
             Log.w("ConnectDevice", "$device")
         }
-
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvBLE.layoutManager = linearLayoutManager
         binding.rvBLE.adapter = adapter
 
+        // -----! VM에 장치 목록 중복 없이 추가 시작 !------
+        viewModel.devices.observe(viewLifecycleOwner) {newDevices ->
+            adapter.updateDevices(newDevices)
+        }
+        // -----! VM에 장치 목록 중복 없이 추가 끝 !------
     }
     private var selectedDevice : BluetoothDevice? = null
-    private val devices = mutableListOf<BluetoothDevice>()
+//    private val devices = mutableListOf<BluetoothDevice>()
     private lateinit var bluetooth : BluetoothManager
     private var gatt: BluetoothGatt? = null
     val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
 
     var scanning = false
-    val SCAN_PERIOD : Long = 15000
+    val SCAN_PERIOD : Long = 7000
 
     private val handler = Handler()
     @SuppressLint("SuspiciousIndentation")
@@ -112,27 +116,29 @@ class DeviceConnectDialogFragment : DialogFragment() {
 
     // 장치 찾기 callback 함수
     private val scanCallback: ScanCallback = object : ScanCallback() {
-        @SuppressLint("MissingPermission")
+        @SuppressLint("MissingPermission", "NotifyDataSetChanged")
+
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
             Log.i("스캔결과", "Remote device name: " + result!!.device.name)
             Log.v("스캔결과","${result}")
             if (result.device != null) {
-                Log.w("BLEdevice!=null", "${result.device}")
                 binding.pbBLEConnect.isEnabled = false
                 binding.pbBLEConnect.visibility =  View.GONE
+                viewModel.addDevice(result.device)
                 activity?.runOnUiThread {
-                    (binding.rvBLE.adapter as? BLEListAdapter)?.addDevice(result.device)
+//                    (binding.rvBLE.adapter as? BLEListAdapter)?.addDevice(result.device)
+                    (binding.rvBLE.adapter as? BLEListAdapter)?.notifyDataSetChanged()
                 }
             }
         }
-        override fun onBatchScanResults(results: List<ScanResult>) {
-            for (result in results) {
-                activity?.runOnUiThread {
-                    (binding.rvBLE.adapter as? BLEListAdapter)?.addDevice(result.device)
-                }
-            }
-        }
+//        override fun onBatchScanResults(results: List<ScanResult>) {
+//            for (result in results) {
+//                activity?.runOnUiThread {
+//                    (binding.rvBLE.adapter as? BLEListAdapter)?.addDevice(result.device)
+//                }
+//            }
+//        }
 
         override fun onScanFailed(errorCode: Int) {
             super.onScanFailed(errorCode)
