@@ -18,6 +18,8 @@ class BLEListAdapter(private val onDeviceClick: (BluetoothDevice) -> Unit
         val tvBtName = view.findViewById<TextView>(R.id.tvBtName)
         val tvBtAddress = view.findViewById<TextView>(R.id.tvBtAddress)
         val clBle = view.findViewById<ConstraintLayout>(R.id.clBle)
+        val tvBleSearched = view.findViewById<TextView>(R.id.tvBleSearched)
+        val tvBleConnected = view.findViewById<TextView>(R.id.tvBleConnected)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -30,6 +32,7 @@ class BLEListAdapter(private val onDeviceClick: (BluetoothDevice) -> Unit
         val currentItem = devices[position]
 
         if (holder is viewHolder) {
+            holder.tvBleConnected.visibility = View.GONE
             if (currentItem.name == null) {
                 holder.tvBtAddress.text = currentItem.address.toString()
                 holder.clBle.setOnClickListener {

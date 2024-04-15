@@ -12,14 +12,19 @@ import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -28,6 +33,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import androidx.core.content.ContextCompat.registerReceiver
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,13 +41,26 @@ import com.example.mhg.Adapter.BLEListAdapter
 import com.example.mhg.Dialog.AgreementDialogFragment
 import com.example.mhg.VO.BLEViewModel
 import com.example.mhg.databinding.FragmentDeviceConnectDialogBinding
+import com.example.mhg.service.BluetoothLeService
 import kotlinx.coroutines.flow.callbackFlow
 import java.lang.Exception
+import java.lang.IllegalArgumentException
 import java.util.UUID
 
 class DeviceConnectDialogFragment : DialogFragment() {
     lateinit var binding : FragmentDeviceConnectDialogBinding
     private val viewModel: BLEViewModel by activityViewModels()
+    val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+    private var selectedDevice : BluetoothDevice? = null
+    private lateinit var bluetooth : BluetoothManager
+
+
+    var scanning = false
+    val SCAN_PERIOD : Long = 3000
+    private val handler = Handler()
+
+    private var bluetoothService : BluetoothLeService? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,8 +73,11 @@ class DeviceConnectDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        val gattServiceIntent = Intent(requireContext(), BluetoothLeService::class.java)
+        requireContext().startService(gattServiceIntent)
+        requireContext().bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         startScanning()
+
         binding.btnBLERescan.setOnClickListener {
             binding.pbBLEConnect.isEnabled = true
             binding.pbBLEConnect.visibility = View.VISIBLE
@@ -67,7 +89,15 @@ class DeviceConnectDialogFragment : DialogFragment() {
 
         val adapter = BLEListAdapter {device ->
             selectedDevice = device
-            connect()
+            bluetoothService?.let { bluetooth ->
+                if (bluetooth.initialize()) {
+                    Log.e("GattServSuccess", "Enable to initialize Bluetooth")
+                    bluetooth.connect(selectedDevice?.address.toString())
+                } else {
+                    Log.e("GattServError", "Unable to initialize Bluetooth")
+                    dismiss()
+                }
+            }
             Log.w("ConnectDevice", "$device")
         }
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -79,18 +109,75 @@ class DeviceConnectDialogFragment : DialogFragment() {
             adapter.updateDevices(newDevices)
         }
         // -----! VM에 장치 목록 중복 없이 추가 끝 !------
+
     }
-    private var selectedDevice : BluetoothDevice? = null
-//    private val devices = mutableListOf<BluetoothDevice>()
-    private lateinit var bluetooth : BluetoothManager
-    private var gatt: BluetoothGatt? = null
-    val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
 
-    var scanning = false
-    val SCAN_PERIOD : Long = 7000
 
-    private val handler = Handler()
+    private val serviceConnection : ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            bluetoothService = (service as BluetoothLeService.LocalBinder).getService()
+            if (!bluetoothService?.initialize()!!) {
+                Log.e("GattServError", "Unable to initialize Bluetooth")
+                dismiss()
+            } else {
+                Log.e("GattServSuccess", "Enable to initialize Bluetooth")
+            }
+        }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            bluetoothService = null
+        }
+    }
+
+
+    private val gattUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                BluetoothLeService.ACTION_GATT_CONNECTED -> {
+
+                }
+                BluetoothLeService.ACTION_GATT_DISCONNECTED -> {
+
+                }
+                BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED -> {
+
+                }
+                BluetoothLeService.ACTION_DATA_AVAILABLE -> {
+                    val servicesToCharacteristics = mutableMapOf<UUID, MutableList<ByteArray>>()
+                    for (key in intent.extras!!.keySet()) {
+                        val uuid = UUID.fromString(key)
+                        val encodedDataList = intent.getStringArrayListExtra(key)!!
+                        val decodedDataList = encodedDataList.map { Base64.decode(it, Base64.DEFAULT) }.toMutableList()
+                        servicesToCharacteristics[uuid] = decodedDataList
+                    }
+                    viewModel.characteristicValues.value = servicesToCharacteristics
+                }
+            }
+        }
+    }
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    override fun onResume() {
+        super.onResume()
+        requireContext().registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter())
+        if (bluetoothService != null) {
+            val result = bluetoothService!!.connect(selectedDevice?.address.toString())
+            Log.d("GATT상태 Receiver", "Connect request result=$result")
+        }
+    }
+    override fun onPause() {
+        super.onPause()
+        requireContext().unregisterReceiver(gattUpdateReceiver)
+    }
+    private fun makeGattUpdateIntentFilter(): IntentFilter? {
+        return IntentFilter().apply {
+            addAction(BluetoothLeService.ACTION_GATT_CONNECTED)
+            addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED)
+            addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED)
+            addAction(BluetoothLeService.ACTION_DATA_AVAILABLE)
+        }
+    }
+    // -------------!! scanner !!--------------
+
     @SuppressLint("SuspiciousIndentation")
     @RequiresPermission(anyOf = ["android.permission.BLUETOOTH_ADMIN", "android.permission.BLUETOOTH", "android.permission.ACCESS_FINE_LOCATION", "android.permission.BLUETOOTH_CONNECT", "android.permission.BLUETOOTH_SCAN"])
     fun startScanning() {
@@ -122,24 +209,13 @@ class DeviceConnectDialogFragment : DialogFragment() {
             super.onScanResult(callbackType, result)
             Log.i("스캔결과", "Remote device name: " + result!!.device.name)
             Log.v("스캔결과","${result}")
-            if (result.device != null) {
-                binding.pbBLEConnect.isEnabled = false
-                binding.pbBLEConnect.visibility =  View.GONE
+            if (result.device.name != null) {
                 viewModel.addDevice(result.device)
                 activity?.runOnUiThread {
-//                    (binding.rvBLE.adapter as? BLEListAdapter)?.addDevice(result.device)
                     (binding.rvBLE.adapter as? BLEListAdapter)?.notifyDataSetChanged()
                 }
             }
         }
-//        override fun onBatchScanResults(results: List<ScanResult>) {
-//            for (result in results) {
-//                activity?.runOnUiThread {
-//                    (binding.rvBLE.adapter as? BLEListAdapter)?.addDevice(result.device)
-//                }
-//            }
-//        }
-
         override fun onScanFailed(errorCode: Int) {
             super.onScanFailed(errorCode)
             Log.w("BLEScan", "BLE Scan Failed")
@@ -159,11 +235,6 @@ class DeviceConnectDialogFragment : DialogFragment() {
         dialog?.window?.setDimAmount(0.6f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.dialog_16))
         requireContext().dialogFragmentResize(0.9f, 0.8f)
-    }
-
-    @RequiresPermission(anyOf = ["android.permission.BLUETOOTH_ADMIN", "android.permission.BLUETOOTH", "android.permission.ACCESS_FINE_LOCATION", "android.permission.BLUETOOTH_CONNECT", "android.permission.BLUETOOTH_SCAN"])
-    fun connect() {
-        viewModel.gatt.value = selectedDevice?.connectGatt(requireContext(), true, GattCallback())
     }
 
     private fun Context.dialogFragmentResize(width: Float, height: Float) {

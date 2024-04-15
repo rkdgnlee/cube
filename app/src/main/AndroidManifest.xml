@@ -129,7 +129,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
+        <service
+            android:name=".service.BluetoothLeService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
         <meta-data
             android:name="com.google.firebase.default_notification_channel_id"
             android:value="news" />
