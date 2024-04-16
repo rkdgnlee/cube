@@ -5,10 +5,12 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.ComponentName
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -51,11 +53,9 @@ class ReportGoalFragment : Fragment() {
         binding = FragmentReportGoalBinding.inflate(inflater)
         return binding.root
     }
-    @SuppressLint("MissingPermission", "NotifyDataSetChanged")
+    @SuppressLint("MissingPermission", "NotifyDataSetChanged", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
 
         // -----! 블루투스 켜기 끄기 설정 보존 시작 !-----
         val sharedPref = context?.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
@@ -100,9 +100,24 @@ class ReportGoalFragment : Fragment() {
         } // -----! receiver를 통해 재사용 설정 끝 !-----
 
         // -----! 블루투스 기기 연결 후 viewmodel에서 꺼내서 gatt 서비스 쓰기 시작 !-----
-        viewModel.characteristicValues.observe(viewLifecycleOwner) { gattServices ->
-            binding.tvGattData.text = gattServices.values.toString()
+        viewModel.characteristicValues.observe(viewLifecycleOwner) { value ->
+            binding.tvGattData.text = binding.tvGattData.text.toString() + value.toString()
         } // -----! 블루투스 기기 연결 후 viewmodel에서 꺼내서 gatt 서비스 쓰기 끝 !-----
+
+//        binding.btnShowData.setOnClickListener {
+//
+//            Log.w("gatt연결 상황", "${viewModel.gattManager}")
+//
+//            val serviceUUID = UUID.fromString("0000fe2c-0000-1000-8000-00805f9b34fb")
+//            val characteristicUUID = UUID.fromString("fe2c1236-8366-4814-8eb0-01de32100bea")
+//
+//            val service = bluetoothGatt?.getService(UUID.fromString(serviceUUID.toString()))
+//            val characteristic = service?.getCharacteristic(UUID.fromString(characteristicUUID.toString()))
+//
+//            val data = viewModel.gattManager?.readCharacteristic(characteristic!!)
+////            Log.w("ByteData", "$data")
+//            binding.tvGattData.text = data.toString()
+//        }
     }
 
     val receiver = object : BroadcastReceiver() {
@@ -121,11 +136,10 @@ class ReportGoalFragment : Fragment() {
 
     // BLE 주변 장치 찾기 위한 클래스 + 스캐너
     private lateinit var bluetooth : BluetoothManager
-
     private var selectedDevice : BluetoothDevice? = null
-    private var gatt: BluetoothGatt? = null
+    private var bluetoothGatt : BluetoothGatt? = null
     private var services: List<BluetoothGattService> = emptyList()
-
+    private var bluetoothService : BluetoothLeService? = null
     // -----! 첫 블루투스 사용 권한 설정 시작 !-----
 
     fun haveAllPermissions(context: Context) =
@@ -148,16 +162,16 @@ class ReportGoalFragment : Fragment() {
         )
     }
     // 특성에서 데이터를 추출하는 곳.
-    @RequiresPermission(anyOf = ["android.permission.BLUETOOTH_ADMIN", "android.permission.BLUETOOTH", "android.permission.ACCESS_FINE_LOCATION", "android.permission.BLUETOOTH_CONNECT", "android.permission.BLUETOOTH_SCAN"])
-    fun readCharacterisitic(serviceUUID: UUID, characteristicUUID: UUID) {
-        val service = viewModel.gatt.value?.getService(serviceUUID)
-        val characteristic = service?.getCharacteristic(characteristicUUID)
-
-        if (characteristic != null) {
-            val success = viewModel.gatt.value?.readCharacteristic(characteristic)
-            Log.v("bluetooth", "Read status: $success")
-        }
-    }
+//    @RequiresPermission(anyOf = ["android.permission.BLUETOOTH_ADMIN", "android.permission.BLUETOOTH", "android.permission.ACCESS_FINE_LOCATION", "android.permission.BLUETOOTH_CONNECT", "android.permission.BLUETOOTH_SCAN"])
+//    fun readCharacterisitic(serviceUUID: UUID, characteristicUUID: UUID) {
+//        val service = viewModel.gatt.value?.getService(serviceUUID)
+//        val characteristic = service?.getCharacteristic(characteristicUUID)
+//
+//        if (characteristic != null) {
+//            val success = viewModel.gatt.value?.readCharacteristic(characteristic)
+//            Log.v("bluetooth", "Read status: $success")
+//        }
+//    }
     override fun onDestroyView() {
         super.onDestroyView()
         // 브로드캐스트 리시버 해제
