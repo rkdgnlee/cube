@@ -1,6 +1,7 @@
 package com.example.mhg.VO
 
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGattCharacteristic
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mhg.`object`.GattManager
@@ -8,24 +9,36 @@ import java.util.UUID
 
 class BLEViewModel : ViewModel() {
     var devices = MutableLiveData(mutableSetOf<BluetoothDevice>())
-    var gattServiceData: MutableLiveData<List<HashMap<String, String>>> = MutableLiveData()
-    var gattCharacteristicData: MutableLiveData<List<ArrayList<HashMap<String, String>>>> = MutableLiveData()
+    var selectedDevice : MutableLiveData<BluetoothDevice?> = MutableLiveData()
+    val gattServiceData: MutableList<HashMap<String, String>> = mutableListOf() // 서비스 목록
+    var gattCharacteristicData: MutableLiveData<MutableList<ArrayList<HashMap<String, String>>>> = MutableLiveData() // 특성 목록
+    var mGattCharacteristics = mutableListOf<MutableList<BluetoothGattCharacteristic>>()
 
+    var byteArrayData = MutableLiveData(mutableListOf<String>())
     // gatt 객체 저장
     var gattManager : GattManager? = null
     // read한 것들 전부 넣기.
-    var characteristicValues :  MutableLiveData<List<HashMap<UUID,ByteArray>>> = MutableLiveData()
+
 
     fun addDevice(device : BluetoothDevice) {
         val updatedDevices = devices.value ?: mutableSetOf()
         updatedDevices.add(device)
         devices.value = updatedDevices
     }
-    fun updateGattServiceData(serviceData: List<HashMap<String, String>>) {
-        gattServiceData.value = serviceData
+
+    fun addByteArrayData(byteArray: String) {
+        val updateByteArray = byteArrayData.value ?: mutableListOf()
+        updateByteArray.add(byteArray)
+        byteArrayData.value = updateByteArray
     }
 
-    fun updateGattCharacteristicData(characteristicData: List<ArrayList<HashMap<String, String>>>) {
-        gattCharacteristicData.value = characteristicData
+    fun reset() {
+        devices.value = mutableSetOf()
+        selectedDevice.value = null
+        gattServiceData.clear()
+        gattCharacteristicData.value = mutableListOf()
+        mGattCharacteristics.clear()
+        byteArrayData.value = mutableListOf()
+        gattManager = null
     }
 }

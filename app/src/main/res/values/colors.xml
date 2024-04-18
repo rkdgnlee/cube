@@ -8,7 +8,6 @@
     <color name="grey500">#888888</color>
     <color name="grey600">#989898</color>
     <color name="grey800">#4D4D4D</color>
-
     <color name="success_green">#3EE400</color>
     <color name="background_shadow">#48303030</color>
 </resources>
