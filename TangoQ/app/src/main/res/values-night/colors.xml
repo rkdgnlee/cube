@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FFFFFF</color>
+    <color name="white">#000000</color>
+    <color name="mainColor">#FF1582</color>
+    <color name="subColor100">#373737</color>
+    <color name="subColor200">#676767</color>
+    <color name="subColor500">#959595</color>
+    <color name="subColor700">#C8C8C8</color>
+    <color name="subColor800">#E1E1E1</color>
+    <color name="successColor">#45FF02</color>
+    <color name="failColor">#FFA100</color>
+</resources>

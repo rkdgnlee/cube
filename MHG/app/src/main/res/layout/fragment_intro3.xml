@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/flIntro3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainwhite"
+    tools:context=".Intro3Fragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#EEEEEE">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="0dp"
+            android:layout_height="400dp"
+            android:layout_marginBottom="344dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/intro3cube"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/btnSignin"
+            android:layout_width="250dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#FF7A00"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="회원가입/로그인 하기"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ibtnGoogleLogin"
+            android:layout_width="250dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/api_login_logo"
+            android:scaleType="centerCrop"
+            android:src="@drawable/google_custom_button"
+            app:layout_constraintBottom_toTopOf="@+id/ibtnKakaoLogin"
+            app:layout_constraintEnd_toEndOf="@+id/ibtnKakaoLogin"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/ibtnKakaoLogin" />
+
+        <ImageButton
+            android:id="@+id/ibtnKakaoLogin"
+            android:layout_width="250dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="20dp"
+            android:background="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/kakao_custom_button"
+            app:layout_constraintBottom_toTopOf="@+id/buttonOAuthLoginImg"
+            app:layout_constraintEnd_toEndOf="@+id/buttonOAuthLoginImg"
+            app:layout_constraintStart_toStartOf="@+id/buttonOAuthLoginImg" />
+
+        <com.navercorp.nid.oauth.view.NidOAuthLoginButton
+            android:id="@+id/buttonOAuthLoginImg"
+            android:layout_width="260dp"
+            android:layout_height="54dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnSignin"
+            app:layout_constraintEnd_toEndOf="@+id/btnSignin"
+            app:layout_constraintStart_toStartOf="@+id/btnSignin" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/clSI"
+        android:icon="@drawable/bnb_main"
+        android:title="메인" />
+    <item
+        android:id="@+id/exercise"
+        android:icon="@drawable/bnb_exercise"
+        android:title="운동" />
+    <item
+        android:id="@+id/measure"
+        android:icon="@drawable/bnb_measure"
+        android:title="측정" />
+    <item
+        android:id="@+id/favorite"
+        android:icon="@drawable/bnb_favorite"
+        android:title="저장" />
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/bnb_profile"
+        android:title="내정보" />
+</menu>

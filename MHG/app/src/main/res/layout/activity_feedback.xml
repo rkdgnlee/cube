@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    tools:context=".FeedbackActivity">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView60"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:text="운동은 어떠셨나요?\n당신의 생각을 들려주세요!"
+                android:textColor="@color/mainblack"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <RadioGroup
+                android:id="@+id/rgFeedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView61">
+
+                <RadioButton
+                    android:id="@+id/rbtnFeedbackIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="실내"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16dp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+                <RadioButton
+                    android:id="@+id/rbtnFeedbackOut"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:text="야외"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16dp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+                <RadioButton
+                    android:id="@+id/rbtnFeedbackFacility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="전문 운동 시설"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16dp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+                <RadioButton
+                    android:id="@+id/rbtnFeddbackOther"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:text="기타"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16dp"
+                    android:theme="@style/Theme.App.RadioButton" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView61"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="운동장소"
+                android:textColor="@color/grey500"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView60"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="@+id/textView60"
+                app:layout_constraintTop_toBottomOf="@+id/textView60" />
+
+            <TextView
+                android:id="@+id/textView62"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="운동 통증"
+                android:textColor="@color/grey500"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/rgFeedback"
+                app:layout_constraintHorizontal_bias="0.503"
+                app:layout_constraintStart_toStartOf="@+id/rgFeedback"
+                app:layout_constraintTop_toBottomOf="@+id/rgFeedback" />
+
+
+            <TextView
+                android:id="@+id/textView63"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="운동 강도"
+                android:textColor="@color/grey500"
+                android:textSize="16sp"
+                tools:layout_editor_absoluteX="174dp"
+                tools:layout_editor_absoluteY="336dp" />
+
+            <TextView
+                android:id="@+id/textView70"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="운동 만족도"
+                android:textColor="@color/grey500"
+                android:textSize="16sp"
+                tools:layout_editor_absoluteX="168dp"
+                tools:layout_editor_absoluteY="460dp" />
+
+            <TextView
+                android:id="@+id/textView71"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="기타 사항"
+                android:textColor="@color/grey500"
+                android:textSize="16sp"
+                tools:layout_editor_absoluteX="174dp"
+                tools:layout_editor_absoluteY="583dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintBottom_toTopOf="@+id/btnfeedback"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView71"
+                app:layout_constraintVertical_bias="0.0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tietFeedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="128dp"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/background_stroke_2dp_sub_color"
+                    android:gravity="start|left"
+                    android:textColor="@color/mainblack"
+                    android:textColorLink="@color/mainblack" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnfeedback"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/mainColor"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="제출"
+                android:textColor="@color/mainwhite"
+                android:textSize="18sp"
+                app:cornerRadius="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="266dp">
+
+                <RadioButton
+                    android:id="@+id/radioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content" />
+
+                <RadioButton
+                    android:id="@+id/radioButton2"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="48dp" />
+
+                <RadioButton
+                    android:id="@+id/radioButton3"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="48dp"
+                    android:layout_marginRight="48dp" />
+
+                <RadioButton
+                    android:id="@+id/radioButton4"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="48dp"
+                    android:gravity="center" />
+
+                <RadioButton
+                    android:id="@+id/radioButton5"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content" />
+            </RadioGroup>
+
+
+            <TextView
+                android:id="@+id/textView75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:text="무통증"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup4"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/textView76"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="미약한 통증"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup4"
+                app:layout_constraintStart_toEndOf="@+id/textView75" />
+
+            <TextView
+                android:id="@+id/textView77"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="보통"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup4"
+                app:layout_constraintEnd_toStartOf="@+id/textView78"
+                app:layout_constraintHorizontal_bias="0.484"
+                app:layout_constraintStart_toEndOf="@+id/textView76" />
+
+            <TextView
+                android:id="@+id/textView78"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:text="상당한 통증"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup4"
+                app:layout_constraintEnd_toStartOf="@+id/textView79" />
+
+            <TextView
+                android:id="@+id/textView79"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:text="심각한 통증"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup4"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+            <RadioGroup
+                android:id="@+id/radioGroup5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="390dp">
+
+                <RadioButton
+                    android:id="@+id/radioButton6"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton7"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="48dp"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton10"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="48dp"
+                    android:layout_marginRight="48dp"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton9"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="48dp"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton8"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView80"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="매우 저강도"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup5"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/textView81"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:text="저강도"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup5"
+                app:layout_constraintStart_toEndOf="@+id/textView80" />
+
+            <TextView
+                android:id="@+id/textView82"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="보통이다"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup5"
+                app:layout_constraintEnd_toStartOf="@+id/textView83"
+                app:layout_constraintStart_toEndOf="@+id/textView81" />
+
+            <TextView
+                android:id="@+id/textView83"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="28dp"
+                android:text="고강도"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup5"
+                app:layout_constraintEnd_toStartOf="@+id/textView84" />
+
+            <TextView
+                android:id="@+id/textView84"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:text="매우 고강도"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup5"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="513dp">
+
+                <RadioButton
+                    android:id="@+id/radioButton11"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton12"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="48dp"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton13"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="48dp"
+                    android:layout_marginRight="48dp"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton14"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="48dp"
+                    android:layout_weight="0" />
+
+                <RadioButton
+                    android:id="@+id/radioButton15"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView85"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="많이 아쉽다"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup6"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/textView86"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:text="아쉽다"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup6"
+                app:layout_constraintStart_toEndOf="@+id/textView85" />
+
+            <TextView
+                android:id="@+id/textView87"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="보통이다"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup6"
+                app:layout_constraintEnd_toStartOf="@+id/textView88"
+                app:layout_constraintStart_toEndOf="@+id/textView86" />
+
+            <TextView
+                android:id="@+id/textView88"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
+                android:text="만족"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup6"
+                app:layout_constraintEnd_toStartOf="@+id/textView89" />
+
+            <TextView
+                android:id="@+id/textView89"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:text="매우 만족"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup6"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainwhite"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:elevation="10dp"
+    tools:context=".PersonalSetupActivity">
+
+    <com.shuhart.stepview.StepView
+        android:id="@+id/step_view"
+        android:layout_width="230dp"
+        android:layout_height="100dp"
+
+        android:pointerIcon="arrow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:sv_doneCircleColor="@color/mainColor"
+        app:sv_doneCircleRadius="16dp"
+        app:sv_doneStepLineColor="@color/mainColor"
+        app:sv_doneStepMarkColor="@color/mainwhite"
+        app:sv_doneTextColor="@color/mainwhite"
+        app:sv_nextStepCircleColor="@color/grey230"
+        app:sv_nextStepCircleEnabled="true"
+        app:sv_nextStepLineColor="@color/grey230"
+        app:sv_nextTextColor="@color/mainwhite"
+        app:sv_selectedCircleColor="@color/mainColor"
+        app:sv_selectedCircleRadius="16dp"
+        app:sv_selectedStepNumberColor="#FFFFFF"
+        app:sv_stepLineWidth="3dp"
+        app:sv_stepNumberTextSize="15sp"
+        app:sv_stepPadding="0dp"
+        app:sv_stepsNumber="4" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp2Setup"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+        app:layout_constraintBottom_toTopOf="@+id/bottom_app_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/step_view">
+
+    </androidx.viewpager2.widget.ViewPager2>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/shadow"
+        android:backgroundTintMode="add"
+        android:clipToPadding="false"
+        android:paddingTop="16dp"
+        android:scrollX="5dp"
+        android:scrollY="5dp"
+        android:stateListAnimator="@null"
+        app:addElevationShadow="true"
+        app:backgroundTint="@color/mainwhite"
+        app:elevation="12dp"
+        app:fabAlignmentMode="center"
+        app:fabCradleMargin="10dp"
+        app:fabCradleRoundedCornerRadius="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:theme="@style/Widget.MaterialComponents.BottomAppBar" />
+
+    <Button
+        android:id="@+id/btnSetupNext"
+        android:layout_width="98dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="26dp"
+        android:backgroundTint="@color/mainColor"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="NEXT"
+        android:textSize="16sp"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnSetupPrevious"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="26dp"
+        android:background="@color/mainwhite"
+        android:backgroundTint="@color/mainwhite"
+        android:backgroundTintMode="add"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/bottom_app_bar"
+        app:srcCompat="@drawable/setupbackbutton" />
+
+    <TextView
+        android:id="@+id/tvSetupSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="Skip"
+        android:textColor="@color/grey800"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/step_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

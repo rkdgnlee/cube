@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainwhite"
+    tools:context=".PickBasketFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/mainwhite">
+
+            <TextView
+                android:id="@+id/textView48"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="원하는 운동을 탭해주세요 ❗"
+                android:textColor="@color/mainblack"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ibtnPickBasketBack" />
+
+            <Button
+                android:id="@+id/btnPickBasketFinish"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/mainColor"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="완료"
+                android:textColor="@color/mainwhite"
+                android:textSize="20sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvPickBasket" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPickBasket"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tlPickBasket">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <AutoCompleteTextView
+                android:id="@+id/actvPickBasket"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/background_stroke_2dp_main_color"
+                android:completionThreshold="2"
+                android:ems="10"
+                android:hint="검색어를 입력해주세요"
+                android:inputType="text"
+                android:padding="12dp"
+                android:textColor="@color/mainblack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView48" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tlPickBasket"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/mainwhite"
+                android:scrollIndicators="bottom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/actvPickBasket"
+                app:tabIndicatorColor="@color/mainColor"
+                app:tabIndicatorFullWidth="true"
+                app:tabRippleColor="#FFFFFF"
+                app:tabSelectedTextColor="@color/mainblack"
+                app:tabTextColor="@color/grey800">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="추천 부위" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="상체" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="하체" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전신" />
+            </com.google.android.material.tabs.TabLayout>
+
+            <ImageButton
+                android:id="@+id/ibtnPickBasketBack"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/mainwhite"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintEnd_toStartOf="@+id/textView65"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView65"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="운동 추가"
+                android:textColor="@color/mainblack"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.501"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

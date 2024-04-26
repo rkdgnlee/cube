@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:background="@drawable/background_bottomsheet"
+        android:padding="4dp"
+        app:layout_anchorGravity="center">
+
+        <TextView
+            android:id="@+id/tvSignInSKT"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="6dp"
+            android:text="SKT"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="@+id/textView47"
+            app:layout_constraintTop_toBottomOf="@+id/textView47" />
+
+        <TextView
+            android:id="@+id/tvSignInKT"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="6dp"
+            android:text="KT"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="@+id/tvSignInSKT"
+            app:layout_constraintTop_toBottomOf="@+id/tvSignInSKT" />
+
+        <TextView
+            android:id="@+id/tvSignInLGU"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="6dp"
+            android:text="LG U+"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="@+id/tvSignInKT"
+            app:layout_constraintTop_toBottomOf="@+id/tvSignInKT" />
+
+        <TextView
+            android:id="@+id/tvSignInSKTC"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="6dp"
+            android:text="SKT 알뜰폰"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="@+id/tvSignInLGU"
+            app:layout_constraintTop_toBottomOf="@+id/tvSignInLGU" />
+
+        <TextView
+            android:id="@+id/tvSignInKTC"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="6dp"
+            android:text="KT 알뜰폰"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="@+id/tvSignInSKTC"
+            app:layout_constraintTop_toBottomOf="@+id/tvSignInSKTC" />
+
+        <TextView
+            android:id="@+id/tvSignInLGUC"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="6dp"
+            android:text="LG U+ 알뜰폰"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="@+id/tvSignInKTC"
+            app:layout_constraintTop_toBottomOf="@+id/tvSignInKTC" />
+
+        <TextView
+            android:id="@+id/textView47"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:text="통신사 선택"
+            android:textSize="26sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

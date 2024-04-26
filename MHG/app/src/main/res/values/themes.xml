@@ -1,0 +1,49 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MHG" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.MHG" parent="Base.Theme.MHG" >
+        <item name="android:colorPrimary">@color/mainColor</item>
+        <item name="colorControlNormal">@color/mainColor</item>
+        <item name="android:statusBarColor">@color/grey230</item>
+        <item name="android:colorBackground">@color/mainwhite</item>
+        <item name="colorAccent">@color/mainColor</item>
+<!--        <item name="android:windowFullscreen">true</item>-->
+        <item name="android:windowBackground">@color/mainwhite</item>
+        <item name="android:fragment">@color/mainblack</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.App.DatePicker</item>
+    </style>
+<!--    alertdialog theme 적용 -->
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/mainblack</item>
+        <item name="colorSecondary">@color/mainwhite</item>
+        <item name="colorOnSurface">@color/mainwhite</item>
+        <item name="colorSurface">@color/mainwhite</item>
+        <item name="android:background">@color/mainwhite</item>
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.App.Body.Text</item>
+
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
+
+
+    <!--   dark theme -->
+    <style name="Theme.MHG.Dark" parent="Base.Theme.MHG">
+        <item name="android:colorPrimary">@color/mainColor</item>
+        <item name="colorControlNormal">@color/mainColor</item>
+        <item name="android:statusBarColor">@color/mainblack</item>
+        <item name="android:colorBackground">@color/grey800</item>
+
+        <!--        <item name="android:windowFullscreen">true</item>-->
+        <item name="android:windowBackground">@color/grey800</item>
+        <item name="android:fragment">@color/mainblack</item>
+    </style>
+
+
+</resources>

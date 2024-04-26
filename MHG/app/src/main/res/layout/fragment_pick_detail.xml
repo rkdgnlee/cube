@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PickDetailFragment">
+
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/mainwhite">
+
+            <TextView
+                android:id="@+id/tvPickEdit"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:background="@drawable/shadow2"
+                android:gravity="center"
+                android:text="즐겨찾기"
+                android:textColor="@color/mainblack"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPickDetail"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:background="#FFFFFF"
+                android:gravity="center"
+                android:paddingBottom="0dp"
+                android:textColorHint="@color/mainblack"
+                app:boxBackgroundColor="@color/mainwhite"
+                app:boxBackgroundMode="outline"
+                app:boxCollapsedPaddingTop="0dp"
+                app:boxStrokeColor="@color/mainblack"
+                app:counterTextColor="@color/mainwhite"
+                app:endIconDrawable="@drawable/pick_detail_icon"
+                app:endIconMinSize="24dp"
+                app:endIconMode="dropdown_menu"
+                app:endIconScaleType="centerCrop"
+                app:endIconTint="@color/grey800"
+                app:expandedHintEnabled="true"
+                app:helperTextTextColor="@color/mainblack"
+                app:hintTextColor="@color/mainblack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEdit"
+                app:placeholderTextColor="@color/mainblack"
+                app:prefixTextColor="@color/mainblack"
+                app:startIconTint="@color/grey500"
+                app:suffixTextColor="@color/mainblack">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actPickDetail"
+                    android:layout_width="196dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="left"
+                    android:background="@color/mainwhite"
+                    android:backgroundTint="@color/mainwhite"
+                    android:editable="false"
+                    android:gravity="center|center_vertical"
+                    android:inputType="none"
+                    android:maxLength="14"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:popupBackground="@color/mainwhite"
+                    android:text="안녕하세요안녕하세요"
+                    android:textColor="@color/mainblack"
+                    android:textColorHighlight="@color/mainblack"
+                    android:textColorHint="@color/mainblack"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout5"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="40dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/tilPickDetail">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflPickDetail1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <include layout="@layout/tv_shimmer_pick_detail_textview" />
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <TextView
+                    android:id="@+id/tvPickDetailExplainTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/mainwhite"
+                    android:text="회전 근개 및 날개 집중 스트레칭"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout6"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout5"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout5"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflPickDetail2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <include layout="@layout/tv_shimmer_pick_detail_textview" />
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <TextView
+                    android:id="@+id/tvPickDetailExplain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/mainwhite"
+                    android:text="어깨 가동범위를 점진적으로 늘려가며.."
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnPickStart"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/mainColor"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="운동 시작"
+                android:textColor="@color/mainwhite"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llPickDetail" />
+
+            <ImageButton
+                android:id="@+id/btnPickDetailBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@color/mainwhite"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
+                app:layout_constraintStart_toStartOf="@+id/tvPickEdit"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.3" />
+
+            <TextView
+                android:id="@+id/textView43"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="설명 제목"
+                android:textColor="@color/grey600"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
+
+            <TextView
+                android:id="@+id/textView49"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="설명"
+                android:textColor="@color/grey600"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+            <LinearLayout
+                android:id="@+id/llPickDetail"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout6">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflPickDetail3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <include layout="@layout/tv_shimmer_pick_detail_textview" />
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <TextView
+                    android:id="@+id/tvPickDetailUnitNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="0"
+                    android:textColor="@color/mainblack"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/textView58"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="개의 운동으로 약"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView57"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  총 "
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvPickDetailUnitTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00"
+                    android:textColor="@color/mainblack"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/textView59"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="분이 소요됩니다"
+                    android:textColor="@color/mainblack"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvPickDetailEmoji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="🔥"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnPickDetailGoEdit"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/background_stroke_2dp_main_color"
+                android:drawableLeft="@drawable/icon_edit_note"
+                android:gravity="center"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="64dp"
+                android:text="편집"
+                android:textColor="@color/mainColor"
+                android:textSize="20sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPickStart" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsvPickDetail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:fadeScrollbars="false"
+                android:fillViewport="true"
+                android:overScrollMode="always"
+                android:scrollbars="none"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPickDetailGoEdit">>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/sflPickDetail4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                            <include layout="@layout/rv_shimmer_pick_detail"/>
+
+                        </LinearLayout>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <ImageView
+                        android:id="@+id/ivPickDetailNull"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:src="@drawable/image_pick_null" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvPickDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="0dp"
+                        android:layout_marginRight="370dp"
+                        android:overScrollMode="never"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

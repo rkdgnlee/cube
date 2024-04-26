@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainwhite"
+    tools:context=".DeviceSettingsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/mainwhite">
+
+        <ImageButton
+            android:id="@+id/ibtnDeviceSettingsBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/mainwhite"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_arrow_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:paddingLeft="8dp"
+            android:text="기기설정"
+            android:textColor="@color/mainblack"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnDeviceSettingsBack"
+            app:layout_constraintStart_toEndOf="@+id/ibtnDeviceSettingsBack"
+            app:layout_constraintTop_toTopOf="@+id/ibtnDeviceSettingsBack" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/schDeviceSettingDark"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="52dp"
+            android:layout_marginEnd="16dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:switchMinWidth="16dp"
+            android:switchPadding="16dp"
+            android:text="다크 모드"
+            android:textColor="@color/mainblack"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ibtnDeviceSettingsBack"
+            app:thumbIconTint="@color/mainwhite"
+            app:thumbTint="@color/mainblack"
+            app:trackDecorationTint="@color/mainblack"
+            app:trackTint="@color/mainwhite"
+            app:useMaterialThemeColors="false" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/materialDivider12"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:dividerColor="@color/grey300"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/schDeviceSettingDark" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/schDeviceSettingHealthData"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="내 운동 정보 사용"
+            android:textColor="@color/mainblack"
+            android:textSize="16dp"
+            app:icon="@drawable/icon_next_arrow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialDivider12"
+            app:thumbIconTint="@color/mainwhite"
+            app:thumbTint="@color/mainblack"
+            app:trackDecorationTint="@color/mainblack"
+            app:trackTint="@color/mainwhite"
+            app:useMaterialThemeColors="false" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/materialDivider13"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/schDeviceSettingHealthData" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/materialDivider14"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDeviceSettingsAgreement1" />
+
+        <Button
+            android:id="@+id/tvDeviceSettingsAgreement1"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/mainwhite"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="이용 약관"
+            android:textColor="@color/mainblack"
+            android:textSize="16dp"
+            app:icon="@drawable/icon_next_arrow"
+            app:iconGravity="end"
+            app:iconSize="32dp"
+            app:iconTint="@color/mainblack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/schDeviceSettingHealthData" />
+
+        <Button
+            android:id="@+id/tvDeviceSettingsAgreement2"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/mainwhite"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="개인정보 처리방침"
+            android:textColor="@color/mainblack"
+            android:textSize="16dp"
+            app:icon="@drawable/icon_next_arrow"
+            app:iconGravity="end"
+            app:iconSize="32dp"
+            app:iconTint="@color/mainblack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDeviceSettingsAgreement1" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDeviceSettingsAgreement2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

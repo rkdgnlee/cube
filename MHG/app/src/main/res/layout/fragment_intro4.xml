@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Intro4Fragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+<!--        <EditText-->
+<!--            android:id="@+id/etId"-->
+<!--            android:layout_width="240dp"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginStart="56dp"-->
+<!--            android:layout_marginTop="88dp"-->
+<!--            android:background="@drawable/pick_favorite_add_button"-->
+<!--            android:backgroundTint="@color/button_grey"-->
+<!--            android:ems="10"-->
+<!--            android:hint="아이디"-->
+<!--            android:inputType="text"-->
+<!--            android:paddingLeft="16dp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/etName"-->
+<!--            android:layout_width="240dp"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:background="@drawable/pick_favorite_add_button"-->
+<!--            android:backgroundTint="@color/button_grey"-->
+<!--            android:ems="10"-->
+<!--            android:hint="이름"-->
+<!--            android:inputType="text"-->
+<!--            android:paddingLeft="16dp"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/etId"-->
+<!--            app:layout_constraintHorizontal_bias="1.0"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etId"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/etId" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/etMobile"-->
+<!--            android:layout_width="240dp"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:background="@drawable/pick_favorite_add_button"-->
+<!--            android:backgroundTint="@color/button_grey"-->
+<!--            android:ems="10"-->
+<!--            android:hint="핸드폰 번호"-->
+<!--            android:inputType="text"-->
+<!--            android:paddingLeft="16dp"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/etName"-->
+<!--            app:layout_constraintHorizontal_bias="1.0"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etName"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/etName" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/etPw"-->
+<!--            android:layout_width="240dp"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:background="@drawable/pick_favorite_add_button"-->
+<!--            android:backgroundTint="@color/button_grey"-->
+<!--            android:ems="10"-->
+<!--            android:hint="비밀번호"-->
+<!--            android:inputType="text"-->
+<!--            android:paddingLeft="16dp"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/etMobile"-->
+<!--            app:layout_constraintHorizontal_bias="1.0"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etMobile"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/etMobile" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/etPwRepeat"-->
+<!--            android:layout_width="240dp"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:background="@drawable/pick_favorite_add_button"-->
+<!--            android:backgroundTint="@color/button_grey"-->
+<!--            android:ems="10"-->
+<!--            android:hint="비밀번호 확인"-->
+<!--            android:inputType="text"-->
+<!--            android:paddingLeft="16dp"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/etPw"-->
+<!--            app:layout_constraintHorizontal_bias="1.0"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etPw"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/etPw" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/etEmail"-->
+<!--            android:layout_width="240dp"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:background="@drawable/pick_favorite_add_button"-->
+<!--            android:backgroundTint="@color/button_grey"-->
+<!--            android:ems="10"-->
+<!--            android:hint="이메일"-->
+<!--            android:inputType="text"-->
+<!--            android:paddingLeft="16dp"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/etPwRepeat"-->
+<!--            app:layout_constraintHorizontal_bias="1.0"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etPwRepeat"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/etPwRepeat" />-->
+
+<!--        <RadioGroup-->
+<!--            android:id="@+id/rgGender"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/etEmail"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etEmail"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/etEmail">-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/rbtnM"-->
+<!--                android:layout_width="120dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="남자" />-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/rbtnF"-->
+<!--                android:layout_width="120dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="여자" />-->
+<!--        </RadioGroup>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvPwCompare"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="4dp"-->
+<!--            android:text="비밀번호가 일치하지 않습니다."-->
+<!--            android:textColor="@color/orange"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/etPwRepeat"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etPwRepeat" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvPwCondition"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="4dp"-->
+<!--            android:text="영문, 숫자, 특수문자( ! @ # $ % ^ &amp; * ? .)를 모두 포함해서 8~20자리를 입력해주세요"-->
+
+<!--            android:textColor="@color/orange"-->
+<!--            android:textSize="10sp"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/etPw"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etPw" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvIdCondition"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="4dp"-->
+<!--            android:text="영문 또는 숫자를 조합해서 4자리 이상 입력해주세요"-->
+<!--            android:textColor="@color/orange"-->
+<!--            android:textSize="12sp"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/etId"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/etId" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/btnIdConfirm"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="36dp"-->
+<!--            android:backgroundTint="@color/orange"-->
+<!--            android:insetTop="0dp"-->
+<!--            android:insetBottom="0dp"-->
+<!--            android:text="중복확인"-->
+<!--            app:cornerRadius="16dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/etId"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/etId"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/etId" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/btnSignIn"-->
+<!--            android:layout_width="130dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:layout_marginTop="60dp"-->
+<!--            android:backgroundTint="@color/orange"-->
+<!--            android:enabled="false"-->
+<!--            android:insetTop="0dp"-->
+<!--            android:insetBottom="0dp"-->
+<!--            android:text="회원가입"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            android:textSize="18sp"-->
+<!--            app:cornerRadius="16dp"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/rgGender"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/rgGender"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/rgGender" />-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

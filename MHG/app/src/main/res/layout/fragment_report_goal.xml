@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ReportGoalFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btnScan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="장치 검색"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDeviceList"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnScan">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="데이터 전송"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnDisconnect" />
+
+        <Button
+            android:id="@+id/btnSendSyncStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="0x83"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSendGetCount"
+            app:layout_constraintStart_toEndOf="@+id/btnSendGetCount"
+            app:layout_constraintTop_toTopOf="@+id/btnSendGetCount"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/btnSendSyncAck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="0x84"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSendSyncStart"
+            app:layout_constraintStart_toEndOf="@+id/btnSendSyncStart"
+            app:layout_constraintTop_toTopOf="@+id/btnSendSyncStart" />
+
+        <Button
+            android:id="@+id/btnSendTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="시간 설정"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnSendGetCount" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/svRecvData"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:fadeScrollbars="false"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnSendTime">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvRecvData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="@color/mainblack" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <TextView
+            android:id="@+id/tvDeviceName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="기기 이름"
+            android:textColor="@color/mainblack"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvMacAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="기기 주소"
+            android:textColor="@color/mainblack"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDeviceName" />
+
+        <Button
+            android:id="@+id/btnConnect"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/mainColor"
+            android:enabled="true"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="연결"
+            android:textColor="@color/mainwhite"
+            app:cornerRadius="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rvDeviceList"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btnDisconnect"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/grey300"
+            android:enabled="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="연결해제"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rvDeviceList" />
+
+        <EditText
+            android:id="@+id/etSendData"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="데이터 입력"
+            android:inputType="textPersonName"
+            android:textColor="@color/mainblack"
+            android:textColorHint="@color/grey300"
+            app:layout_constraintEnd_toStartOf="@+id/btnSend"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnConnect"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <Button
+            android:id="@+id/btnSendGetCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="0x82"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etSendData" />
+
+        <Button
+            android:id="@+id/btnSendRealTimeOrWrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="0x85"
+            android:textColor="@color/mainwhite"
+            android:textSize="16sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSendSyncAck"
+            app:layout_constraintEnd_toEndOf="@+id/btnSend"
+            app:layout_constraintStart_toEndOf="@+id/btnSendSyncAck"
+            app:layout_constraintTop_toTopOf="@+id/btnSendSyncAck"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

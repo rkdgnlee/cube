@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--  alertdialog 시작   -->
+    <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.Material3">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+
+    </style>
+
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="MaterialAlertDialog.App.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Widget.App.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+        <item name="android:background">@color/white</item>
+    </style>
+    <!--    alertdialog 끝 -->
+
+
+    <!--b bottomsheetdialog 스타일 -->
+    <style name="Theme_Design_BottomSheetDialog1" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="behavior_peekHeight">auto</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="DialogFragmentStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:radius">16dp</item>
+    </style>
+
+    <style name="Theme.App.Checkbox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/mainColor</item>
+    </style>
+
+    <!-- bottom navigation bar   -->
+<!--    <style name="MyBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">-->
+<!--        <item name="itemIconTint">@color/subColor200</item>-->
+<!--        <item name="itemTextColor">@color/subColor500</item>-->
+<!--    </style>-->
+<!--    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">-->
+<!--        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>-->
+<!--    </style>-->
+<!--    <style name="ThemeOverlay.App.BottomNavigationView" parent="">-->
+<!--        <item name="colorSurface">@color/white</item>-->
+<!--        <item name="colorOnSurfaceVariant">@color/white</item>-->
+<!--    </style>-->
+    <!-- radiobutton   -->
+    <style name="Theme.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/mainColor</item>
+    </style>
+</resources>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignIn4Fragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:fitsSystemWindows="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/mainwhite">
+
+            <Button
+                android:id="@+id/btnAuthSend"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="32dp"
+                android:backgroundTint="@color/mainColor"
+                android:enabled="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="인증문자 발송"
+                android:textColor="@color/mainwhite"
+                android:textSize="16sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView12"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/cardView12"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView13"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/cardView12"
+                app:layout_constraintEnd_toEndOf="@+id/btnAuthSend"
+                app:layout_constraintStart_toStartOf="@+id/cardView12">
+
+                <TextView
+                    android:id="@+id/tvTelecom"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/mainwhite"
+                    android:padding="16dp"
+                    android:paddingLeft="16dp"
+                    android:text="통신사"
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/imageView10"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/sign_in_telecom_arrow" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="248dp"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/btnAuthSend"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/etMobile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pick_favorite_add_button"
+                    android:ems="10"
+                    android:hint="핸드폰 번호"
+                    android:inputType="phone"
+                    android:padding="16dp"
+                    android:paddingLeft="16dp"
+                    android:textColor="@color/mainblack" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvAuthNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/btnAuthConfirm"
+                app:layout_constraintStart_toStartOf="@+id/cardView12"
+                app:layout_constraintTop_toBottomOf="@+id/cardView12">
+
+                <EditText
+                    android:id="@+id/etAuthNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pick_favorite_add_button"
+                    android:hint="인증 번호"
+                    android:inputType="number"
+                    android:padding="16dp"
+                    android:paddingLeft="16dp"
+                    android:textColor="@color/mainblack" />
+
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/btnAuthConfirm"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="32dp"
+                android:backgroundTint="@color/mainColor"
+                android:enabled="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="인증번호 확인"
+                android:textColor="@color/mainwhite"
+                android:textSize="16sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cvAuthNumber"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/cvAuthNumber" />
+
+            <TextView
+                android:id="@+id/tvSignIn4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="핸드폰 인증"
+                android:textColor="@color/grey800"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/cardView13"
+                app:layout_constraintEnd_toEndOf="@+id/cardView13"
+                app:layout_constraintStart_toStartOf="@+id/cardView13" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/button_background"
+                android:enabled="false"
+                android:fitsSystemWindows="true"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingLeft="36dp"
+                android:paddingRight="36dp"
+                android:text="가입완료"
+                android:textColor="@color/mainwhite"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</FrameLayout>

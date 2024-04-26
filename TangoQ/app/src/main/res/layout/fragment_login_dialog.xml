@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Dialog.LoginDialogFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <ImageView
+            android:layout_width="38dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView5"
+            app:layout_constraintEnd_toStartOf="@+id/textView5"
+            app:layout_constraintTop_toTopOf="@+id/textView5"
+            app:srcCompat="@drawable/app_logo" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="86dp"
+            android:text="운동 다짐은 큐짐과 함께"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.651"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="아이디"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/etLiId"
+            app:layout_constraintStart_toStartOf="@+id/etLiId" />
+
+        <EditText
+            android:id="@+id/etLiId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="128dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/background_stroke_1dp_sub_color"
+            android:ems="10"
+            android:hint="아이디를 입력해 주세요"
+            android:inputType="text"
+            android:paddingLeft="8dp"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="비밀번호"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/etLiPw"
+            app:layout_constraintStart_toStartOf="@+id/etLiPw" />
+
+        <EditText
+            android:id="@+id/etLiPw"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:background="@drawable/background_stroke_1dp_sub_color"
+            android:ems="10"
+            android:hint="비밀 번호를 입력해주세요"
+            android:inputType="textPassword"
+            android:paddingLeft="8dp"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="@+id/etLiId"
+            app:layout_constraintStart_toStartOf="@+id/etLiId"
+            app:layout_constraintTop_toBottomOf="@+id/etLiId" />
+
+        <Button
+            android:id="@+id/btnLiLogin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="16dp"
+            android:text="로그인"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="@+id/etLiPw"
+            app:layout_constraintStart_toStartOf="@+id/etLiPw"
+            app:layout_constraintTop_toBottomOf="@+id/etLiPw" />
+
+        <TextView
+            android:id="@+id/tvLiFind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="아이디 / 패스워드를 잊어버렸나요?"
+            android:textColor="@color/subColor200"
+            app:layout_constraintEnd_toEndOf="@+id/btnLiLogin"
+            app:layout_constraintStart_toStartOf="@+id/btnLiLogin"
+            app:layout_constraintTop_toBottomOf="@+id/btnLiLogin" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

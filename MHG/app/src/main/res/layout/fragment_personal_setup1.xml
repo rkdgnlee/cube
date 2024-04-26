@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="700dp"
+    android:background="@color/mainwhite"
+    android:clipToPadding="false"
+    android:elevation="16dp"
+    android:stateListAnimator="@null"
+    tools:context=".PersonalSetup1Fragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPersonalSetup1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="180dp"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/rbtnSquareMale"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_marginRight="18dp"
+                android:layout_weight="1"
+                android:background="@drawable/personal_setup_rbtn_male"
+                android:button="@null"
+                android:foregroundGravity="center"
+                android:gravity="center"
+                android:text="\nMale\n 남성관련 운동 콘텐츠를\n주로 추천해드립니다."
+                android:textSize="10sp" />
+
+            <RadioButton
+                android:id="@+id/rbtnSquareFemale"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_marginLeft="18dp"
+                android:layout_weight="1"
+                android:background="@drawable/personal_setup_rbtn_female"
+                android:button="@null"
+                android:elevation="8dp"
+                android:gravity="center"
+                android:text="\nFemale\n여성관련 운동 콘텐츠를\n주로 추천해드립니다."
+                android:textSize="10sp" />
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/radioGroup2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/rbtnMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="48dp"
+                android:drawablePadding="12dp"
+                android:elevation="10dp"
+                android:padding="12dp"
+                android:text="남성"
+                android:textSize="16sp"
+                android:theme="@style/OrangeRadioButton" />
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/rbtnFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="48dp"
+                android:drawablePadding="12dp"
+                android:elevation="10dp"
+                android:padding="12dp"
+                android:text="여성"
+                android:textSize="16dp"
+                android:theme="@style/OrangeRadioButton" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:text="성별을 선택해주세요"
+            android:textColor="@color/grey800"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.517"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <!--        <Button-->
+        <!--            android:id="@+id/button4"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="150dp"-->
+        <!--            android:layout_marginTop="180dp"-->
+        <!--            android:backgroundTint="#FFFFFF"-->
+        <!--            android:backgroundTintMode="add"-->
+        <!--            android:elevation="10dp"-->
+        <!--            android:enabled="false"-->
+        <!--            android:stateListAnimator="@null"-->
+        <!--            app:cornerRadius="16dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHorizontal_bias="0.0"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/radioGroup2"-->
+        <!--            app:layout_constraintVertical_bias="1.0" />-->
+
+        <!--        <Button-->
+        <!--            android:id="@+id/btnSetup2Next"-->
+        <!--            android:layout_width="98dp"-->
+        <!--            android:layout_height="48dp"-->
+        <!--            android:layout_marginEnd="32dp"-->
+        <!--            android:layout_marginBottom="72dp"-->
+        <!--            android:backgroundTint="@color/orange"-->
+        <!--            android:elevation="10dp"-->
+        <!--            android:insetTop="0dp"-->
+        <!--            android:insetBottom="0dp"-->
+        <!--            android:shadowColor="#5A5A5A"-->
+        <!--            android:shadowDx="4"-->
+        <!--            android:shadowDy="4"-->
+        <!--            android:stateListAnimator="@null"-->
+        <!--            android:text="NEXT"-->
+        <!--            android:textSize="16sp"-->
+        <!--            app:cornerRadius="16dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent" />-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

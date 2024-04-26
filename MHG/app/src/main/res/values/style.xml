@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="OrangeRadioButton" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/mainColor</item>
+        <item name="colorControlNormal">@color/grey230</item>
+        <item name="colorOnContainer">@color/grey800</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+    
+    <style name="tabTextSize" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Theme.App.Button" parent="Widget.AppCompat.Button">
+        <item name="colorAccent">@color/mainColor</item>
+        <item name="colorOnPrimary">@color/mainblack</item>
+        <item name="colorPrimary">@color/mainwhite</item>
+        <item name="android:windowBackground">@color/mainwhite</item>
+    </style>
+
+    <style name="Theme.App.Checkbox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="colorOnPrimary">@color/mainwhite</item>
+        <item name="colorPrimary">@color/mainColor</item>
+    </style>
+    <style name="Theme.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="colorOnPrimary">@color/mainwhite</item>
+        <item name="colorPrimary">@color/mainColor</item>
+    </style>
+
+    <style name="Theme.App" parent="Theme.Material3.Light.Dialog.Alert">
+        <item name="checkboxStyle">@style/Theme.App.Checkbox</item>
+        <item name="colorAccent">@color/mainColor</item>
+        <item name="colorOnPrimary">@color/mainblack</item>
+        <item name="colorPrimary">@color/mainwhite</item>
+        <item name="android:windowBackground">@color/mainwhite</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
+    </style>
+
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">cut</item>
+    </style>
+
+
+<!--b bottomsheetdialog 스타일 -->
+    <style name="Theme_Design_BottomSheetDialog1" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="behavior_peekHeight">auto</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="ExoMediaButton.FullScreen">
+        <item name="android:background">@drawable/fullscreen_button</item>
+    </style>
+
+    <style name="DialogFragmentStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:radius">16dp</item>
+    </style>
+
+<!--  alertdialog 시작   -->
+    <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.Material3">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+
+    </style>
+
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">@color/mainblack</item>
+    </style>
+    <style name="MaterialAlertDialog.App.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">@color/mainblack</item>
+    </style>
+
+    <style name="Widget.App.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/mainblack</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent" tools:ignore="DuplicateDefinition">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+        <item name="android:background">@color/mainwhite</item>
+    </style>
+<!--    alertdialog 끝 -->
+
+    <!--    datepicker theme 적용 -->
+    <style name="ThemeOverlay.App.DatePicker" parent="@style/ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorPrimary">@color/mainColor</item>
+        <item name="colorOnPrimary">@color/mainwhite</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
+        <!-- Customize text field of the text input mode. -->
+    </style>
+
+<!--pose landmarker-->
+    <style name="BottomSheetSpinnerItemStyle" parent="Widget.AppCompat.Light.DropDownItem.Spinner">
+        <item name="android:textSize">@dimen/bottom_sheet_text_size</item>
+    </style>
+
+    <style name="AppThemeProgressStyle">
+        <item name="colorAccent">@color/mp_color_primary_variant</item>
+    </style>
+</resources>

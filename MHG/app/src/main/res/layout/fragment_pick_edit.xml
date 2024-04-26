@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PickEditFragment">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvPickEdit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        android:overScrollMode="always"
+        android:scrollbars="none">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/mainwhite">
+
+            <TextView
+                android:id="@+id/tvPickEdit"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:background="@drawable/shadow2"
+                android:gravity="center"
+                android:text="즐겨찾기 편집"
+                android:textColor="@color/mainblack"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/etPickEditName"
+                android:layout_width="156dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@color/mainwhite"
+                android:gravity="center"
+                android:maxLength="15"
+                android:text="어깨 루틴"
+                android:textColor="@color/mainblack"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.501"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEdit" />
+
+            <EditText
+                android:id="@+id/etPickEditExplainTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="48dp"
+                android:background="@color/mainwhite"
+                android:text="회전 근개 및 날개 집중 스트레칭"
+                android:textColor="@color/mainblack"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView43"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/textView43"
+                app:layout_constraintTop_toTopOf="@+id/textView43" />
+
+            <EditText
+                android:id="@+id/etPickEditExplain"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
+                android:background="@color/mainwhite"
+                android:text="어깨 가동범위를 점진적으로 늘려가며.."
+                android:textColor="@color/mainblack"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView49"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/etPickEditExplainTitle"
+                app:layout_constraintTop_toTopOf="@+id/textView49" />
+
+            <Button
+                android:id="@+id/btnPickEditFinish"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/mainColor"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="완료"
+                android:textColor="@color/mainwhite"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider10"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                app:dividerColor="@color/grey300"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/etPickEditExplainTitle"
+                app:layout_constraintTop_toBottomOf="@+id/etPickEditExplainTitle" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider11"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                app:dividerColor="@color/grey300"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/etPickEditExplain"
+                app:layout_constraintTop_toBottomOf="@+id/etPickEditExplain" />
+
+            <TextView
+                android:id="@+id/textView43"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="27dp"
+                android:text="설명 제목"
+                android:textColor="@color/grey600"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etPickEditName" />
+
+            <TextView
+                android:id="@+id/textView49"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="설명"
+                android:textColor="@color/grey600"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
+            <TextView
+                android:id="@+id/tvPickEditGoBasket"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:text="운동 추가"
+                android:textColor="@color/mainColor"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imagView16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/imagView16"
+                app:layout_constraintTop_toTopOf="@+id/imagView16"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <ImageView
+                android:id="@+id/imagView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="46dp"
+                android:src="@drawable/icon_add"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView49" />
+
+            <ImageView
+                android:id="@+id/imageView15"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etPickEditName"
+                app:layout_constraintStart_toEndOf="@+id/etPickEditName"
+                app:layout_constraintTop_toTopOf="@+id/etPickEditName" />
+
+            <ImageView
+                android:id="@+id/imageView17"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etPickEditExplainTitle"
+                app:layout_constraintStart_toEndOf="@+id/etPickEditExplainTitle"
+                app:layout_constraintTop_toTopOf="@+id/etPickEditExplainTitle" />
+
+            <ImageView
+                android:id="@+id/imageView18"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etPickEditExplain"
+                app:layout_constraintStart_toEndOf="@+id/etPickEditExplain"
+                app:layout_constraintTop_toTopOf="@+id/etPickEditExplain" />
+
+            <TextView
+                android:id="@+id/tvPickEditBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="취소"
+                android:textColor="@color/grey800"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPickEdit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvPickEdit"
+                app:layout_constraintVertical_bias="0.4" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/btnPickEditFinish"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPickEditGoBasket"
+                app:layout_constraintVertical_bias="0.0">
+
+                <ImageView
+                    android:id="@+id/ivPickEditNull"
+                    android:layout_width="match_parent"
+                    android:layout_height="270dp"
+                    android:background="@color/mainwhite"
+                    android:src="@drawable/image_pick_null" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPickEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:overScrollMode="never" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

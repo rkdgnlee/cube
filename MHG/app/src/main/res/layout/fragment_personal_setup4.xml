@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="700dp"
+    android:background="@color/mainwhite"
+    tools:context=".PersonalSetup4Fragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPersonalSetup4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RadioGroup
+            android:id="@+id/radioGroup3"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="236dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView8">
+
+            <RadioButton
+                android:id="@+id/rbtnhealth"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="44dp"
+                android:gravity="center"
+                android:text="건강증진"
+                android:textSize="16sp"
+                android:theme="@style/OrangeRadioButton" />
+
+            <RadioButton
+                android:id="@+id/rbtnRehabil"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="44dp"
+                android:gravity="center"
+                android:text="재활회복"
+                android:textSize="16sp"
+                android:theme="@style/OrangeRadioButton" />
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup3"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup3"
+            app:layout_constraintTop_toBottomOf="@+id/imgbtnStrength">
+
+            <RadioButton
+                android:id="@+id/rbtnStrength"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="44dp"
+                android:gravity="center"
+                android:text="근력향상"
+                android:textSize="16sp"
+                android:theme="@style/OrangeRadioButton" />
+
+            <RadioButton
+                android:id="@+id/rbtnDiet"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="44dp"
+                android:gravity="center"
+                android:text="체중관리"
+                android:textSize="16sp"
+                android:theme="@style/OrangeRadioButton" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:text="당신의 운동 목적을 골라주세요"
+            android:textColor="@color/grey800"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/imgbtnHealth"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginBottom="4dp"
+            android:background="#FFFFFF"
+            android:backgroundTint="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/setuphealth"
+            app:layout_constraintBottom_toTopOf="@+id/radioGroup3"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup3"
+            app:layout_constraintHorizontal_bias="0.143"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup3" />
+
+        <ImageButton
+            android:id="@+id/imgbtnRehabil"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginBottom="4dp"
+            android:background="#FFFFFF"
+            android:backgroundTint="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/setuprehibilitation"
+            app:layout_constraintBottom_toTopOf="@+id/radioGroup3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.84"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup3" />
+
+        <ImageButton
+            android:id="@+id/imgbtnStrength"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:backgroundTint="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/setupstrength"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup3"
+            app:layout_constraintHorizontal_bias="0.143"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup3"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup3" />
+
+        <ImageButton
+            android:id="@+id/imgbtnDiet"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:backgroundTint="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/setupdiet"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup3"
+            app:layout_constraintHorizontal_bias="0.84"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup3"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

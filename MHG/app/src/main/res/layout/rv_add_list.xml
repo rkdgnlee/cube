@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="104dp">
+
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="86dp"
+        android:layout_gravity="right"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="8dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPickAddDelete"
+            android:layout_width="128dp"
+            android:layout_height="84dp"
+            android:layout_gravity="center|right"
+            android:layout_marginRight="1dp"
+            android:background="@drawable/pick_add_delete_button"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="삭제"
+            android:textColor="@color/mainwhite"
+            android:textSize="18sp"
+            app:cornerRadius="22dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clAdd"
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/dialog_background">
+
+        <ImageView
+            android:id="@+id/ivPickAdd"
+            android:layout_width="90dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/home_warmup" />
+
+        <TextView
+            android:id="@+id/tvPickAddName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="42dp"
+            android:text="TextView"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivPickAddDrag"
+            app:layout_constraintStart_toEndOf="@+id/ivPickAdd"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvPickAddDuration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="5"
+            android:textColor="@color/mainblack"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/tvPickAddSymptom"
+            app:layout_constraintTop_toBottomOf="@+id/tvPickAddSymptom" />
+
+        <ImageView
+            android:id="@+id/ivPickAddDrag"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/mainwhite"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/drag_icon" />
+
+        <TextView
+            android:id="@+id/textView44"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:text="seconds"
+            android:textColor="@color/mainblack"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPickAddDuration"
+            app:layout_constraintStart_toEndOf="@+id/tvPickAddDuration" />
+
+        <TextView
+            android:id="@+id/tvPickAddSymptom"
+            android:layout_width="0dp"
+            android:layout_height="16sp"
+            android:layout_marginTop="4dp"
+            android:maxLength="30"
+            android:text="TextView"
+            android:textColor="@color/grey500"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tvPickAddName"
+            app:layout_constraintStart_toStartOf="@+id/tvPickAddName"
+            app:layout_constraintTop_toBottomOf="@+id/tvPickAddName" />
+
+        <TextView
+            android:id="@+id/tvPickAddJoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:text="관절"
+            android:textColor="@color/mainblack"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/linearLayout4"
+            app:layout_constraintTop_toBottomOf="@+id/tvPickAddSymptom"
+            app:layout_constraintVertical_bias="0.333" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivPickAddDrag"
+            app:layout_constraintTop_toBottomOf="@+id/tvPickAddSymptom"
+            app:layout_constraintVertical_bias="0.2">
+
+            <ImageView
+                android:id="@+id/ivPickAddWarmup"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/icon_stretching" />
+
+            <ImageView
+                android:id="@+id/ivPickAddStrength"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/icon_strength" />
+
+            <ImageView
+                android:id="@+id/ivPickAddMaintain"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/icon_fitness" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</FrameLayout>

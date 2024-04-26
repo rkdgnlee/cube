@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainwhite"
+    android:clipToPadding="false"
+    tools:context=".PersonalSetup2Fragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPersonalSetup2"
+        android:layout_width="match_parent"
+        android:layout_height="700dp"
+        android:clipToPadding="false">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="키(신장)을 입력해주세요"
+            android:textColor="@color/grey800"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/npPersonalSetup2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.shawnlin.numberpicker.NumberPicker
+            android:id="@+id/npPersonalSetup2"
+            android:layout_width="200dp"
+            android:layout_height="400dp"
+            android:layout_centerInParent="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:np_dividerColor="@color/mainColor"
+            app:np_dividerDistance="60dp"
+            app:np_dividerLength="133dp"
+            app:np_dividerThickness="3dp"
+            app:np_fadingEdgeEnabled="true"
+            app:np_fadingEdgeStrength="20"
+            app:np_height="180dp"
+            app:np_itemSpacing="@dimen/default_gap"
+            app:np_max="250"
+            app:np_min="100"
+            app:np_selectedTextColor="@color/mainColor"
+            app:np_selectedTextSize="36dp"
+            app:np_textColor="@color/grey600"
+            app:np_textSize="28dp"
+            app:np_textStrikeThru="false"
+            app:np_textUnderline="false"
+            app:np_value="170"
+            app:np_wheelItemCount="9"
+            app:np_width="64dp" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="180dp"
+            android:text="cm"
+            android:textColor="#B6B6B6"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/npPersonalSetup2"
+            app:layout_constraintEnd_toEndOf="@+id/npPersonalSetup2" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

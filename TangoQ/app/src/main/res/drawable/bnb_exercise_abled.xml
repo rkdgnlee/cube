@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group>
+        <group>
+            <clip-path
+                android:pathData="M1.4 14.98c-.39-.39-.39-1.02 0-1.41l1.98-1.98c.4-.4 1.03-.4 1.42 0l7.07 7.07c.39.39.39 1.02 0 1.41l-1.98 1.98c-.4.4-1.03.4-1.42 0L1.4 14.98Z"/>
+            <path
+                android:fillColor="@color/mainColor"
+                android:strokeColor="@color/mainColor"
+                android:strokeWidth="3"
+                android:pathData="M1.4 14.98c-0.39-0.39-0.39-1.02 0-1.41l1.98-1.98c0.4-0.4 1.03-0.4 1.42 0l7.07 7.07c0.39 0.39 0.39 1.02 0 1.41l-1.98 1.98c-0.4 0.4-1.03 0.4-1.42 0L1.4 14.98Z"/>
+        </group>
+        <group>
+            <clip-path
+                android:pathData="M14.98 1.4c-.4-.39-1.02-.39-1.41 0l-1.98 1.98c-.4.4-.4 1.03 0 1.42l7.07 7.07c.39.39 1.02.39 1.41 0l1.98-1.98c.4-.4.4-1.02 0-1.41L14.98 1.4Z"/>
+            <path
+                android:fillColor="@color/mainColor"
+                android:strokeColor="@color/mainColor"
+                android:strokeWidth="3"
+                android:pathData="M14.98 1.4c-0.4-0.39-1.02-0.39-1.41 0l-1.98 1.98c-0.4 0.4-0.4 1.03 0 1.42l7.07 7.07c0.39 0.39 1.02 0.39 1.41 0l1.98-1.98c0.4-0.4 0.4-1.02 0-1.41L14.98 1.4Z"/>
+        </group>
+        <path
+            android:fillColor="@color/mainColor"
+            android:strokeColor="@color/mainColor"
+            android:strokeWidth="1.5"
+            android:pathData="M14.27 6.85l2.33 2.33-7.42 7.43-2.33-2.34z"/>
+        <path
+            android:fillColor="@color/mainColor"
+            android:strokeColor="@color/mainColor"
+            android:strokeWidth="1.5"
+            android:pathData="M15.12 3.24l1.84-1.84c0.39-0.39 1.02-0.39 1.41 0l3.68 3.68c0.39 0.4 0.39 1.02 0 1.42l-1.84 1.83-5.09-5.09Z"/>
+        <path
+            android:fillColor="@color/mainColor"
+            android:strokeColor="@color/mainColor"
+            android:strokeWidth="1.5"
+            android:pathData="M3.24 15.12L1.4 16.96c-0.39 0.4-0.39 1.02 0 1.41l3.68 3.68c0.39 0.4 1.02 0.4 1.41 0l1.84-1.84-5.09-5.09Z"/>
+    </group>
+</vector>
