@@ -65,78 +65,36 @@ class MainActivity : AppCompatActivity() {
         viewModel.User.value = t_userData.jsonObject
         Log.e("싱글톤>뷰모델", "${viewModel.User.value}")
         // --------! ble 정보로 자동 연결 시작 !---------
-
-        bt_device = Singleton_bt_device.getInstance(this)
-        val deviceAddress = sharedPref.getString("device_address", null)
-        mBtAdapter = bt_device.mBtAdapter
-
-        Log.w("macAd저장", "$deviceAddress")
-        TedPermissionWrapper.checkPermission(this)
-        if (mBtAdapter == null) {
-            Toast.makeText(this, "Bluetooth is not avaliable", Toast.LENGTH_LONG).show()
-            return
-        }
-//        bt_device.mDeviceList.value = arrayListOf()
-        if (bt_device.init == false) {
-//            control_init()
-            service_init()
-            Log.w("serviceInit", "serviceInit Success !")
-            bt_device.init = true
-        }
-        if (!mBtAdapter!!.isEnabled()) {
-            Log.i(ContentValues.TAG, "BT not enabled yet")
-            val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT)
-        }
-
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, "Bluetooth low energy not supported", Toast.LENGTH_LONG).show()
-        }
-        if (mScanning == false) {
-            scanLeDevice(true)
-        }
-//        if (deviceAddress != null) {
-//            if (mState == UART_PROFILE_DISCONNECTED) {
-//                try {
-//                    if (mService?.connect(deviceAddress) == true) {
-//                        if (bt_device.mDevice != null && mState == UART_PROFILE_CONNECTED) {
-//                            Log.v("connect성공", "connect 성공")
-//                            var mPreTime: Long = 0
-//                            val curTime = System.currentTimeMillis()
-//                            mPreTime = curTime
-//                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-//                            val date = Date(curTime)
-//                            var strTemp = "[Request time] " + sdf.format(date)
-//                            //binding.tvRecvData.append(strTemp + "\r\n");
-//                            Log.d(ContentValues.TAG, strTemp)
-//                            val buf = byteArrayOf(0x82.toByte(), 0x0D.toByte(), 0x0A.toByte())
-//                            strTemp = ""
-//                            var i = 0
-//                            while (i < buf.size) {
-//                                strTemp += String.format("%02X ", buf[i])
-//                                i++
-//                            }
-//                            Log.d(ContentValues.TAG, "[send data - byte] $strTemp")
 //
-//                            Toast.makeText(this@MainActivity, "[send] $strTemp\r\n", Toast.LENGTH_SHORT).show()
-////                        binding.tvRecvData.append("[send] $strTemp\r\n")
-//                            mService?.writeRxCharacteristic(buf)
-//                        }
-//                    }
-//                } catch (ex: Exception) {
-//                    Log.e(ContentValues.TAG, ex.toString())
-//                    Toast.makeText(this, "연결 실패!", Toast.LENGTH_LONG).show()
-//                    Log.w("leService", "Null if문 실행 안됨")
-//                }
-//            } else {
-//                Toast.makeText(this, "이미 디바이스에 연결되어 있습니다.", Toast.LENGTH_LONG)
-//                    .show()
-//            }
-////
+//        bt_device = Singleton_bt_device.getInstance(this)
+//        val deviceAddress = sharedPref.getString("device_address", null)
+//        mBtAdapter = bt_device.mBtAdapter
+//
+//        Log.w("macAd저장", "$deviceAddress")
+//        TedPermissionWrapper.checkPermission(this)
+//        if (mBtAdapter == null) {
+//            Toast.makeText(this, "Bluetooth is not avaliable", Toast.LENGTH_LONG).show()
+//            return
 //        }
-
-
-
+//        bt_device.mDeviceList.value = arrayListOf()
+//        if (bt_device.init == false) {
+////            control_init()
+//            service_init()
+//            Log.w("serviceInit", "serviceInit Success !")
+//            bt_device.init = true
+//        }
+//        if (!mBtAdapter!!.isEnabled()) {
+//            Log.i(ContentValues.TAG, "BT not enabled yet")
+//            val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+//            startActivityForResult(enableIntent, REQUEST_ENABLE_BT)
+//        }
+//
+//        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//            Toast.makeText(this, "Bluetooth low energy not supported", Toast.LENGTH_LONG).show()
+//        }
+//        if (mScanning == false) {
+////            scanLeDevice(true)
+//        }
         // --------! ble 정보로 자동 끝 !---------
 
 //        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -272,6 +230,7 @@ class MainActivity : AppCompatActivity() {
             .registerReceiver(mUartStatusChangeReceiver, makeGattUpdateIntentFilter())
     }
     private val mServiceConnection: ServiceConnection = object : ServiceConnection {
+        @SuppressLint("MissingPermission")
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mService = (service as BluetoothLeService.LocalBinder).getService()
             Log.d(ContentValues.TAG, "onServiceConnection mService=" + mService)
@@ -279,13 +238,20 @@ class MainActivity : AppCompatActivity() {
             Log.v("mDevice", "현재 mDevice: ${mDevice?.address}")
             Log.v("mService", "현재 mService상태: $mService")
             Log.v("mBtAdapter", "현재 mBtAdapter상태: ${bt_device.mBtAdapter}, $mBtAdapter")
-            if (mDevice != null || mDevice != null) {
+            if (mDevice != null) {
                 mService!!.connect(mDevice!!.getAddress())
+            } else {
+                mBtAdapter!!.stopLeScan(mLeScanCallback)
+                mService!!.close()
+                mService!!.stopSelf()
+                mService = null
+                bt_device.init = false
+//                bt_device.mBtAdapter = null
+                mBtAdapter = null
+                Log.v("종료 및 초기화", "mBtAdapter: $mBtAdapter, mService: $mService")
             }
-            if (!mService!!.initialize()) {
-                Log.e(ContentValues.TAG, "Unable to initialize Bluetooth")
-//                finish()
-            }
+
+
         }
         override fun onServiceDisconnected(name: ComponentName) {
             mService = null

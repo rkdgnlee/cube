@@ -12,7 +12,7 @@ class ExerciseViewModel: ViewModel() {
     val favoriteItems = MutableLiveData(mutableListOf<FavoriteItemVO>()) // pickItem이 여러개 들어간 즐겨찾기 목록(데이터 전부 포함)
 
     val exerciseBasketUnits = MutableLiveData(mutableListOf<ExerciseVO>()) // 장바구니에 담기는 임시 운동 목록(tab 전환 시 값 보존 목적)
-    val exerciseUnits = MutableLiveData(mutableListOf<ExerciseVO>()) // 편집창에 담기는 운동 목록
+    val exerciseUnits = MutableLiveData(mutableListOf<ExerciseVO>()) // 편집창에 담기는 운동 목록h
     val allExercises = MutableLiveData<List<ExerciseVO>>() // 모든 운동 목록
     init {
         exerciseUnits.value = mutableListOf()

@@ -185,66 +185,66 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
     private fun initBottomSheetControls() {
         // init bottom sheet settings
 
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinPoseDetectionConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinPoseTrackingConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinPosePresenceConfidence
-            )
-
-        // When clicked, lower pose detection score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdMinus.setOnClickListener {
-            if (poseLandmarkerHelper.minPoseDetectionConfidence >= 0.2) {
-                poseLandmarkerHelper.minPoseDetectionConfidence -= 0.1f
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, raise pose detection score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdPlus.setOnClickListener {
-            if (poseLandmarkerHelper.minPoseDetectionConfidence <= 0.8) {
-                poseLandmarkerHelper.minPoseDetectionConfidence += 0.1f
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, lower pose tracking score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdMinus.setOnClickListener {
-            if (poseLandmarkerHelper.minPoseTrackingConfidence >= 0.2) {
-                poseLandmarkerHelper.minPoseTrackingConfidence -= 0.1f
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, raise pose tracking score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdPlus.setOnClickListener {
-            if (poseLandmarkerHelper.minPoseTrackingConfidence <= 0.8) {
-                poseLandmarkerHelper.minPoseTrackingConfidence += 0.1f
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, lower pose presence score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdMinus.setOnClickListener {
-            if (poseLandmarkerHelper.minPosePresenceConfidence >= 0.2) {
-                poseLandmarkerHelper.minPosePresenceConfidence -= 0.1f
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, raise pose presence score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdPlus.setOnClickListener {
-            if (poseLandmarkerHelper.minPosePresenceConfidence <= 0.8) {
-                poseLandmarkerHelper.minPosePresenceConfidence += 0.1f
-                updateControlsUi()
-            }
-        }
+//        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
+//            String.format(
+//                Locale.US, "%.2f", viewModel.currentMinPoseDetectionConfidence
+//            )
+//        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
+//            String.format(
+//                Locale.US, "%.2f", viewModel.currentMinPoseTrackingConfidence
+//            )
+//        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
+//            String.format(
+//                Locale.US, "%.2f", viewModel.currentMinPosePresenceConfidence
+//            )
+//
+//        // When clicked, lower pose detection score threshold floor
+//        fragmentCameraBinding.bottomSheetLayout.detectionThresholdMinus.setOnClickListener {
+//            if (poseLandmarkerHelper.minPoseDetectionConfidence >= 0.2) {
+//                poseLandmarkerHelper.minPoseDetectionConfidence -= 0.1f
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, raise pose detection score threshold floor
+//        fragmentCameraBinding.bottomSheetLayout.detectionThresholdPlus.setOnClickListener {
+//            if (poseLandmarkerHelper.minPoseDetectionConfidence <= 0.8) {
+//                poseLandmarkerHelper.minPoseDetectionConfidence += 0.1f
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, lower pose tracking score threshold floor
+//        fragmentCameraBinding.bottomSheetLayout.trackingThresholdMinus.setOnClickListener {
+//            if (poseLandmarkerHelper.minPoseTrackingConfidence >= 0.2) {
+//                poseLandmarkerHelper.minPoseTrackingConfidence -= 0.1f
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, raise pose tracking score threshold floor
+//        fragmentCameraBinding.bottomSheetLayout.trackingThresholdPlus.setOnClickListener {
+//            if (poseLandmarkerHelper.minPoseTrackingConfidence <= 0.8) {
+//                poseLandmarkerHelper.minPoseTrackingConfidence += 0.1f
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, lower pose presence score threshold floor
+//        fragmentCameraBinding.bottomSheetLayout.presenceThresholdMinus.setOnClickListener {
+//            if (poseLandmarkerHelper.minPosePresenceConfidence >= 0.2) {
+//                poseLandmarkerHelper.minPosePresenceConfidence -= 0.1f
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, raise pose presence score threshold floor
+//        fragmentCameraBinding.bottomSheetLayout.presenceThresholdPlus.setOnClickListener {
+//            if (poseLandmarkerHelper.minPosePresenceConfidence <= 0.8) {
+//                poseLandmarkerHelper.minPosePresenceConfidence += 0.1f
+//                updateControlsUi()
+//            }
+//        }
 
         // When clicked, change the underlying hardware used for inference.
         // Current options are CPU and GPU
@@ -299,24 +299,24 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
     // helper.
     private fun updateControlsUi() {
         if(this::poseLandmarkerHelper.isInitialized) {
-            fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
-                String.format(
-                    Locale.US,
-                    "%.2f",
-                    poseLandmarkerHelper.minPoseDetectionConfidence
-                )
-            fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
-                String.format(
-                    Locale.US,
-                    "%.2f",
-                    poseLandmarkerHelper.minPoseTrackingConfidence
-                )
-            fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
-                String.format(
-                    Locale.US,
-                    "%.2f",
-                    poseLandmarkerHelper.minPosePresenceConfidence
-                )
+//            fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
+//                String.format(
+//                    Locale.US,
+//                    "%.2f",
+//                    poseLandmarkerHelper.minPoseDetectionConfidence
+//                )
+//            fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
+//                String.format(
+//                    Locale.US,
+//                    "%.2f",
+//                    poseLandmarkerHelper.minPoseTrackingConfidence
+//                )
+//            fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
+//                String.format(
+//                    Locale.US,
+//                    "%.2f",
+//                    poseLandmarkerHelper.minPosePresenceConfidence
+//                )
 
             // GPU를 다시 초기화하는 대신 삭제해야 합니다.
             // 적용 가능한 경우 이를 사용하여 스레드에서 대리자를 초기화해야 합니다.

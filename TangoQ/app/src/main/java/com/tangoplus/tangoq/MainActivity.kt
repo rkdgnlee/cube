@@ -34,11 +34,26 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.setOnItemSelectedListener {
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
-                R.id.clSI -> setCurrentFragment(MainFragment())
-                R.id.exercise -> setCurrentFragment(ExerciseFragment())
-                R.id.measure -> setCurrentFragment(MeasureFragment())
-                R.id.favorite -> setCurrentFragment(FavoriteFragment())
-                R.id.profile -> setCurrentFragment(ProfileFragment())
+                R.id.clSI -> {
+                    setCurrentFragment(MainFragment())
+                    binding.tvCurrentPage.text = "메인"
+                }
+                R.id.exercise -> {
+                    setCurrentFragment(ExerciseFragment())
+                    binding.tvCurrentPage.text = "운동"
+                }
+                R.id.measure -> {
+                    setCurrentFragment(MeasureFragment())
+                    binding.tvCurrentPage.text = "측정"
+                }
+                R.id.favorite -> {
+                    setCurrentFragment(FavoriteFragment())
+                    binding.tvCurrentPage.text = ""
+                }
+                R.id.profile -> {
+                    setCurrentFragment(ProfileFragment())
+                    binding.tvCurrentPage.text = "내정보"
+                }
             }
             true
         }

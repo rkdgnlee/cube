@@ -10,7 +10,11 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.Callback.ItemTouchCallback
+import com.tangoplus.tangoq.Dialog.LoginDialogFragment
+import com.tangoplus.tangoq.Fragment.ExerciseFragment
+import com.tangoplus.tangoq.Fragment.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.Listener.BasketItemTouchListener
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseVO
 import com.tangoplus.tangoq.databinding.RvBasketItemBinding
@@ -44,6 +48,8 @@ class ExerciseRVAdapter (
         val tvMIntensity = view.findViewById<TextView>(R.id.tvMIntensity)
         val tvMCount = view.findViewById<TextView>(R.id.tvMCount)
         val ibtnMMore = view.findViewById<ImageButton>(R.id.ibtnMMore)
+
+        val clMItem = view.findViewById<ConstraintLayout>(R.id.clMItem)
     }
 
     // -----! favorite edit !-----
@@ -123,6 +129,12 @@ class ExerciseRVAdapter (
                 val params2 = holder.tvMTime.layoutParams as ConstraintLayout.LayoutParams
                 params2.verticalBias = 0.5f
                 holder.tvMTime.layoutParams = params2
+
+                holder.clMItem.setOnClickListener {
+                    val dialog = PlayThumbnailDialogFragment()
+                    val activity = holder.itemView.context as MainActivity
+                    dialog.show(activity.supportFragmentManager, "LoginDialogFragment")
+                }
             }
 
             is editViewHolder -> {

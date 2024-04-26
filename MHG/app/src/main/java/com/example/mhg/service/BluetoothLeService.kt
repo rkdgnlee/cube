@@ -164,7 +164,7 @@ class BluetoothLeService : Service() {
             Log.w("connect오류", "BluetoothAdapter not initialized or unspecified address")
             return false
         }
-        Log.d("connect오류", "connect to $address")
+        Log.d("connect성공", "connect to $address")
         if (mBluetoothDeviceAddress != null && address == mBluetoothDeviceAddress && mBluetoothGatt != null) {
             Log.d("connect오류", "Trying to use an existing mBluetoothGatt for connection")
             return if (mBluetoothGatt!!.connect()) {
@@ -288,72 +288,75 @@ class BluetoothLeService : Service() {
         val CCCD = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
         val FIRMWARE_REVISON_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb")
         val DIS_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb")
-        val RX_SERVICE_UUID = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
+//        val RX_SERVICE_UUID = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
+//        //0000fff1 = Android --> BLE UUID Write
+//        val RX_CHAR_UUID = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
+//        //0000fff4 = BLE --> Android Notification
+//        val TX_CHAR_UUID = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb")
 
-        //0000fff1 = Android --> BLE UUID Write
-        val RX_CHAR_UUID = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
-
-        //0000fff4 = BLE --> Android Notification
-        val TX_CHAR_UUID = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb")
+        // -------------------! hercules ble 장치 UUID !-------------------
+        val RX_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+        val RX_CHAR_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+        val TX_CHAR_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     }
 
 
     // -----------------------------------! foreground 시도 !----------------------------------------
-    private var iconNotification: Bitmap? = null
-    private var notification: Notification? = null
-    var mNotificationManager: NotificationManager? = null
-    private val mNotificationId = 123
-    @SuppressLint("ForegroundServiceType")
-    private fun generateForegroundNotification() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val intentMainLanding = Intent(this, MainActivity::class.java)
-            val pendingIntent =
-                PendingIntent.getActivity(this, 0, intentMainLanding, PendingIntent.FLAG_IMMUTABLE)
-            iconNotification = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
-            if (mNotificationManager == null) {
-                mNotificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                assert(mNotificationManager != null)
-                mNotificationManager?.createNotificationChannelGroup(
-                    NotificationChannelGroup("chats_group", "Chats")
-                )
-                val notificationChannel =
-                    NotificationChannel("service_channel", "Service Notifications",
-                        NotificationManager.IMPORTANCE_MIN)
-                notificationChannel.enableLights(false)
-                notificationChannel.lockscreenVisibility = Notification.VISIBILITY_SECRET
-                mNotificationManager?.createNotificationChannel(notificationChannel)
-            }
-            val builder = NotificationCompat.Builder(this, "service_channel")
-
-            builder.setContentTitle(StringBuilder(resources.getString(R.string.app_name)).append(" service is running").toString())
-                .setTicker(StringBuilder(resources.getString(R.string.app_name)).append("service is running").toString())
-                .setContentText("Touch to open") //                    , swipe down for more options.
-                .setSmallIcon(R.drawable.logo)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setWhen(0)
-                .setOnlyAlertOnce(true)
-                .setContentIntent(pendingIntent)
-                .setOngoing(true)
-            if (iconNotification != null) {
-                builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification!!, 128, 128, false))
-            }
-            builder.color = resources.getColor(R.color.grey300)
-            notification = builder.build()
-            startForeground(mNotificationId, notification)
-        }
-
-    }
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action != null && intent.action.equals(
-            ACTION_STOP, ignoreCase = true)) {
-            stopSelf()
-        }
-
-        return super.onStartCommand(intent, flags, startId)
-
-    }
+//    private var iconNotification: Bitmap? = null
+//    private var notification: Notification? = null
+//    var mNotificationManager: NotificationManager? = null
+//    private val mNotificationId = 123
+//    @SuppressLint("ForegroundServiceType")
+//    private fun generateForegroundNotification() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val intentMainLanding = Intent(this, MainActivity::class.java)
+//            val pendingIntent =
+//                PendingIntent.getActivity(this, 0, intentMainLanding, PendingIntent.FLAG_IMMUTABLE)
+//            iconNotification = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
+//            if (mNotificationManager == null) {
+//                mNotificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                assert(mNotificationManager != null)
+//                mNotificationManager?.createNotificationChannelGroup(
+//                    NotificationChannelGroup("chats_group", "Chats")
+//                )
+//                val notificationChannel =
+//                    NotificationChannel("service_channel", "Service Notifications",
+//                        NotificationManager.IMPORTANCE_MIN)
+//                notificationChannel.enableLights(false)
+//                notificationChannel.lockscreenVisibility = Notification.VISIBILITY_SECRET
+//                mNotificationManager?.createNotificationChannel(notificationChannel)
+//            }
+//            val builder = NotificationCompat.Builder(this, "service_channel")
+//
+//            builder.setContentTitle(StringBuilder(resources.getString(R.string.app_name)).append(" service is running").toString())
+//                .setTicker(StringBuilder(resources.getString(R.string.app_name)).append("service is running").toString())
+//                .setContentText("Touch to open") //                    , swipe down for more options.
+//                .setSmallIcon(R.drawable.logo)
+//                .setPriority(NotificationCompat.PRIORITY_LOW)
+//                .setWhen(0)
+//                .setOnlyAlertOnce(true)
+//                .setContentIntent(pendingIntent)
+//                .setOngoing(true)
+//            if (iconNotification != null) {
+//                builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification!!, 128, 128, false))
+//            }
+//            builder.color = resources.getColor(R.color.grey300)
+//            notification = builder.build()
+//            startForeground(mNotificationId, notification)
+//        }
+//
+//    }
+//    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+//        if (intent?.action != null && intent.action.equals(
+//            ACTION_STOP, ignoreCase = true)) {
+//            stopSelf()
+//        }
+//
+//        return super.onStartCommand(intent, flags, startId)
+//
+//    }
 }
 
 

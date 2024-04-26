@@ -89,7 +89,6 @@ class ReportSkeletonFragment : Fragment() {
 //                }
 
 
-
             // -----! 날짜 선택 후 서버 응답 후 처리 끝 !-----
         }, year, month, day)
 

@@ -57,16 +57,7 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <data
-                    android:host="oauth"
-                    android:scheme="kakao3c8dea37a829ed6e67206ebe183a47bd" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".AlarmActivity"
@@ -86,7 +77,16 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <data
+                    android:host="oauth"
+                    android:scheme="kakao3c8dea37a829ed6e67206ebe183a47bd" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".IntroActivity"

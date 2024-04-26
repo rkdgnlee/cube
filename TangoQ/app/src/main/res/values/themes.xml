@@ -4,7 +4,8 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:colorPrimary">@color/mainColor</item>
-        <item name="android:statusBarColor">@color/subColor100</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:colorBackground">@color/subColor100</item>
         <item name="colorAccent">@color/mainColor</item>
         <item name="android:windowBackground">@color/subColor100</item>
