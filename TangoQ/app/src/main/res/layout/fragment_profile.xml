@@ -17,40 +17,14 @@
             android:layout_height="wrap_content"
             android:background="@color/white">
 
-            <ImageView
-                android:id="@+id/imageView4"
-                android:layout_width="64dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="20dp"
-
-                android:layout_marginTop="24dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/app_logo" />
-
-            <TextView
-                android:id="@+id/textView30"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="88dp"
-                android:layout_marginTop="24dp"
-                android:text="내정보"
-                android:textColor="@color/black"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/civPf"
                 android:layout_width="76dp"
                 android:layout_height="76dp"
-                android:layout_marginTop="48dp"
                 android:src="@drawable/profile_default"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView30" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvPfName"
@@ -93,6 +67,7 @@
                 android:id="@+id/cardView3"
                 android:layout_width="96dp"
                 android:layout_height="80dp"
+                app:cardBackgroundColor="@color/white"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toStartOf="@+id/cardView4"
                 app:layout_constraintStart_toStartOf="parent"
@@ -144,6 +119,7 @@
                 android:layout_width="96dp"
                 android:layout_height="80dp"
                 android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/white"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -193,6 +169,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="96dp"
                 android:layout_height="80dp"
+                app:cardBackgroundColor="@color/white"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/cardView4"

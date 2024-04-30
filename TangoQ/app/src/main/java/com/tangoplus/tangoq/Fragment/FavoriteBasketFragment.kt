@@ -147,13 +147,14 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
 
     }
     private fun linkAdapter(list : MutableList<ExerciseVO>) {
-        adapter = ExerciseRVAdapter(list,"basket")
-        adapter.exerciseList = list
+        adapter = ExerciseRVAdapter(this@FavoriteBasketFragment,list,"basket")
+
         adapter.basketListener = this@FavoriteBasketFragment
-        val linearLayoutManager2 =
+        binding.rvFB.adapter = adapter
+        val linearLayoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.rvPB.layoutManager = linearLayoutManager2
-        binding.rvPB.adapter = adapter
+        binding.rvFB.layoutManager = linearLayoutManager
+
     }
 
 

@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -14,6 +15,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -85,6 +87,17 @@ class SplashActivity : AppCompatActivity() {
 
         val t_userData = Singleton_t_user.getInstance(this)
 
+        // -----! 다크모드 및 설정 불러오기 시작 !-----
+        val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
+        val darkMode = sharedPref.getBoolean("darkMode", false)
+
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (darkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+        // -----! 다크모드 및 설정 불러오기 끝 !-----
+
         // ----- API 초기화 시작 -----
         NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "TangoQ")
         KakaoSdk.init(this, getString(R.string.kakao_client_id))
@@ -122,7 +135,6 @@ class SplashActivity : AppCompatActivity() {
                             // -----! 전화번호 변환 !-----
                             val encodedNaverMobile = URLEncoder.encode(naverMobile, "UTF-8")
                             if (naverMobile != null) {
-
                                 fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedNaverMobile, false) { jsonObject ->
                                     if (jsonObject != null) {
                                         NetworkUserService.StoreUserInSingleton(this@SplashActivity, jsonObject)

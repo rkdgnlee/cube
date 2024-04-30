@@ -1,20 +1,21 @@
 package com.tangoplus.tangoq.Adapter
 
+import android.annotation.SuppressLint
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.Callback.ItemTouchCallback
-import com.tangoplus.tangoq.Dialog.LoginDialogFragment
-import com.tangoplus.tangoq.Fragment.ExerciseFragment
-import com.tangoplus.tangoq.Fragment.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.Dialog.FavoriteBSDialogFragment
 import com.tangoplus.tangoq.Listener.BasketItemTouchListener
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseVO
 import com.tangoplus.tangoq.databinding.RvBasketItemBinding
@@ -25,7 +26,7 @@ import java.util.Collections
 
 
 @Suppress("UNREACHABLE_CODE")
-class ExerciseRVAdapter (
+class ExerciseRVAdapter (private val fragment: Fragment,
     var exerciseList: MutableList<ExerciseVO>,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
@@ -59,13 +60,13 @@ class ExerciseRVAdapter (
         val tvEditTime = view.findViewById<TextView>(R.id.tvEditTime)
         val tvEditIntensity = view.findViewById<TextView>(R.id.tvEditIntensity)
         val tvEditCount = view.findViewById<TextView>(R.id.tvEditCount)
-        val ivEditDrag = view.findViewById<ImageButton>(R.id.ivEditDrag)
+        val ivEditDrag = view.findViewById<ImageView>(R.id.ivEditDrag)
     }
     // -----! favorite basket !-----
     inner class basketViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvBkName = view.findViewById<TextView>(R.id.tvBkName)
         val tvBkSymptom = view.findViewById<TextView>(R.id.tvBkSymptom)
-        val tvBkTime = view.findViewById<TextView>(R.id.tvEditTime)
+        val tvBkTime = view.findViewById<TextView>(R.id.tvBkTime)
         val tvBkIntensity = view.findViewById<TextView>(R.id.tvBkTime)
         val ibtnBkPlus = view.findViewById<ImageButton>(R.id.ibtnBkPlus)
         val ibtnBkMinus = view.findViewById<ImageButton>(R.id.ibtnBkMinus)
@@ -73,7 +74,6 @@ class ExerciseRVAdapter (
     }
 
     override fun getItemViewType(position: Int): Int {
-        return super.getItemViewType(position)
         return when (xmlname) {
             "main" -> 0
             "edit" -> 1
@@ -105,6 +105,7 @@ class ExerciseRVAdapter (
         return exerciseList.size
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = exerciseList[position]
         val second = currentItem.videoTime?.toInt()?.div(60)
@@ -130,11 +131,20 @@ class ExerciseRVAdapter (
                 params2.verticalBias = 0.5f
                 holder.tvMTime.layoutParams = params2
 
-                holder.clMItem.setOnClickListener {
-                    val dialog = PlayThumbnailDialogFragment()
-                    val activity = holder.itemView.context as MainActivity
-                    dialog.show(activity.supportFragmentManager, "LoginDialogFragment")
+//                holder.clMItem.setOnClickListener {
+//                    val dialog = PlayThumbnailDialogFragment()
+//                    val activity = holder.itemView.context as MainActivity
+//                    dialog.show(activity.supportFragmentManager, "LoginDialogFragment")
+//                }
+                holder.ibtnMMore.setOnClickListener {
+                    val bsFragment = FavoriteBSDialogFragment()
+                    val bundle = Bundle()
+                    bundle.putParcelable("ExerciseUnit", currentItem)
+                    bsFragment.arguments = bundle
+                    val fragmentManager = fragment.requireActivity().supportFragmentManager
+                    bsFragment.show(fragmentManager, bsFragment.tag)
                 }
+
             }
 
             is editViewHolder -> {
@@ -144,11 +154,18 @@ class ExerciseRVAdapter (
 //                holder.tvPickAddJoint.text = currentItem.relatedJoint.toString()
                 holder.tvEditName.text = currentItem.exerciseName
                 holder.tvEditTime.text = second.toString()
+                holder.ivEditDrag.setOnTouchListener { view, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        addListener.onStartDrag(holder)
+                    }
+                    return@setOnTouchListener false
 
+                }
 //            holder.btnPickAddDelete.setOnClickListener {
 //                verticalList.removeAt(holder.position)
 //                notifyItemRemoved(holder.position)
 //            }
+
             }
             is basketViewHolder -> {
                 holder.tvBkSymptom.text = (if (currentItem.relatedSymptom.toString().length >= 25) {

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Dialog.MeasurePainPartDialogFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <ImageButton
+            android:id="@+id/btnPpBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/white"
+            android:src="@drawable/icon_arrow_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="통증부위 선택"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/btnPpBack"
+            app:layout_constraintStart_toEndOf="@+id/btnPpBack"
+            app:layout_constraintTop_toTopOf="@+id/btnPpBack" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            app:dividerColor="@color/subColor250"
+            app:layout_constraintBottom_toTopOf="@+id/rvPp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintBottom_toTopOf="@+id/btnPpSet"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView30"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <Button
+            android:id="@+id/btnPpSet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/mainColor"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:text="적용하기"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

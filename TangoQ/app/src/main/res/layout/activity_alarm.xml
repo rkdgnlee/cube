@@ -5,17 +5,49 @@
     android:id="@+id/clSI"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".AlarmActivity">
 
-    <FrameLayout
-        android:id="@+id/flMain"
-        android:layout_width="409dp"
-        android:layout_height="912dp"
+    <ImageButton
+        android:id="@+id/imgbtnbckAlarm"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_arrow_left" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="알림"
+        android:textColor="@color/black"
+        android:textSize="21sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgbtnbckAlarm"
+        app:layout_constraintStart_toEndOf="@+id/imgbtnbckAlarm"
+        app:layout_constraintTop_toTopOf="@+id/imgbtnbckAlarm" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/materialDivider5"
+        android:layout_width="wrap_content"
+        android:layout_height="4dp"
+        android:layout_marginTop="20dp"
+        app:dividerColor="@color/subColor300"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
-    </FrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAlarm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialDivider5" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

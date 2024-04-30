@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    app:layout_behavior="@string/bottom_sheet_behavior"
+    tools:context=".Dialog.AgreementBottomSheetDialogFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_bottomsheet">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView14"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <CheckBox
+                android:id="@+id/cbAgreementAll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center|left"
+                android:padding="16dp"
+                android:text="모든 약관에 동의"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:theme="@style/Theme.App.Checkbox" />
+
+        </androidx.cardview.widget.CardView>
+
+        <CheckBox
+            android:id="@+id/cbAgreement1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="32dp"
+            android:gravity="center|left"
+            android:padding="12dp"
+            android:text="[필수] 서비스 약관 동의"
+            android:textColor="@color/subColor800"
+            android:textSize="18sp"
+            android:theme="@style/Theme.App.Checkbox"
+            app:layout_constraintEnd_toEndOf="@+id/cardView14"
+            app:layout_constraintStart_toStartOf="@+id/cardView14"
+            app:layout_constraintTop_toBottomOf="@+id/cardView14" />
+
+        <ImageButton
+            android:id="@+id/ibtnAgreement1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="right"
+            android:background="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_arrow_right_agreement"
+            app:layout_constraintBottom_toBottomOf="@+id/cbAgreement1"
+            app:layout_constraintStart_toEndOf="@+id/cbAgreement1"
+            app:layout_constraintTop_toTopOf="@+id/cbAgreement1" />
+
+        <ImageButton
+            android:id="@+id/ibtnAgreement2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="right"
+            android:background="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_arrow_right_agreement"
+            app:layout_constraintBottom_toBottomOf="@+id/cbAgreement2"
+            app:layout_constraintStart_toEndOf="@+id/cbAgreement2"
+            app:layout_constraintTop_toBottomOf="@+id/cbAgreement1" />
+
+        <CheckBox
+            android:id="@+id/cbAgreement2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:padding="12dp"
+            android:text="[필수] 개인정보 수집 · 이용 동의"
+            android:textColor="@color/subColor800"
+            android:textSize="18sp"
+            android:theme="@style/Theme.App.Checkbox"
+            app:layout_constraintEnd_toEndOf="@+id/cbAgreement1"
+            app:layout_constraintStart_toStartOf="@+id/cbAgreement1"
+            app:layout_constraintTop_toBottomOf="@+id/cbAgreement1" />
+
+        <CheckBox
+            android:id="@+id/cbAgreement4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center|left"
+            android:padding="12dp"
+            android:text="[선택] 마케팅 정보 수신 동의"
+            android:textColor="@color/subColor800"
+            android:textSize="18sp"
+            android:theme="@style/Theme.App.Checkbox"
+            app:layout_constraintStart_toStartOf="@+id/cbAgreement2"
+            app:layout_constraintTop_toBottomOf="@+id/cbAgreement2" />
+
+        <Button
+            android:id="@+id/btnAgreementFinish"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/subColor500"
+            android:enabled="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="16dp"
+            android:text="확인"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cbAgreement4" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

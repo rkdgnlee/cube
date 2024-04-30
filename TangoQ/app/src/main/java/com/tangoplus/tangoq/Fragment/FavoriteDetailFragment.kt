@@ -196,7 +196,7 @@ class FavoriteDetailFragment : Fragment() {
 
             Log.w("detail>currentItem", "$currentItem")
             binding.tvFDExplain.text = currentItem.favoriteExplain.toString()
-            val RvAdapter = ExerciseRVAdapter(currentItem.exercises!!, "main")
+            val RvAdapter = ExerciseRVAdapter(this@FavoriteDetailFragment, currentItem.exercises!!, "main")
             RvAdapter.exerciseList = currentItem.exercises!!
             val linearLayoutManager2 =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

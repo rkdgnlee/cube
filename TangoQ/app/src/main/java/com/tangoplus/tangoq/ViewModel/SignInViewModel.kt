@@ -18,4 +18,10 @@ class SignInViewModel: ViewModel() {
     val pwCompare = MutableLiveData(false)
     val emailCondition = MutableLiveData(false)
     val mobileAuthCondition = MutableLiveData(false)
+
+
+    // 로그인
+    val idPwCondition = MutableLiveData(false)
+    var id = ""
+    var pw = ""
 }

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -22,15 +23,12 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MainFragment())
+                binding.tvCurrentPage.text = "메인"
                 commit()
             }
         }
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
-
-
-
-
         binding.bnbMain.setOnItemSelectedListener {
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
@@ -66,6 +64,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.favorite -> {}
                 R.id.profile -> {}
             }
+        }
+
+        binding.ibtnAlarm.setOnClickListener {
+            val intent = Intent(this@MainActivity, AlarmActivity::class.java)
+            startActivity(intent)
         }
     }
     fun setCurrentFragment(fragment: Fragment) =

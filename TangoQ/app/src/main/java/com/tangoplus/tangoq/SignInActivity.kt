@@ -7,7 +7,6 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -34,11 +33,11 @@ import com.google.firebase.auth.auth
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.Adapter.SpinnerAdapter
 import com.tangoplus.tangoq.Dialog.AgreementBottomSheetDialogFragment
-import com.tangoplus.tangoq.Dialog.SignInBottomSheetDialogFragment
+import com.tangoplus.tangoq.Dialog.SignInBSDialogFragment
 import com.tangoplus.tangoq.Listener.OnSingleClickListener
 import com.tangoplus.tangoq.Object.NetworkUserService
 import com.tangoplus.tangoq.Object.NetworkUserService.fetchUserINSERTJson
-import com.tangoplus.tangoq.Object.NetworkUserService.fetchUserSELECTJson
+import com.tangoplus.tangoq.Object.NetworkUserService.getUserSELECTJson
 import com.tangoplus.tangoq.Object.Singleton_t_user
 import com.tangoplus.tangoq.ViewModel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
@@ -413,8 +412,8 @@ class SignInActivity : AppCompatActivity() {
         return phoneEdit
     }
     private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
-        val bottomsheetfragment = SignInBottomSheetDialogFragment()
-        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBottomSheetDialogFragment.onTelecomSelectedListener {
+        val bottomsheetfragment = SignInBSDialogFragment()
+        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.onTelecomSelectedListener {
             override fun onTelecomSelected(telecom: String) {
                 binding.tvTelecom.text = telecom
             }
@@ -422,10 +421,7 @@ class SignInActivity : AppCompatActivity() {
         val fragmentManager = context.supportFragmentManager
         bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
     }
-    override fun onResume() {
-        super.onResume()
-        binding.nsvSI.isNestedScrollingEnabled = false
-    }
+
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
         val bottomSheetFragment = AgreementBottomSheetDialogFragment()
         bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.onAgreeListener {
@@ -445,20 +441,19 @@ class SignInActivity : AppCompatActivity() {
 
                 }
                 val JsonObj = viewModel.User.value
-                fetchUserSELECTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), viewModel.User.value?.optString("user_mobile").toString()) { jsonObj ->
+                getUserSELECTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), viewModel.User.value?.optString("user_mobile").toString()) { jsonObj ->
                     if (jsonObj?.getInt("status") == 404) {
                         fetchUserINSERTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                             if (JsonObj != null) {
                                 NetworkUserService.StoreUserInSingleton(this@SignInActivity, JsonObj)
                                 Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
-                                MainInit()
+                                setupInit()
                             }
                         } // 기존에 정보가 있을 경우
                     } else {
                         viewModel.User.value = null
-                        val intent = Intent(this@SignInActivity, IntroActivity::class.java)
-                        startActivity(intent)
-                        finishAffinity()
+
+                        MainInit()
                     }
                 }
             }
@@ -472,9 +467,19 @@ class SignInActivity : AppCompatActivity() {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
     }
+
     private fun MainInit() {
         val intent = Intent(this ,MainActivity::class.java)
         startActivity(intent)
         finishAffinity()
+    }
+    private fun setupInit() {
+        val intent = Intent(this, SetupActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+    override fun onResume() {
+        super.onResume()
+        binding.nsvSI.isNestedScrollingEnabled = false
     }
 }

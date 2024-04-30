@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +27,9 @@ import com.tangoplus.tangoq.Object.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.RoutingVO
 import com.tangoplus.tangoq.databinding.FragmentProfileBinding
-
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 
 class ProfileFragment : Fragment() {
@@ -45,9 +48,13 @@ class ProfileFragment : Fragment() {
 
         // -----! profile의 나이, 몸무게, 키  설정 코드 시작 !-----
         val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val user_name = t_userdata.jsonObject?.optString("user_name")
-        binding.tvPfName.text = user_name
-
+        val userJson= t_userdata.jsonObject?.getJSONObject("data")
+        Log.v("Singleton>Profile", "${userJson}")
+        binding.tvPfName.text = userJson?.optString("user_name")
+        binding.tvPfHeight.text = userJson?.optString("user_height")
+        binding.tvPfWeight.text = userJson?.optString("user_weight")
+        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+        binding.tvPfAge.text = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
         // ----- 이미지 로드 시작 -----
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
         val imageUri = sharedPreferences.getString("imageUri", null)
@@ -71,7 +78,6 @@ class ProfileFragment : Fragment() {
         binding.rvPf.adapter = adapter
         binding.rvPf.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
         binding.ibtnPfEdit.setOnClickListener {
             when {
                 ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {

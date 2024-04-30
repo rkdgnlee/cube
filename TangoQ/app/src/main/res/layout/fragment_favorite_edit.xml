@@ -6,146 +6,154 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.FavoriteEditFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ImageButton
-            android:id="@+id/ibtnFEBack"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
-            android:background="@color/subColor100"
-            android:scaleType="centerCrop"
-            android:src="@drawable/icon_arrow_left"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <!--        <ImageButton-->
-        <!--            android:id="@+id/ibtnFEMore"-->
-        <!--            android:layout_width="36dp"-->
-        <!--            android:layout_height="36dp"-->
-        <!--            android:layout_marginTop="16dp"-->
-        <!--            android:layout_marginEnd="20dp"-->
-        <!--            android:background="@color/subColor100"-->
-        <!--            android:scaleType="centerCrop"-->
-        <!--            android:src="@drawable/icon_more"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent" />-->
+            android:background="@color/subColor100">
 
-        <EditText
-            android:id="@+id/etFEName"
-            android:layout_width="156dp"
-            android:layout_height="wrap_content"
-            android:background="@color/subColor100"
-            android:gravity="center"
-            android:maxLength="15"
-            android:padding="12dp"
-            android:text="어깨 루틴"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ibtnFEBack" />
-
-        <EditText
-            android:id="@+id/etFEExplain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:backgroundTint="@color/subColor100"
-            android:ems="10"
-            android:gravity="center"
-            android:inputType="text"
-            android:maxLength="25"
-            android:text="설명설명설명"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFEName" />
-
-        <ImageView
-            android:id="@+id/imageView15"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_edit"
-            app:layout_constraintBottom_toBottomOf="@+id/etFEName"
-            app:layout_constraintStart_toEndOf="@+id/etFEName"
-            app:layout_constraintTop_toTopOf="@+id/etFEName" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_edit"
-            app:layout_constraintBottom_toBottomOf="@+id/etFEExplain"
-            app:layout_constraintStart_toEndOf="@+id/etFEExplain"
-            app:layout_constraintTop_toTopOf="@+id/etFEExplain" />
-
-        <Button
-            android:id="@+id/btnFEGoBakset"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="20dp"
-            android:backgroundTint="@color/mainColor"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="운동 추가하기"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFEExplain" />
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nsvFE"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fillViewport="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnFEGoBakset"
-            app:layout_constraintVertical_bias="0.0">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
+            <ImageButton
+                android:id="@+id/ibtnFEBack"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/white">
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/subColor100"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--        <ImageButton-->
+            <!--            android:id="@+id/ibtnFEMore"-->
+            <!--            android:layout_width="36dp"-->
+            <!--            android:layout_height="36dp"-->
+            <!--            android:layout_marginTop="16dp"-->
+            <!--            android:layout_marginEnd="20dp"-->
+            <!--            android:background="@color/subColor100"-->
+            <!--            android:scaleType="centerCrop"-->
+            <!--            android:src="@drawable/icon_more"-->
+            <!--            app:layout_constraintEnd_toEndOf="parent"-->
+            <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFE"
-                    android:layout_width="0dp"
+            <EditText
+                android:id="@+id/etFEName"
+                android:layout_width="156dp"
+                android:layout_height="wrap_content"
+                android:background="@color/subColor100"
+                android:gravity="center"
+                android:maxLength="15"
+                android:padding="12dp"
+                android:text="어깨 루틴"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ibtnFEBack" />
+
+            <EditText
+                android:id="@+id/etFEExplain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:backgroundTint="@color/subColor100"
+                android:ems="10"
+                android:gravity="center"
+                android:inputType="text"
+                android:maxLength="25"
+                android:text="설명설명설명"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etFEName" />
+
+            <ImageView
+                android:id="@+id/imageView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etFEName"
+                app:layout_constraintStart_toEndOf="@+id/etFEName"
+                app:layout_constraintTop_toTopOf="@+id/etFEName" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/etFEExplain"
+                app:layout_constraintStart_toEndOf="@+id/etFEExplain"
+                app:layout_constraintTop_toTopOf="@+id/etFEExplain" />
+
+            <Button
+                android:id="@+id/btnFEGoBakset"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="@color/mainColor"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="운동 추가하기"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:cornerRadius="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etFEExplain" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsvFE"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnFEGoBakset"
+                app:layout_constraintVertical_bias="0.0">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:background="@color/white">
 
-                <Button
-                    android:id="@+id/btnFEFinish"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="16dp"
-                    android:backgroundTint="@color/mainColor"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="즐겨찾기 만들기"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    app:cornerRadius="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rvFE" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.core.widget.NestedScrollView>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvFE"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/btnFEFinish"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="16dp"
+                        android:backgroundTint="@color/mainColor"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="즐겨찾기 만들기"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        app:cornerRadius="12dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/rvFE" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.core.widget.NestedScrollView>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
 </FrameLayout>

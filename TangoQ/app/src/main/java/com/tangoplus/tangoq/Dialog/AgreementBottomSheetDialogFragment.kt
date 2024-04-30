@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.databinding.FragmentAgreementBottomSheetDialogBinding
+import com.tangoplus.tangoq.databinding.FragmentAgreementBSDialogBinding
 
 class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
-    lateinit var binding: FragmentAgreementBottomSheetDialogBinding
+    lateinit var binding: FragmentAgreementBSDialogBinding
     interface onAgreeListener {
         fun onFinish()
     }
@@ -21,7 +21,7 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAgreementBottomSheetDialogBinding.inflate(inflater)
+        binding = FragmentAgreementBSDialogBinding.inflate(inflater)
 
         return binding.root
     }

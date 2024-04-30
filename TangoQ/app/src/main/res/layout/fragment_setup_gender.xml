@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.SetupGenderFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clSuGender"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="180dp"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView12"
+            app:layout_constraintVertical_bias="0.2">
+
+            <RadioButton
+                android:id="@+id/rbtnSquareMale"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_marginRight="18dp"
+                android:layout_weight="1"
+                android:background="@drawable/drawable_setup_gender_male"
+                android:button="@null"
+                android:foregroundGravity="center"
+                android:gravity="center"
+                android:textSize="10sp" />
+
+            <RadioButton
+                android:id="@+id/rbtnSquareFemale"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_marginLeft="18dp"
+                android:layout_weight="1"
+                android:background="@drawable/drawable_setup_gender_female"
+                android:button="@null"
+                android:elevation="8dp"
+                android:gravity="center"
+                android:textSize="10sp" />
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/radioGroup2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/rbtnMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="48dp"
+                android:drawablePadding="12dp"
+                android:elevation="10dp"
+                android:padding="12dp"
+                android:text="남성"
+                android:textSize="16sp"
+                android:theme="@style/Theme.App.RadioButton" />
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/rbtnFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="48dp"
+                android:drawablePadding="12dp"
+                android:elevation="10dp"
+                android:padding="12dp"
+                android:text="여성"
+                android:textSize="16dp"
+                android:theme="@style/Theme.App.RadioButton" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="성별을 선택해주세요"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

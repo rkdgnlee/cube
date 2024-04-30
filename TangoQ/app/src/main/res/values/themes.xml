@@ -28,5 +28,7 @@
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
     </style>
 
-    <style name="Theme.TangoQ" parent="Base.Theme.TangoQ" />
+    <style name="Theme.TangoQ" parent="Base.Theme.TangoQ">
+        <item name="android:fontFamily">@font/font_style</item>
+    </style>
 </resources>

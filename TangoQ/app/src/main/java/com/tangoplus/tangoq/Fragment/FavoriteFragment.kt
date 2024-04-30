@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.Fragment
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.Adapter.FavoriteRVAdapter
-import com.tangoplus.tangoq.Interface.onFavoriteDetailClickListener
+import com.tangoplus.tangoq.Listener.onFavoriteDetailClickListener
 import com.tangoplus.tangoq.Object.NetworkExerciseService.fetchFavoriteItemsJsonByMobile
 import com.tangoplus.tangoq.Object.Singleton_t_user
 import com.tangoplus.tangoq.R
@@ -19,7 +20,6 @@ import com.tangoplus.tangoq.ViewModel.ExerciseViewModel
 import com.tangoplus.tangoq.ViewModel.FavoriteItemVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBinding
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
 
 
 class FavoriteFragment : Fragment(), onFavoriteDetailClickListener {
@@ -34,16 +34,20 @@ class FavoriteFragment : Fragment(), onFavoriteDetailClickListener {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         // -----! singleton에서 전화번호 가져오기 시작 !-----
-        val t_userData = Singleton_t_user.getInstance(requireContext())
-        val user_mobile = t_userData.jsonObject?.optJSONObject("data")?.optString("user_mobile")
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
+        val user_mobile = t_userData?.optString("user_mobile")
+
+        binding.tvFrTitle.text = "${t_userData?.optString("user_name")} 님의\n플레이리스트 목록"
 //        val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
         lifecycleScope.launch {
 
             // -----! 핸드폰 번호로 PickItems 가져오기 시작 !-----
-            val pickList = fetchFavoriteItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), "+8210-4157-9173") // user_mobile 넣기
+            val pickList = fetchFavoriteItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), user_mobile.toString()) // user_mobile 넣기
 
             // -----! appClass list관리 시작 !-----
             if (pickList != null) {

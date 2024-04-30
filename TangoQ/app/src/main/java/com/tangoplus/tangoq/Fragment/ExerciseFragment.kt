@@ -60,7 +60,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
             try { // ------! rv vertical 시작 !------
                 verticalDataList = responseArrayList.toMutableList()
-                val adapter = ExerciseRVAdapter(verticalDataList, "main")
+                val adapter = ExerciseRVAdapter(this@ExerciseFragment, verticalDataList, "main")
                 adapter.exerciseList = verticalDataList
                 binding.rvEcAll.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -114,7 +114,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         val filterList = verticalDataList.filter { item ->
             item.exerciseName!!.contains(category)
         }.toMutableList()
-        val adapter = ExerciseRVAdapter(filterList, "main")
+        val adapter = ExerciseRVAdapter(this@ExerciseFragment, filterList, "main")
         binding.rvEcAll.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvEcAll.layoutManager = linearLayoutManager

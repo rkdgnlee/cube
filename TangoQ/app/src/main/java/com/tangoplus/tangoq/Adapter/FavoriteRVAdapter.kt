@@ -3,11 +3,10 @@ package com.tangoplus.tangoq.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.tangoplus.tangoq.Interface.onFavoriteDetailClickListener
+import com.tangoplus.tangoq.Listener.onFavoriteDetailClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvFvItemBinding
 

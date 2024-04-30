@@ -38,8 +38,8 @@ import com.tangoplus.tangoq.Listener.OnSingleClickListener
 import com.tangoplus.tangoq.Object.CommonDefines.TAG
 import com.tangoplus.tangoq.Object.NetworkUserService.StoreUserInSingleton
 import com.tangoplus.tangoq.Object.NetworkUserService.fetchUserINSERTJson
-import com.tangoplus.tangoq.Object.NetworkUserService.fetchUserSELECTJson
 import com.tangoplus.tangoq.Object.NetworkUserService.fetchUserUPDATEJson
+import com.tangoplus.tangoq.Object.NetworkUserService.getUserSELECTJson
 import com.tangoplus.tangoq.Object.Singleton_t_user
 import com.tangoplus.tangoq.ViewModel.BannerViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
@@ -57,7 +57,7 @@ class IntroActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private var bannerPosition = Int.MAX_VALUE/2
-    private var bannerHandler = BannerHandler()
+    private var bannerHandler = HomeBannerHandler()
     private val intervalTime = 2200.toLong()
 
     @SuppressLint("NotifyDataSetChanged")
@@ -181,12 +181,12 @@ class IntroActivity : AppCompatActivity() {
 
                         Log.i("네이버핸드폰번호", JsonObj.getString("user_mobile"))
                         val encodedUserMobile = URLEncoder.encode(naverMobile, "UTF-8")
-                        fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
+                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
                             if (jsonObj?.getInt("status") == 404) {
                                 fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                     StoreUserInSingleton(this@IntroActivity, JsonObj)
                                     Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-//                                            PersonalSetupInit() TODO 최초 회원가입
+                                    setupInit() //TODO 최초 회원가입
                                 }
                             } else {
                                 fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
@@ -244,12 +244,12 @@ class IntroActivity : AppCompatActivity() {
 
                                 val encodedUserMobile = URLEncoder.encode(kakaoMobile, "UTF-8")
                                 Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_mobile"))
-                                fetchUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
+                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
                                     if (jsonObj?.getInt("status") == 404) {
                                         fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                             StoreUserInSingleton(this, JsonObj)
                                             Log.e("카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-//                                            PersonalSetupInit() TODO 최초 회원가입
+                                            setupInit() //TODO 최초 회원가입
                                         }
                                     } else {
                                         fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
@@ -287,19 +287,19 @@ class IntroActivity : AppCompatActivity() {
         }
 
         // -----! 배너 시작 !-----
-        val bannerList = arrayListOf<String>()
+
         val ImageUrl1 = "https://images.unsplash.com/photo-1572196459043-5c39f99a7555?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         val ImageUrl2 = "https://images.unsplash.com/photo-1605558162119-2de4d9ff8130?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         val ImageUrl3 = "https://images.unsplash.com/photo-1533422902779-aff35862e462?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         val ImageUrl4 = "https://images.unsplash.com/photo-1587387119725-9d6bac0f22fb?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         val ImageUrl5 = "https://images.unsplash.com/photo-1598449356475-b9f71db7d847?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        bannerList.add(ImageUrl1)
-        bannerList.add(ImageUrl2)
-        bannerList.add(ImageUrl3)
-        bannerList.add(ImageUrl4)
-        bannerList.add(ImageUrl5)
+        viewModel.BannerList.add(ImageUrl1)
+        viewModel.BannerList.add(ImageUrl2)
+        viewModel.BannerList.add(ImageUrl3)
+        viewModel.BannerList.add(ImageUrl4)
+        viewModel.BannerList.add(ImageUrl5)
 
-        val bannerAdapter = BannerRVAdapter(bannerList, this@IntroActivity)
+        val bannerAdapter = BannerRVAdapter(viewModel.BannerList, this@IntroActivity)
         bannerAdapter.notifyDataSetChanged()
         binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.vpIntroBanner.adapter = bannerAdapter
@@ -324,33 +324,64 @@ class IntroActivity : AppCompatActivity() {
     }
 
 
-    @SuppressLint("HandlerLeak")
-    private inner class BannerHandler: Handler(Looper.getMainLooper()) {
+//    @SuppressLint("HandlerLeak")
+//    private inner class BannerHandler: Handler(Looper.getMainLooper()) {
+//        override fun handleMessage(msg: Message) {
+//            super.handleMessage(msg)
+//            if (msg.what == 0) {
+//                binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
+//
+//                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
+//                val currentIndex = bannerPosition % viewModel.BannerList.size
+//
+//                // ProgressBar의 값을 계산합니다.
+//                binding.hpvIntro.progress = (currentIndex + 1) * 100 / viewModel.BannerList.size
+//
+//                autoScrollStart(intervalTime)
+//            }
+//        }
+//    }
+    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
-            if (msg.what == 0) {
+            if (msg.what == 0 && viewModel.BannerList.isNotEmpty()) {
                 binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
-
                 // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
-                val currentIndex = bannerPosition % viewModel.BannerList.size
+                val currentIndex = bannerPosition % viewModel.BannerList.size // 65536  % 5
 
                 // ProgressBar의 값을 계산합니다.
-                binding.hpvIntro.progress = (currentIndex + 1) * 100 / viewModel.BannerList.size
-
+                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
                 autoScrollStart(intervalTime)
             }
         }
     }
+
     private fun autoScrollStart(intervalTime: Long) {
         bannerHandler.removeMessages(0)
         bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
+
     }
     private fun autoScrollStop() {
         bannerHandler.removeMessages(0)
     } // -----! 배너 끝 !-----
 
+    private fun setupInit() {
+        val intent = Intent(this, SetupActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        autoScrollStart(intervalTime)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        autoScrollStop()
     }
 }

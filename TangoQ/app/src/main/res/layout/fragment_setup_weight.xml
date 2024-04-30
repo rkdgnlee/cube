@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.SetupWeightFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/textView44"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="체중을 입력해주세요"
+            android:textColor="@color/subColor700"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/etSuWeight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/background_stroke_1dp_sub_color"
+            android:ems="10"
+            android:hint="몸무게를 입력해주세요"
+            android:inputType="number"
+            android:padding="16dp"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView44"
+            app:layout_constraintVertical_bias="0.15" />
+
+        <TextView
+            android:id="@+id/textView45"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="Kg"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/etSuWeight"
+            app:layout_constraintEnd_toEndOf="@+id/etSuWeight"
+            app:layout_constraintTop_toTopOf="@+id/etSuWeight" />
+
+        <TextView
+            android:id="@+id/textView55"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="몸무게(체중)"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/etSuWeight"
+            app:layout_constraintStart_toStartOf="@+id/etSuWeight" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

@@ -16,23 +16,10 @@
             android:layout_height="wrap_content"
             android:background="@color/white">
 
-            <ImageView
-                android:id="@+id/imageView4"
-                android:layout_width="64dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="20dp"
-
-                android:layout_marginTop="24dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/app_logo" />
-
             <TextView
-                android:id="@+id/textView23"
+                android:id="@+id/tvFrTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
                 android:gravity="center"
                 android:text="000 님의\n플레이리스트 목록"
                 android:textColor="@color/black"
@@ -50,7 +37,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView23"
+                app:layout_constraintTop_toBottomOf="@+id/tvFrTitle"
                 app:layout_constraintVertical_bias="0.0">
 
                 <com.facebook.shimmer.ShimmerFrameLayout
@@ -83,18 +70,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="28dp"
-                android:layout_marginEnd="16dp"
-                android:background="@color/white"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_more"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

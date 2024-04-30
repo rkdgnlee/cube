@@ -69,7 +69,7 @@ class FavoriteEditFragment : Fragment() {
 // -----! EditText 셋팅 끝 !-----
 //        val currentPickItem = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
         if (currentPickItem?.exercises != null) {
-            val adapter = ExerciseRVAdapter(currentPickItem.exercises!!, "add")
+            val adapter = ExerciseRVAdapter(this@FavoriteEditFragment, currentPickItem.exercises!!, "add")
             binding.rvFE.adapter = adapter
             viewModel.exerciseUnits.value = currentPickItem.exercises
         }
@@ -94,11 +94,11 @@ class FavoriteEditFragment : Fragment() {
         // -----! EditText 등 제목 VM 연동 끝 !-----
 
         viewModel.exerciseUnits.observe(viewLifecycleOwner) { basketUnits ->
-            val adapter = ExerciseRVAdapter(basketUnits, "edit")
-            adapter.exerciseList = basketUnits
-            val linearLayoutManager2 =
+            val adapter = ExerciseRVAdapter(this@FavoriteEditFragment, basketUnits, "edit")
+            binding.rvFE.adapter = adapter
+            val linearLayoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvFE.layoutManager = linearLayoutManager2
+            binding.rvFE.layoutManager = linearLayoutManager
 
             // -----! item에 swipe 및 dragNdrop 연결 !-----
             val callback = ItemTouchCallback(adapter).apply {

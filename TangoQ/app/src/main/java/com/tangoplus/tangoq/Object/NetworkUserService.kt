@@ -14,9 +14,9 @@ import org.json.JSONObject
 import java.io.IOException
 
 object NetworkUserService {
-    fun fetchUserSELECTJson(myUrl: String, mobile: String, callback: (JSONObject?) -> Unit) {
+    fun getUserSELECTJson(myUrl: String, mobile: String, callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
-        val request = okhttp3.Request.Builder()
+        val request = Request.Builder()
             .url("${myUrl}read.php?user_mobile=$mobile")
             .get()
             .build()
@@ -26,6 +26,25 @@ object NetworkUserService {
                 Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
             }
             override fun onResponse(call: Call, response: Response)  {
+                val responseBody = response.body?.string()
+                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                callback(jsonObj__)
+            }
+        })
+    }
+    fun getUserIdentifyJson(myUrl: String, id: String, pw: String, callback: (JSONObject?) -> Unit) {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}read.php?user_id=$id&user_password=$pw")
+            .get()
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
@@ -91,6 +110,7 @@ object NetworkUserService {
             }
         })
     }
+
 
     fun StoreUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj

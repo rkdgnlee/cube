@@ -24,11 +24,6 @@ class BannerRVAdapter(private val imageList: ArrayList<String>, private val mCon
             itemView.setOnClickListener {
 //                val currentPosition = bindingAdapterPosition
 //                Toast.makeText(mContext, "${currentPosition%5}번째 배너입니다.", Toast.LENGTH_SHORT).show()
-
-
-
-
-
             }
         }
     }

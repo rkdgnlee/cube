@@ -1,14 +1,17 @@
 package com.tangoplus.tangoq.Adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CompoundButton
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -89,11 +92,31 @@ class ProfileRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Re
                         MainActivity().finish()
                     }
                 }
-            }
+            } // -----! 다크모드 시작 !-----
             VIEW_TYPE_SPECIAL_ITEM -> {
                 val myViewHolder = holder as SpecialItemViewHolder
-                myViewHolder.schDSDark
-            }
+                val sharedPref = fragment.requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
+                val modeEditor = sharedPref?.edit()
+                val darkMode = sharedPref?.getBoolean("darkMode", false)
+                if (darkMode != null) {
+                    if (darkMode == true ) {
+                        myViewHolder.schDSDark.isChecked = true
+                    } else {
+                        myViewHolder.schDSDark.isChecked = false
+                    }
+                }
+                myViewHolder.schDSDark.setOnCheckedChangeListener{CompoundButton, onSwitch ->
+                    if (onSwitch) {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        modeEditor?.putBoolean("darkMode", true) ?: true
+                        modeEditor?.apply()
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        modeEditor?.putBoolean("darkMode", false) ?: false
+                        modeEditor?.apply()
+                    }
+                }
+            } // -----! 다크모드 끝 !-----
         }
     }
 
