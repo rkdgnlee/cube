@@ -3,12 +3,14 @@ package com.tangoplus.tangoq.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +23,7 @@ import com.tangoplus.tangoq.databinding.FragmentMeasurePainPartDialogBinding
 
 class MeasurePainPartDialogFragment : DialogFragment(), OnPartCheckListener {
     lateinit var binding : FragmentMeasurePainPartDialogBinding
-    val viewModel : MeasureViewModel by viewModels()
+    val viewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,7 +45,7 @@ class MeasurePainPartDialogFragment : DialogFragment(), OnPartCheckListener {
         ppList.add(Pair("drawable_pain7", "무릎"))
         ppList.add(Pair("drawable_pain8", "복부"))
 
-        val adapter = PainPartRVAdpater(ppList, this@MeasurePainPartDialogFragment)
+        val adapter = PainPartRVAdpater(ppList, "selectPp",this@MeasurePainPartDialogFragment)
         binding.rvPp.adapter = adapter
         val linearLayoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -51,8 +53,9 @@ class MeasurePainPartDialogFragment : DialogFragment(), OnPartCheckListener {
 
         // ------! RV checkbox 취합 시작 !------
         binding.btnPpSet.setOnClickListener {
-            viewModel.parts.value // TODO 통증 부위 선택 후 RecyclerView 번갈아가면서 넣기vh
+//            viewModel.parts.value // TODO 통증 부위 선택 후 번갈아가면서 넣기vh
             dismiss()
+            Log.v("VM>part", "${viewModel.parts.value}")
         }
     }
     override fun onResume() {
@@ -63,11 +66,12 @@ class MeasurePainPartDialogFragment : DialogFragment(), OnPartCheckListener {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
-    override fun onPartCheck(part: String, checked: Boolean) {
+    override fun onPartCheck(part: Pair<String,String>, checked: Boolean) {
         if (checked) {
-            viewModel.parts.value?.add(part)
+            viewModel.addPart(part)
+            Log.v("viewModel.part", "${viewModel.parts.value}")
         } else {
-            viewModel.parts.value?.remove(part)
+            viewModel.deletePart(part)
         }
     }
 }

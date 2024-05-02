@@ -16,6 +16,11 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFavoriteBSDialogBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val bundle = arguments
         val exerciseUnit = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
@@ -37,12 +42,6 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
 
         }
         // TODO MAIN과 FAVORITE BOTTOMSHEET 를 확실하게 분리해야함.
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
 
     }
 }

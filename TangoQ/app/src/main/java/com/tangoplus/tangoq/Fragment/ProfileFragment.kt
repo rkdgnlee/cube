@@ -14,7 +14,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -23,6 +25,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.Adapter.ProfileRVAdapter
+import com.tangoplus.tangoq.Listener.BooleanClickListener
 import com.tangoplus.tangoq.Object.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.RoutingVO
@@ -32,7 +35,7 @@ import java.util.Date
 import java.util.TimeZone
 
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), BooleanClickListener {
     lateinit var binding : FragmentProfileBinding
 
     override fun onCreateView(
@@ -46,7 +49,7 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // -----! profile의 나이, 몸무게, 키  설정 코드 시작 !-----
+        // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         val t_userdata = Singleton_t_user.getInstance(requireContext())
         val userJson= t_userdata.jsonObject?.getJSONObject("data")
         Log.v("Singleton>Profile", "${userJson}")
@@ -73,7 +76,7 @@ class ProfileFragment : Fragment() {
             RoutingVO("계정관리", "5"),
             RoutingVO("로그아웃", "6"),
         )
-        val adapter = ProfileRVAdapter(this@ProfileFragment)
+        val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment)
         adapter.profilemenulist = profilemenulist
         binding.rvPf.adapter = adapter
         binding.rvPf.layoutManager =
@@ -138,11 +141,6 @@ class ProfileFragment : Fragment() {
                         .load(selectedImageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
                         .into(binding.civPf)
-
-
-
-
-
                 } else {
                     Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
@@ -163,6 +161,20 @@ class ProfileFragment : Fragment() {
             .setNegativeButton("취소하기") { _, _ -> }
             .create()
             .show()
+    }
+
+    override fun onSwitchChanged(isChecked: Boolean) {
+        val sharedPref = requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
+        val modeEditor = sharedPref?.edit()
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            modeEditor?.putBoolean("darkMode", true) ?: true
+            modeEditor?.apply()
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            modeEditor?.putBoolean("darkMode", false) ?: false
+            modeEditor?.apply()
+        }
     }
 
 }

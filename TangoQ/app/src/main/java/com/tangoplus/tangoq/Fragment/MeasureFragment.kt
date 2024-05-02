@@ -1,12 +1,15 @@
 package com.tangoplus.tangoq.Fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -15,8 +18,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.tangoplus.tangoq.Adapter.PainPartRVAdpater
 import com.tangoplus.tangoq.Dialog.LoginDialogFragment
 import com.tangoplus.tangoq.Dialog.MeasurePainPartDialogFragment
+import com.tangoplus.tangoq.Listener.OnPartCheckListener
+import com.tangoplus.tangoq.Object.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.GraphVO
 import com.tangoplus.tangoq.ViewModel.MeasureViewModel
@@ -24,9 +30,9 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
 import kotlin.random.Random
 
 
-class MeasureFragment : Fragment() {
-    val viewModel : MeasureViewModel by viewModels()
+class MeasureFragment : Fragment(), OnPartCheckListener {
     lateinit var binding : FragmentMeasureBinding
+    val viewModel : MeasureViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,13 +46,43 @@ class MeasureFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // ------! 통증 부위 관리 시작 !------
-        binding.clMsAddPart.setOnClickListener {
+        binding.tvMsAddPart.setOnClickListener {
             val dialog = MeasurePainPartDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginDialogFragment")
+
         } // ------! 통증 부위 관리 끝 !------
 
+        // ------!  이름 + 통증 부위 시작 !------
+        val t_userdata = Singleton_t_user.getInstance(requireContext())
+        val userJson= t_userdata.jsonObject?.getJSONObject("data")
+        binding.tvMsUserName.text = userJson?.optString("user_name")
 
+        // TODO 1. t_measure등에서 가져오는 결과값이 있다 --> 밸런스 점수, 뭐 측정일자 같은거 업데이트
+        // TODO 2. 일단 통증 부위를 일단 넣을 수 있게.
+        viewModel.parts.observe(viewLifecycleOwner) { parts ->
+            if (parts.isEmpty()) { // 통증 부위 2개 이하 선택
+                binding.llMsEmpty.visibility = View.VISIBLE
 
+            } else { // part로 선택한 게 있을 때.
+                binding.llMsEmpty.visibility = View.GONE
+                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                val leftData = parts.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
+                val leftadapter = PainPartRVAdpater(leftData, "Pp", this@MeasureFragment)
+                binding.rvMsLeft.adapter = leftadapter
+                if (leftData.isNotEmpty()) {
+                    binding.rvMsLeft.layoutManager = linearLayoutManager
+                }
+
+                val rightData = parts.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
+                val rightadapter = PainPartRVAdpater(rightData, "Pp", this@MeasureFragment)
+                Log.v("adapter데이터", "${leftData}, ${rightData}")
+                binding.rvMsRight.adapter = rightadapter
+                if (rightData.isNotEmpty()) {
+                    binding.rvMsRight.layoutManager = linearLayoutManager2
+                }
+            }
+        } // ------!  이름 + 통증 부위 끝 !------
 
 
         // ------! 꺾은선 그래프 시작 !------
@@ -211,6 +247,10 @@ class MeasureFragment : Fragment() {
             invalidate()
         }
         // ---- 막대 그래프 코드 끝 ----
+    }
+
+    override fun onPartCheck(part: Pair<String, String>, checked: Boolean) {
+        TODO("Not yet implemented")
     }
 
 }

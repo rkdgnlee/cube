@@ -22,7 +22,7 @@
                 android:id="@+id/textView48"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="2dp"
                 android:text="님의 통증 차트"
                 android:textColor="@color/black"
                 android:textSize="16sp"
@@ -40,7 +40,7 @@
                 android:textSize="14sp"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMsMore" />
+                app:layout_constraintTop_toBottomOf="@+id/tvMsAddPart" />
 
             <TextView
                 android:id="@+id/textView43"
@@ -78,6 +78,7 @@
                 app:tabIndicatorGravity="bottom"
                 app:tabIndicatorHeight="3dp"
                 app:tabInlineLabel="false"
+                app:tabRippleColor="#27CDCDCD"
                 app:tabSelectedTextColor="@color/mainColor"
                 app:tabTextColor="@color/subColor500">
 
@@ -104,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="주간 요약"
-                android:textSize="24sp"
+                android:textSize="26sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/materialDivider3"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider3" />
@@ -115,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/background_stroke_1dp_sub_color"
-                android:padding="8dp"
+                android:padding="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8">
@@ -166,6 +167,7 @@
                     android:text="67점"
                     android:textColor="@color/black"
                     android:textSize="16sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
@@ -176,6 +178,7 @@
                     android:text="밸런스 점수 - "
                     android:textColor="@color/black"
                     android:textSize="16sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/tvMsBalanceScore"
                     app:layout_constraintEnd_toStartOf="@+id/tvMsBalanceScore"
                     app:layout_constraintTop_toTopOf="@+id/tvMsBalanceScore"
@@ -234,7 +237,6 @@
                 android:id="@+id/textView40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:layout_marginTop="20dp"
                 android:text="통증 부위 관리"
                 android:textColor="@color/black"
@@ -244,10 +246,10 @@
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
             <TextView
-                android:id="@+id/tvMsMore"
+                android:id="@+id/tvMsAddPart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="더보기"
+                android:text="추가하기"
                 android:textColor="@color/subColor500"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView40"
@@ -265,56 +267,61 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView40">
 
                 <LinearLayout
+                    android:id="@+id/llMsEmpty"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_stroke_1dp_sub_color">
+
+                        <TextView
+                            android:id="@+id/textView49"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="통증 부위를\n추가해주세요 💪"
+                            android:textColor="@color/subColor500"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clMsPart2"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_weight="1"
+                        android:background="@color/white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="horizontal">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvMsLeft"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1">
-
-                    </androidx.recyclerview.widget.RecyclerView>
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvMsRight"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1" >
-
-                    </androidx.recyclerview.widget.RecyclerView>
+                        android:layout_marginLeft="8dp"
+                        android:layout_weight="1" />
                 </LinearLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clMsAddPart"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_stroke_1dp_sub_color">
-
-                    <TextView
-                        android:id="@+id/textView49"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="관리 부위 추가하기"
-                        android:textColor="@color/black"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/imageView21"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/icon_add_button"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView49" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
@@ -338,7 +345,7 @@
                 android:text="000"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:textStyle="normal"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView46" />
 

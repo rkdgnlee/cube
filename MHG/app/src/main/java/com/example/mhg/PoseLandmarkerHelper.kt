@@ -21,8 +21,8 @@ class PoseLandmarkerHelper(
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
     var minPoseTrackingConfidence: Float = DEFAULT_POSE_TRACKING_CONFIDENCE,
     var minPosePresenceConfidence: Float = DEFAULT_POSE_PRESENCE_CONFIDENCE,
-    var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
-    var currentDelegate: Int = DELEGATE_CPU,
+    var currentModel: Int = MODEL_POSE_LANDMARKER_HEAVY,
+    var currentDelegate: Int = DELEGATE_GPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
     // 이 리스너는 RunningMode.LIVE_STREAM에서 실행될 때만 사용됩니다.

@@ -23,6 +23,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.Fragment.SettingsFragment
 import com.tangoplus.tangoq.IntroActivity
+import com.tangoplus.tangoq.Listener.BooleanClickListener
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.RoutingVO
@@ -30,7 +31,7 @@ import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
 import java.lang.IllegalArgumentException
 
-class ProfileRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
+class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
     var profilemenulist = mutableListOf<RoutingVO>()
     private val VIEW_TYPE_NORMAL = 0
     private val VIEW_TYPE_SPECIAL_ITEM = 1
@@ -96,7 +97,6 @@ class ProfileRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Re
             VIEW_TYPE_SPECIAL_ITEM -> {
                 val myViewHolder = holder as SpecialItemViewHolder
                 val sharedPref = fragment.requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
-                val modeEditor = sharedPref?.edit()
                 val darkMode = sharedPref?.getBoolean("darkMode", false)
                 if (darkMode != null) {
                     if (darkMode == true ) {
@@ -106,15 +106,8 @@ class ProfileRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Re
                     }
                 }
                 myViewHolder.schDSDark.setOnCheckedChangeListener{CompoundButton, onSwitch ->
-                    if (onSwitch) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                        modeEditor?.putBoolean("darkMode", true) ?: true
-                        modeEditor?.apply()
-                    } else {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                        modeEditor?.putBoolean("darkMode", false) ?: false
-                        modeEditor?.apply()
-                    }
+                    booleanClickListener.onSwitchChanged(onSwitch)
+
                 }
             } // -----! 다크모드 끝 !-----
         }

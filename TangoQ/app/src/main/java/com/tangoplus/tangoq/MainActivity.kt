@@ -1,8 +1,11 @@
 package com.tangoplus.tangoq
 
+import android.app.UiModeManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.tangoplus.tangoq.Fragment.ExerciseFragment
@@ -10,14 +13,23 @@ import com.tangoplus.tangoq.Fragment.FavoriteFragment
 import com.tangoplus.tangoq.Fragment.MainFragment
 import com.tangoplus.tangoq.Fragment.MeasureFragment
 import com.tangoplus.tangoq.Fragment.ProfileFragment
+import com.tangoplus.tangoq.ViewModel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+    val MeasureViewModel : MeasureViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // ------! 다크모드 메뉴 이름 설정 시작 !------
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        val isNightMode = uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
+        binding.tvCurrentPage.text = (if (isNightMode) "내정보" else "내정보")
+        // ------! 다크모드 메뉴 이름 설정 끝 !------
+
 
         // -----! 초기 화면 설정 !-----
         if (savedInstanceState == null) {
@@ -32,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.setOnItemSelectedListener {
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
-                R.id.clSI -> {
+                R.id.main -> {
                     setCurrentFragment(MainFragment())
                     binding.tvCurrentPage.text = "메인"
                 }
@@ -58,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.setOnItemReselectedListener {
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
-                R.id.clSI -> {}
+                R.id.main -> {}
                 R.id.exercise -> {}
                 R.id.measure -> {}
                 R.id.favorite -> {}

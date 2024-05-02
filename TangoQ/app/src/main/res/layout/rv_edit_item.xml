@@ -3,9 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="110dp"
     android:background="@color/white"
-    android:padding="8dp">
+    android:paddingLeft="20dp"
+    android:paddingTop="12dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="12dp">
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -13,31 +16,19 @@
         android:layout_gravity="right"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <TextView
-        android:id="@+id/tvMGoalNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="개"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvEditCount"
-        app:layout_constraintStart_toEndOf="@+id/tvEditCount"
-        app:layout_constraintTop_toTopOf="@+id/tvEditCount" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivEditDrag"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
         android:background="@color/white"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_drag" />
+
     <ImageView
         android:id="@+id/ivEditThumbnail"
         android:layout_width="90dp"
@@ -58,9 +49,10 @@
         android:layout_marginStart="8dp"
         android:text="목 관절 운동 프로그램"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivEditDrag"
         app:layout_constraintStart_toEndOf="@+id/ivEditThumbnail"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -100,16 +92,6 @@
         app:layout_constraintTop_toTopOf="@+id/tvEditIntensity"
         app:srcCompat="@drawable/icon_rv_summary_intensity" />
 
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvEditCount"
-        app:layout_constraintEnd_toStartOf="@+id/tvEditCount"
-        app:layout_constraintTop_toTopOf="@+id/tvEditCount"
-        app:srcCompat="@drawable/icon_rv_summary_count" />
-
     <TextView
         android:id="@+id/tvEditTime"
         android:layout_width="wrap_content"
@@ -131,18 +113,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ivEditThumbnail" />
-
-    <TextView
-        android:id="@+id/tvEditCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="4"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvEditIntensity"
-        app:layout_constraintTop_toTopOf="@+id/tvEditIntensity"
-        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textView14"

@@ -32,7 +32,7 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.tangoplus.tangoq.Adapter.BannerRVAdapter
+import com.tangoplus.tangoq.Adapter.BannerVPAdapter
 import com.tangoplus.tangoq.Dialog.LoginDialogFragment
 import com.tangoplus.tangoq.Listener.OnSingleClickListener
 import com.tangoplus.tangoq.Object.CommonDefines.TAG
@@ -299,7 +299,7 @@ class IntroActivity : AppCompatActivity() {
         viewModel.BannerList.add(ImageUrl4)
         viewModel.BannerList.add(ImageUrl5)
 
-        val bannerAdapter = BannerRVAdapter(viewModel.BannerList, this@IntroActivity)
+        val bannerAdapter = BannerVPAdapter(viewModel.BannerList, "intro",this@IntroActivity)
         bannerAdapter.notifyDataSetChanged()
         binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.vpIntroBanner.adapter = bannerAdapter

@@ -7,6 +7,22 @@
     android:background="@color/subColor100"
     tools:context=".Fragment.FavoriteDetailFragment">
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabtnFDPlay"
+        style="@style/Stroke.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:padding="16dp"
+        android:text="재생하기"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:backgroundTint="@color/white"
+        app:icon="@drawable/icon_play_circle"
+        app:iconTint="@color/black" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvFV"
         android:layout_width="match_parent"
@@ -154,10 +170,11 @@
 
                 <Button
                     android:id="@+id/btnFVEdit"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_margin="20dp"
-                    android:backgroundTint="@color/mainColor"
+                    android:backgroundTint="@color/secondaryColor"
                     android:drawableLeft="@drawable/icon_plus_small"
                     android:drawableTint="@color/white"
                     android:insetTop="0dp"

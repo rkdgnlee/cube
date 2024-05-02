@@ -259,13 +259,11 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginStart="4dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="4dp"
                     android:layout_marginBottom="4dp"
-                    android:background="@color/white"
+                    android:background="#00FFFFFF"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="1dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -318,10 +316,10 @@
                 android:textSize="24dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/horizontalProgressView3" />
+                app:layout_constraintTop_toBottomOf="@+id/hpvMRecommend" />
 
             <com.tomlecollegue.progressbars.HorizontalProgressView
-                android:id="@+id/horizontalProgressView3"
+                android:id="@+id/hpvMRecommend"
                 android:layout_width="186dp"
                 android:layout_height="4dp"
                 android:layout_marginTop="8dp"

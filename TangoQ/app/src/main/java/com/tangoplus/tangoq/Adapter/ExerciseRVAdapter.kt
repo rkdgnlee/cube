@@ -59,15 +59,15 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         val tvEditSymptom = view.findViewById<TextView>(R.id.tvEditSymptom)
         val tvEditTime = view.findViewById<TextView>(R.id.tvEditTime)
         val tvEditIntensity = view.findViewById<TextView>(R.id.tvEditIntensity)
-        val tvEditCount = view.findViewById<TextView>(R.id.tvEditCount)
+//        val tvEditCount = view.findViewById<TextView>(R.id.tvEditCount)
         val ivEditDrag = view.findViewById<ImageView>(R.id.ivEditDrag)
     }
     // -----! favorite basket !-----
     inner class basketViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvBkName = view.findViewById<TextView>(R.id.tvBkName)
         val tvBkSymptom = view.findViewById<TextView>(R.id.tvBkSymptom)
-        val tvBkTime = view.findViewById<TextView>(R.id.tvBkTime)
-        val tvBkIntensity = view.findViewById<TextView>(R.id.tvBkTime)
+//        val tvBkTime = view.findViewById<TextView>(R.id.tvBkTime)
+//        val tvBkIntensity = view.findViewById<TextView>(R.id.tvBkIntensity)
         val ibtnBkPlus = view.findViewById<ImageButton>(R.id.ibtnBkPlus)
         val ibtnBkMinus = view.findViewById<ImageButton>(R.id.ibtnBkMinus)
         val tvBkCount = view.findViewById<TextView>(R.id.tvBkCount)
@@ -172,7 +172,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                     currentItem.relatedSymptom.toString().substring(0, 25) + "..."
                 } else { currentItem.relatedSymptom}).toString()
                 holder.tvBkName.text = currentItem.exerciseName
-                holder.tvBkTime.text = currentItem.videoTime
+//                holder.tvBkTime.text = currentItem.videoTime
 
                 holder.ibtnBkPlus.setOnClickListener {
                     currentItem.quantity += 1

@@ -8,17 +8,16 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.ViewModel.BannerViewModel
 
-class BannerRVAdapter(private val imageList: ArrayList<String>, private val mContext: Context) :
-    RecyclerView.Adapter<BannerRVAdapter.MyViewHolder>() {
+class BannerVPAdapter(private val imageList: ArrayList<String>, private val context : String ,private val mContext: Context) :
+    RecyclerView.Adapter<BannerVPAdapter.MyViewHolder>() {
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val img: ImageView = itemView.findViewById(R.id.ivHomeBanner)
     }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BannerRVAdapter.MyViewHolder {
+    ): BannerVPAdapter.MyViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_banner, parent, false)
         return MyViewHolder(view).apply {
             itemView.setOnClickListener {
@@ -29,10 +28,21 @@ class BannerRVAdapter(private val imageList: ArrayList<String>, private val mCon
     }
 
     override fun onBindViewHolder(
-        holder: BannerRVAdapter.MyViewHolder,
+        holder: BannerVPAdapter.MyViewHolder,
         position: Int
     ) {
-        Glide.with(mContext).load(imageList[position%5]).into(holder.img) // 어떤 수가 나와도 5로 나눈 "나머지 값" 순서의 데이터로 5단위 반복되도록 함.
+
+        if (context == "intro") {
+            val currentItem = imageList[position % 5]
+            Glide.with(mContext).load(currentItem).into(holder.img) // 어떤 수가 나와도 5로 나눈 "나머지 값" 순서의 데이터로 5단위 반복되도록 함.
+        } else if (context == "main") {
+            val currentItem = imageList[position % 4]
+            val resourceId = holder.itemView.context.resources.getIdentifier(
+                currentItem, "drawable", holder.itemView.context.packageName
+            )
+            holder.img.setImageResource(resourceId)
+        }
+
     }
 
     override fun getItemCount(): Int {

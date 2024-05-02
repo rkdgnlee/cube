@@ -17,6 +17,7 @@ import com.tangoplus.tangoq.Dialog.FavoriteBSDialogFragment
 import com.tangoplus.tangoq.Listener.OnRVClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseVO
+import com.tangoplus.tangoq.ViewModel.FavoriteItemVO
 import com.tangoplus.tangoq.ViewModel.ProgramVO
 import com.tangoplus.tangoq.databinding.RvRecommendItemBinding
 
@@ -54,7 +55,11 @@ class RecommendRVAdapter(var programs: MutableLiveData<MutableList<ProgramVO>>, 
         holder.ibtnRcmMore.setOnClickListener {
             val bsFragment = FavoriteBSDialogFragment()
             val bundle = Bundle()
-            bundle.putParcelable("ExerciseUnit", currentItem) // programVO를 따로 다뤄서 BOTTOMSHEET에 넣는 부분도 필요함. ㅗ
+//            val FavoriteVOfromProgramm = FavoriteItemVO(
+//
+//            )
+            bundle.putParcelable("ExerciseUnit", currentItem)
+
             bsFragment.arguments = bundle
             val fragmentManager = fragment.requireActivity().supportFragmentManager
             bsFragment.show(fragmentManager, bsFragment.tag)

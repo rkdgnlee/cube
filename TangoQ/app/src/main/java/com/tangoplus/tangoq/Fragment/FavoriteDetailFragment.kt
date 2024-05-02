@@ -23,6 +23,7 @@ import com.tangoplus.tangoq.Adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.Object.NetworkExerciseService
 import com.tangoplus.tangoq.Object.NetworkExerciseService.jsonToFavoriteItemVO
 import com.tangoplus.tangoq.Object.Singleton_t_user
+import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseViewModel
 import com.tangoplus.tangoq.ViewModel.FavoriteItemVO
@@ -173,6 +174,28 @@ class FavoriteDetailFragment : Fragment() {
             }
             requireContext()
         } // -----! 편집 버튼 끝 !-----
+
+        // ------! 플롯팅액션버튼 시작 !------
+        binding.fabtnFDPlay.setOnClickListener {
+            if (currentItem.exercises?.isNotEmpty() == true) {
+                    val resourceList = storePickUrl(viewModel)
+                    Log.w("url in resourceList", "$resourceList")
+                    val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
+                    intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
+                    startForResult.launch(intent)
+                } else {
+                    val snackbar = Snackbar.make(requireView(), "운동을 추가해주세요 ! ", Snackbar.LENGTH_SHORT)
+                    snackbar.setAction("확인", object: View.OnClickListener {
+                        override fun onClick(v: View?) {
+                            snackbar.dismiss()
+                        }
+                    })
+                    snackbar.setTextColor(Color.WHITE)
+                    snackbar.setActionTextColor(Color.WHITE)
+                    snackbar.show()
+                }
+        } // ------! 플롯팅액션버튼 끝 !------
+
     }
     @SuppressLint("NotifyDataSetChanged")
     private fun setFVDetail(sn: String){

@@ -161,8 +161,8 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
             setUpCamera()
         }
         // Attach listeners to UI control widgets
-        initBottomSheetControls()
-        // -----! pose landmarker 끝 !-----
+//        initBottomSheetControls()
+//         -----! pose landmarker 끝 !-----
 
 //        val videoUrl = intent.getStringExtra("video_url")
 //        if (videoUrl != null) {
@@ -182,9 +182,9 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
 //        }
 //        cameraExecutor = Executors.newSingleThreadExecutor()
     }
-    private fun initBottomSheetControls() {
-        // init bottom sheet settings
-
+//    private fun initBottomSheetControls() {
+//        // init bottom sheet settings
+//
 //        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
 //            String.format(
 //                Locale.US, "%.2f", viewModel.currentMinPoseDetectionConfidence
@@ -245,55 +245,55 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
 //                updateControlsUi()
 //            }
 //        }
-
-        // When clicked, change the underlying hardware used for inference.
-        // Current options are CPU and GPU
-        /**---------------------------------! cpu, gpu 선택 !---------------------------------------- */
-        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
-            viewModel.currentDelegate, false
-        )
-        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
-                ) {
-                    try {
-                        poseLandmarkerHelper.currentDelegate = p2
-                        updateControlsUi()
-                    } catch(e: UninitializedPropertyAccessException) {
-                        Log.e(TAG, "PoseLandmarkerHelper has not been initialized yet.")
-                    }
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /* no op */
-                }
-            }
-
-        // When clicked, change the underlying model used for object detection
-        fragmentCameraBinding.bottomSheetLayout.spinnerModel.setSelection(
-            viewModel.currentModel,
-            false
-        )
-
-        /**----------------------------------! 모델 선택 !-----------------------------------------*/
-        fragmentCameraBinding.bottomSheetLayout.spinnerModel.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    p0: AdapterView<*>?,
-                    p1: View?,
-                    p2: Int,
-                    p3: Long
-                ) {
-                    poseLandmarkerHelper.currentModel = p2
-                    updateControlsUi()
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /* no op */
-                }
-            }
-    }
+//
+//        // When clicked, change the underlying hardware used for inference.
+//        // Current options are CPU and GPU
+//        /**---------------------------------! cpu, gpu 선택 !---------------------------------------- */
+//        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
+//            viewModel.currentDelegate, false
+//        )
+//        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
+//            object : AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(
+//                    p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+//                ) {
+//                    try {
+//                        poseLandmarkerHelper.currentDelegate = p2
+//                        updateControlsUi()
+//                    } catch(e: UninitializedPropertyAccessException) {
+//                        Log.e(TAG, "PoseLandmarkerHelper has not been initialized yet.")
+//                    }
+//                }
+//
+//                override fun onNothingSelected(p0: AdapterView<*>?) {
+//                    /* no op */
+//                }
+//            }
+//
+//        // When clicked, change the underlying model used for object detection
+//        fragmentCameraBinding.bottomSheetLayout.spinnerModel.setSelection(
+//            viewModel.currentModel,
+//            false
+//        )
+//
+//        /**----------------------------------! 모델 선택 !-----------------------------------------*/
+//        fragmentCameraBinding.bottomSheetLayout.spinnerModel.onItemSelectedListener =
+//            object : AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(
+//                    p0: AdapterView<*>?,
+//                    p1: View?,
+//                    p2: Int,
+//                    p3: Long
+//                ) {
+//                    poseLandmarkerHelper.currentModel = p2
+//                    updateControlsUi()
+//                }
+//
+//                override fun onNothingSelected(p0: AdapterView<*>?) {
+//                    /* no op */
+//                }
+//            }
+//    }
 
     // Update the values displayed in the bottom sheet. Reset Poselandmarker
     // helper.
@@ -542,19 +542,19 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
     override fun onError(error: String, errorCode: Int) {
         runOnUiThread {
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-            if (errorCode == PoseLandmarkerHelper.GPU_ERROR) {
-                fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
-                    PoseLandmarkerHelper.DELEGATE_CPU, false
-                )
-            }
+//            if (errorCode == PoseLandmarkerHelper.GPU_ERROR) {
+//                fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
+//                    PoseLandmarkerHelper.DELEGATE_CPU, false
+//                )
+//            }
         }
     }
 
     override fun onResults(resultBundle: PoseLandmarkerHelper.ResultBundle) {
        runOnUiThread {
            if (_fragmentCameraBinding != null) {
-               fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
-                   String.format("%d ms", resultBundle.inferenceTime)
+//               fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
+//                   String.format("%d ms", resultBundle.inferenceTime)
 
                // Pass necessary information to OverlayView for drawing on the canvas
                fragmentCameraBinding.overlay.setResults(
