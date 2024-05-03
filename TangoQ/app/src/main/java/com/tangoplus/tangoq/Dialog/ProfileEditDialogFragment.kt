@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.Fragment
+package com.tangoplus.tangoq.Dialog
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -6,80 +6,79 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.tangoplus.tangoq.Adapter.ProfileRVAdapter
-import com.tangoplus.tangoq.Dialog.ProfileEditDialogFragment
-import com.tangoplus.tangoq.Listener.BooleanClickListener
 import com.tangoplus.tangoq.Object.Singleton_t_user
-import com.tangoplus.tangoq.ViewModel.RoutingVO
-import com.tangoplus.tangoq.databinding.FragmentProfileBinding
-import java.util.Calendar
-import java.util.TimeZone
+import com.tangoplus.tangoq.databinding.FragmentProfileEditDialogBinding
 
 
-class ProfileFragment : Fragment(), BooleanClickListener {
-    lateinit var binding : FragmentProfileBinding
+class ProfileEditDialogFragment : DialogFragment() {
+    lateinit var binding : FragmentProfileEditDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentProfileBinding.inflate(inflater)
+        binding = FragmentProfileEditDialogBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
-        val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("data")
-        Log.v("Singleton>Profile", "${userJson}")
-        binding.tvPfName.text = userJson?.optString("user_name")
-        binding.tvPfHeight.text = userJson?.optString("user_height")
-        binding.tvPfWeight.text = userJson?.optString("user_weight")
-        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-        binding.tvPfAge.text = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
         // ----- 이미지 로드 시작 -----
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+
+
         val imageUri = sharedPreferences.getString("imageUri", null)
         if (imageUri != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 Glide.with(this)
                     .load(imageUri)
                     .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                    .into(binding.civPf)
+                    .into(binding.civPE)
             }
+        } // ----- 이미지 로드 끝 -----
+
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
+
+        val userId = userJson?.optString("user_id")
+        if (userId != null) {
+            binding.etPEName.setText(userId)
+            binding.etPEPassword.setText("************")
+            binding.etPEName.isEnabled = false
+            binding.etPEPassword.isEnabled = false
         }
-        val profilemenulist = mutableListOf<RoutingVO>(
-            RoutingVO("환경설정", "1"),
-            RoutingVO("이용약관", "3"),
-            RoutingVO("연동관리", "4"),
-            RoutingVO("계정관리", "5"),
-            RoutingVO("로그아웃", "6"),
-        )
-        val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment)
-        adapter.profilemenulist = profilemenulist
-        binding.rvPf.adapter = adapter
-        binding.rvPf.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.ibtnPfEdit.setOnClickListener {
+
+        binding.etPEMobile.setText(userJson?.optString("user_mobile"))
+
+        val userEmail = userJson?.optString("user_email")
+        if (userEmail != null) {
+            binding.etPEEmailId.setText(userEmail.substring(0, userEmail.indexOf("@")))
+        }
+
+        binding.etPEMobile.setText(userJson?.optString("user_mobile"))
+
+        binding.ibtnPEBack.setOnClickListener {
+            dismiss()
+        }
+
+        binding.civPE.setOnClickListener {
             when {
                 ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
                     navigateGallery()
@@ -90,12 +89,6 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                 )
             }
         }
-        binding.ibtnPfEdit.setOnClickListener {
-            val DialogFragment = ProfileEditDialogFragment()
-            DialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-        }
-
-
     }
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
@@ -112,12 +105,6 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     Toast.makeText(requireContext(), "권한 설정을 허용해 주십시오", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-    private fun navigateGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, 2000)
-
     }
     @SuppressLint("CheckResult")
     @Deprecated("Deprecated in Java")
@@ -136,7 +123,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     Glide.with(this)
                         .load(selectedImageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                        .into(binding.civPf)
+                        .into(binding.civPE)
                 } else {
                     Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
@@ -146,7 +133,6 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             }
         }
     }
-
     private fun showPermissionContextPopup() {
         AlertDialog.Builder(requireContext())
             .setTitle("권한이 필요합니다.")
@@ -158,19 +144,17 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             .create()
             .show()
     }
+    private fun navigateGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, 2000)
 
-    override fun onSwitchChanged(isChecked: Boolean) {
-        val sharedPref = requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
-        val modeEditor = sharedPref?.edit()
-        if (isChecked) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            modeEditor?.putBoolean("darkMode", true) ?: true
-            modeEditor?.apply()
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            modeEditor?.putBoolean("darkMode", false) ?: false
-            modeEditor?.apply()
-        }
     }
-
+    override fun onResume() {
+        super.onResume()
+        // full Screen code
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+    }
 }

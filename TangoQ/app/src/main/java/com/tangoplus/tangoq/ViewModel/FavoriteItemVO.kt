@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FavoriteItemVO (
+
     var favoriteSn : Int = 0,
     var favoriteName : String? = "",
     var favoriteExplain : String? = "",
@@ -13,6 +14,7 @@ data class FavoriteItemVO (
     var exercises : MutableList<ExerciseVO>?
 ) : Parcelable {
     constructor(parcel: Parcel): this(
+
         parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
@@ -22,6 +24,7 @@ data class FavoriteItemVO (
     override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
+
         dest.writeInt(favoriteSn)
         dest.writeString(favoriteName)
         dest.writeString(favoriteExplain)

@@ -37,7 +37,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.nsvEc.isNestedScrollingEnabled = false
         binding.rvEcAll.isNestedScrollingEnabled = false
         binding.rvEcAll.overScrollMode = 0
 

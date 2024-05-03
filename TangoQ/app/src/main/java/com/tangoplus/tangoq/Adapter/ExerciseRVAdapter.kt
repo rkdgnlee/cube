@@ -14,7 +14,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.Callback.ItemTouchCallback
-import com.tangoplus.tangoq.Dialog.FavoriteBSDialogFragment
+import com.tangoplus.tangoq.Dialog.ExerciseBSDialogFragment
+import com.tangoplus.tangoq.Dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.Listener.BasketItemTouchListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseVO
@@ -46,11 +47,11 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         val tvMName = view.findViewById<TextView>(R.id.tvMName)
         val tvMSymptom = view.findViewById<TextView>(R.id.tvMSymptom)
         val tvMTime = view.findViewById<TextView>(R.id.tvMTime)
-        val tvMIntensity = view.findViewById<TextView>(R.id.tvMIntensity)
-        val tvMCount = view.findViewById<TextView>(R.id.tvMCount)
+        val tvMStage = view.findViewById<TextView>(R.id.tvMStage)
+        val tvMKcal = view.findViewById<TextView>(R.id.tvMKcal)
         val ibtnMMore = view.findViewById<ImageButton>(R.id.ibtnMMore)
 
-        val clMItem = view.findViewById<ConstraintLayout>(R.id.clMItem)
+        val vM = view.findViewById<View>(R.id.vM)
     }
 
     // -----! favorite edit !-----
@@ -112,16 +113,18 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         when (holder) {
             is mainViewHolder -> {
                 // -----! recyclerview에서 운동군 보여주기 !------
-                holder.tvMSymptom.text = (if (currentItem.relatedSymptom.toString().length >= 25) {
-                    currentItem.relatedSymptom.toString().substring(0, 22) + "..."
+                holder.tvMSymptom.text = (if (currentItem.relatedSymptom.toString().length >= 20) {
+                    currentItem.relatedSymptom.toString().substring(0, 17) + "..."
                 } else { currentItem.relatedSymptom}).toString()
                 holder.tvMName.text = currentItem.exerciseName
                 holder.tvMTime.text = second.toString()
-//                holder..text = currentItem.relatedJoint.toString() TODO JOINT 말고 관계된 걸 넣기
-                //        Glide.with(holder.itemView.context)
-                //            .load(currentItem.imgUrl)
-                //            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                //            .into(holder.ivhomevertical)
+                holder.tvMStage.text = when (currentItem.exerciseStage) {
+                    "향상" -> "상급자"
+                    "유지" -> "중급자"
+                    else -> "초급자"
+                }
+
+
                 val params = holder.ivHThumbnail.layoutParams as ConstraintLayout.LayoutParams
                 params.horizontalBias = 0f // 0f는 왼쪽, 0.5f는 가운데, 1f는 오른쪽
                 params.verticalBias = 0.5f // 0f는 위쪽, 0.5f는 가운데, 1f는 아래쪽
@@ -136,15 +139,24 @@ class ExerciseRVAdapter (private val fragment: Fragment,
 //                    val activity = holder.itemView.context as MainActivity
 //                    dialog.show(activity.supportFragmentManager, "LoginDialogFragment")
 //                }
+                // ------! 점점점 버튼 시작 !------
                 holder.ibtnMMore.setOnClickListener {
-                    val bsFragment = FavoriteBSDialogFragment()
+                    val bsFragment = ExerciseBSDialogFragment()
                     val bundle = Bundle()
                     bundle.putParcelable("ExerciseUnit", currentItem)
                     bsFragment.arguments = bundle
                     val fragmentManager = fragment.requireActivity().supportFragmentManager
                     bsFragment.show(fragmentManager, bsFragment.tag)
                 }
-
+                // ------ ! thumbnail 시작 !------
+                holder.vM.setOnClickListener {
+                    val DialogFragment = PlayThumbnailDialogFragment().apply {
+                        arguments = Bundle().apply {
+                            putParcelable("ExerciseUnit", currentItem)
+                        }
+                    }
+                    DialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                }
             }
 
             is editViewHolder -> {

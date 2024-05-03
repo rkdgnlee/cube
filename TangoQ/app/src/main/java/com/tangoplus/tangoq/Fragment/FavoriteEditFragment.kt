@@ -20,6 +20,7 @@ import com.tangoplus.tangoq.Object.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseViewModel
 import com.tangoplus.tangoq.ViewModel.FavoriteItemVO
+import com.tangoplus.tangoq.ViewModel.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteEditBinding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -160,10 +161,12 @@ class FavoriteEditFragment : Fragment() {
             }
         } // -----! 즐겨찾기 하나 만들기 끝 !-----
     }
+
+
     private fun updatePickEdit() {
 
 //        val appClass = requireContext().applicationContext as AppClass
-        val index = viewModel.favoriteItems.value?.indexOfFirst { it.favoriteName == title }
+        val index = viewModel.favoriteItems.value?.indexOfFirst { it.favoriteName == title } // 즐겨찾기이름이 title인 인덱스를 가져온다.
 
         val pickItem = FavoriteItemVO(
             favoriteSn = index?.let { viewModel.favoriteItems.value!![it].favoriteSn }!!,
@@ -174,7 +177,13 @@ class FavoriteEditFragment : Fragment() {
         Log.w("PickItemSave", "시리얼넘버: ${pickItem.favoriteSn}, 운동들: ${pickItem.exercises}")
 
         viewModel.favoriteItems.value?.set(index, pickItem)
-        viewModel.favoriteList.value?.set(index, Pair(pickItem.favoriteSn.toInt(), pickItem.favoriteName.toString()))
+        val favoriteitem = viewModel.favoriteList.value?.get(index)
+        favoriteitem?.name = pickItem.favoriteName.toString()
+
+
+        if (favoriteitem != null) {
+            viewModel.favoriteList.value?.set(index, favoriteitem)
+        }
         title = pickItem.favoriteName.toString()
 
 

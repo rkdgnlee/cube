@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="#00FFFFFF"
     app:layout_behavior="@string/bottom_sheet_behavior"
-    tools:context=".Dialog.FavoriteBSDialogFragment">
+    tools:context=".Dialog.ExerciseBSDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:background="@drawable/background_bottomsheet">
 
         <TextView
-            android:id="@+id/tvFrBSName"
+            android:id="@+id/tvEcBSName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -22,22 +22,22 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ivFrBsThumbnail"
-            app:layout_constraintStart_toEndOf="@+id/ivFrBsThumbnail"
-            app:layout_constraintTop_toTopOf="@+id/ivFrBsThumbnail" />
+            app:layout_constraintBottom_toBottomOf="@+id/ivEcBsThumbnail"
+            app:layout_constraintStart_toEndOf="@+id/ivEcBsThumbnail"
+            app:layout_constraintTop_toTopOf="@+id/ivEcBsThumbnail" />
 
         <ImageView
-            android:id="@+id/ivFrBsThumbnail"
+            android:id="@+id/ivEcBsThumbnail"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="32dp"
             android:src="@drawable/profile_default"
-            app:layout_constraintBottom_toTopOf="@+id/llFrBSPlay"
+            app:layout_constraintBottom_toTopOf="@+id/llEcBSPlay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/ibtnFrBsExit"
+            android:id="@+id/ibtnEcBsExit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -48,7 +48,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/llFrBSPlay"
+            android:id="@+id/llEcBSPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -60,6 +60,7 @@
             app:layout_constraintVertical_bias="0.25">
 
             <ImageView
+                android:id="@+id/imageView22"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -67,7 +68,6 @@
                 android:src="@drawable/icon_play" />
 
             <TextView
-                android:id="@+id/tvFrBSPlay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -77,42 +77,70 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llFrBSEdit"
+            android:id="@+id/llEcBSAddList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSPlay">
+            app:layout_constraintTop_toBottomOf="@+id/llEcBSChange">
 
             <ImageView
                 android:id="@+id/imageView21"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
-                android:src="@drawable/icon_edit" />
+                android:src="@drawable/icon_edit_list" />
 
             <TextView
-                android:id="@+id/textView69"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="2"
-                android:text="편집하기"
+                android:text="플레이리스트 추가하기"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llFrBSShare"
+            android:id="@+id/llEcBSAddSet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llEcBSPlay">
+
+            <ImageView
+                android:id="@+id/imageView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:src="@drawable/icon_add" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="2"
+                android:text="세트 추가하기"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llEcBSShare"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:orientation="horizontal"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSEdit">
+            app:layout_constraintTop_toBottomOf="@+id/llEcBSAddSet">
 
             <ImageView
                 android:id="@+id/imageView25"
@@ -123,7 +151,6 @@
                 android:src="@drawable/icon_share" />
 
             <TextView
-                android:id="@+id/tvFrBSShare"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -133,14 +160,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llFrBSChange"
+            android:id="@+id/llEcBSChange"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSShare">
+            app:layout_constraintTop_toBottomOf="@+id/llEcBSShare">
 
             <ImageView
                 android:id="@+id/imageView26"
@@ -151,7 +178,6 @@
                 android:src="@drawable/icon_change" />
 
             <TextView
-                android:id="@+id/tvFrBSChange"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -161,35 +187,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llFrBSAddExercise"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSChange">
-
-            <ImageView
-                android:id="@+id/imageView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="8"
-                android:src="@drawable/icon_edit_list" />
-
-            <TextView
-                android:id="@+id/textView67"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="2"
-                android:text="운동 추가하기"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llFrBSDelete"
+            android:id="@+id/llEcBSDelete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
@@ -198,7 +196,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSAddExercise">
+            app:layout_constraintTop_toBottomOf="@+id/llEcBSAddList">
 
             <ImageView
                 android:id="@+id/imageView27"
@@ -219,5 +217,4 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

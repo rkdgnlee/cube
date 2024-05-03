@@ -12,6 +12,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONException
@@ -130,7 +131,7 @@ object NetworkExerciseService {
     }
     fun updateFavoriteItemJson(myUrl: String, favorite_sn: String, json:String, callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+        val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
             .url("$myUrl/update.php?favorite_sn=$favorite_sn")
             .patch(body)
@@ -147,6 +148,25 @@ object NetworkExerciseService {
                 callback(jsonObj__)
             }
         })
+    }
+    fun deleteFavoriteItemSn(myUrl: String, favorite_sn: String, callback: () -> Unit) {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}delete.php?favorite_sn=$favorite_sn")
+            .delete()
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                callback()
+            }
+        })
+
     }
     // 즐겨찾기 목록 조회 (PickItems에 담기)
     suspend fun fetchFavoriteItemsJsonByMobile(myUrl: String, mobile: String): JSONArray? {
@@ -208,6 +228,8 @@ object NetworkExerciseService {
             quantity = json.optInt("quantity")
         )
     }
+
+    // exercises 가 전부 들어간 즐겨찾기 한 개
     fun jsonToFavoriteItemVO(json: JSONObject) : FavoriteItemVO {
         val exerciseUnits = mutableListOf<ExerciseVO>()
         val exercises = json.optJSONArray("exercise_detail_data")

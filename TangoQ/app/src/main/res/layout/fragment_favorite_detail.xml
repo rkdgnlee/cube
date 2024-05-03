@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/subColor100"
+    android:background="@color/subColor200"
     tools:context=".Fragment.FavoriteDetailFragment">
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
-                android:background="@color/subColor100"
+                android:background="@color/subColor200"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_arrow_left"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,9 +51,9 @@
                 android:layout_height="36dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="20dp"
-                android:background="@color/subColor100"
+                android:background="@color/subColor200"
                 android:scaleType="centerCrop"
-                android:src="@drawable/icon_more"
+                android:src="@drawable/icon_more_800"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -75,7 +75,7 @@
                 app:endIconMinSize="24dp"
                 app:endIconMode="dropdown_menu"
                 app:endIconScaleType="centerCrop"
-                app:endIconTint="@color/subColor200"
+                app:endIconTint="@color/subColor800"
                 app:expandedHintEnabled="true"
                 app:helperTextTextColor="@color/black"
                 app:hintTextColor="@color/black"
@@ -94,7 +94,7 @@
                     android:layout_height="64dp"
                     android:layout_gravity="left"
                     android:background="@color/subColor100"
-                    android:backgroundTint="@color/subColor100"
+                    android:backgroundTint="@color/subColor200"
                     android:editable="false"
                     android:gravity="center|center_vertical"
                     android:inputType="none"

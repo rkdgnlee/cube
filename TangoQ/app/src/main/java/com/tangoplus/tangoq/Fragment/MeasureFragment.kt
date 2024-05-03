@@ -1,12 +1,17 @@
 package com.tangoplus.tangoq.Fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +32,8 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.GraphVO
 import com.tangoplus.tangoq.ViewModel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.random.Random
 
 
@@ -84,6 +91,25 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             }
         } // ------!  이름 + 통증 부위 끝 !------
 
+        // ------! 공유하기 버튼 시작 !------
+        binding.btnMsShare.setOnClickListener {
+            val bitmap = Bitmap.createBitmap(binding.ClMs.width, binding.ClMs.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            binding.ClMs.draw(canvas)
+
+            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
+            val fileOutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+
+            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "image/png" // 이곳에서 공유 데이터 변경
+            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
+            startActivity(Intent.createChooser(intent, "이미지 공유"))
+        } // ------! 공유하기 버튼 끝 !------
 
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMs

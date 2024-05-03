@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.tangoplus.tangoq.Adapter.ExerciseRVAdapter
+import com.tangoplus.tangoq.Dialog.FavoriteBSDialogFragment
 import com.tangoplus.tangoq.Object.NetworkExerciseService
 import com.tangoplus.tangoq.Object.NetworkExerciseService.jsonToFavoriteItemVO
 import com.tangoplus.tangoq.Object.Singleton_t_user
@@ -27,6 +28,7 @@ import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseViewModel
 import com.tangoplus.tangoq.ViewModel.FavoriteItemVO
+import com.tangoplus.tangoq.ViewModel.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteDetailBinding
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -76,7 +78,7 @@ class FavoriteDetailFragment : Fragment() {
         binding.rvFV.overScrollMode = View.OVER_SCROLL_NEVER
 
         title = requireArguments().getString(ARG_TITLE).toString()
-        currentSn = viewModel.favoriteList.value?.find { it.second == title }?.first.toString()
+        currentSn = viewModel.favoriteList.value?.find { it.name == title }?.sn.toString()
 
         binding.actFVDetail.setText(title)
 
@@ -93,6 +95,7 @@ class FavoriteDetailFragment : Fragment() {
             snData = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)!!
             FavoriteItem = jsonToFavoriteItemVO(snData)
 
+            // ------! 즐겨찾기 넣어서 가져오기 !------
             currentItem = viewModel.favoriteItems.value?.find { it.favoriteName == title }!!
             currentItem.exercises = FavoriteItem.exercises
 
@@ -105,23 +108,23 @@ class FavoriteDetailFragment : Fragment() {
                 binding.sflFV.visibility = View.GONE
             }
 
-            val pickList = mutableListOf<Pair<Int, String>>()
+            val pickList = mutableListOf<String>()
             viewModel.favoriteList.observe(viewLifecycleOwner) { Array ->
                 pickList.clear()
                 for (i in 0 until Array.size) {
-                    pickList.add(Array[i])
+                    pickList.add(Array[i].name.toString())
                 }
                 currentSn = currentItem.favoriteSn.toString()
                 setFVDetail(currentItem.favoriteSn.toString())
             }
-            val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList.map { it.second })
+            val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList)
             binding.actFVDetail.setAdapter(adapter)
             binding.actFVDetail.addTextChangedListener(object: TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {  }
                 override fun afterTextChanged(s: Editable?) {
                     title = s.toString()
-                    currentSn = pickList.find { it.first == currentItem.favoriteSn }?.first.toString() // Pair로 특정 pickList하나의 sn을 가져오기
+                    currentSn = viewModel.favoriteList.value?.find { it.sn == currentItem.favoriteSn }?.sn.toString() // Pair로 특정 pickList하나의 sn을 가져오기
 
                     currentItem = viewModel.favoriteItems.value?.find { it.favoriteName == title }!!
                     Log.v("현재 sn(currentSn)", "현재 sn: $currentSn")
@@ -163,6 +166,17 @@ class FavoriteDetailFragment : Fragment() {
             }
             it.isClickable = true
         }
+        binding.ibtnFDMore.setOnClickListener {
+            val bsFragment = FavoriteBSDialogFragment()
+            val bundle = Bundle()
+            Log.v("currentItem상태", "$currentItem")
+            bundle.putParcelable("FavoriteItem", currentItem)
+            bsFragment.arguments = bundle
+            val fragmentManager = requireActivity().supportFragmentManager
+            bsFragment.show(fragmentManager, bsFragment.tag)
+        }
+
+
         // -----! 편집 버튼 시작 !-----
         binding.btnFVEdit.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -174,6 +188,7 @@ class FavoriteDetailFragment : Fragment() {
             }
             requireContext()
         } // -----! 편집 버튼 끝 !-----
+
 
         // ------! 플롯팅액션버튼 시작 !------
         binding.fabtnFDPlay.setOnClickListener {

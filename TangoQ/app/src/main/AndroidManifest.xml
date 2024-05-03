@@ -77,9 +77,6 @@
             android:name=".AlarmActivity"
             android:exported="true" />
         <activity
-            android:name=".PlayThumbnailActivity"
-            android:exported="true" />
-        <activity
             android:name=".FeedbackActivity"
             android:exported="true" />
         <activity
@@ -110,6 +107,14 @@
             android:enabled="true"
             android:exported="false"
             android:permission="TODO" />
+        <provider
+            android:authorities="com.tangoplus.tangoq.provider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
-
 </manifest>
