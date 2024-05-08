@@ -23,7 +23,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.google.android.material.tabs.TabLayout
 import com.tangoplus.tangoq.Adapter.PainPartRVAdpater
+import com.tangoplus.tangoq.Class.Measurement
+
 import com.tangoplus.tangoq.Dialog.LoginDialogFragment
 import com.tangoplus.tangoq.Dialog.MeasurePainPartDialogFragment
 import com.tangoplus.tangoq.Listener.OnPartCheckListener
@@ -51,6 +54,36 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // ------! tab & enum class 관리 시작 !------
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                val measurement : Measurement = when (tab?.position) {
+                    0 -> Measurement.DAILY
+                    1 -> Measurement.WEEKLY
+                    2 -> Measurement.MONTHLY
+                    else -> throw IllegalArgumentException("Invalid Tab Position")
+                }
+                // enum class 로 값 변경
+                when (measurement) {
+                    Measurement.DAILY -> {
+                        binding.tvMsBalanceScore.text = "83"
+                    }
+                    Measurement.WEEKLY -> {
+                        binding.tvMsBalanceScore.text = "90"
+                    }
+                    Measurement.MONTHLY -> {
+                        binding.tvMsBalanceScore.text = "87"
+                    }
+                    else -> {}
+                }
+
+            }
+            override fun onTabUnselected(p0: TabLayout.Tab?) {}
+            override fun onTabReselected(p0: TabLayout.Tab?) {}
+        })
+
+        // ------! tab & enum class 관리 끝 !------
 
         // ------! 통증 부위 관리 시작 !------
         binding.tvMsAddPart.setOnClickListener {
@@ -113,6 +146,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMs
+        lineChart.setTouchEnabled(false)
         val lcXAxis = lineChart.xAxis
         val lcYAxisLeft = lineChart.axisLeft
         val lcYAxisRight = lineChart.axisRight
@@ -187,6 +221,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
         // ---- 막대 그래프 코드 시작 ----
         val barChart = binding.bcMs
+        barChart.setTouchEnabled(false)
         val bcXAxis = barChart.xAxis
         val bcYAxisLeft = barChart.axisLeft
         val bcYAxisRight = barChart.axisRight
@@ -199,8 +234,14 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 //            val monthLabel = if (currentMonth == 0) "12월" else "${currentMonth}월"
 //            bcDataList.add(ChartVO(monthLabel, Random.nextInt(99)))
 //        }
-        val bcData = listOf( "12:00", "6:00", "12:00", "6:00")
-        val bcEntries = mutableListOf<String>()
+        val bcData = Array(4) { "" }.apply {
+            this[0] = "12:00"
+            this[1] = "6:00"
+            this[2] = "12:00"
+            this[3] = "6:00"
+        }
+
+        val bcLabels = mutableListOf<String>()
         for (hour in 0 until 24) {
             val timeLabel = String.format("%02d:00", hour) // 시간 형식을 "00:00"으로 포맷
             bcDataList.add(GraphVO(timeLabel, Random.nextInt(99)))
@@ -215,12 +256,12 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         for (i in 1 .. bcDataList.size) {
             if (i % interval == 0) {
                 val j = i / interval  // 12 24 36 48
-                bcEntries.add(bcData[j-1])
+                bcLabels.add(bcData[j-1])
             } else {
-                bcEntries.add(" ")
+                bcLabels.add(" ")
             }
         }
-        Log.v("bcEntries", "$bcEntries, ${bcEntries.size}")
+        Log.v("bcLabels", "$bcLabels, ${bcLabels.size}")
 
         val rcEntries : MutableList<BarEntry> = mutableListOf()
         for (i in bcDataList.indices) {
@@ -234,18 +275,20 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         }
 
         bcXAxis.apply {
+
             textSize = 14f
             textColor = resources.getColor(R.color.subColor500)
             labelRotationAngle = 1.0F
             setDrawAxisLine(false)
             setDrawGridLines(false)
-            bcXAxis.valueFormatter = IndexAxisValueFormatter(bcData)
-            setLabelCount(bcData.size, true)
+            bcXAxis.valueFormatter = IndexAxisValueFormatter(bcLabels)
+            setLabelCount(bcLabels.size, true)
             bcXAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
-            axisLineWidth = 0f
+//            axisLineWidth = 0f
 
         }
         bcYAxisLeft.apply {
+            gridColor = R.color.subColor200
             setDrawGridLines(true)
             setDrawAxisLine(false)
 //            setDrawGridLinesBehindData(true)

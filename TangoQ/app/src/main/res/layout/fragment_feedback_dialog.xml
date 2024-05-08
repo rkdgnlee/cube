@@ -6,10 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".Dialog.FeedbackDialogFragment">
 
+    <ImageView
+        android:id="@+id/imageView40"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/recommend_thumbnail" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/subColor200">
+        android:background="#99000000">
 
         <RadioGroup
             android:id="@+id/rgIntensity"
@@ -24,44 +31,49 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView61">
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbIntensity1"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbIntensity2"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbIntensity3"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbIntensity4"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbIntensity5"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
         </RadioGroup>
 
         <TextView
@@ -70,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
             android:text="운동 평가"
-            android:textColor="@color/black"
+            android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -277,7 +289,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:text="운동 강도"
-            android:textColor="@color/black"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -291,7 +303,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="매우 저강도"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -301,7 +313,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
             android:text="저강도"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
             app:layout_constraintStart_toEndOf="@+id/textView80" />
 
@@ -310,7 +322,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="보통이다"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
             app:layout_constraintEnd_toStartOf="@+id/textView83"
             app:layout_constraintStart_toEndOf="@+id/textView81" />
@@ -321,7 +333,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="28dp"
             android:text="고강도"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
             app:layout_constraintEnd_toStartOf="@+id/textView84" />
 
@@ -331,7 +343,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:text="매우 고강도"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -341,7 +353,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="운동 피로도"
-            android:textColor="@color/black"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -350,7 +362,7 @@
 
         <RadioGroup
             android:id="@+id/rgFatigue"
-            style="@style/Theme.App.RadioButton"
+            style="@style/Widget.App.RadioButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -365,39 +377,44 @@
 
             <RadioButton
                 android:id="@+id/rbFatigue1"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbFatigue2"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbFatigue3"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbFatigue4"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginRight="48dp"
                 android:gravity="center"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbFatigue5"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
         </RadioGroup>
 
         <TextView
@@ -406,7 +423,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
             android:text="무통증"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -416,7 +433,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:text="미약한 통증"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
             app:layout_constraintStart_toEndOf="@+id/textView75" />
 
@@ -425,7 +442,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="보통"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
             app:layout_constraintEnd_toStartOf="@+id/textView78"
             app:layout_constraintHorizontal_bias="0.484"
@@ -437,7 +454,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:text="상당한 통증"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
             app:layout_constraintEnd_toStartOf="@+id/textView79" />
 
@@ -447,13 +464,13 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:text="심각한 통증"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <RadioGroup
             android:id="@+id/rgSatisfaction"
-            style="@style/Theme.App.RadioButton"
+            style="@style/Widget.App.RadioButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -467,43 +484,47 @@
 
             <RadioButton
                 android:id="@+id/rbSatisfaction1"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbSatisfaction2"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbSatisfaction3"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbSatisfaction4"
-                style="@style/Theme.App.RadioButton"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <RadioButton
                 android:id="@+id/rbSatisfaction5"
+                style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
         </RadioGroup>
 
         <TextView
@@ -512,7 +533,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="운동 만족도"
-            android:textColor="@color/black"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -525,7 +546,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="많이 아쉽다"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -535,7 +556,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
             android:text="아쉽다"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
             app:layout_constraintStart_toEndOf="@+id/textView85" />
 
@@ -544,7 +565,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="보통이다"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
             app:layout_constraintEnd_toStartOf="@+id/textView88"
             app:layout_constraintStart_toEndOf="@+id/textView86" />
@@ -555,7 +576,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="48dp"
             android:text="만족"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
             app:layout_constraintEnd_toStartOf="@+id/textView89" />
 
@@ -565,11 +586,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:text="매우 만족"
-            android:textColor="@color/subColor800"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <FrameLayout
+            android:id="@+id/frameLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/background_shadow_top_radius"

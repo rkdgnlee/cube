@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom"
-    android:background="@color/subColor500"
+    android:background="#80FFFFFF"
     android:layoutDirection="ltr"
     android:orientation="vertical"
     tools:targetApi="28">
@@ -25,14 +25,14 @@
 
         <ImageButton
             android:id="@id/exo_play"
-            android:layout_width="86dp"
-            android:layout_height="86dp"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
             android:background="@drawable/media_play_button" />
 
         <ImageButton
             android:id="@id/exo_pause"
-            android:layout_width="86dp"
-            android:layout_height="86dp"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
             android:background="@drawable/media_pause_button" />
 
 
@@ -58,7 +58,7 @@
             android:includeFontPadding="false"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
-            android:textColor="#FFBEBEBE"
+            android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -75,7 +75,7 @@
             android:includeFontPadding="false"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
-            android:textColor="#FFBEBEBE"
+            android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:textStyle="bold" />
 

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
@@ -40,7 +41,9 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         binding.nsvEc.isNestedScrollingEnabled = false
         binding.rvEcAll.isNestedScrollingEnabled = false
         binding.rvEcAll.overScrollMode = 0
-
+        binding.ibtnEcACTVClear.setOnClickListener {
+            binding.actvEcSearch.text.clear()
+        }
         // -----! 카테고리  시작 !-----
         val CategoryList = arrayOf("목", "어깨", "팔꿉", "손목", "몸통", "복부", "엉덩", "무릎", "발목", "전신", "유산소", "코어", "몸통")
         val adapter2 = ExerciseCategoryRVAdapter(CategoryList,  this@ExerciseFragment )
@@ -50,13 +53,32 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         binding.rvEcCategory.layoutManager = linearLayoutManager2
         // -----! 카테고리 끝 !-----
 
-        // ------! 자동완성 시작 !------
-        val adapterActv = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, CategoryList)
-        binding.actvEcSearch.setAdapter(adapterActv)
-        // ------! 자동완성 시작 !------
+
 
         lifecycleScope.launch {
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+
+            // ------! 자동완성 시작 !------
+            val keywordList = mutableListOf<String>()
+            for (i in 0 until responseArrayList.size) {
+                keywordList.add(responseArrayList[i].exerciseName.toString())
+            }
+            val adapterActv = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, keywordList)
+            binding.actvEcSearch.setAdapter(adapterActv)
+
+            binding.actvEcSearch.setOnItemClickListener { parent, view, position, id ->
+                val selectedItem = parent.getItemAtPosition(position) as String
+                val filterList = verticalDataList.filter { item ->
+                    item.exerciseName == selectedItem
+                }.toMutableList()
+                val adapter = ExerciseRVAdapter(this@ExerciseFragment, filterList, "main")
+                binding.rvEcAll.adapter = adapter
+                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding.rvEcAll.layoutManager = linearLayoutManager
+                adapter.notifyDataSetChanged()
+            }
+
+            // ------! 자동완성 끝 !------
 
             try { // ------! rv vertical 시작 !------
                 verticalDataList = responseArrayList.toMutableList()

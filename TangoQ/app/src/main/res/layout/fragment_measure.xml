@@ -164,12 +164,14 @@
                     android:id="@+id/tvMsBalanceScore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="67점"
+                    android:layout_marginEnd="2dp"
+                    android:text="67"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="@+id/textView96"
+                    app:layout_constraintEnd_toStartOf="@+id/textView96"
+                    app:layout_constraintTop_toTopOf="@+id/textView96" />
 
                 <TextView
                     android:id="@+id/textView37"
@@ -183,6 +185,18 @@
                     app:layout_constraintEnd_toStartOf="@+id/tvMsBalanceScore"
                     app:layout_constraintTop_toTopOf="@+id/tvMsBalanceScore"
                     app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/textView96"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="점"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -441,11 +455,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="기간별 변화 척도"
-                    android:textColor="@color/subColor300"
-                    android:textSize="10sp"
+                    android:textColor="@color/subColor700"
+                    android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView23"
                     app:layout_constraintStart_toEndOf="@+id/imageView23"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@+id/imageView23" />
 
                 <com.github.mikephil.charting.charts.BarChart
 
@@ -455,6 +469,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="48dp"
                     android:layout_marginEnd="8dp"
+                    android:background="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -466,13 +481,12 @@
                     android:id="@+id/tvMsCalory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="340Kcal"
+                    android:text="340"
                     android:textColor="@color/subColor500"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/bcMs" />
+                    app:layout_constraintBottom_toBottomOf="@+id/textView97"
+                    app:layout_constraintEnd_toStartOf="@+id/textView97"
+                    app:layout_constraintTop_toTopOf="@+id/textView97" />
 
                 <TextView
 
@@ -480,11 +494,75 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:text="칼로리 소모 - "
-                    android:textColor="@color/subColor500"
+                    android:textColor="@color/subColor700"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvMsCalory"
                     app:layout_constraintEnd_toStartOf="@+id/tvMsCalory"
                     app:layout_constraintTop_toTopOf="@+id/tvMsCalory" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout8"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="@+id/bcMs"
+                    app:layout_constraintEnd_toEndOf="@+id/bcMs"
+                    app:layout_constraintStart_toStartOf="@+id/bcMs"
+                    app:layout_constraintTop_toTopOf="@+id/bcMs"
+                    app:layout_constraintVertical_bias="0.85">
+
+                    <TextView
+                        android:id="@+id/textView92"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="12:00"
+                        android:textColor="@color/subColor700"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/textView93"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="06:00"
+                        android:textColor="@color/subColor700"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/textView94"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="12:00"
+                        android:textColor="@color/subColor700"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/textView95"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="06:00"
+                        android:textColor="@color/subColor700"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView97"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Kcal"
+                    android:textColor="@color/subColor500"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bcMs" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

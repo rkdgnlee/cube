@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.Fragment
 
 import android.content.ContentValues
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,12 +18,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.Adapter.BannerVPAdapter
 import com.tangoplus.tangoq.Adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.Adapter.RecommendRVAdapter
 import com.tangoplus.tangoq.Adapter.SpinnerAdapter
 import com.tangoplus.tangoq.Listener.OnRVClickListener
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.Object.NetworkExerciseService.fetchExerciseJson
+import com.tangoplus.tangoq.Object.Singleton_t_user
+import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.BannerViewModel
 import com.tangoplus.tangoq.ViewModel.ExerciseVO
@@ -30,6 +35,7 @@ import com.tangoplus.tangoq.ViewModel.ExerciseViewModel
 import com.tangoplus.tangoq.ViewModel.ProgramVO
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
 import kotlinx.coroutines.launch
+import java.util.ArrayList
 
 
 class MainFragment : Fragment(), OnRVClickListener {
@@ -54,6 +60,40 @@ class MainFragment : Fragment(), OnRVClickListener {
         binding.nsvM.isNestedScrollingEnabled = false
         binding.rvM.isNestedScrollingEnabled = false
         binding.rvM.overScrollMode = 0
+
+        // ------! 점수 시작 !------
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
+        binding.ivMScoreDown.visibility = View.GONE
+        binding.ivMScoreUp.visibility = View.GONE
+        // TODO 점수 변동에 따른 화살표 VISIBLE 처리
+
+        if (binding.tvMBalanceScore.text.toString().toInt() > 76) {
+            binding.ivMScoreDown.visibility = View.GONE
+            binding.ivMScoreDone.visibility = View.GONE
+            binding.ivMScoreUp.visibility = View.VISIBLE
+        } else if (binding.tvMBalanceScore.text.toString().toInt() < 76) {
+            binding.ivMScoreDown.visibility = View.VISIBLE
+            binding.ivMScoreDone.visibility = View.GONE
+            binding.ivMScoreUp.visibility = View.GONE
+        } else {
+            binding.ivMScoreDown.visibility = View.GONE
+            binding.ivMScoreDone.visibility = View.VISIBLE
+            binding.ivMScoreUp.visibility = View.GONE
+        }
+        binding.btnMMeasure.setOnClickListener {
+            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
+            bnv.selectedItemId = R.id.measure
+        }
+        // TODO 운동 기록에 맞게 HPV 연동 필요
+        binding.hpvMDailyFirst.progress = 10
+        binding.hpvMDailySecond.progress = 20
+        binding.hpvMDailyThird.progress = 30
+
+
+        // ------! 점수 끝 !------
+
+
+
         // -----! spinner 연결 시작 !-----
         val filterList = arrayListOf<String>()
         filterList.add("최신순")
@@ -94,8 +134,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                     }
                 }
             })
-        }
-        // ------! 중앙 홍보 배너 끝 !------
+        } // ------! 중앙 홍보 배너 끝 !------
 
         // ------! db에서 받아서 뿌려주기 시작 !------
         lifecycleScope.launch {
@@ -129,7 +168,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                         },
                         programImageUrl = "",
                         programCount = "",
-                        programStep = exercises.first().exerciseIntensity,
+                        programStage = exercises.first().exerciseStage,
                         exercises = exercises
                     )
                     programVO.programTime = programVO.exercises?.sumOf {
@@ -172,9 +211,19 @@ class MainFragment : Fragment(), OnRVClickListener {
             } // -----! 하단 RV Adapter 끝 !-----
         }
     }
-
-    override fun onRVClick(item: String) {
-
+    override fun onRVClick(program: ProgramVO) {
+        val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
+        val url = storeUrl(program)
+        intent.putStringArrayListExtra("resourceList", ArrayList(url))
+        startActivityForResult(intent, 8080)
+    }
+    private fun storeUrl(program: ProgramVO) : MutableList<String> {
+        val exercises = program.exercises
+        val resourceList = mutableListOf<String>()
+        for (i in 0 until exercises!!.size) {
+            resourceList.add(exercises[i].videoFilepath.toString())
+        }
+        return resourceList
     }
     private fun autoScrollStart(intervalTime: Long) {
         bannerHandler.removeMessages(0)

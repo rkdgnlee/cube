@@ -7,7 +7,7 @@ data class ProgramVO(
     var programImageUrl : String? = "",
     var programName : String? = "",
     var programTime : String? = "",
-    var programStep : String? = "",
+    var programStage : String? = "",
     var programCount : String? = "",
     var exercises : MutableList<ExerciseVO>?
 ): Parcelable {
@@ -26,7 +26,7 @@ data class ProgramVO(
         dest.writeString(programImageUrl)
         dest.writeString(programName)
         dest.writeString(programTime)
-        dest.writeString(programStep)
+        dest.writeString(programStage)
         dest.writeString(programCount)
         dest.writeTypedList(exercises)
     }

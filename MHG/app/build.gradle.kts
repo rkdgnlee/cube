@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.mhg"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -45,6 +45,9 @@ dependencies {
 
     // 스켈레톤
     implementation("com.google.mediapipe:tasks-vision:0.20230731")
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha07")
+    implementation("com.google.android.libraries.healthdata:health-data-api:1.0.0-alpha01")
+
 // 외부 라이브러리
     implementation ("io.github.ShawnLin013:number-picker:2.4.13")
     implementation("com.github.shuhart:StepView:v1.5.1")

@@ -36,18 +36,26 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:scaleType="centerCrop"
                     android:src="@drawable/icon_search" />
 
                 <AutoCompleteTextView
                     android:id="@+id/actvEcSearch"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
+                    android:layout_weight="8"
                     android:background="#00FFFFFF"
-                    android:drawableEnd="@drawable/icon_text_clear"
                     android:hint="운동이름을 검색하세요"
                     android:textColorHint="@color/subColor500" />
+
+                <ImageButton
+                    android:id="@+id/ibtnEcACTVClear"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/icon_text_clear" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

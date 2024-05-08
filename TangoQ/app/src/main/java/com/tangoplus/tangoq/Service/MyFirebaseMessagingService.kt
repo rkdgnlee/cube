@@ -9,12 +9,29 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.room.Room
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.Room.Database
+import com.tangoplus.tangoq.Room.Message
+import com.tangoplus.tangoq.Room.MessageDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
+    private lateinit var messageDao: MessageDao
+
+    override fun onCreate() {
+        super.onCreate()
+        val db = Room.databaseBuilder(
+            applicationContext,
+            Database::class.java, "tangoqDB"
+        ).build()
+        messageDao = db.messageDao()
+    }
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         // 메시지에 데이터 페이로드가 포함 되어 있는지 확인
@@ -25,6 +42,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 message.data["title"].toString(),
                 message.data["message"].toString()
             )
+            val messageToStore = Message(
+                message = message.data["message"].toString(),
+                timestamp = System.currentTimeMillis(),
+                route = "AlarmActivity"
+            )
+            CoroutineScope(Dispatchers.IO).launch {
+                messageDao.insert(messageToStore)
+            }
         } else {
             // 메시지에 알림 페이로드가 포함되어 있는지 확인
             message.notification?.let {
@@ -32,6 +57,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     message.notification!!.title.toString(),
                     message.notification!!.body.toString()
                 )
+                val messageToStore = Message(
+                    message = message.notification!!.body.toString(),
+                    timestamp = System.currentTimeMillis(),
+                    route = "AlarmActivity"
+                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    messageDao.insert(messageToStore)
+                }
             }
         }
     }
@@ -47,7 +80,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             PendingIntent.FLAG_IMMUTABLE
         )
         // ----- 해당 알림의 화면 경로 설정 끝 -----
-        val channelId = "Multi Home gym"
+        val channelId = "TangoQ"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.app_logo)

@@ -217,6 +217,7 @@ class PickDetailFragment : Fragment() {
         val title = requireArguments().getString(ARG_TITLE).toString()
         val currentItem = viewModel.favoriteItems.value?.find { it.favoriteName == title }
         Log.w("PreviousStoreURL", "$currentItem")
+
         for (i in 0 until currentItem!!.exercises!!.size) {
             val exercises = currentItem.exercises!!.get(i)
             resourceList.add(exercises.videoFilepath.toString())

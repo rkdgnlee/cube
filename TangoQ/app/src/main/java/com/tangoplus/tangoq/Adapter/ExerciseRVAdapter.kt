@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.Callback.ItemTouchCallback
@@ -22,6 +21,7 @@ import com.tangoplus.tangoq.ViewModel.ExerciseVO
 import com.tangoplus.tangoq.databinding.RvBasketItemBinding
 import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvMainItemBinding
+import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import java.lang.IllegalArgumentException
 import java.util.Collections
 
@@ -74,11 +74,21 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         val tvBkCount = view.findViewById<TextView>(R.id.tvBkCount)
     }
 
+    inner class recommendViewHolder(view:View) : RecyclerView.ViewHolder(view) {
+        val tvRcPName = view.findViewById<TextView>(R.id.tvRcPName)
+        val tvRcPTime = view.findViewById<TextView>(R.id.tvRcPTime)
+        val tvRcPStage = view.findViewById<TextView>(R.id.tvRcPStage)
+        val tvRcPKcal = view.findViewById<TextView>(R.id.tvRcPKcal)
+        val ivRcPThumbnail = view.findViewById<ImageView>(R.id.ivRcPThumbnail)
+
+    }
+
     override fun getItemViewType(position: Int): Int {
         return when (xmlname) {
             "main" -> 0
             "edit" -> 1
             "basket" -> 2
+            "recommend" -> 3
             else -> throw IllegalArgumentException("invalied view type")
         }
     }
@@ -97,6 +107,10 @@ class ExerciseRVAdapter (private val fragment: Fragment,
             2 -> {
                 val binding = RvBasketItemBinding.inflate(inflater, parent, false)
                 basketViewHolder(binding.root)
+            }
+            3 -> {
+                val binding = RvRecommendPTnItemBinding.inflate(inflater, parent, false)
+                recommendViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("invalid view type binding")
         }
@@ -123,16 +137,14 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                     "유지" -> "중급자"
                     else -> "초급자"
                 }
-
-
-                val params = holder.ivHThumbnail.layoutParams as ConstraintLayout.LayoutParams
-                params.horizontalBias = 0f // 0f는 왼쪽, 0.5f는 가운데, 1f는 오른쪽
-                params.verticalBias = 0.5f // 0f는 위쪽, 0.5f는 가운데, 1f는 아래쪽
-                holder.ivHThumbnail.layoutParams = params
-
-                val params2 = holder.tvMTime.layoutParams as ConstraintLayout.LayoutParams
-                params2.verticalBias = 0.5f
-                holder.tvMTime.layoutParams = params2
+//                val params = holder.ivHThumbnail.layoutParams as ConstraintLayout.LayoutParams
+//                params.horizontalBias = 0f // 0f는 왼쪽, 0.5f는 가운데, 1f는 오른쪽
+//                params.verticalBias = 0.5f // 0f는 위쪽, 0.5f는 가운데, 1f는 아래쪽
+//                holder.ivHThumbnail.layoutParams = params
+//
+//                val params2 = holder.tvMTime.layoutParams as ConstraintLayout.LayoutParams
+//                params2.verticalBias = 0.5f
+//                holder.tvMTime.layoutParams = params2
 
 //                holder.clMItem.setOnClickListener {
 //                    val dialog = PlayThumbnailDialogFragment()
@@ -202,6 +214,21 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                     }
                 }
                 holder.tvBkCount.text = currentItem.quantity.toString()
+            }
+            // ------! play thumbnail 추천 운동 시작 !------
+            is recommendViewHolder -> {
+                holder.tvRcPName.text = (if (currentItem.exerciseName.toString().length >= 10) {
+                    currentItem.exerciseName.toString().substring(0, 8)
+                } else {
+                    currentItem.exerciseName
+                }).toString()
+                holder.tvRcPTime.text = second.toString()
+                holder.tvRcPStage.text = when (currentItem.exerciseStage) {
+                    "향상" -> "상급자"
+                    "유지" -> "중급자"
+                    else -> "초급자"
+                }
+                holder.tvRcPKcal.text
             }
         }
     }

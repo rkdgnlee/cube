@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.Adapter
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.Dialog.ExerciseBSDialogFragment
+import com.tangoplus.tangoq.Dialog.FavoriteBSDialogFragment
+import com.tangoplus.tangoq.Dialog.RecommendBSDialogFragment
 import com.tangoplus.tangoq.Listener.OnRVClickListener
+import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.ViewModel.FavoriteItemVO
 import com.tangoplus.tangoq.ViewModel.ProgramVO
 import com.tangoplus.tangoq.databinding.RvRecommendItemBinding
 
@@ -44,23 +49,31 @@ class RecommendRVAdapter(var programs: MutableLiveData<MutableList<ProgramVO>>, 
 //            .diskCacheStrategy(DiskCacheStrategy.ALL)
 //            .into(holder.ivRcmThumbnail)
         holder.tvRcmExerciseName.text = currentItem.programName
-        holder.tvRcmExerciseStep.text = currentItem.programStep
+        holder.tvRcmExerciseStep.text = when (currentItem.programStage) {
+            "유지" -> "상급자"
+            "향상" -> "중급자"
+            else -> "초급자"
+        }
         holder.tvRcmExerciseTime.text = currentItem.programTime
         holder.tvRcmExerciseKcal.text = currentItem.programCount
         holder.ibtnRcmMore.setOnClickListener {
-            val bsFragment = ExerciseBSDialogFragment()
+            val bsFragment = RecommendBSDialogFragment()
             val bundle = Bundle()
 //            val FavoriteVOfromProgramm = FavoriteItemVO(
-//
+//                favoriteSn = 102,
+//                favoriteName = currentItem.programName.toString(),
+//                favoriteExplain = currentItem.programCount.toString() + "개 ," + currentItem.programTime.toString() + "분 ",
+//                favoriteDisclosure = "",
+//                exercises = currentItem.exercises
 //            )
-            bundle.putParcelable("ExerciseUnit", currentItem)
+            bundle.putParcelable("Program", currentItem)
 
             bsFragment.arguments = bundle
             val fragmentManager = fragment.requireActivity().supportFragmentManager
             bsFragment.show(fragmentManager, bsFragment.tag)
         }
         holder.vRcmPlay.setOnClickListener {
-
+            onRVClickListener.onRVClick(currentItem)
         }
     }
 }

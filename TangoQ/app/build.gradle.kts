@@ -79,6 +79,19 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.android.volley:volley:1.2.1")
 
+    // room
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-rxjava3:2.6.1")
+    implementation("androidx.room:room-rxjava2:2.6.1")
+    implementation("androidx.room:room-guava:2.6.1")
+    implementation("androidx.room:room-testing:2.6.1")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
+    //noinspection KaptUsageInsteadOfKsp
+    kapt("androidx.room:room-compiler:2.6.1")
+
     // 내부 라이브러리
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")

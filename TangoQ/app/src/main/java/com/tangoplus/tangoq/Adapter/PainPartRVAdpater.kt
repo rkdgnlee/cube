@@ -54,10 +54,13 @@ class PainPartRVAdpater(var partList: MutableList<Pair<String, String>>, var xml
 
         if (holder is ppViewHolder) {
             holder.tvPpName.text = currentItem.second
-            val resourceId = holder.itemView.context.resources.getIdentifier(
-                currentItem.first, "drawable", holder.itemView.context.packageName
-            )
-            holder.ivPp.setImageResource(resourceId)
+            holder.ibtnPpMore.setOnClickListener {
+                onPartCheckListener.onPartCheck(Pair(currentItem.first, currentItem.second), false)
+            }
+//            val resourceId = holder.itemView.context.resources.getIdentifier(
+//                currentItem.first, "drawable", holder.itemView.context.packageName
+//            )
+//            holder.ivPp.setImageResource(resourceId)
 
         } else if (holder is selectPpViewHolder) {
             holder.tvScPp.text = currentItem.second

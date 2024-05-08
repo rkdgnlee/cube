@@ -11,7 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.Adapter.FavoriteRVAdapter
-import com.tangoplus.tangoq.Listener.onFavoriteDetailClickListener
+import com.tangoplus.tangoq.Listener.OnFavoriteDetailClickListener
 import com.tangoplus.tangoq.Object.NetworkExerciseService
 import com.tangoplus.tangoq.Object.NetworkExerciseService.fetchFavoriteItemsJsonByMobile
 import com.tangoplus.tangoq.Object.Singleton_t_user
@@ -23,7 +23,7 @@ import com.tangoplus.tangoq.databinding.FragmentFavoriteBinding
 import kotlinx.coroutines.launch
 
 
-class FavoriteFragment : Fragment(), onFavoriteDetailClickListener {
+class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
     lateinit var binding : FragmentFavoriteBinding
     val viewModel : ExerciseViewModel by activityViewModels()
     override fun onCreateView(

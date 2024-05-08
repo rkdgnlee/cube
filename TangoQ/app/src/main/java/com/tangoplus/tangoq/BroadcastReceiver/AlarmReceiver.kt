@@ -22,7 +22,7 @@ class AlarmReceiver: BroadcastReceiver() {
         }
 
         val notification: Notification = NotificationCompat.Builder(context, channelId)
-            .setContentTitle("Multi Home Gym")
+            .setContentTitle("TangoQ")
             .setContentText("오늘 하루의 마무리! 스트레칭 어떠세요?")
 //            .setSmallIcon(R.drawable.ic_notification)
             .build()

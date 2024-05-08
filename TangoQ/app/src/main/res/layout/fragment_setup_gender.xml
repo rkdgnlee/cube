@@ -69,7 +69,7 @@
                 android:padding="12dp"
                 android:text="남성"
                 android:textSize="16sp"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
 
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/rbtnFemale"
@@ -81,7 +81,7 @@
                 android:padding="12dp"
                 android:text="여성"
                 android:textSize="16dp"
-                android:theme="@style/Theme.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton" />
         </RadioGroup>
 
         <TextView

@@ -39,7 +39,8 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:background="@color/white">
 
                         <TextView
                             android:id="@+id/textView18"
@@ -149,7 +150,7 @@
                             app:layout_constraintTop_toTopOf="@+id/tvMGoalNumber" />
 
                         <com.tomlecollegue.progressbars.HorizontalProgressView
-                            android:id="@+id/horizontalProgressView"
+                            android:id="@+id/hpvMDailyFirst"
                             android:layout_width="0dp"
                             android:layout_height="2dp"
                             android:layout_marginStart="8dp"
@@ -163,27 +164,28 @@
                             app:layout_constraintTop_toTopOf="@+id/textView17" />
 
                         <com.tomlecollegue.progressbars.HorizontalProgressView
-                            android:id="@+id/horizontalProgressView2"
+                            android:id="@+id/hpvMDailySecond"
                             android:layout_width="0dp"
                             android:layout_height="2dp"
                             android:background="@color/white"
                             app:colorBackground="@color/subColor100"
                             app:colorProgress="@color/mainColor"
                             app:layout_constraintBottom_toBottomOf="@+id/textView18"
-                            app:layout_constraintEnd_toEndOf="@+id/horizontalProgressView"
-                            app:layout_constraintStart_toStartOf="@+id/horizontalProgressView"
+                            app:layout_constraintEnd_toEndOf="@+id/hpvMDailyFirst"
+                            app:layout_constraintStart_toStartOf="@+id/hpvMDailyFirst"
                             app:layout_constraintTop_toTopOf="@+id/textView18" />
 
                         <com.tomlecollegue.progressbars.HorizontalProgressView
+                            android:id="@+id/hpvMDailyThird"
                             android:layout_width="0dp"
                             android:layout_height="2dp"
                             android:background="@color/white"
                             app:colorBackground="@color/subColor100"
                             app:colorProgress="@color/mainColor"
                             app:layout_constraintBottom_toBottomOf="@+id/textView19"
-                            app:layout_constraintEnd_toEndOf="@+id/horizontalProgressView2"
+                            app:layout_constraintEnd_toEndOf="@+id/hpvMDailySecond"
                             app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toStartOf="@+id/horizontalProgressView2"
+                            app:layout_constraintStart_toStartOf="@+id/hpvMDailySecond"
                             app:layout_constraintTop_toTopOf="@+id/textView19" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
@@ -204,7 +206,8 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:background="@color/white">
 
                         <TextView
                             android:id="@+id/textView20"
@@ -253,6 +256,37 @@
                             android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvMBalanceScore"
+                            app:layout_constraintEnd_toStartOf="@+id/tvMBalanceScore"
+                            app:layout_constraintTop_toTopOf="@+id/tvMBalanceScore">
+
+                            <ImageView
+                                android:id="@+id/ivMScoreDone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:src="@drawable/icon_score_done" />
+
+                            <ImageView
+                                android:id="@+id/ivMScoreUp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:src="@drawable/icon_score_up" />
+
+                            <ImageView
+                                android:id="@+id/ivMScoreDown"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:src="@drawable/icon_score_down" />
+                        </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 

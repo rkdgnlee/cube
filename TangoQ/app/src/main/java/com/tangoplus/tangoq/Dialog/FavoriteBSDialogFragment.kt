@@ -35,10 +35,16 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
 
         val bundle = arguments
         val favorite = bundle?.getParcelable<FavoriteVO>("Favorite")
-        val favoriteItem = bundle?.getParcelable<FavoriteItemVO>("FavoriteItem")
-
         // ------! 즐겨찾기 홈에서 경로 설정 시작 !------
         if (favorite != null) {
+
+            // ------! 썸네일 사진 4개 시작 !------
+
+            if (favorite.imgThumbnailList != null) {
+                // TODO 썸네일 URL GLIDE로 뿌리기.
+            }
+
+
             binding.tvFrBSName.text = favorite.name
             binding.llFrBSPlay.setOnClickListener{
                 // TODO 재생목록 만들어서 FULLSCREEN
@@ -91,59 +97,9 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                 }.show()
             }
 
-
-
-
         } // ------! 즐겨찾기 홈에서 경로 설정 끝 !------
+        binding.ibtnFrBsExit.setOnClickListener { dismiss() }
 
-        // ------! bs에서 경로 설정 시작 !------
-        else if (favoriteItem != null) {
-            binding.tvFrBSName.text = favoriteItem.favoriteName
-//            binding.ivFrBsThumbnail.
-            binding.llFrBSPlay.setOnClickListener{
-                // TODO 재생목록 만들어서 FULLSCREEN
-            }
-
-            // ---! 편집하기 !---
-            binding.llFrBSEdit.setOnClickListener {
-                dismiss()
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                    replace(R.id.flMain, FavoriteEditFragment.newInstance(favoriteItem.favoriteName.toString()))
-                    remove(FavoriteDetailFragment()).commit()
-                }
-            }
-            // ---! 운동 추가하기 !---
-            binding.llFrBSAddExercise.setOnClickListener {
-                dismiss()
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                    replace(R.id.flMain, FavoriteBasketFragment.newInstance(favoriteItem.favoriteName.toString()))
-                        .addToBackStack(null)
-                        .commit()
-                }
-            }
-            // ---! 즐겨찾기 삭제 !---
-            binding.llFrBSDelete.setOnClickListener {
-                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                    setTitle("⚠️ 알림")
-                    setMessage("플레이리스트에서 삭제하시겠습니까?")
-                    setPositiveButton("확인") { dialog, _ ->
-                        deleteFavoriteItemSn(getString(R.string.IP_ADDRESS_t_favorite),
-                            favoriteItem.favoriteSn.toString()
-                        ) {
-                            requireActivity().supportFragmentManager.beginTransaction().apply {
-                                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                                replace(R.id.flMain, FavoriteFragment())
-                                    .commit()
-                            }
-                        }
-                    }
-                    setNegativeButton("취소") { dialog, _ -> }
-                    create()
-                }.show()
-            }
-        }
 
     }
 

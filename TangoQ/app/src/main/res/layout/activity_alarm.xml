@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="2dp"
         android:layout_marginTop="20dp"
-        app:dividerColor="@color/subColor300"
+        app:dividerColor="@color/subColor200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
@@ -45,7 +45,6 @@
         android:id="@+id/rvAlarm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialDivider5" />

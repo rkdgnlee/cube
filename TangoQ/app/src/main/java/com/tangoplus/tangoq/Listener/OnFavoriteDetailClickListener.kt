@@ -1,5 +1,5 @@
 package com.tangoplus.tangoq.Listener
 
-interface onFavoriteDetailClickListener {
+interface OnFavoriteDetailClickListener {
     fun onFavoriteClick(title: String)
 }

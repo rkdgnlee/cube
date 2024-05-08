@@ -239,22 +239,6 @@
                     app:layout_constraintStart_toStartOf="@+id/textView53"
                     app:layout_constraintTop_toBottomOf="@+id/textView53" />
 
-                <TextView
-                    android:id="@+id/tvPlayExerciseCaution"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="20dp"
-                    android:lineSpacingExtra="6sp"
-                    android:text="1. 낮은 부하에서 시작하여 점진적으로 부하를 높임\r\n2. 본인의 체력 정도에 따라서 앉은 것도 추천"
-                    android:textColor="@color/subColor800"
-                    android:textSize="15sp"
-                    app:layout_constraintBottom_toTopOf="@+id/frameLayout3"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/textView54"
-                    app:layout_constraintTop_toBottomOf="@+id/textView54" />
-
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/materialDivider8"
                     android:layout_width="407dp"
@@ -324,6 +308,30 @@
                     app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseMethod"
                     app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseMethod" />
 
+                <TextView
+                    android:id="@+id/tvPlayExerciseCaution"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="20dp"
+                    android:lineSpacingExtra="6sp"
+                    android:text="1. 낮은 부하에서 시작하여 점진적으로 부하를 높임\r\n2. 본인의 체력 정도에 따라서 앉은 것도 추천"
+                    android:textColor="@color/subColor800"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView54"
+                    app:layout_constraintTop_toBottomOf="@+id/textView54" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPTn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toTopOf="@+id/frameLayout3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider4" />
+
                 <FrameLayout
                     android:id="@+id/frameLayout3"
                     android:layout_width="match_parent"
@@ -349,6 +357,29 @@
                         app:cornerRadius="16dp" />
 
                 </FrameLayout>
+
+                <TextView
+                    android:id="@+id/textView99"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:text="관련 추천 운동"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseCaution"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseCaution" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider4"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="8dp"
+
+                    app:dividerColor="@color/subColor200"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView99" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

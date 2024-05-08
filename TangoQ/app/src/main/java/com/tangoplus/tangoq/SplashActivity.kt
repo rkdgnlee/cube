@@ -258,7 +258,6 @@ class SplashActivity : AppCompatActivity() {
             val mChannel = NotificationChannel("5000", name, importance)
             mChannel.description = descriptionText
             // 채널을 등록해야 알림을 받을 수 있음
-            // or other notification behaviors after this.
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
 

@@ -41,7 +41,9 @@ class ProfileEditDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ----- 이미지 로드 시작 -----
+        binding.nsvPfE.isNestedScrollingEnabled = false
+
+        // -----! 이미지 로드 시작 !-----
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
 
 
@@ -53,7 +55,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                     .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
                     .into(binding.civPE)
             }
-        } // ----- 이미지 로드 끝 -----
+        } // -----! 이미지 로드 끝 !-----
 
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
 
@@ -84,7 +86,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                     navigateGallery()
                 }
                 else -> requestPermissions(
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                   arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     1000
                 )
             }

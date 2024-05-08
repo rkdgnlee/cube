@@ -438,7 +438,6 @@ class SignInActivity : AppCompatActivity() {
                         viewModel.User.value?.put("user_email", "${binding.etEmailId.text}@${binding.etEmail.text}")
                         Log.w("현재VM값", "${viewModel.User.value}")
                     }
-
                 }
                 val JsonObj = viewModel.User.value
                 getUserSELECTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), viewModel.User.value?.optString("user_mobile").toString()) { jsonObj ->

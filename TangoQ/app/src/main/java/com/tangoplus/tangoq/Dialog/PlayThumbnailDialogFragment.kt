@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.Dialog
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,16 +14,21 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.tangoplus.tangoq.Adapter.ExerciseRVAdapter
+import com.tangoplus.tangoq.Object.NetworkExerciseService
 import com.tangoplus.tangoq.PlaySkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.ExerciseVO
 import com.tangoplus.tangoq.databinding.FragmentFeedbackDialogBinding
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
+import kotlinx.coroutines.launch
 
 class PlayThumbnailDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
@@ -93,10 +99,31 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             dismiss()
         }
 
+
         binding.tvPlayExerciseRelateMuscle.setOnClickListener {
             val dialog = FeedbackDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "FeedbackDialogFragment")
         }
+
+
+        // ------! 관련 운동 횡 rv 시작 !------
+        lifecycleScope.launch {
+            val responseArrayList =
+                NetworkExerciseService.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+            try {
+                val verticalDataList = responseArrayList.filter { it.exerciseName!!.contains(
+                    exerciseData!!.exerciseName!!.substring(0, 1))}.toMutableList()
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, "recommend")
+                binding.rvPTn.adapter = adapter
+                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                binding.rvPTn.layoutManager = linearLayoutManager
+            } catch (e: Exception) {
+                Log.e(ContentValues.TAG, "Error storing exercises", e)
+            }
+        }
+
+        // ------! 관련 운동 횡 rv 끝 !------
+
     }
 
     override fun onResume() {

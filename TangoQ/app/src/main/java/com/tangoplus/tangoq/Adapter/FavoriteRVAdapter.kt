@@ -9,16 +9,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.tangoplus.tangoq.Dialog.ExerciseBSDialogFragment
 import com.tangoplus.tangoq.Dialog.FavoriteBSDialogFragment
-import com.tangoplus.tangoq.Listener.onFavoriteDetailClickListener
+import com.tangoplus.tangoq.Listener.OnFavoriteDetailClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.ViewModel.FavoriteVO
 import com.tangoplus.tangoq.databinding.RvFvItemBinding
 
 class FavoriteRVAdapter(
     var fvList: MutableList<FavoriteVO>,
-    val listener: onFavoriteDetailClickListener,
+    val listener: OnFavoriteDetailClickListener,
     private val fragment: Fragment
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
