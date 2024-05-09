@@ -58,6 +58,7 @@
                 android:id="@+id/materialDivider3"
                 android:layout_width="0dp"
                 android:layout_height="3dp"
+                android:layout_marginStart="8dp"
                 app:dividerColor="@color/subColor300"
                 app:layout_constraintBottom_toBottomOf="@+id/tabLayout"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -69,15 +70,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_tablayout_underline"
+                android:paddingRight="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:tabGravity="start"
+                app:tabIndicatorAnimationDuration="600"
                 app:tabIndicatorColor="@color/mainColor"
                 app:tabIndicatorFullWidth="true"
                 app:tabIndicatorGravity="bottom"
                 app:tabIndicatorHeight="3dp"
                 app:tabInlineLabel="false"
+                app:tabPaddingEnd="20dp"
+                app:tabPaddingStart="20dp"
                 app:tabRippleColor="#27CDCDCD"
                 app:tabSelectedTextColor="@color/mainColor"
                 app:tabTextColor="@color/subColor500">
@@ -210,29 +216,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ClMs">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMsShare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="16dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/subColor250"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/subColor200"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:paddingLeft="48dp"
                     android:paddingTop="12dp"
                     android:paddingRight="48dp"
                     android:paddingBottom="12dp"
+                    android:stateListAnimator="@null"
                     android:text="공유하기"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     app:cornerRadius="12dp" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMsMeasurement"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/mainColor"
                     android:drawableStart="@drawable/icon_plus_small"
                     android:insetTop="0dp"
@@ -241,6 +250,7 @@
                     android:paddingTop="12dp"
                     android:paddingRight="48dp"
                     android:paddingBottom="12dp"
+                    android:stateListAnimator="@null"
                     android:text="측정하기"
                     android:textColor="@color/white"
                     android:textSize="18sp"
@@ -263,6 +273,7 @@
                 android:id="@+id/tvMsAddPart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/effect_ibtn_20dp"
                 android:text="추가하기"
                 android:textColor="@color/subColor500"
                 android:textSize="18sp"
@@ -384,30 +395,35 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ivMsSkeleton">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMsGetReport"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/subColor300"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:stateListAnimator="@null"
                     android:text="리포트 받기"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:cornerRadius="8dp" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMsGetRecommend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/mainColor"
                     android:drawableStart="@drawable/icon_plus_small"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:paddingLeft="12dp"
+                    android:stateListAnimator="@null"
                     android:text="맞춤 운동 추천 받기"
                     android:textColor="@color/white"
                     android:textSize="16sp"
@@ -481,12 +497,12 @@
                     android:id="@+id/tvMsCalory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="340"
+                    android:text="340kcal"
                     android:textColor="@color/subColor500"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView97"
-                    app:layout_constraintEnd_toStartOf="@+id/textView97"
-                    app:layout_constraintTop_toTopOf="@+id/textView97" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bcMs" />
 
                 <TextView
 
@@ -501,7 +517,7 @@
                     app:layout_constraintTop_toTopOf="@+id/tvMsCalory" />
 
                 <LinearLayout
-                    android:id="@+id/linearLayout8"
+                    android:id="@+id/llMs"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -512,17 +528,17 @@
                     app:layout_constraintVertical_bias="0.85">
 
                     <TextView
-                        android:id="@+id/textView92"
+                        android:id="@+id/tv0000"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="12:00"
+                        android:text="00:00"
                         android:textColor="@color/subColor700"
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/textView93"
+                        android:id="@+id/tv0600"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -532,7 +548,7 @@
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/textView94"
+                        android:id="@+id/tv1200"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -542,27 +558,15 @@
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/textView95"
+                        android:id="@+id/tv1800"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="06:00"
+                        android:text="18:00"
                         android:textColor="@color/subColor700"
                         android:textSize="12sp" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textView97"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Kcal"
-                    android:textColor="@color/subColor500"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/bcMs" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

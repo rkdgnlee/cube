@@ -56,7 +56,7 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
                 // -----! alarm touchhelper 연동 시작 !-----
                 val alarmRecyclerViewAdapter = AlarmRVAdapter(alarmList, this@AlarmActivity, this@AlarmActivity)
                 val SwipeHelperCallback = SwipeHelperCallback().apply {
-                    setClamp(260f)
+                    setClamp(275f)
                 }
 
                 val itemTouchHelper = ItemTouchHelper(SwipeHelperCallback)

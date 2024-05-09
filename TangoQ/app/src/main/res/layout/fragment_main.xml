@@ -309,14 +309,16 @@
                         android:layout_height="match_parent" />
                 </androidx.cardview.widget.CardView>
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMMeasure"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/white"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:stateListAnimator="@null"
                     android:text="측정하기"
                     android:textColor="@color/black"
                     android:textSize="18sp"
@@ -331,13 +333,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="28dp"
                 android:text="추천 운동 받기"
                 android:textColor="@color/black"
                 android:textSize="24dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/sflM" />
 
             <TextView
                 android:id="@+id/textView10"
@@ -358,7 +360,7 @@
                 android:layout_height="4dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
-                app:colorBackground="@color/subColor250"
+                app:colorBackground="@color/subColor200"
                 app:colorProgress="@color/mainColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -394,6 +396,45 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/sflM"
+                android:layout_width="match_parent"
+                android:layout_height="256dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/textView101"
+                        android:layout_width="210dp"
+                        android:layout_height="230dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@color/subColor100"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView102"
+                        android:layout_width="160dp"
+                        android:layout_height="230dp"
+                        android:background="@color/subColor100"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toEndOf="@+id/textView101"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

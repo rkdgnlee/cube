@@ -7,9 +7,17 @@ import androidx.lifecycle.ViewModel
 
 class MeasureViewModel : ViewModel() {
     val parts = MutableLiveData(mutableListOf<Pair<String,String>>())
+    val steps = MutableLiveData(mutableListOf<Long>())
+    val totalSteps = MutableLiveData<String>()
+    val calory = MutableLiveData<String>()
+
 
     init {
         parts.value = mutableListOf()
+        steps.value = mutableListOf()
+        totalSteps.value = ""
+        calory.value = ""
+
     }
 
     @SuppressLint("SuspiciousIndentation")

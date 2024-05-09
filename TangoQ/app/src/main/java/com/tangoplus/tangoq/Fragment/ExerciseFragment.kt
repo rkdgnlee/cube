@@ -38,6 +38,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.sflEc.startShimmer()
         binding.nsvEc.isNestedScrollingEnabled = false
         binding.rvEcAll.isNestedScrollingEnabled = false
         binding.rvEcAll.overScrollMode = 0
@@ -81,6 +82,8 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             // ------! 자동완성 끝 !------
 
             try { // ------! rv vertical 시작 !------
+                binding.sflEc.stopShimmer()
+                binding.sflEc.visibility= View.GONE
                 verticalDataList = responseArrayList.toMutableList()
                 val adapter = ExerciseRVAdapter(this@ExerciseFragment, verticalDataList, "main")
                 adapter.exerciseList = verticalDataList

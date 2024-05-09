@@ -40,17 +40,6 @@
                 app:layout_constraintStart_toStartOf="@+id/civPf"
                 app:layout_constraintTop_toBottomOf="@+id/civPf" />
 
-            <ImageButton
-                android:id="@+id/ibtnPfEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@color/white"
-                android:src="@drawable/icon_edit_circle"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPfName"
-                app:layout_constraintStart_toEndOf="@+id/tvPfName"
-                app:layout_constraintTop_toTopOf="@+id/tvPfName" />
-
             <TextView
                 android:id="@+id/textView32"
                 android:layout_width="wrap_content"
@@ -217,23 +206,75 @@
             </androidx.cardview.widget.CardView>
 
 
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider2"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="16dp"
-                app:dividerColor="@color/subColor200"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView4" />
-
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPf"
+                android:id="@+id/rvPfNormal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
+                app:layout_constraintTop_toBottomOf="@+id/textView100" />
+
+            <TextView
+                android:id="@+id/textView100"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:background="@color/subColor150"
+                android:paddingLeft="60dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="일반설정"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView4" />
+
+            <TextView
+                android:id="@+id/textView103"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/subColor150"
+                android:paddingLeft="60dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="도움말"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvPfNormal" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPfHelp"
+                android:layout_width="409dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView103" />
+
+            <TextView
+                android:id="@+id/textView106"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/subColor150"
+                android:paddingLeft="60dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="세부사항"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvPfHelp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPfDetail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView106" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

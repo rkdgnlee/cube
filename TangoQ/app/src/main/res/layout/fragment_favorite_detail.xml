@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/subColor200"
+    android:background="@color/white"
     tools:context=".Fragment.FavoriteDetailFragment">
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
-                android:background="@color/subColor200"
+                android:background="@color/white"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_arrow_left"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,7 @@
                 android:layout_height="36dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="20dp"
-                android:background="@color/subColor200"
+                android:background="@color/white"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_more_800"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -94,7 +94,7 @@
                     android:layout_height="64dp"
                     android:layout_gravity="left"
                     android:background="@color/subColor100"
-                    android:backgroundTint="@color/subColor200"
+                    android:backgroundTint="@color/white"
                     android:editable="false"
                     android:gravity="center|center_vertical"
                     android:inputType="none"
@@ -116,7 +116,7 @@
                 android:id="@+id/tvFDExplain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="20dp"
                 android:maxLength="30"
                 android:text="설명설명설명설명설명"
                 android:textColor="@color/black"
@@ -127,16 +127,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
 
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider9"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="36dp"
+                app:dividerColor="@color/subColor200"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvFDExplain" />
+
             <LinearLayout
                 android:id="@+id/linearLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="4dp"
                 android:background="@color/white"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvFDExplain">
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider9">
 
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/sflFV"

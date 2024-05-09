@@ -37,18 +37,21 @@
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbIntensity2"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:buttonTint="@color/white"
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbIntensity3"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
@@ -56,24 +59,27 @@
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbIntensity4"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbIntensity5"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
         </RadioGroup>
 
         <TextView
@@ -375,31 +381,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView62">
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbFatigue1"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbFatigue2"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbFatigue3"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbFatigue4"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="30dp"
@@ -407,14 +416,16 @@
                 android:layout_gravity="center"
                 android:layout_marginRight="48dp"
                 android:gravity="center"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbFatigue5"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
         </RadioGroup>
 
         <TextView
@@ -482,24 +493,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView63">
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbSatisfaction1"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbSatisfaction2"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbSatisfaction3"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
@@ -507,24 +520,27 @@
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbSatisfaction4"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbSatisfaction5"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton" />
+                android:theme="@style/Widget.App.RadioButton"
+                app:buttonTint="@color/tint_radio_btn" />
         </RadioGroup>
 
         <TextView

@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -67,34 +68,46 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     .into(binding.civPf)
             }
         }
-        val profilemenulist = mutableListOf<RoutingVO>(
-            RoutingVO("환경설정", "1"),
-            RoutingVO("이용약관", "3"),
-            RoutingVO("연동관리", "4"),
-            RoutingVO("계정관리", "5"),
-            RoutingVO("로그아웃", "6"),
+        val profilemenulist = mutableListOf<String>(
+            "내정보",
+            "연동관리",
+            "자주 묻는 질문",
+            "문의하기",
+            "공지사항",
+            "앱 버전",
+            "개인정보 처리방침",
+            "서비스 이용약관",
+            "로그아웃",
+            "회원탈퇴",
         )
-        val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment)
-        adapter.profilemenulist = profilemenulist
-        binding.rvPf.adapter = adapter
-        binding.rvPf.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.ibtnPfEdit.setOnClickListener {
-            when {
-                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-                    navigateGallery()
-                }
-                else -> requestPermissions(
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    1000
-                )
-            }
-        }
-        binding.ibtnPfEdit.setOnClickListener {
-            val DialogFragment = ProfileEditDialogFragment()
-            DialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-        }
+        setAdpater(profilemenulist.subList(0,2), binding.rvPfNormal,0)
+        setAdpater(profilemenulist.subList(2,5), binding.rvPfHelp, 1)
+        setAdpater(profilemenulist.subList(5, profilemenulist.size), binding.rvPfDetail, 2)
+//        binding.ibtnPfEdit.setOnClickListener {
+//            when {
+//                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+//                    navigateGallery()
+//                }
+//                else -> requestPermissions(
+//                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+//                    1000
+//                )
+//            }
+//        }
+    }
 
+    fun setAdpater(list: MutableList<String>, rv: RecyclerView, index: Int) {
+        if (index != 0 ) {
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false)
+            adapter.profilemenulist = list
+            rv.adapter = adapter
+            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        } else {
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true)
+            adapter.profilemenulist = list
+            rv.adapter = adapter
+            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        }
 
     }
     @Deprecated("Deprecated in Java")

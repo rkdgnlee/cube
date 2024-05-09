@@ -46,7 +46,8 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="8"
-                    android:background="#00FFFFFF"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="#00FFFFFF"
                     android:hint="운동이름을 검색하세요"
                     android:textColorHint="@color/subColor500" />
 
@@ -69,11 +70,45 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/sflEc"
+                android:layout_width="match_parent"
+                android:layout_height="600dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvEcCategory">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView93"
+                        android:layout_width="80dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_margin="12dp"
+                        android:background="@color/subColor100" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
             <Spinner
                 android:id="@+id/spnEcFilter"
                 android:layout_width="104dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_stroke_1dp_sub_color_spinner"
                 android:paddingLeft="10dp"
@@ -81,7 +116,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvEcCategory" />
+                app:layout_constraintTop_toBottomOf="@+id/sflEc" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvEcAll"

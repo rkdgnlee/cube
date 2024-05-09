@@ -176,7 +176,7 @@
                 android:textColorHint="@color/subColor100"
                 android:textSize="18sp" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSI"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -185,6 +185,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="30dp"
+                android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/mainColor"
                 android:enabled="false"
                 android:insetTop="0dp"
@@ -430,12 +431,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnAuthSend"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_gravity="bottom"
                     android:layout_marginEnd="20dp"
+                    android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/mainColor"
                     android:enabled="false"
                     android:insetTop="0dp"
@@ -514,13 +516,14 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/etMobile" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnAuthConfirm"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="20dp"
+                    android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/mainColor"
                     android:enabled="false"
                     android:insetTop="0dp"
@@ -546,7 +549,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="28dp"
-        android:background="@color/white"
+        android:background="@drawable/effect_ibtn_20dp"
+        android:backgroundTint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_arrow_left" />

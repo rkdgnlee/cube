@@ -342,14 +342,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnExercisePlay"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="16dp"
+                        android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
+                        android:stateListAnimator="@null"
                         android:text="운동 시작하기"
                         android:textColor="@color/white"
                         android:textSize="18sp"

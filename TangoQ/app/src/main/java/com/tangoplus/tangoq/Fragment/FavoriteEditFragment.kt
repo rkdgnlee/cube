@@ -128,7 +128,7 @@ class FavoriteEditFragment : Fragment() {
         binding.rvFE.overScrollMode = View.OVER_SCROLL_NEVER
 
         // -----! 장바구니로 가기 !-----
-        binding.btnFEGoBakset.setOnClickListener {
+        binding.btnFEGoBasket.setOnClickListener {
             if (!it.isClickable) { return@setOnClickListener }
             it.isClickable = false
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -151,7 +151,7 @@ class FavoriteEditFragment : Fragment() {
             it.isClickable = true
         }
         // -----! 즐겨찾기 하나 만들기 시작 !-----
-        binding.btnFEFinish.setOnClickListener {
+        binding.fabtnFEFinish.setOnClickListener {
             updatePickEdit()
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)

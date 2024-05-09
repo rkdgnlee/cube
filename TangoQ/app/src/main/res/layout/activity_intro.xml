@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:stateListAnimator="@null"
     tools:context=".IntroActivity">
 
     <androidx.viewpager2.widget.ViewPager2
@@ -70,6 +71,7 @@
             android:id="@+id/ibtnGoogleLogin."
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:background="@drawable/effect_ibtn_20dp"
             android:src="@drawable/icon_api_google_logo" />
     </androidx.cardview.widget.CardView>
 
@@ -87,7 +89,7 @@
             android:id="@+id/ibtnKakaoLogin"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@color/white"
+            android:background="@drawable/effect_ibtn_20dp"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/icon_api_kakao_logo" />
     </androidx.cardview.widget.CardView>
@@ -96,7 +98,7 @@
         android:id="@+id/buttonOAuthLoginImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@drawable/effect_ibtn_20dp"
         android:src="@drawable/icon_api_naver_logo"
         app:layout_constraintBottom_toBottomOf="@+id/cardView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -104,17 +106,20 @@
         app:layout_constraintStart_toEndOf="@+id/cardView"
         app:layout_constraintTop_toTopOf="@+id/cardView" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnIntroLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/effect_ibtn_12dp"
         android:backgroundTint="@color/mainColor"
+        android:elevation="0dp"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:padding="16dp"
+        android:stateListAnimator="@null"
         android:text="로그인 / 계정 정보 찾기"
         android:textColor="@color/white"
         android:textSize="18sp"
@@ -123,15 +128,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnIntroSignIn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:background="@drawable/effect_ibtn_12dp"
         android:backgroundTint="@color/subColor200"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:padding="16dp"
+        android:stateListAnimator="@null"
         android:text="회원가입"
         android:textColor="@color/white"
         android:textSize="18sp"

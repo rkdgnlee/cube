@@ -50,6 +50,7 @@ class MainFragment : Fragment(), OnRVClickListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(inflater)
+        binding.sflM.startShimmer()
         return binding.root
     }
 
@@ -176,9 +177,12 @@ class MainFragment : Fragment(), OnRVClickListener {
                     }.toString()
                     programVO.programCount = programVO.exercises?.size.toString()
                     if (viewModel.programList.value?.any { it.programName == programVO.programName } == false ) viewModel.programList.value?.add(programVO)
-//                    Log.v("VM>프로그램", "${viewModel.programList.value}")
-                }
 
+                }
+                if (viewModel.programList.value?.size!! > 1) {
+                    binding.sflM.stopShimmer()
+                    binding.sflM.visibility = View.GONE
+                }
                 val recommendAadpter = RecommendRVAdapter(viewModel.programList, this@MainFragment, this@MainFragment)
                 binding.rvMRecommend.adapter = recommendAadpter
                 val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

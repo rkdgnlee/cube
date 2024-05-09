@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/icon_checkbox_enabled" android:state_checked="true"/>
-    <item android:drawable="@drawable/icon_checkbox_disabled" android:state_checked="false"/>
-</selector>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/subColor200">
+    <item>
+        <selector >
+            <item android:drawable="@drawable/icon_checkbox_enabled" android:state_checked="true"/>
+            <item android:drawable="@drawable/icon_checkbox_disabled" android:state_checked="false"/>
+        </selector>
+    </item>
+</ripple>

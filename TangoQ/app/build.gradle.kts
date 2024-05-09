@@ -56,7 +56,7 @@ dependencies {
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
 
-    // 로그인 api
+    // api
     implementation("com.navercorp.nid:oauth:5.9.1")
     implementation("com.kakao.sdk:v2-common:2.19.0")
     implementation("com.kakao.sdk:v2-user:2.19.0")
@@ -70,6 +70,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.1.0")
     implementation("androidx.security:security-crypto:1.0.0")
     implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha07")
 
     // 통신
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
@@ -103,6 +104,7 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

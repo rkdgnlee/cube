@@ -64,7 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/white"
+            android:background="@drawable/effect_ibtn_20dp"
+            android:backgroundTint="@color/white"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/icon_minus" />
 
@@ -83,7 +84,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/white"
+            android:background="@drawable/effect_ibtn_20dp"
+            android:backgroundTint="@color/white"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/icon_plus" />
 

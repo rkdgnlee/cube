@@ -35,7 +35,8 @@
                 android:layout_height="36dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/white"
+                android:background="@drawable/effect_ibtn_20dp"
+                android:backgroundTint="@color/white"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_arrow_left"
                 app:layout_constraintStart_toStartOf="parent"
@@ -237,22 +238,24 @@
         android:layout_gravity="bottom"
         android:orientation="vertical">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnPEFinish"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_margin="20dp"
+            android:background="@drawable/effect_ibtn_20dp"
             android:backgroundTint="@color/mainColor"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="16dp"
+            android:stateListAnimator="@null"
             android:text="수정 완료"
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="12dp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -260,10 +263,12 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="16dp"
+            android:background="@drawable/effect_ibtn_20dp"
             android:backgroundTint="@color/secondaryColor"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="16dp"
+            android:stateListAnimator="@null"
             android:text="키 몸무게 설정하기"
             android:textColor="@color/white"
             android:textSize="18sp"

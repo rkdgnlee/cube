@@ -59,7 +59,7 @@ class MeasurePainPartDialogFragment : DialogFragment(), OnPartCheckListener {
             Log.v("VM>part", "${viewModel.parts.value}")
         } // ------! RV checkbox 취합 끝 !------
 
-
+        binding.ibtnPpBack.setOnClickListener { dismiss() }
 
 
         // ------! 부위 빨갛게 시작 !------

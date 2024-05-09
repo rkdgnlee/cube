@@ -21,7 +21,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/schDSDark"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon_setting_gear" />
+        app:srcCompat="@drawable/icon_night_mode" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/schDSDark"

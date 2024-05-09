@@ -11,6 +11,16 @@
     android:paddingRight="20sp"
     android:paddingBottom="12dp">
 
+    <View
+        android:id="@+id/vM"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/effect_ibtn_20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ibtnMMore"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textView15"
         android:layout_width="wrap_content"
@@ -143,7 +153,8 @@
         android:id="@+id/ibtnMMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@drawable/effect_ibtn_20dp"
+        android:backgroundTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_more" />
@@ -160,12 +171,4 @@
         app:layout_constraintStart_toEndOf="@+id/tvMTime"
         app:layout_constraintTop_toTopOf="@+id/tvMTime" />
 
-    <View
-        android:id="@+id/vM"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ibtnMMore"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

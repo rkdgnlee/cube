@@ -1,6 +1,8 @@
 package com.example.mhg
 
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,8 +11,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
+import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.request.AggregateGroupByDurationRequest
+import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
 import com.example.mhg.VO.ChartVO
@@ -26,6 +39,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -34,6 +48,10 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -42,6 +60,22 @@ import kotlin.random.Random
 class ReportSkeletonFragment : Fragment() {
     lateinit var binding : FragmentReportSkeletonBinding
     val viewModel: UserViewModel by activityViewModels()
+    lateinit var requestPermissions : ActivityResultLauncher<Set<String>>
+    lateinit var  healthConnectClient : HealthConnectClient
+
+
+    val endTime = LocalDateTime.now()
+    val startTime = endTime.minusDays(1)
+    val PERMISSIONS =
+        setOf(
+            HealthPermission.getReadPermission(HeartRateRecord::class),
+            HealthPermission.getWritePermission(HeartRateRecord::class),
+            HealthPermission.getReadPermission(StepsRecord::class),
+            HealthPermission.getWritePermission(StepsRecord::class),
+            HealthPermission.getWritePermission(TotalCaloriesBurnedRecord::class),
+            HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+
+            )
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,7 +97,44 @@ class ReportSkeletonFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.v("시간 설정", "startTime: $startTime, endTime: $endTime")
 
+        val providerPackageName = "com.google.android.apps.healthdata"
+        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext(), providerPackageName )
+        if (availabilityStatus == HealthConnectClient.SDK_UNAVAILABLE) {
+            return // 실행 가능한 통합이 없기 때문에 조기 복귀
+        }
+        if (availabilityStatus == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) {
+            // 선택적으로 패키지 설치 프로그램으로 리디렉션하여 공급자를 찾습니다. 예:
+            val uriString = "market://details?id=$providerPackageName&url=healthconnect%3A%2F%2Fonboarding"
+            requireContext().startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    setPackage("com.android.vending")
+                    data = Uri.parse(uriString)
+                    putExtra("overlay", true)
+                    putExtra("callerId", requireContext().packageName)
+                }
+            )
+            return
+        }
+        healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+        Log.v("헬커인스턴스", "$healthConnectClient")
+
+        // Create the permissions launcher
+        val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
+        requestPermissions = registerForActivityResult(requestPermissionActivityContract) { granted ->
+            lifecycleScope.launch {
+                if (granted.containsAll(PERMISSIONS)) {
+                    Log.v("권한o", "$healthConnectClient")
+                } else {
+                    checkPermissionsAndRun(healthConnectClient)
+                    Log.v("권한x", "$healthConnectClient")
+                }
+            }
+        }
+        lifecycleScope.launch {
+            checkPermissionsAndRun(healthConnectClient)
+        }
         // ---- 달력 코드 시작 ----
         val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
         var year = c.get(Calendar.YEAR)
@@ -274,5 +345,107 @@ class ReportSkeletonFragment : Fragment() {
         // ---- 막대 그래프 코드 끝 ----
 
 
+    }
+    private suspend fun checkPermissionsAndRun(healthConnectClient: HealthConnectClient) {
+        val granted = healthConnectClient.permissionController.getGrantedPermissions()
+        if (granted.containsAll(PERMISSIONS)) {
+            //권한이 이미 부여되었습니다. 데이터 삽입 또는 읽기를 진행합니다.
+
+            aggregateStepsInto3oMins(healthConnectClient, startTime, endTime)
+
+            val startTimeInstant = startTime.atZone(ZoneId.of("Asia/Seoul")).toInstant()
+            val endTimeInstant = endTime.atZone(ZoneId.of("Asia/Seoul")).toInstant()
+            readStepsByTimeRange(healthConnectClient, startTimeInstant, endTimeInstant)
+            readCaloryByTimeRange(healthConnectClient, startTimeInstant, endTimeInstant)
+        } else {
+            requestPermissions.launch(PERMISSIONS)
+        }
+    }
+
+    private suspend fun aggregateStepsInto3oMins(
+        healthConnectClient: HealthConnectClient,
+        startTime: LocalDateTime,
+        endTime: LocalDateTime
+    ) {
+        try {
+            val response =
+                healthConnectClient.aggregateGroupByDuration(
+                    AggregateGroupByDurationRequest(
+                        metrics = setOf(StepsRecord.COUNT_TOTAL),
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
+                        timeRangeSlicer = Duration.ofMinutes(30)
+                    )
+                )
+            val stepsList = mutableListOf<Long>()
+            var previousSteps : Long? = null
+            for (durationResult in response) {
+                // The result may be null if no data is available in the time range
+                val totalSteps = durationResult.result[StepsRecord.COUNT_TOTAL]
+
+                if (totalSteps != null) {
+                    if (previousSteps == null) {
+                        stepsList.add(totalSteps)
+                    } else {
+                        stepsList.add(totalSteps - previousSteps)
+                    }
+                    previousSteps = totalSteps
+
+                } else {
+                    stepsList[0]
+                }
+                Log.v("걸음 수 누적", "$totalSteps")
+            }
+            Log.v("걸음 리스트", "$stepsList")
+            Log.v("hour응답", "${response.size}")
+
+        } catch (e: Exception) {
+            Log.v("오류", "$e")
+        }
+    }
+    private suspend fun readCaloryByTimeRange(
+        healthConnectClient: HealthConnectClient,
+        startTime: Instant,
+        endTime: Instant
+    ) {
+        try {
+            val response =
+                healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        TotalCaloriesBurnedRecord::class,
+                        timeRangeFilter = TimeRangeFilter.before(endTime)
+                    )
+                )
+            val energy = response.records[0].energy
+            Log.v("ca", "${response.records.size}")
+
+
+        } catch (e: Exception) {
+            Log.v("원시오류", "$e")
+        }
+    }
+    private suspend fun readStepsByTimeRange(
+        healthConnectClient: HealthConnectClient,
+        startTime: Instant,
+        endTime: Instant
+    ) {
+        try {
+            val response =
+                healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        StepsRecord::class,
+                        timeRangeFilter = TimeRangeFilter.before(endTime)
+                    )
+                )
+
+            for (stepRecord in response.records) {
+                // Process each step record
+                Log.v("걸음 개수", "${response.records.size}")
+                Log.v("총 걸음count", "${stepRecord.count}")
+                Log.v("총 걸음meta", "${stepRecord.metadata}")
+            }
+            Log.v("원시데이터 기록", "${response.records.get(0)}, ${response.pageToken}")
+        } catch (e: Exception) {
+            Log.v("원시오류", "$e")
+        }
     }
 }

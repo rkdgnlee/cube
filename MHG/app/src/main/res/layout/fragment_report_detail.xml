@@ -85,12 +85,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rvReportDetail">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnReportDetailAdd"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:backgroundTint="@color/mainwhite"
-                android:backgroundTintMode="add"
+                android:background="@drawable/ripple_effect"
                 android:elevation="8dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"

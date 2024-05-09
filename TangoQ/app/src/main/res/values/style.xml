@@ -66,7 +66,7 @@
     </style>
 
     <style name="ThemeOverlay.App.RadioButton" parent="">
-        <item name="colorControlNormal">@color/deleteColor</item>
+        <item name="colorControlNormal">@color/white</item>
         <item name="colorPrimary">@color/mainColor</item>
     </style>
 
@@ -83,5 +83,11 @@
         <item name="strokeColor">@color/subColor200</item>
     </style>
 
+<!--    <style name="Theme.App.Starting" parent="Theme.SplashScreen">-->
+<!--        <item name="windowSplashScreenBackground">@color/white</item>-->
+<!--        <item name="windowSplashScreenAnimatedIcon">@drawable/app_logo</item>-->
+<!--        <item name="windowSplashScreenAnimationDuration">200</item>-->
+<!--        <item name="postSplashScreenTheme">@style/Theme.TangoQ</item>-->
+<!--    </style>-->
 
 </resources>

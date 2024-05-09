@@ -3,15 +3,13 @@ package com.tangoplus.tangoq.Adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CompoundButton
-import android.widget.Switch
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -21,23 +19,24 @@ import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
+import com.tangoplus.tangoq.Dialog.AgreementDetailDialogFragment
+import com.tangoplus.tangoq.Dialog.ProfileEditDialogFragment
 import com.tangoplus.tangoq.Fragment.SettingsFragment
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.Listener.BooleanClickListener
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.ViewModel.RoutingVO
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
 import java.lang.IllegalArgumentException
 
-class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
-    var profilemenulist = mutableListOf<RoutingVO>()
+class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
+    var profilemenulist = mutableListOf<String>()
     private val VIEW_TYPE_NORMAL = 0
     private val VIEW_TYPE_SPECIAL_ITEM = 1
     inner class MyViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val btnPfName = view.findViewById<TextView>(R.id.tvPfSettingsName)
-
+        val ivPf = view.findViewById<ImageView>(R.id.ivPf)
     }
     inner class SpecialItemViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -66,13 +65,48 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
         when (holder.itemViewType) {
             VIEW_TYPE_NORMAL -> {
                 val myViewHolder = holder as MyViewHolder
-
-                myViewHolder.btnPfName.text = currentItem.title
+                if (currentItem == "내정보") {
+                    holder.ivPf.setImageResource(R.drawable.icon_profile)
+                } else if (currentItem == "로그아웃") {
+                    holder.ivPf.setImageResource(R.drawable.icon_logout)
+                } else if (currentItem == "회원탈퇴") {
+                    holder.ivPf.setImageResource(R.drawable.icon_logout)
+                }
+                myViewHolder.btnPfName.text = currentItem
                 myViewHolder.btnPfName.setOnClickListener {
-                    if (currentItem.title == "환경설정") {
-                        showSettingsFragment()
+                    if (currentItem == "내정보") {
+                        holder.ivPf.setImageResource(R.drawable.icon_profile)
+                        val dialogFragment = ProfileEditDialogFragment()
+                        dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
 
-                    } else if (currentItem.title == "로그아웃") {
+                    } else if (currentItem == "연동관리") {
+                        showSettingsFragment()
+                    } else if (currentItem == "자주 묻는 질문") {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        val url = Uri.parse("https://tangoplus.co.kr/ko/20")
+                        intent.setData(url)
+                        fragment.startActivity(intent)
+                    } else if (currentItem == "문의하기") {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        val url = Uri.parse("https://tangoplus.co.kr/ko/21")
+                        intent.setData(url)
+                        fragment.startActivity(intent)
+                    } else if (currentItem == "공지사항") {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        val url = Uri.parse("https://tangoplus.co.kr/ko/18")
+                        intent.setData(url)
+                        fragment.startActivity(intent)
+
+                    } else if (currentItem == "앱 버전") {
+
+                    } else if (currentItem == "개인정보 처리방침") {
+                        val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
+                        dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
+                    } else if (currentItem == "이용약관") {
+                        val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
+                        dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
+                    } else if (currentItem == "로그아웃") {
+                        holder.ivPf.setImageResource(R.drawable.icon_logout)
                         if (Firebase.auth.currentUser != null) {
                             Firebase.auth.signOut()
                             Log.d("로그아웃", "Firebase sign out successful")
@@ -91,6 +125,8 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                         val intent = Intent(holder.itemView.context, IntroActivity::class.java)
                         holder.itemView.context.startActivity(intent)
                         MainActivity().finish()
+                    } else if (currentItem == "회원탈퇴") {
+
                     }
                 }
             } // -----! 다크모드 시작 !-----
@@ -115,7 +151,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
 
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == 1) {
+        return if (position == 1 && first == true) {
             VIEW_TYPE_SPECIAL_ITEM
         } else {
             VIEW_TYPE_NORMAL
