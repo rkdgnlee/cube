@@ -13,12 +13,12 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
-import com.tangoplus.tangoq.Fragment.ExerciseFragment
-import com.tangoplus.tangoq.Fragment.FavoriteFragment
-import com.tangoplus.tangoq.Fragment.MainFragment
-import com.tangoplus.tangoq.Fragment.MeasureFragment
-import com.tangoplus.tangoq.Fragment.ProfileFragment
-import com.tangoplus.tangoq.ViewModel.MeasureViewModel
+import com.tangoplus.tangoq.fragment.ExerciseFragment
+import com.tangoplus.tangoq.fragment.FavoriteFragment
+import com.tangoplus.tangoq.fragment.MainFragment
+import com.tangoplus.tangoq.fragment.MeasureFragment
+import com.tangoplus.tangoq.fragment.ProfileFragment
+import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

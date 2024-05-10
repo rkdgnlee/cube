@@ -13,13 +13,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -30,9 +27,9 @@ import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
-import com.tangoplus.tangoq.BroadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.Object.NetworkUserService
-import com.tangoplus.tangoq.Object.Singleton_t_user
+import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
+import com.tangoplus.tangoq.`object`.NetworkUserService
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import okhttp3.Call
 import okhttp3.Callback

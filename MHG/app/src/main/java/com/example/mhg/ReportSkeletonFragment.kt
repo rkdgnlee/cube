@@ -39,6 +39,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.fitness.Fitness
+import com.google.android.gms.fitness.data.DataSource
+import com.google.android.gms.fitness.data.DataType
+import com.google.android.gms.fitness.request.DataReadRequest
 import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
@@ -55,6 +60,7 @@ import java.time.ZoneId
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 class ReportSkeletonFragment : Fragment() {
@@ -353,7 +359,7 @@ class ReportSkeletonFragment : Fragment() {
 
             aggregateStepsInto3oMins(healthConnectClient, startTime, endTime)
 
-            val startTimeInstant = startTime.atZone(ZoneId.of("Asia/Seoul")).toInstant()
+            val startTimeInstant = startTime.atZone(ZoneId.of("Asia/Seoul")).minusDays(1).toInstant()
             val endTimeInstant = endTime.atZone(ZoneId.of("Asia/Seoul")).toInstant()
             readStepsByTimeRange(healthConnectClient, startTimeInstant, endTimeInstant)
             readCaloryByTimeRange(healthConnectClient, startTimeInstant, endTimeInstant)
@@ -373,7 +379,7 @@ class ReportSkeletonFragment : Fragment() {
                     AggregateGroupByDurationRequest(
                         metrics = setOf(StepsRecord.COUNT_TOTAL),
                         timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
-                        timeRangeSlicer = Duration.ofMinutes(30)
+                        timeRangeSlicer = Duration.ofHours(30)
                     )
                 )
             val stepsList = mutableListOf<Long>()
@@ -402,6 +408,44 @@ class ReportSkeletonFragment : Fragment() {
             Log.v("오류", "$e")
         }
     }
+
+//    fun readSteps(startTime: Long, endTime: Long) {
+//        val ESTIMATED_STEP_DELTAS = DataSource.Builder()
+//            .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
+//            .setType(DataSource.TYPE_DERIVED)
+//            .setStreamName("estimated_steps")
+//            .setAppPackageName("com.google.android.gms")
+//            .build()
+//        val readRequest = DataReadRequest.Builder()
+//            .aggregate(ESTIMATED_STEP_DELTAS, DataType.AGGREGATE_STEP_COUNT_DELTA)
+//            .bucketByTime(1, TimeUnit.DAYS)
+//            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+//            .build()
+//
+//        Fitness.getHistoryClient(requireActivity(),
+//            GoogleSignIn.getLastSignedInAccount(requireActivity())!!
+//        )
+//            .readData(readRequest)
+//            .addOnSuccessListener { response ->
+//                for (bucket in response.buckets) {
+//                    val dataSets = bucket.dataSets
+//                    for (dataSet in dataSets) {
+//                        for (dp in dataSet.dataPoints) {
+//                            for (field in dp.dataType.fields) {
+//                                val steps = dp.getValue(field).asInt()
+//                                    // 이제 steps 변수에는 startTime과 endTime 사이의 걸음 수가 저장되어 있습니다.
+//                                Log.v("30분 걸음", "$steps")
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                // 요청이 실패한 경우에 대한 처리를 여기에 작성합니다.
+//            }
+//    }
+
+                // 요청이 실패한 경우에 대한 처리를 여기에 작
     private suspend fun readCaloryByTimeRange(
         healthConnectClient: HealthConnectClient,
         startTime: Instant,
@@ -433,7 +477,7 @@ class ReportSkeletonFragment : Fragment() {
                 healthConnectClient.readRecords(
                     ReadRecordsRequest(
                         StepsRecord::class,
-                        timeRangeFilter = TimeRangeFilter.before(endTime)
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                     )
                 )
 

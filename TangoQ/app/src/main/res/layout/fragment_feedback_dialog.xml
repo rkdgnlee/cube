@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Dialog.FeedbackDialogFragment">
+    tools:context=".dialog.FeedbackDialogFragment">
 
     <ImageView
         android:id="@+id/imageView40"
@@ -623,7 +623,7 @@
                 android:paddingTop="12dp">
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/btnFbPainPartSelect"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="6dp"
@@ -637,7 +637,7 @@
                     app:cornerRadius="12dp" />
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/btnFbSubmit"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="6dp"

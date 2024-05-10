@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom"
-    android:background="#80FFFFFF"
+    android:background="#80959595"
     android:layoutDirection="ltr"
     android:orientation="vertical"
     tools:targetApi="28">

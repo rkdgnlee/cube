@@ -9,7 +9,7 @@
     android:layout_marginRight="16dp"
     android:layout_marginBottom="32dp"
     android:background="@drawable/background_dialog"
-    tools:context=".Dialog.AgreementDetailDialogFragment">
+    tools:context=".dialog.AgreementDetailDialogFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

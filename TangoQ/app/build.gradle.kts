@@ -41,6 +41,10 @@ android {
 }
 //noinspection UseTomlInstead
 dependencies {
+
+    // 스켈레톤
+    implementation("com.google.mediapipe:tasks-vision:0.20230731")
+
     // 외부 라이브러리
     implementation ("io.github.ShawnLin013:number-picker:2.4.13")
     implementation("com.github.shuhart:StepView:v1.5.1")
@@ -88,11 +92,22 @@ dependencies {
     implementation("androidx.room:room-guava:2.6.1")
     implementation("androidx.room:room-testing:2.6.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
+
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
     //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:2.6.1")
 
+
+    // 카메라
+    val camera_version = "1.3.3"
+    implementation("androidx.camera:camera-core:$camera_version")
+    implementation("androidx.camera:camera-camera2:$camera_version")
+    implementation("androidx.camera:camera-lifecycle:$camera_version")
+    implementation("androidx.camera:camera-video:$camera_version")
+    implementation("androidx.camera:camera-extensions:$camera_version")
+    implementation("androidx.camera:camera-view:$camera_version")
+    implementation(libs.androidx.camera.core)
     // 내부 라이브러리
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")

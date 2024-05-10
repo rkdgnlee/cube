@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.ExerciseFragment">
+    tools:context=".fragment.ExerciseFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvEc"
@@ -109,6 +109,7 @@
                 android:id="@+id/spnEcFilter"
                 android:layout_width="104dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_stroke_1dp_sub_color_spinner"
                 android:paddingLeft="10dp"
