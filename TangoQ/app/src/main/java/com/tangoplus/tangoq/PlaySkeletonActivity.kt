@@ -1,12 +1,19 @@
 package com.tangoplus.tangoq
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +25,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.tangoplus.tangoq.data.SkeletonViewModel
@@ -107,10 +115,29 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
 
     // ------! POSE LANDMARKER 설정 끝 !------
 
+    @SuppressLint("Recycle")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _fragmentCameraBinding = ActivityPlaySkeletonBinding.inflate(layoutInflater)
         setContentView(_fragmentCameraBinding!!.root)
+
+        // ------! 안내 문구 사라짐 시작 !------
+        val tvPSGuide = findViewById<TextView>(R.id.tvPSGuide)
+
+        val animator = ObjectAnimator.ofFloat(tvPSGuide, "alpha", 1f, 0f)
+        animator.duration = 2500
+        animator.addListener(object: AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                super.onAnimationEnd(animation)
+                tvPSGuide.visibility = View.GONE
+            }
+        })
+        Handler(Looper.getMainLooper()).postDelayed({
+            animator.start()
+        }, 2000)
+
+
+
         // -----! pose landmarker 시작 !-----
         // Initialize our background executor
         backgroundExecutor = Executors.newSingleThreadExecutor()
@@ -199,7 +226,7 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
         if(this::poseLandmarkerHelper.isInitialized) {
             poseLandmarkerHelper.detectLiveStream(
                 imageProxy = imageProxy,
-                isFrontCamera = cameraFacing == CameraSelector.LENS_FACING_FRONT
+                isFrontCamera = cameraFacing == CameraSelector.LENS_FACING_BACK
             )
         }
     }

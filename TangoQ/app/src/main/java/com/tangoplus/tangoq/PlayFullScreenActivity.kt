@@ -5,8 +5,11 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
+import android.view.Choreographer
 import android.view.View
+import android.widget.Chronometer
 import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
@@ -22,6 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
 
+
 class PlayFullScreenActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayFullScreenBinding
     lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -31,11 +35,17 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition = 0L
-
+    private lateinit var chronometer: Chronometer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayFullScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // ------! 재생시간 타이머 시작 !------
+//        chronometer = findViewById(R.id.chro)
+        chronometer.base = SystemClock.elapsedRealtime()
+        chronometer.start()
+        // ------! 재생시간 타이머 끝 !------
 
         // -----! landscape로 방향 설정 & 재생시간 받아오기 !-----
         val videoUrl = intent.getStringExtra("video_url")
@@ -49,7 +59,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val resourceList = intent.getStringArrayListExtra("resourceList")
         if (resourceList != null) {
             initPlayer(resourceList)
-            // -----! 영상 간 1초의 간격 !-----
+            // -----! 영상 간 0.5초의 간격 !-----
             simpleExoPlayer!!.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     super.onPlaybackStateChanged(playbackState)
@@ -63,7 +73,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             Handler(Looper.getMainLooper()).postDelayed({
                                 simpleExoPlayer?.next()
                                 // TODO : 여기에 History에 대한 걸 넣어야 함 (통신)
-                            }, 1000)
+                            }, 500)
                         }
                     }
                 }
@@ -72,6 +82,9 @@ class PlayFullScreenActivity : AppCompatActivity() {
         // -----! 받아온 즐겨찾기 재생 목록 끝 !-----
         val exitButton = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
+            chronometer.stop()
+
+
             showExitDialog()
         }
     }
@@ -119,9 +132,13 @@ class PlayFullScreenActivity : AppCompatActivity() {
 //                // TODO feedback activity에서 운동 기록 데이터 백그라운드 작업 전송 필요
 //                val intent= Intent(this@PlayFullScreenActivity, FeedbackActivity::class.java)
 //                startActivity(intent)
+                // 소요 시간
+                val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
+                viewModel.exerciseLog.value = Triple(elapsedMills.toString(), "${(simpleExoPlayer?.currentWindowIndex)!! + 1}",56)
                 finish()
             }
             setNegativeButton("아니오") { dialog, _ ->
+                chronometer.start()
             }
             create()
         }.show()

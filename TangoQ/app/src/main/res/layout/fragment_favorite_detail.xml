@@ -137,65 +137,65 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvFDExplain" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout2"
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/sflFV"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="4dp"
-                android:background="@color/white"
-                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider9">
 
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/sflFV"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
+                    <include layout="@layout/rv_shimmer_favorite_item" />
 
-                        <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_favorite_item" />
 
-                        <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_favorite_item" />
 
-                        <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_favorite_item" />
 
-                        <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_favorite_item" />
 
-                        <include layout="@layout/rv_shimmer_favorite_item" />
-
-                    </LinearLayout>
+                </LinearLayout>
 
 
-                </com.facebook.shimmer.ShimmerFrameLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sflFV" />
 
-                <Button
-                    android:id="@+id/btnFVEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="20dp"
-                    android:backgroundTint="@color/secondaryColor"
-                    android:drawableLeft="@drawable/icon_plus_small"
-                    android:drawableTint="@color/white"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingLeft="48dp"
-                    android:paddingRight="48dp"
-                    android:text="운동 추가하기"
-                    android:textColor="@color/white"
-                    app:cornerRadius="12dp" />
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/btnFVEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/secondaryColor"
+                android:drawableLeft="@drawable/icon_plus_small"
+                android:drawableTint="@color/white"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingLeft="48dp"
+                android:paddingRight="48dp"
+                android:text="운동 추가하기"
+                android:textColor="@color/white"
+                app:cornerRadius="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvFV" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

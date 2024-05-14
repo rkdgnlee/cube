@@ -43,14 +43,14 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
             val messages = messageDao.getAllMessages().toMutableList()
 
             withContext(Dispatchers.Main) {
-                val alarmList = mutableListOf(
-                    Message(1, "즉시 시작할 것", route = "home_intermediate" ),
-                    Message(2, "미션이 부여됐습니다", route = "pick"),
-                    Message(3,"운동 마무리 루틴", route = "report_goal"),
-                    Message(4,"기기 연결이 완료 됐습니다.", route = "profile")
-                )
+//                val alarmList = mutableListOf(
+//                    Message(1, "즉시 시작할 것", route = "home_intermediate" ),
+//                    Message(2, "미션이 부여됐습니다", route = "pick"),
+//                    Message(3,"운동 마무리 루틴", route = "report_goal"),
+//                    Message(4,"기기 연결이 완료 됐습니다.", route = "profile")
+//                )
                 // -----! alarm touchhelper 연동 시작 !-----
-                val alarmRecyclerViewAdapter = AlarmRVAdapter(alarmList, this@AlarmActivity, this@AlarmActivity)
+                val alarmRecyclerViewAdapter = AlarmRVAdapter(messages, this@AlarmActivity, this@AlarmActivity)
                 val SwipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(275f)
                 }

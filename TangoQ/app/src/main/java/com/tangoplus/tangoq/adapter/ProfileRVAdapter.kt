@@ -10,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.health.connect.client.HealthConnectClient
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.ktx.auth
@@ -37,6 +39,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
     inner class MyViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val btnPfName = view.findViewById<TextView>(R.id.tvPfSettingsName)
         val ivPf = view.findViewById<ImageView>(R.id.ivPf)
+        val cltvPfSettings = view.findViewById<ConstraintLayout>(R.id.cltvPfSettings)
     }
     inner class SpecialItemViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -67,20 +70,26 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                 val myViewHolder = holder as MyViewHolder
                 if (currentItem == "내정보") {
                     holder.ivPf.setImageResource(R.drawable.icon_profile)
+                } else if (currentItem == "연동 관리") {
+                    holder.ivPf.setImageResource(R.drawable.icon_multi_device)
                 } else if (currentItem == "로그아웃") {
                     holder.ivPf.setImageResource(R.drawable.icon_logout)
                 } else if (currentItem == "회원탈퇴") {
                     holder.ivPf.setImageResource(R.drawable.icon_logout)
                 }
+
                 myViewHolder.btnPfName.text = currentItem
-                myViewHolder.btnPfName.setOnClickListener {
+                myViewHolder.cltvPfSettings.setOnClickListener {
                     if (currentItem == "내정보") {
                         holder.ivPf.setImageResource(R.drawable.icon_profile)
                         val dialogFragment = ProfileEditDialogFragment()
                         dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-
-                    } else if (currentItem == "연동관리") {
-                        showSettingsFragment()
+                    } else if (currentItem == "연동 관리") {
+//                        showSettingsFragment()
+                        // ------! 헬스 커넥트 정보로 가기 !------
+                        val settingsIntent = Intent()
+                        settingsIntent.action = HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+                        fragment.startActivity(settingsIntent)
                     } else if (currentItem == "자주 묻는 질문") {
                         val intent = Intent(Intent.ACTION_VIEW)
                         val url = Uri.parse("https://tangoplus.co.kr/ko/20")
@@ -102,11 +111,12 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                     } else if (currentItem == "개인정보 처리방침") {
                         val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
                         dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
-                    } else if (currentItem == "이용약관") {
+                    } else if (currentItem == "서비스 이용약관") {
                         val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
                         dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
                     } else if (currentItem == "로그아웃") {
                         holder.ivPf.setImageResource(R.drawable.icon_logout)
+
                         if (Firebase.auth.currentUser != null) {
                             Firebase.auth.signOut()
                             Log.d("로그아웃", "Firebase sign out successful")
@@ -124,7 +134,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                         }
                         val intent = Intent(holder.itemView.context, IntroActivity::class.java)
                         holder.itemView.context.startActivity(intent)
-                        MainActivity().finish()
+                        fragment.requireActivity().finishAffinity()
                     } else if (currentItem == "회원탈퇴") {
 
                     }

@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattService
+import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -18,251 +19,227 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import java.util.UUID
 
 class BluetoothLeService : Service() {
-    private var bluetoothAdapter: BluetoothAdapter? = null
-    val EXTRA_DATA = "com.example.mhg.service.EXTRA_DATA"
+
+    private var mBluetoothManager: BluetoothManager? = null
+    private var mBluetoothAdapter: BluetoothAdapter? = null
+    private var mBluetoothDeviceAddress: String? = null
     private var mBluetoothGatt: BluetoothGatt? = null
+    private var mConnectionState = STATE_DISCONNECTED
+    private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
+        @SuppressLint("MissingPermission")
+        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+            //super.onConnectionStateChange(gatt, status, newState);
+            val intentAction: String
+            if (newState == BluetoothProfile.STATE_CONNECTED) {
+                intentAction = ACTION_GATT_CONNECTED
+                mConnectionState = STATE_CONNECTED
+                broadcastUpdate(intentAction)
+                Log.i(TAG, "Connected to GATT server")
+                Log.i(
+                    TAG,
+                    "Attempting to start service discorvery:" + mBluetoothGatt!!.discoverServices()
+                )
+            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                intentAction = ACTION_GATT_DISCONNECTED
+                mConnectionState = STATE_DISCONNECTED
+                Log.i(TAG, "Disconnected from GATT server")
+                broadcastUpdate(intentAction)
+            }
+        }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.w(TAG, "mBluetoothGatt = $mBluetoothGatt")
+                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
+            } else {
+                Log.w(
+                    TAG,
+                    "onServicesDiscovered received: $status"
+                )
+            }
+        }
+
+        override fun onCharacteristicRead(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            status: Int
+        ) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.d(TAG, "onCharacteristicRead")
+                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic)
+            }
+        }
+
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic
+        ) {
+            Log.e(TAG, "onCharacteristicChanged")
+            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic)
+        }
+
+        override fun onDescriptorWrite(
+            gatt: BluetoothGatt?,
+            descriptor: BluetoothGattDescriptor?,
+            status: Int
+        ) {
+            super.onDescriptorWrite(gatt, descriptor, status)
+            Log.v("descriptor", "write")
+            broadcastUpdate(ACTION_FIND_CHARACTERISTIC_FINISHED)
+        }
+
+        override fun onDescriptorRead(
+            gatt: BluetoothGatt,
+            descriptor: BluetoothGattDescriptor,
+            status: Int,
+            value: ByteArray
+        ) {
+            super.onDescriptorRead(gatt, descriptor, status, value)
+            Log.v("descriptor", "read")
+            broadcastUpdate(ACTION_FIND_CHARACTERISTIC_FINISHED)
+        }
+    }
+
+    private fun broadcastUpdate(action: String) {
+        val intent = Intent(action)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    }
+
+    private fun broadcastUpdate(action: String, characteristic: BluetoothGattCharacteristic) {
+        val intent = Intent(action)
+        if (TX_CHAR_UUID == characteristic.uuid) {
+            intent.putExtra(EXTRA_DATA, characteristic.value)
+        } else {
+        }
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    }
+
     inner class LocalBinder : Binder() {
         fun getService() : BluetoothLeService {
             return this@BluetoothLeService
         }
     }
-    private val binder: IBinder = LocalBinder()
 
-    override fun onBind(intent: Intent?): IBinder {
-        return binder
+    override fun onBind(intent: Intent): IBinder {
+        return mBinder
     }
 
+    override fun onUnbind(intent: Intent): Boolean {
+        close()
+        return super.onUnbind(intent)
+    }
+
+    private val mBinder: IBinder = LocalBinder()
     fun initialize(): Boolean {
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        if (bluetoothAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.")
+        if (mBluetoothManager == null) {
+            mBluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
+            if (mBluetoothManager == null) {
+                Log.e(TAG, "Unable to initialize BluetoothManager")
+                return false
+            }
+        }
+        mBluetoothAdapter = mBluetoothManager!!.adapter
+        if (mBluetoothAdapter == null) {
+            Log.e(TAG, "Unable to obtain a BluetoothAdapter")
             return false
         }
         return true
     }
 
     @SuppressLint("MissingPermission")
-    fun connect(address: String): BluetoothGatt? {
-        bluetoothAdapter?.let { adapter ->
-            try {
-                val device = adapter.getRemoteDevice(address)
-                mBluetoothGatt = device.connectGatt(this, true, bluetoothGattCallback)
-                Log.w("어댑터 초기화 O" , "bluetoothGatt Success")
-                return mBluetoothGatt
-            } catch (exception: IllegalArgumentException) {
-                Log.w(TAG, "Device not found with provided address.")
-                return null
-            }
-            // connect to the GATT server on the device
-        } ?: run {
-            Log.w("어댑터 초기화 X", "BluetoothAdapter not initialized")
-            return null
+    fun connect(address: String?): Boolean {
+        if (mBluetoothAdapter == null || address == null) {
+            Log.w("connect오류", "BluetoothAdapter not initialized or unspecified address")
+            return false
         }
+        Log.d("connect성공", "connect to $address")
+        if (mBluetoothDeviceAddress != null && address == mBluetoothDeviceAddress && mBluetoothGatt != null) {
+            Log.d("connect오류", "Trying to use an existing mBluetoothGatt for connection")
+            return if (mBluetoothGatt!!.connect()) {
+                mConnectionState = STATE_CONNECTING
+                true
+            } else {
+                false
+            }
+        }
+        val device = mBluetoothAdapter!!.getRemoteDevice(address)
+        if (device == null) {
+            Log.w("connect오류", "Device not found. Unable to connect")
+            return false
+        }
+        mBluetoothGatt = device.connectGatt(this, false, mGattCallback)
+        Log.d("connect오류", "Trying to create a new connection")
+        mBluetoothDeviceAddress = address
+        mConnectionState = STATE_CONNECTING
+        return true
     }
+
     @SuppressLint("MissingPermission")
     fun disconnect() {
-        mBluetoothGatt?.disconnect()
-
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized")
+            return
+        }
+        mBluetoothGatt!!.disconnect()
     }
+
     @SuppressLint("MissingPermission")
-    fun deleteDevice() {
-        mBluetoothGatt?.close()
+    fun close() {
+        if (mBluetoothGatt == null) return
+        Log.w(TAG, "mBluetoothGatt closed")
+        mBluetoothDeviceAddress = null
+        mBluetoothGatt!!.close()
         mBluetoothGatt = null
     }
 
-
-    private var connectionState = BluetoothAdapter.STATE_DISCONNECTED
-    private var services: List<BluetoothGattService> = emptyList()
-    val servicesToCharacteristics = mutableMapOf<UUID, MutableList<String>>()
-
-    // -----! gatt callback 함수 시작 !------
-    private val bluetoothGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
-        @SuppressLint("MissingPermission")
-        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                // successfully connected to the GATT Server
-                connectionState = STATE_CONNECTED
-                broadcastUpdate(ACTION_GATT_CONNECTED)
-                mBluetoothGatt?.discoverServices()
-            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                // disconnected from the GATT Server
-                connectionState = STATE_DISCONNECTED
-                broadcastUpdate(ACTION_GATT_DISCONNECTED)
-            }
-        }
-        @SuppressLint("MissingPermission")
-        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-            super.onServicesDiscovered(gatt, status)
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                services = gatt?.services!!
-                Log.w("service", "serviceFinished")
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
-            }
-        }
-
-//        @SuppressLint("MissingPermission")
-//        override fun onCharacteristicWrite(
-//            gatt: BluetoothGatt?,
-//            characteristic: BluetoothGattCharacteristic?,
-//            status: Int
-//        ) {
-//            super.onCharacteristicWrite(gatt, characteristic, status)
-//            Log.d("writeCallback실행","GATT Callback --> onCharacteristicWrite OK")
-//        }
-
-
-//        @Deprecated("Deprecated in Java")
-//        override fun onCharacteristicRead(
-//            gatt: BluetoothGatt?,
-//            characteristic: BluetoothGattCharacteristic?,
-//            status: Int
-//        ) {
-//            super.onCharacteristicRead(gatt, characteristic, status)
-//            Log.w("readCallback실행", "$characteristic")
-//        }
-
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            value: ByteArray,
-            status: Int
-        ) {
-            super.onCharacteristicRead(gatt, characteristic, value, status)
-            Log.d("CharacRead", "onCharacteristicRead")
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic)
-        }
-
-        @SuppressLint("MissingPermission")
-        override fun onCharacteristicChanged(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            value: ByteArray
-        ) {
-            super.onCharacteristicChanged(gatt, characteristic, value)
-            Log.w("CharacChanged","onCharacteristicChanged")
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic)
-        }
-
-    }
-    // -----! gatt callback 함수 끝 !------
-
-    //-----------! read, write 시작 !-------------
-//    @SuppressLint("MissingPermission")
-//    fun readCharacteristic(characteristic: BluetoothGattCharacteristic) {
-//        getGatt()?.readCharacteristic(characteristic) ?: run {
-//            Log.w(TAG, "BluetoothGatt not initialized")
-//            Return
-//        }
-//    }
     @SuppressLint("MissingPermission")
     fun readCharacteristic(characteristic: BluetoothGattCharacteristic?) {
-        mBluetoothGatt?.readCharacteristic(characteristic) ?: run {
-            Log.w(TAG, "BluetoothGatt not initialized")
-
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized")
+            return
         }
-    }
-//    @SuppressLint("MissingPermission")
-//    fun writeCharacteristic(characteristic: BluetoothGattCharacteristic, data:ByteArray) {
-//        characteristic.value = data
-//        bluetoothGatt?.writeCharacteristic(characteristic)
-//        Log.w("write", "writefunStart")
-//    }
-
-    //-----------! read, write 끝 !-----------
-    fun getSupportedGattServices(): List<BluetoothGattService>? {
-        return mBluetoothGatt?.services
+        mBluetoothGatt!!.readCharacteristic(characteristic)
     }
 
-    fun getGatt(): BluetoothGatt? {
-        return mBluetoothGatt
-    }
-    //    @SuppressLint("MissingPermission")
-//    fun setCharacteristicNotification(
-//        characteristic: BluetoothGattCharacteristic,
-//        enabled: Boolean
-//    ) {
-//        bluetoothGatt?.let { gatt ->
-//            if (CHARACTERISTIC_UUID == characteristic.uuid.toString()) {
-//                val descriptor = characteristic.getDescriptor(UUID.fromString(BLEGattAttributes.CLIENT_CHARACTERISTIC_CONFIG)) // 일반 적인 config
-//                descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-//                gatt.writeDescriptor(descriptor)
-//                Log.w("descriptor", "${descriptor.value}")
-//
-//                if (characteristic.properties and BluetoothGattCharacteristic.PROPERTY_NOTIFY > 0) {
-//                    Log.w("알림notify", "true")
-//                }
-//                if (characteristic.properties and BluetoothGattCharacteristic.PROPERTY_INDICATE > 0) {
-//                    Log.w("알림I", "true")
-//                }
-//            }
-//        }
-//    }
-    private fun showMessage(msg: String) {
-        Log.e("enableTxNotification", msg)
-    }
     @SuppressLint("MissingPermission")
     fun enableTxNotification() {
-        Log.d("BluetoothLeService", "enableTxNotification() - 1")
+        Log.d(TAG, "enableTxNotification() - 1")
         if (mBluetoothGatt == null) {
             showMessage("mBluetoothGatt null$mBluetoothGatt")
             broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART)
             return
         }
-        Log.d("BluetoothLeService", "enableTxNotification() - 2")
-        val RxService: BluetoothGattService =
-            mBluetoothGatt!!.getService(RX_SERVICE_UUID)
+        Log.d(TAG, "enableTxNotification() - 2")
+        val RxService = mBluetoothGatt!!.getService(RX_SERVICE_UUID)
         if (RxService == null) {
             showMessage("Rx service not found!")
             broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART)
             return
         }
-        Log.d("BluetoothLeService", "enableTxNotification() - 3")
-        val TxChar = RxService.getCharacteristic(NOTIFY_CHAR_UUID)
+        Log.d(TAG, "enableTxNotification() - 3")
+        val TxChar = RxService.getCharacteristic(TX_CHAR_UUID)
         if (TxChar == null) {
             showMessage("Tx characteristic not found!")
             broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART)
             return
         }
-
-
         mBluetoothGatt!!.setCharacteristicNotification(TxChar, true)
-        Log.d("BluetoothLeService", "enableTxNotification() - 4")
+        Log.d(TAG, "enableTxNotification() - 4")
         val descriptor = TxChar.getDescriptor(CCCD)
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
         mBluetoothGatt!!.writeDescriptor(descriptor)
-        Log.d("BluetoothLeService", "enableTxNotification() - 5")
+        Log.d(TAG, "enableTxNotification() - 5")
     }
-    companion object {
-        val CCCD = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-        val RX_SERVICE_UUID = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
-        val NOTIFY_CHAR_UUID = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb")
-        val RX_CHAR_UUID = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
 
-        const val ACTION_GATT_CONNECTED =
-            "com.example.mhg.service.ACTION_GATT_CONNECTED"
-        const val ACTION_GATT_DISCONNECTED =
-            "com.example.mhg.service.ACTION_GATT_DISCONNECTED"
-        const val ACTION_GATT_SERVICES_DISCOVERED =
-            "com.example.mhg.service.ACTION_GATT_SERVICES_DISCOVERED"
-        const val ACTION_DATA_AVAILABLE =
-            "com.example.mhg.service.ACTION_DATA_AVAILABLE"
-        const val DEVICE_DOES_NOT_SUPPORT_UART =
-            "com.example.mhg.service.DEVICE_DOES_NOT_SUPPORT_UART"
-
-        private const val STATE_DISCONNECTED = 0
-        private const val STATE_CONNECTED = 2
-
-    }
-    private fun broadcastUpdate(action: String) {
-        val intent = Intent(action)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
-    }
     @SuppressLint("MissingPermission")
     fun writeRxCharacteristic(value: ByteArray?) {
-        val RxService: BluetoothGattService =
-            mBluetoothGatt!!.getService(RX_SERVICE_UUID)
-        showMessage("mBluetoothGatt null?: $mBluetoothGatt")
-
+        val RxService = mBluetoothGatt!!.getService(RX_SERVICE_UUID)
+        showMessage("mBluetoothGatt null$mBluetoothGatt")
+        if (RxService == null) {
+            showMessage("Rx service not found")
+            broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART)
+            return
+        }
         val RxChar = RxService.getCharacteristic(RX_CHAR_UUID)
         if (RxChar == null) {
             showMessage("Rx characteristic not found")
@@ -270,65 +247,105 @@ class BluetoothLeService : Service() {
             return
         }
         RxChar.setValue(value)
-        val status: Boolean = mBluetoothGatt!!.writeCharacteristic(RxChar)
-        Log.w("BluetoothLeService", "write TXChar - status=$status")
+        val status = mBluetoothGatt!!.writeCharacteristic(RxChar)
+        Log.d(TAG, "write TXChar - status=$status")
     }
 
-    private fun broadcastUpdate(action: String, characteristic: BluetoothGattCharacteristic) {
-        val intent = Intent(action)
+    private fun showMessage(msg: String) {
+        Log.e(TAG, msg)
+    }
 
-        if (NOTIFY_CHAR_UUID == characteristic.uuid) {
-            intent.putExtra(EXTRA_DATA, characteristic.value)
-        } else {
+    companion object {
 
-        }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
-//        val intent = Intent(action)
-//        when (characteristic.uuid) {
-//            UUID.fromString(BLEGattAttributes.READ_WRITE) -> {
-//                val flag = characteristic.properties
-//                val format = when (flag and 0x01) {
-//                    0x01 -> {
-//                        Log.d(TAG, "Exercise Management format UINT16.")
-//                        BluetoothGattCharacteristic.FORMAT_UINT16
-//                    }
-//                    else -> {
-//                        Log.d(TAG, "Exercise Management format UINT8.")
-//                        BluetoothGattCharacteristic.FORMAT_UINT8
-//                    }
-//                }
-//                val heartRate = characteristic.getIntValue(format, 1)
-//                Log.d(TAG, String.format("Received Exercise Management: %d", heartRate))
-//                intent.putExtra(EXTRA_DATA, (heartRate).toString())
+        private val TAG = BluetoothLeService::class.java.getSimpleName()
+        private const val STATE_DISCONNECTED = 0
+        private const val STATE_CONNECTING = 1
+        private const val STATE_CONNECTED = 2
+        const val ACTION_GATT_CONNECTED = "com.example.mhg.ACTION_GATT_CONNECTED"
+        const val ACTION_GATT_DISCONNECTED = "com.example.mhg.ACTION_GATT_DISCONNECTED"
+        const val ACTION_GATT_SERVICES_DISCOVERED =
+            "com.example.mhg.ACTION_SERVICES_DISCOVERED"
+        const val ACTION_DATA_AVAILABLE = "com.example.mhg.ACTION_DATA_AVAILABLE"
+        const val DEVICE_DOES_NOT_SUPPORT_UART =
+            "com.example.mhg.DEVICE_DOES_NOT_SUPPORT_UART"
+        const val ACTION_FIND_CHARACTERISTIC_FINISHED =
+            "com.example.mhg.ACTION_FIND_CHARACTERISTIC_FINISHED"
+
+        const val EXTRA_DATA = "com.example.mhg.EXTRA_DATA"
+        val TX_POWER_UUID = UUID.fromString("00001804-0000-1000-8000-00805f9b34fb")
+        val TX_POWER_LEVEL_UUID = UUID.fromString("00002a07-0000-1000-8000-00805f9b34fb")
+        val CCCD = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+        val FIRMWARE_REVISON_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb")
+        val DIS_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb")
+//        val RX_SERVICE_UUID = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
+//        //0000fff1 = Android --> BLE UUID Write
+//        val RX_CHAR_UUID = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
+//        //0000fff4 = BLE --> Android Notification
+//        val TX_CHAR_UUID = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb")
+
+        // -------------------! hercules ble 장치 UUID !-------------------
+        val RX_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+        val RX_CHAR_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+        val TX_CHAR_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+    }
+
+
+    // -----------------------------------! foreground 시도 !----------------------------------------
+//    private var iconNotification: Bitmap? = null
+//    private var notification: Notification? = null
+//    var mNotificationManager: NotificationManager? = null
+//    private val mNotificationId = 123
+//    @SuppressLint("ForegroundServiceType")
+//    private fun generateForegroundNotification() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val intentMainLanding = Intent(this, MainActivity::class.java)
+//            val pendingIntent =
+//                PendingIntent.getActivity(this, 0, intentMainLanding, PendingIntent.FLAG_IMMUTABLE)
+//            iconNotification = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
+//            if (mNotificationManager == null) {
+//                mNotificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 //            }
-//            UUID.fromString((BLEGattAttributes.NOTIFY)) -> {
-//                val flag = characteristic.properties
-//                val format = when (flag and 0x01) {
-//                    0x01 -> {
-//                        Log.d(TAG, "Exercise Management format UINT16.")
-//                        BluetoothGattCharacteristic.FORMAT_UINT16
-//                    }
-//                    else -> {
-//                        Log.d(TAG, "Exercise Management format UINT8.")
-//                        BluetoothGattCharacteristic.FORMAT_UINT8
-//                    }
-//                }
-//                val heartRate = characteristic.getIntValue(format, 1)
-//                Log.d(TAG, String.format("Received Exercise Management: %d", heartRate))
-//                intent.putExtra(EXTRA_DATA, (heartRate).toString())
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                assert(mNotificationManager != null)
+//                mNotificationManager?.createNotificationChannelGroup(
+//                    NotificationChannelGroup("chats_group", "Chats")
+//                )
+//                val notificationChannel =
+//                    NotificationChannel("service_channel", "Service Notifications",
+//                        NotificationManager.IMPORTANCE_MIN)
+//                notificationChannel.enableLights(false)
+//                notificationChannel.lockscreenVisibility = Notification.VISIBILITY_SECRET
+//                mNotificationManager?.createNotificationChannel(notificationChannel)
 //            }
-//            else -> {
-//                // For all other profiles, writes the data formatted in HEX.
-//                val data: ByteArray? = characteristic.value
-//                if (data?.isNotEmpty() == true) {
-//                    val hexString: String = data.joinToString(separator = " ") {
-//                        String.format("%02X", it)
-//                    }
-//                    intent.putExtra(EXTRA_DATA, "$data\n$hexString")
-//                }
+//            val builder = NotificationCompat.Builder(this, "service_channel")
+//
+//            builder.setContentTitle(StringBuilder(resources.getString(R.string.app_name)).append(" service is running").toString())
+//                .setTicker(StringBuilder(resources.getString(R.string.app_name)).append("service is running").toString())
+//                .setContentText("Touch to open") //                    , swipe down for more options.
+//                .setSmallIcon(R.drawable.logo)
+//                .setPriority(NotificationCompat.PRIORITY_LOW)
+//                .setWhen(0)
+//                .setOnlyAlertOnce(true)
+//                .setContentIntent(pendingIntent)
+//                .setOngoing(true)
+//            if (iconNotification != null) {
+//                builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification!!, 128, 128, false))
 //            }
+//            builder.color = resources.getColor(R.color.grey300)
+//            notification = builder.build()
+//            startForeground(mNotificationId, notification)
 //        }
-//        sendBroadcast(intent)
-    }
-
+//
+//    }
+//    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+//        if (intent?.action != null && intent.action.equals(
+//            ACTION_STOP, ignoreCase = true)) {
+//            stopSelf()
+//        }
+//
+//        return super.onStartCommand(intent, flags, startId)
+//
+//    }
 }
+
+

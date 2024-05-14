@@ -58,7 +58,7 @@ dependencies {
     implementation("io.github.litao0621:nifty-slider:1.4.6")
     implementation("com.github.TomLeCollegue:ProgressBar-Library-Android-Kotlin:0.1.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
-
+    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 
     // api
     implementation("com.navercorp.nid:oauth:5.9.1")
@@ -66,14 +66,14 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation("com.kakao.sdk:v2-auth:2.19.0")
     implementation("com.google.gms:google-services:4.4.1")
-    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
-    implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
-    implementation("com.google.firebase:firebase-analytics:21.6.2")
-    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
+    implementation("com.google.firebase:firebase-analytics:22.0.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.android.gms:play-services-auth:21.1.0")
+    implementation("com.google.android.gms:play-services-auth:21.1.1")
     implementation("androidx.security:security-crypto:1.0.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.health.connect:connect-client:1.1.0-alpha07")
 
     // 통신

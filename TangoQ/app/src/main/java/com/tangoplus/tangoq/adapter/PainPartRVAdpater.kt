@@ -20,13 +20,17 @@ class PainPartRVAdpater(var parts: MutableList<Triple<String, String, Boolean>>,
         val ivSPp = view.findViewById<ImageView>(R.id.ivSPp)
         val cbSPp = view.findViewById<CheckBox>(R.id.cbSPp)
         val ivSPpCheck = view.findViewById<ImageView>(R.id.ivSPpCheck)
+
     }
 
     inner class ppViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val tvPpName = view.findViewById<TextView>(R.id.tvPpName)
         val ivPp = view.findViewById<ImageView>(R.id.ivPp)
         val ibtnPpMore = view.findViewById<ImageButton>(R.id.ibtnPpMore)
-
+        val ivPpDone = view.findViewById<ImageView>(R.id.ivPpDone)
+        val ivPpUp = view.findViewById<ImageView>(R.id.ivPpUp)
+        val ivPpDown = view.findViewById<ImageView>(R.id.ivPpDown)
+        val tvPpScore = view.findViewById<TextView>(R.id.tvPpScore)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -59,6 +63,16 @@ class PainPartRVAdpater(var parts: MutableList<Triple<String, String, Boolean>>,
             holder.ibtnPpMore.setOnClickListener {
                 onPartCheckListener.onPartCheck(Triple(currentItem.first, currentItem.second, true))
             }
+            val resourceId = holder.itemView.context.resources.getIdentifier(
+                currentItem.first, "drawable", holder.itemView.context.packageName
+            )
+            holder.ivPp.setImageResource(resourceId)
+            // ------! 점수 상승 icon control 시작 !------
+            holder.ivPpDone.visibility = View.GONE
+            holder.ivPpDown.visibility = View.GONE
+
+            holder.tvPpScore
+            // ------! 점수 상승 icon control 끝 !------
 //            val resourceId = holder.itemView.context.resources.getIdentifier(
 //                currentItem.first, "drawable", holder.itemView.context.packageName
 //            )
@@ -74,8 +88,14 @@ class PainPartRVAdpater(var parts: MutableList<Triple<String, String, Boolean>>,
                 }
             }
             when (currentItem.third) {
-                true -> holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_enabled)
-                false -> holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_disabled)
+                true -> {
+                    holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_enabled)
+                    holder.cbSPp.isChecked = true
+                }
+                false -> {
+                    holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_disabled)
+                    holder.cbSPp.isChecked = false
+                }
             }
             holder.tvSPp.text = currentItem.second
             val resourceId = holder.itemView.context.resources.getIdentifier(

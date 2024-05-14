@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="186dp"
+    android:layout_height="162dp"
+    android:background="@drawable/background_stroke_1dp_sub_color">
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/materialDivider12"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPWPlay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="재생하기"
+        android:textColor="@color/subColor700"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvPWGoThumbnail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/materialDivider11"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvPWGoThumbnail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/materialDivider13"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPWAddFavorite" />
+
+    <TextView
+        android:id="@+id/tvPWGoThumbnail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="자세히 보기"
+        android:textColor="@color/subColor700"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/materialDivider12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPWAddFavorite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="재생목록에 추가하기"
+        android:textColor="@color/subColor700"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialDivider12" />
+
+    <TextView
+        android:id="@+id/tvPWDelete"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="삭제하기"
+        android:textColor="@color/deleteColor"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialDivider13" />
+</androidx.constraintlayout.widget.ConstraintLayout>

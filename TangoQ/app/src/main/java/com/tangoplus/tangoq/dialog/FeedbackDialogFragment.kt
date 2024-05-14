@@ -4,16 +4,24 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.tangoplus.tangoq.MainActivity
+import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackDialogBinding
+import com.tangoplus.tangoq.`object`.Singleton_t_user
+import org.json.JSONObject
 
 class FeedbackDialogFragment : DialogFragment() {
     lateinit var binding: FragmentFeedbackDialogBinding
+    val viewModel: ExerciseViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -25,8 +33,43 @@ class FeedbackDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val t_userdata = Singleton_t_user.getInstance(requireContext())
+        val userJson= t_userdata.jsonObject?.getJSONObject("data")
+
+        binding.tvFTime.text = viewModel.exerciseLog.value?.first
+        binding.tvFCount.text = viewModel.exerciseLog.value?.second
+
 
         binding.btnFbSubmit.setOnClickListener{
+            // TODO 점수 보내기
+            val jsonObj = JSONObject()
+            jsonObj.put("user_mobile", userJson?.optString("user_mobile"))
+            jsonObj.put("intensity_score", when (binding.rgIntensity.checkedRadioButtonId) {
+                R.id.rbtnIntensity1 -> "1"
+                R.id.rbtnIntensity2 -> "2"
+                R.id.rbtnIntensity3 -> "3"
+                R.id.rbtnIntensity4 -> "4"
+                R.id.rbtnIntensity5 -> "5"
+                else -> Log.v("error", "Exception")
+            })
+            jsonObj.put("Fatigue_score", when (binding.rgFatigue.checkedRadioButtonId) {
+                R.id.rbtnFatigue1 -> "1"
+                R.id.rbtnFatigue2 -> "2"
+                R.id.rbtnFatigue3 -> "3"
+                R.id.rbtnFatigue4 -> "4"
+                R.id.rbtnFatigue5 -> "5"
+                else -> Log.v("error", "Exception")
+            })
+
+            jsonObj.put("satisfaction_score", when (binding.rgSatisfaction.checkedRadioButtonId) {
+                R.id.rbtnSatisfaction1 -> "1"
+                R.id.rbtnSatisfaction2 -> "2"
+                R.id.rbtnSatisfaction3 -> "3"
+                R.id.rbtnSatisfaction4 -> "4"
+                R.id.rbtnSatisfaction5 -> "5"
+                else -> Log.v("error", "Exception")
+            })
+            Log.v("피드백 점수", "$jsonObj")
             val intent = Intent(requireActivity(), MainActivity::class.java)
             startActivity(intent)
             requireActivity().finishAffinity()

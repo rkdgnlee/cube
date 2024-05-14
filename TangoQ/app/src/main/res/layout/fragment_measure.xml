@@ -84,7 +84,7 @@
                 app:tabInlineLabel="false"
                 app:tabPaddingEnd="20dp"
                 app:tabPaddingStart="20dp"
-                app:tabRippleColor="#27CDCDCD"
+                app:tabRippleColor="#30CDCDCD"
                 app:tabSelectedTextColor="@color/mainColor"
                 app:tabTextColor="@color/subColor500">
 
@@ -247,9 +247,9 @@
                     android:drawableStart="@drawable/icon_plus_small"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:paddingLeft="48dp"
+                    android:paddingLeft="24dp"
                     android:paddingTop="12dp"
-                    android:paddingRight="48dp"
+                    android:paddingRight="24dp"
                     android:paddingBottom="12dp"
                     android:stateListAnimator="@null"
                     android:text="측정하기"
@@ -275,7 +275,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/effect_ibtn_12dp"
-                android:text="추가하기"
+                android:padding="8dp"
+                android:text="편집하기"
                 android:textColor="@color/subColor500"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView40"
@@ -286,11 +287,11 @@
                 android:id="@+id/linearLayout5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="8dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView40">
+                app:layout_constraintTop_toBottomOf="@+id/tvMsUserName">
 
                 <LinearLayout
                     android:id="@+id/llMsEmpty"
@@ -302,7 +303,6 @@
                         android:id="@+id/clMsAddPart"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:layout_marginRight="8dp"
                         android:layout_marginBottom="16dp"
                         android:layout_weight="1"
                         android:background="@drawable/background_stroke_1dp_sub_color">
@@ -314,20 +314,13 @@
                             android:gravity="center"
                             android:text="통증 부위를\n추가해주세요 💪"
                             android:textColor="@color/subColor500"
+                            android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/clMsPart2"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:layout_weight="1"
-                        android:background="@color/white" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -353,49 +346,26 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView46"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="통증 한눈에 보기"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
-
-            <TextView
                 android:id="@+id/tvMsUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:text="000"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView46" />
-
-            <ImageView
-                android:id="@+id/ivMsSkeleton"
-                android:layout_width="wrap_content"
-                android:layout_height="500dp"
-                android:backgroundTint="@color/subColor300"
-                android:scaleType="centerCrop"
-                android:src="@drawable/image_skeleton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMsUserName" />
+                app:layout_constraintStart_toStartOf="@+id/textView40"
+                app:layout_constraintTop_toBottomOf="@+id/textView40" />
 
             <LinearLayout
                 android:id="@+id/linearLayout6"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivMsSkeleton">
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMsGetReport"
@@ -424,7 +394,7 @@
                     android:drawableStart="@drawable/icon_plus_small"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:paddingLeft="12dp"
+                    android:paddingLeft="24dp"
                     android:stateListAnimator="@null"
                     android:text="맞춤 운동 추천 받기"
                     android:textColor="@color/white"
@@ -496,7 +466,7 @@
 
                 <TextView
 
-                    android:id="@+id/tvMsCalory"
+                    android:id="@+id/tvMsSteps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="340kcal"
@@ -511,12 +481,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
-                    android:text="칼로리 소모 - "
+                    android:text="총 걸음수 - "
                     android:textColor="@color/subColor700"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvMsCalory"
-                    app:layout_constraintEnd_toStartOf="@+id/tvMsCalory"
-                    app:layout_constraintTop_toTopOf="@+id/tvMsCalory" />
+                    app:layout_constraintBottom_toBottomOf="@+id/tvMsSteps"
+                    app:layout_constraintEnd_toStartOf="@+id/tvMsSteps"
+                    app:layout_constraintTop_toTopOf="@+id/tvMsSteps" />
 
                 <LinearLayout
                     android:id="@+id/llMs"

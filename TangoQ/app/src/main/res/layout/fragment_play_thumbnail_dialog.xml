@@ -81,7 +81,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:src="@drawable/icon_time_subcolor"
+                        android:src="@drawable/icon_time_sub_500"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

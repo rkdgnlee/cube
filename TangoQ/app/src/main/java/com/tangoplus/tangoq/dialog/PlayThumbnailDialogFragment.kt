@@ -26,9 +26,10 @@ import com.tangoplus.tangoq.PlaySkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
+import com.tangoplus.tangoq.listener.OnMoreClickListener
 import kotlinx.coroutines.launch
 
-class PlayThumbnailDialogFragment : DialogFragment() {
+class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
 
@@ -178,4 +179,5 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             initPlayer()
         }
     }
+
 }

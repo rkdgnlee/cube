@@ -7,11 +7,14 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,8 +34,11 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.BannerViewModel
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
+import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.listener.OnMoreClickListener
 import kotlinx.coroutines.launch
 import java.util.ArrayList
 
@@ -41,9 +47,11 @@ class MainFragment : Fragment(), OnRVClickListener {
     lateinit var binding: FragmentMainBinding
     val viewModel: ExerciseViewModel by activityViewModels()
     val bViewModel : BannerViewModel by activityViewModels()
+    val mViewModel : MeasureViewModel by activityViewModels()
     private var bannerPosition = Int.MAX_VALUE/2
     private var bannerHandler = HomeBannerHandler()
     private val intervalTime = 2400.toLong()
+    var popupWindow : PopupWindow?= null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -85,9 +93,19 @@ class MainFragment : Fragment(), OnRVClickListener {
             bnv.selectedItemId = R.id.measure
         }
         // TODO 운동 기록에 맞게 HPV 연동 필요
-        binding.hpvMDailyFirst.progress = 10
-        binding.hpvMDailySecond.progress = 20
-        binding.hpvMDailyThird.progress = 30
+        binding.hpvMDailyFirst.progress = 0
+
+        binding.hpvMDailyThird.progress = 0
+
+        mViewModel.totalSteps.observe(viewLifecycleOwner) { totalSteps ->
+            if (totalSteps == "" || totalSteps.toInt() == 0) {
+                binding.tvMTodaySteps.text = "0"
+                binding.hpvMDailySecond.progress = 0
+            } else if (totalSteps.toInt() > 0) {
+                binding.tvMTodaySteps.text = totalSteps
+                binding.hpvMDailySecond.progress = (totalSteps.toInt() * 100) / 8000
+            }
+        }
 
 
         // ------! 점수 끝 !------
@@ -202,7 +220,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                 }) // ------! horizontal과 progressbar 연동 끝 !------
 
                 // ------! 하단 RV Adapter 시작 !------
-                val adapter = ExerciseRVAdapter(this@MainFragment, verticalDataList,"main" )
+                val adapter = ExerciseRVAdapter(this@MainFragment, verticalDataList,"main")
                 adapter.exerciseList = verticalDataList
                 binding.rvM.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -260,4 +278,5 @@ class MainFragment : Fragment(), OnRVClickListener {
         super.onPause()
         autoScrollStop()
     }
+
 }

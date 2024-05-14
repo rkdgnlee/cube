@@ -41,9 +41,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:thumbIconTint="@color/white"
-        app:thumbTint="@color/black"
-        app:trackDecorationTint="@color/black"
-        app:trackTint="@color/white"
+        app:thumbTint="#FFFFFF"
+        app:trackDecorationTint="@color/tint_main_sub200"
+        app:trackTint="@color/tint_main_sub200"
         app:useMaterialThemeColors="false" />
 </androidx.constraintlayout.widget.ConstraintLayout>

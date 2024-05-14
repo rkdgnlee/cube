@@ -3,12 +3,15 @@ package com.tangoplus.tangoq.adapter
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +25,7 @@ import com.tangoplus.tangoq.databinding.RvBasketItemBinding
 import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvMainItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
+import com.tangoplus.tangoq.listener.OnMoreClickListener
 import java.lang.IllegalArgumentException
 import java.util.Collections
 
@@ -34,6 +38,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         ItemTouchCallback.AddItemTouchListener
 {
     var basketListener: BasketItemTouchListener? = null
+    val onMoreClickListener : OnMoreClickListener? = null
     lateinit var addListener: OnStartDragListener
     interface OnStartDragListener {
         fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
@@ -41,6 +46,8 @@ class ExerciseRVAdapter (private val fragment: Fragment,
     fun startDrag(listener: OnStartDragListener) {
         this.addListener = listener
     }
+    var popupWindow : PopupWindow?= null
+
     // -----! main !-----
     inner class mainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivHThumbnail = view.findViewById<ImageView>(R.id.ivMThumbnail)
@@ -50,8 +57,8 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         val tvMStage = view.findViewById<TextView>(R.id.tvMStage)
         val tvMKcal = view.findViewById<TextView>(R.id.tvMKcal)
         val ibtnMMore = view.findViewById<ImageButton>(R.id.ibtnMMore)
-
         val vM = view.findViewById<View>(R.id.vM)
+
     }
 
     // -----! favorite edit !-----
@@ -80,7 +87,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         val tvRcPStage = view.findViewById<TextView>(R.id.tvRcPStage)
         val tvRcPKcal = view.findViewById<TextView>(R.id.tvRcPKcal)
         val ivRcPThumbnail = view.findViewById<ImageView>(R.id.ivRcPThumbnail)
-
+        val vRPTN = view.findViewById<View>(R.id.vRPTN)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -120,7 +127,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         return exerciseList.size
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "MissingInflatedId", "InflateParams")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = exerciseList[position]
         val second = currentItem.videoTime?.toInt()?.div(60)
@@ -152,13 +159,76 @@ class ExerciseRVAdapter (private val fragment: Fragment,
 //                    dialog.show(activity.supportFragmentManager, "LoginDialogFragment")
 //                }
                 // ------! 점점점 버튼 시작 !------
-                holder.ibtnMMore.setOnClickListener {
-                    val bsFragment = ExerciseBSDialogFragment()
-                    val bundle = Bundle()
-                    bundle.putParcelable("ExerciseUnit", currentItem)
-                    bsFragment.arguments = bundle
-                    val fragmentManager = fragment.requireActivity().supportFragmentManager
-                    bsFragment.show(fragmentManager, bsFragment.tag)
+
+                holder.ibtnMMore.setOnClickListener {view ->
+                    if (popupWindow?.isShowing == true) {
+                        popupWindow?.dismiss()
+                        popupWindow =  null
+                    } else {
+                        val inflater = LayoutInflater.from(view?.context)
+                        val popupView = inflater.inflate(R.layout.pw_main_item, null)
+                        val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view?.context?.resources?.displayMetrics).toInt()
+                        val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 162f, view?.context?.resources?.displayMetrics).toInt()
+
+                        popupWindow = PopupWindow(popupView, width, height)
+                        popupWindow!!.showAsDropDown(view)
+                        popupView.findViewById<TextView>(R.id.tvPWPlay).setOnClickListener {
+
+                        }
+                        popupView.findViewById<TextView>(R.id.tvPWGoThumbnail).setOnClickListener {
+                            val dialogFragment = PlayThumbnailDialogFragment().apply {
+                                arguments = Bundle().apply {
+                                    putParcelable("ExerciseUnit", currentItem)
+                                }
+                            }
+                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                        }
+                        popupView.findViewById<TextView>(R.id.tvPWAddFavorite).setOnClickListener {
+
+                        }
+                        popupView.findViewById<TextView>(R.id.tvPWDelete).setOnClickListener {
+
+                        }
+
+                        popupWindow!!.isOutsideTouchable = true
+                        popupWindow!!.isFocusable = true
+                    }
+
+
+//                    val popupMenu = PopupMenu(fragment.requireContext(), holder.ibtnMMore, 0, 0, R.style.PopupMenu)
+//                    popupMenu.menuInflater.inflate(R.menu.item_more_menu, popupMenu.menu)
+//
+//                    popupMenu.setOnMenuItemClickListener { menuItem ->
+//                        when (menuItem.itemId) {
+//                            R.id.more2 -> {
+//                                true
+//                            }
+//                            R.id.more2 -> {
+//                                val DialogFragment = PlayThumbnailDialogFragment().apply {
+//                                    arguments = Bundle().apply {
+//                                        putParcelable("ExerciseUnit", currentItem)
+//                                    }
+//                                }
+//                                DialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+//                                true
+//                            }
+//                            R.id.more3 -> {
+//                                true
+//                            }
+//                            R.id.more4 -> {
+//                                true
+//                            }
+//                            else -> {false}
+//                        }
+//                    }
+//                    popupMenu.show()
+
+//                    val bsFragment = ExerciseBSDialogFragment()
+//                    val bundle = Bundle()
+//                    bundle.putParcelable("ExerciseUnit", currentItem)
+//                    bsFragment.arguments = bundle
+//                    val fragmentManager = fragment.requireActivity().supportFragmentManager
+//                    bsFragment.show(fragmentManager, bsFragment.tag)
                 }
                 // ------ ! thumbnail 시작 !------
                 holder.vM.setOnClickListener {
@@ -229,12 +299,17 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                     else -> "초급자"
                 }
                 holder.tvRcPKcal.text
+                holder.vRPTN.setOnClickListener {
+                    val DialogFragment = PlayThumbnailDialogFragment().apply {
+                        arguments = Bundle().apply {
+                            putParcelable("ExerciseUnit", currentItem)
+                        }
+                    }
+                    DialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                }
             }
         }
     }
-
-
-
 
     override fun onItemMoved(from: Int, to: Int) {
         Collections.swap(exerciseList, from, to)
@@ -246,4 +321,5 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         exerciseList.removeAt(position)
         notifyItemRemoved(position)
     }
+
 }

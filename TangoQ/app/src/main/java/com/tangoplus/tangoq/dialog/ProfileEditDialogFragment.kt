@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.dialog
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,25 +12,37 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.AdapterView
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.SetupActivity
+import com.tangoplus.tangoq.adapter.SpinnerAdapter
+import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileEditDialogBinding
+import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserUPDATEJson
+import org.json.JSONObject
+import java.net.URLEncoder
 
 
 class ProfileEditDialogFragment : DialogFragment() {
     lateinit var binding : FragmentProfileEditDialogBinding
-
+    val viewModel : SignInViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,7 +92,33 @@ class ProfileEditDialogFragment : DialogFragment() {
         binding.ibtnPEBack.setOnClickListener {
             dismiss()
         }
+        binding.spnPE
+        val domain_list = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
+        binding.spnPE.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domain_list)
+        binding.spnPE.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                binding.spnPE.getItemAtPosition(position).toString()
+                if (position == 3) {
+                    binding.etPEEmail.visibility = View.VISIBLE
+                    binding.spnPE.visibility = View.GONE
+                    binding.ivPESpn.setOnClickListener{
+                        binding.spnPE.performClick()
+                        binding.spnPE.visibility = View.VISIBLE
+                    }
 
+                } else {
+                    binding.etPEEmail.visibility = View.GONE
+                    binding.etPEEmail.setText("")
+                    binding.spnPE.visibility = View.VISIBLE
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
         binding.civPE.setOnClickListener {
             when {
                 ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
@@ -90,6 +129,30 @@ class ProfileEditDialogFragment : DialogFragment() {
                     1000
                 )
             }
+        }
+
+        binding.btnPEFinish.setOnClickListener {
+
+            when (binding.spnPE.selectedItemPosition) {
+                0, 1, 2 -> {
+                    viewModel.User.value?.put("user_email", "${binding.etPEEmailId.text}@${binding.spnPE.selectedItem as String}")
+                    userJson?.put("user_email", viewModel.User.value?.optString("user_email"))
+                }
+                else -> {
+                    viewModel.User.value?.put("user_email", "${binding.etPEEmailId.text}@${binding.etPEEmail.text}")
+                    userJson?.put("user_email", viewModel.User.value?.optString("user_email"))
+                }
+            }
+            val user_mobile = userJson?.optString("user_mobile")
+            val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
+            fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), userJson.toString(), encodedUserMobile) {
+                Log.w(ContentValues.TAG +" 싱글톤객체추가", userJson?.optString("user_weight").toString())
+                dismiss()
+            }
+        }
+        binding.btnPEGoSetup.setOnClickListener {
+            val intent = Intent(requireContext(), SetupActivity::class.java)
+            startActivity(intent)
         }
     }
     @Deprecated("Deprecated in Java")

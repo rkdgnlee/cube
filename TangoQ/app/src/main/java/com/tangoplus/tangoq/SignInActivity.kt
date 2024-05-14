@@ -192,12 +192,6 @@ class SignInActivity : AppCompatActivity() {
             false
         }
         val domain_list = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-        val actAdapter = ArrayAdapter(
-            this,
-            R.layout.simple_dropdown_item_1line,
-            domain_list
-        )
-
         binding.spinner.adapter = SpinnerAdapter(this, com.tangoplus.tangoq.R.layout.item_spinner, domain_list)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(

@@ -12,9 +12,12 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackPartDialogBinding
+import com.tangoplus.tangoq.`object`.NetworkMeasureService.insertMeasurePartsByJson
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 
 
 class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
@@ -31,12 +34,28 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        val t_userdata = Singleton_t_user.getInstance(requireContext())
+        val userJson= t_userdata.jsonObject?.getJSONObject("data")
         // ------! RV checkbox 취합 시작 !------
-        binding.btnPpSet.setOnClickListener {
+        binding.btnPpFinish.setOnClickListener {
 //            viewModel.parts.value // TODO 통증 부위 선택 후 번갈아가면서 넣기vh
             dismiss()
             Log.v("VM>part", "${viewModel.parts.value}")
+
+            // ------! db 전송 시작 !------
+            val partsList = mutableListOf<String>()
+            for (i in 0 until viewModel.parts.value?.size!!) {
+                partsList.add(viewModel.parts.value!![i].second)
+            }
+            userJson?.optString("user_mobile")
+//            insertMeasurePartsByJson(getString(R.string.IP_ADDRESS_t_favorite),)
+
+
+
+
+
+            // ------! db 전송 끝 !------
+
         } // ------! RV checkbox 취합 끝 !------
 
         binding.ibtnPpBack.setOnClickListener { dismiss() }

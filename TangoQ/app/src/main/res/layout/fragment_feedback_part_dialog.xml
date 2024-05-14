@@ -38,7 +38,7 @@
 
 
         <Button
-            android:id="@+id/btnPpSet"
+            android:id="@+id/btnPpFinish"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
@@ -47,7 +47,7 @@
             android:insetBottom="0dp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:text="적용하기"
+            android:text="완료하기"
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="12dp"
@@ -60,7 +60,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="48dp"
-            app:layout_constraintBottom_toTopOf="@+id/btnPpSet"
+            app:layout_constraintBottom_toTopOf="@+id/btnPpFinish"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView30">

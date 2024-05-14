@@ -16,12 +16,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:scaleType="fillStart" />
+        app:scaleType="fillStart" >
+
+    </androidx.camera.view.PreviewView>
 
     <com.tangoplus.tangoq.mediapipe.OverlayView
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPSGuide"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#80000000"
+        android:gravity="center"
+        android:paddingBottom="256dp"
+        android:text="측정이 시작됩니다 !  📸\n카메라의 각도를 맞춰주세요"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

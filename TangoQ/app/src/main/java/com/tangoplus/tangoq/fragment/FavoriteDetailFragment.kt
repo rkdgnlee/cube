@@ -8,11 +8,14 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
@@ -26,14 +29,17 @@ import com.tangoplus.tangoq.`object`.NetworkExerciseService.jsonToFavoriteItemVO
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.FavoriteItemVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteDetailBinding
+import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.listener.OnMoreClickListener
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
-class FavoriteDetailFragment : Fragment() {
+class FavoriteDetailFragment : Fragment(){
     lateinit var binding : FragmentFavoriteDetailBinding
     val viewModel : ExerciseViewModel by activityViewModels()
     var title = ""
@@ -42,7 +48,7 @@ class FavoriteDetailFragment : Fragment() {
     lateinit var FavoriteItem : FavoriteItemVO
     lateinit var currentItem : FavoriteItemVO
     private lateinit var startForResult: ActivityResultLauncher<Intent>
-
+    var popupWindow : PopupWindow?= null
     companion object {
         private const val ARG_TITLE = "title"
         fun newInstance(title: String): FavoriteDetailFragment {
@@ -239,7 +245,7 @@ class FavoriteDetailFragment : Fragment() {
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvFV.layoutManager = linearLayoutManager2
             binding.rvFV.adapter = RvAdapter
-            RvAdapter.notifyDataSetChanged()
+//            RvAdapter.notifyDataSetChanged()
 
 //        binding.tvPickDetailUnitNumber.text = currentItem.exercises!!.size.toString()
 

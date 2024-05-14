@@ -19,15 +19,15 @@
 
             <LinearLayout
                 android:id="@+id/linearLayout3"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="12dp"
                 android:background="@drawable/background_rectangle_20dp"
                 android:orientation="horizontal"
                 android:padding="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnEcBLEConnect"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -49,6 +49,7 @@
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="#00FFFFFF"
                     android:hint="운동이름을 검색하세요"
+                    android:singleLine="true"
                     android:textColorHint="@color/subColor500" />
 
                 <ImageButton
@@ -109,7 +110,7 @@
                 android:id="@+id/spnEcFilter"
                 android:layout_width="104dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_stroke_1dp_sub_color_spinner"
                 android:paddingLeft="10dp"
@@ -123,12 +124,24 @@
                 android:id="@+id/rvEcAll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/spnEcFilter"
                 app:layout_constraintVertical_bias="0.0" />
+
+            <ImageButton
+                android:id="@+id/ibtnEcBLEConnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:src="@drawable/icon_bluetooth"
+                app:layout_constraintBottom_toBottomOf="@+id/linearLayout3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/linearLayout3" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -90,4 +90,8 @@
 <!--        <item name="postSplashScreenTheme">@style/Theme.TangoQ</item>-->
 <!--    </style>-->
 
+<!--    popupMenu-->
+    <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@drawable/background_stroke_1dp_sub_color</item>
+    </style>
 </resources>

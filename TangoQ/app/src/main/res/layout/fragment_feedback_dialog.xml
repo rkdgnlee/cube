@@ -32,16 +32,16 @@
             app:layout_constraintTop_toBottomOf="@+id/textView61">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbIntensity1"
+                android:id="@+id/rbtnIntensity1"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbIntensity2"
+                android:id="@+id/rbtnIntensity2"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
@@ -49,10 +49,10 @@
                 android:layout_weight="0"
                 android:buttonTint="@color/white"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbIntensity3"
+                android:id="@+id/rbtnIntensity3"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
@@ -60,26 +60,26 @@
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbIntensity4"
+                android:id="@+id/rbtnIntensity4"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbIntensity5"
+                android:id="@+id/rbtnIntensity5"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
         </RadioGroup>
 
         <TextView
@@ -109,6 +109,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView58">
 
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                app:dividerColor="@color/subColor150" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                app:dividerColor="@color/subColor150" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -130,12 +145,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
-                            android:layout_marginBottom="16dp"
+                            android:layout_marginTop="16dp"
                             android:text="운동 시간"
-                            android:textColor="@color/subColor500"
-                            android:textSize="12sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            android:textColor="@color/subColor700"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
                             android:id="@+id/tvFTime"
@@ -143,13 +158,23 @@
                             android:layout_height="wrap_content"
                             android:text="11:12"
                             android:textColor="@color/black"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.65"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.6" />
+
+                        <ImageView
+                            android:id="@+id/imageView38"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/icon_time_sub_800"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvFTime"
+                            app:layout_constraintEnd_toStartOf="@+id/tvFTime"
+                            app:layout_constraintTop_toTopOf="@+id/tvFTime" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -162,35 +187,48 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
-                            android:layout_marginBottom="16dp"
+                            android:layout_marginTop="16dp"
                             android:text="운동 개수"
-                            android:textColor="@color/subColor500"
-                            android:textSize="12sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            android:textColor="@color/subColor700"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
                             android:id="@+id/tvFCount"
-                            android:layout_width="32dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="4"
                             android:textColor="@color/black"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.65"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.6" />
 
                         <TextView
                             android:id="@+id/textView74"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
                             android:text="개"
-                            android:textColor="@color/subColor500"
+                            android:textColor="@color/subColor800"
+                            android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="@+id/tvFCount"
                             app:layout_constraintStart_toEndOf="@+id/tvFCount"
+                            app:layout_constraintTop_toTopOf="@+id/tvFCount"
+                            app:layout_constraintVertical_bias="1.0" />
+
+                        <ImageView
+                            android:id="@+id/imageView41"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/icon_autocomplete_button_hollow"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvFCount"
+                            app:layout_constraintEnd_toStartOf="@+id/tvFCount"
                             app:layout_constraintTop_toTopOf="@+id/tvFCount" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </LinearLayout>
@@ -211,12 +249,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
-                            android:layout_marginBottom="16dp"
+                            android:layout_marginTop="16dp"
                             android:text="소모 칼로리"
-                            android:textColor="@color/subColor500"
-                            android:textSize="12sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            android:textColor="@color/subColor700"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
                             android:id="@+id/tvFKcal"
@@ -224,22 +262,34 @@
                             android:layout_height="wrap_content"
                             android:text="160"
                             android:textColor="@color/black"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.65"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.6" />
 
                         <TextView
                             android:id="@+id/textView72"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
                             android:text="Kcal"
                             android:textColor="@color/subColor500"
+                            android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"
                             app:layout_constraintStart_toEndOf="@+id/tvFKcal"
+                            app:layout_constraintTop_toTopOf="@+id/tvFKcal" />
+
+                        <ImageView
+                            android:id="@+id/imageView42"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/icon_kcal_sub_800"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"
+                            app:layout_constraintEnd_toStartOf="@+id/tvFKcal"
                             app:layout_constraintTop_toTopOf="@+id/tvFKcal" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -253,33 +303,35 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
-                            android:layout_marginBottom="16dp"
+                            android:layout_marginTop="16dp"
                             android:text="자세 정확도"
-                            android:textColor="@color/subColor500"
-                            android:textSize="12sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            android:textColor="@color/subColor700"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
                             android:id="@+id/tvFAccuracy"
-                            android:layout_width="32dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="68"
                             android:textColor="@color/black"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.65"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.6" />
 
                         <TextView
                             android:id="@+id/textView73"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
                             android:text="%"
                             android:textColor="@color/subColor500"
+                            android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="@+id/tvFAccuracy"
                             app:layout_constraintStart_toEndOf="@+id/tvFAccuracy"
                             app:layout_constraintTop_toTopOf="@+id/tvFAccuracy" />
@@ -382,34 +434,34 @@
             app:layout_constraintTop_toBottomOf="@+id/textView62">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbFatigue1"
+                android:id="@+id/rbtnFatigue1"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbFatigue2"
+                android:id="@+id/rbtnFatigue2"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbFatigue3"
+                android:id="@+id/rbtnFatigue3"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbFatigue4"
+                android:id="@+id/rbtnFatigue4"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
@@ -417,15 +469,15 @@
                 android:layout_marginRight="48dp"
                 android:gravity="center"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbFatigue5"
+                android:id="@+id/rbtnFatigue5"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
         </RadioGroup>
 
         <TextView
@@ -494,26 +546,26 @@
             app:layout_constraintTop_toBottomOf="@+id/textView63">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbSatisfaction1"
+                android:id="@+id/rbtnSatisfaction1"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbSatisfaction2"
+                android:id="@+id/rbtnSatisfaction2"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbSatisfaction3"
+                android:id="@+id/rbtnSatisfaction3"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
@@ -521,26 +573,26 @@
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbSatisfaction4"
+                android:id="@+id/rbtnSatisfaction4"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbSatisfaction5"
+                android:id="@+id/rbtnSatisfaction5"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_radio_btn" />
+                app:buttonTint="@color/tint_main_white" />
         </RadioGroup>
 
         <TextView

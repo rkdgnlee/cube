@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="36dp"
             android:layout_marginBottom="12dp"
-            android:text="분 전"
+            android:text="전"
             android:textColor="@color/subColor500"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -101,11 +101,11 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/textView33"
+            android:id="@+id/tvAlarmTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="2dp"
-            android:text="5"
+            android:text="5분"
             android:textColor="@color/subColor500"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView36"
