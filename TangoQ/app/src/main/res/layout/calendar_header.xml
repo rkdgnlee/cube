@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="7"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSUN"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            tools:text="일" />
+
+        <TextView
+            android:id="@+id/tvMON"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            tools:text="월" />
+
+        <TextView
+            android:id="@+id/tvTUE"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            tools:text="화" />
+
+        <TextView
+            android:id="@+id/tvWEN"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            tools:text="수" />
+
+        <TextView
+            android:id="@+id/tvTUR"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            tools:text="목" />
+
+        <TextView
+            android:id="@+id/tvFRI"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            tools:text="금" />
+
+        <TextView
+            android:id="@+id/tvSAT"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/subColor700"
+            android:textSize="14sp"
+            tools:text="토" />
+
+
+    </LinearLayout>
+</FrameLayout>

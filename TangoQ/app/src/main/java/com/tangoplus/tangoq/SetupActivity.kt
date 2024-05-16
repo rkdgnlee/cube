@@ -27,6 +27,11 @@ class SetupActivity : AppCompatActivity() {
         binding = ActivitySetupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // -----! singletom에 넣고, update 통신 !-----
+        val t_userData = Singleton_t_user.getInstance(this).jsonObject?.optJSONObject("data")
+        val user_mobile = t_userData?.optString("user_mobile")
+        Log.v("싱글턴", "${t_userData}")
+
         binding.pvSu.progress = 25
         binding.svSu.getState()
             .animationType(StepView.ANIMATION_CIRCLE)
@@ -46,14 +51,11 @@ class SetupActivity : AppCompatActivity() {
         // ------! viewmodel + viewpager2 초기화 시작 !------
         //        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         initViewPager()
-        val t_userData = Singleton_t_user.getInstance(this)
+
 
         binding.btnSu.setOnSingleClickListener {
             // ---- 설정 완료 시, 선택한 데이터 저장 및 페이지 이동 코드 시작 ----
             if (binding.btnSu.text == "완료") {
-
-                // -----! singletom에 넣고, update 통신 !-----
-                val user_mobile = t_userData.jsonObject?.optString("user_mobile")
                 val JsonObj = JSONObject()
                 JsonObj.put("user_gender", viewModel.User.value?.optString("user_gender"))
                 Log.w("${ContentValues.TAG}, 성별", viewModel.User.value?.optString("user_gender").toString())
@@ -62,15 +64,15 @@ class SetupActivity : AppCompatActivity() {
                 JsonObj.put("user_weight", viewModel.User.value?.optString("user_weight"))
                 Log.w("${ContentValues.TAG}, 몸무게", viewModel.User.value?.optString("user_weight").toString())
                 Log.w("${ContentValues.TAG}, JSON몸통", "$JsonObj")
-
+                Log.v("전화번호", "$user_mobile")
                 if (user_mobile != null) {
                     val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
-                    Log.w(ContentValues.TAG +" encodedUserMobile", encodedUserMobile)
+                    Log.w("encodedUserMobile", encodedUserMobile)
                     fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
-                        t_userData.jsonObject!!.put("user_gender", viewModel.User.value?.optString("user_gender"))
-                        t_userData.jsonObject!!.put("user_height", viewModel.User.value?.optString("user_height"))
-                        t_userData.jsonObject!!.put("user_weight", viewModel.User.value?.optString("user_weight"))
-                        Log.w(ContentValues.TAG +" 싱글톤객체추가", t_userData.jsonObject!!.optString("user_weight"))
+                        t_userData.put("user_gender", viewModel.User.value?.optString("user_gender"))
+                        t_userData.put("user_height", viewModel.User.value?.optString("user_height"))
+                        t_userData.put("user_weight", viewModel.User.value?.optString("user_weight"))
+                        Log.w(ContentValues.TAG +" 싱글톤객체추가", t_userData.optString("user_weight"))
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         finish()

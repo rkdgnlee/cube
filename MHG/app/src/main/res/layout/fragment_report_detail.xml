@@ -4,175 +4,71 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="1524123">
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/mainwhite">
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/background_stroke_2dp_sub_color"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView28"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="36dp"
-            android:text="밸런스"
-            android:textColor="@color/grey800"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView30"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="196dp"
-            android:layout_marginTop="76dp"
-            android:text="종합"
-            android:textColor="@color/grey500"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@+id/textView28"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvReportDetailScore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="76"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/textView30"
-            app:layout_constraintStart_toEndOf="@+id/textView30"
-            app:layout_constraintTop_toTopOf="@+id/textView30"
-            app:layout_constraintVertical_bias="0.75" />
-
-        <TextView
-            android:id="@+id/textView34"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="점"
-            android:textColor="@color/grey500"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tvReportDetailScore"
-            app:layout_constraintStart_toEndOf="@+id/tvReportDetailScore"
-            app:layout_constraintTop_toTopOf="@+id/tvReportDetailScore"
-            app:layout_constraintVertical_bias="0.75" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvReportDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView30" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView5"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rvReportDetail">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnReportDetailAdd"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/ripple_effect"
-                android:elevation="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:padding="4dp"
-                android:text="추가하기"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:cornerRadius="16dp"
-                app:icon="@drawable/report_detail_plus"
-                app:iconGravity="textStart"
-                app:iconPadding="8dp"
-                app:iconSize="24sp"
-                app:iconTint="#00000000"
-                app:iconTintMode="screen" />
-        </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                android:background="@color/grey300"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView11"
-            android:layout_width="24sp"
-            android:layout_height="24sp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/report_detail_list_logo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView5" />
+                <ImageButton
+                    android:id="@+id/previousMonthButton"
+                    android:layout_width="28dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_arrow_left" />
 
-        <TextView
-            android:id="@+id/textView35"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="밸런스 변화량"
-            android:textColor="#000000"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView11"
-            app:layout_constraintStart_toEndOf="@+id/imageView11"
-            app:layout_constraintTop_toTopOf="@+id/imageView11"
-            app:layout_constraintVertical_bias="1.0" />
+                <TextView
+                    android:id="@+id/monthText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="8"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    tools:text="2024년 5월" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView6"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView35" />
+                <ImageButton
+                    android:id="@+id/nextMonthButton"
+                    android:layout_width="28dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_arrow_right" />
+            </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView6">
-
-            <Button
-                android:id="@+id/button3"
+            <com.kizitonwose.calendar.view.CalendarView
+                android:id="@+id/cvR"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:backgroundTint="@color/grey300"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="리포트 받기"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                app:cornerRadius="16dp"
-                app:icon="@drawable/report_detail_get_report"
-                app:iconGravity="textStart"
-                app:iconSize="28sp"
-                app:iconTint="#00FFFFFF"
-                app:iconTintMode="screen" />
-        </androidx.cardview.widget.CardView>
+                android:layout_height="400dp"
+                app:cv_dayViewResource="@layout/calendar_day_layout"
+                app:cv_monthHeaderResource="@layout/calendar_header"
+                app:cv_orientation="horizontal"
+                app:cv_scrollPaged="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -75,7 +75,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "CommitTransaction")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -127,9 +127,9 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         } // ------! 통증 부위 관리 끝 !------
 
         // ------!  이름 + 통증 부위 시작 !------
-        val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("data")
-        binding.tvMsUserName.text = userJson?.optString("user_name")
+        val t_userdata = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
+
+        binding.tvMsUserName.text = t_userdata?.optString("user_name")
 
         // TODO 1. t_measure등에서 가져오는 결과값이 있다 --> 밸런스 점수, 뭐 측정일자 같은거 업데이트
         // TODO 2. 일단 통증 부위를 일단 넣을 수 있게.
@@ -192,6 +192,21 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
             startActivity(Intent.createChooser(intent, "밸런스 그래프"))
         } // ------! 공유하기 버튼 끝 !------
+
+        // ------! 리포트 버튼 시작 !------
+        binding.btnMsGetReport.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                replace(R.id.flMain, ReportFragment())
+                commit()
+            }
+            requireContext()
+        }
+
+
+        // ------! 리포트 버튼 끝 !------
+
+
 
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMs

@@ -59,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="3dp"
                 android:layout_marginStart="8dp"
-                app:dividerColor="@color/subColor300"
+                app:dividerColor="@color/subColor200"
                 app:layout_constraintBottom_toBottomOf="@+id/tabLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

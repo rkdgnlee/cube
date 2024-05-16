@@ -6,7 +6,7 @@
     android:viewportHeight="960"
     android:tint="?attr/colorControlNormal"
     android:autoMirrored="true"
-    tools:ignore="MissingDefaultResource">
+    >
   <path
       android:fillColor="@android:color/white"
       android:pathData="M560,720L320,480L560,240L616,296L432,480L616,664L560,720Z"/>

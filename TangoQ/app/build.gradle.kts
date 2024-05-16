@@ -17,6 +17,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -32,6 +33,7 @@ android {
         enable = true
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -59,6 +61,8 @@ dependencies {
     implementation("com.github.TomLeCollegue:ProgressBar-Library-Android-Kotlin:0.1.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
+    implementation("com.kizitonwose.calendar:view:2.5.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     // api
     implementation("com.navercorp.nid:oauth:5.9.1")

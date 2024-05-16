@@ -51,7 +51,7 @@ class FavoriteEditFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 // -----! 데이터 선언 !-----
 //        val appClass = requireContext().applicationContext as AppClass
-        val t_userData = Singleton_t_user.getInstance(requireContext())
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         title = requireArguments().getString(ARG_TITLE).toString()
         binding.etFEName.setText(title)
 

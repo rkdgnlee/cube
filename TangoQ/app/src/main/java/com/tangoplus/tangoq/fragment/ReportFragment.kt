@@ -1,7 +1,5 @@
-package com.example.mhg
+package com.tangoplus.tangoq.fragment
 
-
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,32 +7,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.example.mhg.databinding.FragmentReportDetailBinding
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
-import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
+import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.adapter.ReportRVAdapter
+import com.tangoplus.tangoq.databinding.FragmentReportBinding
+import com.tangoplus.tangoq.view.DayViewContainer
+import com.tangoplus.tangoq.view.MonthHeaderViewContainer
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 
-
-class ReportDetailFragment : Fragment() {
-    lateinit var binding: FragmentReportDetailBinding
+class ReportFragment : Fragment() {
+    lateinit var binding : FragmentReportBinding
     var currentMonth = YearMonth.now()
     var selectedDate: LocalDate? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentReportDetailBinding.inflate(inflater)
+        binding = FragmentReportBinding.inflate(inflater)
         return binding.root
     }
-    @SuppressLint("SetTextI18n")
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${YearMonth.now().month}"
         binding.cvR.setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
         binding.cvR.scrollToMonth(currentMonth)
@@ -97,7 +99,7 @@ class ReportDetailFragment : Fragment() {
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.mainColor))
 
                 } else {
-                    container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.grey500))
+                    container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor400))
                 }
                 container.date.setOnClickListener {
                     // 선택된 날짜를 업데이트하고 UI를 갱신합니다.
@@ -112,11 +114,22 @@ class ReportDetailFragment : Fragment() {
             override fun create(view: View): DayViewContainer {
                 return DayViewContainer(view)
             }
-        }
+        } // ------! calendar 끝 !------
 
 
+        val parts = mutableListOf<String>()
+        parts.add("정면 자세")
+        parts.add("후면 자세")
+        parts.add("오버헤드 스쿼트")
+        parts.add("팔꿉 측정 자세")
+        parts.add("의자 후면")
+        parts.add("오른쪽 측면 자세")
+        parts.add("왼쪽 측면 자세")
+        val adapter = ReportRVAdapter(parts, this)
+        binding.rvR.adapter = adapter
+        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.rvR.layoutManager = linearLayoutManager
 
 
     }
-
 }
