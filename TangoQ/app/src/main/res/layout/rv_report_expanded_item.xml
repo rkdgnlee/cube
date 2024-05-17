@@ -86,7 +86,7 @@
                 app:tabIndicatorFullWidth="true"
                 app:tabIndicatorHeight="3dp"
                 app:tabInlineLabel="false"
-                app:tabRippleColor="@color/subColor150"
+                app:tabRippleColor="#00FFFFFF"
                 app:tabSelectedTextColor="@color/black"
                 app:tabTextColor="@color/subColor700">
 
@@ -183,7 +183,7 @@
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cvRELine"
-                    android:layout_width="128dp"
+                    android:layout_width="156dp"
                     android:layout_height="4dp"
                     android:rotation="-15"
                     app:cardBackgroundColor="@color/mainColor"
@@ -196,12 +196,12 @@
 
                 <ImageButton
                     android:id="@+id/ibtnREInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="22dp"
                     android:layout_marginStart="6dp"
                     android:layout_marginBottom="4dp"
-                    android:background="#FFFFFF"
-                    android:scaleType="centerCrop"
+                    android:background="@color/white"
+                    android:scaleType="fitCenter"
                     app:layout_constraintBottom_toBottomOf="@+id/textView90"
                     app:layout_constraintStart_toEndOf="@+id/textView90"
                     app:layout_constraintTop_toTopOf="@+id/textView90"
@@ -216,7 +216,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/subColor100"
+                android:backgroundTint="@color/subColor150"
                 android:paddingLeft="24dp"
                 android:paddingRight="24dp"
                 android:stateListAnimator="@null"

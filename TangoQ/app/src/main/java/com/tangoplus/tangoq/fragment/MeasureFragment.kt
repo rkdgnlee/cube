@@ -289,7 +289,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         viewModel.steps.observe(viewLifecycleOwner) { steps ->
             if (steps.isNotEmpty()) {
                 val bcDataList : MutableList<GraphVO> = mutableListOf()
-                for (i in 0 until 48) {
+                for (i in 0 until steps.size) {
 //                    val timeLabel = String.format("%02d:00", hour) // 시간 형식을 "00:00"으로 포맷
                     bcDataList.add(GraphVO((i+1).toString(), steps[i].toInt()))
                     // 30분 뒤의 시간 추가
@@ -383,9 +383,9 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
         viewModel.totalSteps.observe(viewLifecycleOwner) { totalSteps ->
             if (totalSteps != null) {
-                binding.tvMsSteps.text = "${viewModel.totalSteps.value} 보"
+                binding.tvMsSteps.text = "- ${viewModel.totalSteps.value} 보"
             } else {
-                binding.tvMsSteps.text = "0 보"
+                binding.tvMsSteps.text = " - 0 보"
             }
         }
 //        viewModel.calory.observe(viewLifecycleOwner) {calory ->

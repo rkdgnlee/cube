@@ -105,31 +105,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                 binding.tvMTodaySteps.text = totalSteps
                 binding.hpvMDailySecond.progress = (totalSteps.toInt() * 100) / 8000
             }
-        }
-
-
-        // ------! 점수 끝 !------
-
-
-
-        // -----! spinner 연결 시작 !-----
-        val filterList = arrayListOf<String>()
-        filterList.add("최신순")
-        filterList.add("인기순")
-        filterList.add("추천순")
-        binding.spnMFilter.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
-        binding.spnMFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                binding.spnMFilter.getItemAtPosition(position).toString()
-                // TODO 필터로 recyclerview 순서 변경
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        } // ------! spinner 연결 끝 !------
+        } // ------! 점수 끝 !------
 
         // ------! 중앙 홍보 배너 시작 !------
         bViewModel.BannerList.add("dummy_banner1")
@@ -220,13 +196,42 @@ class MainFragment : Fragment(), OnRVClickListener {
                 }) // ------! horizontal과 progressbar 연동 끝 !------
 
                 // ------! 하단 RV Adapter 시작 !------
-                val adapter = ExerciseRVAdapter(this@MainFragment, verticalDataList,"main")
-                adapter.exerciseList = verticalDataList
-                binding.rvM.adapter = adapter
-                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvM.layoutManager = linearLayoutManager
+                setRVAdapter(verticalDataList)
 
                 // -----! vertical 어댑터 끝 !-----
+
+                // -----! spinner 연결 시작 !-----
+                val filterList = arrayListOf<String>()
+                filterList.add("최신순")
+                filterList.add("인기순")
+                filterList.add("추천순")
+                binding.spnMFilter.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
+                binding.spnMFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        when (position) {
+                            0 -> {
+                                setRVAdapter(verticalDataList)
+                            }
+                            1 -> {
+                                val sortDataList = verticalDataList.sortedBy { it.videoTime }.toMutableList()
+                                setRVAdapter(sortDataList)
+                                Log.v("정렬된 리스트", "$sortDataList")
+                            }
+                            2 -> {
+                                val sortDataList = verticalDataList.sortedBy { it.videoTime }.reversed().toMutableList()
+                                setRVAdapter(sortDataList)
+                                Log.v("정렬된 리스트", "$sortDataList")
+                            }
+                        }
+                    }
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                } // ------! spinner 연결 끝 !------
+
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Error storing exercises", e)
             } // -----! 하단 RV Adapter 끝 !-----
@@ -253,21 +258,30 @@ class MainFragment : Fragment(), OnRVClickListener {
     }
     private fun autoScrollStop() {
         bannerHandler.removeMessages(0)
-    } // -----! 배너 끝 !-----
+    } // -----! 배너 끝 !------
 
     private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             if (msg.what == 0 && bViewModel.BannerList.isNotEmpty()) {
                 binding.vpMBanner.setCurrentItem(++bannerPosition, true)
-                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
+                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산
                 val currentIndex = bannerPosition % bViewModel.BannerList.size // 65536  % 5
 
-//                // ProgressBar의 값을 계산합니다.
+//                // ProgressBar의 값을 계산
 //                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
                 autoScrollStart(intervalTime)
             }
         }
+    }
+
+    private fun setRVAdapter (dataList: MutableList<ExerciseVO>) {
+        val adapter = ExerciseRVAdapter(this@MainFragment, dataList,"main")
+        adapter.exerciseList = dataList
+        binding.rvM.adapter = adapter
+        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.rvM.layoutManager = linearLayoutManager
+        adapter.notifyDataSetChanged()
     }
     override fun onResume() {
         super.onResume()

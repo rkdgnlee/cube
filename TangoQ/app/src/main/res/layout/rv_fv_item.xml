@@ -200,6 +200,7 @@
                     app:srcCompat="@drawable/naver_icon" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clFvThumbnail4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1">
@@ -216,23 +217,15 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@android:drawable/progress_indeterminate_horizontal" />
 
-                    <View
-                        android:id="@+id/view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="#40000000"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
                     <TextView
-                        android:id="@+id/textView98"
+                        android:id="@+id/tvFvThumbnailMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="+"
                         android:textColor="@color/white"
                         android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/ivFvThumbnail4"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -241,6 +234,13 @@
 
             </LinearLayout>
         </LinearLayout>
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#40000000"
+            android:visibility="invisible" />
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.divider.MaterialDivider

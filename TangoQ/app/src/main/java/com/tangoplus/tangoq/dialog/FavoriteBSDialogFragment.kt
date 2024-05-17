@@ -87,6 +87,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                                 replace(R.id.flMain, FavoriteFragment())
                                     .commit()
                             }
+                            dismiss()
                         }
                     }
                     setNegativeButton("취소") { dialog, _ -> }

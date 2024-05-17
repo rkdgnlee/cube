@@ -38,7 +38,7 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         val userJson= t_userdata.jsonObject?.getJSONObject("data")
         // ------! RV checkbox 취합 시작 !------
         binding.btnPpFinish.setOnClickListener {
-//            viewModel.parts.value // TODO 통증 부위 선택 후 번갈아가면서 넣기vh
+//            viewModel.parts.value //
             dismiss()
             Log.v("VM>part", "${viewModel.parts.value}")
 

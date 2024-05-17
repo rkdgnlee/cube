@@ -63,6 +63,7 @@ dependencies {
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation("com.github.skydoves:balloon:1.6.4")
 
     // api
     implementation("com.navercorp.nid:oauth:5.9.1")
@@ -96,11 +97,12 @@ dependencies {
     implementation("androidx.room:room-guava:2.6.1")
     implementation("androidx.room:room-testing:2.6.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
-
+    implementation("com.google.android.gms:play-services-fitness:21.1.0")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
     //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:2.6.1")
+
 
 
     // 카메라
@@ -119,7 +121,7 @@ dependencies {
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    kapt("androidx.room:room-compiler:2.6.1")
+
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")

@@ -55,6 +55,15 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ----- API 초기화 시작 -----
+        NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "TangoQ")
+        KakaoSdk.init(this, getString(R.string.kakao_client_id))
+        firebaseAuth = Firebase.auth
+
+        val googleUserExist = firebaseAuth.currentUser
+        val naverTokenExist = NaverIdLoginSDK.getState()
+        // ----- API 초기화 끝 ------
+
         // ------! 인터넷 연결 확인 !------
         when (isNetworkAvailable(this)) {
             true -> {
@@ -102,14 +111,7 @@ class SplashActivity : AppCompatActivity() {
                 )
                 // -----! 다크모드 및 설정 불러오기 끝 !-----
 
-                // ----- API 초기화 시작 -----
-                NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "TangoQ")
-                KakaoSdk.init(this, getString(R.string.kakao_client_id))
-                firebaseAuth = Firebase.auth
 
-                val googleUserExist = firebaseAuth.currentUser
-                val naverTokenExist = NaverIdLoginSDK.getState()
-                // ----- API 초기화 끝 ------
 
                 val Handler = Handler(Looper.getMainLooper())
                 Handler.postDelayed({
@@ -266,18 +268,16 @@ class SplashActivity : AppCompatActivity() {
         }
     }
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the NotificationChannel.
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val mChannel = NotificationChannel("5000", name, importance)
-            mChannel.description = descriptionText
-            // 채널을 등록해야 알림을 받을 수 있음
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(mChannel)
+        // Create the NotificationChannel.
+        val name = getString(R.string.channel_name)
+        val descriptionText = getString(R.string.channel_description)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val mChannel = NotificationChannel("5000", name, importance)
+        mChannel.description = descriptionText
+        // 채널을 등록해야 알림을 받을 수 있음
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
 
-        }
     }
     private fun MainInit() {
         val intent = Intent(this, MainActivity::class.java)

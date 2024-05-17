@@ -186,49 +186,12 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                         popupView.findViewById<TextView>(R.id.tvPWAddFavorite).setOnClickListener {
 
                         }
-                        popupView.findViewById<TextView>(R.id.tvPWDelete).setOnClickListener {
-
-                        }
-
                         popupWindow!!.isOutsideTouchable = true
                         popupWindow!!.isFocusable = true
                     }
 
 
-//                    val popupMenu = PopupMenu(fragment.requireContext(), holder.ibtnMMore, 0, 0, R.style.PopupMenu)
-//                    popupMenu.menuInflater.inflate(R.menu.item_more_menu, popupMenu.menu)
-//
-//                    popupMenu.setOnMenuItemClickListener { menuItem ->
-//                        when (menuItem.itemId) {
-//                            R.id.more2 -> {
-//                                true
-//                            }
-//                            R.id.more2 -> {
-//                                val DialogFragment = PlayThumbnailDialogFragment().apply {
-//                                    arguments = Bundle().apply {
-//                                        putParcelable("ExerciseUnit", currentItem)
-//                                    }
-//                                }
-//                                DialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-//                                true
-//                            }
-//                            R.id.more3 -> {
-//                                true
-//                            }
-//                            R.id.more4 -> {
-//                                true
-//                            }
-//                            else -> {false}
-//                        }
-//                    }
-//                    popupMenu.show()
 
-//                    val bsFragment = ExerciseBSDialogFragment()
-//                    val bundle = Bundle()
-//                    bundle.putParcelable("ExerciseUnit", currentItem)
-//                    bsFragment.arguments = bundle
-//                    val fragmentManager = fragment.requireActivity().supportFragmentManager
-//                    bsFragment.show(fragmentManager, bsFragment.tag)
                 }
                 // ------ ! thumbnail 시작 !------
                 holder.vM.setOnClickListener {

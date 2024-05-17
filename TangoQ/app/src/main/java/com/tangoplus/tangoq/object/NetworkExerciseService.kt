@@ -110,7 +110,7 @@ object NetworkExerciseService {
         }
     }
     // 즐겨찾기 넣기
-    fun insertFavoriteItemJson(myUrl: String, json: String, callback: () -> Unit) {
+    fun insertFavoriteItemJson(myUrl: String, json: String, callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
@@ -125,7 +125,8 @@ object NetworkExerciseService {
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
                 Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
-                callback()
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                callback(jsonObj__)
             }
         })
     }

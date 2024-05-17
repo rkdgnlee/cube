@@ -21,6 +21,8 @@ import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.FavoriteItemVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBinding
+import com.tangoplus.tangoq.dialog.FavoriteAddDialogFragment
+import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -46,6 +48,14 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
         val user_mobile = t_userData?.optString("user_mobile")
 
         binding.tvFrTitle.text = "${t_userData?.optString("user_name")} 님의\n플레이리스트 목록"
+
+        // ------! 즐겨 찾기 1개 추가 시작 !------
+        binding.btnFrAdd.setOnClickListener {
+            val dialog = FavoriteAddDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "FavoriteAddDialogFragment")
+        }
+        // ------! 즐겨 찾기 1개 추가 끝 !------
+
 //        val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
         lifecycleScope.launch {
 
@@ -65,7 +75,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
                         favoriteName = pickList.getJSONObject(i).optString("favorite_name"),
                         favoriteRegDate = pickList.getJSONObject(i).optString("reg_date"),
                         favoriteExplain = pickList.getJSONObject(i).optString("favorite_description"),
-                        favoriteTotalCount = pickList.getJSONObject(i).optString("exercise_description_ids").split(", ").size.toString(),
+                        favoriteTotalCount = (if ((pickList.getJSONObject(i).optString("exercise_description_ids")) == "null") 0 else (pickList.getJSONObject(i).optString("exercise_description_ids").split(",").size)).toString(),
                         favoriteDisclosure = "",
                         exercises = mutableListOf()
                     ) // 각각의 FavoriteItemVO 만들고,  그후 추가적으로 조회해서 썸네일 넣기.
@@ -82,22 +92,20 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
                         }
                         favoriteItem.exercises = exerciseUnits
                     }
-
-
                     var time = 0
-                    if ( favoriteItem.exercises?.size!! >= 4) {
-                        for (i in 0 until  favoriteItem.exercises?.size!!) {
-                            time += ( favoriteItem.exercises!![i].videoTime!!.toInt())
-                            Log.v("총 second", "$time")
-                        }
-                        for (j in 0 until 4) {
-                            imgList.add( favoriteItem.exercises!![j].imgUrl.toString())
-                        }
+                    for (i in 0 until  favoriteItem.exercises?.size!!) {
+                        time += ( favoriteItem.exercises!![i].videoTime!!.toInt())
                     }
                     favoriteItem.favoriteTotalTime = (time/60).toString()
-
-                    Log.v("favorite", favoriteItem.favoriteTotalTime.toString())
                     viewModel.favoriteList.value?.add(favoriteItem) // 썸네일, 시리얼넘버, 이름까지 포함한 dataclass로 만든 favoriteVO형식의 리스트
+//                    if ( favoriteItem.exercises?.size!! >= 4) {
+//
+//                        for (j in 0 until 4) {
+//                            imgList.add( favoriteItem.exercises!![j].imgUrl.toString())
+//                        }
+//                    }
+
+
                     // 일단 운동은 비워놓고, detail에서 넣음
                 }
             }
@@ -106,20 +114,22 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
             viewModel.favoriteList.observe(viewLifecycleOwner) { jsonArray ->
 //                 아무것도 없을 때 나오는 캐릭터
                 if (jsonArray.isEmpty()) {
-                    binding.sflFV.stopShimmer()
-                    binding.sflFV.visibility = View.GONE
+//                    binding.sflFV.stopShimmer()
+//                    binding.sflFV.visibility = View.GONE
 //                    binding.ivPickNull.visibility = View.VISIBLE
                 } else {
                     binding.sflFV.stopShimmer()
                     binding.sflFV.visibility = View.GONE
+
                 }
             } // -----! appClass list관리 끝 !-----
-
             val FavoriteRVAdapter = FavoriteRVAdapter(viewModel.favoriteList.value!!, this@FavoriteFragment, this@FavoriteFragment)
             binding.rvFv.adapter = FavoriteRVAdapter
             val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvFv.layoutManager = linearLayoutManager
             FavoriteRVAdapter.notifyDataSetChanged()
+            Log.v("리스트", "${viewModel.favoriteList.value!!}")
+
 
 //            binding.btnFavoriteadd.setOnClickListener {
 //                viewModel.exerciseUnits.value?.clear()
