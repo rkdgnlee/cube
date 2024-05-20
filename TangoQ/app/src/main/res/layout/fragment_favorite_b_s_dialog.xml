@@ -231,6 +231,12 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
 
+            <ImageView
+                android:id="@+id/ivFbsThumbnailNull"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/app_logo" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -247,6 +253,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/recommend_thumbnail" />
 
                     <ImageView
@@ -254,6 +261,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/icon_api_google_logo" />
                 </LinearLayout>
 
@@ -268,6 +276,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/icon_api_naver_logo" />
 
                     <ImageView
@@ -275,6 +284,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/icon_api_kakao_logo" />
                 </LinearLayout>
             </LinearLayout>

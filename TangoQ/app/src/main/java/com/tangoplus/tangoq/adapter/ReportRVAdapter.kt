@@ -1,5 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +28,8 @@ import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvRecommendItemBinding
 import com.tangoplus.tangoq.databinding.RvReportExpandedItemBinding
+import com.tangoplus.tangoq.dialog.LoginDialogFragment
+import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
 import com.tangoplus.tangoq.listener.OnReportClickListener
 
 
@@ -77,14 +81,14 @@ class ReportRVAdapter(val parts : MutableList<String>, private val fragment: Fra
             holder.tlRE.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(p0: TabLayout.Tab?) {
                     when (p0?.position) {
-                        0 -> { holder.cvRELine.rotation = -10f }
-                        1 -> { holder.cvRELine.rotation = 10f }
-                        2 -> { holder.cvRELine.rotation = -10f }
-                        3 -> { holder.cvRELine.rotation = -5f }
-                        4 -> { holder.cvRELine.rotation = 3f }
-                        5 -> { holder.cvRELine.rotation = -12f }
-                        6 -> { holder.cvRELine.rotation = 0f }
-                        7 -> { holder.cvRELine.rotation = 0f }
+                        0 -> { setBalanceLine(holder.cvRELine, -10f, -10f) }
+                        1 -> { setBalanceLine(holder.cvRELine, -10f, -5f) }
+                        2 -> { setBalanceLine(holder.cvRELine, -5f, 5f) }
+                        3 -> { setBalanceLine(holder.cvRELine, 5f, 10f) }
+                        4 -> { setBalanceLine(holder.cvRELine, 10f, 7f) }
+                        5 -> { setBalanceLine(holder.cvRELine, 7f, -2f) }
+                        6 -> { setBalanceLine(holder.cvRELine, -2f, 0f) }
+                        7 -> { setBalanceLine(holder.cvRELine, 0f, 3f) }
                     }
                 }
                 override fun onTabUnselected(p0: TabLayout.Tab?) {}
@@ -111,6 +115,9 @@ class ReportRVAdapter(val parts : MutableList<String>, private val fragment: Fra
             }
 
             holder.btnREShowDetail.setOnClickListener {
+//                fragment.requireActivity().supportFinishAfterTransition()
+                val dialog = PoseViewDialogFragment()
+                dialog.show(fragment.requireActivity().supportFragmentManager, "LoginDialogFragment")
 
             }
         }
@@ -118,5 +125,12 @@ class ReportRVAdapter(val parts : MutableList<String>, private val fragment: Fra
 
     override fun getItemCount(): Int {
         return parts.size
+    }
+
+    @SuppressLint("Recycle")
+    private fun setBalanceLine(cv: CardView, prevScore : Float, afterScore: Float) {
+        val animator = ObjectAnimator.ofFloat(cv, "rotation", prevScore, afterScore)
+        animator.duration = 300
+        animator.start()
     }
 }

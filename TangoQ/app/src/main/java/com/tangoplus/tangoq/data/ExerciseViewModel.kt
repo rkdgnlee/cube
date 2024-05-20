@@ -14,7 +14,7 @@ class ExerciseViewModel: ViewModel() {
     val allExercises = MutableLiveData<List<ExerciseVO>>() // 모든 운동 목록
 
     // 재생목록 재생 후 피드백 담기
-    var exerciseLog = MutableLiveData(Triple("", "", 0))
+    var exerciseLog = MutableLiveData(Triple(0, "", 0))
 
     // 메인 - 프로그램
     val programList = MutableLiveData(mutableListOf<ProgramVO>())
@@ -26,7 +26,7 @@ class ExerciseViewModel: ViewModel() {
         exerciseBasketUnits.value = mutableListOf()
         allExercises.value = listOf()
         programList.value = mutableListOf()
-        exerciseLog.value = Triple("", "", 0)
+        exerciseLog.value = Triple(0, "", 0)
     }
 
     // 확인버튼 눌렀을 때 전체 다 담기

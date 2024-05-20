@@ -26,7 +26,7 @@
         android:layout_marginEnd="4dp"
         android:background="@drawable/effect_ibtn_12dp"
         android:gravity="center"
-        android:padding="8dp"
+        android:paddingBottom="12dp"
         android:text="재생하기"
         android:textColor="@color/subColor700"
         android:textSize="18sp"
@@ -54,7 +54,7 @@
         android:layout_marginRight="4dp"
         android:background="@drawable/effect_ibtn_12dp"
         android:gravity="center"
-        android:padding="8dp"
+        android:padding="10dp"
         android:text="자세히 보기"
         android:textColor="@color/subColor700"
         android:textSize="18sp"
@@ -71,12 +71,24 @@
         android:layout_marginRight="4dp"
         android:background="@drawable/effect_ibtn_12dp"
         android:gravity="center"
-        android:padding="8dp"
+        android:padding="12dp"
         android:text="재생목록에 추가하기"
         android:textColor="@color/subColor700"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialDivider12" />
+
+    <ImageButton
+        android:id="@+id/ibtnPWExit"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_exit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

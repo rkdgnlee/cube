@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
+import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 
 
 class PlayFullScreenActivity : AppCompatActivity() {
@@ -42,7 +43,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // ------! 재생시간 타이머 시작 !------
-//        chronometer = findViewById(R.id.chro)
+        chronometer = findViewById(R.id.chronometer)
         chronometer.base = SystemClock.elapsedRealtime()
         chronometer.start()
         // ------! 재생시간 타이머 끝 !------
@@ -129,13 +130,14 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setTitle("알림")
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
-//                // TODO feedback activity에서 운동 기록 데이터 백그라운드 작업 전송 필요
-//                val intent= Intent(this@PlayFullScreenActivity, FeedbackActivity::class.java)
-//                startActivity(intent)
                 // 소요 시간
                 val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
-                viewModel.exerciseLog.value = Triple(elapsedMills.toString(), "${(simpleExoPlayer?.currentWindowIndex)!! + 1}",56)
+                viewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${(simpleExoPlayer?.currentWindowIndex)!! + 1}",56)
                 finish()
+                val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                intent.putExtra("feedback_finish", viewModel.exerciseLog.value)
+                startActivity(intent)
+
             }
             setNegativeButton("아니오") { dialog, _ ->
                 chronometer.start()

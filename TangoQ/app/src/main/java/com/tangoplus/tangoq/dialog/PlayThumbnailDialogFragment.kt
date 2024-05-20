@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.`object`.NetworkExerciseService
 import com.tangoplus.tangoq.PlaySkeletonActivity
@@ -79,7 +80,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
 //            intent.putExtra("video_url", videoUrl)
 //            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
 //            startActivityForResult(intent, 8080)
-            val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
+            val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putExtra("video_url", videoUrl)
             startActivityForResult(intent, 8080)
         } // -----! 하단 운동 시작 버튼 끝 !-----

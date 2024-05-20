@@ -175,6 +175,8 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
         // ------! 공유하기 버튼 시작 !------
         binding.btnMsShare.setOnClickListener {
+
+            // ------! 그래프 캡처 시작 !------
             val bitmap = Bitmap.createBitmap(binding.ClMs.width, binding.ClMs.height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
             binding.ClMs.draw(canvas)
@@ -186,6 +188,8 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             fileOutputStream.close()
 
             val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
+            // ------! 그래프 캡처 끝 !------
+
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "image/png" // 이곳에서 공유 데이터 변경
             intent.putExtra(Intent.EXTRA_STREAM, fileUri)

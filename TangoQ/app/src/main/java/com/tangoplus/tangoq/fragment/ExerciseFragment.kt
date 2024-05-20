@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
@@ -13,6 +14,7 @@ import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -27,6 +29,12 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,7 +46,7 @@ import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkExerciseService.fetchExerciseJson
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.BLEListAdapter
+
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
 import com.tangoplus.tangoq.`object`.CommonDefines
@@ -73,13 +81,12 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
     var mService: BluetoothLeService? = null
     val mDeviceName = "PRBMD02"
     val mAddress = "01:02:03:04:05:06"
+    val PERMISSION_REQUEST_CODE = 6000
 //    val adapter = BLEListAdapter(mDeviceInfoList, this@)
     private var mPreTime: Long = 0
     private val sharedPref : SharedPreferences by lazy {
         requireActivity().getSharedPreferences("TangoQ", Context.MODE_PRIVATE)
     }
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -189,6 +196,28 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         val deviceAddress = sharedPref.getString("device_address", null)
         mHandler = Handler()
         Log.w("init", "${singleton_bt_device.init}")
+
+        // 권한 체크
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // 필요한 권한이 없는 경우, 권한 요청
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
+        } else {
+            // 필요한 권한이 모두 있는 경우, BluetoothAdapter 초기화
+            initializeBluetoothAdapter()
+        }
+
+
+
         TedPermissionWrapper.checkPermission(requireContext())
         mBtAdapter = singleton_bt_device.mBtAdapter // bluetoothadapter는 남아있음. mService
         if (mBtAdapter == null) {
@@ -203,16 +232,22 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             singleton_bt_device.init= true
 
         }
-        if (!mBtAdapter!!.isEnabled()) {
-            Log.i(ContentValues.TAG, "BT not enabled yet")
-            val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT)
-        }
+
+//        lifecycleScope.launch {
+//            if (!mBtAdapter!!.isEnabled()) {
+//                Log.i("mBtAdapter", "BT not enabled yet")
+//            } else if (mBtAdapter!!.isEnabled) {
+//                val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+//                startActivityForResult(enableIntent, REQUEST_ENABLE_BT)
+//            }
+//        }
 
         if (!requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(requireContext(), "Bluetooth low energy not supported", Toast.LENGTH_LONG).show()
 
         }
+
+
         binding.ibtnEcBLEConnect.setOnClickListener {
             if (!isReceiverRegistered) {
                 if (!mBtAdapter?.isEnabled()!!) {
@@ -227,11 +262,31 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             scanLeDevice(true)
         }
     }
+    private fun initializeBluetoothAdapter() {
+        val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        startActivityForResult(enableIntent, REQUEST_ENABLE_BT)
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initializeBluetoothAdapter()
+                }
+            }
+        }
+    }
+
+
     // ------! 2 scan 시작 !------
     @SuppressLint("MissingPermission")
     private fun scanLeDevice(enable: Boolean) {
         if (enable) {
-            mHandler?.postDelayed(Runnable {
+            mHandler?.postDelayed({
                 mScanning = false
                 mBtAdapter?.stopLeScan(mLeScanCallback)
             }, SCAN_PERIOD)

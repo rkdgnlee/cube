@@ -69,6 +69,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             "내정보",
             "다크 모드",
             "연동 관리",
+            "푸쉬 알림 설정",
             "자주 묻는 질문",
             "문의하기",
             "공지사항",
@@ -78,8 +79,8 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             "로그아웃",
             "회원탈퇴",
         )
-        setAdpater(profilemenulist.subList(0,3), binding.rvPfNormal,0)
-        setAdpater(profilemenulist.subList(3,6), binding.rvPfHelp, 1)
+        setAdpater(profilemenulist.subList(0,4), binding.rvPfNormal,0)
+        setAdpater(profilemenulist.subList(4,6), binding.rvPfHelp, 1)
         setAdpater(profilemenulist.subList(6, profilemenulist.size), binding.rvPfDetail, 2)
 //        binding.ibtnPfEdit.setOnClickListener {
 //            when {

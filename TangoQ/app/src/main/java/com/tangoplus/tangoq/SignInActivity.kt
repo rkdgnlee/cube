@@ -42,6 +42,7 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
 import com.tangoplus.tangoq.transition.SignInTransition
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -76,7 +77,22 @@ class SignInActivity : AppCompatActivity() {
         binding.btnAuthConfirm.isEnabled = false
         binding.btnSI.isEnabled = false
 
+        // ------! 구글 토큰 로그인 설정 시 !------
+        val userString = intent.getStringExtra("google_user")
+        if (userString != null) {
+            val user = JSONObject(userString)
+            viewModel.User.value = user
 
+            binding.etName.setText(viewModel.User.value!!.optString("user_name").toString())
+            binding.etName.isEnabled = false
+
+            binding.etEmailId.setText(viewModel.User.value!!.optString("user_email").split("@")[0])
+            binding.etEmailId.isEnabled = false
+            binding.spinner.setSelection(0)
+            binding.spinner.isEnabled = false
+        } else {
+            viewModel.User.value = JSONObject()
+        }
         binding.svSI.getState()
             .animationType(StepView.ANIMATION_CIRCLE)
             .steps(object : ArrayList<String?>() {

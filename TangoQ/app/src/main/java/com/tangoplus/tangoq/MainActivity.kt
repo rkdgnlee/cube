@@ -30,6 +30,7 @@ import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
+import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.FavoriteFragment
@@ -37,6 +38,7 @@ import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
+import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
@@ -47,6 +49,7 @@ import java.time.ZoneId
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     val mViewModel : MeasureViewModel by viewModels()
+    val eViewModel : ExerciseViewModel by viewModels()
     lateinit var requestPermissions : ActivityResultLauncher<Set<String>>
     lateinit var  healthConnectClient : HealthConnectClient
     val endTime = LocalDateTime.now()
@@ -141,12 +144,12 @@ class MainActivity : AppCompatActivity() {
         if (availabilityStatus == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) {
             // 선택적으로 패키지 설치 프로그램으로 리디렉션하여 공급자를 찾습니다. 예:
             val uriString = "market://details?id=$providerPackageName&url=healthconnect%3A%2F%2Fonboarding"
-            this.startActivity(
+            this@MainActivity.startActivity(
                 Intent(Intent.ACTION_VIEW).apply {
                     setPackage("com.android.vending")
                     data = Uri.parse(uriString)
                     putExtra("overlay", true)
-                    putExtra("callerId", this)
+                    putExtra("callerId", packageName)
                 }
             )
             return
@@ -299,6 +302,17 @@ class MainActivity : AppCompatActivity() {
     }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // ------! 0일 때만 피드백 켜지게 !------
+
+        val feedbackData = intent?.getSerializableExtra("feedback_finish")
+        if (feedbackData != null) {
+            eViewModel.exerciseLog.value = feedbackData as Triple<Int, String, Int>
+            val dialog = FeedbackDialogFragment()
+            dialog.show(supportFragmentManager, "FeedbackDialogFragment")
+        }
+    }
 //    fun formattedUpsertionChange(change: UpsertionChange) {
 //        when (change.record) {
 //            is ExerciseSessionRecord -> {

@@ -16,6 +16,7 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
+import kotlin.math.abs
 
 class PoseLandmarkerHelper(
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
@@ -105,6 +106,7 @@ class PoseLandmarkerHelper(
                 optionsBuilder
                     .setResultListener(this::returnLivestreamResult)
                     .setErrorListener(this::returnLivestreamError)
+
             }
 
             val options = optionsBuilder.build()
@@ -174,7 +176,7 @@ class PoseLandmarkerHelper(
             matrix, true
         )
 
-        // Convert the input Bitmap object to an MPImage object to run inference
+        // 추론을 실행하기 위해 입력 Bitmap 객체를 MPImage 객체로 변환합니다.
         val mpImage = BitmapImageBuilder(rotatedBitmap).build()
 
         detectAsync(mpImage, frameTime)
@@ -334,6 +336,7 @@ class PoseLandmarkerHelper(
                 input.width
             )
         )
+
     }
 
     // 감지 중에 발생한 오류를 이 PoseLandmarkerHelper에 반환합니다.

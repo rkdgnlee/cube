@@ -3,7 +3,10 @@ package com.tangoplus.tangoq.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +14,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.health.connect.client.HealthConnectClient
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +31,6 @@ import com.tangoplus.tangoq.dialog.ProfileEditDialogFragment
 import com.tangoplus.tangoq.fragment.SettingsFragment
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.listener.BooleanClickListener
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
@@ -43,7 +47,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
     }
     inner class SpecialItemViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         @SuppressLint("UseSwitchCompatOrMaterialCode")
-        val schDSDark = view.findViewById<MaterialSwitch>(R.id.schDSDark)
+        val schPfS = view.findViewById<MaterialSwitch>(R.id.schPfS)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -68,97 +72,111 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
         when (holder.itemViewType) {
             VIEW_TYPE_NORMAL -> {
                 val myViewHolder = holder as MyViewHolder
-                if (currentItem == "내정보") {
-                    holder.ivPf.setImageResource(R.drawable.icon_profile)
-                } else if (currentItem == "연동 관리") {
-                    holder.ivPf.setImageResource(R.drawable.icon_multi_device)
-                } else if (currentItem == "로그아웃") {
-                    holder.ivPf.setImageResource(R.drawable.icon_logout)
-                } else if (currentItem == "회원탈퇴") {
-                    holder.ivPf.setImageResource(R.drawable.icon_logout)
+                when (currentItem) {
+                    "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
+                    "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+                    "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm)
+                    "로그아웃" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
+                    "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
                 }
 
                 myViewHolder.btnPfName.text = currentItem
                 myViewHolder.cltvPfSettings.setOnClickListener {
-                    if (currentItem == "내정보") {
-                        holder.ivPf.setImageResource(R.drawable.icon_profile)
-                        val dialogFragment = ProfileEditDialogFragment()
-                        dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-                    } else if (currentItem == "연동 관리") {
-//                        showSettingsFragment()
-                        // ------! 헬스 커넥트 정보로 가기 !------
-                        val settingsIntent = Intent()
-                        settingsIntent.action = HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
-                        fragment.startActivity(settingsIntent)
-                    } else if (currentItem == "자주 묻는 질문") {
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        val url = Uri.parse("https://tangoplus.co.kr/ko/20")
-                        intent.setData(url)
-                        fragment.startActivity(intent)
-                    } else if (currentItem == "문의하기") {
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        val url = Uri.parse("https://tangoplus.co.kr/ko/21")
-                        intent.setData(url)
-                        fragment.startActivity(intent)
-                    } else if (currentItem == "공지사항") {
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        val url = Uri.parse("https://tangoplus.co.kr/ko/18")
-                        intent.setData(url)
-                        fragment.startActivity(intent)
+                    when (currentItem) {
+                        "내정보" -> {
+                            holder.ivPf.setImageResource(R.drawable.icon_profile)
+                            val dialogFragment = ProfileEditDialogFragment()
+                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                        }
+                        "연동 관리" -> {
+                            val settingsIntent = Intent()
+                            settingsIntent.action = HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+                            fragment.startActivity(settingsIntent)
+                        }
+                        "푸쉬 알림 설정" -> {
+                            val intent = Intent().apply {
+                                action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                                putExtra("android.provider.extra.APP_PACKAGE", fragment.requireContext().packageName)
+                            }
+                            fragment.startActivity(intent)
+                        }
+                        "자주 묻는 질문" -> {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            val url = Uri.parse("https://tangoplus.co.kr/ko/20")
+                            intent.setData(url)
+                            fragment.startActivity(intent)
+                        }
+                        "문의하기" -> {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            val url = Uri.parse("https://tangoplus.co.kr/ko/21")
+                            intent.setData(url)
+                            fragment.startActivity(intent)
+                        }
+                        "공지사항" -> {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            val url = Uri.parse("https://tangoplus.co.kr/ko/18")
+                            intent.setData(url)
+                            fragment.startActivity(intent)
+                        }
+                        "앱 버전" -> {
 
-                    } else if (currentItem == "앱 버전") {
+                        }
+                        "개인정보 처리방침" -> {
+                            val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
+                            dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
+                        }
+                        "서비스 이용약관" -> {
+                            val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
+                            dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
+                        }
+                        "로그아웃" -> {
+                            holder.ivPf.setImageResource(R.drawable.icon_logout)
 
-                    } else if (currentItem == "개인정보 처리방침") {
-                        val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
-                        dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
-                    } else if (currentItem == "서비스 이용약관") {
-                        val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
-                        dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
-                    } else if (currentItem == "로그아웃") {
-                        holder.ivPf.setImageResource(R.drawable.icon_logout)
-
-                        if (Firebase.auth.currentUser != null) {
-                            Firebase.auth.signOut()
-                            Log.d("로그아웃", "Firebase sign out successful")
-                        } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
-                            NaverIdLoginSDK.logout()
-                            Log.d("로그아웃", "Naver sign out successful")
-                        } else if (AuthApiClient.instance.hasToken()) {
-                            UserApiClient.instance.logout { error->
-                                if (error != null) {
-                                    Log.e("로그아웃", "KAKAO Sign out failed", error)
-                                } else {
-                                    Log.e("로그아웃", "KAKAO Sign out successful")
+                            if (Firebase.auth.currentUser != null) {
+                                Firebase.auth.signOut()
+                                Log.d("로그아웃", "Firebase sign out successful")
+                            } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
+                                NaverIdLoginSDK.logout()
+                                Log.d("로그아웃", "Naver sign out successful")
+                            } else if (AuthApiClient.instance.hasToken()) {
+                                UserApiClient.instance.logout { error->
+                                    if (error != null) {
+                                        Log.e("로그아웃", "KAKAO Sign out failed", error)
+                                    } else {
+                                        Log.e("로그아웃", "KAKAO Sign out successful")
+                                    }
                                 }
                             }
+                            val intent = Intent(holder.itemView.context, IntroActivity::class.java)
+                            holder.itemView.context.startActivity(intent)
+                            fragment.requireActivity().finishAffinity()
                         }
-                        val intent = Intent(holder.itemView.context, IntroActivity::class.java)
-                        holder.itemView.context.startActivity(intent)
-                        fragment.requireActivity().finishAffinity()
-                    } else if (currentItem == "회원탈퇴") {
-
                     }
                 }
             } // -----! 다크모드 시작 !-----
             VIEW_TYPE_SPECIAL_ITEM -> {
                 val myViewHolder = holder as SpecialItemViewHolder
-                val sharedPref = fragment.requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
-                val darkMode = sharedPref?.getBoolean("darkMode", false)
-                if (darkMode != null) {
-                    if (darkMode == true ) {
-                        myViewHolder.schDSDark.isChecked = true
-                    } else {
-                        myViewHolder.schDSDark.isChecked = false
+                when (currentItem) {
+                    "다크모드" -> {
+                        val sharedPref = fragment.requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
+                        val darkMode = sharedPref?.getBoolean("darkMode", false)
+                        if (darkMode != null) {
+                            if (darkMode == true ) {
+                                myViewHolder.schPfS.isChecked = true
+                            } else {
+                                myViewHolder.schPfS.isChecked = false
+                            }
+                        }
+                        myViewHolder.schPfS.setOnCheckedChangeListener{CompoundButton, isChecked ->
+                            booleanClickListener.onSwitchChanged(isChecked)
+
+                        }
                     }
                 }
-                myViewHolder.schDSDark.setOnCheckedChangeListener{CompoundButton, onSwitch ->
-                    booleanClickListener.onSwitchChanged(onSwitch)
 
-                }
             } // -----! 다크모드 끝 !-----
         }
     }
-
 
     override fun getItemViewType(position: Int): Int {
         return if (position == 1 && first == true) {

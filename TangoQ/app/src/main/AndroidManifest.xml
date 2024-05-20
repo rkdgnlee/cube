@@ -86,13 +86,18 @@
 
         <activity
             android:name=".PlaySkeletonActivity"
-            android:exported="true" />
+            android:exported="true">
+
+        </activity>
+
         <activity
             android:name=".PlayFullScreenActivity"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
+            android:exported="true" >
+
+        </activity>
         <activity
             android:name=".IntroActivity"
             android:exported="true" />

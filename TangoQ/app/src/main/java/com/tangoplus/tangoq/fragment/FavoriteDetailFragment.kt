@@ -3,6 +3,8 @@ package com.tangoplus.tangoq.fragment
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -92,6 +94,17 @@ class FavoriteDetailFragment : Fragment(){
         val user_mobile = t_userData.jsonObject?.optString("user_mobile")
         // -----! singleton에서 전화번호 가져오기 끝 !-----
 
+        /** ============================= 흐름 =============================
+         *  1. pickList에서 sn을 받아서 옴
+         *  2. sn으로 조회한 즐겨찾기 1개의 이름, 설명, 운동 목록 가져옴 (favoritelist에서)
+         *  3. 가져와서 뿌리기 (viewModel.pickitem
+         *
+         *
+         *
+         * */
+
+
+
         // -----! 운동 picklist, 제목 가져오기 시작 !-----
         lifecycleScope.launch {
             binding.sflFV.startShimmer()
@@ -99,11 +112,13 @@ class FavoriteDetailFragment : Fragment(){
 
             snData = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)!!
             FavoriteItem = jsonToFavoriteItemVO(snData)
-
-            // ------! 즐겨찾기 넣어서 가져오기 !------
+//
+//            // ------! 즐겨찾기 넣어서 가져오기 !------
             currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!
             currentItem.exercises = FavoriteItem.exercises
-
+            currentSn = currentItem.favoriteSn.toString()
+            setFVDetail(currentItem.favoriteSn.toString())
+//
             if (currentItem.exercises!!.isEmpty()) {
                 binding.sflFV.stopShimmer()
                 binding.sflFV.visibility = View.GONE
@@ -111,6 +126,7 @@ class FavoriteDetailFragment : Fragment(){
             } else {
                 binding.sflFV.stopShimmer()
                 binding.sflFV.visibility = View.GONE
+
             }
 
             val pickList = mutableListOf<String>()
@@ -119,9 +135,9 @@ class FavoriteDetailFragment : Fragment(){
                 for (i in 0 until Array.size) {
                     pickList.add(Array[i].favoriteName.toString())
                 }
-                currentSn = currentItem.favoriteSn.toString()
-                setFVDetail(currentItem.favoriteSn.toString())
+
             }
+
             val adapter = ArrayAdapter(requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, pickList)
             binding.actFVDetail.setAdapter(adapter)
             binding.actFVDetail.addTextChangedListener(object: TextWatcher {
@@ -129,36 +145,15 @@ class FavoriteDetailFragment : Fragment(){
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {  }
                 override fun afterTextChanged(s: Editable?) {
                     title = s.toString()
+                    currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!
                     currentSn = viewModel.favoriteList.value?.find { it.favoriteSn == currentItem.favoriteSn }?.favoriteSn.toString() // Pair로 특정 pickList하나의 sn을 가져오기
 
-                    currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!
+
                     Log.v("현재 sn(currentSn)", "현재 sn: $currentSn")
                     Log.v("현재Sn", "현재 sn: ${currentItem.favoriteSn}")
                     setFVDetail(currentSn)
-
                 }
             })
-
-            // -----! 운동 url list 만들기 시작 !-----
-//            binding.btnPickStart.setOnClickListener {
-//                if (currentItem.exercises?.isNotEmpty() == true) {
-//                    val resourceList = storePickUrl(viewModel)
-//                    Log.w("url in resourceList", "$resourceList")
-//                    val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-//                    intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
-//                    startForResult.launch(intent)
-//                } else {
-//                    val snackbar = Snackbar.make(requireView(), "운동을 추가해주세요 ! ", Snackbar.LENGTH_SHORT)
-//                    snackbar.setAction("확인", object: View.OnClickListener {
-//                        override fun onClick(v: View?) {
-//                            snackbar.dismiss()
-//                        }
-//                    })
-//                    snackbar.setTextColor(Color.WHITE)
-//                    snackbar.setActionTextColor(Color.WHITE)
-//                    snackbar.show()
-//                }
-//            } // -----! 운동 url list 만들기 끝 !-----
         }
         // ----- 운동 picklist, 제목 가져오기 끝 -----
 
@@ -231,7 +226,6 @@ class FavoriteDetailFragment : Fragment(){
             if (currentItem.exercises!!.isEmpty()) {
                 binding.sflFV.stopShimmer()
                 binding.sflFV.visibility = View.GONE
-
             } else {
                 binding.sflFV.stopShimmer()
                 binding.sflFV.visibility = View.GONE
@@ -245,9 +239,6 @@ class FavoriteDetailFragment : Fragment(){
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvFV.layoutManager = linearLayoutManager2
             binding.rvFV.adapter = RvAdapter
-//            RvAdapter.notifyDataSetChanged()
-
-//        binding.tvPickDetailUnitNumber.text = currentItem.exercises!!.size.toString()
 
             var totalTime = 0
             for (i in 0 until currentItem.exercises!!.size) {
@@ -256,7 +247,6 @@ class FavoriteDetailFragment : Fragment(){
                 totalTime += exercises.videoTime!!.toInt()
             }
             Log.w("총 시간", "$totalTime")
-//        binding.tvPickDetailUnitTime.text = (totalTime.div(60)).toString()
         }
     }
 
@@ -271,5 +261,11 @@ class FavoriteDetailFragment : Fragment(){
             Log.w("Finish?storeUrl", "$resourceList")
         }
         return  resourceList
+    }
+    fun getBitMapFromView(view: View) : Bitmap {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
     }
 }

@@ -36,8 +36,8 @@ class FeedbackDialogFragment : DialogFragment() {
         val t_userdata = Singleton_t_user.getInstance(requireContext())
         val userJson= t_userdata.jsonObject?.getJSONObject("data")
 
-        binding.tvFTime.text = viewModel.exerciseLog.value?.first
-        binding.tvFCount.text = viewModel.exerciseLog.value?.second
+        binding.tvFTime.text = "${viewModel.exerciseLog.value?.first.toString()} 초" ?: "0"
+        binding.tvFCount.text = viewModel.exerciseLog.value?.second ?: "0"
 
 
         binding.btnFbSubmit.setOnClickListener{
@@ -70,8 +70,10 @@ class FeedbackDialogFragment : DialogFragment() {
                 else -> Log.v("error", "Exception")
             })
             Log.v("피드백 점수", "$jsonObj")
-            val intent = Intent(requireActivity(), MainActivity::class.java)
-            startActivity(intent)
+//            val intent = Intent(requireActivity(), MainActivity::class.java)
+//            startActivity(intent)
+//            requireActivity().finishAffinity()
+            dismiss()
             requireActivity().finishAffinity()
         }
 

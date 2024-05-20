@@ -186,7 +186,7 @@ class IntroActivity : AppCompatActivity() {
                                 fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                     StoreUserInSingleton(this@IntroActivity, JsonObj)
                                     Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                                    setupInit() //TODO 최초 회원가입
+                                    setupInit() // 최초 회원가입
                                 }
                             } else {
                                 fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
@@ -198,7 +198,6 @@ class IntroActivity : AppCompatActivity() {
                                 }
                             }
                         }
-
                     }
                 })
                 // ---- 네이버 로그인 성공 동작 끝 ----

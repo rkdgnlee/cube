@@ -186,6 +186,9 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                         popupView.findViewById<TextView>(R.id.tvPWAddFavorite).setOnClickListener {
 
                         }
+                        popupView.findViewById<ImageButton>(R.id.ibtnPWExit).setOnClickListener {
+                            popupWindow!!.dismiss()
+                        }
                         popupWindow!!.isOutsideTouchable = true
                         popupWindow!!.isFocusable = true
                     }

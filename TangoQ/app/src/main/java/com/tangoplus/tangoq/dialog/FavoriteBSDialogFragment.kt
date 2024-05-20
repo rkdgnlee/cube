@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -55,6 +56,15 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                     remove(FavoriteDetailFragment()).commit()
                 }
             }
+            binding.llFrBSShare.setOnClickListener{
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                // TODO 앱 게시 후 앱 링크 추가 필요
+                val content = "친구가 링크를 공유했어요!\n어떤 링크인지 들어가서 확인해볼까요?"
+                intent.putExtra(Intent.EXTRA_TEXT, "$content\n\nhttps://tangoplus.co.kr/")
+                val chooserTitle = "친구에게 공유하기"
+                startActivity(Intent.createChooser(intent, chooserTitle))
+            }
             // ---! 운동 추가하기 !---
             binding.llFrBSAddExercise.setOnClickListener {
                 dismiss()
@@ -83,7 +93,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                             favorite.favoriteSn.toString()
                         ) {
                             requireActivity().supportFragmentManager.beginTransaction().apply {
-                                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//                                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                                 replace(R.id.flMain, FavoriteFragment())
                                     .commit()
                             }
@@ -101,5 +111,11 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
 
     }
 
+    private fun setThumbnailVisible(one: Boolean, two: Boolean, three: Boolean, four : Boolean) {
+        binding.ivFbsThumbnail1.visibility = if (one) View.VISIBLE else View.GONE
+        binding.ivFbsThumbnail2.visibility = if (two) View.VISIBLE else View.GONE
+        binding.ivFbsThumbnail3.visibility = if (three) View.VISIBLE else View.GONE
+        binding.ivFbsThumbnail4.visibility = if (four) View.VISIBLE else View.GONE
 
+    }
 }
