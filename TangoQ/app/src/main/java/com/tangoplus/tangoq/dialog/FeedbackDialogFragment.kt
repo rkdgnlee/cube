@@ -74,7 +74,7 @@ class FeedbackDialogFragment : DialogFragment() {
 //            startActivity(intent)
 //            requireActivity().finishAffinity()
             dismiss()
-            requireActivity().finishAffinity()
+
         }
 
         binding.btnFbPainPartSelect.setOnClickListener {

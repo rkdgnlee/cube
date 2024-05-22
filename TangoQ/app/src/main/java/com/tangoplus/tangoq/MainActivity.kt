@@ -19,14 +19,11 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
-import androidx.health.connect.client.changes.UpsertionChange
 import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.request.AggregateGroupByDurationRequest
-import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
@@ -43,7 +40,6 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.ZoneId
 
 class MainActivity : AppCompatActivity() {
@@ -91,7 +87,7 @@ class MainActivity : AppCompatActivity() {
 
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
-                R.id.main -> {
+                R.id.clPS -> {
                     setCurrentFragment(MainFragment())
                     binding.tvCurrentPage.text = "메인"
                     setOptiLayout(binding.flMain,  binding.main ,binding.cvCl)
@@ -122,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.setOnItemReselectedListener {
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
-                R.id.main -> {}
+                R.id.clPS -> {}
                 R.id.exercise -> {}
                 R.id.measure -> {}
                 R.id.favorite -> {}

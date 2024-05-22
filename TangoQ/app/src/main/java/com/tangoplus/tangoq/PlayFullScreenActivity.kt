@@ -48,28 +48,23 @@ class PlayFullScreenActivity : AppCompatActivity() {
         chronometer.start()
         // ------! 재생시간 타이머 끝 !------
 
-        // -----! landscape로 방향 설정 & 재생시간 받아오기 !-----
+        // ------! landscape로 방향 설정 & 재생시간 받아오기 !------
         val videoUrl = intent.getStringExtra("video_url")
         if (videoUrl != null) {
             val url_list = ArrayList<String>()
             url_list.add(videoUrl)
             playbackPosition = intent.getLongExtra("current_position", 0L)
             initPlayer(url_list)
-        }
-        // -----! 받아온 즐겨찾기 재생 목록 시작 !-----
-        val resourceList = intent.getStringArrayListExtra("resourceList")
-        if (resourceList != null) {
-            initPlayer(resourceList)
-            // -----! 영상 간 0.5초의 간격 !-----
             simpleExoPlayer!!.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     super.onPlaybackStateChanged(playbackState)
                     if (playbackState == Player.STATE_ENDED) {
-                        // -----! 모든 영상 종료 시 자동 이동 !-----
-                        if (simpleExoPlayer!!.currentWindowIndex == resourceList.size -1) {
-//                            val intent = Intent(this@PlayFullScreenActivity, FeedbackActivity::class.java)
-//                            startActivity(intent)
-//                            finish()
+                        Log.v("currentWindowIndex", "${simpleExoPlayer!!.currentWindowIndex}")
+                        // ------! 모든 영상 종료 시 자동 이동 !------
+                        if (simpleExoPlayer!!.currentWindowIndex == url_list.size - 1) {
+                            val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                            intent.putExtra("feedback_finish", viewModel.exerciseLog.value)
+                            startActivity(intent)
                         }else {
                             Handler(Looper.getMainLooper()).postDelayed({
                                 simpleExoPlayer?.next()
@@ -84,8 +79,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val exitButton = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
             chronometer.stop()
-
-
             showExitDialog()
         }
     }
