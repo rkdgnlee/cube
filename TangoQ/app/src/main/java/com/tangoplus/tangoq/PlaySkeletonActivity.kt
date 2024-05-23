@@ -6,6 +6,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -35,13 +36,22 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.FileOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.liveData
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.tangoplus.tangoq.data.SkeletonViewModel
@@ -52,6 +62,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.ExecutorService
@@ -65,16 +76,24 @@ private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener {
 
-    private var simpleExoPlayer: SimpleExoPlayer? = null
-    private var player : SimpleExoPlayer? = null
-    private var playbackPosition = 0L
-    private lateinit var cameraExecutor: ExecutorService
+//    private var simpleExoPlayer: SimpleExoPlayer? = null
+//    private var player : SimpleExoPlayer? = null
+//    private var playbackPosition = 0L
+//    private lateinit var cameraExecutor: ExecutorService
+
     private lateinit var imageCapture: ImageCapture
-    private var isTimerStarted = false
+    val detectbody = MediatorLiveData<Boolean>()
+    var singleCapture = true
+    var hasExecuted = false
+    var isTimerRunning = false
     private lateinit var bitmap1 : Bitmap
     private lateinit var bitmap2 : Bitmap
     val bitmap1b  = MutableLiveData(false)
     val bitmap2b = MutableLiveData(false)
+    private var repeatCount = 0
+    private val maxRepeats = 2
+    private lateinit var videoCapture : VideoCapture<Recorder>
+    private var currentRecording: Recording? = null
     // ------! POSE LANDMARKER 설정 시작 !------
     companion object {
         private const val TAG = "Pose Landmarker"
@@ -150,6 +169,7 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
         backgroundExecutor.awaitTermination(
             Long.MAX_VALUE, TimeUnit.NANOSECONDS
         )
+        Handler(Looper.getMainLooper()).removeCallbacksAndMessages(null)
     }
 
     // ------! POSE LANDMARKER 설정 끝 !------
@@ -161,7 +181,7 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
         setContentView(_fragmentCameraBinding!!.root)
 
         // ------! 안내 문구 사라짐 시작 !------
-        setAnimation(fragmentCameraBinding.tvPSGuide, 2000, 1500) {}
+
         // -----! pose landmarker 시작 !-----
         // Initialize our background executor
         backgroundExecutor = Executors.newSingleThreadExecutor()
@@ -186,6 +206,65 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
             requestPermissions(PERMISSIONS_REQUIRED, REQUEST_CODE_PERMISSIONS)
             setUpCamera()
         }
+
+        // ------! 명시적으로 루프 타기 !------
+        setAnimation(fragmentCameraBinding.tvPSGuide, 2000, 1500) { }
+        // ------! 카운트 다운 !-------
+        val mCountDown : CountDownTimer by lazy {
+            object : CountDownTimer(4000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    runOnUiThread{
+                        fragmentCameraBinding.tvPSCount.visibility = View.VISIBLE
+                        fragmentCameraBinding.tvPSCount.alpha = 1f
+                        fragmentCameraBinding.tvPSCount.text = "${(millisUntilFinished.toFloat() / 1000.0f).roundToInt()}"
+                        Log.v("count", "${fragmentCameraBinding.tvPSCount.text}")
+                    }
+                }
+                override fun onFinish() {
+                    if (singleCapture) {
+                        fragmentCameraBinding.tvPSCount.text = "측정을 시작합니다 !"
+                        setAnimation(fragmentCameraBinding.tvPSCount, 1000, 500) {
+                            takePhoto()
+                            captureScreen()
+                            observeBitmaps()
+                        }
+                        singleCapture = false
+                        isTimerRunning = false
+                    }
+                }
+            }
+        }
+        val detectObserver = Observer<Boolean> {
+            if (it && !hasExecuted) {
+                if (!isTimerRunning) {
+                    singleCapture = true
+                    mCountDown.start()
+                    isTimerRunning = true // Timer is now running
+                }
+                detectbody.postValue(false)
+                hasExecuted = true
+                Log.v("hasExecuted", "$hasExecuted")
+            }
+        }
+        Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
+            override fun run() {
+                if (repeatCount == maxRepeats) {
+                    mCountDown.cancel()
+                    detectbody.removeObserver(detectObserver)
+                    Log.v("repeat", "Max repeats reached, stopping the loop")
+                    return
+                }
+                detectbody.observe(this@PlaySkeletonActivity, detectObserver)
+                Log.v("repeatCount", "$repeatCount")
+                repeatCount++
+                if (repeatCount <= maxRepeats) {
+                    Handler(Looper.getMainLooper()).postDelayed(this, 8000)
+                }
+            }
+        }, 5000)
+
+
+
     }
     private fun setUpCamera() {
         val cameraProviderFuture =
@@ -235,6 +314,12 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
             .build()
+        videoCapture = VideoCapture.withOutput(Recorder.Builder()
+            .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+            .build()
+        )
+
+
 
         // Must unbind the use-cases before rebinding them
         cameraProvider.unbindAll()
@@ -272,7 +357,6 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
                 setUpCamera()
                 Log.v("스켈레톤 Init", "동작 성공")
             } else {
-
                 Log.v("스켈레톤 Init", "동작 실패")
             }
         }
@@ -310,15 +394,11 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
 //        val ankleData = mutableListOf<Pair<Float, Float>>()
 //        val heelData = mutableListOf<Pair<Float, Float>>()
 
-        if (resultBundle.results.first().landmarks().isNotEmpty() && !isTimerStarted) {
-           isTimerStarted = true
-            runOnUiThread {
-                _fragmentCameraBinding?.tvPSCount?.visibility = View.VISIBLE
+        if (resultBundle.results.first().landmarks().isNotEmpty()) {
 
-                Handler(Looper.getMainLooper()).postDelayed({
-                    mCountDown.start()
-                }, 500)
-            }
+            detectbody.postValue(true)
+
+
 
 
 //            val poseLandmarkerResult = resultBundle.results.first().landmarks()[0]
@@ -407,54 +487,35 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
         return (y2 - y1) / (x2 - x1)
     }
 
-    // ------! 카운트 다운 !-------
-    private val mCountDown : CountDownTimer = object : CountDownTimer(3000, 1000) {
-        override fun onTick(millisUntilFinished: Long) {
-            _fragmentCameraBinding?.tvPSCount?.text = "${(millisUntilFinished.toFloat() / 1000.0f).roundToInt()}"
-        }
 
-        override fun onFinish() {
-            fragmentCameraBinding.tvPSCount.text = "측정을 시작합니다 !"
-            setAnimation(fragmentCameraBinding.tvPSCount, 1000, 500) {
-                takePhoto()
-                captureScreen()
-                observeBitmaps()
-            }
-        }
-    }
     // 16:9로 사진찍기.
     private fun observeBitmaps() {
-        // Combine bitmap1b and bitmap2b LiveData
-        val combinedLiveData = MediatorLiveData<Boolean>().apply {
-            var bitmap1Value = bitmap1b.value ?: false
-            var bitmap2Value = bitmap2b.value ?: false
+        // Removing existing observers to prevent multiple triggers
+        bitmap1b.removeObservers(this)
+        bitmap2b.removeObservers(this)
 
-            fun update() {
-                this.value = bitmap1Value && bitmap2Value
-            }
-
-            addSource(bitmap1b) {
-                bitmap1Value = it
-                update()
-            }
-
-            addSource(bitmap2b) {
-                bitmap2Value = it
-                update()
+        bitmap1b.observe(this) { isBitmap1Ready ->
+            if (isBitmap1Ready) {
+                Log.v("observeBitmaps", "bitmap1 is ready")
+                checkAndCombineBitmaps()
             }
         }
 
-        combinedLiveData.observe(this, { isBothTrue ->
-            Log.v("bitmap", "bitmap1, bitmap2 is Initialized")
-            if (isBothTrue) {
-                saveBitmap(combineBitmaps(bitmap1, bitmap2))
+        bitmap2b.observe(this) { isBitmap2Ready ->
+            if (isBitmap2Ready) {
+                Log.v("observeBitmaps", "bitmap2 is ready")
+                checkAndCombineBitmaps()
             }
-        })
+        }
     }
-        private fun rotateBitmap(bitmap: Bitmap, rotationDegrees: Int): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(rotationDegrees.toFloat())
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
+    private fun checkAndCombineBitmaps() {
+        if (bitmap1b.value == true && bitmap2b.value == true) {
+            val combinedBitmap = combineBitmaps(bitmap1, bitmap2)
+            saveBitmap(combinedBitmap)
+            bitmap1b.value = false
+            bitmap2b.value = false
+        }
     }
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
@@ -472,18 +533,69 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
                         bitmap1b.value = true
                         Log.v("bitmap", "bitmap1: ${bitmap1b.value}")
                     }
-                    override fun onError(exception: ImageCaptureException) {
-                    }
+                    override fun onError(exception: ImageCaptureException) {}
                 }
             )
         } catch (e: Exception) {
             Log.e("takePhoto", "${e.message}")
         }
     }
+    // ------! 비디오 녹화 시작 !------
+
+    private fun takeVideo() {
+        val videoFile = File(
+            externalMediaDirs.firstOrNull(),
+            "${System.currentTimeMillis()}.mp4"
+        )
+
+
+        val outputOptions = FileOutputOptions.Builder(videoFile).build()
+        currentRecording = videoCapture.output
+            .prepareRecording(this, outputOptions)
+            .start(ContextCompat.getMainExecutor(this)) { recordEvent ->
+                when (recordEvent) {
+                    is VideoRecordEvent.Start -> {
+                        Log.w("video", "Video Record Starrt")
+                    }
+                    is VideoRecordEvent.Finalize -> {
+                        if (!recordEvent.hasError()) {
+                            Log.d(TAG, "Video recording succeeded: ${recordEvent.outputResults.outputUri}")
+                            Toast.makeText(this, "Video saved: ${recordEvent.outputResults.outputUri}", Toast.LENGTH_SHORT).show()
+                            // ------! 동영상 저장 !------
+                            val contentValues = ContentValues().apply {
+                                put(MediaStore.Video.Media.DISPLAY_NAME, videoFile.name)
+                                put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+                                put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES)
+                            }
+
+                            val contentResolver = contentResolver
+                            val videoUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+                            videoUri?.let {
+                                contentResolver.openOutputStream(it)?.use { outputStream ->
+                                    FileInputStream(videoFile).use { inputStream ->
+                                        inputStream.copyTo(outputStream)
+                                    }
+                                }
+                                Log.d(TAG, "Video saved to gallery: $videoUri")
+                                Toast.makeText(this, "Video saved to gallery: $videoUri", Toast.LENGTH_SHORT).show()
+                            }
+                            // ------! 동영상 저장 !------
+                        } else {
+                            recordEvent.error.let {
+                                Log.e(TAG, "Video recording error: ${it}")
+                            }
+                        }
+                        currentRecording = null
+                    }
+                }
+            }
+        Handler(Looper.getMainLooper()).postDelayed({
+            currentRecording?.stop()
+        }, 3000) // 3초 후에 녹화를 중지합니다.
+    } // ------! 비디오 녹화 끝 !------
         private fun captureScreen() {
 
-            // MediaStore.Images.Media.CONTENT_URI 를 사용하여 MediaStore에 액세스합니다.
-//            val imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             // 현재 화면의 비트맵을 가져옵니다.
             val rootView = window.decorView.rootView
             val bitmap = Bitmap.createBitmap(rootView.width, rootView.height, Bitmap.Config.ARGB_8888)
@@ -492,18 +604,6 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
             bitmap2 = bitmap
             bitmap2b.value = true
             Log.v("bitmap", "bitmap2: ${bitmap2b.value}")
-//            val fileOutputStream: FileOutputStream
-//            try {
-//                val imageFile = File(Environment.getExternalStorageDirectory(), "${System.currentTimeMillis()}.png")
-//                fileOutputStream = FileOutputStream(imageFile)
-//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
-//                fileOutputStream.flush()
-//                fileOutputStream.close()
-//                Toast.makeText(applicationContext, "캡처가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                Toast.makeText(applicationContext, "캡처 저장 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-//            }
     }
     private fun combineBitmaps(bitmap1: Bitmap, bitmap2: Bitmap): Bitmap {
         // bitmap2를 bitmap1의 크기에 맞게 조정 (중앙 부분 자르기)
@@ -519,13 +619,13 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
         val scaledBitmap2: Bitmap = if (ratioBitmap2 > width.toFloat() / height.toFloat()) {
             // 너무 넓을 경우 상하로 잘라냄
             val scaledHeight = height
-            val scaledWidth = (height * ratioBitmap2).toInt()
+            val scaledWidth = (height * ratioBitmap2).roundToInt()
             Log.v("scaledWidth", "${scaledWidth}")
             Bitmap.createScaledBitmap(bitmap2, scaledWidth, scaledHeight, true)
         } else {
             // 너무 좁을 경우 좌우로 잘라냄
             val scaledWidth = width
-            val scaledHeight = (width / ratioBitmap2).toInt()
+            val scaledHeight = (width / ratioBitmap2).roundToInt()
             Log.v("scaledHeight", "${scaledHeight}")
             Bitmap.createScaledBitmap(bitmap2, scaledWidth, scaledHeight, true)
         }
@@ -555,6 +655,11 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
             val file = File(dir, "${System.currentTimeMillis()}.png")
             fos = FileOutputStream(file)
             bitmap?.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            // ------! 종료 후 다시 세팅 !------
+            hasExecuted = false
+
+
+
             Toast.makeText(this, "Screenshot saved: ${file.absolutePath}", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -571,7 +676,7 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
         animator.addListener(object: AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animation)
-                tv.visibility = View.GONE
+                tv.visibility = View.INVISIBLE
                 callback()
             }
         })
@@ -579,4 +684,5 @@ class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landmarke
             animator.start()
         }, delay)
     }
+
 }
