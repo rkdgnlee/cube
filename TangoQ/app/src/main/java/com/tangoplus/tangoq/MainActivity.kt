@@ -27,6 +27,7 @@ import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
@@ -72,6 +73,12 @@ class MainActivity : AppCompatActivity() {
         // ------! 다크모드 메뉴 이름 설정 끝 !------
 
 
+        val finishMeasure = intent.getBooleanExtra("finishMeasure", false)
+        if (finishMeasure) {
+            val bnv = findViewById<BottomNavigationView>(R.id.bnbMain)
+            bnv.selectedItemId = R.id.measure
+        }
+
         // -----! 초기 화면 설정 !-----
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().apply {
@@ -83,8 +90,6 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
         binding.bnbMain.setOnItemSelectedListener {
-
-
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
                 R.id.clPS -> {

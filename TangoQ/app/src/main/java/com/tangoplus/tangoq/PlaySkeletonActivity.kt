@@ -7,70 +7,57 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ComponentName
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Matrix
 import android.media.projection.MediaProjectionManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Environment
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.video.MediaStoreOutputOptions
-import androidx.camera.video.Quality
-import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.util.Consumer
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.tangoplus.tangoq.data.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlaySkeletonBinding
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.service.MediaProjectionService
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
-import java.text.SimpleDateFormat
-import java.util.Locale
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+
 
 class PlaySkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener{
 
@@ -116,18 +103,21 @@ companion object {
     private var mediaProjectionService: MediaProjectionService? = null
     private var serviceConnection: ServiceConnection? = null
     private lateinit var mediaProjectionManager: MediaProjectionManager
+
+    // 결과 분석
+    // ------! 싱글턴 패턴 객체 가져오기 !------
+    private lateinit var singletonInstance: Singleton_t_measure
+
+    var latestResult: PoseLandmarkerHelper.ResultBundle? = null
+
     // 타이머 반복
     val detectbody = MediatorLiveData<Boolean>()
     var hasExecuted = false
     var isTimerRunning = false
     private var repeatCount = 0
-    private val maxRepeats = 5
+    private val maxRepeats = 6
     private var isLooping = false
-    private val delay = if (isRecording) 110000L else 80000L //11,8초
-    // 동영상 녹화
-    private lateinit var videoCapture : VideoCapture<Recorder>
-    private var currentRecording: Recording? = null
-    private var recordingState:VideoRecordEvent? = null
+    private val delay = if (isRecording) 100000L else 65000L //10,6.5초
 
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
@@ -140,27 +130,37 @@ companion object {
                     Log.v("count", "${binding.tvPSCount.text}")
                 }
             }
+            @RequiresApi(Build.VERSION_CODES.R)
             override fun onFinish() {
-                binding.tvPSCount.text = "측정을 시작합니다 !"
-                setAnimation(binding.tvPSCount, 1000, 500) {
-                    if (isRecording) {
+                if (isRecording) { // 동영상 촬영
+                    binding.tvPSCount.text = "스쿼트를 실시해주세요"
+                    setAnimation(binding.tvPSCount, 1000, 500) {
                         Log.v("동영상녹화", "hasExecuted: ${hasExecuted}, isCapture: ${isCapture}")
-                        if (recordingState == null || recordingState is VideoRecordEvent.Finalize) {
-                            mediaProjectionService?.recordScreen {
-                                isLooping = false
-                                isRecording = false // 녹화 완료
-                            }
+                        mediaProjectionService?.recordScreen {
+                            Log.v("녹화종료시점", "step: $repeatCount, latestResult: $latestResult")
+                            resultBundleToJson(latestResult!!, repeatCount)
+                            isLooping = false
+                            isRecording = false // 녹화 완료
+                            repeatCount++
                         }
-                    } else {
+
+                    }
+                } else {
+                    binding.tvPSCount.text = "촬영을 시작합니다"
+                    setAnimation(binding.tvPSCount, 1000, 500) {
                         Log.v("사진service", "isCapture: ${isCapture}, hasExecuted: ${hasExecuted}")
                         // ------! 종료 후 다시 세팅 !------
                         mediaProjectionService?.captureScreen{
+                            Log.v("캡쳐종료시점", "step: $repeatCount, latestResult: $latestResult")
+                            resultBundleToJson(latestResult!!, repeatCount)
                             isLooping = false
                             isCapture = false
+                            repeatCount++
                         }
                     }
                 }
                 isTimerRunning = false
+
             }
         }
     } //  ------! 카운트 다운 끝 !-------
@@ -169,7 +169,6 @@ companion object {
             if (it && !isLooping) { // 루프 안 되고 있음
                 if (!isTimerRunning) { // 타이머 안돌아가고 있음.
                     startTimer()
-
                 }
                 isLooping = true
                 Log.v("isLooping", "$isLooping")
@@ -212,6 +211,7 @@ companion object {
             // Close the PoseLandmarkerHelper and release resources
             backgroundExecutor.execute { poseLandmarkerHelper.clearPoseLandmarker() }
             unbindService(serviceConnection as ServiceConnection)
+
         }
     }
 
@@ -225,6 +225,8 @@ companion object {
         )
         Handler(Looper.getMainLooper()).removeCallbacksAndMessages(null)
         unbindService(serviceConnection as ServiceConnection)
+        val serviceIntent = Intent(this, MediaProjectionService::class.java)
+        stopService(serviceIntent)
     }
 
     // ------! POSE LANDMARKER 설정 끝 !------
@@ -234,7 +236,9 @@ companion object {
         super.onCreate(savedInstanceState)
         _binding = ActivityPlaySkeletonBinding.inflate(layoutInflater)
         setContentView(_binding!!.root)
+        singletonInstance = Singleton_t_measure.getInstance(this)
 
+        // ------! foreground 서비스 연결 시작 !------
         mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -252,7 +256,7 @@ companion object {
         // Bind to the service
         val intent = Intent(this, MediaProjectionService::class.java)
         bindService(intent, serviceConnection as ServiceConnection, Context.BIND_AUTO_CREATE)
-
+        // ------! foreground 서비스 연결 끝 !------
 
         // -----! pose landmarker 시작 !-----
         // Initialize our background executor
@@ -281,15 +285,22 @@ companion object {
 
 
         // ------! 안내 문구 사라짐 시작 !------
-        setAnimation(binding.tvPSGuide, 2000, 1500) { }
+        setAnimation(binding.tvPSGuide, 2000, 3000) { }
         // 옵저버 달아놓기
         detectbody.observe(this@PlaySkeletonActivity, detectObserver)
 
-        /** */
+        /** 사진 및 동영상 촬영 순서
+         * 1. isLooping true -> repeatCount확인 -> count에 맞게 isCapture및 isRecord 선택
+         * 2. mCountdown.start() -> 카운트 다운이 종료될 때 isCapture, isRecording에 따라 service 함수 실행 */
+        binding.ibtnPSBack.setOnClickListener {
+            val intentBack = Intent(this, MainActivity::class.java)
+            intentBack.putExtra("finishMeasure", true)
+            startActivity(intentBack)
+            finish()
+        }
     }
 
     private fun startTimer() {
-
        Handler(Looper.getMainLooper()).postDelayed(object: Runnable {
            override fun run() {
                if (repeatCount == maxRepeats) {
@@ -313,7 +324,7 @@ companion object {
                if (repeatCount <= maxRepeats) {
                    Handler(Looper.getMainLooper()).postDelayed(this, delay)
                }
-               repeatCount++
+
            }
        }, 5000)
     }
@@ -367,22 +378,18 @@ companion object {
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetRotation(binding.viewFinder.display.rotation)
             .build()
-        videoCapture = VideoCapture.withOutput(Recorder.Builder()
-            .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
-            .build()
-        )
-
+//        videoCapture = VideoCapture.withOutput(Recorder.Builder()
+//            .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+//            .build()
+//        )
         // ------! 카메라에 poselandmarker 그리기 !------
-
-
-
         // Must unbind the use-cases before rebinding them
         cameraProvider.unbindAll()
         try {
             // 여기에는 다양한 사용 사례가 전달될 수 있습니다.
             // 카메라는 CameraControl 및 CameraInfo에 대한 액세스를 제공합니다. // TODO 기능 추가할 경우 여기다가 선언한 기능 넣어야 함
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageAnalyzer, imageCapture, videoCapture
+                this, cameraSelector, preview, imageAnalyzer, imageCapture
             )
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
@@ -442,112 +449,229 @@ companion object {
 
                 // Force a redraw
                 binding.overlay.invalidate()
-
+                latestResult = resultBundle
             }
         }
-        // --------------------------------! 포즈 값 받아오기 시작 !--------------------------------
-//        val earData = mutableListOf<Pair<Float, Float>>()
-//        val shoulderData = mutableListOf<Pair<Float, Float>>()
-//        val elbowData = mutableListOf<Pair<Float, Float>>()
-//        val wristData = mutableListOf<Pair<Float, Float>>()
-//        val indexData = mutableListOf<Pair<Float, Float>>()
-//        val hipData = mutableListOf<Pair<Float, Float>>()
-//        val kneeData = mutableListOf<Pair<Float, Float>>()
-//        val ankleData = mutableListOf<Pair<Float, Float>>()
-//        val heelData = mutableListOf<Pair<Float, Float>>()
-
         if (resultBundle.results.first().landmarks().isNotEmpty()) {
             detectbody.postValue(true)
+        } else {
+            detectbody.postValue(false)
+        }
+    }
+    // ------! 기울기 계산 !------
+    fun calculateSlope(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+        return (y2 - y1) / (x2 - x1)
+    }
+    // ------! 선과 점의 X 거리 !------
+//    fun calculateXDifference(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
+//        val x4 = x1 + (y3 - y1) / (y2 - y1) * (x2 - x1)
+//        return abs(x3 - x4)
+//    }
+    // --------------------------------! 포즈 값 받아오기 시작 !--------------------------------
+    private fun resultBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle, step: Int) {
+        val earData = mutableListOf<Pair<Double, Double>>()
+        val shoulderData = mutableListOf<Pair<Double, Double>>()
+        val elbowData = mutableListOf<Pair<Double, Double>>()
+        val wristData = mutableListOf<Pair<Double, Double>>()
+        val indexData = mutableListOf<Pair<Double, Double>>()
 
+        val thumbData = mutableListOf<Pair<Double, Double>>()
+        val hipData = mutableListOf<Pair<Double, Double>>()
+        val kneeData = mutableListOf<Pair<Double, Double>>()
+        val ankleData = mutableListOf<Pair<Double, Double>>()
+        val heelData = mutableListOf<Pair<Double, Double>>()
+        val toeData = mutableListOf<Pair<Double, Double>>()
+        val plr = resultBundle.results.first().landmarks()[0]!!
+        for (i in 7 until  plr.size) {
+            when (i) {
+                in 7 .. 8 -> earData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 11 .. 12 -> shoulderData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 13 .. 14 -> elbowData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 15 .. 16 -> wristData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 19 .. 20 -> indexData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 21 .. 22 -> thumbData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 23 .. 24 -> hipData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 25 .. 26 -> kneeData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 27 .. 28 -> ankleData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 29 .. 30 -> heelData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                in 31 .. 32 -> toeData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+            }
+        }
+        val nose : Pair<Double, Double> = Pair(plr[0].x().toDouble(), plr[0].y().toDouble())
+        val ankleXAxis = ankleData[0].first.minus(ankleData[1].first)  / 2
 
+        // ------! 왼쪽 true (left 가 true) !------
+        when (step) {
+            0 -> {
+                val jo = JSONObject()
 
+                val earAngle : Double = calculateSlope(earData[0].first, earData[0].second, earData[1].first, earData[1].second)
+                val shoulderAngle : Double = calculateSlope(shoulderData[0].first, shoulderData[0].second, shoulderData[1].first, shoulderData[1].second)
+                val elbowAngle : Double = calculateSlope(elbowData[0].first, elbowData[0].second, elbowData[1].first, elbowData[1].second)
+                val wristAngle : Double = calculateSlope(wristData[0].first, wristData[0].second, wristData[1].first, wristData[1].second)
+                val hipAngle : Double = calculateSlope(hipData[0].first, hipData[0].second, hipData[1].first, hipData[1].second)
+                val kneeAngle : Double = calculateSlope(kneeData[0].first, kneeData[0].second, kneeData[1].first, kneeData[1].second)
+                val ankleAngle : Double = calculateSlope(ankleData[0].first, ankleData[0].second, ankleData[1].first, ankleData[1].second)
+                jo.put("result_static_front_horizontal_angle_ear", earAngle)
+                jo.put("result_static_front_horizontal_angle_shoulder", shoulderAngle)
+                jo.put("result_static_front_horizontal_angle_elbow", elbowAngle)
+                jo.put("result_static_front_horizontal_angle_wrist", wristAngle)
+                jo.put("result_static_front_horizontal_angle_hip", hipAngle)
+                jo.put("result_static_front_horizontal_angle_knee", kneeAngle)
+                jo.put("result_static_front_horizontal_angle_ankle", ankleAngle)
 
-//            val poseLandmarkerResult = resultBundle.results.first().landmarks()[0]
-//            Log.v("poseLandmarkerResult결과", "$poseLandmarkerResult")
-//            for (i in 7 until  poseLandmarkerResult.size) {
-//                when (i) {
-//                    in 7 .. 8 -> earData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 11 .. 12 -> shoulderData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 13 .. 14 -> elbowData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 15 .. 16 -> wristData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 19 .. 20 -> indexData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 23 .. 24 -> hipData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 25 .. 26 -> kneeData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 27 .. 28 -> ankleData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                    in 29 .. 30 -> heelData.add(Pair(poseLandmarkerResult[i].x(), poseLandmarkerResult[i].y()))
-//                }
-//            }
-//            val nose : Pair<Float, Float> = Pair(poseLandmarkerResult[0].x(), poseLandmarkerResult[0].y())
-////             -------! 왼쪽 그니까 홀수번이 높을 경우 true (left 가 true)
-//            val shoulderAngle : Float = calculateSlope(shoulderData[0].first, shoulderData[0].second, shoulderData[1].first, shoulderData[1].second)
-//            val elbowAngle : Float = calculateSlope(elbowData[0].first, elbowData[0].second, elbowData[1].first, elbowData[1].second)
-//            val wristAngle : Float = calculateSlope(wristData[0].first, wristData[0].second, wristData[1].first, wristData[1].second)
-//            val hipAngle : Float = calculateSlope(hipData[0].first, hipData[0].second, hipData[1].first, hipData[1].second)
-//            val kneeAngle : Float = calculateSlope(kneeData[0].first, kneeData[0].second, kneeData[1].first, kneeData[1].second)
-//            val ankleAngle : Float = calculateSlope(ankleData[0].first, ankleData[0].second, ankleData[1].first, ankleData[1].second)
-//            Log.v("1 전면 기울기, 기울어짐", "어깨: $shoulderAngle, 팔꿈치: $elbowAngle, 손목: $wristAngle, 엉덩이: $hipAngle, 무릎: $kneeAngle, 발목: $ankleAngle")
-//            val ankleXAxis = ankleData[0].first.minus(ankleData[1].first)  / 2
-//
-//            val shoulderDistance : Pair<Float, Float> = Pair(abs(shoulderData[0].first.minus(ankleXAxis)), shoulderData[1].first.minus(ankleXAxis))
-//            val elbowDistance : Pair<Float, Float> = Pair(abs(elbowData[0].first.minus(ankleXAxis)), elbowData[1].first.minus(ankleXAxis))
-//            val wristDistance : Pair<Float, Float> = Pair(abs(wristData[0].first.minus(ankleXAxis)), wristData[1].first.minus(ankleXAxis))
-//            val hipDistance : Pair<Float, Float> = Pair(abs(hipData[0].first.minus(ankleXAxis)), hipData[1].first.minus(ankleXAxis))
-//            val kneeDistance : Pair<Float, Float> = Pair(abs(kneeData[0].first.minus(ankleXAxis)), kneeData[1].first.minus(ankleXAxis))
-//            val ankleDistance : Pair<Float, Float> = Pair(abs(ankleData[0].first.minus(ankleXAxis)), ankleData[1].first.minus(ankleXAxis))
-//            Log.v("2 전면 거리", "어깨: $shoulderDistance, 팔꿈치: $elbowDistance, 손목: $wristDistance, 엉덩이: $hipDistance, 무릎: $kneeDistance, 발목: $ankleDistance")
-//
-//            // ------! 주먹쥐고 가슴에 붙이기 !------
-//            val fistElbowLean : Pair<Float, Float> = Pair(calculateSlope(shoulderData[0].first, shoulderData[0].second, elbowData[0].first, elbowData[0].second), calculateSlope(shoulderData[1].first, shoulderData[1].second, elbowData[1].first, elbowData[1].second))
-//            val fistWristLean : Pair<Float, Float> = Pair(calculateSlope(elbowData[0].first, elbowData[0].second, wristData[0].first, wristData[0].second), calculateSlope(elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second))
-//
-//            Log.v("3 주먹쥐고 팔 각도", "어깨-팔꿈치: $fistElbowLean, 팔꿈치-손목: $fistWristLean")
-//
-//            // ------! 전면 팔 기울기 !------
-//            val bicepsLean: Pair<Float, Float> = Pair(calculateSlope(shoulderData[0].first, shoulderData[0].second, elbowData[0].first, elbowData[0].second), calculateSlope(shoulderData[1].first, shoulderData[1].second, elbowData[1].first, elbowData[1].second))
-//            val forearmsLean: Pair<Float, Float> = Pair(calculateSlope(elbowData[0].first, elbowData[0].second, wristData[0].first, wristData[0].second), calculateSlope(elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second))
-//            val thighsLean: Pair<Float, Float> = Pair(calculateSlope(hipData[0].first, hipData[0].second, kneeData[0].first, kneeData[0].second), calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second))
-//            Log.v("4 팔 기울기", "이두: $bicepsLean, 전완: $forearmsLean, 허벅지: $thighsLean")
-//
-//            // ------! 측면 기울기 !------
-//            val sideLeftBicepsLean : Pair<Float, Float> = Pair(calculateSlope(shoulderData[0].first, hipData[0].second, kneeData[0].first, kneeData[0].second), calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second))
-//            val sideLeftForearmsLean: Pair<Float, Float> = Pair(calculateSlope(elbowData[0].first, elbowData[0].second, wristData[0].first, wristData[0].second), calculateSlope(elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second))
-//            val sideLeftThighsLean : Pair<Float, Float> = Pair(calculateSlope(hipData[0].first, hipData[0].second, kneeData[0].first, kneeData[0].second), calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second))
-//            val sideShoulderDistance: Pair<Float, Float> = Pair(abs(shoulderData[0].first.minus(ankleXAxis)), shoulderData[1].first.minus(ankleXAxis))
-//            val sideHipDistance: Pair<Float, Float> = Pair(abs(hipData[0].first.minus(ankleXAxis)), hipData[1].first.minus(ankleXAxis))
-//            Log.v("5 측면 기울기", "어깨: $sideShoulderDistance, 엉덩: $sideHipDistance 이두: $sideLeftBicepsLean, 전완: $sideLeftForearmsLean, 허벅지: $sideLeftThighsLean")
-//
-//            // ------! 후면 기울기 !------
-//            val backWaistLean : Float = calculateSlope(nose.first, nose.second, ankleXAxis, hipData[0].second) // ankle의 x값, hip의 y값으로 기울기 계산
-//            val backfootLean : Pair<Float, Float> = Pair(calculateSlope(kneeData[0].first, kneeData[0].second, heelData[0].first, heelData[0].second), calculateSlope(kneeData[1].first, kneeData[1].second, heelData[1].first, heelData[1].second))
-//            Log.v("6 후면 기울기 ", "허리: $backWaistLean, 발: $backfootLean")
-//
-//            // ------! 후면 거리 !------
-//            val backShoulderDistance : Pair<Float, Float> = Pair(abs(shoulderData[0].first.minus(ankleXAxis)), shoulderData[1].first.minus(ankleXAxis))
-//            val backElbowDistance : Pair<Float, Float> = Pair(abs(elbowData[0].first.minus(ankleXAxis)), elbowData[1].first.minus(ankleXAxis))
-//            val backWRistDistance : Pair<Float, Float> = Pair(abs(wristData[0].first.minus(ankleXAxis)), wristData[1].first.minus(ankleXAxis))
-//            val backHipDistance : Pair<Float, Float> = Pair(abs(hipData[0].first.minus(ankleXAxis)), hipData[1].first.minus(ankleXAxis))
-//            val backKneeDistance : Pair<Float, Float> = Pair(abs(kneeData[0].first.minus(ankleXAxis)), kneeData[1].first.minus(ankleXAxis))
-//            val backAnkleDistance : Pair<Float, Float> = Pair(abs(ankleData[0].first.minus(ankleXAxis)), ankleData[1].first.minus(ankleXAxis))
-//            Log.v("7 후면 거리", "어깨: $backShoulderDistance, 팔꿈치: $backElbowDistance, 손목: $backWRistDistance, 엉덩이: $backHipDistance, 무릎: $backKneeDistance, 발목: $backAnkleDistance")
-//
-//            // ------! 의자 후면 기울기 !------
-//            val sitBackNeckDistance : Pair<Float, Float> = Pair(abs(earData[0].second.minus(shoulderData[0].second)), abs(earData[1].second.minus(shoulderData[1].second)))
-//            val sitBackShoulderDistance  : Pair<Float, Float> = Pair(abs(shoulderData[0].first.minus(ankleXAxis)), shoulderData[1].first.minus(ankleXAxis))
-//            val sitBackHipDistance : Pair<Float, Float> = Pair(abs(hipData[0].first.minus(ankleXAxis)), hipData[1].first.minus(ankleXAxis))
-//            Log.v("8 의자 후면 기울기", "목: $sitBackNeckDistance, 어깨: $sitBackShoulderDistance, 엉덩: $sitBackHipDistance")
+                // 각 부위 거리
+                val earSubDistance : Pair<Double, Double> = Pair(abs(earData[0].first.minus(ankleXAxis)), abs(earData[1].first.minus(ankleXAxis)))
+                val shoulderSubDistance : Pair<Double, Double> = Pair(abs(shoulderData[0].first.minus(ankleXAxis)), abs(shoulderData[1].first.minus(ankleXAxis)))
+                val elbowSubDistance : Pair<Double, Double> = Pair(abs(elbowData[0].first.minus(ankleXAxis)), abs(elbowData[1].first.minus(ankleXAxis)))
+                val wristSubDistance : Pair<Double, Double> = Pair(abs(wristData[0].first.minus(ankleXAxis)), abs(wristData[1].first.minus(ankleXAxis)))
+//                val thumbSubDistance : Pair<Double, Double> = Pair(abs(thumbData[0].first.minus(ankleXAxis)), abs(thumbData[1].first.minus(ankleXAxis)))
+                val hipSubDistance : Pair<Double, Double> = Pair(abs(hipData[0].first.minus(ankleXAxis)), abs(hipData[1].first.minus(ankleXAxis)))
+                val kneeSubDistance : Pair<Double, Double> = Pair(abs(kneeData[0].first.minus(ankleXAxis)), abs(kneeData[1].first.minus(ankleXAxis)))
+                val ankleSubDistance : Pair<Double, Double> = Pair(abs(ankleData[0].first.minus(ankleXAxis)), abs(ankleData[1].first.minus(ankleXAxis)))
+//                val toeSubDistance : Pair<Double, Double> = Pair(abs(toeData[0].first.minus(ankleXAxis)), abs(toeData[1].first.minus(ankleXAxis)))
+                jo.put("result_static_front_horizontal_distance_sub_ear", earSubDistance)
+                jo.put("result_static_front_horizontal_distance_sub_shoulder", shoulderSubDistance)
+                jo.put("result_static_front_horizontal_distance_sub_elbow", elbowSubDistance)
+                jo.put("result_static_front_horizontal_distance_sub_wrist", wristSubDistance)
+                jo.put("result_static_front_horizontal_distance_sub_hip", hipSubDistance)
+                jo.put("result_static_front_horizontal_distance_sub_knee", kneeSubDistance)
+                jo.put("result_static_front_horizontal_distance_sub_ankle", ankleSubDistance)
+//                jo.put("result_static_front_horizontal_distance_thumb_left", thumbSubDistance.first)
+//                jo.put("result_static_front_horizontal_distance_thumb_right", thumbSubDistance.second)
+                jo.put("result_static_front_horizontal_distance_knee_left", kneeSubDistance.first)
+                jo.put("result_static_front_horizontal_distance_knee_right", kneeSubDistance.second)
+                jo.put("result_static_front_horizontal_distance_ankle_left", ankleSubDistance.first)
+                jo.put("result_static_front_horizontal_distance_ankle_right", ankleSubDistance.second)
+//                jo.put("result_static_front_horizontal_distance_toe_left", toeSubDistance.first)
+//                jo.put("result_static_front_horizontal_distance_toe_right", toeSubDistance.second)
+
+                // 팔 각도
+                val bicepsLean: Pair<Double, Double> = Pair(calculateSlope(shoulderData[0].first, shoulderData[0].second, elbowData[0].first, elbowData[0].second), calculateSlope(shoulderData[1].first, shoulderData[1].second, elbowData[1].first, elbowData[1].second))
+                val forearmsLean: Pair<Double, Double> = Pair(calculateSlope(elbowData[0].first, elbowData[0].second, wristData[0].first, wristData[0].second), calculateSlope(elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second))
+                val thighsLean: Pair<Double, Double> = Pair(calculateSlope(hipData[0].first, hipData[0].second, kneeData[0].first, kneeData[0].second), calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second))
+                val calfLean : Pair<Double, Double> = Pair(calculateSlope(kneeData[0].first, kneeData[0].second, toeData[0].first, toeData[0].second), calculateSlope(kneeData[1].first, kneeData[1].second, toeData[1].first, toeData[1].second))
+                jo.put("result_static_front_vertical_angle_shoulder_elbow_left", bicepsLean.first)
+                jo.put("result_static_front_vertical_angle_shoulder_elbow_right", bicepsLean.second)
+                jo.put("result_static_front_vertical_angle_elbow_wrist_left", forearmsLean.first)
+                jo.put("result_static_front_vertical_angle_elbow_wrist_right", forearmsLean.second)
+                jo.put("result_static_front_vertical_angle_hip_knee_left", thighsLean.first)
+                jo.put("result_static_front_vertical_angle_hip_knee_right", thighsLean.second)
+                jo.put("result_static_front_vertical_angle_knee_ankle_left", calfLean.first)
+                jo.put("result_static_front_vertical_angle_knee_ankle_right", calfLean.second)
+                saveJsonToSingleton(jo, step)
+            }
+            1 -> {  // 스쿼트
+
+            }
+            2 -> { // 주먹 쥐고
+                val jo = JSONObject()
+
+                // ------! 주먹 쥐고 !------
+                val fistBicepsLean : Pair<Double, Double> = Pair(calculateSlope(shoulderData[0].first, shoulderData[0].second, elbowData[0].first, elbowData[0].second), calculateSlope(shoulderData[1].first, shoulderData[1].second, elbowData[1].first, elbowData[1].second))
+                val fistForearmsLean : Pair<Double, Double> = Pair(calculateSlope(elbowData[0].first, elbowData[0].second, wristData[0].first, wristData[0].second), calculateSlope(elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second))
+
+            }
+            3 -> { // 왼쪽보기 (오른쪽 팔)
+                val jo = JSONObject()
+                // ------! 측면 거리  - 왼쪽 !------
+                val sideLeftShoulderDistance : Double = abs(shoulderData[1].first.minus(ankleXAxis))
+                val sideLeftHipDistance : Double = abs(hipData[1].first.minus(ankleXAxis))
+                jo.put("result_static_side_left_horizontal_distance_shoulder", sideLeftShoulderDistance)
+                jo.put("result_static_side_left_horizontal_distance_hip", sideLeftHipDistance)
+
+                val sideLeftBicepsLean : Double = calculateSlope(shoulderData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second)
+                val sideLeftForearmsLean: Double = calculateSlope(elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second)
+                val sideLeftThighsLean : Double = calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second)
+                val sideLeftNeckLean : Double = calculateSlope(earData[1].first, earData[1].second, shoulderData[1].first, shoulderData[1].second)
+                jo.put("result_static_side_left_vertical_angle_shoulder_elbow", sideLeftBicepsLean)
+                jo.put("result_static_side_left_vertical_angle_elbow_wrist", sideLeftForearmsLean)
+                jo.put("result_static_side_left_vertical_angle_hip_knee", sideLeftThighsLean)
+                jo.put("result_static_side_left_vertical_angle_ear_shoulder", sideLeftNeckLean)
+                saveJsonToSingleton(jo, step)
+            }
+            4 -> { // 오른쪽보기 (왼쪽 팔)
+                // ------! 측면 거리  - 오른쪽 !------
+                val jo = JSONObject()
+                val sideRightShoulderDistance : Double = abs(shoulderData[1].first.minus(ankleXAxis))
+                val sideRightWristDistance : Double = abs(wristData[1].first.minus(ankleXAxis))
+//                val sideRightIndexDistance : Double = abs(indexData[1].first.minus(ankleXAxis))
+                jo.put("result_static_side_left_horizontal_distance_shoulder", sideRightShoulderDistance)
+                jo.put("result_static_side_left_horizontal_distance_hip", sideRightWristDistance)
+
+                // ------! 측면 기울기  - 오른쪽 !------
+                val sideRightBicepsLean : Double = calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second)
+                val sideRightForearmsLean: Double =calculateSlope(elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second)
+                val sideRightThighsLean : Double = calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second)
+                val sideRightNeckLean : Double = calculateSlope(earData[1].first, earData[1].second, shoulderData[1].first, shoulderData[1].second)
+                jo.put("result_static_side_left_vertical_angle_shoulder_elbow", sideRightBicepsLean)
+                jo.put("result_static_side_left_vertical_angle_elbow_wrist", sideRightForearmsLean)
+                jo.put("result_static_side_left_vertical_angle_hip_knee", sideRightThighsLean)
+                jo.put("result_static_side_left_vertical_angle_ear_shoulder", sideRightNeckLean)
+                saveJsonToSingleton(jo, step)
+            }
+            5 -> { // ------! 후면 서서 !-------
+                val jo = JSONObject()
+
+                val backEarAngle : Double = calculateSlope(earData[0].first, earData[0].second, earData[1].first, earData[1].second)
+                val backShoulderAngle : Double = calculateSlope(shoulderData[0].first, shoulderData[0].second, shoulderData[1].first, shoulderData[1].second)
+                val backElbowAngle : Double = calculateSlope(elbowData[0].first, elbowData[0].second, elbowData[1].first, elbowData[1].second)
+                val backHipAngle : Double = calculateSlope(hipData[0].first, hipData[0].second, hipData[1].first, hipData[1].second)
+                val backAnkleAngle : Double = calculateSlope(ankleData[0].first, ankleData[0].second, ankleData[1].first, ankleData[1].second)
+                jo.put("result_static_back_horizontal_angle_ear", backEarAngle)
+                jo.put("result_static_back_horizontal_angle_shoulder", backShoulderAngle)
+                jo.put("result_static_back_horizontal_angle_elbow", backElbowAngle)
+                jo.put("result_static_back_horizontal_angle_hip", backHipAngle)
+                jo.put("result_static_back_horizontal_angle_ankle", backAnkleAngle)
+
+                // ------! 후면 거리 !------
+                val backWristDistance : Pair<Double, Double> = Pair(abs(wristData[0].first.minus(ankleXAxis)), abs(wristData[1].first.minus(ankleXAxis)))
+                val backKneeDistance : Pair<Double, Double> = Pair(abs(kneeData[0].first.minus(ankleXAxis)), abs(kneeData[1].first.minus(ankleXAxis)))
+                val backHeelDistance : Pair<Double, Double> = Pair(abs(heelData[0].first.minus(ankleXAxis)), abs(heelData[1].first.minus(ankleXAxis)))
+                jo.put("result_static_back_horizontal_distance_wrist_left", backWristDistance.first)
+                jo.put("result_static_back_horizontal_distance_wrist_right", backWristDistance.second)
+                jo.put("result_static_back_horizontal_distance_knee_left", backKneeDistance.first)
+                jo.put("result_static_back_horizontal_distance_knee_right", backKneeDistance.second)
+                jo.put("result_static_back_horizontal_distance_heel_left", backHeelDistance.first)
+                jo.put("result_static_back_horizontal_distance_heel_right", backHeelDistance.second)
+
+                val backSpineLean : Double = calculateSlope(nose.first, nose.second, hipData[0].first, abs(hipData[0].second - hipData[1].second))
+                val backCalfLean : Pair<Double, Double> = Pair(calculateSlope(heelData[0].first, heelData[0].second, kneeData[0].first, kneeData[0].second), calculateSlope(heelData[1].first, heelData[1].second, kneeData[1].first, kneeData[1].second))
+                jo.put("result_static_back_vertical_angle_nose_center_hip", backSpineLean)
+                jo.put("result_static_back_vertical_angle_knee_heel_left", backCalfLean.second)
+                jo.put("result_static_back_vertical_angle_knee_heel_right", backCalfLean.first)
+                saveJsonToSingleton(jo, step)
+            }
+            6 -> { // ------! 앉았을 때 !------
+                val jo = JSONObject()
+
+                // ------! 의자 후면 거리 !------
+                val sitBackEarDistance : Pair<Double, Double> = Pair(abs(earData[0].second.minus(shoulderData[0].second)), abs(earData[1].second.minus(shoulderData[1].second)))
+                val sitBackShoulderDistance  : Pair<Double, Double> = Pair(abs(shoulderData[0].first.minus(ankleXAxis)), abs(shoulderData[1].first.minus(ankleXAxis)))
+                val sitBackHipDistance : Pair<Double, Double> = Pair(abs(hipData[0].first.minus(ankleXAxis)), abs(hipData[1].first.minus(ankleXAxis)))
+                jo.put("result_static_back_sit_horizontal_distance_sub_ear", sitBackEarDistance)
+                jo.put("result_static_back_sit_horizontal_distance_sub_shoulder", sitBackShoulderDistance)
+                jo.put("result_static_back_sit_horizontal_distance_sub_hip", sitBackHipDistance)
+                // ------! 의자 후면 기울기 !------
+                val sitBackEarAngle = calculateSlope(earData[0].first, earData[0].second, earData[1].first, earData[1].second)
+                val sitBackShoulderAngle = calculateSlope(shoulderData[0].first, shoulderData[0].second, shoulderData[1].first, shoulderData[1].second)
+                val sitBackHipAngle = calculateSlope(hipData[0].first, hipData[0].second, hipData[1].first, hipData[1].second)
+                jo.put("result_static_back_sit_horizontal_angle_ear", sitBackEarAngle)
+                jo.put("result_static_back_sit_horizontal_angle_shoulder", sitBackShoulderAngle)
+                jo.put("result_static_back_sit_horizontal_angle_hip", sitBackHipAngle)
+                saveJsonToSingleton(jo, step)
+            }
+        }
 //
 //            // ------! 스쿼트 자세 기울기 !------
 //            val squatHandsLean : Float = calculateSlope(indexData[0].first, indexData[0].second, indexData[1].first, indexData[1].second)
 //            val squatHipLean : Float = calculateSlope(hipData[0].first, hipData[0].second, hipData[1].first, hipData[1].second)
 //            val squatKneeLean : Float = calculateSlope(kneeData[0].first, kneeData[0].second, kneeData[1].first, kneeData[1].second)
 //            Log.v("9 스쿼트 자세 기울기", "손 끝: $squatHandsLean, 엉덩: $squatHipLean, 무릎: $squatKneeLean")
-        } else {
-            detectbody.postValue(false)
-        }
     }
-    // ------! 기울기 계산 !------
-    fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        return (y2 - y1) / (x2 - x1)
+    private fun saveJsonToSingleton(jsonObj: JSONObject, step: Int) {
+        singletonInstance .jsonObject?.put(step.toString(), jsonObj)
+        Log.v("싱글턴", "${singletonInstance.jsonObject}")
     }
 
     // ------! 애니메이션 !------

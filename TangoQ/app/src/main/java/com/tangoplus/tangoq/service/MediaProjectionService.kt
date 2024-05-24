@@ -37,6 +37,8 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.camera.view.PreviewView
 import androidx.core.app.NotificationCompat
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import java.io.File
@@ -203,7 +205,7 @@ class MediaProjectionService : Service() {
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setVideoSize(1080, 1920) // Change according to your requirement
             setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            setVideoEncodingBitRate(512 * 1000)
+            setVideoEncodingBitRate(1024 * 2000)
             setVideoFrameRate(30)
             setOutputFile(videoFilePath)
             prepare()
@@ -239,7 +241,8 @@ class MediaProjectionService : Service() {
     private fun stopRecording() {
         mediaRecorder?.apply {
             stop()
-            saveVideoToGallery(videoFilePath)
+            val outputFilePath = "${getExternalFilesDir(null)}/cropped_video_${System.currentTimeMillis()}.mp4"
+            cropVideo(videoFilePath, outputFilePath, getStatusBarHeight(), getNavigationBarHeight())
             reset()
             release()
         }
@@ -251,6 +254,30 @@ class MediaProjectionService : Service() {
     // ------! 화면 녹화 끝 !------
 
     // ------! 비디오 저장 시작 !------
+    private fun cropVideo(inputFilePath: String, outputFilePath: String, topCrop: Int, bottomCrop: Int) {
+        val metrics = DisplayMetrics()
+        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        windowManager.defaultDisplay.getMetrics(metrics)
+
+        val videoWidth = metrics.widthPixels
+        val videoHeight = metrics.heightPixels - topCrop - bottomCrop
+
+        val command = "-i $inputFilePath -vf crop=$videoWidth:$videoHeight:0:$topCrop -c:a copy $outputFilePath"
+
+        FFmpegKit.executeAsync(command) { session ->
+            val returnCode = session.returnCode
+            if (ReturnCode.isSuccess(returnCode)) {
+                // Command succeeded
+                saveVideoToGallery(outputFilePath)
+            } else if (ReturnCode.isCancel(returnCode)) {
+                // Command cancelled
+                Log.e("FFmpeg", "Command cancelled")
+            } else {
+                // Command failed
+                Log.e("FFmpeg", "Command failed with returnCode=$returnCode")
+            }
+        }
+    }
     private fun saveVideoToGallery(videoFilePath: String) {
 
         val filename = "video_${System.currentTimeMillis()}.mp4"
@@ -274,10 +301,10 @@ class MediaProjectionService : Service() {
             FileInputStream(videoFilePath).use { inputStream ->
                 inputStream.copyTo(outputStream)
             }
-            Toast.makeText(this, "Video saved to gallery", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "촬영한 비디오가 갤러리에 저장됐습니다 !", Toast.LENGTH_SHORT).show()
 
         } ?: run {
-            Toast.makeText(this, "Failed to save video", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
 
         }
     }
@@ -325,8 +352,21 @@ class MediaProjectionService : Service() {
         return Bitmap.createBitmap(bitmap, 0, statusBarHeight, width, height)
     } // ------! 캡처 후 상단 하단바 자르기 끝 !------
 
+    // ------! 액티비티 종료 시 파일 전부 삭제 !------
+    private fun deleteFilesInExternalStorage() {
+        Log.v("deleteData", "DeleteFilesInExternalStorage")
+        val directory = getExternalFilesDir(null)
+        if (directory != null && directory.isDirectory) {
+            val files = directory.listFiles()
+            files?.forEach { file ->
+                file.delete()
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         imageReader.close()
+        deleteFilesInExternalStorage()
     }
 }

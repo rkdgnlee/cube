@@ -47,6 +47,7 @@ dependencies {
     // 스켈레톤
     implementation("com.google.mediapipe:tasks-vision:0.20230731")
 
+
     // 외부 라이브러리
     implementation ("io.github.ShawnLin013:number-picker:2.4.13")
     implementation("com.github.shuhart:StepView:v1.5.1")
@@ -106,7 +107,7 @@ dependencies {
 
 
 
-    // 카메라
+    // 미디어
     val camera_version = "1.3.3"
     implementation("androidx.camera:camera-core:$camera_version")
     implementation("androidx.camera:camera-camera2:$camera_version")
@@ -115,6 +116,8 @@ dependencies {
     implementation("androidx.camera:camera-extensions:$camera_version")
     implementation("androidx.camera:camera-view:$camera_version")
     implementation(libs.androidx.camera.core)
+    implementation("com.arthenica:ffmpeg-kit-full:4.5")
+
     // 내부 라이브러리
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
