@@ -115,6 +115,7 @@
             android:name=".service.MediaProjectionService"
             android:foregroundServiceType="mediaProjection"
             android:enabled="true"
+            android:permission="android.permission.FOREGROUND_SERVICE"
             android:exported="false">
         </service>
         <service
