@@ -51,6 +51,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.GraphVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -66,7 +67,8 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
     val viewModel : MeasureViewModel by activityViewModels()
     val endTime = LocalDateTime.now()
     val startTime = LocalDateTime.now().minusDays(1)
-
+    // ------! 싱글턴 패턴 객체 가져오기 !------
+    private lateinit var singletonInstance: Singleton_t_measure
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -78,6 +80,9 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
     @SuppressLint("SetTextI18n", "CommitTransaction")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        singletonInstance = Singleton_t_measure.getInstance(requireContext())
+
 
         // ------! tab & enum class 관리 시작 !------
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{

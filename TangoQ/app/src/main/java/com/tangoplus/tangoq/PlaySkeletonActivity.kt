@@ -146,6 +146,7 @@ companion object {
 
                     }
                 } else {
+
                     binding.tvPSCount.text = "촬영을 시작합니다"
                     setAnimation(binding.tvPSCount, 1000, 500) {
                         Log.v("사진service", "isCapture: ${isCapture}, hasExecuted: ${hasExecuted}")
@@ -156,6 +157,10 @@ companion object {
                             isLooping = false
                             isCapture = false
                             repeatCount++
+
+                            if (repeatCount == 6) {
+                                binding.btnPSStep.text = "완료하기"
+                            }
                         }
                     }
                 }
@@ -165,16 +170,13 @@ companion object {
         }
     } //  ------! 카운트 다운 끝 !-------
     private val detectObserver = Observer<Boolean> {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (it && !isLooping) { // 루프 안 되고 있음
-                if (!isTimerRunning) { // 타이머 안돌아가고 있음.
-                    startTimer()
-                }
-                isLooping = true
-                Log.v("isLooping", "$isLooping")
+        if (it && !isLooping) { // 루프 안 되고 있음
+            if (!isTimerRunning) { // 타이머 안돌아가고 있음.
+                startTimer()
             }
-
-        }, 1000) // 탐지가 되면 4초 뒤에 시작
+            isLooping = true
+            Log.v("isLooping", "$isLooping")
+        }
     }
 
     override fun onResume() {
@@ -249,7 +251,7 @@ companion object {
 
             override fun onServiceDisconnected(name: ComponentName?) {
                 mediaProjectionService = null
-                Log.w("serviceInit2", "$mediaProjectionService")
+                Log.w("serviceInit Failed", "$mediaProjectionService")
             }
         }
         startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE)
@@ -300,33 +302,36 @@ companion object {
         }
     }
 
+    // ------! 타이머 control 시작 !------
     private fun startTimer() {
-       Handler(Looper.getMainLooper()).postDelayed(object: Runnable {
-           override fun run() {
-               if (repeatCount == maxRepeats) {
-                   mCountDown.cancel()
-                   detectbody.removeObserver(detectObserver)
-                   Log.v("repeat", "Max repeats reached, stopping the loop")
-                   return
-               }
-               when (repeatCount) {
-                   1 -> {
-                       isCapture = false
-                       isRecording = true
-                   }
-                   else -> {
-                       isCapture = true
-                       isRecording = false
-                   }
-               }
-               Log.v("repeatCount", "$repeatCount")
-               mCountDown.start()
-               if (repeatCount <= maxRepeats) {
-                   Handler(Looper.getMainLooper()).postDelayed(this, delay)
-               }
+        when (repeatCount) {
+            1 -> {
+                isCapture = false
+                isRecording = true
+            }
+            else -> {
+                isCapture = true
+                isRecording = false
+            }
+        }
+        Log.v("repeatCount", "$repeatCount")
+        mCountDown.start()
+        // ------! 타이머 control 끝 !------
 
-           }
-       }, 5000)
+        // -----! 버튼 촬영 시작 !-----
+        binding.btnPSStep.setOnClickListener {
+            // TODO return 으로 빠져나가기
+            if (binding.btnPSStep.text == "완료하기") {
+                // todo 통신 시간에 따라 alertDialog 띄우던가 해야 함
+                mCountDown.cancel()
+                detectbody.removeObserver(detectObserver)
+                Log.v("repeat", "Max repeats reached, stopping the loop")
+                finish()
+            }
+            if (repeatCount <= maxRepeats) {
+                detectbody.postValue(true)
+            }
+        }
     }
 
     private fun setUpCamera() {
@@ -562,6 +567,11 @@ companion object {
                 saveJsonToSingleton(jo, step)
             }
             1 -> {  // 스쿼트
+                val jo = JSONObject()
+                // ------! 스쿼트 자세 기울기 !------
+                val squatHandsLean : Double = calculateSlope(indexData[0].first, indexData[0].second, indexData[1].first, indexData[1].second)
+                val squatHipLean : Double = calculateSlope(hipData[0].first, hipData[0].second, hipData[1].first, hipData[1].second)
+                val squatKneeLean : Double = calculateSlope(kneeData[0].first, kneeData[0].second, kneeData[1].first, kneeData[1].second)
 
             }
             2 -> { // 주먹 쥐고
@@ -662,12 +672,9 @@ companion object {
                 saveJsonToSingleton(jo, step)
             }
         }
+
 //
-//            // ------! 스쿼트 자세 기울기 !------
-//            val squatHandsLean : Float = calculateSlope(indexData[0].first, indexData[0].second, indexData[1].first, indexData[1].second)
-//            val squatHipLean : Float = calculateSlope(hipData[0].first, hipData[0].second, hipData[1].first, hipData[1].second)
-//            val squatKneeLean : Float = calculateSlope(kneeData[0].first, kneeData[0].second, kneeData[1].first, kneeData[1].second)
-//            Log.v("9 스쿼트 자세 기울기", "손 끝: $squatHandsLean, 엉덩: $squatHipLean, 무릎: $squatKneeLean")
+
     }
     private fun saveJsonToSingleton(jsonObj: JSONObject, step: Int) {
         singletonInstance .jsonObject?.put(step.toString(), jsonObj)
