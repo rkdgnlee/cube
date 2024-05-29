@@ -74,6 +74,7 @@ class FeedbackDialogFragment : DialogFragment() {
 //            startActivity(intent)
 //            requireActivity().finishAffinity()
             dismiss()
+            viewModel.exerciseLog.value = null
 
         }
 

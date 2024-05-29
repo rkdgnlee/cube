@@ -8,6 +8,7 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,7 +43,9 @@ import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserUPDATEJson
 import com.tangoplus.tangoq.`object`.NetworkUserService.getUserSELECTJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.BannerViewModel
+import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
+import com.tangoplus.tangoq.dialog.GoogleSignInDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,6 +57,7 @@ import java.net.URLEncoder
 class IntroActivity : AppCompatActivity() {
     lateinit var binding : ActivityIntroBinding
     val viewModel : BannerViewModel by viewModels()
+    val sViewModel  : SignInViewModel by viewModels()
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private var bannerPosition = Int.MAX_VALUE/2
@@ -73,14 +77,12 @@ class IntroActivity : AppCompatActivity() {
             firebaseAuth = FirebaseAuth.getInstance()
             launcher = registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult(), ActivityResultCallback { result ->
-                    Log.d(TAG, "resultCode: ${result.resultCode}입니다.")
-                    Log.d(TAG, "$result")
+                    Log.v(TAG, "resultCode: ${result.resultCode}입니다.")
                     if (result.resultCode == RESULT_OK) {
                         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                         try {
                             task.getResult(ApiException::class.java)?.let { account ->
                                 val tokenId = account.idToken
-                                Log.d("토큰 있나요?", "예. $tokenId")
                                 if (tokenId != null && tokenId != "") {
                                     val credential: AuthCredential =
                                         GoogleAuthProvider.getCredential(account.idToken, null)
@@ -92,16 +94,13 @@ class IntroActivity : AppCompatActivity() {
                                                 val user: FirebaseUser = firebaseAuth.currentUser!!
 
                                                 // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
-                                                val JsonObj = JSONObject()
-                                                JsonObj.put("user_name", user.displayName.toString())
-                                                JsonObj.put("user_email", user.email.toString())
-                                                JsonObj.put("google_login_id", user.uid)
-
-                                                Log.e("구글JsonObj", JsonObj.getString("google_login_id"))
-                                                val intent = Intent(this, SignInActivity::class.java)
-                                                intent.putExtra("google_user", JsonObj.toString())
-                                                startActivity(intent)
-
+                                                sViewModel.googleJson.put("user_name", user.displayName.toString())
+                                                sViewModel.googleJson.put("user_email", user.email.toString())
+                                                sViewModel.googleJson.put("google_login_id", user.uid)
+                                                Log.e("구글JsonObj", sViewModel.googleJson.optString("google_login_id"))
+                                                val dialog = GoogleSignInDialogFragment()
+                                                dialog.isCancelable = false
+                                                dialog.show(supportFragmentManager, "GoogleSignInDialogFragment")
                                                 // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
 
                                                 val googleSignInToken = account.idToken ?: ""
@@ -148,13 +147,13 @@ class IntroActivity : AppCompatActivity() {
             }
 
             override fun onFailure(httpStatus: Int, message: String) {
-//                val errorCode = NaverIdLoginSDK.getLastErrorCode().code
-//                val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-//                Toast.makeText(
-//                    requireContext(),
-//                    "errorCode: $errorCode, errorDesc: $errorDescription",
-//                    Toast.LENGTH_SHORT
-//                ).show()
+                val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                Toast.makeText(
+                    this@IntroActivity,
+                    "errorCode: $errorCode, errorDesc: $errorDescription",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onSuccess() {
@@ -321,25 +320,6 @@ class IntroActivity : AppCompatActivity() {
         startActivity(intent)
         finishAffinity()
     }
-
-
-//    @SuppressLint("HandlerLeak")
-//    private inner class BannerHandler: Handler(Looper.getMainLooper()) {
-//        override fun handleMessage(msg: Message) {
-//            super.handleMessage(msg)
-//            if (msg.what == 0) {
-//                binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
-//
-//                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
-//                val currentIndex = bannerPosition % viewModel.BannerList.size
-//
-//                // ProgressBar의 값을 계산합니다.
-//                binding.hpvIntro.progress = (currentIndex + 1) * 100 / viewModel.BannerList.size
-//
-//                autoScrollStart(intervalTime)
-//            }
-//        }
-//    }
     private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)

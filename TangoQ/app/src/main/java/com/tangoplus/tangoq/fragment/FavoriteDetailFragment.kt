@@ -243,8 +243,8 @@ class FavoriteDetailFragment : Fragment(){
             var totalTime = 0
             for (i in 0 until currentItem.exercises!!.size) {
                 val exercises = currentItem.exercises!!.get(i)
-                Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
-                totalTime += exercises.videoTime!!.toInt()
+                Log.w("운동각 시간" ,"${exercises.videoDuration!!.toInt()}")
+                totalTime += exercises.videoDuration!!.toInt()
             }
             Log.w("총 시간", "$totalTime")
         }

@@ -62,9 +62,13 @@ class PlayFullScreenActivity : AppCompatActivity() {
                         Log.v("currentWindowIndex", "${simpleExoPlayer!!.currentWindowIndex}")
                         // ------! 모든 영상 종료 시 자동 이동 !------
                         if (simpleExoPlayer!!.currentWindowIndex == url_list.size - 1) {
+
+                            val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
+                            viewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${(simpleExoPlayer?.currentWindowIndex)!! + 1}",56)
                             val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                             intent.putExtra("feedback_finish", viewModel.exerciseLog.value)
                             startActivity(intent)
+                            finish()
                         }else {
                             Handler(Looper.getMainLooper()).postDelayed({
                                 simpleExoPlayer?.next()
@@ -124,12 +128,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
                 // 소요 시간
-                val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
-                viewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${(simpleExoPlayer?.currentWindowIndex)!! + 1}",56)
-                finish()
-                val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-                intent.putExtra("feedback_finish", viewModel.exerciseLog.value)
-                startActivity(intent)
+
 
             }
             setNegativeButton("아니오") { dialog, _ ->

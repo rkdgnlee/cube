@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/clPS"
+        android:id="@+id/main"
         android:icon="@drawable/bnb_main"
         android:title="메인" />
     <item

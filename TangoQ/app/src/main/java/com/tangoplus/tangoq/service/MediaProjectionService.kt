@@ -41,6 +41,7 @@ import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.ReturnCode
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.callback.CaptureCallback
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -55,6 +56,12 @@ class MediaProjectionService : Service() {
     // 화면 녹화
     private var mediaRecorder : MediaRecorder? = null
     private var videoFilePath: String = ""
+
+    private var callback: CaptureCallback? = null
+    fun setCallback(callback: CaptureCallback) {
+        this.callback = callback
+    }
+
     // ------! 서비스 intent 호출에 대한 응답 시작 !------
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForegroundService()
@@ -182,7 +189,7 @@ class MediaProjectionService : Service() {
         fos?.use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
             Toast.makeText(this, "Image saved to gallery", Toast.LENGTH_SHORT).show()
-
+            callback?.onCaptureComplete(filename)
         }
 
     } // ------! 갤러리에 저장 끝 !------
@@ -205,7 +212,7 @@ class MediaProjectionService : Service() {
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setVideoSize(1080, 1920) // Change according to your requirement
             setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            setVideoEncodingBitRate(1024 * 2000)
+            setVideoEncodingBitRate(256 * 500)
             setVideoFrameRate(30)
             setOutputFile(videoFilePath)
             prepare()
@@ -301,7 +308,7 @@ class MediaProjectionService : Service() {
             FileInputStream(videoFilePath).use { inputStream ->
                 inputStream.copyTo(outputStream)
             }
-            Toast.makeText(this, "촬영한 비디오가 갤러리에 저장됐습니다 !", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "촬영한 비디오가 갤러리에 저장됐습니다 !", Toast.LENGTH_LONG).show()
 
         } ?: run {
             Toast.makeText(this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()

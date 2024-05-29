@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.dialog.RecommendBSDialogFragment
 import com.tangoplus.tangoq.listener.OnRVClickListener
 import com.tangoplus.tangoq.R
@@ -39,7 +41,7 @@ class RecommendRVAdapter(var programs: MutableLiveData<MutableList<ProgramVO>>, 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = programs.value!![position]
 
-//        Glide.with(holder.itemView.context)
+//        Glide.with(this)
 //            .load(currentItem.programImageUrl)
 //            .diskCacheStrategy(DiskCacheStrategy.ALL)
 //            .into(holder.ivRcmThumbnail)

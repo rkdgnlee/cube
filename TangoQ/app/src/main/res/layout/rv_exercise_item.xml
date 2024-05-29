@@ -14,8 +14,10 @@
         android:background="@drawable/effect_ibtn_20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textView15"
@@ -74,7 +76,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:maxLength="20"
+        android:maxLength="26"
         android:singleLine="true"
         android:text="증상들 생략.."
         android:textColor="@color/subColor500"
@@ -90,6 +92,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView8"
+        app:layout_constraintEnd_toStartOf="@+id/imageView6"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tvMSymptom"
         app:layout_constraintTop_toBottomOf="@+id/tvMSymptom"
         app:layout_constraintVertical_bias="0.9"
@@ -99,20 +103,20 @@
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvMStage"
-        app:layout_constraintEnd_toStartOf="@+id/tvMStage"
-        app:layout_constraintTop_toTopOf="@+id/tvMStage"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintStart_toEndOf="@+id/cardView8"
+        app:layout_constraintTop_toTopOf="@+id/imageView5"
         app:srcCompat="@drawable/icon_rv_summary_intensity" />
 
     <ImageView
         android:id="@+id/imageView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="76dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvMStage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
-        app:layout_constraintStart_toEndOf="@+id/tvMStage"
         app:layout_constraintTop_toTopOf="@+id/tvMStage"
         app:srcCompat="@drawable/icon_kcal_main_color" />
 
@@ -121,8 +125,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="25"
-        android:textSize="18sp"
+        android:text="1분 20초"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5" />
@@ -131,21 +135,22 @@
         android:id="@+id/tvMStage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="회복"
+        android:layout_marginStart="4dp"
+        android:text="초급"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvMTime"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cardView8"
-        app:layout_constraintTop_toTopOf="@+id/tvMTime" />
+        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
+        app:layout_constraintStart_toEndOf="@+id/imageView6"
+        app:layout_constraintTop_toTopOf="@+id/imageView6" />
 
     <TextView
         android:id="@+id/tvMKcal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:text="48"
-        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView7"
         app:layout_constraintStart_toEndOf="@+id/imageView7"
         app:layout_constraintTop_toTopOf="@+id/imageView7" />
@@ -161,17 +166,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_more" />
-
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="분"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvMTime"
-        app:layout_constraintStart_toEndOf="@+id/tvMTime"
-        app:layout_constraintTop_toTopOf="@+id/tvMTime" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

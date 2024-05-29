@@ -196,9 +196,9 @@ class FavoriteEditFragment : Fragment() {
 
         val descriptionIdList = mutableListOf<Int>()
         for (i in 0 until (viewModel.exerciseUnits.value?.size ?: Log.w(ContentValues.TAG, "unvalid Data"))) {
-            viewModel.exerciseUnits.value?.get(i)?.exerciseDescriptionId?.let {
+            viewModel.exerciseUnits.value?.get(i)?.exerciseId?.let {
                 descriptionIdList.add(
-                    it)
+                    it.toInt())
             }
         }
         Log.w("DscIDList", "${descriptionIdList}")

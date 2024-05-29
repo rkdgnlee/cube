@@ -135,7 +135,7 @@
                 android:id="@+id/textView34"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kcal"
+                android:text="개"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvRcmExerciseKcal"

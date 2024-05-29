@@ -133,6 +133,9 @@ class ProfileEditDialogFragment : DialogFragment() {
 
         binding.btnPEFinish.setOnClickListener {
 
+
+
+
             when (binding.spnPE.selectedItemPosition) {
                 0, 1, 2 -> {
                     viewModel.User.value?.put("user_email", "${binding.etPEEmailId.text}@${binding.spnPE.selectedItem as String}")
@@ -189,6 +192,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                         .load(selectedImageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
                         .into(binding.civPE)
+                    viewModel.ivProfile.value = selectedImageUri
                 } else {
                     Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }

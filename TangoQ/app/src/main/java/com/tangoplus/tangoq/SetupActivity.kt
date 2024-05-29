@@ -29,6 +29,7 @@ class SetupActivity : AppCompatActivity() {
 
         // -----! singletom에 넣고, update 통신 !-----
         val t_userData = Singleton_t_user.getInstance(this).jsonObject?.optJSONObject("data")
+
         val user_mobile = t_userData?.optString("user_mobile")
         Log.v("싱글턴", "${t_userData}")
 

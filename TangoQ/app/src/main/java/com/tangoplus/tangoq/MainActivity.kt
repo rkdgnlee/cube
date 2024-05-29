@@ -42,15 +42,19 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.Stack
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     val mViewModel : MeasureViewModel by viewModels()
     val eViewModel : ExerciseViewModel by viewModels()
     lateinit var requestPermissions : ActivityResultLauncher<Set<String>>
+    val backStack = Stack<Int>()
+    var selectedTabId = R.id.main
     lateinit var  healthConnectClient : HealthConnectClient
     val endTime = LocalDateTime.now()
     val startTime = LocalDateTime.now().minusDays(1)
+
     val PERMISSIONS =
         setOf(
             HealthPermission.getReadPermission(HeartRateRecord::class),
@@ -81,49 +85,45 @@ class MainActivity : AppCompatActivity() {
 
         // -----! 초기 화면 설정 !-----
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flMain, MainFragment())
-                binding.tvCurrentPage.text = "메인"
-                commit()
-            }
+            backStack.push(selectedTabId)
+            setCurrentFragment(selectedTabId)
         }
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
+
         binding.bnbMain.setOnItemSelectedListener {
-            when(it.itemId) {
-                // ---- fragment 경로 지정 시작 ----
-                R.id.clPS -> {
-                    setCurrentFragment(MainFragment())
-                    binding.tvCurrentPage.text = "메인"
-                    setOptiLayout(binding.flMain,  binding.main ,binding.cvCl)
-                }
-                R.id.exercise -> {
-                    setCurrentFragment(ExerciseFragment())
-                    binding.tvCurrentPage.text = "운동"
-                    setOptiLayout(binding.flMain,  binding.main ,binding.cvCl)
-                }
-                R.id.measure -> {
-                    setCurrentFragment(MeasureFragment())
-                    binding.tvCurrentPage.text = "측정"
-                    setOptiLayout(binding.flMain,  binding.main, binding.cvCl)
-                }
-                R.id.favorite -> {
-                    setCurrentFragment(FavoriteFragment())
-                    binding.tvCurrentPage.text = ""
-                    setFullLayout(binding.flMain, binding.main)
-                }
-                R.id.profile -> {
-                    setCurrentFragment(ProfileFragment())
-                    binding.tvCurrentPage.text = "내정보"
-                    setOptiLayout(binding.flMain,  binding.main, binding.cvCl)
+            if (selectedTabId != it.itemId) {
+                selectedTabId = it.itemId
+                if (backStack.isEmpty() || backStack.peek() != it.itemId) {
+                    backStack.push(it.itemId)
                 }
             }
+
+            setTopLayoutFull(binding.flMain, binding.clMain)
+            setCurrentFragment(selectedTabId)
+            binding.tvCurrentPage.text = when (it.itemId) {
+                // ---- fragment 경로 지정 시작 ----
+                R.id.main -> "메인"
+                R.id.exercise -> "운동"
+                R.id.measure -> "측정"
+                R.id.favorite -> ""
+                R.id.profile -> "내정보"
+                else -> ""
+            }
+            if (it.itemId == R.id.favorite) {
+                setTopLayoutFull(binding.flMain, binding.clMain)
+            } else {
+                setOptiLayout(binding.flMain,  binding.clMain ,binding.cvCl)
+            }
             true
+
         }
+
+
         binding.bnbMain.setOnItemReselectedListener {
             when(it.itemId) {
                 // ---- fragment 경로 지정 시작 ----
-                R.id.clPS -> {}
+                R.id.main -> {}
                 R.id.exercise -> {}
                 R.id.measure -> {}
                 R.id.favorite -> {}
@@ -177,14 +177,33 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun setCurrentFragment(fragment: Fragment) =
+    fun setCurrentFragment(itemId: Int) {
+        val fragment = when(itemId) {
+            R.id.main -> MainFragment()
+            R.id.exercise -> ExerciseFragment()
+            R.id.measure -> MeasureFragment()
+            R.id.favorite -> FavoriteFragment()
+            R.id.profile -> ProfileFragment()
+
+            else -> throw IllegalArgumentException("Invalid tab ID")
+        }
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flMain, fragment)
 //            addToBackStack(null)
             commit()
         }
+    }
+    fun setFullLayout(frame: FrameLayout, const : ConstraintLayout) {
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(const)
+        constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
+        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0)
+        constraintSet.applyTo(const)
+        binding.cvCl.visibility = View.GONE
+        binding.bnbMain.visibility = View.GONE
+    }
 
-    fun setFullLayout(frame: FrameLayout, const: ConstraintLayout) {
+    fun setTopLayoutFull(frame: FrameLayout, const: ConstraintLayout) {
         val constraintSet = ConstraintSet()
         constraintSet.clone(const)
         constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
@@ -196,16 +215,18 @@ class MainActivity : AppCompatActivity() {
         val constraintSet = ConstraintSet()
         constraintSet.clone(const)
         constraintSet.connect(frame.id, ConstraintSet.TOP, cardView.id, ConstraintSet.BOTTOM, 0)
+        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, binding.bnbMain.id, ConstraintSet.TOP, 0)
         constraintSet.applyTo(const)
         binding.cvCl.visibility = View.VISIBLE
-
+        binding.bnbMain.visibility = View.VISIBLE
     }
 
-    private val onBackPressedCallback = object: OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
 
-        }
-    }
+//    private val onBackPressedCallback = object: OnBackPressedCallback(true) {
+//        override fun handleOnBackPressed() {
+//
+//        }
+//    }
 
     private suspend fun checkPermissionsAndRun(healthConnectClient: HealthConnectClient) {
         val granted = healthConnectClient.permissionController.getGrantedPermissions()
@@ -307,11 +328,15 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         // ------! 0일 때만 피드백 켜지게 !------
 
-        val feedbackData = intent?.getSerializableExtra("feedback_finish")
-        if (feedbackData != null) {
-            eViewModel.exerciseLog.value = feedbackData as Triple<Int, String, Int>
-            val dialog = FeedbackDialogFragment()
-            dialog.show(supportFragmentManager, "FeedbackDialogFragment")
+        var feedbackData = intent?.getSerializableExtra("feedback_finish")
+        if (feedbackData != null ) {
+            if (eViewModel.isDialogShown.value == false) {
+                eViewModel.exerciseLog.value = feedbackData as Triple<Int, String, Int>
+                val dialog = FeedbackDialogFragment()
+                dialog.show(supportFragmentManager, "FeedbackDialogFragment")
+            } else {
+                eViewModel.isDialogShown.value = true
+            }
         }
     }
 //    fun formattedUpsertionChange(change: UpsertionChange) {
@@ -329,5 +354,17 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 //    }
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (backStack.size > 1) {
+            backStack.pop()
+            val itemId = backStack.peek()
+            binding.bnbMain.selectedItemId = itemId
+            selectedTabId = itemId
+            setCurrentFragment(itemId)
+        } else {
+            super.onBackPressed()
+        }
+    }
 }
 

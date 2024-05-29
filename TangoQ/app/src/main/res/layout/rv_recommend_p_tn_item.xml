@@ -116,18 +116,6 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView104"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="분"
-        android:textColor="@color/black"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvRcPTime"
-        app:layout_constraintStart_toEndOf="@+id/tvRcPTime"
-        app:layout_constraintTop_toTopOf="@+id/tvRcPTime" />
-
-    <TextView
         android:id="@+id/textView105"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

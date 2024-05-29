@@ -88,50 +88,7 @@
                 app:tabInlineLabel="false"
                 app:tabRippleColor="#00FFFFFF"
                 app:tabSelectedTextColor="@color/black"
-                app:tabTextColor="@color/subColor700">
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="0dp"
-                    android:text="목" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="0dp"
-                    android:text="손목" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="어깨" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="팔꿉" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="복부" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="허리" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="무릎" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="발목" />
-            </com.google.android.material.tabs.TabLayout>
+                app:tabTextColor="@color/subColor700"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"
@@ -185,7 +142,7 @@
                     android:id="@+id/cvRELine"
                     android:layout_width="156dp"
                     android:layout_height="4dp"
-                    android:rotation="-10"
+                    android:rotation="180"
                     app:cardBackgroundColor="@color/mainColor"
                     app:cardCornerRadius="4dp"
                     app:cardElevation="0dp"

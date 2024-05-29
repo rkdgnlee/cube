@@ -15,12 +15,13 @@ class ExerciseViewModel: ViewModel() {
 
     // 재생목록 재생 후 피드백 담기
     var exerciseLog = MutableLiveData(Triple(0, "", 0))
+    var isDialogShown = MutableLiveData(false)
 
     // 메인 - 프로그램
     val programList = MutableLiveData(mutableListOf<ProgramVO>())
     init {
         exerciseUnits.value = mutableListOf()
-        favoriteItem.value = FavoriteItemVO(mutableListOf(),0,"","","", "", "",  "", mutableListOf())
+        favoriteItem.value = FavoriteItemVO(mutableListOf(),0,"","","", "", "",  mutableListOf())
         favoriteEditItem.value = JSONObject()
         favoriteList.value = mutableListOf()
         exerciseBasketUnits.value = mutableListOf()
@@ -41,7 +42,7 @@ class ExerciseViewModel: ViewModel() {
         return exerciseBasketUnits.value?.filter { it.quantity >= 1 }?.toMutableList() ?: mutableListOf()
     }
     fun addExerciseBasketUnit(exercise : ExerciseVO, quantity: Int) {
-        val existingExercise = exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == exercise.exerciseDescriptionId.toString() }
+        val existingExercise = exerciseBasketUnits.value?.find { it.exerciseId.toString() == exercise.exerciseId.toString() }
         if (existingExercise == null) {
             exercise.quantity = quantity
             exerciseBasketUnits.value?.add(exercise)
@@ -50,11 +51,11 @@ class ExerciseViewModel: ViewModel() {
 
     // +- 수량 체크
     fun setQuantity(itemId: String, quantity: Int) {
-        exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == itemId }?.quantity = quantity
+        exerciseBasketUnits.value?.find { it.exerciseId.toString() == itemId }?.quantity = quantity
     }
 
     fun getQuantityForItem(itemId: String): Int {
-        val item = exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == itemId }
+        val item = exerciseBasketUnits.value?.find { it.exerciseId.toString() == itemId }
         return item?.quantity?: 0
     }
 

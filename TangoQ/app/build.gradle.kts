@@ -78,7 +78,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics:22.0.0")
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.android.gms:play-services-auth:21.1.1")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("androidx.security:security-crypto:1.0.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.health.connect:connect-client:1.1.0-alpha07")
@@ -99,7 +99,7 @@ dependencies {
     implementation("androidx.room:room-guava:2.6.1")
     implementation("androidx.room:room-testing:2.6.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("com.google.android.gms:play-services-fitness:21.1.0")
+    implementation("com.google.android.gms:play-services-fitness:21.2.0")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
     //noinspection KaptUsageInsteadOfKsp
@@ -119,12 +119,11 @@ dependencies {
     implementation("com.arthenica:ffmpeg-kit-full:4.5")
 
     // 내부 라이브러리
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
+    implementation("androidx.fragment:fragment-ktx:1.7.1")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
 
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")

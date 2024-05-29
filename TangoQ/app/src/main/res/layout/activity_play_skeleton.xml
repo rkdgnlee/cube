@@ -16,6 +16,7 @@
     <!--        app:layout_constraintEnd_toEndOf="parent"-->
     <!--        app:layout_constraintStart_toStartOf="parent"-->
     <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
@@ -56,94 +57,119 @@
     <TextView
         android:id="@+id/tvPSCount"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:background="#00FFFFFF"
-        android:paddingBottom="156dp"
-        android:text="4"
-        android:textColor="@color/white"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvPSExplain" />
-
-    <ImageButton
-        android:id="@+id/ibtnPSBack"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#00FFFFFF"
-        android:padding="8dp"
+        android:text="프레임에 맞춰 서주세요"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon_arrow_left" />
+        app:layout_constraintTop_toBottomOf="@+id/clPSTop" />
 
-    <TextView
-        android:id="@+id/tvPSExplain"
+    <ImageView
+        android:id="@+id/ivPSFrame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="정면을 보고 서주세요"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/view_finder"
+        app:layout_constraintEnd_toEndOf="@+id/view_finder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6"
+        app:srcCompat="@drawable/drawable_measure_0" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPSTop"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:background="@drawable/background_radius_8dp_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pvPS" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnPSStep"
-        android:layout_width="0dp"
+        <ImageButton
+            android:id="@+id/ibtnPSBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="#00FFFFFF"
+            android:padding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icon_arrow_left" />
+
+        <com.shuhart.stepview.StepView
+            android:id="@+id/svPS"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ibtnPSBack"
+            app:sv_animationDuration="250"
+            app:sv_animationType="Circle"
+            app:sv_background="#00FFFFFF"
+            app:sv_doneCircleColor="@color/mainColor"
+            app:sv_doneStepLineColor="@color/subColor100"
+            app:sv_doneStepMarkColor="@color/subColor100"
+            app:sv_doneTextColor="@color/mainColor"
+            app:sv_nextStepCircleColor="@color/subColor100"
+            app:sv_nextStepCircleEnabled="true"
+            app:sv_nextStepLineColor="@color/subColor100"
+            app:sv_nextTextColor="@color/subColor100"
+            app:sv_selectedCircleColor="@color/mainColor"
+            app:sv_selectedStepNumberColor="@color/subColor100"
+            app:sv_selectedTextColor="@color/mainColor"
+            app:sv_stepsNumber="7"
+            app:sv_textPadding="4dp"
+            app:sv_textSize="14sp" />
+
+        <com.tomlecollegue.progressbars.HorizontalProgressView
+            android:id="@+id/pvPS"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="#00FFFFFF"
+            android:orientation="horizontal"
+            android:requiresFadingEdge="horizontal"
+            android:stateListAnimator="@null"
+            app:colorBackground="@color/subColor100"
+            app:colorProgress="@color/mainColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/svPS" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPSBottom"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:background="@drawable/effect_ibtn_12dp"
-        android:backgroundTint="@color/mainColor"
-        android:text="돌아가기"
-        android:textColor="@color/white"
-        android:textSize="18sp"
+        android:background="@drawable/background_radius_8dp_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <com.shuhart.stepview.StepView
-        android:id="@+id/svPS"
-        android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ibtnPSBack"
-        app:sv_animationDuration="250"
-        app:sv_animationType="Circle"
-        app:sv_background="#00FFFFFF"
-        app:sv_doneCircleColor="@color/mainColor"
-        app:sv_doneStepLineColor="@color/subColor100"
-        app:sv_doneStepMarkColor="@color/subColor100"
-        app:sv_doneTextColor="@color/mainColor"
-        app:sv_nextStepCircleColor="@color/subColor100"
-        app:sv_nextStepCircleEnabled="true"
-        app:sv_nextStepLineColor="@color/subColor100"
-        app:sv_nextTextColor="@color/subColor100"
-        app:sv_selectedCircleColor="@color/mainColor"
-        app:sv_selectedStepNumberColor="@color/subColor100"
-        app:sv_selectedTextColor="@color/mainColor"
-        app:sv_stepsNumber="7"
-        app:sv_textPadding="4dp"
-        app:sv_textSize="14sp" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPSStep"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/mainColor"
+            android:padding="16dp"
+            android:stateListAnimator="@null"
+            android:text="측정하기"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.tomlecollegue.progressbars.HorizontalProgressView
-        android:id="@+id/pvPS"
-        android:layout_width="0dp"
-        android:layout_height="4dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="20dp"
-        android:background="@color/white"
-        app:colorBackground="@color/subColor100"
-        app:colorProgress="@color/mainColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/svPS"
-        app:strokeWidth="4dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

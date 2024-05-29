@@ -76,26 +76,26 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
                         favoriteRegDate = pickList.getJSONObject(i).optString("reg_date"),
                         favoriteExplain = pickList.getJSONObject(i).optString("favorite_description"),
                         favoriteTotalCount = (if ((pickList.getJSONObject(i).optString("exercise_description_ids")) == "null") 0 else (pickList.getJSONObject(i).optString("exercise_description_ids").split(",").size)).toString(),
-                        favoriteDisclosure = "",
                         exercises = mutableListOf()
                     ) // 각각의 FavoriteItemVO 만들고,  그후 추가적으로 조회해서 썸네일 넣기.
-                    val exerciseItemBySn = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite),
-                        favoriteItem.favoriteSn.toString()
-                    )
+
+//                    val exerciseItemBySn = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite),
+//                        favoriteItem.favoriteSn.toString()
+//                    )
                     val exerciseUnits = mutableListOf<ExerciseVO>()
-                    if (exerciseItemBySn != null) {
-                        val exercises = exerciseItemBySn.optJSONArray("exercise_detail_data")
-                        if (exercises != null) {
-                            for (i in 0 until exercises.length()) {
-                                exerciseUnits.add(jsonToExerciseVO(exercises.get(i) as JSONObject))
-                            }
-                        }
-                        favoriteItem.exercises = exerciseUnits
-                    }
+//                    if (exerciseItemBySn != null) {
+//                        val exercises = exerciseItemBySn.optJSONArray("exercise_detail_data")
+//                        if (exercises != null) {
+//                            for (i in 0 until exercises.length()) {
+//                                exerciseUnits.add(jsonToExerciseVO(exercises.get(i) as JSONObject))
+//                            }
+//                        }
+//                        favoriteItem.exercises = exerciseUnits
+//                    }
                     var time = 0
-                    for (i in 0 until  favoriteItem.exercises?.size!!) {
-                        time += ( favoriteItem.exercises!![i].videoTime!!.toInt())
-                    }
+//                    for (i in 0 until  favoriteItem.exercises?.size!!) {
+//                        time += ( favoriteItem.exercises!![i].videoDuration!!.toInt())
+//                    }
                     favoriteItem.favoriteTotalTime = (time/60).toString()
                     viewModel.favoriteList.value?.add(favoriteItem) // 썸네일, 시리얼넘버, 이름까지 포함한 dataclass로 만든 favoriteVO형식의 리스트
 //                    if ( favoriteItem.exercises?.size!! >= 4) {
@@ -104,8 +104,6 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
 //                            imgList.add( favoriteItem.exercises!![j].imgUrl.toString())
 //                        }
 //                    }
-
-
                     // 일단 운동은 비워놓고, detail에서 넣음
                 }
             }

@@ -1,8 +1,13 @@
 package com.tangoplus.tangoq.dialog
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -88,11 +93,11 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         cb.setOnCheckedChangeListener { buttonView, isChecked ->
             when (isChecked) {
                 true -> {
-                    iv.visibility = View.VISIBLE
+                    setAnimation(iv, isChecked)
                     viewModel.addPart(Triple(cb.text.toString(), cb.text.toString(), true))
                 }
                 else -> {
-                    iv.visibility = View.GONE
+                    setAnimation(iv, isChecked)
                     viewModel.deletePart(Triple(cb.text.toString(), cb.text.toString(), false))
                 }
             }
@@ -126,4 +131,22 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
             viewModel.deletePart(part)
         }
     }
+    private fun setAnimation(view: View, onOff: Boolean) {
+        if (onOff) view.visibility = View.VISIBLE
+        val animator = ObjectAnimator.ofFloat(view, "alpha", if (onOff) 0f else 1f, if (onOff) 1f else 0f)
+        animator.duration = 300
+        animator.addListener(object: AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                super.onAnimationEnd(animation)
+                view.visibility = if (onOff) View.VISIBLE else View.INVISIBLE
+            }
+
+            override fun onAnimationStart(animation: Animator) {
+                super.onAnimationStart(animation)
+
+            }
+        })
+        animator.start()
+    }
+
 }

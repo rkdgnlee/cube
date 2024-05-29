@@ -73,7 +73,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 }
                 // ------! 기울기 라인 적기 !------
                 PoseLandmarker.POSE_LANDMARKS.forEach {
-                    if (it!!.start() !in 1..6 && it.start() !in 9..10 && it.start() !in 17..18 && it.start() !in 21..22 && it.start() !in 31..32) {
+                    if (it!!.start() !in 1..10 && it.start() !in 17..22 && it.start() !in 29..32) {
                         val x1 = poseLandmarkerResult.landmarks().get(0).get(it.start()).x() * imageWidth * scaleFactor
                         val y1 = poseLandmarkerResult.landmarks().get(0).get(it.start()).y() * imageHeight * scaleFactor
                         val x2 = poseLandmarkerResult.landmarks().get(0).get(it.end()).x() * imageWidth * scaleFactor

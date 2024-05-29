@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -34,6 +35,8 @@ import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
+import com.tangoplus.tangoq.fragment.ReportFragment
+import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import java.lang.IllegalArgumentException
 
 class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
@@ -75,7 +78,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                 when (currentItem) {
                     "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
                     "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
-                    "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm)
+                    "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
                     "로그아웃" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
                     "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
                 }
@@ -119,7 +122,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             fragment.startActivity(intent)
                         }
                         "앱 버전" -> {
-
+                            Toast.makeText(fragment.requireContext(), "현재 v1.0 입니다.", Toast.LENGTH_SHORT).show()
                         }
                         "개인정보 처리방침" -> {
                             val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
@@ -130,8 +133,6 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
                         }
                         "로그아웃" -> {
-                            holder.ivPf.setImageResource(R.drawable.icon_logout)
-
                             if (Firebase.auth.currentUser != null) {
                                 Firebase.auth.signOut()
                                 Log.d("로그아웃", "Firebase sign out successful")
@@ -151,13 +152,21 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             holder.itemView.context.startActivity(intent)
                             fragment.requireActivity().finishAffinity()
                         }
+                        "회원탈퇴" -> {
+                            fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                                replace(R.id.flMain, WithdrawalFragment())
+                                addToBackStack(null)
+                                commit()
+                            }
+                        }
                     }
                 }
             } // -----! 다크모드 시작 !-----
             VIEW_TYPE_SPECIAL_ITEM -> {
                 val myViewHolder = holder as SpecialItemViewHolder
                 when (currentItem) {
-                    "다크모드" -> {
+                    "다크 모드" -> {
                         val sharedPref = fragment.requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
                         val darkMode = sharedPref?.getBoolean("darkMode", false)
                         if (darkMode != null) {

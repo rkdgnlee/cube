@@ -1,10 +1,12 @@
 package com.tangoplus.tangoq.data
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.json.JSONObject
 
 class SignInViewModel: ViewModel() {
+    // 회원가입에 담는 user
     val User = MutableLiveData(JSONObject())
     // 로그인
     var currentidCon = MutableLiveData(false)
@@ -12,6 +14,13 @@ class SignInViewModel: ViewModel() {
     var idPwCondition = MutableLiveData(false)
     var id = ""
     var pw = ""
+
+    val ivProfile = MutableLiveData<Uri>()
+
+    // 구글 로그인에 담을 json
+    val googleJson = JSONObject()
+
+
     init {
         User.value = JSONObject()
         currentidCon.observeForever{ updateIdPwCondition() }

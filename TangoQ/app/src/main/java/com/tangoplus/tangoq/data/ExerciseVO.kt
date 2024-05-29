@@ -6,24 +6,27 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ExerciseVO(
-    var imgUrl: String? = "",
+    var exerciseId : String? = "",
     var exerciseName: String? = "",
-    var exerciseDescription: String? = "",
-    var exerciseDescriptionId: Int = 0,
+    var exerciseTypeId: String? = "",
+    var exerciseTypeName: String? = "",
+    var exerciseCategoryId: String? = "",
+    var exerciseCategoryName: String? = "",
     var relatedJoint: String? = "",
     var relatedMuscle: String? = "",
     var relatedSymptom: String? = "",
     var exerciseStage: String? = "",
-    var exerciseFequency: String? = "",
+    var exerciseFrequency: String? = "",
     var exerciseIntensity: String? = "",
     var exerciseInitialPosture: String? = "",
     var exerciseMethod: String? = "",
     var exerciseCaution: String? = "",
-    var videoAlternativeName: String? = "",
+    var videoActualName: String? = "",
     var videoFilepath: String? = "",
-    var videoTime: String? = "",
-    var exerciseTypeId: String? = "",
-    var exerciseTypeName: String? = "",
+    var videoDuration: String? = "",
+    var imageFilePathReal: String? = "",
+
+
     var quantity: Int = 0
 ) : Parcelable {
 
@@ -32,7 +35,6 @@ data class ExerciseVO(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -47,30 +49,36 @@ data class ExerciseVO(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+
         parcel.readInt()
     )
 
     override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(imgUrl)
+        dest.writeString(exerciseId)
         dest.writeString(exerciseName)
-        dest.writeString(exerciseDescription)
-        dest.writeInt(exerciseDescriptionId)
+        dest.writeString(exerciseTypeId)
+        dest.writeString(exerciseTypeName)
+        dest.writeString(exerciseCategoryId)
+        dest.writeString(exerciseCategoryName)
         dest.writeString(relatedJoint)
         dest.writeString(relatedMuscle)
         dest.writeString(relatedSymptom)
         dest.writeString(exerciseStage)
-        dest.writeString(exerciseFequency)
+        dest.writeString(exerciseFrequency)
         dest.writeString(exerciseIntensity)
         dest.writeString(exerciseInitialPosture)
         dest.writeString(exerciseMethod)
         dest.writeString(exerciseCaution)
-        dest.writeString(videoAlternativeName)
+        dest.writeString(videoActualName)
         dest.writeString(videoFilepath)
-        dest.writeString(videoTime)
-        dest.writeString(exerciseTypeId)
-        dest.writeString(exerciseTypeName)
+        dest.writeString(videoDuration)
+
+        dest.writeString(imageFilePathReal)
+
         dest.writeInt(quantity)
 
     }

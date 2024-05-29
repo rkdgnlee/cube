@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,6 +25,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
+import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileBinding
@@ -33,7 +35,7 @@ import java.util.TimeZone
 
 class ProfileFragment : Fragment(), BooleanClickListener {
     lateinit var binding : FragmentProfileBinding
-
+    val viewModel : SignInViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,6 +67,17 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     .into(binding.civPf)
             }
         }
+        // ------! 프로필 사진 관찰 시작 !------
+        viewModel.ivProfile.observe(viewLifecycleOwner) {
+            if (it != null) {
+                Glide.with(this)
+                    .load(it)
+                    .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                    .into(binding.civPf)
+            }
+        } // ------! 프로필 사진 관찰 끝 !------
+
+
         val profilemenulist = mutableListOf(
             "내정보",
             "다크 모드",

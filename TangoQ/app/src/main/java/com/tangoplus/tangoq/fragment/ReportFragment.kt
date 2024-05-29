@@ -1,6 +1,8 @@
 package com.tangoplus.tangoq.fragment
 
+import android.annotation.SuppressLint
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -23,17 +25,22 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ReportRVAdapter
 import com.tangoplus.tangoq.databinding.FragmentReportBinding
 import com.tangoplus.tangoq.listener.OnReportClickListener
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
+import org.json.JSONObject
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 import kotlin.math.exp
 
 class ReportFragment : Fragment(), OnReportClickListener {
     lateinit var binding : FragmentReportBinding
     var currentMonth = YearMonth.now()
-    var selectedDate: LocalDate? = null
+    var selectedDate = LocalDate.now()
+    private lateinit var singletonInstance: Singleton_t_measure
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,31 +49,34 @@ class ReportFragment : Fragment(), OnReportClickListener {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        singletonInstance = Singleton_t_measure.getInstance(requireContext())
+
 
         // ------! calendar 시작 !------
-        binding.monthText.text = "${YearMonth.now().year}월 ${YearMonth.now().month}"
+        binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
         binding.cvR.setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
         binding.cvR.scrollToMonth(currentMonth)
         binding.cvR.monthScrollListener = { month ->
             currentMonth = month.yearMonth
-            binding.monthText.text = "${currentMonth.year}년 ${currentMonth.month}"
+            binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
         }
         binding.nextMonthButton.setOnClickListener {
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
-                binding.monthText.text = "${currentMonth.year}년 ${currentMonth.month}"
+                binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
                 binding.cvR.scrollToMonth(currentMonth)
             }
-
         }
+
         binding.previousMonthButton.setOnClickListener {
             if (currentMonth == YearMonth.now().minusMonths(24)) {
 
             } else {
                 currentMonth = currentMonth.minusMonths(1)
-                binding.monthText.text = "${currentMonth.year}년 ${currentMonth.month}"
+                binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
                 binding.cvR.scrollToMonth(currentMonth)
             }
         }
@@ -82,7 +92,6 @@ class ReportFragment : Fragment(), OnReportClickListener {
                 container.tvTUR.text = "목"
                 container.tvFRI.text = "금"
                 container.tvSAT.text = "토"
-
             }
         }
 
@@ -95,28 +104,26 @@ class ReportFragment : Fragment(), OnReportClickListener {
                 // ------! 선택 날짜 !------
                 if (day.date == selectedDate) {
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.mainColor))
-
+                } else if (day.date == LocalDate.now()) {
+                    if (day.date != selectedDate) {
+                        container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor700))
+                    }
+                    container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.black))
                 } else {
                     // ------! 해당 월 이외 색상 처리 !------
                     if (day.position == DayPosition.MonthDate) {
-                        container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor800))
+                        container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor700))
                     } else {
                         container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor200))
                     }
-
                 }
-                binding.ibtnRDiseasePredict.setOnClickListener{
+                binding.vRDiseasePredict.setOnClickListener{
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                         replace(R.id.flMain, ReportDiseaseFragment())
                         commit()
                     }
                 }
-
-
-
-
-
                 container.date.setOnClickListener {
                     // 선택된 날짜를 업데이트하고 UI를 갱신합니다.
                     val oldDate = selectedDate
@@ -133,14 +140,16 @@ class ReportFragment : Fragment(), OnReportClickListener {
         } // ------! calendar 끝 !------
 
 
-        val parts = mutableListOf<String>() // TODO 현재는 String, report에 들어가는 형식에 맞게 dataclass 만들어야 함.
-        parts.add("정면 자세")
-        parts.add("후면 자세")
-        parts.add("오버헤드 스쿼트")
-        parts.add("팔꿉 측정 자세")
-        parts.add("의자 후면")
-        parts.add("오른쪽 측면 자세")
-        parts.add("왼쪽 측면 자세")
+        val parts = mutableListOf<Triple<String, String, JSONObject>>() // TODO Triple<분류, 파일명, 데이터>
+
+        parts.add(Triple("정면 자세", singletonInstance.jsonObject?.optString("fileName"),singletonInstance.jsonObject!!.optJSONObject("0")) as Triple<String, String, JSONObject>)
+        parts.add(Triple("팔꿉 측정 자세", singletonInstance.jsonObject?.optString("fileName"), singletonInstance.jsonObject!!.optJSONObject("1")) as Triple<String, String, JSONObject>)
+        parts.add(Triple("오버헤드 스쿼트", singletonInstance.jsonObject?.optString("fileName"),singletonInstance.jsonObject!!.optJSONObject("2")) as Triple<String, String, JSONObject>)
+        parts.add(Triple("왼쪽 측면 자세",singletonInstance.jsonObject?.optString("fileName") ,singletonInstance.jsonObject!!.optJSONObject("3")) as Triple<String, String, JSONObject>)
+        parts.add(Triple("오른쪽 측면 자세", singletonInstance.jsonObject?.optString("fileName"),singletonInstance.jsonObject!!.optJSONObject("4")) as Triple<String, String, JSONObject>)
+        parts.add(Triple("후면 자세",singletonInstance.jsonObject?.optString("fileName") ,singletonInstance.jsonObject!!.optJSONObject("5")) as Triple<String, String, JSONObject>)
+        parts.add(Triple("의자 후면",singletonInstance.jsonObject?.optString("fileName") ,singletonInstance.jsonObject!!.optJSONObject("6")) as Triple<String, String, JSONObject>)
+
         val adapter = ReportRVAdapter(parts, this@ReportFragment, this@ReportFragment, binding.nsvR)
         binding.rvR.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -149,41 +158,25 @@ class ReportFragment : Fragment(), OnReportClickListener {
 
 
     }
+    private fun scrollToView(view: View) {
+        val location = IntArray(2)
+        view.getLocationInWindow(location)
+        val viewTop = location[1]
 
-    override fun onReportClick(currentItem: Int, nsv: NestedScrollView, mcv: MaterialCardView) {
-//        nsv.post {
-//            val layoutManager = binding.rvR.layoutManager
-//            val expandedView = layoutManager?.findViewByPosition(currentItem)
-//
-//            if (expandedView != null) {
-//                val rect = Rect()
-//                expandedView.getGlobalVisibleRect(rect)
-//
-//                if (!expandedView.getLocalVisibleRect(rect)) {
-//                    nsv.smoothScrollTo(0, expandedView.bottom)
-//                }
-//            }
-//        }
-        val layoutManager = binding.rvR.layoutManager
-        val expandedView = layoutManager?.findViewByPosition(currentItem)
+        val scrollViewLocation = IntArray(2)
+        binding.nsvR.getLocationInWindow(scrollViewLocation)
+        val scrollViewTop = scrollViewLocation[1]
 
-        val rect = Rect()
-        expandedView?.getGlobalVisibleRect(rect)
-        if (!expandedView?.getLocalVisibleRect(rect)!!) {
-            nsv.post {
-                nsv.smoothScrollTo(0, expandedView.bottom)
-            }
-        }
+        val scrollY = binding.nsvR.scrollY
+        val scrollTo = scrollY + viewTop - scrollViewTop
 
-//        val expandedView = mcv
-//        Log.v("아이템 클릭", "${currentItem}, ${mcv.id}")
-//        val rect = Rect()
-//        expandedView.getGlobalVisibleRect(rect)
-//
-//        if (!expandedView.getLocalVisibleRect(rect)) {
-//            nsv.post {
-//                nsv.smoothScrollTo(0, expandedView.bottom)
-//            }
-//        }
+        binding.nsvR.smoothScrollTo(0, scrollTo)
+    }
+    override fun onReportScroll(view: View) {
+        scrollToView(view)
+    }
+
+    fun getCurrentMonthInKorean(month: YearMonth): String {
+        return month.month.getDisplayName(TextStyle.FULL, Locale("ko"))
     }
 }

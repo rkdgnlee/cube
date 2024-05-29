@@ -9,12 +9,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentPoseViewDialogBinding
 
 
 class PoseViewDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPoseViewDialogBinding
+
+    companion object {
+        private const val ARG_IMAGE_PATH = "image_path"
+
+        fun newInstance(imagePath: String): PoseViewDialogFragment {
+            val args = Bundle()
+            args.putString(ARG_IMAGE_PATH, imagePath)
+            val fragment = PoseViewDialogFragment()
+            fragment.arguments = args
+            return fragment
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,6 +42,16 @@ class PoseViewDialogFragment : DialogFragment() {
         binding.ibtnPVExit.setOnClickListener {
             dismiss()
         }
+        val imagePath = arguments?.getString(ARG_IMAGE_PATH)
+        if (imagePath != null) {
+            Glide.with(this)
+                .load(imagePath)
+                .into(binding.ivPVPose)
+        }
+
+
+
+
     }
 
     override fun onResume() {

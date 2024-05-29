@@ -62,7 +62,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                 for (element in filterList) {
                     recommendlist.add(element)
                     recommendlist.map { exercise ->
-                        exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                        exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
                     }
                     linkAdapter(recommendlist)
                 }
@@ -72,7 +72,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                         when (tab?.position) {
                             0 -> {
                                 recommendlist.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
                                 }
                                 linkAdapter(recommendlist)
                             }
@@ -80,7 +80,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                                 val keywords = listOf("목", "어깨", "팔꿉", "손목", "몸통", "복부" )
                                 val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
                                 filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
                                 }
                                 Log.w(ContentValues.TAG, "topBodyList: ${filteredList[0]}")
                                 linkAdapter(filteredList)
@@ -89,7 +89,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                                 val keywords = listOf("엉덩", "무릎", "발목" )
                                 val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
                                 filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
                                 }
                                 linkAdapter(filteredList)
                             }
@@ -98,7 +98,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                                 val keywords = listOf("전신", "유산소", "코어", "몸통" )
                                 val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
                                 filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
                                 }
                                 linkAdapter(filteredList)
                             }
@@ -159,11 +159,11 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
 
 
     override fun onBasketItemQuantityChanged(descriptionId: String, newQuantity: Int) {
-        val exercise = viewModel.allExercises.value?.find { it.exerciseDescriptionId.toString() == descriptionId }
+        val exercise = viewModel.allExercises.value?.find { it.exerciseId.toString() == descriptionId }
         if (exercise != null) {
             viewModel.addExerciseBasketUnit(exercise, newQuantity)
         }
         viewModel.setQuantity(descriptionId, newQuantity)
-        Log.w("장바구니viewmodel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == descriptionId }?.exerciseDescriptionId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == descriptionId }?.quantity}")
+        Log.w("장바구니viewmodel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.exerciseId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.quantity}")
     }
 }

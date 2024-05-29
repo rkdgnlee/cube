@@ -32,32 +32,35 @@ object NetworkExerciseService {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
                 Log.e("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
-                val jsonObj__ = responseBody?.let { JSONObject(it) }
 
-                jsonObj__?.optJSONArray("data")
                 val exerciseDataList = mutableListOf<ExerciseVO>()
-                val jsonArr = jsonObj__?.optJSONArray("data")
+                val jsonArr = responseBody?.let { JSONObject(it) }?.optJSONArray("data")
+                Log.v("fetchExerciseJson", "$jsonArr")
                 if (jsonArr != null) {
                     for (i in 0 until jsonArr.length()) {
                         val jsonObject = jsonArr.getJSONObject(i)
                         val exerciseData = ExerciseVO(
+                            exerciseId = jsonObject.optString("exercise_id"),
                             exerciseName = jsonObject.optString("exercise_name"),
-                            exerciseDescription = jsonObject.getString("exercise_description"),
-                            exerciseDescriptionId = jsonObject.getInt("exercise_description_id"),
+                            exerciseTypeId = jsonObject.getString("exercise_type_id"),
+                            exerciseTypeName = jsonObject.getString("exercise_type_name"),
+                            exerciseCategoryId = jsonObject.getString("exercise_category_id"),
+                            exerciseCategoryName = jsonObject.getString("exercise_category_name"),
                             relatedJoint = jsonObject.getString("related_joint"),
                             relatedMuscle = jsonObject.getString("related_muscle"),
                             relatedSymptom = jsonObject.getString("related_symptom"),
                             exerciseStage = jsonObject.getString("exercise_stage"),
-                            exerciseFequency = jsonObject.getString("exercise_frequency"),
+                            exerciseFrequency = jsonObject.getString("exercise_frequency"),
                             exerciseIntensity = jsonObject.getString("exercise_intensity"),
                             exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
                             exerciseMethod = jsonObject.getString("exercise_method"),
                             exerciseCaution = jsonObject.getString("exercise_caution"),
-                            videoAlternativeName = jsonObject.getString("video_alternative_name"),
+                            videoActualName = jsonObject.getString("video_actual_name"),
                             videoFilepath = jsonObject.getString("video_filepath"),
-                            videoTime = jsonObject.getString("video_time"),
-                            exerciseTypeId = jsonObject.getString("exercise_type_id"),
-                            exerciseTypeName = jsonObject.getString("exercise_type_name")
+                            videoDuration = (jsonObject.optString("video_duration").toIntOrNull() ?: 0).toString(),
+                            imageFilePathReal = jsonObject.getString("image_filepath_real"),
+
+
                         )
                         exerciseDataList.add(exerciseData)
                     }
@@ -84,23 +87,26 @@ object NetworkExerciseService {
                     for (i in 0 until jsonArr.length()) {
                         val jsonObject = jsonArr.getJSONObject(i)
                         val exerciseData = ExerciseVO(
+                            exerciseId = jsonObject.optString("exercise_id"),
                             exerciseName = jsonObject.optString("exercise_name"),
-                            exerciseDescription = jsonObject.getString("exercise_description"),
-                            exerciseDescriptionId = jsonObject.getInt("exercise_description_id"),
+                            exerciseTypeId = jsonObject.getString("exercise_type_id"),
+                            exerciseTypeName = jsonObject.getString("exercise_type_name"),
+                            exerciseCategoryId = jsonObject.getString("exercise_category_id"),
+                            exerciseCategoryName = jsonObject.getString("exercise_category_name"),
                             relatedJoint = jsonObject.getString("related_joint"),
                             relatedMuscle = jsonObject.getString("related_muscle"),
                             relatedSymptom = jsonObject.getString("related_symptom"),
                             exerciseStage = jsonObject.getString("exercise_stage"),
-                            exerciseFequency = jsonObject.getString("exercise_frequency"),
+                            exerciseFrequency = jsonObject.getString("exercise_frequency"),
                             exerciseIntensity = jsonObject.getString("exercise_intensity"),
                             exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
                             exerciseMethod = jsonObject.getString("exercise_method"),
                             exerciseCaution = jsonObject.getString("exercise_caution"),
-                            videoAlternativeName = jsonObject.getString("video_alternative_name"),
+                            videoActualName = jsonObject.getString("video_actual_name"),
                             videoFilepath = jsonObject.getString("video_filepath"),
-                            videoTime = jsonObject.getString("video_time"),
-                            exerciseTypeId = jsonObject.getString("exercise_type_id"),
-                            exerciseTypeName = jsonObject.getString("exercise_type_name")
+                            videoDuration = (jsonObject.optString("video_duration").toIntOrNull() ?: 0).toString(),
+                            imageFilePathReal = jsonObject.getString("image_alternative_name"),
+
                         )
                         exerciseDataList.add(exerciseData)
                     }
@@ -208,25 +214,26 @@ object NetworkExerciseService {
         // JSONObject에서 필요한 데이터를 추출하고 ExerciseVO 객체를 생성합니다.
         // 이 예제에서는 모든 필드가 String 타입이라고 가정합니다.
         return ExerciseVO(
-            imgUrl = json.optString("imgUrl"),
+            exerciseId = json.optString("exercise_id"),
             exerciseName = json.optString("exercise_name"),
-            exerciseDescription = json.optString("exercise_description"),
-            exerciseDescriptionId = json.optInt("exercise_description_id"),
-            relatedJoint = json.optString("related_joint"),
-            relatedMuscle = json.optString("related_muscle"),
-            relatedSymptom = json.optString("related_symptom"),
-            exerciseStage = json.optString("exercise_stage"),
-            exerciseFequency = json.optString("exercise_frequency"),
-            exerciseIntensity = json.optString("exercise_intensity"),
-            exerciseInitialPosture = json.optString("exercise_initial_posture"),
-            exerciseMethod = json.optString("exercise_method"),
-            exerciseCaution = json.optString("exercise_caution"),
-            videoAlternativeName = json.optString("video_alternative_name"),
-            videoFilepath = json.optString("video_filepath"),
-            videoTime = json.optString("video_time"),
-            exerciseTypeId = json.optString("exercise_type_id"),
-            exerciseTypeName = json.optString("exercise_type_name"),
-            quantity = json.optInt("quantity")
+            exerciseTypeId = json.getString("exercise_type_id"),
+            exerciseTypeName = json.getString("exercise_type_name"),
+            exerciseCategoryId = json.getString("exercise_category_id"),
+            exerciseCategoryName = json.getString("exercise_category_name"),
+            relatedJoint = json.getString("related_joint"),
+            relatedMuscle = json.getString("related_muscle"),
+            relatedSymptom = json.getString("related_symptom"),
+            exerciseStage = json.getString("exercise_stage"),
+            exerciseFrequency = json.getString("exercise_frequency"),
+            exerciseIntensity = json.getString("exercise_intensity"),
+            exerciseInitialPosture = json.getString("exercise_initial_posture"),
+            exerciseMethod = json.getString("exercise_method"),
+            exerciseCaution = json.getString("exercise_caution"),
+            videoActualName = json.getString("video_actual_name"),
+            videoFilepath = json.getString("video_filepath"),
+            videoDuration = (json.optString("video_duration").toIntOrNull() ?: 0).toString(),
+            imageFilePathReal = json.getString("image_alternative_name"),
+
         )
     }
 

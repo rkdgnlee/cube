@@ -125,14 +125,16 @@ class SignInActivity : AppCompatActivity() {
         // -----! 인증 문자 확인 시작 !-----
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {}
-            override fun onVerificationFailed(p0: FirebaseException) {}
+            override fun onVerificationFailed(p0: FirebaseException) {
+                Log.e("failedAuth", "$p0")
+            }
             @RequiresApi(Build.VERSION_CODES.P)
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 this@SignInActivity.verificationId = verificationId
                 Log.v("onCodeSent", "메시지 발송 성공")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
-                Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clPS), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSI), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 binding.btnAuthConfirm.isEnabled = true
             }
         }
@@ -392,7 +394,7 @@ class SignInActivity : AppCompatActivity() {
                         binding.etName.requestFocus()
                         binding.svSI.go(1, true)
                         // ------! 번호 인증 완료 !------
-                        val snackbar = Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clPS), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
+                        val snackbar = Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSI), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
                         snackbar.setAction("확인", object: View.OnClickListener {
                             override fun onClick(v: View?) {
                                 snackbar.dismiss()

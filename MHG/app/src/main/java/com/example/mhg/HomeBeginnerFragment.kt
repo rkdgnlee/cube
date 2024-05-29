@@ -25,7 +25,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.mhg.Adapter.HomeBannerRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeHorizontalRecyclerViewAdapter
 import com.example.mhg.Adapter.HomeVerticalRecyclerViewAdapter
-
 import com.example.mhg.VO.ExerciseVO
 import com.example.mhg.VO.ExerciseViewModel
 import com.example.mhg.VO.HomeBannerItem
@@ -141,11 +140,7 @@ class HomeBeginnerFragment : Fragment() {
 
                 // ----- autoCompleteTextView를 통해 sort 하는 코드 시작 -----
                 val sort_list = listOf("인기순", "조회순", "최신순", "오래된순")
-                val adapter3 = ArrayAdapter(
-                    requireContext(),
-                    R.layout.simple_dropdown_item_1line,
-                    sort_list
-                )
+                val adapter3 = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, sort_list)
                 binding.actHomeBeginner.setAdapter(adapter3)
                 binding.actHomeBeginner.setText(sort_list.firstOrNull(), false)
 

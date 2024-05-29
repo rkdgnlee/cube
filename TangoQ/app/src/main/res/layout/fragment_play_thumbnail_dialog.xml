@@ -31,7 +31,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
             android:fillViewport="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,7 +44,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="어깨 관절 운동 프로그램(2)"
                     android:textColor="@color/black"
@@ -52,7 +51,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout4"
@@ -69,7 +68,7 @@
                         android:id="@+id/textView59"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="분"
+                        android:text="초"
                         android:textColor="@color/subColor700"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvPlayExerciseTime"
@@ -327,6 +326,7 @@
                     android:id="@+id/rvPTn"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintBottom_toTopOf="@+id/frameLayout3"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -375,7 +375,7 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/materialDivider4"
                     android:layout_width="match_parent"
-                    android:layout_height="4dp"
+                    android:layout_height="2dp"
                     android:layout_marginTop="8dp"
 
                     app:dividerColor="@color/subColor200"

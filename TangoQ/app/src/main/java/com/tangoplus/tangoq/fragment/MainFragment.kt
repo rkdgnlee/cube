@@ -132,6 +132,7 @@ class MainFragment : Fragment(), OnRVClickListener {
 
         // ------! db에서 받아서 뿌려주기 시작 !------
         lifecycleScope.launch {
+            // TODO 프로그램을 불러오거나 전체에서 필터링해서 만들어야 함
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
 //            Log.v("MainF>RV", "$responseArrayList")
             try {
@@ -165,9 +166,11 @@ class MainFragment : Fragment(), OnRVClickListener {
                         programStage = exercises.first().exerciseStage,
                         exercises = exercises
                     )
+
                     programVO.programTime = programVO.exercises?.sumOf {
-                        ((it.videoTime?.toInt())!! / 60)
+                        ((it.videoDuration?.toInt())!! / 60)
                     }.toString()
+
                     programVO.programCount = programVO.exercises?.size.toString()
                     if (viewModel.programList.value?.any { it.programName == programVO.programName } == false ) viewModel.programList.value?.add(programVO)
 
@@ -218,12 +221,12 @@ class MainFragment : Fragment(), OnRVClickListener {
                                 setRVAdapter(verticalDataList)
                             }
                             1 -> {
-                                val sortDataList = verticalDataList.sortedBy { it.videoTime }.toMutableList()
+                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.toMutableList()
                                 setRVAdapter(sortDataList)
                                 Log.v("정렬된 리스트", "$sortDataList")
                             }
                             2 -> {
-                                val sortDataList = verticalDataList.sortedBy { it.videoTime }.reversed().toMutableList()
+                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.reversed().toMutableList()
                                 setRVAdapter(sortDataList)
                                 Log.v("정렬된 리스트", "$sortDataList")
                             }
