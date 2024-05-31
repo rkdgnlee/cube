@@ -10,9 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.tabs.TabLayout
 import com.google.mediapipe.util.proto.RenderDataProto.RenderAnnotation.Line
@@ -49,10 +53,27 @@ class ReportFragment : Fragment(), OnReportClickListener {
         return binding.root
     }
 
+    @OptIn(ExperimentalBadgeUtils::class)
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         singletonInstance = Singleton_t_measure.getInstance(requireContext())
+
+        // ------! 분석 뱃지 시작 !------
+        BadgeDrawable.create(requireContext()).apply {
+
+            backgroundColor = ContextCompat.getColor(requireContext(), R.color.deleteColor)
+//            badgeTextColor = ContextCompat.getColor(requireContext(), R.color.textColor)
+            badgeGravity = BadgeDrawable.TOP_START
+        }.let {
+            binding.tvRBadge.foreground = it
+            binding.flR.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                BadgeUtils.attachBadgeDrawable(it, binding.tvRBadge, binding.flR)
+            }
+        }
+
+            // ------! 분석 뱃지 끝 !------
+
 
 
         // ------! calendar 시작 !------

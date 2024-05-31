@@ -311,9 +311,9 @@ companion object {
          * 1. isLooping true -> repeatCount확인 -> count에 맞게 isCapture및 isRecord 선택
          * 2. mCountdown.start() -> 카운트 다운이 종료될 때 isCapture, isRecording에 따라 service 함수 실행 */
         binding.ibtnPSBack.setOnClickListener {
-            val intentBack = Intent(this, MainActivity::class.java)
-            intentBack.putExtra("finishMeasure", true)
-            startActivity(intentBack)
+//            val intentBack = Intent(this, MainActivity::class.java)
+//            intentBack.putExtra("finishMeasure", true)
+//            startActivity(intentBack)
             finish()
         }
         // ------! STEP CIRCLE !------
@@ -353,9 +353,11 @@ companion object {
     // ------! 촬영 시 view 가리고 보이기 !-----
     private fun hideViews(delay : Long) {
         binding.clPSTop.visibility = View.INVISIBLE
+        binding.ivPSFrame.visibility = View.INVISIBLE
         binding.clPSBottom.visibility = View.INVISIBLE
 
         setAnimation(binding.clPSTop, 700, delay, true) {}
+        setAnimation(binding.ivPSFrame, 700, delay, true) {}
         setAnimation(binding.clPSBottom, 700, delay, true) {}
 
     }
@@ -677,8 +679,8 @@ companion object {
                     val sideRightShoulderDistance : Double = abs(shoulderData[1].first.minus(ankleXAxis))
                     val sideRightWristDistance : Double = abs(wristData[1].first.minus(ankleXAxis))
 //                val sideRightIndexDistance : Double = abs(indexData[1].first.minus(ankleXAxis))
-                    jo.put("result_static_side_left_horizontal_distance_shoulder", sideRightShoulderDistance)
-                    jo.put("result_static_side_left_horizontal_distance_hip", sideRightWristDistance)
+                    jo.put("result_static_side_right_horizontal_distance_shoulder", sideRightShoulderDistance)
+                    jo.put("result_static_side_right_horizontal_distance_hip", sideRightWristDistance)
 
                     // ------! 측면 기울기  - 오른쪽 !------
                     val sideRightBicepsLean : Double = calculateSlope(hipData[1].first, hipData[1].second, kneeData[1].first, kneeData[1].second)

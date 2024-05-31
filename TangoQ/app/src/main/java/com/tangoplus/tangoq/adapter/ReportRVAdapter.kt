@@ -154,7 +154,7 @@ class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject
             val balloon = Balloon.Builder(fragment.requireContext())
                 .setWidthRatio(0.6f)
                 .setHeight(BalloonSizeSpec.WRAP)
-                .setText("수평에 가까울 수록\n바른 자세입니다.")
+                .setText("수평·수직에 가까울 수록\n바른 자세입니다.")
                 .setTextColorResource(R.color.black)
                 .setTextSize(15f)
                 .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)

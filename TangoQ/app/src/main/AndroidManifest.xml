@@ -90,7 +90,9 @@
         </activity>
         <activity
             android:name=".AlarmActivity"
-            android:exported="true" />
+            android:exported="true" >
+
+        </activity>
 
         <activity
             android:name=".PlaySkeletonActivity"
@@ -112,6 +114,7 @@
         <activity
             android:name=".SignInActivity"
             android:exported="true" />
+
         <service
             android:name=".service.MediaProjectionService"
             android:foregroundServiceType="mediaProjection"
@@ -124,6 +127,14 @@
             android:enabled="true"
             android:exported="false"
             android:permission="TODO" />
+        <service
+            android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <provider
             android:authorities="com.tangoplus.tangoq.provider"
             android:name="androidx.core.content.FileProvider"
@@ -133,15 +144,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-        <service
-            android:name=".service.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_launcher_background" />

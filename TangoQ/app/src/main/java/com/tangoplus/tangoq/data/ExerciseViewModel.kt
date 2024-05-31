@@ -19,6 +19,7 @@ class ExerciseViewModel: ViewModel() {
 
     // 메인 - 프로그램
     val programList = MutableLiveData(mutableListOf<ProgramVO>())
+
     init {
         exerciseUnits.value = mutableListOf()
         favoriteItem.value = FavoriteItemVO(mutableListOf(),0,"","","", "", "",  mutableListOf())

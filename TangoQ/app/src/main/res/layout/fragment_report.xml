@@ -55,22 +55,10 @@
                     android:id="@+id/vRDiseasePredict"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_margin="8dp"
+                    android:layout_margin="4dp"
                     android:background="@drawable/effect_ibtn_12dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textView95"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:text="질환 예측"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -82,14 +70,15 @@
                     android:background="@drawable/effect_ibtn_12dp"
                     android:padding="4dp"
                     android:src="@drawable/icon_next_arrow"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView95"
+                    app:layout_constraintBottom_toBottomOf="@+id/flR"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView95" />
+                    app:layout_constraintTop_toTopOf="@+id/flR" />
 
                 <TextView
                     android:id="@+id/textView97"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/background_rectangle_8dp"
                     android:padding="16dp"
@@ -97,9 +86,27 @@
                     android:textColor="@color/subColor700"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/textView95"
-                    app:layout_constraintTop_toBottomOf="@+id/textView95"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/flR"
                     app:layout_constraintVertical_bias="0.6" />
+
+                <FrameLayout
+                    android:id="@+id/flR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvRBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="질환 예측"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+                </FrameLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView

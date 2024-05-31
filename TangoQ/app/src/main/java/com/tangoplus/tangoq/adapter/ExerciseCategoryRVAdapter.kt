@@ -1,13 +1,17 @@
 package com.tangoplus.tangoq.adapter
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,16 +19,18 @@ import com.google.android.material.card.MaterialCardView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
+import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.onCategoryScrollListener
 
-class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<String>,
-                                private val subCategorys: MutableList<String>,
+class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int, String>>,
+                                private val subCategorys: MutableList<Pair<Int, String>>,
                                 private val fragment: Fragment,
-                                private val recyclerView: RecyclerView,
+                                private val mainCategoryIndex: Int,
                                 private val onCategoryScrollListener: onCategoryScrollListener,
                                 var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
 
     inner class mainCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
         val tvMCName = view.findViewById<TextView>(R.id.tvMCName)
@@ -74,20 +80,19 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<String>,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         when (holder) {
             // ------! 대분류 item 시작 !------
             is mainCategoryViewHolder -> {
-                val currentItem = mainCategorys[position]
+                val currentItemMain = mainCategorys[position]
                 holder.mcvMC.visibility = View.GONE
-                holder.tvMCName.text = currentItem
-//                Glide.with(fragment.requireContext())
-//                    .load()
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .into(holder.ivMCThumbnail)
+                holder.tvMCName.text = currentItemMain.second
+                Glide.with(fragment)
+                    .load(fragment.resources.getIdentifier("drawable_main_category_${position + 1}", "drawable", fragment.requireActivity().packageName))
+                    .override(2000)
+                    .into(holder.ivMCThumbnail)
 
                 // -----! 이미지 클릭 시 서브 카테고리 시작 !------
-                val adapter = ExerciseCategoryRVAdapter(mainCategorys, subCategorys, fragment, holder.rvMC, onCategoryScrollListener,"subCategory" )
+                val adapter = ExerciseCategoryRVAdapter(mainCategorys, subCategorys, fragment, position ,onCategoryScrollListener,"subCategory" )
                 holder.rvMC.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
                 holder.rvMC.layoutManager = linearLayoutManager
@@ -117,9 +122,21 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<String>,
             }
             is subCategoryViewHolder -> {
                 val currentItem = subCategorys[position]
-                holder.tvSCName.text = currentItem
+                holder.tvSCName.text = currentItem.second
+
+                holder.tvSCName.setOnClickListener {
+                    goExerciseDetail(mainCategorys[mainCategoryIndex], currentItem)
+                }
             }
         }
     }
-
+    private fun goExerciseDetail(category : Pair<Int, String>, search: Pair<Int, String>) {
+        Log.v("ClickIndex", "category: ${category} type: $search")
+        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+            replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, search))
+            addToBackStack(null)
+            commit()
+        }
+    }
 }

@@ -76,13 +76,6 @@ class MainActivity : AppCompatActivity() {
         binding.tvCurrentPage.text = (if (isNightMode) "내정보" else "내정보")
         // ------! 다크모드 메뉴 이름 설정 끝 !------
 
-
-        val finishMeasure = intent.getBooleanExtra("finishMeasure", false)
-        if (finishMeasure) {
-            val bnv = findViewById<BottomNavigationView>(R.id.bnbMain)
-            bnv.selectedItemId = R.id.measure
-        }
-
         // -----! 초기 화면 설정 !-----
         if (savedInstanceState == null) {
             backStack.push(selectedTabId)
@@ -110,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.profile -> "내정보"
                 else -> ""
             }
-            if (it.itemId == R.id.favorite) {
+            if (it.itemId == R.id.favorite || it.itemId == R.id.exercise) {
                 setTopLayoutFull(binding.flMain, binding.clMain)
             } else {
                 setOptiLayout(binding.flMain,  binding.clMain ,binding.cvCl)
@@ -155,6 +148,9 @@ class MainActivity : AppCompatActivity() {
             )
             return
         }
+        healthConnectClient = HealthConnectClient.getOrCreate(this)
+        Log.v("현재 시간", "endTime: $endTime, startTime: $startTime")
+
         healthConnectClient = HealthConnectClient.getOrCreate(this)
         Log.v("현재 시간", "endTime: $endTime, startTime: $startTime")
 

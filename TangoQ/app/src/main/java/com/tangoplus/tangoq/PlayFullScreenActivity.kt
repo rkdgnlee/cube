@@ -67,6 +67,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             viewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${(simpleExoPlayer?.currentWindowIndex)!! + 1}",56)
                             val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                             intent.putExtra("feedback_finish", viewModel.exerciseLog.value)
+                            Log.v("feedback_finish", "VM_exercise_log: ${viewModel.exerciseLog.value}")
                             startActivity(intent)
                             finish()
                         }else {

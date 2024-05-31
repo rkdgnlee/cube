@@ -7,14 +7,12 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
-import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.PopupWindow
-import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +21,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.adapter.BannerVPAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.adapter.RecommendRVAdapter
+import com.tangoplus.tangoq.adapter.ProgramRVAdapter
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.listener.OnRVClickListener
 import com.tangoplus.tangoq.MainActivity
@@ -37,8 +35,6 @@ import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
-import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
-import com.tangoplus.tangoq.listener.OnMoreClickListener
 import kotlinx.coroutines.launch
 import java.util.ArrayList
 
@@ -108,10 +104,8 @@ class MainFragment : Fragment(), OnRVClickListener {
         } // ------! 점수 끝 !------
 
         // ------! 중앙 홍보 배너 시작 !------
-        bViewModel.BannerList.add("dummy_banner1")
-        bViewModel.BannerList.add("dummy_banner2")
-        bViewModel.BannerList.add("dummy_banner3")
-        bViewModel.BannerList.add("dummy_banner4")
+        bViewModel.BannerList.add("drawable_banner_1")
+        bViewModel.BannerList.add("drawable_banner_2")
 
         val bannerAdpater = BannerVPAdapter(bViewModel.BannerList, "main", requireContext())
         bannerAdpater.notifyDataSetChanged()
@@ -179,7 +173,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                     binding.sflM.stopShimmer()
                     binding.sflM.visibility = View.GONE
                 }
-                val recommendAadpter = RecommendRVAdapter(viewModel.programList, this@MainFragment, this@MainFragment)
+                val recommendAadpter = ProgramRVAdapter(viewModel.programList.value!!, this@MainFragment, this@MainFragment, "horizon")
                 binding.rvMRecommend.adapter = recommendAadpter
                 val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvMRecommend.layoutManager = linearLayoutManager2
@@ -216,21 +210,21 @@ class MainFragment : Fragment(), OnRVClickListener {
                         position: Int,
                         id: Long
                     ) {
-                        when (position) {
-                            0 -> {
-                                setRVAdapter(verticalDataList)
-                            }
-                            1 -> {
-                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.toMutableList()
-                                setRVAdapter(sortDataList)
-                                Log.v("정렬된 리스트", "$sortDataList")
-                            }
-                            2 -> {
-                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.reversed().toMutableList()
-                                setRVAdapter(sortDataList)
-                                Log.v("정렬된 리스트", "$sortDataList")
-                            }
-                        }
+//                        when (position) {
+//                            0 -> {
+////                                setRVAdapter(verticalDataList)
+//                            }
+//                            1 -> {
+//                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.toMutableList()
+////                                setRVAdapter(sortDataList)
+//                                Log.v("정렬된 리스트", "$sortDataList")
+//                            }
+//                            2 -> {
+//                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.reversed().toMutableList()
+////                                setRVAdapter(sortDataList)
+//                                Log.v("정렬된 리스트", "$sortDataList")
+//                            }
+//                        }
                     }
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 } // ------! spinner 연결 끝 !------
@@ -278,9 +272,9 @@ class MainFragment : Fragment(), OnRVClickListener {
         }
     }
 
-    private fun setRVAdapter (dataList: MutableList<ExerciseVO>) {
-        val adapter = ExerciseRVAdapter(this@MainFragment, dataList,"main")
-        adapter.exerciseList = dataList
+    private fun setRVAdapter (programList: MutableList<ProgramVO>) {
+        val adapter = ProgramRVAdapter(programList, this@MainFragment, this@MainFragment,"rank")
+        adapter.programs = programList
         binding.rvM.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvM.layoutManager = linearLayoutManager

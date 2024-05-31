@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.callback.ItemTouchCallback
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.updateFavoriteItemJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentFavoriteEditBinding
+import com.tangoplus.tangoq.`object`.NetworkFavoriteService.updateFavoriteItemJson
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -205,9 +205,9 @@ class FavoriteEditFragment : Fragment() {
         // -----! json으로 변환 후 update 시작 !-----
         val JsonObj = JSONObject()
         JsonObj.put("favorite_name", currentEditItem.favoriteName)
-        JsonObj.put("exercise_description_ids", JSONArray(descriptionIdList))
+        JsonObj.put("exercise_ids", JSONArray(descriptionIdList))
         JsonObj.put("favorite_description", currentEditItem.favoriteExplain)
-        Log.w("JsonExerciseIdList","${JsonObj.get("exercise_description_ids")}")
+        Log.w("JsonExerciseIdList","${JsonObj.get("exercise_ids")}")
         Log.w("updateJsonInBody", "$JsonObj")
         updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), currentEditItem.favoriteSn.toString(), JsonObj.toString()) {
             // TODO 반환된 값으로 뭐 해도 되고 안해도 됨.

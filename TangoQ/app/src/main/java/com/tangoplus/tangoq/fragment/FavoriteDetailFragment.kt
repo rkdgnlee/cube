@@ -27,7 +27,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.dialog.FavoriteBSDialogFragment
 import com.tangoplus.tangoq.`object`.NetworkExerciseService
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.jsonToFavoriteItemVO
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
@@ -37,6 +36,8 @@ import com.tangoplus.tangoq.data.FavoriteItemVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteDetailBinding
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.listener.OnMoreClickListener
+import com.tangoplus.tangoq.`object`.NetworkFavoriteService.fetchFavoriteItemJsonBySn
+import com.tangoplus.tangoq.`object`.NetworkFavoriteService.jsonToFavoriteItemVO
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -110,7 +111,7 @@ class FavoriteDetailFragment : Fragment(){
             binding.sflFV.startShimmer()
 
 
-            snData = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)!!
+            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)!!
             FavoriteItem = jsonToFavoriteItemVO(snData)
 //
 //            // ------! 즐겨찾기 넣어서 가져오기 !------
@@ -180,7 +181,7 @@ class FavoriteDetailFragment : Fragment(){
         // -----! 편집 버튼 시작 !-----
         binding.btnFVEdit.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, FavoriteEditFragment.newInstance(title))
 
 
@@ -194,7 +195,7 @@ class FavoriteDetailFragment : Fragment(){
         binding.fabtnFDPlay.setOnClickListener {
             if (currentItem.exercises?.isNotEmpty() == true) {
                     val resourceList = storePickUrl(viewModel)
-                    Log.w("url in resourceList", "$resourceList")
+//                    Log.w("url in resourceList", "$resourceList")
                     val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
                     intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
                     startForResult.launch(intent)
@@ -217,7 +218,7 @@ class FavoriteDetailFragment : Fragment(){
         lifecycleScope.launch {
             binding.sflFV.startShimmer()
             Log.v("현재 Sn", sn)
-            snData = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn)!!
+            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn)!!
             FavoriteItem = jsonToFavoriteItemVO(snData)
 
             currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!
@@ -231,7 +232,7 @@ class FavoriteDetailFragment : Fragment(){
                 binding.sflFV.visibility = View.GONE
             }
 
-            Log.w("detail>currentItem", "$currentItem")
+//            Log.w("detail>currentItem", "$currentItem")
             binding.tvFDExplain.text = currentItem.favoriteExplain.toString()
             val RvAdapter = ExerciseRVAdapter(this@FavoriteDetailFragment, currentItem.exercises!!, "main")
             RvAdapter.exerciseList = currentItem.exercises!!
@@ -243,7 +244,7 @@ class FavoriteDetailFragment : Fragment(){
             var totalTime = 0
             for (i in 0 until currentItem.exercises!!.size) {
                 val exercises = currentItem.exercises!!.get(i)
-                Log.w("운동각 시간" ,"${exercises.videoDuration!!.toInt()}")
+//                Log.w("운동각 시간" ,"${exercises.videoDuration!!.toInt()}")
                 totalTime += exercises.videoDuration!!.toInt()
             }
             Log.w("총 시간", "$totalTime")

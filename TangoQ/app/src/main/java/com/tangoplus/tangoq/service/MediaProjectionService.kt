@@ -373,7 +373,10 @@ class MediaProjectionService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        imageReader.close()
+        if (::imageReader.isInitialized) {
+            imageReader.close()
+        }
+
         deleteFilesInExternalStorage()
     }
 }

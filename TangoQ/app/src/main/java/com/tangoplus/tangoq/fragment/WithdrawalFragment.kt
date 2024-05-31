@@ -88,13 +88,15 @@ class WithdrawalFragment : Fragment() {
         }
 
         // ------! 회원 탈퇴 시작 !------
-        val message = SpannableString("경고❗ \n회원 탈퇴 시 철회할 수 없습니다.\n확인을 누르면 회원 계정이 삭제됩니다.\n삭제하시겠습니까?")
-        message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 33, 39, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val message = SpannableString("회원 탈퇴 시 철회할 수 없습니다.\n확인을 누르면 회원 계정이 삭제됩니다.\n삭제하시겠습니까?")
+        val startIndex = message.indexOf("회원 계정이 삭제")
+        val endIndex = message.indexOf("회원 계정이 삭제")
+        message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 47, 49, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         message.setSpan(StyleSpan(Typeface.BOLD), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.btnWd.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                setTitle("회원 탈퇴")
+                setTitle("경고⚠️")
                 setMessage(message)
                 setPositiveButton("예") { dialog, _ ->
                     deleteAccount()

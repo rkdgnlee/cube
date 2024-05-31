@@ -30,10 +30,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.adapter.ExerciseJointTypeRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
@@ -43,9 +46,13 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 
 import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
 import com.tangoplus.tangoq.listener.onCategoryScrollListener
+import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
 import com.tangoplus.tangoq.`object`.CommonDefines
+import com.tangoplus.tangoq.`object`.NetworkExerciseService
+import com.tangoplus.tangoq.`object`.NetworkExerciseService.fetchExerciseCategory
 import com.tangoplus.tangoq.`object`.Singleton_bt_device
 import com.tangoplus.tangoq.`object`.TedPermissionWrapper
 import com.tangoplus.tangoq.service.BluetoothLeService
@@ -55,9 +62,10 @@ import java.util.Date
 
 
 @Suppress("UNREACHABLE_CODE")
-class ExerciseFragment : Fragment(), OnCategoryClickListener, onCategoryScrollListener {
+class ExerciseFragment : Fragment(), onCategoryScrollListener {
     lateinit var binding : FragmentExerciseBinding
-    var verticalDataList = mutableListOf<ExerciseVO>()
+//    var verticalDataList = mutableListOf<ExerciseVO>()
+    val viewModel : ExerciseViewModel by activityViewModels()
 
     // ------! 블루투스 변수 !------
     var mDeviceInfoList: ArrayList<BluetoothDeviceInfo> = arrayListOf()
@@ -89,125 +97,21 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener, onCategoryScrollLi
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentExerciseBinding.inflate(inflater)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.sflEc.startShimmer()
+//        binding.sflEc.startShimmer()
         binding.nsvEc.isNestedScrollingEnabled = false
-        binding.rvEcAll.isNestedScrollingEnabled = false
-        binding.rvEcAll.overScrollMode = 0
-        binding.ibtnEcACTVClear.setOnClickListener {
-            binding.actvEcSearch.text.clear()
-        }
-        // -----! 카테고리  시작 !-----
-        val CategoryList = arrayOf("전체","목", "어깨", "팔", "척추", "하체", "몸통", "발목", "전신", "코어")
-        val adapter2 = ExerciseJointTypeRVAdapter(CategoryList,  this@ExerciseFragment )
-        adapter2.category = CategoryList
-        binding.rvEcCategory.adapter = adapter2
-        val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.rvEcCategory.layoutManager = linearLayoutManager2
-        // -----! 카테고리 끝 !-----
+        binding.rvEcMainCategory.isNestedScrollingEnabled = false
+        binding.rvEcMainCategory.overScrollMode = 0
+//        binding.ibtnEcACTVClear.setOnClickListener {
+//            binding.actvEcSearch.text.clear()
+//        }
 
-
-
-        lifecycleScope.launch {
-            val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
-
-            // ------! 자동완성 시작 !------
-            val keywordList = mutableListOf<String>()
-            for (i in 0 until responseArrayList.size) {
-                keywordList.add(responseArrayList[i].exerciseName.toString())
-            }
-            val adapterActv = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, keywordList)
-            binding.actvEcSearch.setAdapter(adapterActv)
-
-            binding.actvEcSearch.setOnItemClickListener { parent, view, position, id ->
-//                val selectedItem = parent.getItemAtPosition(position) as String
-//                val filterList = verticalDataList.filter { item ->
-//                    item.exerciseName == selectedItem
-//                }.toMutableList()
-//                val adapter = ExerciseRVAdapter(this@ExerciseFragment, filterList, "mainCategory")
-//                binding.rvEcAll.adapter = adapter
-//                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//                binding.rvEcAll.layoutManager = linearLayoutManager
-//                adapter.notifyDataSetChanged()
-            }
-
-            // ------! 자동완성 끝 !------
-
-            try { // ------! rv vertical 시작 !------
-                binding.sflEc.stopShimmer()
-                binding.sflEc.visibility= View.GONE
-                verticalDataList = responseArrayList.toMutableList()
-//                val adapter = ExerciseRVAdapter(this@ExerciseFragment, verticalDataList, "mainCategory")
-//                adapter.exerciseList = verticalDataList
-//                binding.rvEcAll.adapter = adapter
-//                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//                binding.rvEcAll.layoutManager = linearLayoutManager
-                // ------! main Category !------
-                val mainFiltered = verticalDataList.distinctBy { it.exerciseCategoryName }
-                val mainCategoryList = mutableListOf<String>()
-                for (i in 0 until mainFiltered.size) {
-                    mainCategoryList.add(mainFiltered[i].exerciseCategoryName.toString())
-                } // ------! main Category !------
-
-                // ------! sub Category !-----
-                val subFiltered = verticalDataList.distinctBy { it.exerciseTypeName }
-                val subCategoryList = mutableListOf<String>()
-                for (i in 0 until subFiltered.size) {
-                    subCategoryList.add(subFiltered[i].exerciseTypeName.toString())
-                } // ------! sub Category !-----
-
-                Log.v("카테고리size", "${mainCategoryList}")
-                val adapter = ExerciseCategoryRVAdapter(mainCategoryList, subCategoryList,this@ExerciseFragment, binding.rvEcAll, this@ExerciseFragment,"mainCategory")
-                binding.rvEcAll.adapter = adapter
-                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvEcAll.layoutManager = linearLayoutManager
-                // ------! rv vertical 끝 !------
-
-
-
-
-                val filterList = arrayListOf<String>()
-                filterList.add("필터")
-                filterList.add("최신순")
-                filterList.add("인기순")
-                filterList.add("추천순")
-                binding.spnEcFilter.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
-                binding.spnEcFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                    @SuppressLint("NotifyDataSetChanged")
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        when (position) {
-                            0 -> {}
-                            1 -> {
-                                verticalDataList.sortBy { it.exerciseId }
-                                adapter.notifyDataSetChanged()
-                            }
-                            2 -> {
-                                verticalDataList.sortByDescending { it.videoDuration }
-                                adapter.notifyDataSetChanged()
-                            }
-                            3 -> {
-                                verticalDataList.sortBy { it.exerciseIntensity }
-                                adapter.notifyDataSetChanged()
-                            }
-                        }
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-                }
-
-
-            } catch (e: Exception) {
-                Log.e(ContentValues.TAG, "Error storing exercises", e)
-            }
-        } // ------! rv vertical 끝 !------
+        (activity as MainActivity).setTopLayoutFull(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
 
         // ------------------------! 블루투스 연결 시작 !------------------------
         singleton_bt_device = Singleton_bt_device.getInstance(requireContext())
@@ -264,22 +168,31 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener, onCategoryScrollLi
             Toast.makeText(requireContext(), "저전력 블루투스가 지원되지 않습니다.", Toast.LENGTH_LONG).show()
 
         }
+        lifecycleScope.launch {
+            val categoryArrayList = fetchExerciseCategory(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+//            val typeArrayList = fetchExerciseType(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+            val typeArrayList = mutableListOf<Pair<Int, String>>()
+            typeArrayList.add(Pair(1, "목관절"))
+            typeArrayList.add(Pair(2, "어깨"))
+            typeArrayList.add(Pair(3, "팔꿉"))
+            typeArrayList.add(Pair(4, "손목"))
+            typeArrayList.add(Pair(5, "척추"))
+            typeArrayList.add(Pair(6, "복부"))
+            typeArrayList.add(Pair(7, "엉덩"))
+            typeArrayList.add(Pair(8, "무릎"))
+            typeArrayList.add(Pair(9, "발목"))
+            try { // ------! rv vertical 시작 !------
 
-
-        binding.ibtnEcBLEConnect.setOnClickListener {
-            if (!isReceiverRegistered) {
-                if (!mBtAdapter?.isEnabled()!!) {
-                    Toast.makeText(requireContext(), "블루투스가 켜지지 않았습니다.", Toast.LENGTH_SHORT).show()
-                    Log.i(ContentValues.TAG, "onResume() - BT not enabled yet")
-                    val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                    startActivityForResult(enableIntent, REQUEST_ENABLE_BT)
-                }
+                Log.v("카테고리size", "mainCategoryList: ${categoryArrayList}, subCategoryList: ${typeArrayList}")
+                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, 0, this@ExerciseFragment,"mainCategory")
+                binding.rvEcMainCategory.adapter = adapter
+                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding.rvEcMainCategory.layoutManager = linearLayoutManager
+                // ------! rv vertical 끝 !------
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: ${e.message}")
             }
-            clearDevice()
-            scanLeDevice(false)
-            scanLeDevice(true)
         }
-
     }
 
     override fun categoryScroll(view: View) {
@@ -663,7 +576,6 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener, onCategoryScrollLi
 //            }
 //            isReceiverRegistered = false
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -706,23 +618,5 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener, onCategoryScrollLi
     )
 
     // ------! horizontal 아이템 눌렀을 때 !------
-    @SuppressLint("NotifyDataSetChanged")
-    override fun onCategoryClick(category: String) {
 
-
-
-        var filterList = mutableListOf<ExerciseVO>()
-        if (category == "전체") {
-            filterList = verticalDataList
-        } else {
-            filterList = verticalDataList.filter { item ->
-                item.relatedSymptom!!.contains(category)
-            }.toMutableList()
-        }
-        val adapter = ExerciseRVAdapter(this@ExerciseFragment, filterList, "main")
-        binding.rvEcAll.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.rvEcAll.layoutManager = linearLayoutManager
-        adapter.notifyDataSetChanged()
-    }
 }

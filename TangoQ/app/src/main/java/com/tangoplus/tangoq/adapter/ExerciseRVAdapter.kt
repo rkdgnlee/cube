@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -17,6 +18,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.callback.ItemTouchCallback
 import com.tangoplus.tangoq.dialog.ExerciseBSDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
@@ -27,6 +30,7 @@ import com.tangoplus.tangoq.databinding.RvBasketItemBinding
 import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
+import com.tangoplus.tangoq.databinding.RvRankItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.listener.OnMoreClickListener
 import java.lang.IllegalArgumentException
@@ -66,6 +70,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
 
     // -----! favorite edit !-----
     inner class editViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val ivEditThumbnail = view.findViewById<ImageView>(R.id.ivEditThumbnail)
         val tvEditName = view.findViewById<TextView>(R.id.tvEditName)
         val tvEditSymptom = view.findViewById<TextView>(R.id.tvEditSymptom)
         val tvEditTime = view.findViewById<TextView>(R.id.tvEditTime)
@@ -75,6 +80,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
     }
     // -----! favorite basket !-----
     inner class basketViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val ivBkThumbnail = view.findViewById<ImageView>(R.id.ivBkThumbnail)
         val tvBkName = view.findViewById<TextView>(R.id.tvBkName)
         val tvBkSymptom = view.findViewById<TextView>(R.id.tvBkSymptom)
 //        val tvBkTime = view.findViewById<TextView>(R.id.tvBkTime)
@@ -99,7 +105,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
             "edit" -> 1
             "basket" -> 2
             "recommend" -> 3
-
+            "rank" -> 4
             else -> throw IllegalArgumentException("invalied view type")
         }
     }
@@ -187,9 +193,6 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                         popupWindow!!.isOutsideTouchable = true
                         popupWindow!!.isFocusable = true
                     }
-
-
-
                 }
                 // ------ ! thumbnail 시작 !------
                 holder.vM.setOnClickListener {
@@ -207,6 +210,13 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                     currentItem.relatedSymptom.toString().substring(0, 25) + "..."
                 } else { currentItem.relatedSymptom}).toString()
 //                holder.tvPickAddJoint.text = currentItem.relatedJoint.toString()
+
+                // ------! 썸네일 !------
+                Glide.with(fragment.requireContext())
+                    .load("${currentItem.imageFilePathReal}")
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivEditThumbnail)
+
                 holder.tvEditName.text = currentItem.exerciseName
                 holder.tvEditTime.text = second
                 holder.ivEditDrag.setOnTouchListener { view, event ->
@@ -229,6 +239,11 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                 holder.tvBkName.text = currentItem.exerciseName
 //                holder.tvBkTime.text = currentItem.videoTime
 
+                // ------! 썸네일 !------
+                Glide.with(fragment.requireContext())
+                    .load("${currentItem.imageFilePathReal}")
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivBkThumbnail)
                 holder.ibtnBkPlus.setOnClickListener {
                     currentItem.quantity += 1
                     basketListener?.onBasketItemQuantityChanged(currentItem.exerciseId.toString(), currentItem.quantity)
@@ -269,7 +284,6 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                     DialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                 }
             }
-
         }
     }
 

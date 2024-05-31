@@ -75,7 +75,7 @@ class FeedbackDialogFragment : DialogFragment() {
 //            requireActivity().finishAffinity()
             dismiss()
             viewModel.exerciseLog.value = null
-
+            viewModel.isDialogShown.value = true
         }
 
         binding.btnFbPainPartSelect.setOnClickListener {

@@ -5,13 +5,17 @@ import android.os.Parcelable
 
 data class ProgramVO(
     var programImageUrl : String? = "",
+    var programVideoUrl : String? = "",
     var programName : String? = "",
     var programTime : String? = "",
     var programStage : String? = "",
+    var programDescription : String? = "",
     var programCount : String? = "",
     var exercises : MutableList<ExerciseVO>?
 ): Parcelable {
     constructor(parcel: Parcel): this(
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -24,8 +28,10 @@ data class ProgramVO(
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(programImageUrl)
+        dest.writeString(programVideoUrl)
         dest.writeString(programName)
         dest.writeString(programTime)
+        dest.writeString(programDescription)
         dest.writeString(programStage)
         dest.writeString(programCount)
         dest.writeTypedList(exercises)

@@ -58,7 +58,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
 
                 // -----! RV 필터링 시작 !-----
                 val recommendlist = mutableListOf<ExerciseVO>()
-                val filterList = allDataList.filter { it.exerciseName!!.contains("(1)") }
+                val filterList = allDataList.filter { it.exerciseCategoryId!!.contains("2") }
                 for (element in filterList) {
                     recommendlist.add(element)
                     recommendlist.map { exercise ->
@@ -66,7 +66,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                     }
                     linkAdapter(recommendlist)
                 }
-                Log.w(ContentValues.TAG, "filterList: $filterList")
+//                Log.w(ContentValues.TAG, "filterList: $filterList")
                 binding.tlFB.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
                     override fun onTabSelected(tab: TabLayout.Tab?) {
                         when (tab?.position) {

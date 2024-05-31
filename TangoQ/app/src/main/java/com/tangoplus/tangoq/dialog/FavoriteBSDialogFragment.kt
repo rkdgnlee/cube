@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.dialog
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,10 +13,10 @@ import com.tangoplus.tangoq.fragment.FavoriteBasketFragment
 import com.tangoplus.tangoq.fragment.FavoriteDetailFragment
 import com.tangoplus.tangoq.fragment.FavoriteEditFragment
 import com.tangoplus.tangoq.fragment.FavoriteFragment
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.deleteFavoriteItemSn
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.FavoriteItemVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBSDialogBinding
+import com.tangoplus.tangoq.`object`.NetworkFavoriteService.deleteFavoriteItemSn
 
 
 class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
@@ -38,11 +40,10 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
 
             // ------! 썸네일 사진 4개 시작 !------
 
-            if (favorite.imgThumbnailList != null) {
-                // TODO 썸네일 URL GLIDE로 뿌리기.
-            }
-
-
+            val imgByteArray = bundle.getByteArray("img")
+            val imgBitmap = BitmapFactory.decodeByteArray(imgByteArray, 0, imgByteArray!!.size)
+            binding.ivFbsThumbnail.setImageBitmap(imgBitmap)
+            Log.v("imgByteArray", "imgByteArray: ${imgByteArray}")
             binding.tvFrBSName.text = favorite.favoriteName
             binding.llFrBSPlay.setOnClickListener{
                 // TODO 재생목록 만들어서 FULLSCREEN
@@ -107,15 +108,5 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
 
         } // ------! 즐겨찾기 홈에서 경로 설정 끝 !------
         binding.ibtnFrBsExit.setOnClickListener { dismiss() }
-
-
-    }
-
-    private fun setThumbnailVisible(one: Boolean, two: Boolean, three: Boolean, four : Boolean) {
-        binding.ivFbsThumbnail1.visibility = if (one) View.VISIBLE else View.GONE
-        binding.ivFbsThumbnail2.visibility = if (two) View.VISIBLE else View.GONE
-        binding.ivFbsThumbnail3.visibility = if (three) View.VISIBLE else View.GONE
-        binding.ivFbsThumbnail4.visibility = if (four) View.VISIBLE else View.GONE
-
     }
 }

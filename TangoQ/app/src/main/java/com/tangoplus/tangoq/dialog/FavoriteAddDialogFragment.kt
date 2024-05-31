@@ -20,7 +20,8 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.FavoriteItemVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteAddDialogBinding
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.insertFavoriteItemJson
+import com.tangoplus.tangoq.fragment.FavoriteFragment
+import com.tangoplus.tangoq.`object`.NetworkFavoriteService.insertFavoriteItemJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import org.json.JSONObject
 
@@ -81,15 +82,27 @@ class FavoriteAddDialogFragment : DialogFragment() {
 //                    exercises = mutableListOf(),
 //                    imgThumbnailList = mutableListOf(),
 //                )
+                val data = responseJson?.getJSONArray("seletedData")?.optJSONObject(0)?.optJSONObject("data")
                 val newFavoriteItem = FavoriteItemVO(
-                    favoriteSn = responseJson!!.getInt("favorite_sn"),
-                    favoriteName = responseJson.optString("favorite_name"),
-                    favoriteExplain = responseJson.optString("favorite_description"),
+                    favoriteSn = data!!.getInt("favorite_sn"),
+                    favoriteName = data.optString("favorite_name"),
+                    favoriteExplain = data.optString("favorite_description"),
                     exercises = mutableListOf(),
                     imgThumbnailList = mutableListOf(),
                 )
-                viewModel.favoriteList.value?.add(newFavoriteItem)
-                Log.v("", "$newFavoriteItem")
+//                requireActivity().runOnUiThread {
+//                    val updatedList = viewModel.favoriteList.value?.toMutableList() ?: mutableListOf()
+//                    updatedList.add(newFavoriteItem)
+//                    viewModel.favoriteList.value = updatedList
+//                    Log.v("newFavoriteItem", "newFavoriteItem: $newFavoriteItem")
+//                    dismiss()
+//                }
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flMain, FavoriteFragment())
+                        .commit()
+                }
+                Log.v("newFavoriteItem", "newFavoriteItem: $newFavoriteItem")
+                dismiss()
             }
         }
 
