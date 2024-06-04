@@ -189,6 +189,7 @@
                 android:paddingRight="48dp"
                 android:text="목록 편집하기"
                 android:textColor="@color/white"
+                android:textSize="18sp"
                 app:cornerRadius="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

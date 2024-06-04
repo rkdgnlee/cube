@@ -23,11 +23,10 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.`object`.NetworkExerciseService
-import com.tangoplus.tangoq.PlaySkeletonActivity
+import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.listener.OnMoreClickListener
 import kotlinx.coroutines.launch
@@ -35,9 +34,8 @@ import kotlinx.coroutines.launch
 class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
-    val viewModel: ExerciseViewModel by activityViewModels()
+    val viewModel: FavoriteViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
-    private var player : SimpleExoPlayer? = null
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition = 0L
@@ -102,11 +100,26 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
             dismiss()
         }
 
+        // ------! 앞으로 감기 뒤로 감기 시작 !------
+        val replay5 = binding.pvPT.findViewById<ImageButton>(R.id.exo_replay_5)
+        val forward5 = binding.pvPT.findViewById<ImageButton>(R.id.exo_forward_5)
+        replay5.setOnClickListener {
+            val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
+            if (replayPosition != null) {
+                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition)!!)
+            }
+        }
+        forward5.setOnClickListener {
+            val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
+            if (forwardPosition != null) {
+                if (forwardPosition < simpleExoPlayer?.duration?.minus(5000)!!) {
+                    simpleExoPlayer?.seekTo(forwardPosition)
+                } else {
+                    simpleExoPlayer!!.pause()
+                }
+            }
+        } // ------! 앞으로 감기 뒤로 감기 끝 !------
 
-//        binding.tvPlayExerciseRelateMuscle.setOnClickListener {
-//            val dialog = FeedbackDialogFragment()
-//            dialog.show(requireActivity().supportFragmentManager, "FeedbackDialogFragment")
-//        }
 
 
 
@@ -114,7 +127,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
             val responseArrayList =
-                NetworkExerciseService.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+                NetworkExercise.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
 
 //            val jointKeyword =
 //                exerciseData?.relatedMuscle!!.contains("복근")

@@ -88,7 +88,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 holder.tvMCName.text = currentItemMain.second
                 Glide.with(fragment)
                     .load(fragment.resources.getIdentifier("drawable_main_category_${position + 1}", "drawable", fragment.requireActivity().packageName))
-                    .override(2000)
+                    .override(1000)
                     .into(holder.ivMCThumbnail)
 
                 // -----! 이미지 클릭 시 서브 카테고리 시작 !------
@@ -102,16 +102,16 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                         holder.mcvMC.visibility = View.VISIBLE
                         holder.mcvMC.alpha = 0f
                         holder.mcvMC.animate().apply {
-                            duration = 150
+                            duration = 100
                             alpha(1f)
                         }
                         Handler(Looper.getMainLooper()).postDelayed({
                             onCategoryScrollListener.categoryScroll(holder.ivMCThumbnail)
-                        }, 200)
+                        }, 150)
 
                     } else {
                         holder.mcvMC.animate().apply {
-                            duration = 150
+                            duration = 100
                             alpha(0f)
                             withEndAction {
                                 holder.mcvMC.visibility = View.GONE
@@ -134,8 +134,8 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
         Log.v("ClickIndex", "category: ${category} type: $search")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
             setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-            replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, search))
-            addToBackStack(null)
+            add(R.id.flMain, ExerciseDetailFragment.newInstance(category, search))
+//            addToBackStack(null)
             commit()
         }
     }

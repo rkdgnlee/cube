@@ -26,12 +26,14 @@ import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.listener.BasketItemTouchListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.RvBasketItemBinding
 import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
 import com.tangoplus.tangoq.databinding.RvRankItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
+import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
 import com.tangoplus.tangoq.listener.OnMoreClickListener
 import java.lang.IllegalArgumentException
 import java.util.Collections
@@ -185,7 +187,17 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                             dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                         }
                         popupView.findViewById<TextView>(R.id.tvPWAddFavorite).setOnClickListener {
-
+                            val exerciseUnit = mutableListOf<ExerciseVO>()
+                            exerciseUnit.add(currentItem)
+                            val program = ProgramVO(0, mutableListOf(), "", 0, "","","", exerciseUnit)
+                            val bundle = Bundle().apply {
+                                putParcelable("Program", program)
+                            }
+                            val dialog = ProgramAddFavoriteDialogFragment().apply {
+                                arguments = bundle
+                            }
+                            dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramAddFavoriteDialogFragment")
+                            popupWindow!!.dismiss()
                         }
                         popupView.findViewById<ImageButton>(R.id.ibtnPWExit).setOnClickListener {
                             popupWindow!!.dismiss()

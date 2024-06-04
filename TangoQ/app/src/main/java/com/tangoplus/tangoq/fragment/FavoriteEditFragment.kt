@@ -17,17 +17,17 @@ import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.callback.ItemTouchCallback
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.FavoriteViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentFavoriteEditBinding
-import com.tangoplus.tangoq.`object`.NetworkFavoriteService.updateFavoriteItemJson
+import com.tangoplus.tangoq.`object`.NetworkFavorite.updateFavoriteItemJson
 import org.json.JSONArray
 import org.json.JSONObject
 
 
 class FavoriteEditFragment : Fragment() {
     lateinit var binding: FragmentFavoriteEditBinding
-    val viewModel: ExerciseViewModel by activityViewModels()
+    val viewModel: FavoriteViewModel by activityViewModels()
     var title = ""
     companion object {
         private const val ARG_TITLE = "title"

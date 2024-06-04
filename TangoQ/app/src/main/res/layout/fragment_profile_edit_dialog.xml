@@ -53,12 +53,236 @@
                 app:layout_constraintTop_toTopOf="@+id/civPE"
                 app:layout_constraintVertical_bias="0.482" />
 
+            <LinearLayout
+                android:id="@+id/linearLayout15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_rectangle_8dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/civPE">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView91"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:layout_weight="5"
+                        android:text="휴대폰번호"
+                        android:textColor="@color/subColor700"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvPEMobile"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="4dp"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:text="010-0000-0000"
+                        android:textColor="@color/subColor800"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView111"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="12dp"
+                        android:layout_weight="5"
+                        android:text="이름"
+                        android:textColor="@color/subColor700"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvPEName"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="4dp"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:text="홍길통"
+                        android:textColor="@color/subColor800"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout9"
+                android:layout_width="0dp"
+                android:layout_height="128dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_rectangle_8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout15">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toStartOf="@+id/cardView15"
+                    app:layout_constraintHorizontal_bias="0.25"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/imageButton"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_api_google_logo" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/imageButton2"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_api_kakao_logo" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.75"
+                    app:layout_constraintStart_toEndOf="@+id/cardView15"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/imageButton3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:src="@drawable/icon_api_naver_logo" />
+                </androidx.cardview.widget.CardView>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider18"
+                    android:layout_width="2dp"
+                    android:layout_height="100dp"
+                    app:dividerColor="@color/subColor400"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/cardView15"
+                    app:layout_constraintStart_toEndOf="@+id/cardView13"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="2dp"
+                    android:layout_height="100dp"
+                    app:dividerColor="@color/subColor400"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/cardView17"
+                    app:layout_constraintStart_toEndOf="@+id/cardView15"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView96"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="연동완료"
+                    app:layout_constraintEnd_toEndOf="@+id/cardView17"
+                    app:layout_constraintStart_toStartOf="@+id/cardView17"
+                    app:layout_constraintTop_toBottomOf="@+id/cardView17" />
+
+                <TextView
+                    android:id="@+id/textView108"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="2024.05.12"
+                    app:layout_constraintEnd_toEndOf="@+id/cardView17"
+                    app:layout_constraintStart_toStartOf="@+id/cardView17"
+                    app:layout_constraintTop_toBottomOf="@+id/textView96" />
+
+                <TextView
+                    android:id="@+id/textView124"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="연동완료"
+                    app:layout_constraintEnd_toEndOf="@+id/cardView15"
+                    app:layout_constraintStart_toStartOf="@+id/cardView15"
+                    app:layout_constraintTop_toBottomOf="@+id/cardView15" />
+
+                <TextView
+                    android:id="@+id/textView125"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="2024.05.12"
+                    app:layout_constraintEnd_toEndOf="@+id/cardView15"
+                    app:layout_constraintStart_toStartOf="@+id/cardView15"
+                    app:layout_constraintTop_toBottomOf="@+id/textView124" />
+
+                <TextView
+                    android:id="@+id/textView126"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="연동완료"
+                    app:layout_constraintEnd_toEndOf="@+id/cardView13"
+                    app:layout_constraintStart_toStartOf="@+id/cardView13"
+                    app:layout_constraintTop_toBottomOf="@+id/cardView13" />
+
+                <TextView
+                    android:id="@+id/textView127"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="2024.05.12"
+                    app:layout_constraintEnd_toEndOf="@+id/cardView13"
+                    app:layout_constraintStart_toStartOf="@+id/cardView13"
+                    app:layout_constraintTop_toBottomOf="@+id/textView126" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <EditText
                 android:id="@+id/etPEName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="64dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_stroke_1dp_sub_color_8dp"
                 android:ems="10"
@@ -66,17 +290,31 @@
                 android:inputType="text"
                 android:padding="16dp"
                 android:textColor="@color/black"
+                android:textColorHint="@color/subColor200"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/civPE" />
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout9" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:dividerColor="@color/subColor400"
+                app:layout_constraintBottom_toBottomOf="@+id/linearLayout15"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout15"
+                app:layout_constraintHorizontal_bias="0.25"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout15"
+                app:layout_constraintTop_toTopOf="@+id/linearLayout15" />
 
             <EditText
                 android:id="@+id/etPEPassword"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_stroke_1dp_sub_color_8dp"
                 android:ems="10"
@@ -84,10 +322,12 @@
                 android:inputType="textPassword"
                 android:padding="16dp"
                 android:textColor="@color/black"
+                android:textColorHint="@color/subColor200"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEName" />
+                app:layout_constraintTop_toBottomOf="@+id/textView92" />
 
             <LinearLayout
                 android:id="@+id/linearLayout7"
@@ -113,7 +353,7 @@
                     android:inputType="textEmailAddress"
                     android:padding="16dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/subColor100"
+                    android:textColorHint="@color/subColor150"
                     android:textSize="18sp" />
 
                 <ImageView
@@ -175,31 +415,12 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/etPEMobile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_stroke_1dp_sub_color_8dp"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="number"
-                android:padding="16dp"
-                android:text="010-4878-3148"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView91" />
-
             <TextView
                 android:id="@+id/textView71"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="아이디 비밀번호"
+                android:layout_marginBottom="8dp"
+                android:text="아이디 변경"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -210,38 +431,45 @@
                 android:id="@+id/textView90"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="이메일"
-                android:textColor="@color/black"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/linearLayout7"
-                app:layout_constraintTop_toBottomOf="@+id/etPEPassword" />
-
-            <TextView
-                android:id="@+id/textView91"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="휴대폰번호"
-                android:textColor="@color/black"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/etPEMobile"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout7" />
-
-            <TextView
-                android:id="@+id/textView108"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:text="주소"
+                android:text="이메일 변경"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEMobile" />
+                app:layout_constraintTop_toBottomOf="@+id/etPEPasswordRepeat" />
+
+            <TextView
+                android:id="@+id/textView92"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="비밀번호 변경"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etPEName" />
+
+            <EditText
+                android:id="@+id/etPEPasswordRepeat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_stroke_1dp_sub_color"
+                android:ems="10"
+                android:hint="비밀번호 확인"
+                android:inputType="textPassword"
+                android:padding="16dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/subColor200"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etPEPassword" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -258,7 +486,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_margin="20dp"
-            android:background="@drawable/effect_ibtn_20dp"
+            android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/mainColor"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -277,7 +505,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/effect_ibtn_20dp"
+            android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/secondaryColor"
             android:insetTop="0dp"
             android:insetBottom="0dp"

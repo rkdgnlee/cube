@@ -87,6 +87,7 @@ class PainPartRVAdpater(var parts: MutableList<Triple<String, String, Boolean>>,
                     false -> holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_disabled)
                 }
             }
+            // ------! 값 보존 !------
             when (currentItem.third) {
                 true -> {
                     holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_enabled)

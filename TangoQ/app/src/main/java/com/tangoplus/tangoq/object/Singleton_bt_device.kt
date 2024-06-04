@@ -12,7 +12,7 @@ class Singleton_bt_device private constructor(context: Context) {
     var mBtAdapter : BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     var mDevice : BluetoothDevice? = null
     var mDeviceList : MutableLiveData<ArrayList<BluetoothDevice>> = MutableLiveData()
-    var mDeviceInfoList : ArrayList<ExerciseFragment.BluetoothDeviceInfo> = arrayListOf()
+//    var mDeviceInfoList : ArrayList<ExerciseFragment.BluetoothDeviceInfo> = arrayListOf()
     var txValue = byteArrayOf() ?: null
     init {
 

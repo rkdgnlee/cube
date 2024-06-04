@@ -28,40 +28,73 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <AutoCompleteTextView
-                android:id="@+id/actvFB"
+            <LinearLayout
+                android:id="@+id/linearLayout14"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:completionThreshold="2"
-                android:ems="10"
-                android:hint="검색어를 입력해주세요"
-                android:inputType="text"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_rectangle_20dp"
+                android:orientation="horizontal"
                 android:padding="12dp"
-                android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ibtnFBBack" />
+                app:layout_constraintTop_toBottomOf="@+id/ibtnFBBack">
+
+                <ImageView
+                    android:id="@+id/imageView50"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_search" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/actvFBSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="8"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="#00FFFFFF"
+                    android:hint="운동이름을 검색하세요"
+                    android:singleLine="true"
+                    android:textColorHint="@color/subColor500" />
+
+                <ImageButton
+                    android:id="@+id/ibtnFBACTVClear"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/icon_text_clear" />
+            </LinearLayout>
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tlFB"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
                 android:background="@color/white"
                 android:scrollIndicators="bottom"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
 
-                app:layout_constraintTop_toBottomOf="@+id/actvFB"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout14"
+                app:tabGravity="fill"
                 app:tabIndicatorColor="@color/mainColor"
                 app:tabIndicatorFullWidth="true"
+                app:tabMaxWidth="512dp"
                 app:tabRippleColor="#FFFFFF"
                 app:tabSelectedTextColor="@color/black"
                 app:tabTextColor="@color/subColor800">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전체" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -71,17 +104,12 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="관절 부위별" />
+                    android:text="상체" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="카테고리별" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="전체" />
+                    android:text="하체" />
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -89,28 +117,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="64dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tlFB" />
-
-            <Button
-                android:id="@+id/btnPickBasketFinish"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:layout_gravity="bottom|center"
-                android:layout_margin="20dp"
-                android:backgroundTint="@color/mainColor"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="완료"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:cornerRadius="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvFB" />
+                app:layout_constraintTop_toBottomOf="@+id/tlFB"
+                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/btnPickBasketFinish"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="12dp"
+        android:backgroundTint="@color/mainColor"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:padding="16dp"
+        android:text="완료"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:cornerRadius="16dp" />
 
 </FrameLayout>

@@ -10,14 +10,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.PopupWindow
-import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
@@ -26,30 +24,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.dialog.FavoriteBSDialogFragment
-import com.tangoplus.tangoq.`object`.NetworkExerciseService
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.FavoriteItemVO
+import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteDetailBinding
-import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
-import com.tangoplus.tangoq.listener.OnMoreClickListener
-import com.tangoplus.tangoq.`object`.NetworkFavoriteService.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavoriteService.jsonToFavoriteItemVO
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
+import com.tangoplus.tangoq.`object`.NetworkFavorite.jsonToFavoriteItemVO
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
 class FavoriteDetailFragment : Fragment(){
     lateinit var binding : FragmentFavoriteDetailBinding
-    val viewModel : ExerciseViewModel by activityViewModels()
+    val viewModel : FavoriteViewModel by activityViewModels()
     var title = ""
     private var currentSn =  ""
     private var snData = JSONObject()
-    lateinit var FavoriteItem : FavoriteItemVO
-    lateinit var currentItem : FavoriteItemVO
+    lateinit var FavoriteItem : FavoriteVO
+    lateinit var currentItem : FavoriteVO
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     var popupWindow : PopupWindow?= null
     companion object {
@@ -194,10 +188,10 @@ class FavoriteDetailFragment : Fragment(){
         // ------! 플롯팅액션버튼 시작 !------
         binding.fabtnFDPlay.setOnClickListener {
             if (currentItem.exercises?.isNotEmpty() == true) {
-                    val resourceList = storePickUrl(viewModel)
+                    val urls = storeFavoriteUrl(viewModel)
 //                    Log.w("url in resourceList", "$resourceList")
                     val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-                    intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
+                    intent.putStringArrayListExtra("urls", ArrayList(urls))
                     startForResult.launch(intent)
                 } else {
                     val snackbar = Snackbar.make(requireView(), "운동을 추가해주세요 ! ", Snackbar.LENGTH_SHORT)
@@ -251,17 +245,17 @@ class FavoriteDetailFragment : Fragment(){
         }
     }
 
-    private fun storePickUrl(viewModel : ExerciseViewModel) : MutableList<String> {
-        val resourceList = mutableListOf<String>()
+    private fun storeFavoriteUrl(viewModel : FavoriteViewModel) : MutableList<String> {
+        val urls = mutableListOf<String>()
         val title = requireArguments().getString(ARG_TITLE).toString()
         val currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }
         Log.w("PreviousStoreURL", "$currentItem")
         for (i in 0 until currentItem!!.exercises!!.size) {
             val exercises = currentItem.exercises!!.get(i)
-            resourceList.add(exercises.videoFilepath.toString())
-            Log.w("Finish?storeUrl", "$resourceList")
+            urls.add(exercises.videoFilepath.toString())
+            Log.w("Finish?storeUrl", "$urls")
         }
-        return  resourceList
+        return  urls
     }
     fun getBitMapFromView(view: View) : Bitmap {
         val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)

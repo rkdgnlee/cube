@@ -36,11 +36,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:singleLine="true"
         android:text="목 관절 운동 프로그램"
         android:textColor="@color/black"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout13"
         app:layout_constraintStart_toEndOf="@+id/cardView11"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -51,20 +53,21 @@
         android:layout_height="18dp"
         android:layout_marginTop="4dp"
         android:maxLength="30"
+        android:singleLine="true"
         android:text="증상들 생략.."
         android:textColor="@color/subColor500"
         android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/tvBkName"
         app:layout_constraintStart_toStartOf="@+id/tvBkName"
         app:layout_constraintTop_toBottomOf="@+id/tvBkName" />
 
     <LinearLayout
+        android:id="@+id/linearLayout13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toEndOf="@+id/ivBkThumbnail">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
             android:id="@+id/ibtnBkMinus"

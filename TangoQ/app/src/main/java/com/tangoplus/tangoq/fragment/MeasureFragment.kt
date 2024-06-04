@@ -40,6 +40,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.tabs.TabLayout
+import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.adapter.PainPartRVAdpater
 import com.tangoplus.tangoq.data.Measurement
 
@@ -83,7 +84,10 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
         singletonInstance = Singleton_t_measure.getInstance(requireContext())
 
-
+        binding.ibtnMAlarm.setOnClickListener {
+            val intent = Intent(requireContext(), AlarmActivity::class.java)
+            startActivity(intent)
+        }
         // ------! tab & enum class 관리 시작 !------
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -96,13 +100,13 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                 // enum class 로 값 변경
                 when (measurement) {
                     Measurement.DAILY -> {
-                        binding.tvMsBalanceScore.text = "76"
+                        binding.tvMsBalanceScore.text = "76 점"
                     }
                     Measurement.WEEKLY -> {
-                        binding.tvMsBalanceScore.text = "90"
+                        binding.tvMsBalanceScore.text = "90 점"
                     }
                     Measurement.MONTHLY -> {
-                        binding.tvMsBalanceScore.text = "87"
+                        binding.tvMsBalanceScore.text = "87 점"
                     }
                     else -> {}
                 }
@@ -235,7 +239,8 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 //        }
         val weekList = listOf("월", "화", "수", "목", "금", "토", "일")
         for (i in weekList) {
-            lcDataList.add(GraphVO(i, Random.nextInt(99)))
+//            lcDataList.add(GraphVO(i, Random.nextInt(10)))
+            lcDataList.add(GraphVO(i, 1))
         }
         val lcEntries : MutableList<Entry> = mutableListOf()
         for (i in lcDataList.indices) {

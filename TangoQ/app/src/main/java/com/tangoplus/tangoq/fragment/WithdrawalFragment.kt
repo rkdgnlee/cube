@@ -49,7 +49,7 @@ class WithdrawalFragment : Fragment() {
 
 
         // ------! 화면 확장 및 세팅 & 싱글턴 초기화 시작 !------
-        (activity as MainActivity).setFullLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
+//        (activity as MainActivity).setFullLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
         binding.btnWd.isEnabled = false
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())
@@ -147,13 +147,13 @@ class WithdrawalFragment : Fragment() {
         binding.btnWd.backgroundTintList = colorStateList
         binding.btnWd.isEnabled = isChecked
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
+//    }
 }

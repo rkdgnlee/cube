@@ -14,9 +14,9 @@ import com.tangoplus.tangoq.fragment.FavoriteDetailFragment
 import com.tangoplus.tangoq.fragment.FavoriteEditFragment
 import com.tangoplus.tangoq.fragment.FavoriteFragment
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.FavoriteItemVO
+import com.tangoplus.tangoq.data.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBSDialogBinding
-import com.tangoplus.tangoq.`object`.NetworkFavoriteService.deleteFavoriteItemSn
+import com.tangoplus.tangoq.`object`.NetworkFavorite.deleteFavoriteItemSn
 
 
 class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
@@ -34,7 +34,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val bundle = arguments
-        val favorite = bundle?.getParcelable<FavoriteItemVO>("Favorite")
+        val favorite = bundle?.getParcelable<FavoriteVO>("Favorite")
         // ------! 즐겨찾기 홈에서 경로 설정 시작 !------
         if (favorite != null) {
 

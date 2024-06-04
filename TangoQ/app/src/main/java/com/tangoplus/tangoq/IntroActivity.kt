@@ -61,7 +61,7 @@ class IntroActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private var bannerPosition = Int.MAX_VALUE/2
-    private var bannerHandler = HomeBannerHandler()
+//    private var bannerHandler = HomeBannerHandler()
     private val intervalTime = 2200.toLong()
 
     @SuppressLint("NotifyDataSetChanged")
@@ -286,33 +286,29 @@ class IntroActivity : AppCompatActivity() {
 
         // -----! 배너 시작 !-----
 
-        val ImageUrl1 = "https://images.unsplash.com/photo-1572196459043-5c39f99a7555?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl2 = "https://images.unsplash.com/photo-1605558162119-2de4d9ff8130?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl3 = "https://images.unsplash.com/photo-1533422902779-aff35862e462?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl4 = "https://images.unsplash.com/photo-1587387119725-9d6bac0f22fb?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl5 = "https://images.unsplash.com/photo-1598449356475-b9f71db7d847?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        viewModel.BannerList.add(ImageUrl1)
-        viewModel.BannerList.add(ImageUrl2)
-        viewModel.BannerList.add(ImageUrl3)
-        viewModel.BannerList.add(ImageUrl4)
-        viewModel.BannerList.add(ImageUrl5)
 
-        val bannerAdapter = BannerVPAdapter(viewModel.BannerList, "intro",this@IntroActivity)
-        bannerAdapter.notifyDataSetChanged()
-        binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.vpIntroBanner.adapter = bannerAdapter
-        binding.vpIntroBanner.setCurrentItem(bannerPosition, false)
-        binding.vpIntroBanner.apply {
-            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageScrollStateChanged(state: Int) {
-                    super.onPageScrollStateChanged(state)
-                    when (state) {
-                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
-                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
-                    }
-                }
-            })
-        }
+//        viewModel.BannerList.add(ImageUrl1)
+//        viewModel.BannerList.add(ImageUrl2)
+//        viewModel.BannerList.add(ImageUrl3)
+//        viewModel.BannerList.add(ImageUrl4)
+//        viewModel.BannerList.add(ImageUrl5)
+//
+//        val bannerAdapter = BannerVPAdapter(viewModel.BannerList, "intro",this@IntroActivity)
+//        bannerAdapter.notifyDataSetChanged()
+//        binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+//        binding.vpIntroBanner.adapter = bannerAdapter
+//        binding.vpIntroBanner.setCurrentItem(bannerPosition, false)
+//        binding.vpIntroBanner.apply {
+//            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+//                override fun onPageScrollStateChanged(state: Int) {
+//                    super.onPageScrollStateChanged(state)
+//                    when (state) {
+//                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
+//                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
+//                    }
+//                }
+//            })
+//        }
 
     }
     private fun MainInit() {
@@ -320,29 +316,29 @@ class IntroActivity : AppCompatActivity() {
         startActivity(intent)
         finishAffinity()
     }
-    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            if (msg.what == 0 && viewModel.BannerList.isNotEmpty()) {
-                binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
-                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
-                val currentIndex = bannerPosition % viewModel.BannerList.size // 65536  % 5
+//    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
+//        override fun handleMessage(msg: Message) {
+//            super.handleMessage(msg)
+//            if (msg.what == 0 && viewModel.BannerList.isNotEmpty()) {
+//                binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
+//                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
+//                val currentIndex = bannerPosition % viewModel.BannerList.size // 65536  % 5
+//
+//                // ProgressBar의 값을 계산합니다.
+//                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
+//                autoScrollStart(intervalTime)
+//            }
+//        }
+//    }
 
-                // ProgressBar의 값을 계산합니다.
-                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
-                autoScrollStart(intervalTime)
-            }
-        }
-    }
-
-    private fun autoScrollStart(intervalTime: Long) {
-        bannerHandler.removeMessages(0)
-        bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
-
-    }
-    private fun autoScrollStop() {
-        bannerHandler.removeMessages(0)
-    } // -----! 배너 끝 !-----
+//    private fun autoScrollStart(intervalTime: Long) {
+//        bannerHandler.removeMessages(0)
+//        bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
+//
+//    }
+//    private fun autoScrollStop() {
+//        bannerHandler.removeMessages(0)
+//    } // -----! 배너 끝 !-----
 
     private fun setupInit() {
         val intent = Intent(this, SetupActivity::class.java)
@@ -354,13 +350,13 @@ class IntroActivity : AppCompatActivity() {
         setOnClickListener(OnSingleClickListener(listener))
     }
 
-    override fun onResume() {
-        super.onResume()
-        autoScrollStart(intervalTime)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        autoScrollStop()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        autoScrollStart(intervalTime)
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        autoScrollStop()
+//    }
 }

@@ -140,7 +140,7 @@
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cvRELine"
-                    android:layout_width="156dp"
+                    android:layout_width="128dp"
                     android:layout_height="4dp"
                     android:rotation="180"
                     app:cardBackgroundColor="@color/mainColor"

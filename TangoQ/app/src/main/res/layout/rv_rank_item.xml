@@ -6,6 +6,15 @@
     android:layout_height="240dp"
     android:background="@color/white">
 
+    <View
+        android:id="@+id/vR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/effect_ibtn_12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView6"
         android:layout_width="match_parent"
@@ -19,33 +28,93 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:id="@+id/pvR"
+<!--        <com.google.android.exoplayer2.ui.PlayerView-->
+<!--            android:id="@+id/pvR"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            app:use_controller="false" />-->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivRThumbnail1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                app:srcCompat="@color/mainColor" />
+
+            <ImageView
+                android:id="@+id/ivRThumbnail2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:visibility="visible"
+                app:srcCompat="@color/secondaryColor" />
+
+            <ImageView
+                android:id="@+id/ivRThumbnail3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:visibility="visible"
+                app:srcCompat="@color/conditionSuccessColor" />
+
+            <LinearLayout
+                android:id="@+id/llRThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+            </LinearLayout>
+        </LinearLayout>
+
     </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/ibtnRMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="18dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:backgroundTint="@color/white"
+        android:padding="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView6"
+        app:srcCompat="@drawable/icon_more_800" />
 
     <TextView
         android:id="@+id/tvRName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:text="제목"
         android:textColor="@color/subColor800"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvRanking" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView6" />
 
     <TextView
         android:id="@+id/tvRExplain"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:text="관절 부위 및 설명 "
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:maxLines="2"
+        android:singleLine="false"
+        android:text="관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 "
         android:textColor="@color/subColor800"
-        android:textSize="16sp"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/ibtnRMore"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvRName" />
 
@@ -53,46 +122,36 @@
         android:id="@+id/tvRCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="8dp"
         android:text="3개"
         android:textColor="@color/subColor800"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvRName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvRName" />
+        app:layout_constraintBottom_toBottomOf="@+id/imageView44"
+        app:layout_constraintStart_toEndOf="@+id/imageView44"
+        app:layout_constraintTop_toTopOf="@+id/imageView44"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/imageView44"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/tvRCount"
-        app:layout_constraintStart_toStartOf="@+id/imageView45"
-        app:layout_constraintTop_toTopOf="@+id/tvRCount"
+        android:layout_marginStart="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvRExplain"
         app:srcCompat="@drawable/icon_rv_summary_count" />
-
-    <ImageButton
-        android:id="@+id/ibtnRMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/effect_ibtn_12dp"
-        android:backgroundTint="@color/white"
-        android:padding="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView6"
-        app:srcCompat="@drawable/icon_more_800" />
 
     <TextView
         android:id="@+id/tvRTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
         android:text="2분 48초"
         android:textColor="@color/subColor800"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvRExplain"
+        app:layout_constraintBottom_toBottomOf="@+id/tvRCount"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvRExplain" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvRCount" />
 
     <ImageView
         android:id="@+id/imageView45"
@@ -102,19 +161,19 @@
         app:layout_constraintBottom_toBottomOf="@+id/tvRTime"
         app:layout_constraintEnd_toStartOf="@+id/tvRTime"
         app:layout_constraintTop_toTopOf="@+id/tvRTime"
-        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/icon_rv_summary_time" />
 
     <TextView
         android:id="@+id/tvRanking"
-        android:layout_width="10dp"
-        android:layout_height="28dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
         android:text="1"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView6" />
 

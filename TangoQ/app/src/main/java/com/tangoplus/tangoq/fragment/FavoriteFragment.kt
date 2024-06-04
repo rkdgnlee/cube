@@ -15,21 +15,21 @@ import com.tangoplus.tangoq.listener.OnFavoriteDetailClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.FavoriteItemVO
+import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBinding
 import com.tangoplus.tangoq.dialog.FavoriteAddDialogFragment
-import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.jsonToExerciseVO
-import com.tangoplus.tangoq.`object`.NetworkFavoriteService.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavoriteService.fetchFavoriteItemsJsonByMobile
+import com.tangoplus.tangoq.listener.OnFavoriteSelectedClickListener
+import com.tangoplus.tangoq.`object`.NetworkExercise.jsonToExerciseVO
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByMobile
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
-class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
+class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSelectedClickListener {
     lateinit var binding : FragmentFavoriteBinding
-    val viewModel : ExerciseViewModel by activityViewModels()
+    val viewModel : FavoriteViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,30 +60,20 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
         lifecycleScope.launch {
 
             // ------! 핸드폰 번호로 PickItems 가져오기 시작 !------
-            val pickList = fetchFavoriteItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), user_mobile.toString()) // user_mobile 넣기
+            val favoriteList = fetchFavoriteItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), user_mobile.toString()) // user_mobile 넣기
 
             // ------! list관리 시작 !------
-            if (pickList != null) {
+            if (favoriteList != null) {
 
                 viewModel.favoriteList.value?.clear()
                 viewModel.exerciseUnits.value?.clear()
-                for (i in 0 until pickList.length()) { // 즐겨찾기 루프
+                for (i in favoriteList.indices) { // 즐겨찾기 루프
                     // 일단 favorite 1
+                    val favoriteItem = favoriteList[i]
                     val imgList = mutableListOf<String>()
-                    val favoriteItem = FavoriteItemVO(
-                        imgThumbnailList = imgList,
-                        favoriteSn = pickList.getJSONObject(i).optInt("favorite_sn"),
-                        favoriteName = pickList.getJSONObject(i).optString("favorite_name"),
-                        favoriteRegDate = pickList.getJSONObject(i).optString("reg_date"),
-                        favoriteExplain = pickList.getJSONObject(i).optString("favorite_description"),
-                        favoriteTotalCount = (if ((pickList.getJSONObject(i).optString("exercise_ids")) == "null") 0 else (pickList.getJSONObject(i).optString("exercise_ids").split(",").size)).toString(),
-                        exercises = mutableListOf()
-                    ) // 각각의 FavoriteItemVO 만들고,  그후 추가적으로 조회해서 썸네일 넣기.
-
                     val exerciseItemBySn = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite),
                         favoriteItem.favoriteSn.toString()
                     )
-
                     // ------! 1 운동 항목에 넣기 !------
                     val exerciseUnits = mutableListOf<ExerciseVO>()
                     if (exerciseItemBySn != null) {
@@ -109,7 +99,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
                             Log.v("썸네일", "${imgList}")
                         }
                     }
-                    favoriteItem.imgThumbnailList = imgList
+                    favoriteItem.imgThumbnails = imgList
 
                     viewModel.favoriteList.value?.add(favoriteItem) // 썸네일, 시리얼넘버, 이름까지 포함한 dataclass로 만든 favoriteVO형식의 리스트
                     // 일단 운동은 비워놓고, detail에서 넣음
@@ -127,7 +117,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
                     binding.sflFV.stopShimmer()
                     binding.sflFV.visibility = View.GONE
                 }
-                val FavoriteRVAdapter = FavoriteRVAdapter(viewModel.favoriteList.value!!, this@FavoriteFragment, this@FavoriteFragment)
+                val FavoriteRVAdapter = FavoriteRVAdapter(viewModel.favoriteList.value!!, this@FavoriteFragment, this@FavoriteFragment, this@FavoriteFragment,"main")
                 binding.rvFv.adapter = FavoriteRVAdapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 binding.rvFv.layoutManager = linearLayoutManager
@@ -155,5 +145,8 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener {
             commit()
 
         }
+    }
+
+    override fun onFavoriteSelected(favoriteVO: FavoriteVO) {
     }
 }

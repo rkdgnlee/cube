@@ -36,7 +36,7 @@ class BannerVPAdapter(private val imageList: ArrayList<String>, private val cont
             val currentItem = imageList[position % 5]
             Glide.with(mContext)
                 .load(currentItem)
-                .override(200)
+                .override(1000)
                 .into(holder.img) // 어떤 수가 나와도 5로 나눈 "나머지 값" 순서의 데이터로 5단위 반복되도록 함.
         } else if (context == "main") {
             val currentItem = imageList[position % imageList.size]

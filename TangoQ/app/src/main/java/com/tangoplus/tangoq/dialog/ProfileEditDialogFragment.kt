@@ -54,8 +54,11 @@ class ProfileEditDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.nsvPfE.isNestedScrollingEnabled = false
+        binding.nsvPfE.isNestedScrollingEnabled = true
 
+        binding.ibtnPEBack.setOnClickListener {
+            dismiss()
+        }
         // -----! 이미지 로드 시작 !-----
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
 
@@ -70,28 +73,27 @@ class ProfileEditDialogFragment : DialogFragment() {
             }
         } // -----! 이미지 로드 끝 !-----
 
+        // ------! 싱글턴에서 가져오기 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
+
+        // ------! 이름, 전화번호 세팅 !------
+        binding.tvPEMobile.setText(userJson?.optString("user_mobile"))
+        binding.tvPEName.setText(userJson?.optString("user_name"))
 
         val userId = userJson?.optString("user_id")
         if (userId != null) {
             binding.etPEName.setText(userId)
             binding.etPEPassword.setText("************")
-            binding.etPEName.isEnabled = false
-            binding.etPEPassword.isEnabled = false
+//            binding.etPEName.isEnabled = false
+//            binding.etPEPassword.isEnabled = false
         }
-
-        binding.etPEMobile.setText(userJson?.optString("user_mobile"))
 
         val userEmail = userJson?.optString("user_email")
         if (userEmail != null) {
             binding.etPEEmailId.setText(userEmail.substring(0, userEmail.indexOf("@")))
         }
 
-        binding.etPEMobile.setText(userJson?.optString("user_mobile"))
 
-        binding.ibtnPEBack.setOnClickListener {
-            dismiss()
-        }
         binding.spnPE
         val domain_list = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
         binding.spnPE.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domain_list)

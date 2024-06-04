@@ -12,6 +12,7 @@
     <color name="subColor500">#959595</color>
     <color name="subColor700">#757575</color>
     <color name="subColor800">#454545</color>
+
     <color name="successColor">#45FF02</color>
     <color name="conditionSuccessColor">#7AA2E3</color>
     <color name="deleteColor">#FF3B30</color>

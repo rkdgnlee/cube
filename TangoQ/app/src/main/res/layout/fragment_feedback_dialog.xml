@@ -369,10 +369,10 @@
             android:id="@+id/textView81"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
             android:text="저강도"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
+            app:layout_constraintEnd_toStartOf="@+id/textView82"
             app:layout_constraintStart_toEndOf="@+id/textView80" />
 
         <TextView
@@ -382,18 +382,18 @@
             android:text="보통이다"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
-            app:layout_constraintEnd_toStartOf="@+id/textView83"
-            app:layout_constraintStart_toEndOf="@+id/textView81" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/textView83"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
             android:text="고강도"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgIntensity"
-            app:layout_constraintEnd_toStartOf="@+id/textView84" />
+            app:layout_constraintEnd_toStartOf="@+id/textView84"
+            app:layout_constraintStart_toEndOf="@+id/textView82" />
 
         <TextView
             android:id="@+id/textView84"
@@ -494,10 +494,10 @@
             android:id="@+id/textView76"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
             android:text="미약한 통증"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
+            app:layout_constraintEnd_toStartOf="@+id/textView77"
             app:layout_constraintStart_toEndOf="@+id/textView75" />
 
         <TextView
@@ -507,19 +507,19 @@
             android:text="보통"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
-            app:layout_constraintEnd_toStartOf="@+id/textView78"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.484"
-            app:layout_constraintStart_toEndOf="@+id/textView76" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/textView78"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
             android:text="상당한 통증"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgFatigue"
-            app:layout_constraintEnd_toStartOf="@+id/textView79" />
+            app:layout_constraintEnd_toStartOf="@+id/textView79"
+            app:layout_constraintStart_toEndOf="@+id/textView77" />
 
         <TextView
             android:id="@+id/textView79"
@@ -548,49 +548,48 @@
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbtnSatisfaction1"
                 style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbtnSatisfaction2"
                 style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="48dp"
-                android:layout_weight="0"
+                android:layout_weight="1"
+                android:gravity="center|center_vertical"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbtnSatisfaction3"
                 style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="48dp"
-                android:layout_marginRight="48dp"
-                android:layout_weight="0"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal|center_vertical"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbtnSatisfaction4"
                 style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="48dp"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbtnSatisfaction5"
                 style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white" />
         </RadioGroup>
@@ -612,20 +611,19 @@
             android:id="@+id/textView85"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:text="많이 아쉽다"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/rgSatisfaction" />
 
         <TextView
             android:id="@+id/textView86"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
             android:text="아쉽다"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
+            app:layout_constraintEnd_toStartOf="@+id/textView87"
             app:layout_constraintStart_toEndOf="@+id/textView85" />
 
         <TextView
@@ -635,28 +633,27 @@
             android:text="보통이다"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
-            app:layout_constraintEnd_toStartOf="@+id/textView88"
-            app:layout_constraintStart_toEndOf="@+id/textView86" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/textView88"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="48dp"
             android:text="만족"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
-            app:layout_constraintEnd_toStartOf="@+id/textView89" />
+            app:layout_constraintEnd_toStartOf="@+id/textView89"
+            app:layout_constraintStart_toEndOf="@+id/textView87" />
 
         <TextView
             android:id="@+id/textView89"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
             android:text="매우 만족"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/rgSatisfaction"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/rgSatisfaction" />
 
         <FrameLayout
             android:id="@+id/frameLayout2"

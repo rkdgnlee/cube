@@ -14,32 +14,27 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
-import com.tangoplus.tangoq.adapter.ExerciseJointTypeRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
-import com.tangoplus.tangoq.`object`.NetworkExerciseService
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.fetchCategoryAndSearch
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.fetchExerciseJsonByType
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
 import kotlinx.coroutines.launch
 
 
 class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseDetailBinding
     var filteredDataList = mutableListOf<ExerciseVO>()
-    val viewModel : ExerciseViewModel by activityViewModels()
+    val viewModel : FavoriteViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentExerciseDetailBinding.inflate(inflater)
-        (activity as? MainActivity)?.setTopLayoutFull(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
+//        (activity as? MainActivity)?.setTopLayoutFull(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
 
         return binding.root
@@ -102,13 +97,9 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         lifecycleScope.launch {
             // TODO 여기서 CATEGORY에 맞게도 필터링 되야 함.
 
-            filteredDataList  = fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_Exercise_Description), categoryId!!, searchId!!)
+            filteredDataList  = fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_exercise_description), categoryId!!, searchId!!)
             // ------! 자동완성 시작 !------
-            val keywordList = mutableListOf<String>()
-            for (i in 0 until filteredDataList.size) {
-                keywordList.add(filteredDataList[i].exerciseName.toString())
-            }
-            val adapterActv = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, keywordList)
+
 //            binding.actvEDSearch.setAdapter(adapterActv)
 //
 //            binding.actvEDSearch.setOnItemClickListener { parent, view, position, id ->
@@ -133,6 +124,13 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
                 binding.rvEDAll.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 binding.rvEDAll.layoutManager = linearLayoutManager
+
+                if (filteredDataList.isEmpty()) {
+                    binding.tvGuideNull.visibility = View.VISIBLE
+                } else {
+                    binding.tvGuideNull.visibility = View.INVISIBLE
+                }
+
 //                // ------! rv vertical 끝 !------
 
                 val filterList = arrayListOf<String>()
@@ -212,15 +210,15 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         adapter.notifyDataSetChanged()
     }
 
-    override fun onPause() {
-        super.onPause()
-        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-    }
+//    override fun onPause() {
+//        super.onPause()
+//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
+//    }
+//
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
+//    }
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -229,6 +227,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
                 replace(R.id.flMain, ExerciseFragment())
                 commit()
             }
+
         }
     }
 }

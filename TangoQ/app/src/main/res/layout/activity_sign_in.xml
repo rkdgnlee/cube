@@ -405,54 +405,58 @@
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/tvTelecom"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/etMobile"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:id="@+id/linearLayout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/background_stroke_1dp_sub_color"
-                    android:ems="10"
-                    android:hint="휴대폰 번호를 입력해주세요"
-                    android:inputType="phone"
-                    android:paddingLeft="12dp"
-                    android:paddingTop="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
-                    android:textColorHint="@color/subColor100"
-                    android:textSize="18sp"
-                    app:layout_constraintEnd_toStartOf="@+id/btnAuthSend"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnAuthSend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_gravity="bottom"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/mainColor"
-                    android:enabled="false"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:stateListAnimator="@null"
-                    android:text="인증번호 전송"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    app:cornerRadius="12dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/etMobile"
+                    android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/etMobile" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+                    <EditText
+                        android:id="@+id/etMobile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/background_stroke_1dp_sub_color"
+                        android:ems="10"
+                        android:hint="휴대폰 번호를 입력해주세요"
+                        android:inputType="phone"
+                        android:paddingLeft="12dp"
+                        android:paddingTop="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="16dp"
+                        android:textColorHint="@color/subColor100"
+                        android:textSize="18sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnAuthSend"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="bottom"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/mainColor"
+                        android:enabled="false"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:stateListAnimator="@null"
+                        android:text="인증번호 전송"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/linearLayout"
@@ -502,7 +506,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/background_stroke_1dp_sub_color"
                     android:ems="10"
@@ -516,7 +519,7 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/etMobile" />
+                    tools:layout_editor_absoluteY="176dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnAuthConfirm"

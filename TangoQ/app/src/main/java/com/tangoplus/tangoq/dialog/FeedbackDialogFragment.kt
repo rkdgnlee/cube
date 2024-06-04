@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,19 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import org.json.JSONObject
 
 class FeedbackDialogFragment : DialogFragment() {
     lateinit var binding: FragmentFeedbackDialogBinding
-    val viewModel: ExerciseViewModel by activityViewModels()
+    val viewModel: FavoriteViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

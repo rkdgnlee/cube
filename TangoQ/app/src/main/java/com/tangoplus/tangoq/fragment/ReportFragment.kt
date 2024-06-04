@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.Bundle
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
@@ -25,6 +27,7 @@ import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
+import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ReportRVAdapter
 import com.tangoplus.tangoq.databinding.FragmentReportBinding
@@ -60,27 +63,35 @@ class ReportFragment : Fragment(), OnReportClickListener {
         singletonInstance = Singleton_t_measure.getInstance(requireContext())
 
         // ------! 분석 뱃지 시작 !------
-        BadgeDrawable.create(requireContext()).apply {
-
+        val badgeDrawable = BadgeDrawable.create(requireContext()).apply {
             backgroundColor = ContextCompat.getColor(requireContext(), R.color.deleteColor)
-//            badgeTextColor = ContextCompat.getColor(requireContext(), R.color.textColor)
-            badgeGravity = BadgeDrawable.TOP_START
-        }.let {
-            binding.tvRBadge.foreground = it
-            binding.flR.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-                BadgeUtils.attachBadgeDrawable(it, binding.tvRBadge, binding.flR)
-            }
+            badgeGravity = BadgeDrawable.TOP_END
+            horizontalOffset = 8  // 원하는 가로 간격 (픽셀 단위)
+            verticalOffset = 8  // 원하는 세로 간격 (픽셀 단위)
         }
 
-            // ------! 분석 뱃지 끝 !------
 
+        val layoutParams = binding.tvRBadge.layoutParams as FrameLayout.LayoutParams
+        layoutParams.marginEnd = 16  // 오른쪽 마진
+        layoutParams.topMargin = 16  // 위쪽 마진
+        binding.tvRBadge.layoutParams = layoutParams
+
+        // 뱃지를 View에 연결
+        binding.flR.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            BadgeUtils.attachBadgeDrawable(badgeDrawable, binding.tvRBadge, binding.flR)
+        } // ------! 분석 뱃지 끝 !------
+
+        binding.ibtnRAlarm.setOnClickListener {
+            val intent = Intent(requireContext(), AlarmActivity::class.java)
+            startActivity(intent)
+        }
 
 
         // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
-        binding.cvR.setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
-        binding.cvR.scrollToMonth(currentMonth)
-        binding.cvR.monthScrollListener = { month ->
+        binding.cvRCalendar.setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
+        binding.cvRCalendar.scrollToMonth(currentMonth)
+        binding.cvRCalendar.monthScrollListener = { month ->
             currentMonth = month.yearMonth
             binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
         }
@@ -88,7 +99,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
-                binding.cvR.scrollToMonth(currentMonth)
+                binding.cvRCalendar.scrollToMonth(currentMonth)
             }
         }
 
@@ -98,10 +109,10 @@ class ReportFragment : Fragment(), OnReportClickListener {
             } else {
                 currentMonth = currentMonth.minusMonths(1)
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
-                binding.cvR.scrollToMonth(currentMonth)
+                binding.cvRCalendar.scrollToMonth(currentMonth)
             }
         }
-        binding.cvR.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthHeaderViewContainer> {
+        binding.cvRCalendar.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthHeaderViewContainer> {
             override fun create(view: View) = MonthHeaderViewContainer(view)
             override fun bind(container: MonthHeaderViewContainer, month: CalendarMonth) {
                 // 여기에서 month 정보를 사용하여 header view를 업데이트 할 수 있습니다.
@@ -116,7 +127,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
             }
         }
 
-        binding.cvR.dayBinder = object : MonthDayBinder<DayViewContainer> {
+        binding.cvRCalendar.dayBinder = object : MonthDayBinder<DayViewContainer> {
             override fun bind(container: DayViewContainer, day: CalendarDay) {
                 container.date.text = day.date.dayOfMonth.toString()
                 container.date.textSize = 20f
@@ -150,9 +161,9 @@ class ReportFragment : Fragment(), OnReportClickListener {
                     val oldDate = selectedDate
                     selectedDate = day.date
                     if (oldDate != null) {
-                        binding.cvR.notifyDateChanged(oldDate)
+                        binding.cvRCalendar.notifyDateChanged(oldDate)
                     }
-                    binding.cvR.notifyDateChanged(day.date)
+                    binding.cvRCalendar.notifyDateChanged(day.date)
                 }
             }
             override fun create(view: View): DayViewContainer {

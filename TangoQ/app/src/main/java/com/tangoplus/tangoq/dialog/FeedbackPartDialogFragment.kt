@@ -6,8 +6,6 @@ import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +15,9 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackPartDialogBinding
-import com.tangoplus.tangoq.`object`.NetworkMeasureService.insertMeasurePartsByJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 
 

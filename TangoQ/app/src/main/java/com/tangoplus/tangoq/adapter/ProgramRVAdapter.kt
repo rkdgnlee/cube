@@ -1,32 +1,39 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.dialog.RecommendBSDialogFragment
 import com.tangoplus.tangoq.listener.OnRVClickListener
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.RvProgramItemBinding
 import com.tangoplus.tangoq.databinding.RvRankItemBinding
+import com.tangoplus.tangoq.dialog.LoginDialogFragment
+import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
 import java.lang.IllegalArgumentException
 
-class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVClickListener: OnRVClickListener, val fragment : Fragment, val xmlname: String)
+class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVClickListener: OnRVClickListener, val fragment : Fragment, val xmlname: String, private val startForResult: ActivityResultLauncher<Intent>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private lateinit var player: ExoPlayer
+    var popupWindow : PopupWindow?= null
         inner class horizonViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val ivRcmThumbnail = view.findViewById<ImageView>(R.id.ivRcmThumbnail)
             val tvRcmExerciseName = view.findViewById<TextView>(R.id.tvRcmExerciseName)
@@ -37,13 +44,18 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
             val vRcmPlay = view.findViewById<View>(R.id.vRcmPlay)
         }
     inner class rankViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val ivRThumbnail1 = view.findViewById<ImageView>(R.id.ivRThumbnail1)
+//        val llRThumbnail = view.findViewById<ImageView>(R.id.llRThumbnail)
+        val ivRThumbnail2 = view.findViewById<ImageView>(R.id.ivRThumbnail2)
+        val ivRThumbnail3 = view.findViewById<ImageView>(R.id.ivRThumbnail3)
         val tvRanking = view.findViewById<TextView>(R.id.tvRanking)
         val tvRName = view.findViewById<TextView>(R.id.tvRName)
         val tvRExplain = view.findViewById<TextView>(R.id.tvRExplain)
         val ibtnRMore = view.findViewById<ImageButton>(R.id.ibtnRMore)
         val tvRCount = view.findViewById<TextView>(R.id.tvRCount)
         val tvRTime = view.findViewById<TextView>(R.id.tvRTime)
-        val pvR = view.findViewById<PlayerView>(R.id.pvR)
+//        val pvR = view.findViewById<PlayerView>(R.id.pvR)
+        val vR = view.findViewById<View>(R.id.vR)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -74,6 +86,7 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = programs[position]
+
         when (holder) {
             is horizonViewHolder -> {
                 holder.tvRcmExerciseName.text = currentItem.programName
@@ -82,7 +95,11 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                     "향상" -> "중급자"
                     else -> "초급자"
                 }
-                holder.tvRcmExerciseTime.text = currentItem.programTime
+                holder.tvRcmExerciseTime.text = (if (currentItem.programTime <= 60) {
+                    "${currentItem.programTime}초"
+                } else {
+                    "${currentItem.programTime / 60}분 ${currentItem.programTime % 60}초"
+                }).toString()
                 holder.tvRcmExerciseKcal.text = currentItem.programCount
                 holder.ibtnRcmMore.setOnClickListener {
                     val bsFragment = RecommendBSDialogFragment()
@@ -106,41 +123,134 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
             }
             is rankViewHolder -> {
                 holder.tvRName.text = currentItem.programName
-                holder.tvRanking.text = position.toString()
-                holder.tvRTime.text = currentItem.programTime
-                holder.tvRCount.text = currentItem.programCount
+                holder.tvRanking.text = "${position + 1}"
+                holder.tvRTime.text = (if (currentItem.programTime <= 60) {
+                    "${currentItem.programTime}초"
+                } else {
+                    "${currentItem.programTime / 60}분 ${currentItem.programTime % 60}초"
+                }).toString()
+                holder.tvRCount.text = "${currentItem.programCount} 개"
                 holder.tvRExplain.text = currentItem.programDescription
+
                 // ------! more 버튼 시작 !------
-                holder.ibtnRMore.setOnClickListener {
+                holder.ibtnRMore.setOnClickListener { view ->
+                    if (popupWindow?.isShowing == true) {
+                        popupWindow?.dismiss()
+                        popupWindow =  null
+                    } else {
+                        val inflater = LayoutInflater.from(view?.context)
+                        val popupView = inflater.inflate(R.layout.pw_main_item, null)
+                        val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view?.context?.resources?.displayMetrics).toInt()
+                        val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 162f, view?.context?.resources?.displayMetrics).toInt()
+
+                        popupWindow = PopupWindow(popupView, width, height)
+                        popupWindow!!.showAsDropDown(view)
+
+                        // ------! 팝업 1 재생 시작 !------
+                        popupView.findViewById<TextView>(R.id.tvPWPlay).setOnClickListener {
+                            val urls = storePickUrl(currentItem.exercises!!)
+                            val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
+                            intent.putStringArrayListExtra("urls", ArrayList(urls))
+                            fragment.requireContext().startActivity(intent)
+                            startForResult.launch(intent)
+                            popupWindow!!.dismiss()
+                        } // ------! 팝업 1 재생 시작 !------
+                        popupView.findViewById<TextView>(R.id.tvPWGoThumbnail).setOnClickListener {
+                            val dialogFragment = PlayThumbnailDialogFragment().apply {
+                                arguments = Bundle().apply {
+                                    putParcelable("ExerciseUnit", currentItem.exercises!![0])
+                                }
+                            }
+                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                            popupWindow!!.dismiss()
+                        } // -------! 팝업 즐겨찾기 추가 !------
+                        popupView.findViewById<TextView>(R.id.tvPWAddFavorite).setOnClickListener {
+                            val bundle = Bundle().apply {
+                                putParcelable("Program", currentItem)
+                            }
+                            val dialog = ProgramAddFavoriteDialogFragment().apply {
+                                arguments = bundle
+                            }
+                            dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramAddFavoriteDialogFragment")
+                            popupWindow!!.dismiss()
+                        }
+                        popupView.findViewById<ImageButton>(R.id.ibtnPWExit).setOnClickListener {
+                            popupWindow!!.dismiss()
+                        }
+                        popupWindow!!.isOutsideTouchable = true
+                        popupWindow!!.isFocusable = true
+                    }
+
 
                 } // ------! more 버튼 끝 !------
 
-                player = ExoPlayer.Builder(fragment.requireContext()).build()
-                holder.pvR.player = player
-                val mediaItem = MediaItem.fromUri(currentItem.programVideoUrl.toString())
-                player.setMediaItem(mediaItem)
-                player.prepare()
-                player.seekTo(40000)
-                player.play()
-                player.pause()
+                // -------! 이미지 썸네일 시작 !------
+                Glide.with(holder.itemView.context)
+                    .load(currentItem.imgThumbnails!![2])
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivRThumbnail1)
+                Glide.with(holder.itemView.context)
+                    .load(currentItem.imgThumbnails!![1])
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivRThumbnail2)
+                Glide.with(holder.itemView.context)
+                    .load(currentItem.imgThumbnails!![0])
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivRThumbnail3)
 
-                holder.pvR.setOnTouchListener { v, event ->
-                    when (event.action) {
-                        MotionEvent.ACTION_DOWN -> {
-                            player.play()
-                        }
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                            player.stop()
-                        }
-                    }
-                    true
+                // -------! 이미지 썸네일 끝 !------
+
+                // -------! 클릭 재생 시작 !-------
+                holder.vR.setOnClickListener {
+                    val urls = storePickUrl(currentItem.exercises!!)
+                    val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
+                    intent.putStringArrayListExtra("urls", ArrayList(urls))
+                    fragment.requireContext().startActivity(intent)
+                    startForResult.launch(intent)
                 }
+
+//                val trackSelector = DefaultTrackSelector(fragment.requireContext())
+//                val parametersBuilder = trackSelector.buildUponParameters()
+//                parametersBuilder.setMaxVideoSize(640, 360) // 해상도 제한 설정
+//                trackSelector.parameters = parametersBuilder.build()
+//
+//                player = ExoPlayer.Builder(fragment.requireContext())
+//                    .setTrackSelector(trackSelector)
+//                    .build()
+//                holder.pvR.player = player
+//                val mediaItem = MediaItem.fromUri(currentItem.programVideoUrl.toString())
+//                player.setMediaItem(mediaItem)
+//                player.prepare()
+//                player.seekTo(20000)
+//                player.play()
+//                player.pause()
+//
+//                holder.pvR.setOnTouchListener { v, event ->
+//                    when (event.action) {
+//                        MotionEvent.ACTION_DOWN -> {
+//                            player.play()
+//                        }
+//                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+//                            player.stop()
+//                        }
+//                    }
+//                    true
+//                }
             }
         }
     }
-
+    // TODO exoplayer에서 5초 뒤로가기 앞으로 가기 해야함
+    private fun storePickUrl(currentItem : MutableList<ExerciseVO>) : MutableList<String> {
+        val urls = mutableListOf<String>()
+        for (i in currentItem.indices) {
+            val exercise = currentItem[i]
+            urls.add(exercise.videoFilepath.toString())
+        }
+        Log.v("urls", "${urls}")
+        return urls
+    }
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
-        player.release()
+//        player.release()
     }
 }

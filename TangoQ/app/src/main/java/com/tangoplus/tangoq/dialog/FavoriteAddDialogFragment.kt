@@ -4,31 +4,28 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.FavoriteItemVO
+import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteAddDialogBinding
 import com.tangoplus.tangoq.fragment.FavoriteFragment
-import com.tangoplus.tangoq.`object`.NetworkFavoriteService.insertFavoriteItemJson
+import com.tangoplus.tangoq.`object`.NetworkFavorite.insertFavoriteItemJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import org.json.JSONObject
 
 
 class FavoriteAddDialogFragment : DialogFragment() {
     lateinit var binding : FragmentFavoriteAddDialogBinding
-    val viewModel : ExerciseViewModel by activityViewModels()
+    val viewModel : FavoriteViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -83,12 +80,12 @@ class FavoriteAddDialogFragment : DialogFragment() {
 //                    imgThumbnailList = mutableListOf(),
 //                )
                 val data = responseJson?.getJSONArray("seletedData")?.optJSONObject(0)?.optJSONObject("data")
-                val newFavoriteItem = FavoriteItemVO(
+                val newFavoriteItem = FavoriteVO(
                     favoriteSn = data!!.getInt("favorite_sn"),
                     favoriteName = data.optString("favorite_name"),
                     favoriteExplain = data.optString("favorite_description"),
                     exercises = mutableListOf(),
-                    imgThumbnailList = mutableListOf(),
+                    imgThumbnails = mutableListOf(),
                 )
 //                requireActivity().runOnUiThread {
 //                    val updatedList = viewModel.favoriteList.value?.toMutableList() ?: mutableListOf()

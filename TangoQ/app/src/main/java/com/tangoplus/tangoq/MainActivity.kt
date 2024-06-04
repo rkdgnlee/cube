@@ -6,17 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.view.View
-import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.fragment.app.Fragment
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -27,8 +24,7 @@ import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.FavoriteFragment
@@ -42,14 +38,13 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.Stack
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     val mViewModel : MeasureViewModel by viewModels()
-    val eViewModel : ExerciseViewModel by viewModels()
+    val eViewModel : FavoriteViewModel by viewModels()
     lateinit var requestPermissions : ActivityResultLauncher<Set<String>>
-    val backStack = Stack<Int>()
+//    val backStack = Stack<Int>()
     var selectedTabId = R.id.main
     lateinit var  healthConnectClient : HealthConnectClient
     val endTime = LocalDateTime.now()
@@ -73,12 +68,14 @@ class MainActivity : AppCompatActivity() {
         // ------! 다크모드 메뉴 이름 설정 시작 !------
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         val isNightMode = uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
-        binding.tvCurrentPage.text = (if (isNightMode) "내정보" else "내정보")
+//        binding.tvCurrentPage.text = (if (isNightMode) "내정보" else "내정보")
         // ------! 다크모드 메뉴 이름 설정 끝 !------
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // -----! 초기 화면 설정 !-----
         if (savedInstanceState == null) {
-            backStack.push(selectedTabId)
+//            backStack.push(selectedTabId)
             setCurrentFragment(selectedTabId)
         }
         binding.bnbMain.itemIconTintList = null
@@ -87,27 +84,19 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.setOnItemSelectedListener {
             if (selectedTabId != it.itemId) {
                 selectedTabId = it.itemId
-                if (backStack.isEmpty() || backStack.peek() != it.itemId) {
-                    backStack.push(it.itemId)
-                }
+//                if (backStack.isEmpty() || backStack.peek() != it.itemId) {
+//                    backStack.push(it.itemId)
+//                }
             }
 
-            setTopLayoutFull(binding.flMain, binding.clMain)
+//            setTopLayoutFull(binding.flMain, binding.clMain)
             setCurrentFragment(selectedTabId)
-            binding.tvCurrentPage.text = when (it.itemId) {
-                // ---- fragment 경로 지정 시작 ----
-                R.id.main -> "메인"
-                R.id.exercise -> "운동"
-                R.id.measure -> "측정"
-                R.id.favorite -> ""
-                R.id.profile -> "내정보"
-                else -> ""
-            }
-            if (it.itemId == R.id.favorite || it.itemId == R.id.exercise) {
-                setTopLayoutFull(binding.flMain, binding.clMain)
-            } else {
-                setOptiLayout(binding.flMain,  binding.clMain ,binding.cvCl)
-            }
+
+//            if (it.itemId == R.id.favorite || it.itemId == R.id.exercise) {
+//                setTopLayoutFull(binding.flMain, binding.clMain)
+//            } else {
+//                setOptiLayout(binding.flMain,  binding.clMain ,binding.cvCl)
+//            }
             true
 
         }
@@ -124,10 +113,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.ibtnAlarm.setOnClickListener {
-            val intent = Intent(this@MainActivity, AlarmActivity::class.java)
-            startActivity(intent)
-        }
+//        binding.ibtnAlarm.setOnClickListener {
+//            val intent = Intent(this@MainActivity, AlarmActivity::class.java)
+//            startActivity(intent)
+//        }
 
         // ------! 헬스 커넥트 연동 데이터 가져오기 시작 !------
         val providerPackageName = "com.google.android.apps.healthdata"
@@ -189,33 +178,33 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
     }
-    fun setFullLayout(frame: FrameLayout, const : ConstraintLayout) {
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(const)
-        constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
-        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0)
-        constraintSet.applyTo(const)
-        binding.cvCl.visibility = View.GONE
-        binding.bnbMain.visibility = View.GONE
-    }
-
-    fun setTopLayoutFull(frame: FrameLayout, const: ConstraintLayout) {
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(const)
-        constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
-        constraintSet.applyTo(const)
-        binding.cvCl.visibility = View.GONE
-
-    }
-    fun setOptiLayout(frame: FrameLayout, const: ConstraintLayout, cardView: CardView) {
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(const)
-        constraintSet.connect(frame.id, ConstraintSet.TOP, cardView.id, ConstraintSet.BOTTOM, 0)
-        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, binding.bnbMain.id, ConstraintSet.TOP, 0)
-        constraintSet.applyTo(const)
-        binding.cvCl.visibility = View.VISIBLE
-        binding.bnbMain.visibility = View.VISIBLE
-    }
+//    fun setFullLayout(frame: FrameLayout, const : ConstraintLayout) {
+//        val constraintSet = ConstraintSet()
+//        constraintSet.clone(const)
+//        constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
+//        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0)
+//        constraintSet.applyTo(const)
+//        binding.cvCl.visibility = View.GONE
+//        binding.bnbMain.visibility = View.GONE
+//    }
+//
+//    fun setTopLayoutFull(frame: FrameLayout, const: ConstraintLayout) {
+//        val constraintSet = ConstraintSet()
+//        constraintSet.clone(const)
+//        constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
+//        constraintSet.applyTo(const)
+//        binding.cvCl.visibility = View.GONE
+//
+//    }
+//    fun setOptiLayout(frame: FrameLayout, const: ConstraintLayout, cardView: CardView) {
+//        val constraintSet = ConstraintSet()
+//        constraintSet.clone(const)
+//        constraintSet.connect(frame.id, ConstraintSet.TOP, cardView.id, ConstraintSet.BOTTOM, 0)
+//        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, binding.bnbMain.id, ConstraintSet.TOP, 0)
+//        constraintSet.applyTo(const)
+//        binding.cvCl.visibility = View.VISIBLE
+//        binding.bnbMain.visibility = View.VISIBLE
+//    }
 
 
 //    private val onBackPressedCallback = object: OnBackPressedCallback(true) {
@@ -350,17 +339,44 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 //    }
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (backStack.size > 1) {
-            backStack.pop()
-            val itemId = backStack.peek()
-            binding.bnbMain.selectedItemId = itemId
-            selectedTabId = itemId
-            setCurrentFragment(itemId)
-        } else {
-            super.onBackPressed()
+//    @Deprecated("Deprecated in Java")
+//    override fun onBackPressed() {
+//        if (backStack.size > 1) {
+//            backStack.pop()
+//            val itemId = backStack.peek()
+//            binding.bnbMain.selectedItemId = itemId
+//            selectedTabId = itemId
+//            setCurrentFragment(itemId)
+//        } else {
+//            super.onBackPressed()
+//        }
+//    }
+
+    // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
+    private var backPressedOnce = false
+    private val backPressHandler = Handler(Looper.getMainLooper())
+    private val backPressRunnable = Runnable { backPressedOnce = false }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (backPressedOnce) {
+                // 뒤로 가기 버튼이 두 번 눌렸으므로, 콜백을 비활성화하고 super.onBackPressed()를 호출
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            } else {
+                // 처음 눌렸을 때
+                backPressedOnce = true
+                Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+                backPressHandler.postDelayed(backPressRunnable, 1000)
+            }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // 핸들러의 콜백을 제거하여 메모리 누수를 방지
+        backPressHandler.removeCallbacks(backPressRunnable)
+    }
+    // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
 }
 

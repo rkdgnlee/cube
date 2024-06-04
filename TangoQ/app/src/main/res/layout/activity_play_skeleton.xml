@@ -58,6 +58,7 @@
         android:id="@+id/ivPSFrame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/view_finder"
         app:layout_constraintEnd_toEndOf="@+id/view_finder"
         app:layout_constraintStart_toStartOf="parent"

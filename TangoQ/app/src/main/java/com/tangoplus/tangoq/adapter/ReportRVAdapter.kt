@@ -30,7 +30,6 @@ import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignEnd
 import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.databinding.RvRecommendItemBinding
 import com.tangoplus.tangoq.databinding.RvReportExpandedItemBinding
 import com.tangoplus.tangoq.dialog.LoginDialogFragment
 import com.tangoplus.tangoq.dialog.PoseViewDialogFragment

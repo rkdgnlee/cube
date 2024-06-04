@@ -4,20 +4,20 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class ProgramVO(
-    var programImageUrl : String? = "",
-    var programVideoUrl : String? = "",
+    var programSn :Int = 0,
+    var imgThumbnails : MutableList<String>?,
     var programName : String? = "",
-    var programTime : String? = "",
+    var programTime : Int = 0,
     var programStage : String? = "",
     var programDescription : String? = "",
     var programCount : String? = "",
     var exercises : MutableList<ExerciseVO>?
 ): Parcelable {
     constructor(parcel: Parcel): this(
+        parcel.readInt(),
+        parcel.createStringArrayList(),
         parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
+        parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -27,10 +27,10 @@ data class ProgramVO(
     override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(programImageUrl)
-        dest.writeString(programVideoUrl)
+        dest.writeInt(programSn)
+        dest.writeStringList(imgThumbnails)
         dest.writeString(programName)
-        dest.writeString(programTime)
+        dest.writeInt(programTime)
         dest.writeString(programDescription)
         dest.writeString(programStage)
         dest.writeString(programCount)
