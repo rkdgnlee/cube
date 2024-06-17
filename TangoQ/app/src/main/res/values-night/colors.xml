@@ -4,11 +4,12 @@
     <color name="white">#000000</color>
     <color name="mainColor">#0CDCDC</color>
     <color name="subColor100">#454545</color>
-    <color name="subColor200">#676767</color>
-    <color name="subColor250">#959595</color>
-    <color name="subColor300">#C8C8C8</color>
-    <color name="subColor500">#D6D6D6</color>
-    <color name="subColor700">#D9D9D9</color>
+    <color name="subColor150">#757575</color>
+    <color name="subColor200">#959595</color>
+    <color name="subColor300">#AEAEAE</color>
+    <color name="subColor400">#C8C8C8</color>
+    <color name="subColor500">#D9D9D9</color>
+    <color name="subColor700">#DFDFE0</color>
     <color name="subColor800">#F5F5F5</color>
     <color name="successColor">#45FF02</color>
     <!--    <color name="failColor">#FFA100</color>-->

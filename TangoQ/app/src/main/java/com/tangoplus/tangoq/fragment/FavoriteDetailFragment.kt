@@ -10,14 +10,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.PopupWindow
-import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
@@ -26,29 +24,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.dialog.FavoriteBSDialogFragment
-import com.tangoplus.tangoq.`object`.NetworkExerciseService
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.jsonToFavoriteItemVO
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.FavoriteItemVO
+import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteDetailBinding
-import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
-import com.tangoplus.tangoq.listener.OnMoreClickListener
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
+import com.tangoplus.tangoq.`object`.NetworkFavorite.jsonToFavoriteItemVO
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
 class FavoriteDetailFragment : Fragment(){
     lateinit var binding : FragmentFavoriteDetailBinding
-    val viewModel : ExerciseViewModel by activityViewModels()
+    val viewModel : FavoriteViewModel by activityViewModels()
     var title = ""
     private var currentSn =  ""
     private var snData = JSONObject()
-    lateinit var FavoriteItem : FavoriteItemVO
-    lateinit var currentItem : FavoriteItemVO
+    lateinit var FavoriteItem : FavoriteVO
+    lateinit var currentItem : FavoriteVO
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     var popupWindow : PopupWindow?= null
     companion object {
@@ -91,7 +86,7 @@ class FavoriteDetailFragment : Fragment(){
 
         // -----! singleton에서 전화번호 가져오기 시작 !-----
         val t_userData = Singleton_t_user.getInstance(requireContext())
-        val user_mobile = t_userData.jsonObject?.optString("user_mobile")
+
         // -----! singleton에서 전화번호 가져오기 끝 !-----
 
         /** ============================= 흐름 =============================
@@ -110,11 +105,12 @@ class FavoriteDetailFragment : Fragment(){
             binding.sflFV.startShimmer()
 
 
-            snData = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)!!
+            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)!!
             FavoriteItem = jsonToFavoriteItemVO(snData)
 //
 //            // ------! 즐겨찾기 넣어서 가져오기 !------
-            currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!
+            currentItem = viewModel.favoriteList.value?.find { it.favoriteSn == currentSn.toInt() }!!
+            Log.v("Detail>CurrentItem", "sn: ${currentItem.favoriteSn} ,갯수: ${currentItem.imgThumbnails!!.size}")
             currentItem.exercises = FavoriteItem.exercises
             currentSn = currentItem.favoriteSn.toString()
             setFVDetail(currentItem.favoriteSn.toString())
@@ -167,9 +163,13 @@ class FavoriteDetailFragment : Fragment(){
             it.isClickable = true
         }
         binding.ibtnFDMore.setOnClickListener {
+            // ------! img bytearray로 만들기가 안됨.
+
+
             val bsFragment = FavoriteBSDialogFragment()
             val bundle = Bundle()
-            Log.v("currentItem상태", "$currentItem")
+            Log.v("currentItem상태", "${currentItem.exercises?.size}")
+
             bundle.putParcelable("Favorite", currentItem)
             bsFragment.arguments = bundle
             val fragmentManager = requireActivity().supportFragmentManager
@@ -180,7 +180,7 @@ class FavoriteDetailFragment : Fragment(){
         // -----! 편집 버튼 시작 !-----
         binding.btnFVEdit.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, FavoriteEditFragment.newInstance(title))
 
 
@@ -193,10 +193,10 @@ class FavoriteDetailFragment : Fragment(){
         // ------! 플롯팅액션버튼 시작 !------
         binding.fabtnFDPlay.setOnClickListener {
             if (currentItem.exercises?.isNotEmpty() == true) {
-                    val resourceList = storePickUrl(viewModel)
-                    Log.w("url in resourceList", "$resourceList")
+                    val urls = storeFavoriteUrl(viewModel)
+//                    Log.w("url in resourceList", "$resourceList")
                     val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-                    intent.putStringArrayListExtra("resourceList", ArrayList(resourceList))
+                    intent.putStringArrayListExtra("urls", ArrayList(urls))
                     startForResult.launch(intent)
                 } else {
                     val snackbar = Snackbar.make(requireView(), "운동을 추가해주세요 ! ", Snackbar.LENGTH_SHORT)
@@ -217,7 +217,7 @@ class FavoriteDetailFragment : Fragment(){
         lifecycleScope.launch {
             binding.sflFV.startShimmer()
             Log.v("현재 Sn", sn)
-            snData = NetworkExerciseService.fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn)!!
+            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn)!!
             FavoriteItem = jsonToFavoriteItemVO(snData)
 
             currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!
@@ -231,7 +231,7 @@ class FavoriteDetailFragment : Fragment(){
                 binding.sflFV.visibility = View.GONE
             }
 
-            Log.w("detail>currentItem", "$currentItem")
+//            Log.w("detail>currentItem", "$currentItem")
             binding.tvFDExplain.text = currentItem.favoriteExplain.toString()
             val RvAdapter = ExerciseRVAdapter(this@FavoriteDetailFragment, currentItem.exercises!!, "main")
             RvAdapter.exerciseList = currentItem.exercises!!
@@ -243,24 +243,24 @@ class FavoriteDetailFragment : Fragment(){
             var totalTime = 0
             for (i in 0 until currentItem.exercises!!.size) {
                 val exercises = currentItem.exercises!!.get(i)
-                Log.w("운동각 시간" ,"${exercises.videoTime!!.toInt()}")
-                totalTime += exercises.videoTime!!.toInt()
+//                Log.w("운동각 시간" ,"${exercises.videoDuration!!.toInt()}")
+                totalTime += exercises.videoDuration!!.toInt()
             }
             Log.w("총 시간", "$totalTime")
         }
     }
 
-    private fun storePickUrl(viewModel : ExerciseViewModel) : MutableList<String> {
-        val resourceList = mutableListOf<String>()
+    private fun storeFavoriteUrl(viewModel : FavoriteViewModel) : MutableList<String> {
+        val urls = mutableListOf<String>()
         val title = requireArguments().getString(ARG_TITLE).toString()
         val currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }
         Log.w("PreviousStoreURL", "$currentItem")
         for (i in 0 until currentItem!!.exercises!!.size) {
             val exercises = currentItem.exercises!!.get(i)
-            resourceList.add(exercises.videoFilepath.toString())
-            Log.w("Finish?storeUrl", "$resourceList")
+            urls.add(exercises.videoFilepath.toString())
+            Log.w("Finish?storeUrl", "$urls")
         }
-        return  resourceList
+        return  urls
     }
     fun getBitMapFromView(view: View) : Bitmap {
         val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)

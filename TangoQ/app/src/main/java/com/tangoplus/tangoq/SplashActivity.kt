@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
+import androidx.security.crypto.MasterKeys
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -26,14 +30,16 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.`object`.NetworkUserService
+import com.tangoplus.tangoq.`object`.NetworkUser
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -54,6 +60,8 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        Log.v("keyhash", Utility.getKeyHash(this))
 
         // ----- API 초기화 시작 -----
         NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "TangoQ")
@@ -139,11 +147,11 @@ class SplashActivity : AppCompatActivity() {
                                     jsonObj.put("naver_login_id", jsonBody?.optString("id"))
                                     jsonObj.put("user_mobile", naverMobile)
                                     // -----! 전화번호 변환 !-----
-                                    val encodedNaverMobile = URLEncoder.encode(naverMobile, "UTF-8")
+                                    val encodedNaverEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                     if (naverMobile != null) {
-                                        fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedNaverMobile, false) { jsonObject ->
+                                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedNaverEmail) { jsonObject ->
                                             if (jsonObject != null) {
-                                                NetworkUserService.StoreUserInSingleton(this@SplashActivity, jsonObject)
+                                                NetworkUser.StoreUserInSingleton(this@SplashActivity, jsonObject)
                                                 Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                             }
                                             MainInit()
@@ -162,9 +170,9 @@ class SplashActivity : AppCompatActivity() {
                                 if (task.isSuccessful) {
                                     val JsonObj = JSONObject()
                                     JsonObj.put("google_login_id", user.uid)
-                                    fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("google_login_id"), true) {jsonObject ->
+                                    getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("google_login_id")) {jsonObject ->
                                         if (jsonObject != null) {
-                                            NetworkUserService.StoreUserInSingleton(this, jsonObject)
+                                            NetworkUser.StoreUserInSingleton(this, jsonObject)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
                                         MainInit()
@@ -194,25 +202,33 @@ class SplashActivity : AppCompatActivity() {
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 JsonObj.put("kakao_login_id" , user.id.toString())
-                                Log.w("${ContentValues.TAG}, Spl카카오회원가입", JsonObj.getString("user_mobile"))
+                                Log.w("Spl카카오회원가입", JsonObj.getString("user_email"))
 
 
-                                val encodedKakaoMobile = URLEncoder.encode(kakaoMobile, "UTF-8")
+                                val encodedKakaoEmail = URLEncoder.encode(JsonObj.getString("user_email"), "UTF-8")
 
-                                fetchSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedKakaoMobile, false) {jsonObject ->
+                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedKakaoEmail) {jsonObject ->
                                     if (jsonObject != null) {
-                                        NetworkUserService.StoreUserInSingleton(this, jsonObject)
+                                        NetworkUser.StoreUserInSingleton(this, jsonObject)
                                         Log.e("Spl카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
                                     }
                                     MainInit()
                                 }
                             }
                         }
-                    } else {
+                    }
+                    else if (getEncryptedJwtToken(this@SplashActivity) != null) {
+                        val token = getEncryptedJwtToken(this@SplashActivity)
+                        //TODO 자체 로그인 토큰 존재 확인해야함 ! -> token으로 값을 다 받아올건지. token으로 select하는 api가 필요함.
+                    }
+                    else {
                         // 로그인 정보가 없을 경우
                         IntroInit()
                     }
                 }, 1500)
+
+
+
                 // ----- 카카오 토큰 있음 끝 -----
                 // ---- 화면 경로 설정 끝 ----
             }
@@ -225,31 +241,6 @@ class SplashActivity : AppCompatActivity() {
                 )
             }
         }
-
-
-
-    }
-    fun fetchSELECTJson(
-        myUrl: String, identifier:String, isGoogleId: Boolean,
-        callback: (JSONObject?) -> Unit
-    ){
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url(if (isGoogleId) "${myUrl}read.php?google_login_id=$identifier" else "${myUrl}read.php?user_mobile=$identifier")
-            .get()
-            .build()
-
-        client.newCall(request).enqueue(object : Callback  {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("OKHTTP3", "Failed to execute request!")
-            }
-            override fun onResponse(call: Call, response: Response)  {
-                val responseBody = response.body?.string()
-                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
-                val jsonObj__ = responseBody?.let { JSONObject(it) }
-                callback(jsonObj__)
-            }
-        })
     }
 
     private fun permissionCheck() {
@@ -288,5 +279,60 @@ class SplashActivity : AppCompatActivity() {
         val intent = Intent(this@SplashActivity, IntroActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    // 토큰 저장
+    private fun saveEncryptedJwtToken(context: Context, token: String, expirationTime: Long) {
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val sharedPreferences : SharedPreferences = EncryptedSharedPreferences.create(
+            "loginEncryptPrefs", masterKeyAlias, context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+        val editor : SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putString("jwt_token", token)
+        editor.putLong("token_expiration_time", expirationTime)
+        editor.apply()
+    }
+
+    // 토큰 로드
+    private fun getEncryptedJwtToken(context: Context): String? {
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
+            "loginEncryptPrefs",
+            masterKeyAlias,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+        val token = sharedPreferences.getString("jwt_token", null)
+        val expirationTime = sharedPreferences.getLong("token_expiration_time", 0)
+        if (token != null && System.currentTimeMillis() > expirationTime) {
+            Log.v("JWT", "Token has expired")
+            return null
+        }
+        return token
+    }
+
+    // 토큰 갱신
+    private fun refreshJwtToken(context: Context): String? {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://yourserver.com/api/token/refresh")
+            .header("Authorization", "Bearer " + getEncryptedJwtToken(context)) // 만료된 토큰을 보내 새 토큰을 요청
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            return if (response.isSuccessful) {
+                val newToken = response.body?.string()
+                val newExpirationTime = System.currentTimeMillis() + 24 * 60 * 60 * 1000 // 24시간 유효기간
+                if (newToken != null) {
+                    saveEncryptedJwtToken(context, newToken, newExpirationTime)
+                }
+                newToken
+            } else {
+                null
+            }
+        }
     }
 }

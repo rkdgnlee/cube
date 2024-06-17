@@ -32,6 +32,8 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
         setContentView(binding.root)
 
         binding.imgbtnbckAlarm.setOnClickListener {
+//            val intent = Intent(this@AlarmActivity, MainActivity::class.java)
+//            startActivity(intent)
             finish()
         }
         val db = Room.databaseBuilder(
@@ -43,16 +45,16 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
             val messages = messageDao.getAllMessages().toMutableList()
 
             withContext(Dispatchers.Main) {
-//                val alarmList = mutableListOf(
-//                    Message(1, "즉시 시작할 것", route = "home_intermediate" ),
-//                    Message(2, "미션이 부여됐습니다", route = "pick"),
-//                    Message(3,"운동 마무리 루틴", route = "report_goal"),
-//                    Message(4,"기기 연결이 완료 됐습니다.", route = "profile")
-//                )
+                val alarmList = mutableListOf<Message>(
+//                    Message(1, "즉시 시작할 것", timestamp =  0 ,route = "home_intermediate" ),
+//                    Message(2, "미션이 부여됐습니다", timestamp =  3 , route = "pick"),
+//                    Message(3,"운동 마무리 루틴", timestamp =  20 ,route = "report_goal"),
+//                    Message(4,"기기 연결이 완료 됐습니다.", timestamp =  388 , route = "profile")
+                )
                 // -----! alarm touchhelper 연동 시작 !-----
-                val alarmRecyclerViewAdapter = AlarmRVAdapter(messages, this@AlarmActivity, this@AlarmActivity)
+                val alarmRecyclerViewAdapter = AlarmRVAdapter(alarmList, this@AlarmActivity, this@AlarmActivity)
                 val SwipeHelperCallback = SwipeHelperCallback().apply {
-                    setClamp(275f)
+                    setClamp(250f)
                 }
 
                 val itemTouchHelper = ItemTouchHelper(SwipeHelperCallback)

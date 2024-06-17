@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.callback
 import android.graphics.Canvas
 import android.icu.lang.UCharacter
 import android.view.View
+import android.widget.TextView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.adapter.AlarmRVAdapter
@@ -48,6 +49,7 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
         setTag(viewHolder, !isClamped && currentDx <= -clamp)
         return 2f
     }
+
     override fun onChildDraw(
         c: Canvas,
         recyclerView: RecyclerView,
@@ -61,7 +63,8 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
             val view = getView(viewHolder)
             val isClamped = getTag(viewHolder)      // 고정할지 말지 결정, true : 고정함 false : 고정 안 함
             val newX = clampViewPositionHorizontal(dX, isClamped, isCurrentlyActive)  // newX 만큼 이동(고정 시 이동 위치/고정 해제 시 이동 위치 결정)
-
+            val tvAlarmDelete: View = viewHolder.itemView.findViewById(R.id.tvAlarmDelete)
+            val clSwipe : View = viewHolder.itemView.findViewById(R.id.clSwipe)
             // 고정시킬 시 애니메이션 추가
             if (newX == -clamp) {
                 getView(viewHolder).animate().translationX(-clamp).setDuration(80L).start()
@@ -78,6 +81,16 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
                 actionState,
                 isCurrentlyActive
             )
+            if (dX < 0) { // 슬라이드했을 때의
+                val deleteButtonWidth = tvAlarmDelete.width.toFloat()
+                if (tvAlarmDelete.x >= clSwipe.x) {
+                    val translationX = dX.coerceAtLeast(-deleteButtonWidth)
+                    tvAlarmDelete.translationX = translationX
+                } else { // 스와이프 되돌릴 때
+                    tvAlarmDelete.translationX = 0f
+                    tvAlarmDelete.alpha = 0f
+                }
+            }
         }
     }
     // swipe_view 를 swipe 했을 때 <삭제> 화면이 보이도록 고정

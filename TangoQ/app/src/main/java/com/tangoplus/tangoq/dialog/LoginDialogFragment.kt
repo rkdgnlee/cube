@@ -15,7 +15,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.MainActivity
-import com.tangoplus.tangoq.`object`.NetworkUserService
+import com.tangoplus.tangoq.`object`.NetworkUser
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.SignInViewModel
@@ -38,15 +38,15 @@ class LoginDialogFragment : DialogFragment() {
 
 
         // ------! 로그인 시작 !------
-        val idPattern = "^[a-zA-Z0-9]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
+        val idPattern = "^[\\s\\S]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
         val IdPattern = Pattern.compile(idPattern)
-        val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&.^])[A-Za-z[0-9]$@$!%*#?&.^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
+        val pwPattern = "^[\\s\\S]{4,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴 ^[a-zA-Z0-9]{6,20}$
         val Pwpattern = Pattern.compile(pwPattern)
         binding.etLiId.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                viewModel.id = s.toString()
+                viewModel.id.value = s.toString()
                 viewModel.currentidCon.value = IdPattern.matcher(binding.etLiId.text.toString()).find()
                 Log.v("아이디비밀번호", "${viewModel.currentidCon.value} ,${viewModel.idPwCondition.value}")
 
@@ -56,7 +56,7 @@ class LoginDialogFragment : DialogFragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                viewModel.pw = s.toString()
+                viewModel.pw.value = s.toString()
                 viewModel.currentPwCon.value = Pwpattern.matcher(binding.etLiPw.text.toString()).find()
                 Log.v("아이디비밀번호", "${viewModel.currentPwCon.value} ,${viewModel.idPwCondition.value}")
             }
@@ -68,12 +68,12 @@ class LoginDialogFragment : DialogFragment() {
 //        }
         binding.btnLiLogin.setOnClickListener {
             if (viewModel.idPwCondition.value == true) {
-                NetworkUserService.getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), viewModel.id, viewModel.pw) { jsonObj ->
+                NetworkUser.getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), viewModel.id.value.toString(), viewModel.pw.value.toString()) { jsonObj ->
                     Log.v("json", "${jsonObj?.getInt("status")}")
                     if (jsonObj?.getInt("status") == 201) { // 기존에 정보가 있을 경우 - 로그인 성공
                         requireActivity().runOnUiThread {
                             viewModel.User.value = null
-                            NetworkUserService.StoreUserInSingleton(requireContext(), jsonObj)
+                            NetworkUser.StoreUserInSingleton(requireContext(), jsonObj)
                             Log.e("로그인>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             startActivity(intent)
@@ -99,7 +99,6 @@ class LoginDialogFragment : DialogFragment() {
 
         // ------! 비밀번호 및 아이디 찾기 시작 !------
     }
-
 
     override fun onResume() {
         super.onResume()

@@ -1,20 +1,27 @@
 package com.tangoplus.tangoq.adapter
 
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvPainPartItemBinding
 import com.tangoplus.tangoq.databinding.RvSelectPainPartItemBinding
+import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
+import com.tangoplus.tangoq.fragment.ReportDiseaseFragment
+import com.tangoplus.tangoq.fragment.ReportFragment
 import java.lang.IllegalArgumentException
 
-class PainPartRVAdpater(var parts: MutableList<Triple<String, String, Boolean>>, var xmlname: String ,private val onPartCheckListener: OnPartCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PainPartRVAdpater(val fragment: Fragment, var parts: MutableList<Triple<String, String, Boolean>>, var xmlname: String ,private val onPartCheckListener: OnPartCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var popupWindow : PopupWindow?= null
     inner class selectPpViewHolder(view: View) :RecyclerView.ViewHolder(view) {
         val tvSPp = view.findViewById<TextView>(R.id.tvSPp)
         val ivSPp = view.findViewById<ImageView>(R.id.ivSPp)
@@ -67,6 +74,46 @@ class PainPartRVAdpater(var parts: MutableList<Triple<String, String, Boolean>>,
                 currentItem.first, "drawable", holder.itemView.context.packageName
             )
             holder.ivPp.setImageResource(resourceId)
+
+            holder.ibtnPpMore.setOnClickListener{ view ->
+                if (popupWindow?.isShowing == true) {
+                    popupWindow?.dismiss()
+                    popupWindow =  null
+                } else {
+                    val inflater = LayoutInflater.from(view?.context)
+                    val popupView = inflater.inflate(R.layout.pw_pain_part_item, null)
+                    val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view.context.resources.displayMetrics).toInt()
+                    val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  162f, view.context.resources.displayMetrics).toInt()
+
+                    popupWindow = PopupWindow(popupView, width, height)
+                    popupWindow?.showAsDropDown(view)
+                    popupView.findViewById<TextView>(R.id.tvPPP1).setOnClickListener {
+                        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                            add(R.id.flMain, ReportDiseaseFragment())
+                            commit()
+                        }
+                        popupWindow!!.dismiss()
+                    }
+                    popupView.findViewById<TextView>(R.id.tvPPP2).setOnClickListener {
+                        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                            add(R.id.flMain, ReportFragment())
+                            commit()
+                        }
+                        popupWindow!!.dismiss()
+                    }
+                    popupView.findViewById<TextView>(R.id.tvPPP3).setOnClickListener {
+                        val dialog = PoseViewDialogFragment.newInstance(currentItem.second)
+                        dialog.show(fragment.requireActivity().supportFragmentManager, "PoseViewDialogFragment")
+                        popupWindow!!.dismiss()
+                    }
+                    popupWindow!!.isOutsideTouchable = true
+                    popupWindow!!.isFocusable = true
+                    popupView.findViewById<ImageButton>(R.id.ibtnPPPExit).setOnClickListener { popupWindow!!.dismiss() }
+                }
+
+            }
             // ------! 점수 상승 icon control 시작 !------
             holder.ivPpDone.visibility = View.GONE
             holder.ivPpDown.visibility = View.GONE
@@ -87,6 +134,7 @@ class PainPartRVAdpater(var parts: MutableList<Triple<String, String, Boolean>>,
                     false -> holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_disabled)
                 }
             }
+            // ------! 값 보존 !------
             when (currentItem.third) {
                 true -> {
                     holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_enabled)

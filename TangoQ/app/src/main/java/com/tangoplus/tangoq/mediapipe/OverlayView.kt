@@ -71,9 +71,30 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                         pointPaint
                     )
                 }
+
                 // ------! 기울기 라인 적기 !------
                 PoseLandmarker.POSE_LANDMARKS.forEach {
-                    if (it!!.start() !in 1..6 && it.start() !in 9..10 && it.start() !in 17..18 && it.start() !in 21..22 && it.start() !in 31..32) {
+                    // ------! 코와 어깨 좌표 가져오기 !------
+                    val noseX = poseLandmarkerResult.landmarks().get(0).get(0).x() * imageWidth * scaleFactor
+                    val noseY = poseLandmarkerResult.landmarks().get(0).get(0).y() * imageHeight * scaleFactor
+                    val leftShoulderX = poseLandmarkerResult.landmarks().get(0).get(11).x() * imageWidth * scaleFactor
+                    val leftShoulderY = poseLandmarkerResult.landmarks().get(0).get(11).y() * imageHeight * scaleFactor
+
+                    val rightShoulderX = poseLandmarkerResult.landmarks().get(0).get(12).x() * imageWidth * scaleFactor
+                    val rightShoulderY = poseLandmarkerResult.landmarks().get(0).get(12).y() * imageHeight * scaleFactor
+
+                    val midShoulderX = (leftShoulderX + rightShoulderX) / 2
+                    val midShoulderY = (leftShoulderY + rightShoulderY) / 2
+
+                    canvas.drawLine(
+                        noseX,
+                        noseY,
+                        midShoulderX,
+                        midShoulderY,
+                        linePaint
+                    )
+
+                    if (it!!.start() !in 1..10 && it.start() !in 17..22 && it.start() !in 29..32) {
                         val x1 = poseLandmarkerResult.landmarks().get(0).get(it.start()).x() * imageWidth * scaleFactor
                         val y1 = poseLandmarkerResult.landmarks().get(0).get(it.start()).y() * imageHeight * scaleFactor
                         val x2 = poseLandmarkerResult.landmarks().get(0).get(it.end()).x() * imageWidth * scaleFactor
@@ -81,11 +102,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
                         val slope = (y2 - y1) / (x2 - x1)
 
-                        canvas.drawText(
-                            "%.2f".format(slope),
-                            (x1 + x2) / 2,
-                            (y1 + y2)  / 2,
-                            textPaint)
+//                        canvas.drawText(
+//                            "%.2f".format(slope),
+//                            (x1 + x2) / 2,
+//                            (y1 + y2)  / 2,
+//                            textPaint)
                         canvas.drawLine(
                             x1,
                             y1,
@@ -102,12 +123,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     val y = poseLandmarkerResult.landmarks().get(0).get(index).y() * imageHeight * scaleFactor
 
                     // 거리를 화면에 표시
-                    canvas.drawText(
-                        "%.2f".format(distance),
-                        poseLandmarkerResult.landmarks().get(0).get(index).x() * imageWidth * scaleFactor,
-                        y,
-                        textPaint
-                    )
+//                    canvas.drawText(
+//                        "%.2f".format(distance),
+//                        poseLandmarkerResult.landmarks().get(0).get(index).x() * imageWidth * scaleFactor,
+//                        y,
+//                        textPaint
+//                    )
                 }
             }
         }

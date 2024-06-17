@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentReportDiseaseBinding
 
@@ -27,10 +28,9 @@ class ReportDiseaseFragment : Fragment() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, ReportFragment())
-                addToBackStack(null)
+
                 commit()
             }
         }
     }
-
 }

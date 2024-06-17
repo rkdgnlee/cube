@@ -15,19 +15,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.callback.ItemTouchCallback
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.updateFavoriteItemJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.FavoriteViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentFavoriteEditBinding
+import com.tangoplus.tangoq.`object`.NetworkFavorite.updateFavoriteItemJson
 import org.json.JSONArray
 import org.json.JSONObject
 
 
 class FavoriteEditFragment : Fragment() {
     lateinit var binding: FragmentFavoriteEditBinding
-    val viewModel: ExerciseViewModel by activityViewModels()
+    val viewModel: FavoriteViewModel by activityViewModels()
     var title = ""
     companion object {
         private const val ARG_TITLE = "title"
@@ -153,10 +153,9 @@ class FavoriteEditFragment : Fragment() {
         binding.fabtnFEFinish.setOnClickListener {
             updatePickEdit()
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, FavoriteDetailFragment.newInstance(title))
-
-                remove(FavoriteDetailFragment()).commit()
+                remove(FavoriteDetailFragment())
+                commit()
             }
         } // -----! 즐겨찾기 하나 만들기 끝 !-----
     }
@@ -173,13 +172,6 @@ class FavoriteEditFragment : Fragment() {
         currentEditItem.favoriteName = binding.etFEName.text.toString()
         currentEditItem.favoriteExplain = binding.etFEExplain.text.toString()
         currentEditItem.exercises = viewModel.exerciseUnits.value?.toMutableList()
-//        val pickItem = FavoriteItemVO(
-//            favoriteSn = index?.let { viewModel.favoriteList.value!![it].favoriteSn }!!,
-//            favoriteTotalTime = viewModel.favoriteList.value.find { it.favoriteSn ==  },
-//            favoriteName = binding.etFEName.text.toString(),
-//            favoriteExplain = binding.etFEExplain.text.toString(),
-//            exercises = viewModel.exerciseUnits.value?.toMutableList(),
-//        )
         Log.w("PickItemSave", "시리얼넘버: ${currentEditItem.favoriteSn}, 운동들: ${currentEditItem.favoriteName}")
 
         viewModel.favoriteList.value?.set(index, currentEditItem)
@@ -189,28 +181,36 @@ class FavoriteEditFragment : Fragment() {
 
         if (favoriteitem != null) {
             viewModel.favoriteList.value?.set(index, favoriteitem)
+
         }
         title = currentEditItem.favoriteName.toString()
 
 
-
+        // ------! 운동 리스트, 썸네일 중복없이 담기 시작 !------
         val descriptionIdList = mutableListOf<Int>()
+        val imgThumbnails = mutableSetOf<String>()
         for (i in 0 until (viewModel.exerciseUnits.value?.size ?: Log.w(ContentValues.TAG, "unvalid Data"))) {
-            viewModel.exerciseUnits.value?.get(i)?.exerciseDescriptionId?.let {
+            viewModel.exerciseUnits.value?.get(i)?.exerciseId?.let {
                 descriptionIdList.add(
-                    it)
+                    it.toInt())
             }
+            // 업데이트 할 운동 목록에서 이미지 썸네일 받아오기
+            imgThumbnails.add(viewModel.exerciseUnits.value?.get(i)?.imageFilePathReal.toString())
         }
-        Log.w("DscIDList", "${descriptionIdList}")
+        Log.v("DscIDList", "${descriptionIdList}")
+        Log.v("imgThumbnails", "${imgThumbnails}")
+        // ------! 운동 리스트, 썸네일 중복없이 담기 끝 !------
+
         // -----! json으로 변환 후 update 시작 !-----
         val JsonObj = JSONObject()
         JsonObj.put("favorite_name", currentEditItem.favoriteName)
-        JsonObj.put("exercise_description_ids", JSONArray(descriptionIdList))
+        JsonObj.put("exercise_ids", JSONArray(descriptionIdList))
         JsonObj.put("favorite_description", currentEditItem.favoriteExplain)
-        Log.w("JsonExerciseIdList","${JsonObj.get("exercise_description_ids")}")
+        Log.w("JsonExerciseIdList","${JsonObj.get("exercise_ids")}")
         Log.w("updateJsonInBody", "$JsonObj")
         updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), currentEditItem.favoriteSn.toString(), JsonObj.toString()) {
-            // TODO 반환된 값으로 뭐 해도 되고 안해도 됨.
+            viewModel.favoriteList.value!![index].imgThumbnails = imgThumbnails.toMutableList()
+
         }
         viewModel.exerciseUnits.value?.clear()
         // -----! json으로 변환 후 update 끝 !-----

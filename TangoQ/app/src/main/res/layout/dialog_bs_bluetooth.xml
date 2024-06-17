@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout15"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_bottomsheet"
@@ -114,23 +115,12 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView92"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="기기연결 : "
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/tvBtBSDeviceName"
-        app:layout_constraintEnd_toStartOf="@+id/tvBtBSDeviceName"
-        app:layout_constraintTop_toTopOf="@+id/tvBtBSDeviceName" />
-
-    <TextView
         android:id="@+id/tvBtBSDeviceName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="디바이스네임"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="@+id/imageView34"
-        app:layout_constraintHorizontal_bias="0.60"
         app:layout_constraintStart_toStartOf="@+id/imageView34"
         app:layout_constraintTop_toBottomOf="@+id/imageView34" />
 

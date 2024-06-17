@@ -21,14 +21,17 @@ class MeasureViewModel : ViewModel() {
 
     @SuppressLint("SuspiciousIndentation")
     fun addPart(part: Triple<String, String, Boolean>) {
-        val updatedPart = parts.value?.toMutableList()
-        if (updatedPart?.contains(part) == false)
-        updatedPart.add(part)
+        val updatedPart = parts.value?.toMutableList() ?: mutableListOf()
+        if (!updatedPart.contains(part)) {
+            updatedPart.add(part)
+        }
         parts.value = updatedPart
     }
+
     fun deletePart(part: Triple<String, String, Boolean>) {
-        val updatedPart = parts.value?.toMutableList()
-        updatedPart?.removeAll { it.first == part.first }
+        val updatedPart = parts.value?.toMutableList() ?: mutableListOf()
+        updatedPart.removeAll { it.first == part.first }
         parts.value = updatedPart
     }
+
 }

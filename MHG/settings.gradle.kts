@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_EXPRESSION")
-
 pluginManagement {
     repositories {
         google()

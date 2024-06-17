@@ -34,9 +34,14 @@ class BannerVPAdapter(private val imageList: ArrayList<String>, private val cont
 
         if (context == "intro") {
             val currentItem = imageList[position % 5]
-            Glide.with(mContext).load(currentItem).into(holder.img) // 어떤 수가 나와도 5로 나눈 "나머지 값" 순서의 데이터로 5단위 반복되도록 함.
+            Glide.with(mContext)
+                .load(currentItem)
+                .override(1000)
+                .fitCenter()
+                .into(holder.img) // 어떤 수가 나와도 5로 나눈 "나머지 값" 순서의 데이터로 5단위 반복되도록 함.
+
         } else if (context == "main") {
-            val currentItem = imageList[position % 4]
+            val currentItem = imageList[position % imageList.size]
             val resourceId = holder.itemView.context.resources.getIdentifier(
                 currentItem, "drawable", holder.itemView.context.packageName
             )

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout57"
     android:layout_width="match_parent"
     android:layout_height="110dp"
     android:background="@color/white">
@@ -18,56 +19,42 @@
         android:id="@+id/ivEditDrag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="12dp"
         android:background="@color/white"
+        android:padding="8dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_drag" />
 
-    <ImageView
-        android:id="@+id/ivEditThumbnail"
-        android:layout_width="90dp"
-        android:layout_height="0dp"
-
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:clipToOutline="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/background_button" />
-
     <TextView
         android:id="@+id/tvEditName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:singleLine="true"
         android:text="목 관절 운동 프로그램"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ivEditDrag"
-        app:layout_constraintStart_toEndOf="@+id/ivEditThumbnail"
-        app:layout_constraintTop_toTopOf="@+id/ivEditThumbnail"
+        app:layout_constraintStart_toEndOf="@+id/cardView12"
+        app:layout_constraintTop_toTopOf="@+id/cardView12"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/tvEditSymptom"
         android:layout_width="0dp"
         android:layout_height="18dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
-        android:maxLength="30"
+        android:singleLine="true"
         android:text="증상들 생략.."
-        android:textColor="@color/subColor500"
 
+        android:textColor="@color/subColor500"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/ivEditDrag"
         app:layout_constraintStart_toStartOf="@+id/tvEditName"
@@ -78,20 +65,20 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivEditThumbnail"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView12"
         app:layout_constraintStart_toStartOf="@+id/tvEditSymptom"
         app:layout_constraintTop_toBottomOf="@+id/tvEditSymptom"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.9"
         app:srcCompat="@drawable/icon_rv_summary_time" />
 
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView14"
-        app:layout_constraintStart_toEndOf="@+id/textView14"
-        app:layout_constraintTop_toTopOf="@+id/textView14"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+        app:layout_constraintEnd_toStartOf="@+id/ivEditDrag"
+        app:layout_constraintStart_toEndOf="@+id/cardView12"
+        app:layout_constraintTop_toTopOf="@+id/imageView5"
         app:srcCompat="@drawable/icon_rv_summary_intensity" />
 
     <TextView
@@ -100,6 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="25"
+        android:textColor="@color/subColor800"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
@@ -111,23 +99,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="회복"
-        android:textColor="@color/black"
+        android:textColor="@color/subColor800"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView6"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="@+id/imageView6" />
-
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="분"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvEditTime"
-        app:layout_constraintStart_toEndOf="@+id/tvEditTime"
-        app:layout_constraintTop_toTopOf="@+id/tvEditTime" />
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
@@ -136,4 +112,27 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView12"
+        android:layout_width="90dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivEditThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:clipToOutline="true"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/background_button" />
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

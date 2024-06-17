@@ -28,6 +28,7 @@
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout26"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white">
@@ -36,9 +37,10 @@
                 android:id="@+id/ibtnFEBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/white"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:padding="4dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_arrow_left"
                 app:layout_constraintStart_toStartOf="parent"

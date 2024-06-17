@@ -1,5 +1,8 @@
 package com.tangoplus.tangoq.dialog
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -12,11 +15,9 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackPartDialogBinding
-import com.tangoplus.tangoq.`object`.NetworkMeasureService.insertMeasurePartsByJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 
 
@@ -34,8 +35,8 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
+
         // ------! RV checkbox 취합 시작 !------
         binding.btnPpFinish.setOnClickListener {
 //            viewModel.parts.value //
@@ -49,7 +50,6 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
             }
             userJson?.optString("user_mobile")
 //            insertMeasurePartsByJson(getString(R.string.IP_ADDRESS_t_favorite),)
-
 
 
 
@@ -88,11 +88,11 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         cb.setOnCheckedChangeListener { buttonView, isChecked ->
             when (isChecked) {
                 true -> {
-                    iv.visibility = View.VISIBLE
+                    setAnimation(iv, isChecked)
                     viewModel.addPart(Triple(cb.text.toString(), cb.text.toString(), true))
                 }
                 else -> {
-                    iv.visibility = View.GONE
+                    setAnimation(iv, isChecked)
                     viewModel.deletePart(Triple(cb.text.toString(), cb.text.toString(), false))
                 }
             }
@@ -126,4 +126,22 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
             viewModel.deletePart(part)
         }
     }
+    private fun setAnimation(view: View, onOff: Boolean) {
+        if (onOff) view.visibility = View.VISIBLE
+        val animator = ObjectAnimator.ofFloat(view, "alpha", if (onOff) 0f else 1f, if (onOff) 1f else 0f)
+        animator.duration = 300
+        animator.addListener(object: AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                super.onAnimationEnd(animation)
+                view.visibility = if (onOff) View.VISIBLE else View.INVISIBLE
+            }
+
+            override fun onAnimationStart(animation: Animator) {
+                super.onAnimationStart(animation)
+
+            }
+        })
+        animator.start()
+    }
+
 }

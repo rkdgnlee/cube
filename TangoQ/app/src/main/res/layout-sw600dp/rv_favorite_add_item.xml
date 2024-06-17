@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clFvA"
+    android:layout_width="match_parent"
+    android:layout_height="130dp"
+    android:background="@color/white">
+
+    <CheckBox
+        android:id="@+id/cbFvA"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:backgroundTint="@color/white"
+        android:button="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView48"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cvAFv"
+        app:layout_constraintTop_toBottomOf="@+id/textView122"
+        app:srcCompat="@drawable/icon_rv_summary_time" />
+
+    <TextView
+        android:id="@+id/tvFvATime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="25"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView48"
+        app:layout_constraintStart_toEndOf="@+id/imageView48"
+        app:layout_constraintTop_toTopOf="@+id/imageView48" />
+
+    <TextView
+        android:id="@+id/textView49"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="분"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFvATime"
+        app:layout_constraintStart_toEndOf="@+id/tvFvATime"
+        app:layout_constraintTop_toTopOf="@+id/tvFvATime" />
+
+    <TextView
+        android:id="@+id/tvFvAName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="즐겨찾기 일일이"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cvAFv"
+        app:layout_constraintTop_toTopOf="@+id/cvAFv"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tvFvARegDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:maxLength="30"
+        android:text="2024.04.24"
+
+        android:textColor="@color/subColor500"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView122"
+        app:layout_constraintStart_toEndOf="@+id/textView122"
+        app:layout_constraintTop_toTopOf="@+id/textView122" />
+
+    <ImageView
+        android:id="@+id/imageView49"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cvAFv"
+        app:layout_constraintTop_toBottomOf="@+id/textView122"
+        app:srcCompat="@drawable/icon_rv_summary_count" />
+
+    <TextView
+        android:id="@+id/tvFvACount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="4"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView49"
+        app:layout_constraintStart_toEndOf="@+id/imageView49"
+        app:layout_constraintTop_toTopOf="@+id/imageView49" />
+
+    <TextView
+        android:id="@+id/textView123"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="개"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFvACount"
+        app:layout_constraintStart_toEndOf="@+id/tvFvACount"
+        app:layout_constraintTop_toTopOf="@+id/tvFvACount" />
+
+    <TextView
+        android:id="@+id/textView122"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="생성일자"
+        android:textColor="@color/subColor500"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/tvFvAName"
+        app:layout_constraintTop_toBottomOf="@+id/tvFvAName" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvAFv"
+        android:layout_width="110dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivFvAThumbnailNull"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/drawable_fv_null" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivFvAThumbnail1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/recommend_thumbnail" />
+
+                <ImageView
+                    android:id="@+id/ivFvAThumbnail2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_api_kakao_logo" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llFvAThumbnailBottom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivFvAThumbnail3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/naver_icon" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clFvAThumbnail4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:id="@+id/ivFvAThumbnail4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@android:drawable/progress_indeterminate_horizontal" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vFvA"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#59000000"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tvFvAThumbnailMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="8dp"
+            android:text="+4"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/materialDivider17"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        app:dividerColor="@color/subColor100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivFvACheck"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_checkbox_disabled" />
+</androidx.constraintlayout.widget.ConstraintLayout>

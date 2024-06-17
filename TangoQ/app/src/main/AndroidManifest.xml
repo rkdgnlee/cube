@@ -26,22 +26,22 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
 
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+<!--    <uses-permission android:name="android.permission.BLUETOOTH" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
 
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
-    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE"/>
-    <uses-permission android:name="android.permission.health.READ_STEPS"/>
-    <uses-permission android:name="android.permission.health.WRITE_STEPS"/>
-    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
-    <uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED"/>
+<!--    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>-->
+<!--    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>-->
+<!--    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE"/>-->
+<!--    <uses-permission android:name="android.permission.health.READ_STEPS"/>-->
+<!--    <uses-permission android:name="android.permission.health.WRITE_STEPS"/>-->
+<!--    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>-->
+<!--    <uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED"/>-->
     <application
         android:name=".MyApplication"
         android:allowBackup="false"
@@ -71,7 +71,7 @@
                 <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
                 <data
                     android:host="oauth"
-                    android:scheme="kakao3c8dea37a829ed6e67206ebe183a47bd" />
+                    android:scheme="kakaoa5d0bc7cde69e2321d62d6eed07e4ec3" />
             </intent-filter>
         </activity>
         <activity
@@ -81,10 +81,12 @@
         </activity>
         <activity
             android:name=".AlarmActivity"
-            android:exported="true" />
+            android:exported="true" >
+
+        </activity>
 
         <activity
-            android:name=".PlaySkeletonActivity"
+            android:name=".MeasureSkeletonActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -94,7 +96,7 @@
             <intent-filter>
                 <data
                     android:host="oauth"
-                    android:scheme="kakao3c8dea37a829ed6e67206ebe183a47bd" />
+                    android:scheme="kakaoa5d0bc7cde69e2321d62d6eed07e4ec3" />
             </intent-filter>
         </activity>
 
@@ -112,6 +114,7 @@
         <activity
             android:name=".SignInActivity"
             android:exported="true" />
+
         <service
             android:name=".service.MediaProjectionService"
             android:foregroundServiceType="mediaProjection"
@@ -124,6 +127,14 @@
             android:enabled="true"
             android:exported="false"
             android:permission="TODO" />
+        <service
+            android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <provider
             android:authorities="com.tangoplus.tangoq.provider"
             android:name="androidx.core.content.FileProvider"
@@ -133,15 +144,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-        <service
-            android:name=".service.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_launcher_background" />

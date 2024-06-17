@@ -3,18 +3,15 @@ package com.tangoplus.tangoq
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -32,17 +29,18 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.tangoplus.tangoq.adapter.BannerVPAdapter
 import com.tangoplus.tangoq.dialog.LoginDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.`object`.CommonDefines.TAG
-import com.tangoplus.tangoq.`object`.NetworkUserService.StoreUserInSingleton
-import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserINSERTJson
-import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserUPDATEJson
-import com.tangoplus.tangoq.`object`.NetworkUserService.getUserSELECTJson
+import com.tangoplus.tangoq.`object`.NetworkUser.StoreUserInSingleton
+import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserINSERTJson
+import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.BannerViewModel
+import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
+import com.tangoplus.tangoq.dialog.GoogleSignInDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,10 +52,11 @@ import java.net.URLEncoder
 class IntroActivity : AppCompatActivity() {
     lateinit var binding : ActivityIntroBinding
     val viewModel : BannerViewModel by viewModels()
+    val sViewModel  : SignInViewModel by viewModels()
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private var bannerPosition = Int.MAX_VALUE/2
-    private var bannerHandler = HomeBannerHandler()
+//    private var bannerPosition = Int.MAX_VALUE/2
+//    private var bannerHandler = HomeBannerHandler()
     private val intervalTime = 2200.toLong()
 
     @SuppressLint("NotifyDataSetChanged")
@@ -73,14 +72,12 @@ class IntroActivity : AppCompatActivity() {
             firebaseAuth = FirebaseAuth.getInstance()
             launcher = registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult(), ActivityResultCallback { result ->
-                    Log.d(TAG, "resultCode: ${result.resultCode}입니다.")
-                    Log.d(TAG, "$result")
+                    Log.v(TAG, "resultCode: ${result.resultCode}입니다.")
                     if (result.resultCode == RESULT_OK) {
                         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                         try {
                             task.getResult(ApiException::class.java)?.let { account ->
                                 val tokenId = account.idToken
-                                Log.d("토큰 있나요?", "예. $tokenId")
                                 if (tokenId != null && tokenId != "") {
                                     val credential: AuthCredential =
                                         GoogleAuthProvider.getCredential(account.idToken, null)
@@ -92,17 +89,29 @@ class IntroActivity : AppCompatActivity() {
                                                 val user: FirebaseUser = firebaseAuth.currentUser!!
 
                                                 // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
-                                                val JsonObj = JSONObject()
-                                                JsonObj.put("user_name", user.displayName.toString())
-                                                JsonObj.put("user_email", user.email.toString())
-                                                JsonObj.put("google_login_id", user.uid)
+                                                val jsonObj = JSONObject()
+                                                jsonObj.put("user_name", user.displayName.toString())
+                                                jsonObj.put("user_email", user.email.toString())
+                                                jsonObj.put("google_login_id", user.uid)
 
-                                                Log.e("구글JsonObj", JsonObj.getString("google_login_id"))
-                                                val intent = Intent(this, SignInActivity::class.java)
-                                                intent.putExtra("google_user", JsonObj.toString())
-                                                startActivity(intent)
-
-                                                // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
+                                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
+                                                Log.w("구글가입>메일", encodedUserEmail)
+                                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserEmail) {
+                                                    if (jsonObj.getInt("status") == 404) {
+                                                        fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString()) {
+                                                            StoreUserInSingleton(this, jsonObj)
+                                                            Log.v("구글", "JsonObj: $jsonObj")
+                                                            Log.e("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                                                            setupInit()
+                                                        }
+                                                    } else {
+                                                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString(), encodedUserEmail) {
+                                                            StoreUserInSingleton(this, jsonObj)
+                                                            Log.e("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                                                            MainInit()
+                                                        }
+                                                    }
+                                                } // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
 
                                                 val googleSignInToken = account.idToken ?: ""
                                                 if (googleSignInToken != "") {
@@ -148,13 +157,13 @@ class IntroActivity : AppCompatActivity() {
             }
 
             override fun onFailure(httpStatus: Int, message: String) {
-//                val errorCode = NaverIdLoginSDK.getLastErrorCode().code
-//                val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-//                Toast.makeText(
-//                    requireContext(),
-//                    "errorCode: $errorCode, errorDesc: $errorDescription",
-//                    Toast.LENGTH_SHORT
-//                ).show()
+                val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                Toast.makeText(
+                    this@IntroActivity,
+                    "errorCode: $errorCode, errorDesc: $errorDescription",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onSuccess() {
@@ -179,9 +188,10 @@ class IntroActivity : AppCompatActivity() {
                         JsonObj.put("user_birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
                         JsonObj.put("naver_login_id" , result.profile?.id.toString())
 
-                        Log.i("네이버핸드폰번호", JsonObj.getString("user_mobile"))
-                        val encodedUserMobile = URLEncoder.encode(naverMobile, "UTF-8")
-                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
+                        Log.i("네이버이메일", JsonObj.getString("user_email"))
+                        val encodedUserEmail = URLEncoder.encode(JsonObj.getString("user_email"), "UTF-8")
+
+                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserEmail) { jsonObj ->
                             if (jsonObj?.getInt("status") == 404) {
                                 fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                     StoreUserInSingleton(this@IntroActivity, JsonObj)
@@ -189,7 +199,7 @@ class IntroActivity : AppCompatActivity() {
                                     setupInit() // 최초 회원가입
                                 }
                             } else {
-                                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
+                                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserEmail) {
                                     if (jsonObj != null) {
                                         StoreUserInSingleton(this@IntroActivity, jsonObj)
                                     }
@@ -228,6 +238,7 @@ class IntroActivity : AppCompatActivity() {
                             }
                             else if (user != null) {
                                 val JsonObj = JSONObject()
+                                Log.v("카카오핸드폰번호", "${user.kakaoAccount?.phoneNumber}")
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M") {
@@ -235,23 +246,25 @@ class IntroActivity : AppCompatActivity() {
                                 } else {
                                     "여자"
                                 }
+                                Log.v("카카오계정정보", " ${user.kakaoAccount?.gender}, ${user.kakaoAccount?.phoneNumber}")
                                 JsonObj.put("user_gender", kakaoUserGender)
                                 JsonObj.put("user_mobile", kakaoMobile)
                                 JsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 JsonObj.put("kakao_login_id" , user.id.toString())
 
-                                val encodedUserMobile = URLEncoder.encode(kakaoMobile, "UTF-8")
-                                Log.w("$TAG, 카카오회원가입", JsonObj.getString("user_mobile"))
-                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserMobile) { jsonObj ->
+                                val encodedUserEmail = URLEncoder.encode(JsonObj.getString("user_email"), "UTF-8")
+                                Log.w("카카오가입>메일", encodedUserEmail)
+                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserEmail) { jsonObj ->
                                     if (jsonObj?.getInt("status") == 404) {
                                         fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                                             StoreUserInSingleton(this, JsonObj)
+                                            Log.v("카카오", "JsonObj: $JsonObj")
                                             Log.e("카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
                                             setupInit() //TODO 최초 회원가입
                                         }
                                     } else {
-                                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
+                                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserEmail) {
                                             if (jsonObj != null) {
                                                 StoreUserInSingleton(this, jsonObj)
                                             }
@@ -287,33 +300,29 @@ class IntroActivity : AppCompatActivity() {
 
         // -----! 배너 시작 !-----
 
-        val ImageUrl1 = "https://images.unsplash.com/photo-1572196459043-5c39f99a7555?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl2 = "https://images.unsplash.com/photo-1605558162119-2de4d9ff8130?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl3 = "https://images.unsplash.com/photo-1533422902779-aff35862e462?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl4 = "https://images.unsplash.com/photo-1587387119725-9d6bac0f22fb?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        val ImageUrl5 = "https://images.unsplash.com/photo-1598449356475-b9f71db7d847?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        viewModel.BannerList.add(ImageUrl1)
-        viewModel.BannerList.add(ImageUrl2)
-        viewModel.BannerList.add(ImageUrl3)
-        viewModel.BannerList.add(ImageUrl4)
-        viewModel.BannerList.add(ImageUrl5)
 
-        val bannerAdapter = BannerVPAdapter(viewModel.BannerList, "intro",this@IntroActivity)
-        bannerAdapter.notifyDataSetChanged()
-        binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.vpIntroBanner.adapter = bannerAdapter
-        binding.vpIntroBanner.setCurrentItem(bannerPosition, false)
-        binding.vpIntroBanner.apply {
-            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageScrollStateChanged(state: Int) {
-                    super.onPageScrollStateChanged(state)
-                    when (state) {
-                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
-                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
-                    }
-                }
-            })
-        }
+//        viewModel.BannerList.add(ImageUrl1)
+//        viewModel.BannerList.add(ImageUrl2)
+//        viewModel.BannerList.add(ImageUrl3)
+//        viewModel.BannerList.add(ImageUrl4)
+//        viewModel.BannerList.add(ImageUrl5)
+//
+//        val bannerAdapter = BannerVPAdapter(viewModel.BannerList, "intro",this@IntroActivity)
+//        bannerAdapter.notifyDataSetChanged()
+//        binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+//        binding.vpIntroBanner.adapter = bannerAdapter
+//        binding.vpIntroBanner.setCurrentItem(bannerPosition, false)
+//        binding.vpIntroBanner.apply {
+//            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+//                override fun onPageScrollStateChanged(state: Int) {
+//                    super.onPageScrollStateChanged(state)
+//                    when (state) {
+//                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
+//                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
+//                    }
+//                }
+//            })
+//        }
 
     }
     private fun MainInit() {
@@ -321,48 +330,29 @@ class IntroActivity : AppCompatActivity() {
         startActivity(intent)
         finishAffinity()
     }
-
-
-//    @SuppressLint("HandlerLeak")
-//    private inner class BannerHandler: Handler(Looper.getMainLooper()) {
+//    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
 //        override fun handleMessage(msg: Message) {
 //            super.handleMessage(msg)
-//            if (msg.what == 0) {
+//            if (msg.what == 0 && viewModel.BannerList.isNotEmpty()) {
 //                binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
-//
 //                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
-//                val currentIndex = bannerPosition % viewModel.BannerList.size
+//                val currentIndex = bannerPosition % viewModel.BannerList.size // 65536  % 5
 //
 //                // ProgressBar의 값을 계산합니다.
-//                binding.hpvIntro.progress = (currentIndex + 1) * 100 / viewModel.BannerList.size
-//
+//                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
 //                autoScrollStart(intervalTime)
 //            }
 //        }
 //    }
-    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            if (msg.what == 0 && viewModel.BannerList.isNotEmpty()) {
-                binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
-                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
-                val currentIndex = bannerPosition % viewModel.BannerList.size // 65536  % 5
 
-                // ProgressBar의 값을 계산합니다.
-                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
-                autoScrollStart(intervalTime)
-            }
-        }
-    }
-
-    private fun autoScrollStart(intervalTime: Long) {
-        bannerHandler.removeMessages(0)
-        bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
-
-    }
-    private fun autoScrollStop() {
-        bannerHandler.removeMessages(0)
-    } // -----! 배너 끝 !-----
+//    private fun autoScrollStart(intervalTime: Long) {
+//        bannerHandler.removeMessages(0)
+//        bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
+//
+//    }
+//    private fun autoScrollStop() {
+//        bannerHandler.removeMessages(0)
+//    } // -----! 배너 끝 !-----
 
     private fun setupInit() {
         val intent = Intent(this, SetupActivity::class.java)
@@ -374,13 +364,13 @@ class IntroActivity : AppCompatActivity() {
         setOnClickListener(OnSingleClickListener(listener))
     }
 
-    override fun onResume() {
-        super.onResume()
-        autoScrollStart(intervalTime)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        autoScrollStop()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        autoScrollStart(intervalTime)
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        autoScrollStop()
+//    }
 }

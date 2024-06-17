@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".dialog.PlayThumbnailDialogFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="320dp">
+
+            <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/pvPT"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:auto_show="true"
+                app:controller_layout_id="@layout/exo_player_control_view"
+                app:resize_mode="fixed_width"
+                app:surface_type="surface_view"
+                app:use_controller="true" />
+        </FrameLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout35"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvPlayExerciseName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="어깨 관절 운동 프로그램(2)"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseName">
+
+                    <TextView
+                        android:id="@+id/textView59"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="초"
+                        android:textColor="@color/subColor700"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvPlayExerciseTime"
+                        app:layout_constraintStart_toEndOf="@+id/tvPlayExerciseTime"
+                        app:layout_constraintTop_toTopOf="@+id/tvPlayExerciseTime" />
+
+                    <ImageView
+                        android:id="@+id/imageView30"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/icon_time_sub_500"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPlayExerciseTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="2"
+                        android:text="25"
+                        android:textColor="@color/subColor700"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView30"
+                        app:layout_constraintStart_toEndOf="@+id/imageView30"
+                        app:layout_constraintTop_toTopOf="@+id/imageView30" />
+
+                    <ImageView
+                        android:id="@+id/imageView31"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/icon_step_subcolor"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tvPlayExerciseStage"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPlayExerciseStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="2"
+                        android:text="중급자"
+                        android:textColor="@color/subColor700"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider7"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="30dp"
+                    app:dividerColor="@color/subColor300"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+
+                <TextView
+                    android:id="@+id/tvPlayExerciseRelateJoint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:text="어깨"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView50"
+                    app:layout_constraintStart_toEndOf="@+id/textView50"
+                    app:layout_constraintTop_toTopOf="@+id/textView50"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/tvPlayExerciseRelateMuscle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="후면 삼각근, 승모근"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvPlayExerciseRelateJoint"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/tvPlayExerciseRelateJoint"
+                    app:layout_constraintTop_toTopOf="@+id/tvPlayExerciseRelateJoint" />
+
+                <TextView
+                    android:id="@+id/tvPlayExerciseFrequency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="매일"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView51"
+                    app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseRelateJoint"
+                    app:layout_constraintTop_toTopOf="@+id/textView51" />
+
+                <TextView
+                    android:id="@+id/tvPlayExercise_initial_posture"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="큐브 또는 벤치 위에 앉은 자세"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView52"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseFrequency"
+                    app:layout_constraintTop_toTopOf="@+id/textView52" />
+
+                <TextView
+                    android:id="@+id/tvPlayExerciseMethod"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:lineSpacingExtra="6sp"
+                    android:text="1. 큐브나 벤치 위에 앉는다.\r\n2. 상체를 구부린 상태에서 양쪽 손으로 부하 손잡이를 잡는다.\r\n3. 손잡이를 고정한 상태로 잡고 양팔을 위로 벌리면서 올린다.  \r\n4. 호흡은 부하 손잡이를 위로 올릴 때 들이마시고, 아래로 내릴 때 내쉰다.\r\n5. 부하만을 활용하여 동작을 시행한 후, 숙달되면 큐브에 연결하여 운동하는 것도 하나의 방법이다."
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView53"
+                    app:layout_constraintTop_toBottomOf="@+id/textView53" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider8"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="30dp"
+                    app:dividerColor="@color/subColor300"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPlayExercise_initial_posture" />
+
+                <TextView
+                    android:id="@+id/textView50"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="30dp"
+                    android:text="관절, 근육"
+                    android:textColor="@color/subColor500"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider7" />
+
+                <TextView
+                    android:id="@+id/textView51"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="추천 빈도"
+                    android:textColor="@color/subColor500"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView50"
+                    app:layout_constraintTop_toBottomOf="@+id/textView50" />
+
+                <TextView
+                    android:id="@+id/textView52"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="운동 장소"
+                    android:textColor="@color/subColor500"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView51"
+                    app:layout_constraintTop_toBottomOf="@+id/textView51" />
+
+                <TextView
+                    android:id="@+id/textView53"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="30dp"
+                    android:text="운동 방법"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider8" />
+
+                <TextView
+                    android:id="@+id/textView54"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="⚠ 주의사항"
+                    android:textColor="@color/mainColor"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseMethod"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseMethod" />
+
+                <TextView
+                    android:id="@+id/tvPlayExerciseCaution"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:lineSpacingExtra="6sp"
+                    android:text="1. 낮은 부하에서 시작하여 점진적으로 부하를 높임\r\n2. 본인의 체력 정도에 따라서 앉은 것도 추천"
+                    android:textColor="@color/subColor800"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView54"
+                    app:layout_constraintTop_toBottomOf="@+id/textView54" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPTn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/frameLayout3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider4"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <FrameLayout
+                    android:id="@+id/frameLayout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/background_shadow_top_radius"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnExercisePlay"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="16dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/mainColor"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="운동 시작하기"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/textView99"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="38dp"
+                    android:text="관련 추천 운동"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/tvPlayExerciseCaution"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPlayExerciseCaution" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider4"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="12dp"
+
+                    app:dividerColor="@color/subColor200"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView99" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+</FrameLayout>

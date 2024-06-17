@@ -26,10 +26,11 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvFV"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout25"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -102,7 +103,6 @@
                     android:paddingTop="12dp"
                     android:paddingBottom="12dp"
                     android:popupBackground="@color/white"
-                    android:text="안녕하세요안녕하세요"
                     android:textColor="@color/black"
                     android:textColorHighlight="@color/black"
                     android:textColorHint="@color/black"
@@ -118,7 +118,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:maxLength="30"
-                android:text="설명설명설명설명설명"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="normal"
@@ -170,17 +169,17 @@
                 android:id="@+id/rvFV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/btnFVEdit"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sflFV" />
+                app:layout_constraintTop_toBottomOf="@+id/sflFV"
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/btnFVEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="20dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/secondaryColor"
                 android:drawableLeft="@drawable/icon_edit"
@@ -191,11 +190,11 @@
                 android:paddingRight="48dp"
                 android:text="목록 편집하기"
                 android:textColor="@color/white"
+                android:textSize="18sp"
                 app:cornerRadius="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvFV" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

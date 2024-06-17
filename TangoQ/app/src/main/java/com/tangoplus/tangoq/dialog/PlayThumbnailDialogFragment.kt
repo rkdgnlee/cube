@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.MediaItem
@@ -22,10 +23,10 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.`object`.NetworkExerciseService
-import com.tangoplus.tangoq.PlaySkeletonActivity
+import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.listener.OnMoreClickListener
 import kotlinx.coroutines.launch
@@ -33,9 +34,8 @@ import kotlinx.coroutines.launch
 class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
-
+    val viewModel: FavoriteViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
-    private var player : SimpleExoPlayer? = null
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition = 0L
@@ -59,17 +59,13 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         binding.tvPlayExerciseName.text = exerciseData?.exerciseName.toString()
         binding.tvPlayExerciseRelateJoint.text = exerciseData?.relatedJoint.toString()
 
-        binding.tvPlayExerciseTime.text = exerciseData?.videoTime.toString()
-        binding.tvPlayExerciseStage.text = when (exerciseData?.exerciseStage) {
-            "초기" -> "초급자"
-            "향상" -> "상급자"
-            "유지" -> "중급자"
-            else -> "기타"
-        }
-        binding.tvPlayExerciseFrequency.text = exerciseData?.exerciseFequency.toString()
+        binding.tvPlayExerciseTime.text = exerciseData?.videoDuration
+        binding.tvPlayExerciseStage.text = exerciseData?.exerciseStage
+        binding.tvPlayExerciseFrequency.text = exerciseData?.exerciseFrequency.toString()
         binding.tvPlayExerciseInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
         binding.tvPlayExerciseMethod.text = exerciseData?.exerciseMethod.toString()
         binding.tvPlayExerciseCaution.text = exerciseData?.exerciseCaution.toString()
+        binding.tvPlayExerciseRelateMuscle.text = exerciseData?.relatedMuscle.toString()
 
 
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
@@ -83,7 +79,12 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putExtra("video_url", videoUrl)
             startActivityForResult(intent, 8080)
+
+            // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
+            viewModel.isDialogShown.value = false
         } // -----! 하단 운동 시작 버튼 끝 !-----
+
+
 //        // -----! 전체화면 구현 로직 시작 !-----
 //        val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
 //
@@ -99,20 +100,51 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
             dismiss()
         }
 
-
-        binding.tvPlayExerciseRelateMuscle.setOnClickListener {
-            val dialog = FeedbackDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "FeedbackDialogFragment")
+        // ------! 앞으로 감기 뒤로 감기 시작 !------
+        val replay5 = binding.pvPT.findViewById<ImageButton>(R.id.exo_replay_5)
+        val forward5 = binding.pvPT.findViewById<ImageButton>(R.id.exo_forward_5)
+        replay5.setOnClickListener {
+            val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
+            if (replayPosition != null) {
+                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition)!!)
+            }
         }
+        forward5.setOnClickListener {
+            val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
+            if (forwardPosition != null) {
+                if (forwardPosition < simpleExoPlayer?.duration?.minus(5000)!!) {
+                    simpleExoPlayer?.seekTo(forwardPosition)
+                } else {
+                    simpleExoPlayer!!.pause()
+                }
+            }
+        } // ------! 앞으로 감기 뒤로 감기 끝 !------
+
+
+
 
 
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
             val responseArrayList =
-                NetworkExerciseService.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+                NetworkExercise.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
+
+//            val jointKeyword =
+//                exerciseData?.relatedMuscle!!.contains("복근")
+//                when (exerciseData?.relatedMuscle!!.contains(it)) {
+//                    "복근", "척추기립근", "광배근" -> "척추"
+//                    "둔근", "둔근 근육", "햄스트링", "대퇴사두근",-> "엉덩"
+//                    "회전근개", "삼각근", "견갑거근" -> "어깨"
+//                    "사각근", "승모근" -> "목"
+//                    "내전근", "장딴지근", "가자미근" -> "무릎"
+//                    "이두근", "삼두", "전완" -> "팔꿉"
+//                else -> ""
+//            }
+
             try {
-                val verticalDataList = responseArrayList.filter { it.exerciseName!!.contains(
-                    exerciseData!!.exerciseName!!.substring(0, 1))}.toMutableList()
+                // 전체데이터에서 현재 데이터(exerciseData)와 비교함.
+                val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
+                    exerciseData?.relatedJoint!!.split(", ")[0])}.toMutableList()
                 val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, "recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

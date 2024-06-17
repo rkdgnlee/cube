@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.ExerciseDetailFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvED"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout21"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/linearLayout3"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="12dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:layout_marginEnd="12dp"-->
+<!--                android:background="@drawable/background_rectangle_20dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="12dp"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/ibtnEDBLEConnect"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/ibtnEDBack"-->
+<!--                app:layout_constraintTop_toTopOf="parent">-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/imageView20"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:scaleType="centerCrop"-->
+<!--                    android:src="@drawable/icon_search" />-->
+
+<!--                <AutoCompleteTextView-->
+<!--                    android:id="@+id/actvEDSearch"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_marginLeft="8dp"-->
+<!--                    android:layout_weight="8"-->
+<!--                    android:background="@drawable/effect_ibtn_20dp"-->
+<!--                    android:backgroundTint="#00FFFFFF"-->
+<!--                    android:hint="운동이름을 검색하세요"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:textColorHint="@color/subColor800" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/ibtnEDACTVClear"-->
+<!--                    android:layout_width="24dp"-->
+<!--                    android:layout_height="24dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:src="@drawable/icon_text_clear" />-->
+<!--            </LinearLayout>-->
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/ibtnEDBLEConnect"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:background="@drawable/effect_ibtn_12dp"-->
+<!--                android:src="@drawable/icon_bluetooth"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/linearLayout3"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/linearLayout3" />-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/rvEcCategory"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout8"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@color/subColor100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/textView95"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="운동"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/ibtnEDBack"
+                    app:layout_constraintStart_toEndOf="@+id/ibtnEDBack"
+                    app:layout_constraintTop_toTopOf="@+id/ibtnEDBack" />
+
+                <ImageButton
+                    android:id="@+id/ibtnEDBack"
+                    android:layout_width="42dp"
+                    android:layout_height="46dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/subColor100"
+                    android:padding="8dp"
+                    android:src="@drawable/icon_arrow_left"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/tvEDCategoryName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/subColor800"
+                android:textSize="22sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sflED" />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/sflED"
+                android:layout_width="match_parent"
+                android:layout_height="600dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout8">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    <include layout="@layout/rv_shimmer_favorite_item" />
+
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <Spinner
+                android:id="@+id/spnEDFilter"
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_stroke_1dp_sub_color_spinner"
+                android:paddingLeft="10dp"
+                android:popupBackground="@color/white"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout8" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEDAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEDCategoryName" />
+
+            <TextView
+                android:id="@+id/tvGuideNull"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="곧 더 많은 운동이 추가될 예정입니다 !"
+                android:textColor="@color/subColor300"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvEDAll" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

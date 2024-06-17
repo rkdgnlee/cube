@@ -1,12 +1,18 @@
 package com.tangoplus.tangoq.fragment
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -14,10 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.listener.BasketItemTouchListener
-import com.tangoplus.tangoq.`object`.NetworkExerciseService.fetchExerciseJson
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseJson
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBasketBinding
 import kotlinx.coroutines.launch
 
@@ -25,8 +31,9 @@ import kotlinx.coroutines.launch
 class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
     lateinit var binding: FragmentFavoriteBasketBinding
     private lateinit var adapter: ExerciseRVAdapter
-    val viewModel : ExerciseViewModel by activityViewModels()
+    val viewModel : FavoriteViewModel by activityViewModels()
     var title = ""
+    private val SEARCH_HISTORY = "search_history"
 
     companion object {
         private const val ARG_TITLE = "title"
@@ -46,59 +53,48 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
         return binding.root
     }
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         title = requireArguments().getString(ARG_TITLE).toString()
         lifecycleScope.launch {
-            val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_Exercise_Description))
+            val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
             Log.w(ContentValues.TAG, "jsonArr: ${responseArrayList[0]}")
             try {
                 viewModel.allExercises.value = responseArrayList.toMutableList()
                 val allDataList = responseArrayList.toMutableList()
 
                 // -----! RV 필터링 시작 !-----
-                val recommendlist = mutableListOf<ExerciseVO>()
-                val filterList = allDataList.filter { it.exerciseName!!.contains("(1)") }
-                for (element in filterList) {
-                    recommendlist.add(element)
-                    recommendlist.map { exercise ->
-                        exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
-                    }
-                    linkAdapter(recommendlist)
-                }
-                Log.w(ContentValues.TAG, "filterList: $filterList")
+                linkAdapter(allDataList)
                 binding.tlFB.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
                     override fun onTabSelected(tab: TabLayout.Tab?) {
                         when (tab?.position) {
                             0 -> {
-                                recommendlist.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
-                                }
-                                linkAdapter(recommendlist)
+//                                recommendlist.map { exercise ->
+//                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
+//                                }
+                                linkAdapter(allDataList)
                             }
                             1 -> {
-                                val keywords = listOf("목", "어깨", "팔꿉", "손목", "몸통", "복부" )
-                                val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
-                                filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
-                                }
-                                Log.w(ContentValues.TAG, "topBodyList: ${filteredList[0]}")
-                                linkAdapter(filteredList)
+//                                val keywords = listOf("목관절", "어깨관절", "무릎관절", "척추")
+//                                val filteredList = allDataList.filter { item -> item.exerciseCategoryId == "3" }.toMutableList()
+//                                filteredList.map { exercise ->
+//                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
+//                                }
+//                                Log.w(ContentValues.TAG, "List2: ${filteredList[0]}")
+                                linkAdapter(mutableListOf())
                             }
                             2 -> {
-                                val keywords = listOf("엉덩", "무릎", "발목" )
-                                val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
+                                val filteredList = allDataList.filter { item -> item.exerciseCategoryId == "3" }.toMutableList()
                                 filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
                                 }
                                 linkAdapter(filteredList)
                             }
                             3 -> {
-
-                                val keywords = listOf("전신", "유산소", "코어", "몸통" )
-                                val filteredList = allDataList.filter { item -> keywords.any { keywords -> item.exerciseName!!.contains(keywords) } }.toMutableList()
+                                val filteredList = allDataList.filter { item -> item.exerciseCategoryId == "4" }.toMutableList()
                                 filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseDescriptionId.toString())
+                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
                                 }
                                 linkAdapter(filteredList)
                             }
@@ -108,15 +104,95 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                     override fun onTabReselected(tab: TabLayout.Tab?) {}
                 })
                 // -----! RV 필터링 끝 !-----
+
+                // -----! 자동완성 검색 시작 !-----
+                binding.ibtnFBACTVClear.setOnClickListener {
+                    binding.actvFBSearch.text.clear()
+                    binding.tlFB.selectTab(binding.tlFB.getTabAt(0))
+                    updateRecyclerView(allDataList)
+                }
+
+                // ------! actv 포커싱 시작 !------
+                binding.actvFBSearch.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                    if (hasFocus) {
+                        loadSearchHistory()
+                    }
+                }
+
+
+
+                val exerciseNames = allDataList.map { it.exerciseName }.distinct().toMutableList()
+                val adapterActv = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, exerciseNames)
+                binding.actvFBSearch.setAdapter(adapterActv)
+                Log.v("exerciseNames", "${exerciseNames.size}")
+//                binding.actvFBSearch.addTextChangedListener(object : TextWatcher {
+//                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                        val inputText = s.toString()
+//                        if (inputText.isNotEmpty()) {
+//                            // 입력된 텍스트를 사용하여 관련된 exerciseName 필터링
+//                            val filteredExerciseNames = allDataList.filter { it.relatedJoint!!.contains(inputText) }
+//                                .map { it.exerciseName }
+//                                .toMutableList()
+//                            Log.v("filteredExerciseNames", "$filteredExerciseNames")
+//                            // 필터링된 결과로 어댑터 업데이트\
+//
+//                            requireActivity().runOnUiThread {
+//                                adapterActv.clear()
+//                                adapterActv.addAll(filteredExerciseNames)
+//                                adapterActv.notifyDataSetChanged()
+//                                binding.actvFBSearch.showDropDown()
+//                            }
+//                        }
+//                    }
+//                    override fun afterTextChanged(s: Editable?) {
+//
+//                    }
+//                })
+                // ------! enter를 눌렀을 때 해당 텍스트로 관절 검색 !------
+                binding.actvFBSearch.setOnEditorActionListener{v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_NEXT || event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+
+                        // ------! enter 클릭시 동작 시작 !------
+                        binding.tlFB.selectTab(binding.tlFB.getTabAt(1))
+
+                        val inputText = binding.actvFBSearch.text.toString()
+                        if (inputText.isNotEmpty()) {
+                            val filteredExercises = allDataList.filter { it.relatedJoint!!.contains(inputText) }
+                                .distinct()
+                                .toMutableList()
+                            Log.v("filteredExercises", "${filteredExercises.size}")
+                            updateRecyclerView(filteredExercises)
+
+                        }
+                        binding.actvFBSearch.dismissDropDown()
+                        saveSearchQuery(inputText)
+                        true
+                        // ------! enter 클릭시 동작 끝 !------
+                    } else {
+                        false
+                    }
+                }
+
+// 사용자가 항목을 선택했을 때 필터링된 결과를 리사이클러뷰에 표시
+                binding.actvFBSearch.setOnItemClickListener { parent, view, position, id ->
+                    val selectedItem = parent.getItemAtPosition(position) as String
+                    val filterList = allDataList.filter { item ->
+                        item.exerciseName == selectedItem
+                    }.toMutableList()
+                    val adapter = ExerciseRVAdapter(this@FavoriteBasketFragment, filterList, "basket")
+                    binding.rvFB.adapter = adapter
+                    val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                    binding.rvFB.layoutManager = linearLayoutManager
+                    adapter.notifyDataSetChanged()
+                }
+
+// -----! 자동완성 검색 끝 !-----
+
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Error storing exercises", e)
             }
         }
-        // -----! 자동완성 검색 시작 !-----
-        val jointList = arrayOf("목", "어깨", "팔꿉", "손목", "몸통", "복부", "엉덩", "무릎", "발목", "전신", "유산소", "코어", "몸통")
-        val actvAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, jointList)
-        binding.actvFB.setAdapter(actvAdapter)
-        // -----! 자동완성 검색 끝 !-----
 
         binding.btnPickBasketFinish.setOnClickListener {
 
@@ -157,13 +233,37 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
 
     }
 
+    fun updateRecyclerView(filteredExercises: List<ExerciseVO>) {
+        // RecyclerView 어댑터에 필터링된 데이터를 설정
+        val adapter = binding.rvFB.adapter as ExerciseRVAdapter
+        adapter.exerciseList = filteredExercises.toMutableList()
+        adapter.notifyDataSetChanged()
+
+    }
+
+    private fun loadSearchHistory() {
+        val searchHistory = requireActivity().getSharedPreferences(SEARCH_HISTORY, Context.MODE_PRIVATE)
+        val history = searchHistory.getStringSet(SEARCH_HISTORY, setOf())?.toMutableList()
+        if (history != null) {
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, history)
+            binding.actvFBSearch.setAdapter(adapter)
+        }
+    }
+
+    private fun saveSearchQuery(query: String) {
+        val searchHistory = requireActivity().getSharedPreferences(SEARCH_HISTORY, Context.MODE_PRIVATE)
+        val history = searchHistory.getStringSet(SEARCH_HISTORY, setOf())?.toMutableSet()
+        history?.add(query)
+        searchHistory.edit().putStringSet(SEARCH_HISTORY, history).apply()
+    }
+
 
     override fun onBasketItemQuantityChanged(descriptionId: String, newQuantity: Int) {
-        val exercise = viewModel.allExercises.value?.find { it.exerciseDescriptionId.toString() == descriptionId }
+        val exercise = viewModel.allExercises.value?.find { it.exerciseId.toString() == descriptionId }
         if (exercise != null) {
             viewModel.addExerciseBasketUnit(exercise, newQuantity)
         }
         viewModel.setQuantity(descriptionId, newQuantity)
-        Log.w("장바구니viewmodel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == descriptionId }?.exerciseDescriptionId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseDescriptionId.toString() == descriptionId }?.quantity}")
+        Log.w("장바구니viewmodel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.exerciseId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.quantity}")
     }
 }
