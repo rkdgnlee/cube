@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -7,6 +8,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.transition.Visibility
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.fragment.FavoriteBasketFragment
@@ -21,7 +27,7 @@ import com.tangoplus.tangoq.`object`.NetworkFavorite.deleteFavoriteItemSn
 
 class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentFavoriteBSDialogBinding
-
+    var index = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,13 +43,74 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
         val favorite = bundle?.getParcelable<FavoriteVO>("Favorite")
         // ------! 즐겨찾기 홈에서 경로 설정 시작 !------
         if (favorite != null) {
-
+            Log.v("favorite", "${favorite.imgThumbnails}")
             // ------! 썸네일 사진 4개 시작 !------
-
             val imgByteArray = bundle.getByteArray("img")
-            val imgBitmap = BitmapFactory.decodeByteArray(imgByteArray, 0, imgByteArray!!.size)
-            binding.ivFbsThumbnail.setImageBitmap(imgBitmap)
-            Log.v("imgByteArray", "imgByteArray: ${imgByteArray}")
+            if (imgByteArray != null) {
+                // index = 0 : bytearray값 존재 ->
+                // index = 1 : imgThumbnails에서 전부 glide
+
+                index = 0
+            } else {
+                index = 1
+            }
+            when (index) {
+                0 -> {
+                    val imgBitmap = BitmapFactory.decodeByteArray(imgByteArray, 0, imgByteArray!!.size)
+                    // ------! null 이미지와 favorite more버튼은 ivFvbsNull을 사용함(favorite는 bitmap으로 캡쳐해서 가져옴) !------
+                    binding.ivFrBSThumbnailNull.visibility = View.VISIBLE
+                    binding.ivFrBSThumbnailNull.setImageBitmap(imgBitmap)
+                    setVisibility(false)
+                }
+                1 -> {
+                    val itemCount = favorite.exercises?.size
+                    binding.vFrBS.visibility = View.INVISIBLE
+                    Log.v("썸네일갯수", "${itemCount}")
+                    when (itemCount) {
+                        0 -> {
+                            binding.ivFrBSThumbnailNull.visibility = View.VISIBLE
+                            binding.tvFrBSThumbnailMore.visibility = View.INVISIBLE
+                            setVisibility(false)
+                        }
+                        1 -> {
+                            val list = listOf(binding.ivFrBSThumbnail1)
+                            binding.ivFrBSThumbnailNull.visibility = View.GONE
+                            binding.ivFrBSThumbnail2.visibility = View.GONE
+                            binding.llFrBSThumbnailBottom.visibility = View.GONE
+                            setThumbnails(favorite.imgThumbnails!!.take(1), list, listOf(true, false, false, false))
+                        }
+                        2 -> {
+                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2)
+                            binding.ivFrBSThumbnailNull.visibility = View.GONE
+                            binding.llFrBSThumbnailBottom.visibility = View.GONE
+                            setThumbnails(favorite.imgThumbnails!!.take(2), list, listOf(true, true, false, false))
+                        }
+                        3 -> {
+                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2 , binding.ivFrBSThumbnail3)
+                            binding.ivFrBSThumbnailNull.visibility = View.GONE
+                            binding.ivFrBSThumbnail4.visibility = View.GONE
+                            setThumbnails(favorite.imgThumbnails!!.take(3), list, listOf(true, true, true, false))
+                        }
+                        4 -> {
+                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2, binding.ivFrBSThumbnail3, binding.ivFrBSThumbnail4)
+                            binding.ivFrBSThumbnailNull.visibility = View.GONE
+                            setThumbnails(favorite.imgThumbnails!!.take(4), list, listOf(true, true, true, true))
+                        }
+                        else -> {
+                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2, binding.ivFrBSThumbnail3, binding.ivFrBSThumbnail4)
+                            binding.ivFrBSThumbnailNull.visibility = View.GONE
+                            binding.vFrBS.visibility = View.VISIBLE
+                            binding.tvFrBSThumbnailMore.visibility = View.VISIBLE
+                            setThumbnails(favorite.imgThumbnails!!.take(4), list, listOf(true, true, true, true))
+                            if (itemCount != null) {
+                                binding.tvFrBSThumbnailMore.text = "+ ${itemCount - 4}"
+                            }
+                        }
+                    }
+                }
+            } // ------! 썸네일 사진 4개 끝 !------
+
+
             binding.tvFrBSName.text = favorite.favoriteName
             binding.llFrBSPlay.setOnClickListener{
                 // TODO 재생목록 만들어서 FULLSCREEN
@@ -108,5 +175,36 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
 
         } // ------! 즐겨찾기 홈에서 경로 설정 끝 !------
         binding.ibtnFrBsExit.setOnClickListener { dismiss() }
+    }
+
+    // ------! 이미지 썸네일 함수 시작 !------
+    private fun loadImage(context: Context, url: String, imageView: ImageView) {
+        Glide.with(context)
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(imageView)
+    }
+    private fun setThumbnails(urls: List<String>, imageViews : List<ImageView>,visibilityFlags : List<Boolean>) {
+        imageViews.forEachIndexed { index, imageView ->
+            if (index < urls.size) {
+                loadImage(requireContext(), urls[index], imageView)
+                imageView.visibility = if (visibilityFlags[index]) View.VISIBLE else View.GONE
+            } else {
+                imageView.visibility = View.GONE
+            }
+        }
+    }
+    private fun setVisibility(tf : Boolean){
+        if (tf) {
+            binding.ivFrBSThumbnail1.visibility = View.VISIBLE
+            binding.ivFrBSThumbnail2.visibility = View.VISIBLE
+            binding.ivFrBSThumbnail3.visibility = View.VISIBLE
+            binding.ivFrBSThumbnail4.visibility = View.VISIBLE
+        } else {
+            binding.ivFrBSThumbnail1.visibility = View.GONE
+            binding.ivFrBSThumbnail2.visibility = View.GONE
+            binding.ivFrBSThumbnail3.visibility = View.GONE
+            binding.ivFrBSThumbnail4.visibility = View.GONE
+        }
     }
 }

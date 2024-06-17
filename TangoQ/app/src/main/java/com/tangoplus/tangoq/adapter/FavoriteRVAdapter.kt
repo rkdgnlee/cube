@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
@@ -56,11 +57,11 @@ class FavoriteRVAdapter(
         val tvFvThumbnailMore = view.findViewById<TextView>(R.id.tvFvThumbnailMore)
         val ibtnFvMore = view.findViewById<ImageButton>(R.id.ibtnFvMore)
         val vFv = view.findViewById<View>(R.id.vFv)
-        fun setThumbnailVisible(one: Boolean, two: Boolean, three: Boolean, four : Boolean) {
-            ivFvThumbnail1.visibility = if (one) View.VISIBLE else View.GONE
-            ivFvThumbnail2.visibility = if (two) View.VISIBLE else View.GONE
-            ivFvThumbnail3.visibility = if (three) View.VISIBLE else View.GONE
-            ivFvThumbnail4.visibility = if (four) View.VISIBLE else View.GONE
+        fun setThumbnailGone() {
+            ivFvThumbnail1.visibility = View.GONE
+            ivFvThumbnail2.visibility = View.GONE
+            ivFvThumbnail3.visibility = View.GONE
+            ivFvThumbnail4.visibility = View.GONE
         }
     }
 
@@ -81,11 +82,11 @@ class FavoriteRVAdapter(
         val ivFvACheck = view.findViewById<ImageView>(R.id.ivFvACheck)
         val vFvA = view.findViewById<View>(R.id.vFvA)
 
-        fun setThumbnailVisible(one: Boolean, two: Boolean, three: Boolean, four : Boolean) {
-            ivFvAThumbnail1.visibility = if (one) View.VISIBLE else View.GONE
-            ivFvAThumbnail2.visibility = if (two) View.VISIBLE else View.GONE
-            ivFvAThumbnail3.visibility = if (three) View.VISIBLE else View.GONE
-            ivFvAThumbnail4.visibility = if (four) View.VISIBLE else View.GONE
+        fun setThumbnailGone() {
+            ivFvAThumbnail1.visibility = View.GONE
+            ivFvAThumbnail2.visibility = View.GONE
+            ivFvAThumbnail3.visibility = View.GONE
+            ivFvAThumbnail4.visibility = View.GONE
         }
     }
     override fun getItemViewType(position: Int): Int {
@@ -128,10 +129,6 @@ class FavoriteRVAdapter(
                     listener.onFavoriteClick(currentItem.favoriteName.toString())
                 }
                 // ------! 바텀시트 썸네일 처리 시작 !------
-
-
-
-
                 holder.ibtnFvMore.setOnClickListener {
                     val bsFragment = FavoriteBSDialogFragment()
                     val bundle = Bundle()
@@ -148,99 +145,50 @@ class FavoriteRVAdapter(
                     val fragmentManager = fragment.requireActivity().supportFragmentManager
                     bsFragment.show(fragmentManager, bsFragment.tag)
                 }
+
                 // ------! 썸네일 처리 시작 !------
                 val itemCount = currentItem.favoriteTotalCount?.toInt()
                 holder.vFv.visibility = View.INVISIBLE
-                Log.v("썸네일리스트갯수", "개수:  ${itemCount}, 각 리스트:${currentItem.imgThumbnails}")
+//                Log.v("썸네일리스트갯수", "개수:  ${itemCount}, 각 리스트:${currentItem.imgThumbnails}")
                 when (itemCount) {
                     0 -> {
                         holder.ivFvThumbnailNull.visibility = View.VISIBLE
-                        holder.setThumbnailVisible(false, false, false, false)
                         holder.tvFvThumbnailMore.visibility = View.INVISIBLE
+                        holder.setThumbnailGone()
                         holder.tvFvTime.text = "0"
                     }
                     1 -> {
+                        val list = listOf<ImageView>(holder.ivFvThumbnail1)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         holder.ivFvThumbnail2.visibility = View.GONE
                         holder.llFvThumbnailBottom.visibility = View.GONE
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail1)
-                        holder.setThumbnailVisible(true, false, false, false)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(1), list , listOf(true, false, false, false))
                     }
                     2 -> {
+                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         holder.llFvThumbnailBottom.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, false, false)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail2)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(2), list , listOf(true, true, false, false))
                     }
                     3 -> {
+                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         holder.clFvThumbnail4.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, true, false)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail2)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![2])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail3)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(3), list , listOf(true, true, true, false))
+
                     }
                     4 -> {
+                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3, holder.ivFvThumbnail4)
                         holder.ivFvThumbnailNull.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, true, true)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail2)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![2])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail3)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![3])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail4)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(4), list , listOf(true, true, true, true))
                     }
                     else -> { // ------! 5개 이상일 때 !------
+                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3, holder.ivFvThumbnail4)
                         holder.ivFvThumbnailNull.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, true, true)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail2)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![2])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail3)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![3])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvThumbnail4)
+                        holder.vFv.visibility = View.VISIBLE
+                        holder.tvFvThumbnailMore.visibility = View.VISIBLE
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(4), list , listOf(true, true, true, true))
                         if (itemCount != null) {
-                            holder.vFv.visibility = View.VISIBLE
-                            holder.tvFvThumbnailMore.visibility =  View.VISIBLE
                             holder.tvFvThumbnailMore.text = "+ ${itemCount - 4}"
                         }
 
@@ -287,92 +235,42 @@ class FavoriteRVAdapter(
                 when (itemCount) {
                     0 -> {
                         holder.ivFvAThumbnailNull.visibility = View.VISIBLE
-                        holder.setThumbnailVisible(false, false, false, false)
                         holder.tvFvAThumbnailMore.visibility = View.INVISIBLE
+                        holder.setThumbnailGone()
                         holder.tvFvATime.text = "0"
                     }
                     1 -> {
+                        val list = listOf<ImageView>(holder.ivFvAThumbnail1)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         holder.ivFvAThumbnail2.visibility = View.GONE
                         holder.llFvAThumbnailBottom.visibility = View.GONE
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail1)
-                        holder.setThumbnailVisible(true, false, false, false)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(1), list , listOf(true, false, false, false))
                     }
                     2 -> {
+                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         holder.llFvAThumbnailBottom.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, false, false)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail2)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(2), list , listOf(true, true, false, false))
                     }
                     3 -> {
+                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         holder.clFvAThumbnail4.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, true, false)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail2)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![2])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail3)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(3), list , listOf(true, true, true, false))
+
                     }
                     4 -> {
+                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3, holder.ivFvAThumbnail4)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, true, true)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail2)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![2])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail3)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![3])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail4)
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(4), list , listOf(true, true, true, true))
                     }
                     else -> { // ------! 5개 이상일 때 !------
+                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3, holder.ivFvAThumbnail4)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
-                        holder.setThumbnailVisible(true, true, true, true)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![0])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail1)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![1])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail2)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![2])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail3)
-                        Glide.with(holder.itemView.context)
-                            .load(currentItem.imgThumbnails!![3])
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(holder.ivFvAThumbnail4)
+                        holder.vFvA.visibility = View.VISIBLE
+                        holder.tvFvAThumbnailMore.visibility = View.VISIBLE
+                        setThumbnails(holder, currentItem.imgThumbnails!!.take(4), list , listOf(true, true, true, true))
                         if (itemCount != null) {
-                            holder.vFvA.visibility = View.VISIBLE
-                            holder.tvFvAThumbnailMore.visibility =  View.VISIBLE
                             holder.tvFvAThumbnailMore.text = "+ ${itemCount - 4}"
                         }
 
@@ -398,5 +296,21 @@ class FavoriteRVAdapter(
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         return stream.toByteArray()
+    }
+    private fun loadImage(context: Context, url: String, imageView: ImageView) {
+        Glide.with(context)
+            .load(url)
+            .into(imageView)
+    }
+
+    private fun setThumbnails(holder: RecyclerView.ViewHolder, urls: List<String>, imageViews: List<ImageView>, visibilityFlags: List<Boolean>) {
+        imageViews.forEachIndexed{ index, imageView ->
+            if (index < urls.size) {
+                loadImage(holder.itemView.context, urls[index], imageView)
+                imageView.visibility = if (visibilityFlags[index]) View.VISIBLE else View.GONE
+            } else {
+                imageView.visibility = View.GONE
+            }
+        }
     }
 }

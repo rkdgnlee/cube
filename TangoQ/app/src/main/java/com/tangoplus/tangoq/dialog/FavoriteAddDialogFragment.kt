@@ -39,7 +39,7 @@ class FavoriteAddDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-        val user_mobile = t_userData?.optString("user_mobile")
+        val user_email = t_userData?.optString("user_email")
 
         binding.etFrDFName.setOnTouchListener{ v, event ->
             val DRAWABLE_RIHGT = 2
@@ -68,7 +68,7 @@ class FavoriteAddDialogFragment : DialogFragment() {
             val jsonObj = JSONObject()
             jsonObj.put("favorite_name", binding.etFrDFName.text)
             jsonObj.put("favorite_description", binding.etFrDFDescript.text)
-            jsonObj.put("user_mobile", user_mobile)
+            jsonObj.put("user_mobile", user_email)
             Log.v("즐겨찾기JSON", "$jsonObj")
 
             insertFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), jsonObj.toString()) { responseJson ->

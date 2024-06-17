@@ -24,6 +24,8 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.tangoplus.tangoq.AlarmActivity
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.listener.BooleanClickListener
@@ -67,6 +69,12 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     .into(binding.civPf)
             }
         }
+
+        binding.ibtnPfAlarm.setOnClickListener {
+            val intent = Intent(requireContext(), AlarmActivity::class.java)
+            startActivity(intent)
+        }
+
         // ------! 프로필 사진 관찰 시작 !------
         viewModel.ivProfile.observe(viewLifecycleOwner) {
             if (it != null) {
@@ -81,7 +89,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         val profilemenulist = mutableListOf(
             "내정보",
             "다크 모드",
-            "연동 관리",
+//            "연동 관리",
             "푸쉬 알림 설정",
             "자주 묻는 질문",
             "문의하기",
@@ -90,11 +98,10 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             "개인정보 처리방침",
             "서비스 이용약관",
             "로그아웃",
-            "회원탈퇴",
         )
-        setAdpater(profilemenulist.subList(0,4), binding.rvPfNormal,0)
-        setAdpater(profilemenulist.subList(4,6), binding.rvPfHelp, 1)
-        setAdpater(profilemenulist.subList(6, profilemenulist.size), binding.rvPfDetail, 2)
+        setAdpater(profilemenulist.subList(0,3), binding.rvPfNormal,0)
+        setAdpater(profilemenulist.subList(3,5), binding.rvPfHelp, 1)
+        setAdpater(profilemenulist.subList(5, profilemenulist.size), binding.rvPfDetail, 2)
 //        binding.ibtnPfEdit.setOnClickListener {
 //            when {
 //                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
@@ -121,6 +128,17 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
 
+        // ------! 회원탈퇴 시작 !------
+        binding.tvWithDrawal.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                replace(R.id.flMain, WithdrawalFragment())
+                addToBackStack(null)
+                commit()
+            }
+        }
+
+        // ------! 회원탈퇴 시작 !------
     }
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(

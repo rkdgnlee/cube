@@ -49,9 +49,6 @@ class PoseViewDialogFragment : DialogFragment() {
                 .into(binding.ivPVPose)
         }
 
-
-
-
     }
 
     override fun onResume() {

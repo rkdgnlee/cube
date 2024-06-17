@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout57"
     android:layout_width="match_parent"
     android:layout_height="110dp"
     android:background="@color/white">
@@ -50,7 +51,6 @@
         android:layout_height="18dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
-        android:maxLength="30"
         android:singleLine="true"
         android:text="증상들 생략.."
 

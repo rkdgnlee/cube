@@ -21,7 +21,7 @@ import java.io.InputStreamReader
 
 class AgreementDetailDialogFragment : DialogFragment() {
     companion object {
-        private const val ARG_AGREEMENT_TYPE = "agreement_type"
+        const val ARG_AGREEMENT_TYPE = "agreement_type"
 
         fun newInstance(agreementType: String): AgreementDetailDialogFragment {
             val args = Bundle()

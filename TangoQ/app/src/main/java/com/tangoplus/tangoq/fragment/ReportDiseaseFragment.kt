@@ -24,10 +24,6 @@ class ReportDiseaseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! 화면 확장 시작 !------
-//        (activity as MainActivity).setTopLayoutFull(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
-        // ------! 화면 확장 끝 !------
-
         binding.ibtnRD.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -36,18 +32,5 @@ class ReportDiseaseFragment : Fragment() {
                 commit()
             }
         }
-
-
-
     }
-
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
 }

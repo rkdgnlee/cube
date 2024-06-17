@@ -4,32 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Matrix
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.core.content.FileProvider
-import androidx.core.util.rangeTo
 import androidx.fragment.app.activityViewModels
-import androidx.health.connect.client.HealthConnectClient
-import androidx.health.connect.client.PermissionController
-import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.DistanceRecord
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
-import androidx.health.connect.client.request.AggregateGroupByDurationRequest
-import androidx.health.connect.client.request.AggregateRequest
-import androidx.health.connect.client.request.ReadRecordsRequest
-import androidx.health.connect.client.time.TimeRangeFilter
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -47,20 +33,16 @@ import com.tangoplus.tangoq.data.Measurement
 import com.tangoplus.tangoq.dialog.MeasurePartDialogFragment
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
-import com.tangoplus.tangoq.PlaySkeletonActivity
+import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.GraphVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
+import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.time.Duration
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
-import kotlin.random.Random
 
 
 class MeasureFragment : Fragment(), OnPartCheckListener {
@@ -68,6 +50,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
     val viewModel : MeasureViewModel by activityViewModels()
     val endTime = LocalDateTime.now()
     val startTime = LocalDateTime.now().minusDays(1)
+    var popupWindow : PopupWindow?= null
     // ------! 싱글턴 패턴 객체 가져오기 !------
     private lateinit var singletonInstance: Singleton_t_measure
     override fun onCreateView(
@@ -120,7 +103,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
         // ------! 측정 버튼 시작 !------
         binding.btnMsMeasurement.setOnClickListener {
-            val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
+            val intent = Intent(requireContext(), MeasureSkeletonActivity::class.java)
             startActivity(intent)
         }
         // ------! 측정 버튼 끝 !------
@@ -147,7 +130,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             if (parts.isEmpty()) {
                 binding.llMsEmpty.visibility = View.VISIBLE
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                val leftAdapter = PainPartRVAdpater(parts, "Pp", this@MeasureFragment)
+                val leftAdapter = PainPartRVAdpater(this@MeasureFragment, parts, "Pp", this@MeasureFragment)
                 binding.rvMsLeft.adapter = leftAdapter
                 binding.rvMsLeft.layoutManager = linearLayoutManager
 
@@ -156,7 +139,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                 binding.rvMsRight.visibility = View.GONE
                 (binding.rvMsLeft.layoutParams as ViewGroup.MarginLayoutParams).rightMargin = 0
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                val leftAdapter = PainPartRVAdpater(parts, "Pp", this@MeasureFragment)
+                val leftAdapter = PainPartRVAdpater(this@MeasureFragment, parts, "Pp", this@MeasureFragment)
                 binding.rvMsLeft.adapter = leftAdapter
                 binding.rvMsLeft.layoutManager = linearLayoutManager
             } else {
@@ -166,14 +149,14 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 val leftData = parts.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
-                val leftadapter = PainPartRVAdpater(leftData, "Pp", this@MeasureFragment)
+                val leftadapter = PainPartRVAdpater(this@MeasureFragment, leftData, "Pp", this@MeasureFragment)
                 binding.rvMsLeft.adapter = leftadapter
                 if (leftData.isNotEmpty()) {
                     binding.rvMsLeft.layoutManager = linearLayoutManager
                 }
 
                 val rightData = parts.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
-                val rightadapter = PainPartRVAdpater(rightData, "Pp", this@MeasureFragment)
+                val rightadapter = PainPartRVAdpater(this@MeasureFragment, rightData, "Pp", this@MeasureFragment)
                 Log.v("adapter데이터", "${leftData}, ${rightData}")
                 binding.rvMsRight.adapter = rightadapter
                 if (rightData.isNotEmpty()) {
@@ -215,10 +198,15 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             }
             requireContext()
         }
-
-
         // ------! 리포트 버튼 끝 !------
 
+        binding.btnMsGetRecommend.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                replace(R.id.flMain, ReportFragment())
+                commit()
+            }
+        }
 
 
         // ------! 꺾은선 그래프 시작 !------
@@ -409,12 +397,49 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 //        }
 
     }
+    private fun goExerciseDetailFragment(parts: MutableList<Triple<String, String, Boolean>>) {
+
+    }
 
 
 
 
+    @SuppressLint("MissingInflatedId")
     override fun onPartCheck(part: Triple<String, String, Boolean>) {
+        if (popupWindow?.isShowing == true) {
+            popupWindow?.dismiss()
+            popupWindow = null
+        } else {
+            val inflater = LayoutInflater.from(view?.context)
+            val popupView = inflater.inflate(R.layout.pw_main_item, null)
+            val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view?.context?.resources?.displayMetrics).toInt()
+            val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 162f, view?.context?.resources?.displayMetrics).toInt()
 
+            popupWindow = PopupWindow(popupView, width, height)
+            popupWindow!!.showAsDropDown(view)
+
+            popupView.findViewById<TextView>(R.id.tvPPP1).setOnClickListener{
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    add(R.id.flMain, ReportDiseaseFragment())
+                    addToBackStack(null)
+                    commit()
+                }
+                popupWindow?.dismiss()
+            }
+            popupView.findViewById<TextView>(R.id.tvPPP2).setOnClickListener{
+                val dialog = PoseViewDialogFragment.newInstance(part.second)
+                dialog.show(requireActivity().supportFragmentManager, "PoseViewDialogFragment")
+                popupWindow?.dismiss()
+            }
+            popupView.findViewById<TextView>(R.id.tvPPP3).setOnClickListener{
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    add(R.id.flMain, ReportFragment())
+                    addToBackStack(null)
+                    commit()
+                }
+                popupWindow?.dismiss()
+            }
+        }
     }
 
 }

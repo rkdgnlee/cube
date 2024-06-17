@@ -7,6 +7,7 @@
     tools:context=".fragment.ProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout37"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -21,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout3"
+                android:id="@+id/constraintLayout38"
                 android:layout_width="match_parent"
                 android:layout_height="74dp"
                 android:background="@color/white">
@@ -45,12 +46,12 @@
                     android:layout_height="38dp"
 
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="4dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.05"
+                    app:layout_constraintVertical_bias="0.0"
                     app:srcCompat="@drawable/app_logo" />
 
                 <TextView
@@ -76,6 +77,7 @@
             app:layout_constraintTop_toBottomOf="@+id/cvPf">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout39"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white">
@@ -127,6 +129,7 @@
                     app:layout_constraintTop_toTopOf="@+id/cardView4">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constraintLayout40"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/background_stroke_1dp_sub_color">
@@ -179,6 +182,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvPfName">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constraintLayout41"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/background_stroke_1dp_sub_color">
@@ -229,6 +233,7 @@
                     app:layout_constraintTop_toTopOf="@+id/cardView4">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constraintLayout42"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/background_stroke_1dp_sub_color">
@@ -335,11 +340,29 @@
                     android:id="@+id/rvPfDetail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView106" />
+
+                <TextView
+                    android:id="@+id/tvWithDrawal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="64dp"
                     android:layout_marginBottom="64dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:gravity="right|center_vertical"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="회원 탈퇴"
+                    android:textColor="@color/subColor300"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView106" />
+                    app:layout_constraintTop_toBottomOf="@+id/rvPfDetail" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

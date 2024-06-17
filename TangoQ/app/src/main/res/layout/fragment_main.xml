@@ -7,6 +7,7 @@
     tools:context=".fragment.MainFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout12"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -14,7 +15,6 @@
             android:id="@+id/cardView16"
             android:layout_width="match_parent"
             android:layout_height="68dp"
-            app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +23,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout3"
                 android:layout_width="match_parent"
-                android:layout_height="74dp"
+                android:layout_height="match_parent"
                 android:background="@color/white">
 
                 <ImageButton
@@ -47,12 +47,12 @@
                     android:layout_height="38dp"
 
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="4dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.05"
+                    app:layout_constraintVertical_bias="0.0"
                     app:srcCompat="@drawable/app_logo" />
 
                 <TextView
@@ -81,12 +81,13 @@
             app:layout_constraintTop_toBottomOf="@+id/cardView16">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout31"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/white">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraintLayout"
+                    android:id="@+id/clTop"
                     android:layout_width="match_parent"
                     android:layout_height="400dp"
                     android:background="@color/subColor100"
@@ -114,6 +115,7 @@
                             app:cardElevation="0dp">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint13"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@color/white">
@@ -278,6 +280,7 @@
                             app:cardElevation="0dp">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraintLayout13"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@color/white">
@@ -354,7 +357,7 @@
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_height="128dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="2dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="2dp"
@@ -370,7 +373,7 @@
                         <androidx.viewpager2.widget.ViewPager2
                             android:id="@+id/vpMBanner"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
+                            android:layout_height="128dp" />
                     </androidx.cardview.widget.CardView>
 
                     <androidx.appcompat.widget.AppCompatButton
@@ -382,6 +385,7 @@
                         android:backgroundTint="@color/white"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
+                        android:padding="12dp"
                         android:stateListAnimator="@null"
                         android:text="측정하기"
                         android:textColor="@color/black"
@@ -397,61 +401,46 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
                     android:text="추천 운동 받기"
                     android:textColor="@color/black"
                     android:textSize="24dp"
                     android:textStyle="bold"
                     android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/clTop" />
 
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/sflM"
                     android:layout_width="match_parent"
-                    android:layout_height="256dp"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView9">
+                    app:layout_constraintTop_toBottomOf="@+id/textView10">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/white">
+                        android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/textView101"
-                            android:layout_width="210dp"
-                            android:layout_height="230dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:background="@color/subColor100"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                        <include layout="@layout/rv_shimmer_program_item" />
 
-                        <TextView
-                            android:id="@+id/textView102"
-                            android:layout_width="160dp"
-                            android:layout_height="230dp"
-                            android:background="@color/subColor100"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="1.0"
-                            app:layout_constraintStart_toEndOf="@+id/textView101"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                        <include layout="@layout/rv_shimmer_program_item" />
 
+                        <include layout="@layout/rv_shimmer_program_item" />
+
+                        <include layout="@layout/rv_shimmer_program_item" />
+
+                    </LinearLayout>
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMRecommend"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sflM" />
+                    app:layout_constraintTop_toBottomOf="@+id/clTop" />
 
                 <com.tomlecollegue.progressbars.HorizontalProgressView
                     android:id="@+id/hpvMRecommend"
@@ -459,6 +448,7 @@
                     android:layout_height="4dp"
                     android:layout_marginTop="8dp"
                     android:background="@color/white"
+                    android:visibility="invisible"
                     app:colorBackground="@color/subColor200"
                     app:colorProgress="@color/mainColor"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -470,10 +460,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_marginTop="10dp"
                     android:text="추천 프로그램"
                     android:textColor="@color/black"
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/hpvMRecommend" />
@@ -486,6 +476,7 @@
                     android:background="@drawable/background_stroke_1dp_sub_color_spinner"
                     android:paddingLeft="10dp"
                     android:popupBackground="@color/white"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/textView10"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView10" />
@@ -494,13 +485,12 @@
                     android:id="@+id/rvM"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="64dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView10"
+                    app:layout_constraintTop_toBottomOf="@+id/sflM"
                     app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,6 +13,7 @@
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout21"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white">
@@ -104,8 +105,8 @@
 
                 <ImageButton
                     android:id="@+id/ibtnEDBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="46dp"
                     android:layout_marginStart="12dp"
                     android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/subColor100"
@@ -116,27 +117,30 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/tvEDCategoryName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/subColor800"
+                android:textSize="22sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sflED" />
+
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/sflED"
                 android:layout_width="match_parent"
                 android:layout_height="600dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spnEDFilter">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout8">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/white"
                     android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView93"
-                        android:layout_width="80dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="right|center_vertical"
-                        android:layout_margin="12dp"
-                        android:background="@color/subColor100" />
 
                     <include layout="@layout/rv_shimmer_favorite_item" />
 
@@ -170,9 +174,10 @@
                 android:id="@+id/rvEDAll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sflED" />
+                app:layout_constraintTop_toBottomOf="@+id/tvEDCategoryName" />
 
             <TextView
                 android:id="@+id/tvGuideNull"

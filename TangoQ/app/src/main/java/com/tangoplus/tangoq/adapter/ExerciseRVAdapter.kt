@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
-import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -11,17 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.callback.ItemTouchCallback
-import com.tangoplus.tangoq.dialog.ExerciseBSDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.listener.BasketItemTouchListener
 import com.tangoplus.tangoq.R
@@ -30,8 +25,6 @@ import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.RvBasketItemBinding
 import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
-import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
-import com.tangoplus.tangoq.databinding.RvRankItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
 import com.tangoplus.tangoq.listener.OnMoreClickListener
@@ -64,7 +57,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         val tvMSymptom = view.findViewById<TextView>(R.id.tvMSymptom)
         val tvMTime = view.findViewById<TextView>(R.id.tvMTime)
         val tvMStage = view.findViewById<TextView>(R.id.tvMStage)
-        val tvMKcal = view.findViewById<TextView>(R.id.tvMKcal)
+//        val tvMKcal = view.findViewById<TextView>(R.id.tvMKcal)
         val ibtnMMore = view.findViewById<ImageButton>(R.id.ibtnMMore)
         val vM = view.findViewById<View>(R.id.vM)
 
@@ -149,9 +142,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         when (holder) {
             is mainViewHolder -> {
                 // -----! recyclerview에서 운동군 보여주기 !------
-                holder.tvMSymptom.text = (if (currentItem.relatedSymptom.toString().length >= 25) {
-                    currentItem.relatedSymptom.toString().substring(0, 23) + "..."
-                } else { currentItem.relatedSymptom}).toString()
+                holder.tvMSymptom.text = currentItem.relatedSymptom.toString()
                 holder.tvMName.text = currentItem.exerciseName
                 holder.tvMTime.text = second
                 holder.tvMStage.text = currentItem.exerciseStage
@@ -175,10 +166,10 @@ class ExerciseRVAdapter (private val fragment: Fragment,
 
                         popupWindow = PopupWindow(popupView, width, height)
                         popupWindow!!.showAsDropDown(view)
-                        popupView.findViewById<TextView>(R.id.tvPWPlay).setOnClickListener {
+                        popupView.findViewById<TextView>(R.id.tvPMPlay).setOnClickListener {
 
                         }
-                        popupView.findViewById<TextView>(R.id.tvPWGoThumbnail).setOnClickListener {
+                        popupView.findViewById<TextView>(R.id.tvPMGoThumbnail).setOnClickListener {
                             val dialogFragment = PlayThumbnailDialogFragment().apply {
                                 arguments = Bundle().apply {
                                     putParcelable("ExerciseUnit", currentItem)
@@ -186,7 +177,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                             }
                             dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                         }
-                        popupView.findViewById<TextView>(R.id.tvPWAddFavorite).setOnClickListener {
+                        popupView.findViewById<TextView>(R.id.tvPMAddFavorite).setOnClickListener {
                             val exerciseUnit = mutableListOf<ExerciseVO>()
                             exerciseUnit.add(currentItem)
                             val program = ProgramVO(0, mutableListOf(), "", 0, "","","", exerciseUnit)
@@ -199,7 +190,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                             dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramAddFavoriteDialogFragment")
                             popupWindow!!.dismiss()
                         }
-                        popupView.findViewById<ImageButton>(R.id.ibtnPWExit).setOnClickListener {
+                        popupView.findViewById<ImageButton>(R.id.ibtnPMExit).setOnClickListener {
                             popupWindow!!.dismiss()
                         }
                         popupWindow!!.isOutsideTouchable = true
@@ -218,9 +209,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
             }
 
             is editViewHolder -> {
-                holder.tvEditSymptom.text = (if (currentItem.relatedSymptom.toString().length >= 25) {
-                    currentItem.relatedSymptom.toString().substring(0, 25) + "..."
-                } else { currentItem.relatedSymptom}).toString()
+                holder.tvEditSymptom.text = currentItem.relatedSymptom.toString()
 //                holder.tvPickAddJoint.text = currentItem.relatedJoint.toString()
 
                 // ------! 썸네일 !------
@@ -245,9 +234,7 @@ class ExerciseRVAdapter (private val fragment: Fragment,
 
             }
             is basketViewHolder -> {
-                holder.tvBkSymptom.text = (if (currentItem.relatedSymptom.toString().length >= 25) {
-                    currentItem.relatedSymptom.toString().substring(0, 25) + "..."
-                } else { currentItem.relatedSymptom}).toString()
+                holder.tvBkSymptom.text = currentItem.relatedSymptom.toString()
                 holder.tvBkName.text = currentItem.exerciseName
 //                holder.tvBkTime.text = currentItem.videoTime
 

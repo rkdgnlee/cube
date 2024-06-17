@@ -243,7 +243,7 @@ class MediaProjectionService : Service() {
         mediaRecorder?.start()
         Handler(Looper.getMainLooper()).postDelayed({
             stopRecording()
-        }, 4000) // 3 seconds
+        }, 3000) // 3 seconds
     }
     private fun stopRecording() {
         mediaRecorder?.apply {

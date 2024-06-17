@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
@@ -64,9 +65,18 @@ class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject
         if (holder is partViewHolder) {
             holder.mcvExpand.visibility = View.GONE
             holder.tvREName.text = currentItem.first
+            Glide.with(fragment)
+                .load(fragment.resources.getIdentifier("drawable_posture_${position + 1}_disabled", "drawable", fragment.requireActivity().packageName))
+                .into(holder.ivRE)
+            // -----! 펼치기 접기 시작 !------
             holder.clRE.setOnClickListener {
                 if (holder.mcvExpand.visibility == View.GONE) {
                     holder.mcvExpand.visibility = View.VISIBLE
+                    Glide.with(fragment)
+                        .load(fragment.resources.getIdentifier("drawable_posture_${position + 1}_enabled", "drawable", fragment.requireActivity().packageName))
+                        .into(holder.ivRE)
+
+
                     holder.mcvExpand.animate().apply {
                         duration = 150
                         rotation(0f)
@@ -78,13 +88,17 @@ class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject
 
                 } else {
                     holder.mcvExpand.visibility = View.GONE
+                    Glide.with(fragment)
+                        .load(fragment.resources.getIdentifier("drawable_posture_${position + 1}_disabled", "drawable", fragment.requireActivity().packageName))
+                        .into(holder.ivRE)
                     holder.mcvExpand.animate().apply {
                         duration = 150
                         rotation(0f)
                     }
                     holder.ivReArrow.setImageResource(R.drawable.icon_arrow_down)
                 }
-            }
+            } // -----! 펼치기 접기 끝 !------
+
             tl = holder.tlRE
             when (currentItem.first) {
                 "정면 자세" -> {

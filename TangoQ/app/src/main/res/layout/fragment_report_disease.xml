@@ -12,12 +12,13 @@
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout47"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout6"
+                android:id="@+id/constraintLayout5"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:background="@color/subColor100"
@@ -45,7 +46,7 @@
                     android:layout_marginStart="8dp"
                     android:text="결과 정보"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/ibtnRD"
                     app:layout_constraintStart_toEndOf="@+id/ibtnRD"
@@ -53,7 +54,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout7"
+                android:id="@+id/constraintLayout6"
                 android:layout_width="0dp"
                 android:layout_height="156dp"
                 android:layout_marginStart="20dp"
@@ -62,7 +63,7 @@
                 android:background="@drawable/background_stroke_1dp_sub_color"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout6">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout5">
 
                 <TextView
                     android:id="@+id/textView110"
@@ -94,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:src="@drawable/drawable_pain2"
+                    android:src="@drawable/drawable_pain3"
                     app:layout_constraintBottom_toBottomOf="@+id/tvRDName"
                     app:layout_constraintEnd_toStartOf="@+id/tvRDName"
                     app:layout_constraintTop_toTopOf="@+id/tvRDName" />
@@ -111,7 +112,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout7" />
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
 
             <TextView
                 android:id="@+id/tvRDExplain"

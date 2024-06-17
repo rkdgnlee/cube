@@ -62,30 +62,28 @@ class ReportFragment : Fragment(), OnReportClickListener {
         super.onViewCreated(view, savedInstanceState)
         singletonInstance = Singleton_t_measure.getInstance(requireContext())
 
-        // ------! 분석 뱃지 시작 !------
-        val badgeDrawable = BadgeDrawable.create(requireContext()).apply {
-            backgroundColor = ContextCompat.getColor(requireContext(), R.color.deleteColor)
-            badgeGravity = BadgeDrawable.TOP_END
-            horizontalOffset = 8  // 원하는 가로 간격 (픽셀 단위)
-            verticalOffset = 8  // 원하는 세로 간격 (픽셀 단위)
+        setBadgeOnFlR()
+
+        binding.tvRMeasureHistory.text = "최근 측정 기록 - ${selectedDate.year}년 ${getCurrentMonthInKorean(currentMonth)} ${selectedDate.dayOfMonth}일"
+
+
+        binding.ibtnRBack.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, MeasureFragment())
+                commit()
+            }
         }
-
-
-        val layoutParams = binding.tvRBadge.layoutParams as FrameLayout.LayoutParams
-        layoutParams.marginEnd = 16  // 오른쪽 마진
-        layoutParams.topMargin = 16  // 위쪽 마진
-        binding.tvRBadge.layoutParams = layoutParams
-
-        // 뱃지를 View에 연결
-        binding.flR.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-            BadgeUtils.attachBadgeDrawable(badgeDrawable, binding.tvRBadge, binding.flR)
-        } // ------! 분석 뱃지 끝 !------
-
-        binding.ibtnRAlarm.setOnClickListener {
-            val intent = Intent(requireContext(), AlarmActivity::class.java)
-            startActivity(intent)
+//        binding.ibtnRAlarm.setOnClickListener {
+//            val intent = Intent(requireContext(), AlarmActivity::class.java)
+//            startActivity(intent)
+//        }
+        binding.vRDiseasePredict.setOnClickListener{
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                replace(R.id.flMain, ReportDiseaseFragment())
+                commit()
+            }
         }
-
 
         // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
@@ -149,15 +147,9 @@ class ReportFragment : Fragment(), OnReportClickListener {
                         container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor200))
                     }
                 }
-                binding.vRDiseasePredict.setOnClickListener{
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                        replace(R.id.flMain, ReportDiseaseFragment())
-                        commit()
-                    }
-                }
+
                 container.date.setOnClickListener {
-                    // 선택된 날짜를 업데이트하고 UI를 갱신합니다.
+                    // 선택된 날짜를 업데이트 + UI 갱신
                     val oldDate = selectedDate
                     selectedDate = day.date
                     if (oldDate != null) {
@@ -208,7 +200,28 @@ class ReportFragment : Fragment(), OnReportClickListener {
         scrollToView(view)
     }
 
-    fun getCurrentMonthInKorean(month: YearMonth): String {
+    private fun getCurrentMonthInKorean(month: YearMonth): String {
         return month.month.getDisplayName(TextStyle.FULL, Locale("ko"))
+    }
+
+    @OptIn(ExperimentalBadgeUtils::class)
+    private fun setBadgeOnFlR() {
+        // ------! 분석 뱃지 시작 !------
+        val badgeDrawable = BadgeDrawable.create(requireContext()).apply {
+            backgroundColor = ContextCompat.getColor(requireContext(), R.color.deleteColor)
+            badgeGravity = BadgeDrawable.TOP_END
+            horizontalOffset = 8  // 원하는 가로 간격 (픽셀 단위)
+            verticalOffset = 8  // 원하는 세로 간격 (픽셀 단위)
+        }
+
+        val layoutParams = binding.tvRBadge.layoutParams as FrameLayout.LayoutParams
+        layoutParams.marginEnd = 16  // 오른쪽 마진
+        layoutParams.topMargin = 16  // 위쪽 마진
+        binding.tvRBadge.layoutParams = layoutParams
+
+        // 뱃지를 View에 연결
+        binding.flR.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            BadgeUtils.attachBadgeDrawable(badgeDrawable, binding.tvRBadge, binding.flR)
+        } // ------! 분석 뱃지 끝 !------
     }
 }

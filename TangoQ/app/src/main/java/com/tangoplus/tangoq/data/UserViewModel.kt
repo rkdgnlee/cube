@@ -7,18 +7,14 @@ import org.json.JSONObject
 class UserViewModel: ViewModel() {
     val User = MutableLiveData(JSONObject())
 
-    val UserHistory = MutableLiveData(JSONObject())
+    var setupProgress = 25
+    var setupStep = 0
+
+
 
     init {
         User.value = JSONObject()
+        setupProgress = 25
+        setupStep = 0
     }
-
-
-    val idCondition = MutableLiveData(false)
-    val nameCondition = MutableLiveData(false)
-    val mobileCondition = MutableLiveData(false)
-    val pwCondition = MutableLiveData(false)
-    val pwCompare = MutableLiveData(false)
-    val emailCondition = MutableLiveData(false)
-    val mobileAuthCondition = MutableLiveData(false)
 }

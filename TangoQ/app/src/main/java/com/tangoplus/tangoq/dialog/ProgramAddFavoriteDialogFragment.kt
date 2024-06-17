@@ -27,7 +27,7 @@ import com.tangoplus.tangoq.listener.OnFavoriteSelectedClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.`object`.NetworkFavorite
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByMobile
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByEmail
 import com.tangoplus.tangoq.`object`.NetworkFavorite.updateFavoriteItemJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
@@ -61,7 +61,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
 
         // ------! program 데이터 bundle, singleton에서 전화번호 가져오기 시작 !------
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-        val user_mobile = t_userData?.optString("user_mobile")
+        val user_email = t_userData?.optString("user_email")
 
         val bundle = arguments
 
@@ -76,7 +76,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
 
         // ------! 먼저 즐겨찾기 목록을 보여주기 !------
         lifecycleScope.launch {
-            val favoriteList = fetchFavoriteItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), user_mobile.toString())
+            val favoriteList = fetchFavoriteItemsJsonByEmail(getString(R.string.IP_ADDRESS_t_favorite), user_email.toString())
 
             if (favoriteList != null) {
                 for (i in favoriteList.indices) {

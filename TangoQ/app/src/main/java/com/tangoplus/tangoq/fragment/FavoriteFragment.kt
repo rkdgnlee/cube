@@ -22,9 +22,10 @@ import com.tangoplus.tangoq.dialog.FavoriteAddDialogFragment
 import com.tangoplus.tangoq.listener.OnFavoriteSelectedClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.jsonToExerciseVO
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByMobile
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByEmail
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.net.URLEncoder
 
 
 class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSelectedClickListener {
@@ -45,7 +46,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
 
         // ------! singleton에서 전화번호 가져오기 시작 !------
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-        val user_mobile = t_userData?.optString("user_mobile")
+        val user_email = t_userData?.optString("user_email")
 
         binding.tvFrTitle.text = "${t_userData?.optString("user_name")} 님의\n플레이리스트 목록"
 
@@ -56,11 +57,11 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
         }
         // ------! 즐겨 찾기 1개 추가 끝 !------
 
-//        val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
+        val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
         lifecycleScope.launch {
 
             // ------! 핸드폰 번호로 PickItems 가져오기 시작 !------
-            val favoriteList = fetchFavoriteItemsJsonByMobile(getString(R.string.IP_ADDRESS_t_favorite), user_mobile.toString()) // user_mobile 넣기
+            val favoriteList = fetchFavoriteItemsJsonByEmail(getString(R.string.IP_ADDRESS_t_favorite), user_email.toString()) // user_mobile 넣기
 
             // ------! list관리 시작 !------
             if (favoriteList != null) {

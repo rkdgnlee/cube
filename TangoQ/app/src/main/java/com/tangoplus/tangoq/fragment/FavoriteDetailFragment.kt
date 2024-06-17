@@ -86,7 +86,7 @@ class FavoriteDetailFragment : Fragment(){
 
         // -----! singleton에서 전화번호 가져오기 시작 !-----
         val t_userData = Singleton_t_user.getInstance(requireContext())
-        val user_mobile = t_userData.jsonObject?.optString("user_mobile")
+
         // -----! singleton에서 전화번호 가져오기 끝 !-----
 
         /** ============================= 흐름 =============================
@@ -109,7 +109,8 @@ class FavoriteDetailFragment : Fragment(){
             FavoriteItem = jsonToFavoriteItemVO(snData)
 //
 //            // ------! 즐겨찾기 넣어서 가져오기 !------
-            currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!
+            currentItem = viewModel.favoriteList.value?.find { it.favoriteSn == currentSn.toInt() }!!
+            Log.v("Detail>CurrentItem", "sn: ${currentItem.favoriteSn} ,갯수: ${currentItem.imgThumbnails!!.size}")
             currentItem.exercises = FavoriteItem.exercises
             currentSn = currentItem.favoriteSn.toString()
             setFVDetail(currentItem.favoriteSn.toString())
@@ -162,9 +163,13 @@ class FavoriteDetailFragment : Fragment(){
             it.isClickable = true
         }
         binding.ibtnFDMore.setOnClickListener {
+            // ------! img bytearray로 만들기가 안됨.
+
+
             val bsFragment = FavoriteBSDialogFragment()
             val bundle = Bundle()
-            Log.v("currentItem상태", "$currentItem")
+            Log.v("currentItem상태", "${currentItem.exercises?.size}")
+
             bundle.putParcelable("Favorite", currentItem)
             bsFragment.arguments = bundle
             val fragmentManager = requireActivity().supportFragmentManager

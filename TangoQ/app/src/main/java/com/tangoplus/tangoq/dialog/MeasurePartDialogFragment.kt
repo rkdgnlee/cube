@@ -40,13 +40,13 @@ class MeasurePartDialogFragment : DialogFragment(), OnPartCheckListener {
         ppList.add(Triple("drawable_pain7", "무릎", false))
         ppList.add(Triple("drawable_pain8", "복부", false))
 
-        for ( i in ppList.indices) {
+        for ( i in ppList.indices ) {
             val matchingPart = viewModel.parts.value?.find { it.second == ppList[i].second }
             if (matchingPart != null) {
                 ppList[i] = ppList[i].copy(third = matchingPart.third)
             }
         }
-        val adapter = PainPartRVAdpater(ppList, "selectPp",this@MeasurePartDialogFragment)
+        val adapter = PainPartRVAdpater(this@MeasurePartDialogFragment, ppList, "selectPp",this@MeasurePartDialogFragment)
         binding.rvMP.adapter = adapter
         val linearLayoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

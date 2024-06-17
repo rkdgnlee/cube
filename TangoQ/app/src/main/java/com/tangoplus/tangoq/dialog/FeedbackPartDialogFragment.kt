@@ -35,8 +35,8 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
+
         // ------! RV checkbox 취합 시작 !------
         binding.btnPpFinish.setOnClickListener {
 //            viewModel.parts.value //
@@ -50,7 +50,6 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
             }
             userJson?.optString("user_mobile")
 //            insertMeasurePartsByJson(getString(R.string.IP_ADDRESS_t_favorite),)
-
 
 
 

@@ -26,10 +26,11 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvFV"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout25"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -168,17 +169,17 @@
                 android:id="@+id/rvFV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/btnFVEdit"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sflFV" />
+                app:layout_constraintTop_toBottomOf="@+id/sflFV"
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/btnFVEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="20dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/secondaryColor"
                 android:drawableLeft="@drawable/icon_edit"
@@ -193,8 +194,7 @@
                 app:cornerRadius="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvFV" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

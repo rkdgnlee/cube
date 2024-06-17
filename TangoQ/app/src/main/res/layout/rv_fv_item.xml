@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clFv"
     android:layout_width="match_parent"
     android:layout_height="110dp"
     android:background="@color/white">
@@ -174,7 +175,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/recommend_thumbnail" />
+                    app:srcCompat="@color/subColor800" />
 
                 <ImageView
                     android:id="@+id/ivFvThumbnail2"
@@ -182,7 +183,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/icon_api_kakao_logo" />
+                    app:srcCompat="@color/mainColor" />
             </LinearLayout>
 
             <LinearLayout
@@ -198,7 +199,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/naver_icon" />
+                    app:srcCompat="@color/secondaryColor" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/clFvThumbnail4"
@@ -216,7 +217,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@android:drawable/progress_indeterminate_horizontal" />
+                        app:srcCompat="@color/subColor700" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

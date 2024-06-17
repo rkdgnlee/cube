@@ -91,11 +91,11 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             val dialogFragment = ProfileEditDialogFragment()
                             dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                         }
-                        "연동 관리" -> {
-                            val settingsIntent = Intent()
-                            settingsIntent.action = HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
-                            fragment.startActivity(settingsIntent)
-                        }
+//                        "연동 관리" -> {
+//                            val settingsIntent = Intent()
+//                            settingsIntent.action = HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+//                            fragment.startActivity(settingsIntent)
+//                        }
                         "푸쉬 알림 설정" -> {
                             val intent = Intent().apply {
                                 action = "android.settings.APP_NOTIFICATION_SETTINGS"
@@ -151,14 +151,6 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             val intent = Intent(holder.itemView.context, IntroActivity::class.java)
                             holder.itemView.context.startActivity(intent)
                             fragment.requireActivity().finishAffinity()
-                        }
-                        "회원탈퇴" -> {
-                            fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                                replace(R.id.flMain, WithdrawalFragment())
-                                addToBackStack(null)
-                                commit()
-                            }
                         }
                     }
                 }

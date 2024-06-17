@@ -76,7 +76,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 //        binding.ibtnEDACTVClear.setOnClickListener {
 //            binding.actvEDSearch.text.clear()
 //        }
-
+        binding.tvEDCategoryName.text = categoryName
         binding.ibtnEDBack.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
 //                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_in_left)

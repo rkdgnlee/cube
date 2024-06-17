@@ -5,10 +5,8 @@ import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
-import android.text.Html.FROM_HTML_MODE_LEGACY
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannedString
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
@@ -19,14 +17,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.IntroActivity
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
-import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserDeleteJson
+import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserDeleteJson
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 
@@ -92,13 +87,14 @@ class WithdrawalFragment : Fragment() {
         val startIndex = message.indexOf("회원 계정이 삭제")
         val endIndex = message.indexOf("회원 계정이 삭제")
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 47, 49, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 42, 44, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         message.setSpan(StyleSpan(Typeface.BOLD), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.btnWd.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("경고⚠️")
                 setMessage(message)
                 setPositiveButton("예") { dialog, _ ->
+                    dialog.dismiss()
                     deleteAccount()
                 }
                 setNegativeButton("아니오") { dialog, _ ->
@@ -109,19 +105,21 @@ class WithdrawalFragment : Fragment() {
     }
     private fun deleteAccount() {
         fetchUserDeleteJson(getString(R.string.IP_ADDRESS_t_user),
-            singletonUserInstance.jsonObject?.optJSONObject("data")?.optString("user_mobile").toString()
+            singletonUserInstance.jsonObject?.optJSONObject("data")?.optString("user_email").toString()
         ) {
-            MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                setMessage("탈퇴가 완료됐습니다.")
-                setPositiveButton("예") { dialog, _ ->
-                    val intent = Intent(requireContext(), IntroActivity::class.java)
-                    singletonUserInstance.jsonObject = null
-                    singletonMeasureInstance.jsonObject = null
-                    startActivity(intent)
-                    requireActivity().finishAffinity()
-                }
-                create()
-            }.show()
+            requireActivity().runOnUiThread {
+                MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setMessage("탈퇴가 완료됐습니다.")
+                    setPositiveButton("예") { dialog, _ ->
+                        val intent = Intent(requireContext(), IntroActivity::class.java)
+                        singletonUserInstance.jsonObject = null
+                        singletonMeasureInstance.jsonObject = null
+                        startActivity(intent)
+                        requireActivity().finishAffinity()
+                    }
+                    create()
+                }.show()
+            }
         }
 
     }

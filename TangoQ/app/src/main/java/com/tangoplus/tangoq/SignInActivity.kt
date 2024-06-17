@@ -34,9 +34,9 @@ import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUserService
-import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserINSERTJson
-import com.tangoplus.tangoq.`object`.NetworkUserService.getUserSELECTJson
+import com.tangoplus.tangoq.`object`.NetworkUser
+import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserINSERTJson
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
@@ -455,7 +455,7 @@ class SignInActivity : AppCompatActivity() {
                     if (jsonObj?.getInt("status") == 404) {
                         fetchUserINSERTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
                             if (JsonObj != null) {
-                                NetworkUserService.StoreUserInSingleton(this@SignInActivity, JsonObj)
+                                NetworkUser.StoreUserInSingleton(this@SignInActivity, JsonObj)
                                 Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
                                 setupInit()
                             }

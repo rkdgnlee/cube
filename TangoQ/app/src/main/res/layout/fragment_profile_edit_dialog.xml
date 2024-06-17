@@ -13,8 +13,9 @@
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout43"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@color/white">
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -76,7 +77,7 @@
                         android:id="@+id/textView91"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="12dp"
+                        android:layout_margin="16dp"
                         android:layout_marginBottom="12dp"
                         android:layout_weight="5"
                         android:text="휴대폰번호"
@@ -106,7 +107,7 @@
                         android:id="@+id/textView111"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="12dp"
+                        android:layout_margin="16dp"
                         android:layout_weight="5"
                         android:text="이름"
                         android:textColor="@color/subColor700"
@@ -125,164 +126,163 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout9"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/linearLayout17"
+                android:layout_width="match_parent"
                 android:layout_height="128dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_rectangle_8dp"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout15">
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView13"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:cardCornerRadius="28dp"
-                    app:cardElevation="0dp"
-                    app:layout_constraintEnd_toStartOf="@+id/cardView15"
-                    app:layout_constraintHorizontal_bias="0.25"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clGoogle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/subColor200">
 
-                    <ImageButton
-                        android:id="@+id/imageButton"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/effect_ibtn_20dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/icon_api_google_logo" />
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:cardCornerRadius="28dp"
-                    app:cardElevation="0dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageButton
-                        android:id="@+id/imageButton2"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/effect_ibtn_20dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/icon_api_kakao_logo" />
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView17"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:cardCornerRadius="28dp"
-                    app:cardElevation="0dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.75"
-                    app:layout_constraintStart_toEndOf="@+id/cardView15"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageButton
-                        android:id="@+id/imageButton3"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView13"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/effect_ibtn_20dp"
-                        android:src="@drawable/icon_api_naver_logo" />
-                </androidx.cardview.widget.CardView>
+                        app:cardCornerRadius="28dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.3">
+
+                        <ImageButton
+                            android:id="@+id/imageButton"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/effect_ibtn_20dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/icon_api_google_logo" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/tvGoogleInteCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="미연결"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cardView13" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/materialDivider18"
                     android:layout_width="2dp"
                     android:layout_height="100dp"
-                    app:dividerColor="@color/subColor400"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/cardView15"
-                    app:layout_constraintStart_toEndOf="@+id/cardView13"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_gravity="center_vertical"
+                    app:dividerColor="@color/subColor400" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clKakao"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/subColor200">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="28dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.3">
+
+                        <ImageButton
+                            android:id="@+id/imageButton2"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/effect_ibtn_20dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/icon_api_kakao_logo" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/tvKakaoIntecheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="미연결"
+                        app:layout_constraintEnd_toEndOf="@+id/cardView15"
+                        app:layout_constraintStart_toStartOf="@+id/cardView15"
+                        app:layout_constraintTop_toBottomOf="@+id/cardView15" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="2dp"
                     android:layout_height="100dp"
-                    app:dividerColor="@color/subColor400"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/cardView17"
-                    app:layout_constraintStart_toEndOf="@+id/cardView15"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_gravity="center_vertical"
+                    app:dividerColor="@color/subColor400" />
 
-                <TextView
-                    android:id="@+id/textView96"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="연동완료"
-                    app:layout_constraintEnd_toEndOf="@+id/cardView17"
-                    app:layout_constraintStart_toStartOf="@+id/cardView17"
-                    app:layout_constraintTop_toBottomOf="@+id/cardView17" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clNaver"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/subColor200">
 
-                <TextView
-                    android:id="@+id/textView108"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="2024.05.12"
-                    app:layout_constraintEnd_toEndOf="@+id/cardView17"
-                    app:layout_constraintStart_toStartOf="@+id/cardView17"
-                    app:layout_constraintTop_toBottomOf="@+id/textView96" />
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView17"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="28dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.3">
 
-                <TextView
-                    android:id="@+id/textView124"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="연동완료"
-                    app:layout_constraintEnd_toEndOf="@+id/cardView15"
-                    app:layout_constraintStart_toStartOf="@+id/cardView15"
-                    app:layout_constraintTop_toBottomOf="@+id/cardView15" />
+                        <ImageButton
+                            android:id="@+id/imageButton3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/effect_ibtn_20dp"
+                            android:src="@drawable/icon_api_naver_logo" />
+                    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/textView125"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="2024.05.12"
-                    app:layout_constraintEnd_toEndOf="@+id/cardView15"
-                    app:layout_constraintStart_toStartOf="@+id/cardView15"
-                    app:layout_constraintTop_toBottomOf="@+id/textView124" />
+                    <TextView
+                        android:id="@+id/tvNaverInteCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="미연결"
+                        app:layout_constraintEnd_toEndOf="@+id/cardView17"
+                        app:layout_constraintStart_toStartOf="@+id/cardView17"
+                        app:layout_constraintTop_toBottomOf="@+id/cardView17" />
 
-                <TextView
-                    android:id="@+id/textView126"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="연동완료"
-                    app:layout_constraintEnd_toEndOf="@+id/cardView13"
-                    app:layout_constraintStart_toStartOf="@+id/cardView13"
-                    app:layout_constraintTop_toBottomOf="@+id/cardView13" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/textView127"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="2024.05.12"
-                    app:layout_constraintEnd_toEndOf="@+id/cardView13"
-                    app:layout_constraintStart_toStartOf="@+id/cardView13"
-                    app:layout_constraintTop_toBottomOf="@+id/textView126" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
             <EditText
-                android:id="@+id/etPEName"
+                android:id="@+id/etPEId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_stroke_1dp_sub_color_8dp"
                 android:ems="10"
@@ -295,7 +295,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout9" />
+                app:layout_constraintTop_toBottomOf="@+id/textView71" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="2dp"
@@ -305,7 +305,7 @@
                 app:dividerColor="@color/subColor400"
                 app:layout_constraintBottom_toBottomOf="@+id/linearLayout15"
                 app:layout_constraintEnd_toEndOf="@+id/linearLayout15"
-                app:layout_constraintHorizontal_bias="0.25"
+                app:layout_constraintHorizontal_bias="0.26"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout15"
                 app:layout_constraintTop_toTopOf="@+id/linearLayout15" />
 
@@ -334,19 +334,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="32dp"
                 android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout16"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView90">
+                app:layout_constraintTop_toBottomOf="@+id/textView90"
+                app:layout_constraintVertical_bias="0.0">
 
                 <EditText
                     android:id="@+id/etPEEmailId"
-                    android:layout_width="156dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="8dp"
+                    android:layout_weight="1"
                     android:background="@drawable/background_stroke_1dp_sub_color_8dp"
                     android:ems="10"
                     android:hint="이메일"
@@ -358,15 +362,17 @@
 
                 <ImageView
                     android:id="@+id/imageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:layout_weight="1.85"
                     app:srcCompat="@drawable/icon_at" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
                     android:background="@drawable/background_stroke_1dp_sub_color_8dp">
 
                     <ImageView
@@ -419,13 +425,13 @@
                 android:id="@+id/textView71"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="32dp"
                 android:text="아이디 변경"
-                android:textColor="@color/black"
+                android:textColor="@color/subColor800"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/etPEName"
-                app:layout_constraintStart_toStartOf="@+id/etPEName" />
+                app:layout_constraintStart_toStartOf="@+id/etPEId"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout17" />
 
             <TextView
                 android:id="@+id/textView90"
@@ -434,7 +440,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:text="이메일 변경"
-                android:textColor="@color/black"
+                android:textColor="@color/subColor800"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -447,10 +453,11 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:text="비밀번호 변경"
+                android:textColor="@color/subColor800"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEName" />
+                app:layout_constraintTop_toBottomOf="@+id/etPEId" />
 
             <EditText
                 android:id="@+id/etPEPasswordRepeat"
@@ -470,51 +477,55 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etPEPassword" />
 
+            <LinearLayout
+                android:id="@+id/linearLayout16"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@color/white"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnPEFinish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_margin="20dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/mainColor"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="16dp"
+                    android:stateListAnimator="@null"
+                    android:text="수정 완료"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    app:cornerRadius="8dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnPEGoSetup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/secondaryColor"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="16dp"
+                    android:stateListAnimator="@null"
+                    android:text="키 몸무게 설정하기"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    app:cornerRadius="8dp" />
+            </LinearLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/white"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPEFinish"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_margin="20dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:backgroundTint="@color/mainColor"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:padding="16dp"
-            android:stateListAnimator="@null"
-            android:text="수정 완료"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="8dp" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPEGoSetup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:backgroundTint="@color/secondaryColor"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:padding="16dp"
-            android:stateListAnimator="@null"
-            android:text="키 몸무게 설정하기"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="8dp" />
-    </LinearLayout>
 
 </FrameLayout>

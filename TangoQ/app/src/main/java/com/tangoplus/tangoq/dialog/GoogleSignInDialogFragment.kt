@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues
@@ -9,18 +8,14 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.core.view.ViewCompat.requireViewById
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
@@ -35,12 +30,11 @@ import com.tangoplus.tangoq.SetupActivity
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentGoogleSignInDialogBinding
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUserService.StoreUserInSingleton
-import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserINSERTJson
-import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserUPDATEJson
-import com.tangoplus.tangoq.`object`.NetworkUserService.getUserSELECTJson
+import com.tangoplus.tangoq.`object`.NetworkUser.StoreUserInSingleton
+import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserINSERTJson
+import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
-import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
 

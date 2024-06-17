@@ -22,7 +22,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -43,6 +43,9 @@ android {
 }
 //noinspection UseTomlInstead
 dependencies {
+
+    // test
+    implementation("com.google.android.play:integrity:1.3.0")
 
     // 스켈레톤
     implementation("com.google.mediapipe:tasks-vision:0.20230731")

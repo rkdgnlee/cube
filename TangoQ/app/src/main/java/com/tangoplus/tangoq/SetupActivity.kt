@@ -12,7 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.adapter.SetupVPAdapter
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUserService.fetchUserUPDATEJson
+import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.ActivitySetupBinding
@@ -30,10 +30,11 @@ class SetupActivity : AppCompatActivity() {
         // -----! singletom에 넣고, update 통신 !-----
         val t_userData = Singleton_t_user.getInstance(this).jsonObject?.optJSONObject("data")
 
-        val user_mobile = t_userData?.optString("user_mobile")
+        val user_email = t_userData?.optString("user_email")
         Log.v("싱글턴", "${t_userData}")
 
-        binding.pvSu.progress = 25
+        binding.pvSu.progress = viewModel.setupProgress
+        binding.svSu.go(viewModel.setupStep, false)
         binding.svSu.getState()
             .animationType(StepView.ANIMATION_CIRCLE)
             .steps(object : ArrayList<String?>() {
@@ -45,6 +46,7 @@ class SetupActivity : AppCompatActivity() {
                 }
             })
             .stepsNumber(4)
+
             .animationDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
             // other state methods are equal to the corresponding xml attributes
             .commit()
@@ -65,11 +67,11 @@ class SetupActivity : AppCompatActivity() {
                 JsonObj.put("user_weight", viewModel.User.value?.optString("user_weight"))
                 Log.w("${ContentValues.TAG}, 몸무게", viewModel.User.value?.optString("user_weight").toString())
                 Log.w("${ContentValues.TAG}, JSON몸통", "$JsonObj")
-                Log.v("전화번호", "$user_mobile")
-                if (user_mobile != null) {
-                    val encodedUserMobile = URLEncoder.encode(user_mobile, "UTF-8")
-                    Log.w("encodedUserMobile", encodedUserMobile)
-                    fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserMobile) {
+                Log.v("이메일", "$user_email")
+                if (user_email != null) {
+                    val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
+                    Log.w("encodedUserEmail", encodedUserEmail)
+                    fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserEmail) {
                         t_userData.put("user_gender", viewModel.User.value?.optString("user_gender"))
                         t_userData.put("user_height", viewModel.User.value?.optString("user_height"))
                         t_userData.put("user_weight", viewModel.User.value?.optString("user_weight"))
@@ -82,9 +84,14 @@ class SetupActivity : AppCompatActivity() {
                 } // -----! view model에 값을 넣기 끝 !-----
                 // -----! 설정 완료 시, 선택한 데이터 저장 및 페이지 이동 코드 끝 !-----
             } else {
-                binding.vp2Su.currentItem += 1
-                binding.svSu.go(binding.svSu.currentStep + 1, true)
-                if (binding.pvSu.progress in 0 ..100) binding.pvSu.progress  += 25
+                viewModel.setupStep += 1
+                binding.vp2Su.currentItem = viewModel.setupStep
+
+                binding.svSu.go(viewModel.setupStep, true)
+                if (binding.pvSu.progress in 0 ..100) {
+                    viewModel.setupProgress += 25
+                    binding.pvSu.progress = viewModel.setupProgress
+                }
             }
         }
 
@@ -105,9 +112,13 @@ class SetupActivity : AppCompatActivity() {
             if (binding.vp2Su.currentItem == 0) {
 
             } else {
-                binding.vp2Su.currentItem -= 1
-                binding.svSu.go(binding.svSu.currentStep -1, true)
-                if (binding.pvSu.progress in 0 ..100) binding.pvSu.progress -= 25
+                viewModel.setupStep -= 1
+                binding.vp2Su.currentItem = viewModel.setupStep
+                binding.svSu.go(viewModel.setupStep, true)
+                if (binding.pvSu.progress in 0 ..100) {
+                    viewModel.setupProgress -= 25
+                    binding.pvSu.progress = viewModel.setupProgress
+                }
             }
         }
         // ------! 이전 버튼 끝 !------
@@ -136,9 +147,13 @@ class SetupActivity : AppCompatActivity() {
         if (binding.vp2Su.currentItem == 0) {
 
         } else {
-            binding.vp2Su.currentItem -= 1
-            binding.svSu.go(binding.svSu.currentStep -1, true)
-            if (binding.pvSu.progress in 0 ..100) binding.pvSu.progress -= 25
+            viewModel.setupStep -= 1
+            binding.vp2Su.currentItem = viewModel.setupStep
+            binding.svSu.go(viewModel.setupStep, true)
+            if (binding.pvSu.progress in 0 ..100) {
+                viewModel.setupProgress -= 25
+                binding.pvSu.progress = viewModel.setupProgress
+            }
         }
     }
 }

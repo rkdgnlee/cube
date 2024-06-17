@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.fragment
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -65,6 +66,16 @@ class MainFragment : Fragment(), OnRVClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // ------! 태블릿 창 크기 조절 !------
+//        val lpClTop = binding.clTop.layoutParams
+//        val lpVpBanner = binding.vpMBanner.layoutParams
+//        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+//        lpClTop.height = (screenHeight * 0.4).toInt()
+//        lpVpBanner.height = (screenHeight * 0.175).toInt()
+//        binding.clTop.layoutParams = lpClTop
+//        binding.vpMBanner.layoutParams = lpVpBanner
+
+
         // -----! 스크롤 관리 !-----
         binding.nsvM.isNestedScrollingEnabled = false
         binding.rvM.isNestedScrollingEnabled = false
@@ -80,41 +91,45 @@ class MainFragment : Fragment(), OnRVClickListener {
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         binding.ivMScoreDown.visibility = View.GONE
         binding.ivMScoreUp.visibility = View.GONE
-        // TODO 점수 변동에 따른 화살표 VISIBLE 처리
-
-        if (binding.tvMBalanceScore.text == "미설정") {
-
-        } else if (binding.tvMBalanceScore.text.toString().toInt() > 76) {
-            binding.ivMScoreDown.visibility = View.GONE
-            binding.ivMScoreDone.visibility = View.GONE
-            binding.ivMScoreUp.visibility = View.VISIBLE
-        } else if (binding.tvMBalanceScore.text.toString().toInt() < 76) {
-            binding.ivMScoreDown.visibility = View.VISIBLE
-            binding.ivMScoreDone.visibility = View.GONE
-            binding.ivMScoreUp.visibility = View.GONE
-        } else {
-            binding.ivMScoreDown.visibility = View.GONE
-            binding.ivMScoreDone.visibility = View.VISIBLE
-            binding.ivMScoreUp.visibility = View.GONE
-        }
-        binding.btnMMeasure.setOnClickListener {
-            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
-            bnv.selectedItemId = R.id.measure
-        }
-        // TODO 운동 기록에 맞게 HPV 연동 필요
-        binding.hpvMDailyFirst.progress = 0
-
-        binding.hpvMDailyThird.progress = 0
-
-        mViewModel.totalSteps.observe(viewLifecycleOwner) { totalSteps ->
-            if (totalSteps == "" || totalSteps.toInt() == 0) {
-                binding.tvMTodaySteps.text = "0"
-                binding.hpvMDailySecond.progress = 0
-            } else if (totalSteps.toInt() > 0) {
-                binding.tvMTodaySteps.text = totalSteps
-                binding.hpvMDailySecond.progress = (totalSteps.toInt() * 100) / 8000
-            }
-        } // ------! 점수 끝 !------
+//        // TODO 점수 변동에 따른 화살표 VISIBLE 처리
+//
+//        if (binding.tvMBalanceScore.text == "미설정") {
+//
+//        } else if (binding.tvMBalanceScore.text.toString().toInt() > 76) {
+//            binding.ivMScoreDown.visibility = View.GONE
+//            binding.ivMScoreDone.visibility = View.GONE
+//            binding.ivMScoreUp.visibility = View.VISIBLE
+//        } else if (binding.tvMBalanceScore.text.toString().toInt() < 76) {
+//            binding.ivMScoreDown.visibility = View.VISIBLE
+//            binding.ivMScoreDone.visibility = View.GONE
+//            binding.ivMScoreUp.visibility = View.GONE
+//        } else {
+//            binding.ivMScoreDown.visibility = View.GONE
+//            binding.ivMScoreDone.visibility = View.VISIBLE
+//            binding.ivMScoreUp.visibility = View.GONE
+//        }
+//        binding.btnMMeasure.setOnClickListener {
+//            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
+//            bnv.selectedItemId = R.id.measure
+//        }
+//        // TODO 운동 기록에 맞게 HPV 연동 필요
+        binding.tvMTodayTime.text = "16"
+        binding.tvMTodaySteps.text = "1138"
+        binding.tvMTodaySet.text = "3/5"
+        binding.hpvMDailyFirst.progress = 28
+        binding.hpvMDailySecond.progress = 19
+        binding.hpvMDailyThird.progress = 60
+        binding.tvMBalanceScore.text = "87점"
+//
+//        mViewModel.totalSteps.observe(viewLifecycleOwner) { totalSteps ->
+//            if (totalSteps == "" || totalSteps.toInt() == 0) {
+//                binding.tvMTodaySteps.text = "0"
+//                binding.hpvMDailySecond.progress = 0
+//            } else if (totalSteps.toInt() > 0) {
+//                binding.tvMTodaySteps.text = totalSteps
+//                binding.hpvMDailySecond.progress = (totalSteps.toInt() * 100) / 8000
+//            }
+//        } // ------! 점수 끝 !------
 
         // ------! 중앙 홍보 배너 시작 !------
         bViewModel.BannerList.add("drawable_banner_1")
@@ -205,15 +220,15 @@ class MainFragment : Fragment(), OnRVClickListener {
 //                    }
 //                }) // ------! horizontal과 progressbar 연동 끝 !------
 
-                val programVOList = mutableListOf<ProgramVO>()
-                for (i in 10 downTo 2) {
-                    programVOList.add(fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), i.toString()))
-                    binding.sflM.stopShimmer()
-                    binding.sflM.visibility = View.GONE
-                    binding.hpvMRecommend.visibility = View.GONE
-                    binding.spnMFilter.visibility = View.GONE
-                }
-                setRVAdapter(programVOList)
+            val programVOList = mutableListOf<ProgramVO>()
+            for (i in 10 downTo 2) {
+                programVOList.add(fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), i.toString()))
+            }
+            binding.sflM.stopShimmer()
+            binding.sflM.visibility = View.GONE
+            binding.hpvMRecommend.visibility = View.INVISIBLE
+            binding.spnMFilter.visibility = View.INVISIBLE
+            setRVAdapter(programVOList)
 
 
 

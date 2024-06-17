@@ -81,10 +81,10 @@ object NetworkFavorite {
 
     }
     // 즐겨찾기 목록 조회 (PickItems에 담기)
-    suspend fun fetchFavoriteItemsJsonByMobile(myUrl: String, mobile: String): MutableList<FavoriteVO>? {
+    suspend fun fetchFavoriteItemsJsonByEmail(myUrl: String, email: String): MutableList<FavoriteVO>? {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_mobile=$mobile")
+            .url("${myUrl}read.php?user_email=$email")
             .get()
             .build()
         return withContext(Dispatchers.IO) {

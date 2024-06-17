@@ -18,7 +18,7 @@ class SignInBSDialogFragment: BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSignInBottomSheetDialogBinding.inflate(inflater)
         return binding.root
     }

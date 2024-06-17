@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout53"
     android:layout_width="186dp"
     android:layout_height="162dp"
     android:layout_margin="4dp"
@@ -16,10 +17,10 @@
         app:dividerColor="@color/subColor200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPWGoThumbnail" />
+        app:layout_constraintTop_toBottomOf="@+id/tvPMGoThumbnail" />
 
     <TextView
-        android:id="@+id/tvPWPlay"
+        android:id="@+id/tvPMPlay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -42,12 +43,12 @@
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
         app:dividerColor="@color/subColor200"
-        app:layout_constraintBottom_toTopOf="@+id/tvPWGoThumbnail"
+        app:layout_constraintBottom_toTopOf="@+id/tvPMGoThumbnail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/tvPWGoThumbnail"
+        android:id="@+id/tvPMGoThumbnail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
@@ -64,7 +65,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvPWAddFavorite"
+        android:id="@+id/tvPMAddFavorite"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
@@ -80,7 +81,7 @@
         app:layout_constraintTop_toBottomOf="@+id/materialDivider12" />
 
     <ImageButton
-        android:id="@+id/ibtnPWExit"
+        android:id="@+id/ibtnPMExit"
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_marginTop="8dp"

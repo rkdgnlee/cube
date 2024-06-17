@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -13,6 +14,7 @@ import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,8 +26,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.RvProgramItemBinding
-import com.tangoplus.tangoq.databinding.RvRankItemBinding
-import com.tangoplus.tangoq.dialog.LoginDialogFragment
+import com.tangoplus.tangoq.databinding.RvRecommendHorizontalItemBinding
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
 import java.lang.IllegalArgumentException
@@ -44,6 +45,7 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
             val vRcmPlay = view.findViewById<View>(R.id.vRcmPlay)
         }
     inner class rankViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val cvRThumbnail = view.findViewById<CardView>(R.id.cvRThumbnail)
         val ivRThumbnail1 = view.findViewById<ImageView>(R.id.ivRThumbnail1)
 //        val llRThumbnail = view.findViewById<ImageView>(R.id.llRThumbnail)
         val ivRThumbnail2 = view.findViewById<ImageView>(R.id.ivRThumbnail2)
@@ -69,11 +71,11 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             0 -> {
-                val binding = RvProgramItemBinding.inflate(inflater, parent, false)
+                val binding = RvRecommendHorizontalItemBinding.inflate(inflater, parent, false)
                 return horizonViewHolder(binding.root)
             }
             1 -> {
-                val binding = RvRankItemBinding.inflate(inflater, parent, false)
+                val binding = RvProgramItemBinding.inflate(inflater, parent, false)
                 return rankViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("invalid view type binding")
@@ -122,6 +124,15 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                 }
             }
             is rankViewHolder -> {
+//                val lpitemView = holder.itemView.layoutParams
+//                val lpcv = holder.cvRThumbnail.layoutParams
+//                val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+//                lpitemView.height = (screenHeight * 0.24).toInt()  // 화면 높이의 25%로 설정
+//                lpcv.height = (screenHeight * 0.15).toInt()
+//                holder.itemView.layoutParams = lpitemView
+//                holder.cvRThumbnail.layoutParams = lpcv
+
+
                 holder.tvRName.text = currentItem.programName
                 holder.tvRanking.text = "${position + 1}"
                 holder.tvRTime.text = (if (currentItem.programTime <= 60) {
@@ -147,7 +158,7 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                         popupWindow!!.showAsDropDown(view)
 
                         // ------! 팝업 1 재생 시작 !------
-                        popupView.findViewById<TextView>(R.id.tvPWPlay).setOnClickListener {
+                        popupView.findViewById<TextView>(R.id.tvPMPlay).setOnClickListener {
                             val urls = storePickUrl(currentItem.exercises!!)
                             val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
                             intent.putStringArrayListExtra("urls", ArrayList(urls))
@@ -155,7 +166,7 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                             startForResult.launch(intent)
                             popupWindow!!.dismiss()
                         } // ------! 팝업 1 재생 시작 !------
-                        popupView.findViewById<TextView>(R.id.tvPWGoThumbnail).setOnClickListener {
+                        popupView.findViewById<TextView>(R.id.tvPMGoThumbnail).setOnClickListener {
                             val dialogFragment = PlayThumbnailDialogFragment().apply {
                                 arguments = Bundle().apply {
                                     putParcelable("ExerciseUnit", currentItem.exercises!![0])
@@ -164,7 +175,7 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                             dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                             popupWindow!!.dismiss()
                         } // -------! 팝업 즐겨찾기 추가 !------
-                        popupView.findViewById<TextView>(R.id.tvPWAddFavorite).setOnClickListener {
+                        popupView.findViewById<TextView>(R.id.tvPMAddFavorite).setOnClickListener {
                             val bundle = Bundle().apply {
                                 putParcelable("Program", currentItem)
                             }
@@ -174,7 +185,7 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                             dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramAddFavoriteDialogFragment")
                             popupWindow!!.dismiss()
                         }
-                        popupView.findViewById<ImageButton>(R.id.ibtnPWExit).setOnClickListener {
+                        popupView.findViewById<ImageButton>(R.id.ibtnPMExit).setOnClickListener {
                             popupWindow!!.dismiss()
                         }
                         popupWindow!!.isOutsideTouchable = true
