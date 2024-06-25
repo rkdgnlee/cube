@@ -41,7 +41,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView5"
                 android:layout_width="0dp"
-                android:layout_height="196dp"
+                android:layout_height="128dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="20dp"
@@ -52,13 +52,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView58">
 
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    app:dividerColor="@color/subColor150" />
+                <!--                <com.google.android.material.divider.MaterialDivider-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="1dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginLeft="20dp"-->
+                <!--                    android:layout_marginRight="20dp"-->
+                <!--                    app:dividerColor="@color/subColor150" />-->
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="1dp"
@@ -89,7 +89,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="8dp"
                                 android:text="운동 시간"
                                 android:textColor="@color/subColor700"
                                 android:textSize="16sp"
@@ -107,8 +107,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <ImageView
                                 android:id="@+id/imageView38"
@@ -131,7 +130,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="8dp"
                                 android:text="운동 개수"
                                 android:textColor="@color/subColor700"
                                 android:textSize="16sp"
@@ -149,8 +148,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/textView74"
@@ -177,110 +175,110 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
+                    <!--                    <LinearLayout-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="match_parent"-->
+                    <!--                        android:layout_weight="1"-->
+                    <!--                        android:orientation="horizontal">-->
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
+                    <!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:layout_height="match_parent"-->
+                    <!--                            android:layout_weight="1">-->
 
-                            <TextView
-                                android:id="@+id/textView68"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
-                                android:text="소모 칼로리"
-                                android:textColor="@color/subColor700"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView68"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="16dp"-->
+                    <!--                                android:layout_marginTop="16dp"-->
+                    <!--                                android:text="소모 칼로리"-->
+                    <!--                                android:textColor="@color/subColor700"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent" />-->
 
-                            <TextView
-                                android:id="@+id/tvFKcal"
-                                android:layout_width="32dp"
-                                android:layout_height="wrap_content"
-                                android:text="160"
-                                android:textColor="@color/black"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/tvFKcal"-->
+                    <!--                                android:layout_width="32dp"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="160"-->
+                    <!--                                android:textColor="@color/black"-->
+                    <!--                                android:textSize="18sp"-->
+                    <!--                                android:textStyle="bold"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--                                app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent"-->
+                    <!--                                app:layout_constraintVertical_bias="0.6" />-->
 
-                            <TextView
-                                android:id="@+id/textView72"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="Kcal"
-                                android:textColor="@color/subColor500"
-                                android:textSize="16sp"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"
-                                app:layout_constraintStart_toEndOf="@+id/tvFKcal"
-                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView72"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="4dp"-->
+                    <!--                                android:text="Kcal"-->
+                    <!--                                android:textColor="@color/subColor500"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintStart_toEndOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />-->
 
-                            <ImageView
-                                android:id="@+id/imageView42"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="4dp"
-                                android:src="@drawable/icon_kcal_sub_800"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"
-                                app:layout_constraintEnd_toStartOf="@+id/tvFKcal"
-                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <!--                            <ImageView-->
+                    <!--                                android:id="@+id/imageView42"-->
+                    <!--                                android:layout_width="24dp"-->
+                    <!--                                android:layout_height="24dp"-->
+                    <!--                                android:layout_marginEnd="4dp"-->
+                    <!--                                android:src="@drawable/icon_kcal_sub_800"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintEnd_toStartOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />-->
+                    <!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
+                    <!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:layout_height="match_parent"-->
+                    <!--                            android:layout_weight="1">-->
 
-                            <TextView
-                                android:id="@+id/textView70"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
-                                android:text="자세 정확도"
-                                android:textColor="@color/subColor700"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView70"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="16dp"-->
+                    <!--                                android:layout_marginTop="16dp"-->
+                    <!--                                android:text="자세 정확도"-->
+                    <!--                                android:textColor="@color/subColor700"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent" />-->
 
-                            <TextView
-                                android:id="@+id/tvFAccuracy"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="68"
-                                android:textColor="@color/black"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/tvFAccuracy"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="68"-->
+                    <!--                                android:textColor="@color/black"-->
+                    <!--                                android:textSize="18sp"-->
+                    <!--                                android:textStyle="bold"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--                                app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent"-->
+                    <!--                                app:layout_constraintVertical_bias="0.6" />-->
 
-                            <TextView
-                                android:id="@+id/textView73"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="%"
-                                android:textColor="@color/subColor500"
-                                android:textSize="16sp"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFAccuracy"
-                                app:layout_constraintStart_toEndOf="@+id/tvFAccuracy"
-                                app:layout_constraintTop_toTopOf="@+id/tvFAccuracy" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView73"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="4dp"-->
+                    <!--                                android:text="%"-->
+                    <!--                                android:textColor="@color/subColor500"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFAccuracy"-->
+                    <!--                                app:layout_constraintStart_toEndOf="@+id/tvFAccuracy"-->
+                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFAccuracy" />-->
+                    <!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
+                    <!--                    </LinearLayout>-->
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
