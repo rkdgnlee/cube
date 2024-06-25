@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import org.json.JSONObject
@@ -21,6 +22,7 @@ import org.json.JSONObject
 class FeedbackDialogFragment : DialogFragment() {
     lateinit var binding: FragmentFeedbackDialogBinding
     val viewModel: FavoriteViewModel by activityViewModels()
+    val mViewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,11 +42,20 @@ class FeedbackDialogFragment : DialogFragment() {
 
         binding.btnFbSubmit.setOnClickListener{
             // TODO 점수 보내기
+
             val jsonObj = JSONObject()
+
+            val parts = mutableListOf<String>()
+
+            for (i in 0 until mViewModel.feedbackparts.value?.size!!) {
+                parts.add(mViewModel.feedbackparts.value!![i].second)
+            }
+
             jsonObj.put("user_email", userJson?.optString("user_email"))
             jsonObj.put("fatigue_score",getCheckedRadioButtonIndex(binding.rgFatigue!!))
             jsonObj.put("satisfaction_score",getCheckedRadioButtonIndex(binding.rgSatisfaction!!))
             jsonObj.put("intensity_score",getCheckedRadioButtonIndex(binding.rgIntensity!!))
+            jsonObj.put("pain_parts", parts)
 
             Log.v("피드백 점수", "$jsonObj")
 //            val intent = Intent(requireActivity(), MainActivity::class.java)

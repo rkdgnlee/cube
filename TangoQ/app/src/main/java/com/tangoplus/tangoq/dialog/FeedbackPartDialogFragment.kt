@@ -15,6 +15,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackPartDialogBinding
@@ -41,12 +42,12 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         binding.btnFPDFinish.setOnClickListener {
 //            viewModel.parts.value //
             dismiss()
-            Log.v("VM>part", "${viewModel.parts.value}")
+            Log.v("VM>part", "${viewModel.feedbackparts.value}")
 
             // ------! db 전송 시작 !------
             val partsList = mutableListOf<String>()
             for (i in 0 until viewModel.parts.value?.size!!) {
-                partsList.add(viewModel.parts.value!![i].second)
+                partsList.add(viewModel.feedbackparts.value!![i].second)
             }
             userJson?.optString("user_mobile")
 //            insertMeasurePartsByJson(getString(R.string.IP_ADDRESS_t_favorite),)
@@ -62,14 +63,6 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
 
 
         // ------! 부위 빨갛게 시작 !------
-        binding.ivFPDNeck.visibility = View.GONE
-        binding.ivFPDShoulder.visibility = View.GONE
-        binding.ivFPDWrist.visibility = View.GONE
-        binding.ivFPDStomach.visibility = View.GONE
-        binding.ivFPDHipJoint.visibility = View.GONE
-        binding.ivFPDKnee.visibility = View.GONE
-        binding.ivFPDAnkle.visibility = View.GONE
-
         setPartCheck(binding.cbFPDNeck, binding.ivFPDNeck)
         setPartCheck(binding.cbFPDShoulder, binding.ivFPDShoulder)
         setPartCheck(binding.cbFPDWrist, binding.ivFPDWrist)
@@ -83,24 +76,24 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
     fun setPartCheck(cb:CheckBox, iv: ImageView) {
         // ------! 기존 데이터 받아서 쓰기 !------
         val part = Triple(cb.text.toString(), cb.text.toString(), cb.isChecked)
-        cb.isChecked = viewModel.parts.value?.contains(part) == true
+        cb.isChecked = viewModel.feedbackparts.value?.contains(part) == true
 
         cb.setOnCheckedChangeListener { buttonView, isChecked ->
             when (isChecked) {
                 true -> {
-                    setAnimation(iv, isChecked)
-                    viewModel.addPart(Triple(cb.text.toString(), cb.text.toString(), true))
+                    iv.setImageResource(R.drawable.drawable_select_part_enabled)
+                    viewModel.addFeedbackPart(Triple(cb.text.toString(), cb.text.toString(), true))
                 }
                 else -> {
-                    setAnimation(iv, isChecked)
-                    viewModel.deletePart(Triple(cb.text.toString(), cb.text.toString(), false))
+                    iv.setImageResource(R.drawable.drawable_select_part_disabled)
+                    viewModel.deleteFeedbackPart(Triple(cb.text.toString(), cb.text.toString(), false))
                 }
             }
         }
     }
 
     fun setvmPart(cb: CheckBox, iv: ImageView) {
-        val enabledPart = viewModel.parts.value?.find { it.first == cb.text }
+        val enabledPart = viewModel.feedbackparts.value?.find { it.first == cb.text }
         if (enabledPart != null) {
             cb.isEnabled = true
             setPartCheck(cb, iv)
@@ -120,28 +113,28 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
 
     override fun onPartCheck(part: Triple<String,String, Boolean>) {
         if (part.third) {
-            viewModel.addPart(part)
+            viewModel.addFeedbackPart(part)
             Log.v("viewModel.part", "${viewModel.parts.value}")
         } else {
-            viewModel.deletePart(part)
+            viewModel.deleteFeedbackPart(part)
         }
     }
-    private fun setAnimation(view: View, onOff: Boolean) {
-        if (onOff) view.visibility = View.VISIBLE
-        val animator = ObjectAnimator.ofFloat(view, "alpha", if (onOff) 0f else 1f, if (onOff) 1f else 0f)
-        animator.duration = 300
-        animator.addListener(object: AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                super.onAnimationEnd(animation)
-                view.visibility = if (onOff) View.VISIBLE else View.INVISIBLE
-            }
-
-            override fun onAnimationStart(animation: Animator) {
-                super.onAnimationStart(animation)
-
-            }
-        })
-        animator.start()
-    }
+//    private fun setAnimation(view: View, onOff: Boolean) {
+//        if (onOff) view.visibility = View.VISIBLE
+//        val animator = ObjectAnimator.ofFloat(view, "alpha", if (onOff) 0f else 1f, if (onOff) 1f else 0f)
+//        animator.duration = 300
+//        animator.addListener(object: AnimatorListenerAdapter() {
+//            override fun onAnimationEnd(animation: Animator) {
+//                super.onAnimationEnd(animation)
+//                view.visibility = if (onOff) View.VISIBLE else View.INVISIBLE
+//            }
+//
+//            override fun onAnimationStart(animation: Animator) {
+//                super.onAnimationStart(animation)
+//
+//            }
+//        })
+//        animator.start()
+//    }
 
 }

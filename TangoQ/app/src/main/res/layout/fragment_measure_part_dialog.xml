@@ -53,12 +53,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="통증부위 선택"
+            android:textColor="@color/subColor800"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/ibtnMPDBack"
             app:layout_constraintStart_toEndOf="@+id/ibtnMPDBack"
-            app:layout_constraintTop_toTopOf="@+id/ibtnMPDBack"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toTopOf="@+id/ibtnMPDBack" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnMPDSet"

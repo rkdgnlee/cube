@@ -18,7 +18,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.AlarmActivity
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.adapter.BannerVPAdapter
 import com.tangoplus.tangoq.adapter.ProgramRVAdapter
 import com.tangoplus.tangoq.listener.OnRVClickListener
@@ -65,16 +67,6 @@ class MainFragment : Fragment(), OnRVClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! 태블릿 창 크기 조절 !------
-//        val lpClTop = binding.clTop.layoutParams
-//        val lpVpBanner = binding.vpMBanner.layoutParams
-//        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-//        lpClTop.height = (screenHeight * 0.4).toInt()
-//        lpVpBanner.height = (screenHeight * 0.175).toInt()
-//        binding.clTop.layoutParams = lpClTop
-//        binding.vpMBanner.layoutParams = lpVpBanner
-
-
         // -----! 스크롤 관리 !-----
         binding.nsvM.isNestedScrollingEnabled = false
         binding.rvM.isNestedScrollingEnabled = false
@@ -107,10 +99,10 @@ class MainFragment : Fragment(), OnRVClickListener {
 //            binding.ivMScoreDone.visibility = View.VISIBLE
 //            binding.ivMScoreUp.visibility = View.GONE
 //        }
-//        binding.btnMMeasure.setOnClickListener {
-//            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
-//            bnv.selectedItemId = R.id.measure
-//        }
+        binding.btnMMeasure.setOnClickListener {
+            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
+            bnv.selectedItemId = R.id.measure
+        }
 //        // TODO 운동 기록에 맞게 HPV 연동 필요
         binding.tvMTodayTime.text = "16"
         binding.tvMTodaySteps.text = "1138"
@@ -233,13 +225,7 @@ class MainFragment : Fragment(), OnRVClickListener {
 
 
                 // ------! 하단 RV Adapter 시작 !------
-
-
-
-
-
 //                setRVAdapter(verticalDataList)
-
                 // -----! vertical 어댑터 끝 !-----
 
                 // -----! spinner 연결 시작 !-----
