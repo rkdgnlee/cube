@@ -29,6 +29,7 @@ import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.listener.OnMoreClickListener
+import com.tangoplus.tangoq.`object`.Singleton_t_history
 import kotlinx.coroutines.launch
 
 class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
@@ -36,9 +37,11 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
     val viewModel: FavoriteViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
-    private var playWhenReady = true
-    private var currentWindow = 0
+//    private var playWhenReady = true
+//    private var currentWindow = 0
     private var playbackPosition = 0L
+    private lateinit var singletonInstance: Singleton_t_history
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,33 +53,35 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        singletonInstance = Singleton_t_history.getInstance(requireContext())
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
 
 // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = exerciseData?.videoFilepath.toString()
         Log.w("동영상url", videoUrl)
-        binding.tvPlayExerciseName.text = exerciseData?.exerciseName.toString()
-        binding.tvPlayExerciseRelateJoint.text = exerciseData?.relatedJoint.toString()
+        binding.tvPTDName.text = exerciseData?.exerciseName.toString()
+        binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
-        binding.tvPlayExerciseTime.text = exerciseData?.videoDuration
-        binding.tvPlayExerciseStage.text = exerciseData?.exerciseStage
-        binding.tvPlayExerciseFrequency.text = exerciseData?.exerciseFrequency.toString()
-        binding.tvPlayExerciseInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
-        binding.tvPlayExerciseMethod.text = exerciseData?.exerciseMethod.toString()
-        binding.tvPlayExerciseCaution.text = exerciseData?.exerciseCaution.toString()
-        binding.tvPlayExerciseRelateMuscle.text = exerciseData?.relatedMuscle.toString()
+        binding.tvPTDTime.text = exerciseData?.videoDuration
+        binding.tvPTDStage.text = exerciseData?.exerciseStage
+        binding.tvPTDFrequency.text = exerciseData?.exerciseFrequency.toString()
+        binding.tvPTDInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
+        binding.tvPTDMethod.text = exerciseData?.exerciseMethod.toString()
+        binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
+        binding.tvPTDRelatedMuscle.text = exerciseData?.relatedMuscle.toString()
 
 
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
         // -----! 하단 운동 시작 버튼 시작 !-----
-        binding.btnExercisePlay.setOnClickListener {
+        binding.btnPTDPlay.setOnClickListener {
 //            val intent = Intent(this, PlayFullScreenActivity::class.java)
 //            intent.putExtra("video_url", videoUrl)
 //            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
 //            startActivityForResult(intent, 8080)
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
+            intent.putExtra("exercise_id", exerciseData?.exerciseId)
             intent.putExtra("video_url", videoUrl)
             startActivityForResult(intent, 8080)
 
@@ -95,18 +100,18 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
 //
 //            startActivityForResult(intent, 8080)
 //        }
-        val exitButton = binding.pvPT.findViewById<ImageButton>(R.id.exo_exit)
+        val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
             dismiss()
         }
 
         // ------! 앞으로 감기 뒤로 감기 시작 !------
-        val replay5 = binding.pvPT.findViewById<ImageButton>(R.id.exo_replay_5)
-        val forward5 = binding.pvPT.findViewById<ImageButton>(R.id.exo_forward_5)
+        val replay5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_replay_5)
+        val forward5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_forward_5)
         replay5.setOnClickListener {
             val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
             if (replayPosition != null) {
-                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition)!!)
+                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition))
             }
         }
         forward5.setOnClickListener {
@@ -145,7 +150,8 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
                 // 전체데이터에서 현재 데이터(exerciseData)와 비교함.
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
                     exerciseData?.relatedJoint!!.split(", ")[0])}.toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, "recommend")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, singletonInstance.viewingHistory?.toList() ?: listOf(),
+                    "recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager
@@ -168,7 +174,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     }
     private fun initPlayer(){
         simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        binding.pvPT.player = simpleExoPlayer
+        binding.pvPTD.player = simpleExoPlayer
         buildMediaSource().let {
             simpleExoPlayer?.prepare(it)
         }
@@ -205,9 +211,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 8080 && resultCode == Activity.RESULT_OK) {
             val currentPosition = data?.getLongExtra("current_position", 0)
-            val VideoUrl = data?.getStringExtra("video_url")
-
-            videoUrl = VideoUrl.toString()
+            videoUrl = data?.getStringExtra("video_url").toString()
             playbackPosition = currentPosition!!
             initPlayer()
         }

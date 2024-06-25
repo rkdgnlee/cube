@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.annotation.SuppressLint
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -20,24 +21,24 @@ import com.tangoplus.tangoq.fragment.ReportDiseaseFragment
 import com.tangoplus.tangoq.fragment.ReportFragment
 import java.lang.IllegalArgumentException
 
-class PainPartRVAdpater(val fragment: Fragment, var parts: MutableList<Triple<String, String, Boolean>>, var xmlname: String ,private val onPartCheckListener: OnPartCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var popupWindow : PopupWindow?= null
-    inner class selectPpViewHolder(view: View) :RecyclerView.ViewHolder(view) {
-        val tvSPp = view.findViewById<TextView>(R.id.tvSPp)
-        val ivSPp = view.findViewById<ImageView>(R.id.ivSPp)
-        val cbSPp = view.findViewById<CheckBox>(R.id.cbSPp)
-        val ivSPpCheck = view.findViewById<ImageView>(R.id.ivSPpCheck)
+class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<Triple<String, String, Boolean>>, private var xmlname: String, private val onPartCheckListener: OnPartCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var popupWindow : PopupWindow?= null
+    inner class SelectPpViewHolder(view: View) :RecyclerView.ViewHolder(view) {
+        val tvSPp : TextView = view.findViewById(R.id.tvSPp)
+        val ivSPp : ImageView = view.findViewById(R.id.ivSPp)
+        val cbSPp : CheckBox = view.findViewById(R.id.cbSPp)
+        val ivSPpCheck : ImageView = view.findViewById(R.id.ivSPpCheck)
 
     }
 
     inner class ppViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val tvPpName = view.findViewById<TextView>(R.id.tvPpName)
-        val ivPp = view.findViewById<ImageView>(R.id.ivPp)
-        val ibtnPpMore = view.findViewById<ImageButton>(R.id.ibtnPpMore)
-        val ivPpDone = view.findViewById<ImageView>(R.id.ivPpDone)
-        val ivPpUp = view.findViewById<ImageView>(R.id.ivPpUp)
-        val ivPpDown = view.findViewById<ImageView>(R.id.ivPpDown)
-        val tvPpScore = view.findViewById<TextView>(R.id.tvPpScore)
+        val tvPpName : TextView = view.findViewById(R.id.tvPpName)
+        val ivPp : ImageView = view.findViewById(R.id.ivPp)
+        val ibtnPpMore : ImageButton = view.findViewById(R.id.ibtnPpMore)
+        val ivPpDone : ImageView = view.findViewById(R.id.ivPpDone)
+        val ivPpUp : ImageView = view.findViewById(R.id.ivPpUp)
+        val ivPpDown : ImageView = view.findViewById(R.id.ivPpDown)
+        val tvPpScore : TextView = view.findViewById(R.id.tvPpScore)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -56,12 +57,13 @@ class PainPartRVAdpater(val fragment: Fragment, var parts: MutableList<Triple<St
             }
             1 -> {
                 val binding = RvSelectPainPartItemBinding.inflate(inflater, parent, false)
-                selectPpViewHolder(binding.root)
+                SelectPpViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("invalid view type binding")
         }
     }
 
+    @SuppressLint("InflateParams")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = parts[position]
 
@@ -125,7 +127,7 @@ class PainPartRVAdpater(val fragment: Fragment, var parts: MutableList<Triple<St
 //            )
 //            holder.ivPp.setImageResource(resourceId)
 
-        } else if (holder is selectPpViewHolder) {
+        } else if (holder is SelectPpViewHolder) {
 
             holder.cbSPp.setOnCheckedChangeListener { _, isChecked ->
                 onPartCheckListener.onPartCheck(Triple(currentItem.first, currentItem.second, isChecked))

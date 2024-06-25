@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Bundle
 import android.text.Editable
@@ -18,9 +19,9 @@ import com.tangoplus.tangoq.callback.ItemTouchCallback
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.FavoriteViewModel
-
 import com.tangoplus.tangoq.databinding.FragmentFavoriteEditBinding
 import com.tangoplus.tangoq.`object`.NetworkFavorite.updateFavoriteItemJson
+import com.tangoplus.tangoq.`object`.Singleton_t_history
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -29,6 +30,8 @@ class FavoriteEditFragment : Fragment() {
     lateinit var binding: FragmentFavoriteEditBinding
     val viewModel: FavoriteViewModel by activityViewModels()
     var title = ""
+    private lateinit var singletonInstance: Singleton_t_history
+
     companion object {
         private const val ARG_TITLE = "title"
         fun newInstance(title: String): FavoriteEditFragment {
@@ -47,10 +50,13 @@ class FavoriteEditFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-// -----! 데이터 선언 !-----
+        // -----! 데이터 선언 !-----
 //        val appClass = requireContext().applicationContext as AppClass
+
+        singletonInstance = Singleton_t_history.getInstance(requireContext())
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         title = requireArguments().getString(ARG_TITLE).toString()
         binding.etFEName.setText(title)
@@ -69,7 +75,7 @@ class FavoriteEditFragment : Fragment() {
 // -----! EditText 셋팅 끝 !-----
 //        val currentPickItem = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
         if (currentPickItem?.exercises != null) {
-            val adapter = ExerciseRVAdapter(this@FavoriteEditFragment, currentPickItem.exercises!!, "add")
+            val adapter = ExerciseRVAdapter(this@FavoriteEditFragment, currentPickItem.exercises!!, singletonInstance.viewingHistory!!.toList(),"add")
             binding.rvFE.adapter = adapter
             viewModel.exerciseUnits.value = currentPickItem.exercises
         }
@@ -94,7 +100,7 @@ class FavoriteEditFragment : Fragment() {
         // -----! EditText 등 제목 VM 연동 끝 !-----
 
         viewModel.exerciseUnits.observe(viewLifecycleOwner) { basketUnits ->
-            val adapter = ExerciseRVAdapter(this@FavoriteEditFragment, basketUnits, "edit")
+            val adapter = ExerciseRVAdapter(this@FavoriteEditFragment, basketUnits, singletonInstance.viewingHistory?.toList() ?: listOf(), "edit")
             binding.rvFE.adapter = adapter
             val linearLayoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -208,7 +214,7 @@ class FavoriteEditFragment : Fragment() {
         JsonObj.put("favorite_description", currentEditItem.favoriteExplain)
         Log.w("JsonExerciseIdList","${JsonObj.get("exercise_ids")}")
         Log.w("updateJsonInBody", "$JsonObj")
-        updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), currentEditItem.favoriteSn.toString(), JsonObj.toString()) {
+        updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), currentEditItem.favoriteSn.toString(), JsonObj.toString(), requireContext()) {
             viewModel.favoriteList.value!![index].imgThumbnails = imgThumbnails.toMutableList()
 
         }

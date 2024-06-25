@@ -9,7 +9,7 @@
     tools:context=".AlarmActivity">
 
     <ImageButton
-        android:id="@+id/imgbtnbckAlarm"
+        android:id="@+id/ibtnAlarmBack"
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_marginStart="20dp"
@@ -28,9 +28,9 @@
         android:text="알림"
         android:textColor="@color/black"
         android:textSize="21sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imgbtnbckAlarm"
-        app:layout_constraintStart_toEndOf="@+id/imgbtnbckAlarm"
-        app:layout_constraintTop_toTopOf="@+id/imgbtnbckAlarm" />
+        app:layout_constraintBottom_toBottomOf="@+id/ibtnAlarmBack"
+        app:layout_constraintStart_toEndOf="@+id/ibtnAlarmBack"
+        app:layout_constraintTop_toTopOf="@+id/ibtnAlarmBack" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/materialDivider5"

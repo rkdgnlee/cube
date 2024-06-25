@@ -9,7 +9,7 @@ class SignInViewModel: ViewModel() {
     // 회원가입에 담는 user
     val User = MutableLiveData(JSONObject())
     // 로그인
-    var currentidCon = MutableLiveData(false)
+    var currentIdCon = MutableLiveData(false)
     var currentPwCon = MutableLiveData(false)
     var idPwCondition = MutableLiveData(false)
     var id = MutableLiveData("")
@@ -26,14 +26,14 @@ class SignInViewModel: ViewModel() {
 
     init {
         User.value = JSONObject()
-        currentidCon.observeForever{ updateIdPwCondition() }
+        currentIdCon.observeForever{ updateIdPwCondition() }
         currentPwCon.observeForever{ updateIdPwCondition() }
         id.value = ""
         pw.value = ""
         emailId.value = ""
     }
     private fun updateIdPwCondition() {
-        idPwCondition.value = currentidCon.value == true && currentPwCon.value == true
+        idPwCondition.value = currentIdCon.value == true && currentPwCon.value == true
     }
 
     val idCondition = MutableLiveData(false)
@@ -46,7 +46,7 @@ class SignInViewModel: ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        currentidCon.removeObserver { updateIdPwCondition() }
+        currentIdCon.removeObserver { updateIdPwCondition() }
         currentPwCon.removeObserver { updateIdPwCondition() }
     }
 

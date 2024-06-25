@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import androidx.security.crypto.MasterKeys
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
@@ -149,9 +148,9 @@ class SplashActivity : AppCompatActivity() {
                                     // -----! 전화번호 변환 !-----
                                     val encodedNaverEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                     if (naverMobile != null) {
-                                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedNaverEmail) { jsonObject ->
+                                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) { jsonObject ->
                                             if (jsonObject != null) {
-                                                NetworkUser.StoreUserInSingleton(this@SplashActivity, jsonObject)
+                                                NetworkUser.storeUserInSingleton(this@SplashActivity, jsonObject)
                                                 Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                             }
                                             MainInit()
@@ -172,7 +171,7 @@ class SplashActivity : AppCompatActivity() {
                                     JsonObj.put("google_login_id", user.uid)
                                     getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("google_login_id")) {jsonObject ->
                                         if (jsonObject != null) {
-                                            NetworkUser.StoreUserInSingleton(this, jsonObject)
+                                            NetworkUser.storeUserInSingleton(this, jsonObject)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
                                         MainInit()
@@ -189,27 +188,27 @@ class SplashActivity : AppCompatActivity() {
                             }
                             else if (user != null) {
                                 Log.i(ContentValues.TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
-                                val JsonObj = JSONObject()
+                                val jsonObj = JSONObject()
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
-                                JsonObj.put("user_name" , user.kakaoAccount?.name.toString())
+                                jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M") {
                                     "남자"
                                 } else {
                                     "여자"
                                 }
-                                JsonObj.put("user_gender", kakaoUserGender)
-                                JsonObj.put("user_mobile", kakaoMobile)
-                                JsonObj.put("user_email", user.kakaoAccount?.email.toString())
-                                JsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
-                                JsonObj.put("kakao_login_id" , user.id.toString())
-                                Log.w("Spl카카오회원가입", JsonObj.getString("user_email"))
+                                jsonObj.put("user_gender", kakaoUserGender)
+                                jsonObj.put("user_mobile", kakaoMobile)
+                                jsonObj.put("user_email", user.kakaoAccount?.email.toString())
+                                jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
+                                jsonObj.put("kakao_login_id" , user.id.toString())
+                                Log.w("splKakao>Login", jsonObj.getString("user_email"))
 
 
-                                val encodedKakaoEmail = URLEncoder.encode(JsonObj.getString("user_email"), "UTF-8")
+                                val encodedKakaoEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
 
-                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedKakaoEmail) {jsonObject ->
+                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) {jsonObject ->
                                     if (jsonObject != null) {
-                                        NetworkUser.StoreUserInSingleton(this, jsonObject)
+                                        NetworkUser.storeUserInSingleton(this, jsonObject)
                                         Log.e("Spl카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
                                     }
                                     MainInit()
@@ -325,7 +324,7 @@ class SplashActivity : AppCompatActivity() {
         client.newCall(request).execute().use { response ->
             return if (response.isSuccessful) {
                 val newToken = response.body?.string()
-                val newExpirationTime = System.currentTimeMillis() + 24 * 60 * 60 * 1000 // 24시간 유효기간
+                val newExpirationTime = System.currentTimeMillis() + 24 * 60 * 60 * 3 // 24시간 * 3 유효기간
                 if (newToken != null) {
                     saveEncryptedJwtToken(context, newToken, newExpirationTime)
                 }

@@ -1,9 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.graphics.Rect
-import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,37 +8,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
-import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.tabs.TabLayout
-import com.google.mediapipe.util.proto.RenderDataProto.RenderAnnotation.Line
+import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
-import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ReportRVAdapter
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.databinding.FragmentReportBinding
 import com.tangoplus.tangoq.listener.OnReportClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
+import org.json.JSONArray
 import org.json.JSONObject
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
-import kotlin.math.exp
 
 class ReportFragment : Fragment(), OnReportClickListener {
     lateinit var binding : FragmentReportBinding
@@ -112,9 +105,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
         }
         binding.cvRCalendar.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthHeaderViewContainer> {
             override fun create(view: View) = MonthHeaderViewContainer(view)
-            override fun bind(container: MonthHeaderViewContainer, month: CalendarMonth) {
-                // 여기에서 month 정보를 사용하여 header view를 업데이트 할 수 있습니다.
-                // 예를 들어, TextView의 경우:
+            override fun bind(container: MonthHeaderViewContainer, data: CalendarMonth) {
                 container.tvSUN.text = "일"
                 container.tvMON.text = "월"
                 container.tvTUE.text = "화"
@@ -150,12 +141,14 @@ class ReportFragment : Fragment(), OnReportClickListener {
 
                 container.date.setOnClickListener {
                     // 선택된 날짜를 업데이트 + UI 갱신
-                    val oldDate = selectedDate
-                    selectedDate = day.date
-                    if (oldDate != null) {
-                        binding.cvRCalendar.notifyDateChanged(oldDate)
+                    if (day.date <= LocalDate.now()) {
+                        val oldDate = selectedDate
+                        selectedDate = day.date
+                        if (oldDate != null) {
+                            binding.cvRCalendar.notifyDateChanged(oldDate)
+                        }
+                        binding.cvRCalendar.notifyDateChanged(day.date)
                     }
-                    binding.cvRCalendar.notifyDateChanged(day.date)
                 }
             }
             override fun create(view: View): DayViewContainer {
@@ -164,15 +157,56 @@ class ReportFragment : Fragment(), OnReportClickListener {
         } // ------! calendar 끝 !------
 
 
-        val parts = mutableListOf<Triple<String, String, JSONObject>>() // TODO Triple<분류, 파일명, 데이터>
+        val parts = mutableListOf<MeasureVO>() // TODO Triple<분류, 파일명, 데이터>
 
-        parts.add(Triple("정면 자세", singletonInstance.jsonObject?.optString("fileName"),singletonInstance.jsonObject!!.optJSONObject("0")) as Triple<String, String, JSONObject>)
-        parts.add(Triple("팔꿉 측정 자세", singletonInstance.jsonObject?.optString("fileName"), singletonInstance.jsonObject!!.optJSONObject("1")) as Triple<String, String, JSONObject>)
-        parts.add(Triple("오버헤드 스쿼트", singletonInstance.jsonObject?.optString("fileName"),singletonInstance.jsonObject!!.optJSONObject("2")) as Triple<String, String, JSONObject>)
-        parts.add(Triple("왼쪽 측면 자세",singletonInstance.jsonObject?.optString("fileName") ,singletonInstance.jsonObject!!.optJSONObject("3")) as Triple<String, String, JSONObject>)
-        parts.add(Triple("오른쪽 측면 자세", singletonInstance.jsonObject?.optString("fileName"),singletonInstance.jsonObject!!.optJSONObject("4")) as Triple<String, String, JSONObject>)
-        parts.add(Triple("후면 자세",singletonInstance.jsonObject?.optString("fileName") ,singletonInstance.jsonObject!!.optJSONObject("5")) as Triple<String, String, JSONObject>)
-        parts.add(Triple("의자 후면",singletonInstance.jsonObject?.optString("fileName") ,singletonInstance.jsonObject!!.optJSONObject("6")) as Triple<String, String, JSONObject>)
+        parts.add(MeasureVO(partName = "정면 자세", anglesNDistances = singletonInstance.jsonObject?.optJSONObject("0")))
+        parts.add(MeasureVO(partName = "팔꿉 측정 자세", anglesNDistances = singletonInstance.jsonObject?.optJSONObject("1")))
+
+        // ------! 측정 관련 7가지 json에서 가져오기 시작 !------
+        val squartVideo = JSONArray()
+        for (i in generateSequence(2.0) { it + 0.1 }.takeWhile { it < 3.0 }) {
+            squartVideo.put(singletonInstance.jsonObject!!.optJSONObject("$i"))
+        }
+
+        val squatHandsLeanValues = mutableListOf<Double>()
+        val squatHipLeanValues = mutableListOf<Double>()
+        val squatKneeLeanValues = mutableListOf<Double>()
+
+
+        for (i in 0 until squartVideo.length()) {
+            val jsonObj = squartVideo.optJSONObject(i)
+            if (jsonObj != null) {
+                val handsLean = jsonObj.optDouble("res_ov_hd_sq_fnt_horiz_ang_wrist", Double.NaN)
+                val hipLean = jsonObj.optDouble("res_ov_hd_sq_fnt_horiz_ang_hip", Double.NaN)
+                val kneeLean = jsonObj.optDouble("res_ov_hd_sq_fnt_horiz_ang_knee", Double.NaN)
+
+                if (!handsLean.isNaN()) squatHandsLeanValues.add(handsLean)
+                if (!hipLean.isNaN()) squatHipLeanValues.add(hipLean)
+                if (!kneeLean.isNaN()) squatKneeLeanValues.add(kneeLean)
+            }
+        }
+
+        // 평균값 계산
+        val avgSquatHandsLean = if (squatHandsLeanValues.isNotEmpty()) squatHandsLeanValues.average() else 0.0
+        val avgSquatHipLean = if (squatHipLeanValues.isNotEmpty()) squatHipLeanValues.average() else 0.0
+        val avgSquatKneeLean = if (squatKneeLeanValues.isNotEmpty()) squatKneeLeanValues.average() else 0.0
+
+        // 평균값을 새로운 JSONObject에 넣기
+        val averagedJsonObject = JSONObject()
+        averagedJsonObject.put("res_ov_hd_sq_fnt_horiz_ang_wrist", avgSquatHandsLean)
+        averagedJsonObject.put("res_ov_hd_sq_fnt_horiz_ang_hip", avgSquatHipLean)
+        averagedJsonObject.put("res_ov_hd_sq_fnt_horiz_ang_knee", avgSquatKneeLean)
+
+        // 최종적으로 하나의 JSON에 넣기
+        val resultJsonObject = JSONObject()
+        resultJsonObject.put("2", averagedJsonObject)
+
+        parts.add(MeasureVO(partName = "오버헤드 스쿼트", anglesNDistances = resultJsonObject))
+        parts.add(MeasureVO(partName = "왼쪽 측면 자세", anglesNDistances = singletonInstance.jsonObject?.optJSONObject("3")))
+        parts.add(MeasureVO(partName = "오른쪽 측면 자세", anglesNDistances = singletonInstance.jsonObject!!.optJSONObject("4")))
+        parts.add(MeasureVO(partName = "후면 자세", anglesNDistances = singletonInstance.jsonObject!!.optJSONObject("5")))
+        parts.add(MeasureVO(partName = "의자 후면", anglesNDistances = singletonInstance.jsonObject!!.optJSONObject("6")))
+        // ------! 측정 관련 7가지 json에서 가져오기 끝 !------
 
         val adapter = ReportRVAdapter(parts, this@ReportFragment, this@ReportFragment, binding.nsvR)
         binding.rvR.adapter = adapter
@@ -208,15 +242,15 @@ class ReportFragment : Fragment(), OnReportClickListener {
     private fun setBadgeOnFlR() {
         // ------! 분석 뱃지 시작 !------
         val badgeDrawable = BadgeDrawable.create(requireContext()).apply {
-            backgroundColor = ContextCompat.getColor(requireContext(), R.color.deleteColor)
-            badgeGravity = BadgeDrawable.TOP_END
-            horizontalOffset = 8  // 원하는 가로 간격 (픽셀 단위)
-            verticalOffset = 8  // 원하는 세로 간격 (픽셀 단위)
+            backgroundColor = ContextCompat.getColor(requireContext(), R.color.mainColor)
+            badgeGravity = BadgeDrawable.TOP_START
+            horizontalOffset = 12  // 원하는 가로 간격 (픽셀 단위)
+            verticalOffset = 12  // 원하는 세로 간격 (픽셀 단위)h
         }
 
         val layoutParams = binding.tvRBadge.layoutParams as FrameLayout.LayoutParams
-        layoutParams.marginEnd = 16  // 오른쪽 마진
-        layoutParams.topMargin = 16  // 위쪽 마진
+        layoutParams.marginStart = 20  // 오른쪽 마진
+        layoutParams.topMargin = 20  // 위쪽 마진
         binding.tvRBadge.layoutParams = layoutParams
 
         // 뱃지를 View에 연결

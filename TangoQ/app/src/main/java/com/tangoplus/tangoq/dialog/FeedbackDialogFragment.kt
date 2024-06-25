@@ -38,36 +38,13 @@ class FeedbackDialogFragment : DialogFragment() {
         binding.tvFTime.text = "${viewModel.exerciseLog.value?.first.toString()} 초" ?: "0"
         binding.tvFCount.text = viewModel.exerciseLog.value?.second ?: "0"
 
-        // ------! 라디오 그룹 시작 !------
-        val rgFatigue = RadioGroup(requireContext())
-        rgFatigue.addView(binding.rbtnFatigue1)
-        rgFatigue.addView(binding.rbtnFatigue2)
-        rgFatigue.addView(binding.rbtnFatigue3)
-        rgFatigue.addView(binding.rbtnFatigue4)
-        rgFatigue.addView(binding.rbtnFatigue5)
-        val rgSatisfaction = RadioGroup(requireContext())
-        rgSatisfaction.addView(binding.rbtnSatisfaction1)
-        rgSatisfaction.addView(binding.rbtnSatisfaction2)
-        rgSatisfaction.addView(binding.rbtnSatisfaction3)
-        rgSatisfaction.addView(binding.rbtnSatisfaction4)
-        rgSatisfaction.addView(binding.rbtnSatisfaction5)
-        val rgIntensity = RadioGroup(requireContext())
-        rgIntensity.addView(binding.rbtnIntensity1)
-        rgIntensity.addView(binding.rbtnIntensity2)
-        rgIntensity.addView(binding.rbtnIntensity3)
-        rgIntensity.addView(binding.rbtnIntensity4)
-        rgIntensity.addView(binding.rbtnIntensity5)
-        // ------! 라디오 그룹 끝 !------
-
         binding.btnFbSubmit.setOnClickListener{
             // TODO 점수 보내기
             val jsonObj = JSONObject()
             jsonObj.put("user_email", userJson?.optString("user_email"))
-            jsonObj.put("fatigue_score",getCheckedRadioButtonIndex(rgFatigue))
-            jsonObj.put("satisfaction_score",getCheckedRadioButtonIndex(rgSatisfaction))
-            jsonObj.put("intensity_score",getCheckedRadioButtonIndex(rgIntensity))
-
-
+            jsonObj.put("fatigue_score",getCheckedRadioButtonIndex(binding.rgFatigue!!))
+            jsonObj.put("satisfaction_score",getCheckedRadioButtonIndex(binding.rgSatisfaction!!))
+            jsonObj.put("intensity_score",getCheckedRadioButtonIndex(binding.rgIntensity!!))
 
             Log.v("피드백 점수", "$jsonObj")
 //            val intent = Intent(requireActivity(), MainActivity::class.java)

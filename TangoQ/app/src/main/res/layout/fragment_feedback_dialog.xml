@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_gravity="right"
     tools:context=".dialog.FeedbackDialogFragment">
 
     <ImageView
@@ -362,76 +363,72 @@
                 android:id="@+id/textView62"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="28dp"
                 android:text="운동 피로도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rbtnIntensity3" />
+                app:layout_constraintTop_toBottomOf="@+id/rgIntensity" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue1"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+            <RadioGroup
+                android:id="@+id/rgFatigue"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView75"
-                app:layout_constraintStart_toStartOf="@+id/textView75"
-                app:layout_constraintTop_toBottomOf="@+id/textView75" />
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView77">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue2"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView76"
-                app:layout_constraintStart_toStartOf="@+id/textView76"
-                app:layout_constraintTop_toBottomOf="@+id/textView76" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue1"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue3"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView77"
-                app:layout_constraintStart_toStartOf="@+id/textView77"
-                app:layout_constraintTop_toBottomOf="@+id/textView77" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue2"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue4"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0"
-                android:gravity="center"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView78"
-                app:layout_constraintStart_toStartOf="@+id/textView78"
-                app:layout_constraintTop_toBottomOf="@+id/textView78" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue3"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue5"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView79"
-                app:layout_constraintStart_toStartOf="@+id/textView79"
-                app:layout_constraintTop_toBottomOf="@+id/textView79" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue4"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue5"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+            </RadioGroup>
 
             <TextView
                 android:id="@+id/textView75"
@@ -485,7 +482,7 @@
                 android:id="@+id/textView79"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="3dp"
                 android:text="심각한 통증"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
@@ -493,81 +490,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView78" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction1"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView85"
-                app:layout_constraintStart_toStartOf="@+id/textView85"
-                app:layout_constraintTop_toBottomOf="@+id/textView85" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction2"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center|center_vertical"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView86"
-                app:layout_constraintStart_toStartOf="@+id/textView86"
-                app:layout_constraintTop_toBottomOf="@+id/textView86" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction3"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal|center_vertical"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView87"
-                app:layout_constraintStart_toStartOf="@+id/textView87"
-                app:layout_constraintTop_toBottomOf="@+id/textView87" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction4"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView88"
-                app:layout_constraintStart_toStartOf="@+id/textView88"
-                app:layout_constraintTop_toBottomOf="@+id/textView88" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction5"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView89"
-                app:layout_constraintStart_toStartOf="@+id/textView89"
-                app:layout_constraintTop_toBottomOf="@+id/textView89" />
-
             <TextView
                 android:id="@+id/textView63"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
                 android:text="운동 만족도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rbtnFatigue3" />
+                app:layout_constraintTop_toBottomOf="@+id/rgFatigue" />
 
             <TextView
                 android:id="@+id/textView85"
@@ -676,66 +611,129 @@
 
             </FrameLayout>
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity1"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+            <RadioGroup
+                android:id="@+id/rgIntensity"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView80"
-                app:layout_constraintStart_toStartOf="@+id/textView80"
-                app:layout_constraintTop_toBottomOf="@+id/textView80" />
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView82">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity2"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:buttonTint="@color/white"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView81"
-                app:layout_constraintStart_toStartOf="@+id/textView81"
-                app:layout_constraintTop_toBottomOf="@+id/textView81" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity1"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity3"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView82"
-                app:layout_constraintStart_toStartOf="@+id/textView82"
-                app:layout_constraintTop_toBottomOf="@+id/textView82" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity2"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/white"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity4"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView83"
-                app:layout_constraintStart_toStartOf="@+id/textView83"
-                app:layout_constraintTop_toBottomOf="@+id/textView83" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity3"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity5"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity4"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity5"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/rgSatisfaction"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView84"
-                app:layout_constraintStart_toStartOf="@+id/textView84"
-                app:layout_constraintTop_toBottomOf="@+id/textView84" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView87">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction1"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction2"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center|center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction3"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction4"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction5"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+            </RadioGroup>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

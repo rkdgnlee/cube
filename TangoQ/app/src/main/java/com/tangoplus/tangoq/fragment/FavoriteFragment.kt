@@ -25,7 +25,6 @@ import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByEmail
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.net.URLEncoder
 
 
 class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSelectedClickListener {
@@ -36,11 +35,11 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFavoriteBinding.inflate(inflater)
-        binding.sflFV.startShimmer()
+        binding.sflF.startShimmer()
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -48,16 +47,16 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         val user_email = t_userData?.optString("user_email")
 
-        binding.tvFrTitle.text = "${t_userData?.optString("user_name")} 님의\n플레이리스트 목록"
+        binding.tvFTitle.text = "${t_userData?.optString("user_name")} 님의\n플레이리스트 목록"
 
         // ------! 즐겨 찾기 1개 추가 시작 !------
-        binding.btnFrAdd.setOnClickListener {
+        binding.btnFAdd.setOnClickListener {
             val dialog = FavoriteAddDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "FavoriteAddDialogFragment")
         }
         // ------! 즐겨 찾기 1개 추가 끝 !------
 
-        val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
+//        val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
         lifecycleScope.launch {
 
             // ------! 핸드폰 번호로 PickItems 가져오기 시작 !------
@@ -65,7 +64,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
 
             // ------! list관리 시작 !------
             if (favoriteList != null) {
-
+                binding.tvFEmpty.visibility = View.INVISIBLE
                 viewModel.favoriteList.value?.clear()
                 viewModel.exerciseUnits.value?.clear()
                 for (i in favoriteList.indices) { // 즐겨찾기 루프
@@ -92,12 +91,12 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
                     } // ------! 2 시간 항목에 넣기 !------
 
                     // ------! 3 이미지썸네일 항목에 넣기 !------
-                    val ExerciseSize = favoriteItem.exercises?.size
+                    val exerciseSize = favoriteItem.exercises?.size
 
-                    for (k in 0 until ExerciseSize!!) {
+                    for (k in 0 until exerciseSize!!) {
                         if (k < 4) {
                             imgList.add( favoriteItem.exercises!![k].imageFilePathReal.toString())
-                            Log.v("썸네일", "${imgList}")
+                            Log.v("썸네일", "$imgList")
                         }
                     }
                     favoriteItem.imgThumbnails = imgList
@@ -107,22 +106,23 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
                 }
             }
 
-
             viewModel.favoriteList.observe(viewLifecycleOwner) { jsonArray ->
 //                 아무것도 없을 때 나오는 캐릭터
                 if (jsonArray.isEmpty()) {
-                    binding.sflFV.stopShimmer()
-                    binding.sflFV.visibility = View.GONE
+                    binding.sflF.stopShimmer()
+                    binding.sflF.visibility = View.GONE
+                    binding.tvFEmpty.visibility = View.VISIBLE
 //                    binding.ivPickNull.visibility = View.VISIBLE
                 } else {
-                    binding.sflFV.stopShimmer()
-                    binding.sflFV.visibility = View.GONE
+                    binding.sflF.stopShimmer()
+                    binding.sflF.visibility = View.GONE
+                    binding.tvFEmpty.visibility = View.VISIBLE
                 }
-                val FavoriteRVAdapter = FavoriteRVAdapter(viewModel.favoriteList.value!!, this@FavoriteFragment, this@FavoriteFragment, this@FavoriteFragment,"main")
-                binding.rvFv.adapter = FavoriteRVAdapter
+                val favoriteRvAdapter = FavoriteRVAdapter(viewModel.favoriteList.value!!, this@FavoriteFragment, this@FavoriteFragment, this@FavoriteFragment,"main")
+                binding.rvF.adapter = favoriteRvAdapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvFv.layoutManager = linearLayoutManager
-                FavoriteRVAdapter.notifyDataSetChanged()
+                binding.rvF.layoutManager = linearLayoutManager
+                favoriteRvAdapter.notifyDataSetChanged()
             } // -----! appClass list관리 끝 !-----
 
 

@@ -10,11 +10,13 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.PainPartRVAdpater
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasurePartDialogBinding
+import kotlinx.coroutines.launch
 
 class MeasurePartDialogFragment : DialogFragment(), OnPartCheckListener {
     lateinit var binding : FragmentMeasurePartDialogBinding
@@ -52,17 +54,18 @@ class MeasurePartDialogFragment : DialogFragment(), OnPartCheckListener {
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvMP.layoutManager = linearLayoutManager
 
-        binding.btnMPSet.setOnClickListener {
+        binding.btnMPDSet.setOnClickListener {
 //            viewModel.parts.value
             dismiss()
             Log.v("VM>part", "${viewModel.parts.value}")
         } // ------! RV checkbox 취합 끝 !------
-        binding.ibtnMPBack.setOnClickListener { dismiss() }
+        binding.ibtnMPDBack.setOnClickListener { dismiss() }
+
     }
 
     override fun onResume() {
         super.onResume()
-        // full Screen code
+
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

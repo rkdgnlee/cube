@@ -31,7 +31,7 @@
                 android:layout_marginTop="48dp"
                 android:text="운동 평가"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp"
+                android:textSize="28sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +91,7 @@
                                 android:layout_marginTop="16dp"
                                 android:text="운동 시간"
                                 android:textColor="@color/subColor700"
-                                android:textSize="16sp"
+                                android:textSize="20sp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -101,7 +101,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="11:12"
                                 android:textColor="@color/black"
-                                android:textSize="18sp"
+                                android:textSize="20sp"
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -133,7 +133,7 @@
                                 android:layout_marginTop="16dp"
                                 android:text="운동 개수"
                                 android:textColor="@color/subColor700"
-                                android:textSize="16sp"
+                                android:textSize="20sp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -143,7 +143,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="4"
                                 android:textColor="@color/black"
-                                android:textSize="18sp"
+                                android:textSize="20sp"
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -158,7 +158,7 @@
                                 android:layout_marginStart="4dp"
                                 android:text="개"
                                 android:textColor="@color/subColor800"
-                                android:textSize="16sp"
+                                android:textSize="18sp"
                                 app:layout_constraintBottom_toBottomOf="@+id/tvFCount"
                                 app:layout_constraintStart_toEndOf="@+id/tvFCount"
                                 app:layout_constraintTop_toTopOf="@+id/tvFCount"
@@ -195,17 +195,17 @@
                                 android:layout_marginTop="16dp"
                                 android:text="소모 칼로리"
                                 android:textColor="@color/subColor700"
-                                android:textSize="16sp"
+                                android:textSize="20sp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/tvFKcal"
-                                android:layout_width="32dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="160"
                                 android:textColor="@color/black"
-                                android:textSize="18sp"
+                                android:textSize="20sp"
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -220,7 +220,7 @@
                                 android:layout_marginStart="4dp"
                                 android:text="Kcal"
                                 android:textColor="@color/subColor500"
-                                android:textSize="16sp"
+                                android:textSize="18sp"
                                 app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"
                                 app:layout_constraintStart_toEndOf="@+id/tvFKcal"
                                 app:layout_constraintTop_toTopOf="@+id/tvFKcal" />
@@ -249,7 +249,7 @@
                                 android:layout_marginTop="16dp"
                                 android:text="자세 정확도"
                                 android:textColor="@color/subColor700"
-                                android:textSize="16sp"
+                                android:textSize="20sp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -259,7 +259,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="68"
                                 android:textColor="@color/black"
-                                android:textSize="18sp"
+                                android:textSize="20sp"
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -274,7 +274,7 @@
                                 android:layout_marginStart="4dp"
                                 android:text="%"
                                 android:textColor="@color/subColor500"
-                                android:textSize="16sp"
+                                android:textSize="18sp"
                                 app:layout_constraintBottom_toBottomOf="@+id/tvFAccuracy"
                                 app:layout_constraintStart_toEndOf="@+id/tvFAccuracy"
                                 app:layout_constraintTop_toTopOf="@+id/tvFAccuracy" />
@@ -302,12 +302,12 @@
                 android:id="@+id/textView80"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:text="매우 저강도"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView81"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnIntensity1"
+                app:layout_constraintStart_toStartOf="@+id/rbtnIntensity1"
                 app:layout_constraintTop_toTopOf="@+id/textView81" />
 
             <TextView
@@ -316,10 +316,10 @@
                 android:layout_height="wrap_content"
                 android:text="저강도"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView82"
-                app:layout_constraintEnd_toStartOf="@+id/textView82"
-                app:layout_constraintStart_toEndOf="@+id/textView80"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnIntensity2"
+                app:layout_constraintStart_toStartOf="@+id/rbtnIntensity2"
                 app:layout_constraintTop_toTopOf="@+id/textView82" />
 
             <TextView
@@ -329,7 +329,7 @@
                 android:layout_marginTop="12dp"
                 android:text="보통이다"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView61" />
@@ -340,29 +340,29 @@
                 android:layout_height="wrap_content"
                 android:text="고강도"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView82"
-                app:layout_constraintEnd_toStartOf="@+id/textView84"
-                app:layout_constraintStart_toEndOf="@+id/textView82"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnIntensity4"
+                app:layout_constraintStart_toStartOf="@+id/rbtnIntensity4"
                 app:layout_constraintTop_toTopOf="@+id/textView82" />
 
             <TextView
                 android:id="@+id/textView84"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
                 android:text="매우 고강도"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView83"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toTopOf="@+id/rbtnIntensity4"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnIntensity5"
+                app:layout_constraintStart_toStartOf="@+id/rbtnIntensity5"
                 app:layout_constraintTop_toTopOf="@+id/textView83" />
 
             <TextView
                 android:id="@+id/textView62"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="128dp"
                 android:text="운동 피로도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -376,11 +376,11 @@
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView75"
-                app:layout_constraintStart_toStartOf="@+id/textView75"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView75" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -391,8 +391,8 @@
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView76"
-                app:layout_constraintStart_toStartOf="@+id/textView76"
+                app:layout_constraintEnd_toStartOf="@+id/rbtnFatigue3"
+                app:layout_constraintStart_toEndOf="@+id/rbtnFatigue1"
                 app:layout_constraintTop_toBottomOf="@+id/textView76" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -403,8 +403,8 @@
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView77"
-                app:layout_constraintStart_toStartOf="@+id/textView77"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView77" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -417,32 +417,34 @@
                 android:gravity="center"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView78"
-                app:layout_constraintStart_toStartOf="@+id/textView78"
-                app:layout_constraintTop_toBottomOf="@+id/textView78" />
+                app:layout_constraintBottom_toBottomOf="@+id/rbtnFatigue3"
+                app:layout_constraintEnd_toStartOf="@+id/rbtnFatigue5"
+                app:layout_constraintStart_toEndOf="@+id/rbtnFatigue3"
+                app:layout_constraintTop_toBottomOf="@+id/textView77" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbtnFatigue5"
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView79"
-                app:layout_constraintStart_toStartOf="@+id/textView79"
-                app:layout_constraintTop_toBottomOf="@+id/textView79" />
+                app:layout_constraintBottom_toBottomOf="@+id/rbtnFatigue3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView77" />
 
             <TextView
                 android:id="@+id/textView75"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:text="무통증"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView76"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnFatigue1"
+                app:layout_constraintStart_toStartOf="@+id/rbtnFatigue1"
                 app:layout_constraintTop_toTopOf="@+id/textView76" />
 
             <TextView
@@ -451,10 +453,10 @@
                 android:layout_height="wrap_content"
                 android:text="미약한 통증"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@+id/rbtnFatigue3"
-                app:layout_constraintEnd_toStartOf="@+id/textView77"
-                app:layout_constraintStart_toEndOf="@+id/textView75"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnFatigue2"
+                app:layout_constraintStart_toStartOf="@+id/rbtnFatigue2"
                 app:layout_constraintTop_toTopOf="@+id/textView77" />
 
             <TextView
@@ -464,7 +466,7 @@
                 android:layout_marginTop="12dp"
                 android:text="보통"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView62" />
@@ -475,22 +477,22 @@
                 android:layout_height="wrap_content"
                 android:text="상당한 통증"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@+id/rbtnFatigue3"
-                app:layout_constraintEnd_toStartOf="@+id/textView79"
-                app:layout_constraintStart_toEndOf="@+id/textView77"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnFatigue4"
+                app:layout_constraintStart_toStartOf="@+id/rbtnFatigue4"
                 app:layout_constraintTop_toTopOf="@+id/textView77" />
 
             <TextView
                 android:id="@+id/textView79"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
                 android:text="심각한 통증"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@+id/rbtnFatigue4"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnFatigue5"
+                app:layout_constraintStart_toStartOf="@+id/rbtnFatigue5"
                 app:layout_constraintTop_toTopOf="@+id/textView78" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -498,12 +500,12 @@
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView85"
-                app:layout_constraintStart_toStartOf="@+id/textView85"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView85" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -515,8 +517,8 @@
                 android:gravity="center|center_vertical"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView86"
-                app:layout_constraintStart_toStartOf="@+id/textView86"
+                app:layout_constraintEnd_toStartOf="@+id/rbtnSatisfaction3"
+                app:layout_constraintStart_toEndOf="@+id/rbtnSatisfaction1"
                 app:layout_constraintTop_toBottomOf="@+id/textView86" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -528,8 +530,8 @@
                 android:gravity="center_horizontal|center_vertical"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView87"
-                app:layout_constraintStart_toStartOf="@+id/textView87"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView87" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -540,8 +542,8 @@
                 android:layout_weight="1"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView88"
-                app:layout_constraintStart_toStartOf="@+id/textView88"
+                app:layout_constraintEnd_toStartOf="@+id/rbtnSatisfaction5"
+                app:layout_constraintStart_toEndOf="@+id/rbtnSatisfaction3"
                 app:layout_constraintTop_toBottomOf="@+id/textView88" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -549,18 +551,18 @@
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
                 android:layout_weight="1"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView89"
-                app:layout_constraintStart_toStartOf="@+id/textView89"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView89" />
 
             <TextView
                 android:id="@+id/textView63"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="128dp"
                 android:text="운동 만족도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -573,12 +575,12 @@
                 android:id="@+id/textView85"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:text="많이 아쉽다"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView86"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnSatisfaction1"
+                app:layout_constraintStart_toStartOf="@+id/rbtnSatisfaction1"
                 app:layout_constraintTop_toTopOf="@+id/textView86" />
 
             <TextView
@@ -587,10 +589,10 @@
                 android:layout_height="wrap_content"
                 android:text="아쉽다"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@+id/rbtnSatisfaction3"
-                app:layout_constraintEnd_toStartOf="@+id/textView87"
-                app:layout_constraintStart_toEndOf="@+id/textView85"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnSatisfaction2"
+                app:layout_constraintStart_toStartOf="@+id/rbtnSatisfaction2"
                 app:layout_constraintTop_toTopOf="@+id/textView87" />
 
             <TextView
@@ -600,7 +602,7 @@
                 android:layout_marginTop="12dp"
                 android:text="보통이다"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView63" />
@@ -611,22 +613,22 @@
                 android:layout_height="wrap_content"
                 android:text="만족"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@+id/rbtnSatisfaction3"
-                app:layout_constraintEnd_toStartOf="@+id/textView89"
-                app:layout_constraintStart_toEndOf="@+id/textView87"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnSatisfaction4"
+                app:layout_constraintStart_toStartOf="@+id/rbtnSatisfaction4"
                 app:layout_constraintTop_toTopOf="@+id/textView87" />
 
             <TextView
                 android:id="@+id/textView89"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
                 android:text="매우 만족"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView88"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toTopOf="@+id/rbtnSatisfaction4"
+                app:layout_constraintEnd_toEndOf="@+id/rbtnSatisfaction5"
+                app:layout_constraintStart_toStartOf="@+id/rbtnSatisfaction5"
                 app:layout_constraintTop_toTopOf="@+id/textView88" />
 
             <FrameLayout
@@ -654,23 +656,27 @@
                         android:backgroundTint="@color/conditionSuccessColor"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
                         android:text="통증체크"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         app:cornerRadius="12dp" />
 
                     <Button
                         android:id="@+id/btnFbSubmit"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="6dp"
                         android:layout_weight="2"
                         android:backgroundTint="@color/mainColor"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
                         android:text="제출하기"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         app:cornerRadius="12dp" />
                 </LinearLayout>
 
@@ -681,11 +687,11 @@
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView80"
-                app:layout_constraintStart_toStartOf="@+id/textView80"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView80" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -697,8 +703,8 @@
                 android:buttonTint="@color/white"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView81"
-                app:layout_constraintStart_toStartOf="@+id/textView81"
+                app:layout_constraintEnd_toStartOf="@+id/rbtnIntensity3"
+                app:layout_constraintStart_toEndOf="@+id/rbtnIntensity1"
                 app:layout_constraintTop_toBottomOf="@+id/textView81" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -709,8 +715,8 @@
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView82"
-                app:layout_constraintStart_toStartOf="@+id/textView82"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView82" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -721,8 +727,8 @@
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView83"
-                app:layout_constraintStart_toStartOf="@+id/textView83"
+                app:layout_constraintEnd_toStartOf="@+id/rbtnIntensity5"
+                app:layout_constraintStart_toEndOf="@+id/rbtnIntensity3"
                 app:layout_constraintTop_toBottomOf="@+id/textView83" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -730,11 +736,11 @@
                 style="@style/Widget.App.RadioButton"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
                 android:layout_weight="0"
                 android:theme="@style/Widget.App.RadioButton"
                 app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView84"
-                app:layout_constraintStart_toStartOf="@+id/textView84"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView84" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

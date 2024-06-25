@@ -41,37 +41,37 @@ class FavoriteAddDialogFragment : DialogFragment() {
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         val user_email = t_userData?.optString("user_email")
 
-        binding.etFrDFName.setOnTouchListener{ v, event ->
+        binding.etFDaName.setOnTouchListener{ v, event ->
             val DRAWABLE_RIHGT = 2
             if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= (binding.etFrDFName.right - binding.etFrDFName.compoundDrawables[DRAWABLE_RIHGT].bounds.width())) {
+                if (event.rawX >= (binding.etFDaName.right - binding.etFDaName.compoundDrawables[DRAWABLE_RIHGT].bounds.width())) {
 
-                    binding.etFrDFName.text.clear()
+                    binding.etFDaName.text.clear()
                     return@setOnTouchListener true
                 }
             }
             false
         }
-        binding.etFrDFDescript.setOnTouchListener{ v, event ->
+        binding.etFDaDescript.setOnTouchListener{ v, event ->
             val DRAWABLE_RIHGT = 2
             if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= (binding.etFrDFDescript.right - binding.etFrDFDescript.compoundDrawables[DRAWABLE_RIHGT].bounds.width())) {
+                if (event.rawX >= (binding.etFDaDescript.right - binding.etFDaDescript.compoundDrawables[DRAWABLE_RIHGT].bounds.width())) {
 
-                    binding.etFrDFDescript.text.clear()
+                    binding.etFDaDescript.text.clear()
                     return@setOnTouchListener true
                 }
             }
             false
         }
-        binding.tvFrDFCancel.setOnClickListener { dismiss() }
-        binding.tvFrDFConfirm.setOnClickListener {
+        binding.tvFDaCancel.setOnClickListener { dismiss() }
+        binding.tvFDaConfirm.setOnClickListener {
             val jsonObj = JSONObject()
-            jsonObj.put("favorite_name", binding.etFrDFName.text)
-            jsonObj.put("favorite_description", binding.etFrDFDescript.text)
+            jsonObj.put("favorite_name", binding.etFDaName.text)
+            jsonObj.put("favorite_description", binding.etFDaDescript.text)
             jsonObj.put("user_mobile", user_email)
             Log.v("즐겨찾기JSON", "$jsonObj")
 
-            insertFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), jsonObj.toString()) { responseJson ->
+            insertFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), jsonObj.toString(), requireContext()) { responseJson ->
 //                val newFavoriteItem = FavoriteItemVO(
 //                    favoriteSn = responseJson!!.getInt("favorite_sn"),
 //                    favoriteName = responseJson.optString("favorite_name"),

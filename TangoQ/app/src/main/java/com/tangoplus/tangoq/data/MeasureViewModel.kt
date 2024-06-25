@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MeasureViewModel : ViewModel() {
-    val parts = MutableLiveData(mutableListOf<Triple<String,String, Boolean>>())
+    val parts = MutableLiveData(mutableListOf<Triple<String,String, Boolean>>()) // drawable, 부위 이름, 체크여부
     val steps = MutableLiveData(mutableListOf<Long>())
     val totalSteps = MutableLiveData<String>()
     val calory = MutableLiveData<String>()

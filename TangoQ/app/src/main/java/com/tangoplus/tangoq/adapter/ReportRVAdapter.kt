@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,7 +16,6 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
@@ -29,42 +27,40 @@ import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignEnd
-import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.databinding.RvReportExpandedItemBinding
-import com.tangoplus.tangoq.dialog.LoginDialogFragment
 import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
 import com.tangoplus.tangoq.listener.OnReportClickListener
 import org.json.JSONObject
 
 
-class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject>>, private val fragment: Fragment, private val listener: OnReportClickListener, private val nsv : NestedScrollView) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ReportRVAdapter(val parts : MutableList<MeasureVO>, private val fragment: Fragment, private val listener: OnReportClickListener, private val nsv : NestedScrollView) : RecyclerView.Adapter<ViewHolder>() {
 
-    // TODO REPORT 쏴줄 때의 VO 필요. 8개 TAB LAYOUT에 들어가는 각각의 수치들.
     private lateinit var tl: TabLayout
-    inner class partViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvREName = view.findViewById<TextView>(R.id.tvREName)
-        val clRE = view.findViewById<ConstraintLayout>(R.id.clRE)
-        val cvRELine = view.findViewById<CardView>(R.id.cvRELine)
-        val ivRE = view.findViewById<ImageView>(R.id.ivRE)
-        val ivReArrow = view.findViewById<ImageView>(R.id.ivReArrow)
-        val tlRE = view.findViewById<TabLayout>(R.id.tlRE)
-        val mcvExpand = view.findViewById<MaterialCardView>(R.id.mcvExpand)
-        val btnREShowDetail = view.findViewById<AppCompatButton>(R.id.btnREShowDetail)
-        val ibtnREInfo = view.findViewById<ImageButton>(R.id.ibtnREInfo)
+    inner class PartViewHolder(view: View) : ViewHolder(view) {
+        val tvREName: TextView = view.findViewById(R.id.tvREName)
+        val clRE: ConstraintLayout = view.findViewById(R.id.clRE)
+        val cvRELine: CardView = view.findViewById(R.id.cvRELine)
+        val ivRE: ImageView = view.findViewById(R.id.ivRE)
+        val ivReArrow: ImageView = view.findViewById(R.id.ivReArrow)
+        val tlRE: TabLayout = view.findViewById(R.id.tlRE)
+        val mcvExpand: MaterialCardView = view.findViewById(R.id.mcvExpand)
+        val btnREShowDetail: AppCompatButton = view.findViewById(R.id.btnREShowDetail)
+        val ibtnREInfo: ImageButton = view.findViewById(R.id.ibtnREInfo)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvReportExpandedItemBinding.inflate(inflater, parent, false)
-        return partViewHolder(binding.root)
+        return PartViewHolder(binding.root)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = parts[position]
-        if (holder is partViewHolder) {
+        if (holder is PartViewHolder) {
             holder.mcvExpand.visibility = View.GONE
-            holder.tvREName.text = currentItem.first
+            holder.tvREName.text = currentItem.partName
             Glide.with(fragment)
                 .load(fragment.resources.getIdentifier("drawable_posture_${position + 1}_disabled", "drawable", fragment.requireActivity().packageName))
                 .into(holder.ivRE)
@@ -99,8 +95,14 @@ class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject
                 }
             } // -----! 펼치기 접기 끝 !------
 
+            /** 점수 process
+             *  1. 탭 레이아웃을 만들며 각각의 list를 가져옴
+             *  2. 해당 anglePrefix + 순서 + 각 부위 영문명 result_static_front_horizontal_angle_shoulder_elbow_left 등
+             *  3. 해당 값으로 json을 가져옴 (setTabListener)
+             * */
+
             tl = holder.tlRE
-            when (currentItem.first) {
+            when (currentItem.partName) {
                 "정면 자세" -> {
                     val tabs = listOf("ear", "shoulder", "elbow", "wrist", "hip", "knee", "ankle")
                     addTab("목", holder.tlRE)
@@ -143,7 +145,7 @@ class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject
                     addTab("상완", holder.tlRE)
                     addTab("하완", holder.tlRE)
                     addTab("허벅지", holder.tlRE)
-                    setTabListener(holder, currentItem, tabs, "result_static_side_right_vertical_angle_", "left")
+                    setTabListener(holder, currentItem, tabs, "result_static_side_right_vertical_angle_", "_right")
                 }
                 "후면 자세" -> { // 오른쪽
                     val tabs = listOf("ear", "shoulder", "elbow", "hip", "ankle")
@@ -186,7 +188,7 @@ class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject
 
             holder.btnREShowDetail.setOnClickListener {
 //                fragment.requireActivity().supportFinishAfterTransition()
-                val dialog = PoseViewDialogFragment.newInstance(currentItem.second)
+                val dialog = PoseViewDialogFragment.newInstance(currentItem.partName)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "PoseViewDialogFragment")
 
             }
@@ -211,17 +213,20 @@ class ReportRVAdapter(val parts : MutableList<Triple<String,  String, JSONObject
         tl.addTab(tab)
     }
 
-    private fun setTabListener(holder: partViewHolder, currentItem: Triple<String, String, JSONObject>, tabs: List<String>, anglePrefix: String, angleSuffix: String = "") {
+    private fun setTabListener(holder: PartViewHolder, currentItem: MeasureVO, tabs: List<String>, anglePrefix: String, angleSuffix: String = "") {
         holder.tlRE.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: Tab?) {
 
-                if (tab != null && currentItem.third != null && currentItem.third.keys().hasNext()) {
+                if (tab != null && currentItem.anglesNDistances != null && currentItem.anglesNDistances.keys().hasNext()) {
                     val angleKey = anglePrefix + tabs[tab.position] + angleSuffix
-                    val angleValue = currentItem.third.optDouble(angleKey)
+
+                    // ------! 각도 받아와서 계산 !------
+
+                    val angleValue = currentItem.anglesNDistances.optDouble(angleKey)
                     setBalanceLine(holder.cvRELine, 0f, Math.toDegrees(angleValue).toFloat())
                     Log.v("angle", "${ Math.toDegrees(angleValue).toFloat()}")
                 } else {
-                    if (currentItem.first == "왼쪽 측면 자세" || currentItem.first == "오른쪽 측면 자세"  ) {
+                    if (currentItem.partName == "왼쪽 측면 자세" || currentItem.partName == "오른쪽 측면 자세"  ) {
                         setBalanceLine(holder.cvRELine, 90f, 90f)
                     } else {
                         setBalanceLine(holder.cvRELine, 0f, 0f)

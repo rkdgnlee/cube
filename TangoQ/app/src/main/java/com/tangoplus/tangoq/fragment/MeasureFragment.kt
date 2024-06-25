@@ -1,5 +1,7 @@
 package com.tangoplus.tangoq.fragment
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
@@ -12,6 +14,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.content.FileProvider
@@ -29,7 +32,6 @@ import com.google.android.material.tabs.TabLayout
 import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.adapter.PainPartRVAdpater
 import com.tangoplus.tangoq.data.Measurement
-
 import com.tangoplus.tangoq.dialog.MeasurePartDialogFragment
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -49,7 +51,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
     lateinit var binding : FragmentMeasureBinding
     val viewModel : MeasureViewModel by activityViewModels()
     val endTime = LocalDateTime.now()
-    val startTime = LocalDateTime.now().minusDays(1)
+//    val startTime = LocalDateTime.now().minusDays(1)
     var popupWindow : PopupWindow?= null
     // ------! 싱글턴 패턴 객체 가져오기 !------
     private lateinit var singletonInstance: Singleton_t_measure
@@ -83,15 +85,14 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                 // enum class 로 값 변경
                 when (measurement) {
                     Measurement.DAILY -> {
-                        binding.tvMsBalanceScore.text = "76 점"
+                        binding.tvMsBalanceScore.text = "미설정"
                     }
                     Measurement.WEEKLY -> {
-                        binding.tvMsBalanceScore.text = "90 점"
+                        binding.tvMsBalanceScore.text = "미설정"
                     }
                     Measurement.MONTHLY -> {
-                        binding.tvMsBalanceScore.text = "87 점"
+                        binding.tvMsBalanceScore.text = "미설정"
                     }
-                    else -> {}
                 }
 
             }
@@ -101,12 +102,35 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
         // ------! tab & enum class 관리 끝 !------
 
+        // ------! 공유하기 버튼 시작 !------
+        binding.btnMsShare.setOnClickListener {
+
+            // ------! 그래프 캡처 시작 !------
+            val bitmap = Bitmap.createBitmap(binding.ClMs.width, binding.ClMs.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            binding.ClMs.draw(canvas)
+
+            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
+            val fileOutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+
+            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
+            // ------! 그래프 캡처 끝 !------
+
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "image/png" // 이곳에서 공유 데이터 변경
+            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
+            startActivity(Intent.createChooser(intent, "밸런스 그래프"))
+        } // ------! 공유하기 버튼 끝 !------
+
         // ------! 측정 버튼 시작 !------
         binding.btnMsMeasurement.setOnClickListener {
             val intent = Intent(requireContext(), MeasureSkeletonActivity::class.java)
             startActivity(intent)
-        }
-        // ------! 측정 버튼 끝 !------
+        } // ------! 측정 버튼 끝 !------
 
         // ------! 통증 부위 관리 시작 !------
         binding.tvMsAddPart.setOnClickListener {
@@ -156,40 +180,17 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                 }
 
                 val rightData = parts.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
-                val rightadapter = PainPartRVAdpater(this@MeasureFragment, rightData, "Pp", this@MeasureFragment)
+                val rightAdapter = PainPartRVAdpater(this@MeasureFragment, rightData, "Pp", this@MeasureFragment)
                 Log.v("adapter데이터", "${leftData}, ${rightData}")
-                binding.rvMsRight.adapter = rightadapter
+                binding.rvMsRight.adapter = rightAdapter
                 if (rightData.isNotEmpty()) {
                     binding.rvMsRight.layoutManager = linearLayoutManager2
                 }
             }
         } // ------!  이름 + 통증 부위 끝 !------
 
-        // ------! 공유하기 버튼 시작 !------
-        binding.btnMsShare.setOnClickListener {
-
-            // ------! 그래프 캡처 시작 !------
-            val bitmap = Bitmap.createBitmap(binding.ClMs.width, binding.ClMs.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            binding.ClMs.draw(canvas)
-
-            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
-            val fileOutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
-            fileOutputStream.flush()
-            fileOutputStream.close()
-
-            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
-            // ------! 그래프 캡처 끝 !------
-
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "image/png" // 이곳에서 공유 데이터 변경
-            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
-            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
-            startActivity(Intent.createChooser(intent, "밸런스 그래프"))
-        } // ------! 공유하기 버튼 끝 !------
-
         // ------! 리포트 버튼 시작 !------
+//        startBounceAnimation(binding.btnMsGetReport)
         binding.btnMsGetReport.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -201,12 +202,10 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         // ------! 리포트 버튼 끝 !------
 
         binding.btnMsGetRecommend.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flMain, ReportFragment())
-                commit()
-            }
+//            goExerciseDetailFragment(viewModel.parts.value?.sortedBy { it.first. })
         }
+
+
 
 
         // ------! 꺾은선 그래프 시작 !------
@@ -256,7 +255,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             setDrawGridLines(false)
             lcXAxis.valueFormatter = (IndexAxisValueFormatter(lcDataList.map { it.xAxis }))
             setLabelCount(lcDataList.size, true)
-            lcXAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
+            lcXAxis.position = XAxis.XAxisPosition.BOTTOM
             axisLineWidth = 1.0f
         }
         lcYAxisLeft.apply {
@@ -328,7 +327,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                     setDrawGridLines(false)
                     bcXAxis.valueFormatter = IndexAxisValueFormatter()
                     setLabelCount(12, false)
-                    bcXAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
+                    bcXAxis.position = XAxis.XAxisPosition.BOTTOM
 //            axisLineWidth = 0f
 
                 }
@@ -395,16 +394,42 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 //                binding.tvMsCalory.text = calory
 //            }
 //        }
-
-    }
-    private fun goExerciseDetailFragment(parts: MutableList<Triple<String, String, Boolean>>) {
-
     }
 
+    // ------! 추천 운동 받기 시작 !------
+    private fun goExerciseDetailFragment(parts: Triple<String, String, Boolean>) {
+        /** 1. 관절의 데이터 점수를 가져와서
+         *  2. 추천 운동은 그 데이터 점수에서 가장 낮은 걸 가져와서 해당 값에 맞게 가야하는거지.
+         *  3.
+         * */
+        val category = Pair(0, "전체")
+        val search = Pair(transformJointNum(parts), parts.second)
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+            add(R.id.flMain, ExerciseDetailFragment.newInstance(category, search))
+//            addToBackStack(null)
+            commit()
+        }
+    }
+
+    private fun transformJointNum(part: Triple<String, String, Boolean>) : Int {
+        return when (part.second) {
+            "손목" -> 1
+            "척추" -> 2
+            "팔꿉" -> 3
+            "목" -> 4
+            "발목" -> 5
+            "어깨" -> 6
+            "무릎" -> 7
+            "복부" -> 8
+            else -> 0
+        }
+    }
+    // ------! 추천 운동 받기 끝!------
 
 
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "InflateParams")
     override fun onPartCheck(part: Triple<String, String, Boolean>) {
         if (popupWindow?.isShowing == true) {
             popupWindow?.dismiss()
@@ -441,5 +466,22 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             }
         }
     }
+    private fun startBounceAnimation(view: View) {
+        val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.1f, 1f).apply {
+            duration = 800
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }
+        val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.1f, 1f).apply {
+            duration = 800
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }
 
+
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(scaleX, scaleY)
+        animatorSet.interpolator = AccelerateDecelerateInterpolator()
+        animatorSet.start()
+    }
 }

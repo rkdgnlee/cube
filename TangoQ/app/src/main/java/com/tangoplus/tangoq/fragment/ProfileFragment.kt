@@ -46,6 +46,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,10 +55,13 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         val userJson= t_userdata.jsonObject?.getJSONObject("data")
         Log.v("Singleton>Profile", "${userJson}")
         binding.tvPfName.text = userJson?.optString("user_name")
-        binding.tvPfHeight.text = userJson?.optString("user_height")
-        binding.tvPfWeight.text = userJson?.optString("user_weight")
+        binding.tvPHeight.text = userJson?.optString("user_height") + " cm"
+        binding.tvPWeight.text = userJson?.optString("user_weight") + " kg"
         val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-        binding.tvPfAge.text = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
+        val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
+        binding.tvPAge.text = "$age 세"
+
+        binding.tvPAge.text = if (age == null) "미설정" else "$age 세"
         // ----- 이미지 로드 시작 -----
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
         val imageUri = sharedPreferences.getString("imageUri", null)
@@ -66,11 +70,11 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                 Glide.with(this)
                     .load(imageUri)
                     .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                    .into(binding.civPf)
+                    .into(binding.civP)
             }
         }
 
-        binding.ibtnPfAlarm.setOnClickListener {
+        binding.ibtnPAlarm.setOnClickListener {
             val intent = Intent(requireContext(), AlarmActivity::class.java)
             startActivity(intent)
         }
@@ -81,7 +85,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                 Glide.with(this)
                     .load(it)
                     .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                    .into(binding.civPf)
+                    .into(binding.civP)
             }
         } // ------! 프로필 사진 관찰 끝 !------
 
@@ -99,9 +103,9 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             "서비스 이용약관",
             "로그아웃",
         )
-        setAdpater(profilemenulist.subList(0,3), binding.rvPfNormal,0)
-        setAdpater(profilemenulist.subList(3,5), binding.rvPfHelp, 1)
-        setAdpater(profilemenulist.subList(5, profilemenulist.size), binding.rvPfDetail, 2)
+        setAdpater(profilemenulist.subList(0,3), binding.rvPNormal,0)
+        setAdpater(profilemenulist.subList(3,5), binding.rvPHelp, 1)
+        setAdpater(profilemenulist.subList(5, profilemenulist.size), binding.rvPDetail, 2)
 //        binding.ibtnPfEdit.setOnClickListener {
 //            when {
 //                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
@@ -115,7 +119,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
 //        }
     }
 
-    fun setAdpater(list: MutableList<String>, rv: RecyclerView, index: Int) {
+    private fun setAdpater(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
             val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false)
             adapter.profilemenulist = list
@@ -179,7 +183,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     Glide.with(this)
                         .load(selectedImageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                        .into(binding.civPf)
+                        .into(binding.civP)
                 } else {
                     Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }

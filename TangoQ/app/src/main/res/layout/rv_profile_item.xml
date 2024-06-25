@@ -41,8 +41,8 @@
             android:layout_weight="1.5"
             android:gravity="center_vertical"
             android:text="환경설정"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
+            android:textColor="@color/subColor800"
+            android:textSize="20sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -21,8 +21,13 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
@@ -35,6 +40,9 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.callback.CaptureCallback
@@ -119,56 +127,62 @@ companion object {
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
         object : CountDownTimer(5000, 1000) {
+            @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 runOnUiThread{
-                    binding.tvPSCount.visibility = View.VISIBLE
-                    binding.tvPSCount.alpha = 1f
-                    binding.tvPSCount.text = "${(millisUntilFinished.toFloat() / 1000.0f).roundToInt()}"
-                    Log.v("count", "${binding.tvPSCount.text}")
+                    binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
+                    binding.tvMeasureSkeletonCount.alpha = 1f
+                    binding.tvMeasureSkeletonCount.text = "${(millisUntilFinished.toFloat() / 1000.0f).roundToInt()}"
+                    Log.v("count", "${binding.tvMeasureSkeletonCount.text}")
                 }
             }
             @RequiresApi(Build.VERSION_CODES.R)
             override fun onFinish() {
                 if (isRecording) { // 동영상 촬영
-                    binding.tvPSCount.text = "스쿼트를 실시해주세요"
-                    setAnimation(binding.tvPSCount, 1000, 500, false) {
+                    binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
+
+                    setAnimation(binding.tvMeasureSkeletonCount, 1000, 500, false) {
                         hideViews(3700)
                         Log.v("동영상녹화", "isRecording: ${isRecording}, isCapture: ${isCapture}")
+                        // 녹화 종료 시점 아님
                         mediaProjectionService?.recordScreen {
-                            Log.v("녹화종료시점", "step: $repeatCount, latestResult: $latestResult")
-//                            updateUI()
+                            Log.v("녹화시작시점", "step: $repeatCount, latestResult: $latestResult")
                             isRecording = false // 녹화 완료
+                            // 녹화완료가 되면서 종료되는 곳
                         }
                         // ------! 영상일 경우 바로 0.3초 단위로 값 접근 !------
                         val runnableCode: Runnable = object : Runnable {
                             override fun run() {
                                 if (repeatCount == BigDecimal("2.9")) {
+                                    updateUI()
                                     return
                                 }
-                                Log.v("녹화시점", "step: $repeatCount, latestResult: $latestResult")
-                                updateUI()
+                                Log.v("녹화도중시점", "step: $repeatCount, latestResult: $latestResult")
 
                                 Handler(Looper.getMainLooper()).postDelayed(this, 300)
+                                updateUI()
                             }
                         }
                         Handler(Looper.getMainLooper()).post(runnableCode)
+
                     }
                 } else {
-                    binding.tvPSCount.text = "자세를 따라해주세요"
-                    setAnimation(binding.tvPSCount, 1000, 500, false) {
+                    binding.tvMeasureSkeletonCount.text = "자세를 따라해주세요"
+                    setAnimation(binding.tvMeasureSkeletonCount, 1000, 500, false) {
                         hideViews(600)
                         Log.v("사진service", "isCapture: ${isCapture}, isRecording: ${isRecording}")
                         // ------! 종료 후 다시 세팅 !------
                         mediaProjectionService?.captureScreen{
                             Log.v("캡쳐종료시점", "step: $repeatCount, latestResult: $latestResult")
+
                             resultBundleToJson(latestResult!!, repeatCount)
                             updateUI()
                             isCapture = false
 
 
                             if (repeatCount == maxRepeats) {
-                                binding.btnPSStep.text = "완료하기"
-                                binding.pvPS.progress = 100
+                                binding.btnMeasureSkeletonStep.text = "완료하기"
+                                binding.pvMeasureSkeleton.progress = 100
                                 mCountDown.cancel()
                                 Log.v("repeat", "Max repeats reached, stopping the loop")
                             }
@@ -176,7 +190,7 @@ companion object {
                     }
                 }
 //                isTimerRunning = false
-                binding.btnPSStep.isEnabled = true
+                binding.btnMeasureSkeletonStep.isEnabled = true
             }
         }
     } //  ------! 카운트 다운 끝 !-------
@@ -256,6 +270,7 @@ companion object {
         singletonInstance = Singleton_t_measure.getInstance(this)
 
         // ------! foreground 서비스 연결 시작 !------
+
         mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -288,31 +303,34 @@ companion object {
         }
         // Create the PoseLandmarkerHelper that will handle the inference
         backgroundExecutor.execute {
-            poseLandmarkerHelper = PoseLandmarkerHelper(
-                context = this,
-                runningMode = RunningMode.LIVE_STREAM,
-                minPoseDetectionConfidence = viewModel.currentMinPoseDetectionConfidence,
-                minPoseTrackingConfidence = viewModel.currentMinPoseTrackingConfidence,
-                minPosePresenceConfidence = viewModel.currentMinPosePresenceConfidence,
-                currentDelegate = viewModel.currentDelegate,
-                poseLandmarkerHelperListener = this
-            )
-        }
-        if (!hasPermissions(this)) {
-            requestPermissions(PERMISSIONS_REQUIRED, REQUEST_CODE_PERMISSIONS)
-            setUpCamera()
-        }
-
-
+            try {
+                poseLandmarkerHelper = PoseLandmarkerHelper(
+                    context = this,
+                    runningMode = RunningMode.LIVE_STREAM,
+                    minPoseDetectionConfidence = viewModel.currentMinPoseDetectionConfidence,
+                    minPoseTrackingConfidence = viewModel.currentMinPoseTrackingConfidence,
+                    minPosePresenceConfidence = viewModel.currentMinPosePresenceConfidence,
+                    currentDelegate = viewModel.currentDelegate,
+                    poseLandmarkerHelperListener = this
+                )
+            }
+            catch (e: UnsatisfiedLinkError) {
+                Log.e("PoseLandmarkerHelper", "Failed to load libmediapipe_tasks_vision_jni.so", e)
+            }
+            if (!hasPermissions(this)) {
+                requestPermissions(PERMISSIONS_REQUIRED, REQUEST_CODE_PERMISSIONS)
+                setUpCamera()
+            }
+            }
         // ------! 안내 문구 사라짐 시작 !------
-        setAnimation(binding.tvPSGuide, 2000, 2500, false ) { }
+        setAnimation(binding.tvMeasureSkeletonGuide!!, 2000, 2500, false ) { }
         // 옵저버 달아놓기
 //        detectbody.observe(this@PlaySkeletonActivity, detectObserver)
 
         /** 사진 및 동영상 촬영 순서
          * 1. isLooping true -> repeatCount확인 -> count에 맞게 isCapture및 isRecord 선택
          * 2. mCountdown.start() -> 카운트 다운이 종료될 때 isCapture, isRecording에 따라 service 함수 실행 */
-        binding.ibtnPSBack.setOnClickListener {
+        binding.ibtnMeasureSkeletonBack.setOnClickListener {
 //            val intentBack = Intent(this, MainActivity::class.java)
 //            intentBack.putExtra("finishMeasure", true)
 //            startActivity(intentBack)
@@ -328,7 +346,7 @@ companion object {
 
 
         // ------! STEP CIRCLE !------
-        binding.svPS.state.animationType(StepView.ANIMATION_CIRCLE)
+        binding.svMeasureSkeleton.state.animationType(StepView.ANIMATION_CIRCLE)
             .steps(object : ArrayList<String?>() {
                 init {
                     add("전면")
@@ -345,13 +363,13 @@ companion object {
             .commit()
 
         // -----! 초기 시작 !-----
-        binding.svPS.go(0, true)
-        binding.pvPS.progress = 12
+        binding.svMeasureSkeleton.go(0, true)
+        binding.pvMeasureSkeleton.progress = 14
 
         // -----! 버튼 촬영 시작 !-----
-        binding.btnPSStep.setOnClickListener {
+        binding.btnMeasureSkeletonStep.setOnClickListener {
 
-            if (binding.btnPSStep.text == "완료하기") {
+            if (binding.btnMeasureSkeletonStep.text == "완료하기") {
                 // todo 통신 시간에 따라 alertDialog 띄우던가 해야 함
                 finish()
             }
@@ -363,20 +381,23 @@ companion object {
 
     // ------! 촬영 시 view 가리고 보이기 !-----
     private fun hideViews(delay : Long) {
-        binding.clPSTop.visibility = View.INVISIBLE
-        binding.ivPSFrame.visibility = View.INVISIBLE
-        binding.clPSBottom.visibility = View.INVISIBLE
+        binding.clMeasureSkeletonTop.visibility = View.INVISIBLE
+        binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
+        binding.clMeasureSkeletonBottom.visibility = View.INVISIBLE
+        startCameraShutterAnimation()
 
-        setAnimation(binding.clPSTop, 850, delay, true) {}
-        setAnimation(binding.ivPSFrame, 850, delay, true) {}
-        setAnimation(binding.clPSBottom, 850, delay, true) {}
 
+        setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
+        setAnimation(binding.ivMeasureSkeletonFrame, 850, delay, true) {}
+        setAnimation(binding.clMeasureSkeletonBottom, 850, delay, true) {}
+        binding.btnMeasureSkeletonStep.visibility = View.VISIBLE
+        binding.btnMeasureSkeletonStep.text = "프레임에 맞춰 서주세요"
     }
 
     // ------! 타이머 control 시작 !------
     private fun startTimer() {
         // 시작 버튼 후 시작
-        binding.btnPSStep.isEnabled = false
+        binding.btnMeasureSkeletonStep.isEnabled = false
 
         when (repeatCount) {
             BigDecimal("2.0") -> {
@@ -396,19 +417,28 @@ companion object {
     // ------! update UI 시작 !------
     private fun updateUI() {
         when (repeatCount) {
-            in BigDecimal("2.0") .. BigDecimal("2.9") -> {
+            in BigDecimal("2.0") .. BigDecimal("2.8") -> {
                 repeatCount = repeatCount.plus(BigDecimal("0.1"))
             }
             maxRepeats -> {
-                binding.pvPS.progress = 100
+                binding.pvMeasureSkeleton.progress = 100
+            }
+            BigDecimal("2.9") -> {
+                repeatCount = repeatCount.plus(BigDecimal("0.1"))
+                progress += 14
+                binding.pvMeasureSkeleton.progress = progress
+                binding.svMeasureSkeleton.go(repeatCount.toInt(), true)
+                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.toInt()}", "drawable", packageName))
+                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
             }
             else -> {
                 repeatCount = repeatCount.plus(BigDecimal("1.0"))
-                progress += 12
-                binding.pvPS.progress = progress
-                binding.svPS.go(repeatCount.toInt(), true)
+                progress += 14
+                binding.pvMeasureSkeleton.progress = progress
+                Log.v("녹화종료되나요?", "repeatCount: $repeatCount, progress: $progress")
+                binding.svMeasureSkeleton.go(repeatCount.toInt(), true)
                 val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.toInt()}", "drawable", packageName))
-                binding.ivPSFrame.setImageDrawable(drawable)
+                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
             }
         }
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount}")
@@ -534,7 +564,8 @@ companion object {
                     RunningMode.LIVE_STREAM
                 )
 
-                // Force a redraw
+                // 여기에 resultbundle(poselandarkerhelper.resultbundle)이 들어감.
+
                 binding.overlay.invalidate()
                 latestResult = resultBundle
             }
@@ -824,7 +855,7 @@ companion object {
         }
 //
     }
-    private fun saveJsonToSingleton(step: BigDecimal, jsonObj: JSONObject, ) {
+    private fun saveJsonToSingleton(step: BigDecimal, jsonObj: JSONObject ) {
         singletonInstance .jsonObject?.put(step.toString(), jsonObj)
         Log.v("싱글턴", "${singletonInstance.jsonObject}")
     }
@@ -852,5 +883,31 @@ companion object {
         jo.put("fileName", filePath)
         saveJsonToSingleton(repeatCount, jo)
     }
+    private fun startCameraShutterAnimation() {
+        // 첫 번째 애니메이션: VISIBLE로 만들고 alpha를 0에서 1로
+        binding.flMeasureSkeleton?.visibility = View.VISIBLE
+        val fadeIn = ObjectAnimator.ofFloat(binding.flMeasureSkeleton, "alpha", 0f, 1f).apply {
+            duration = 100 // 0.1초
+            interpolator = AccelerateDecelerateInterpolator()
+        }
 
+        // 두 번째 애니메이션: alpha를 1에서 0으로 만들고, 끝난 후 INVISIBLE로 설정
+        val fadeOut = ObjectAnimator.ofFloat(binding.flMeasureSkeleton, "alpha", 1f, 0f).apply {
+            duration = 100 // 0.1초
+            interpolator = AccelerateDecelerateInterpolator()
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    binding.flMeasureSkeleton?.visibility = View.INVISIBLE
+                }
+            })
+        }
+
+        // 애니메이션 시작
+        fadeIn.start()
+        fadeIn.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                fadeOut.start()
+            }
+        })
+    }
 }

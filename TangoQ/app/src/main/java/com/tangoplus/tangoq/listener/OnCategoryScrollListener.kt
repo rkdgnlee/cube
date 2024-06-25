@@ -2,6 +2,6 @@ package com.tangoplus.tangoq.listener
 
 import android.view.View
 
-interface onCategoryScrollListener {
+interface OnCategoryScrollListener {
     fun categoryScroll(view: View)
 }

@@ -35,4 +35,22 @@
         <!--                android:layout_height="match_parent"-->
         <!--                app:controller_layout_id="@layout/custom_player_control_view" />-->
     </com.google.android.exoplayer2.ui.PlayerView>
+
+    <TextView
+        android:id="@+id/tvFullScreenGuide"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#80000000"
+        android:gravity="center"
+        android:paddingBottom="256dp"
+        android:text="다음 운동이 곧 시작합니다 !\n준비해 주세요\n\n3"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35" />
 </androidx.constraintlayout.widget.ConstraintLayout>

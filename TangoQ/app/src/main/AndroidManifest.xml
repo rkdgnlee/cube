@@ -77,17 +77,6 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true">
-
-        </activity>
-        <activity
-            android:name=".AlarmActivity"
-            android:exported="true" >
-
-        </activity>
-
-        <activity
-            android:name=".MeasureSkeletonActivity"
-            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
@@ -98,6 +87,17 @@
                     android:host="oauth"
                     android:scheme="kakaoa5d0bc7cde69e2321d62d6eed07e4ec3" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".AlarmActivity"
+            android:exported="true" >
+
+        </activity>
+
+        <activity
+            android:name=".MeasureSkeletonActivity"
+            android:exported="true">
+
         </activity>
 
         <activity

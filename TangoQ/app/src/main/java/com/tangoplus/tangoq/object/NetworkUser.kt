@@ -17,7 +17,7 @@ object NetworkUser {
     fun getUserSELECTJson(myUrl: String, email: String, callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_email=$email")
+            .url("${myUrl}read.php?user_mobile=$email")
             .get()
             .build()
 
@@ -112,7 +112,7 @@ object NetworkUser {
     }
 
 
-    fun StoreUserInSingleton(context: Context, jsonObj :JSONObject) {
+    fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj
     }
 }

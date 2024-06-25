@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,16 +18,23 @@ import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
+import com.tangoplus.tangoq.`object`.NetworkHistory.fetchViewingHistory
+import com.tangoplus.tangoq.`object`.Singleton_t_history
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import io.reactivex.Single
 import kotlinx.coroutines.launch
 
 
 class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseDetailBinding
-    var filteredDataList = mutableListOf<ExerciseVO>()
+    private var filteredDataList = mutableListOf<ExerciseVO>()
     val viewModel : FavoriteViewModel by activityViewModels()
+    private lateinit var singletonInstance: Singleton_t_history
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,13 +66,13 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         // ------! 뒤로가기 시작 !------
-
+        singletonInstance = Singleton_t_history.getInstance(requireContext())
         // ------! 선택 카테고리 & 타입 가져오기 시작 !------
 
         val categoryId = arguments?.getInt(ARG_CATEGORY_ID)
         val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
         val searchId = arguments?.getInt(ARG_SERACH_ID)
-        val searchName = arguments?.getString(ARG_SERACH_NAME)
+//        val searchName = arguments?.getString(ARG_SERACH_NAME)
         // ------! 선택 카테고리 & 타입 가져오기  !------
 
         binding.sflED.startShimmer()
@@ -114,12 +120,22 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 //                adapter.notifyDataSetChanged()
 //            } // ------! 자동완성 끝 !------
 
+            // ------! 시청 기록 시작 !------
+
+
+
+
+            // ------! 시청 기록 끝 !------
 
             try {
                 binding.sflED.stopShimmer()
                 binding.sflED.visibility= View.GONE
                 filteredDataList = filteredDataList.toMutableList()
-                val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filteredDataList, "main")
+                val adapter = ExerciseRVAdapter(
+                    this@ExerciseDetailFragment,
+                    filteredDataList,
+                    singletonInstance.viewingHistory?.toList() ?: listOf(),
+                    "main")
                 adapter.exerciseList = filteredDataList
                 binding.rvEDAll.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -133,52 +149,43 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 
 //                // ------! rv vertical 끝 !------
 
-                val filterList = arrayListOf<String>()
-                filterList.add("필터")
-                filterList.add("최신순")
-                filterList.add("인기순")
-                filterList.add("추천순")
-                binding.spnEDFilter.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
-                binding.spnEDFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                    @SuppressLint("NotifyDataSetChanged")
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        when (position) {
-                            0 -> {}
-                            1 -> {
-//                                verticalDataList.sortBy { it.exerciseId }
-//                                adapter.notifyDataSetChanged()
-                            }
-                            2 -> {
-//                                verticalDataList.sortByDescending { it.videoDuration }
-//                                adapter.notifyDataSetChanged()
-                            }
-                            3 -> {
-//                                verticalDataList.sortBy { it.exerciseIntensity }
-//                                adapter.notifyDataSetChanged()
-                            }
-                        }
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-                }
+//                val filterList = arrayListOf<String>()
+//                filterList.add("필터")
+//                filterList.add("최신순")
+//                filterList.add("인기순")
+//                filterList.add("추천순")
+//                binding.spnEDFilter.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
+//                binding.spnEDFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+//                    @SuppressLint("NotifyDataSetChanged")
+//                    override fun onItemSelected(
+//                        parent: AdapterView<*>?,
+//                        view: View?,
+//                        position: Int,
+//                        id: Long
+//                    ) {
+//                        when (position) {
+//                            0 -> {}
+//                            1 -> {
+////                                verticalDataList.sortBy { it.exerciseId }
+////                                adapter.notifyDataSetChanged()
+//                            }
+//                            2 -> {
+////                                verticalDataList.sortByDescending { it.videoDuration }
+////                                adapter.notifyDataSetChanged()
+//                            }
+//                            3 -> {
+////                                verticalDataList.sortBy { it.exerciseIntensity }
+////                                adapter.notifyDataSetChanged()
+//                            }
+//                        }
+//                    }
+//                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+//                }
+
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Error storing exercises", e)
             } // ------! rv all rv 끝 !------
-
-
-
-
-
-
         }
-        // ------! rv all rv 시작 !------
-
-
-
 //        binding.ibtnEDBLEConnect.setOnClickListener {
 //            if (!isReceiverRegistered) {
 //                if (!mBtAdapter?.isEnabled()!!) {
@@ -194,31 +201,21 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 //        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCategoryClick(category: String) {
-        var filterList = mutableListOf<ExerciseVO>()
-        if (category == "전체") {
-            filterList = filteredDataList
+        val filterList: MutableList<ExerciseVO> = if (category == "전체") {
+            filteredDataList
         } else {
-            filterList = filteredDataList.filter { item ->
+            filteredDataList.filter { item ->
                 item.relatedSymptom!!.contains(category)
             }.toMutableList()
         }
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filterList, "main")
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filterList, singletonInstance.viewingHistory?.toList() ?: listOf(),"main")
         binding.rvEDAll.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvEDAll.layoutManager = linearLayoutManager
         adapter.notifyDataSetChanged()
     }
-
-//    override fun onPause() {
-//        super.onPause()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {

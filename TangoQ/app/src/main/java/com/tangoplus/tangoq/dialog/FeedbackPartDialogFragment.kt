@@ -38,7 +38,7 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
 
         // ------! RV checkbox 취합 시작 !------
-        binding.btnPpFinish.setOnClickListener {
+        binding.btnFPDFinish.setOnClickListener {
 //            viewModel.parts.value //
             dismiss()
             Log.v("VM>part", "${viewModel.parts.value}")
@@ -58,25 +58,25 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
 
         } // ------! RV checkbox 취합 끝 !------
 
-        binding.ibtnPpBack.setOnClickListener { dismiss() }
+        binding.ibtnFPDBack.setOnClickListener { dismiss() }
 
 
         // ------! 부위 빨갛게 시작 !------
-        binding.ivPpNeck.visibility = View.GONE
-        binding.ivPpShoulder.visibility = View.GONE
-        binding.ivPpWrist.visibility = View.GONE
-        binding.ivPpStomach.visibility = View.GONE
-        binding.ivPpHipJoint.visibility = View.GONE
-        binding.ivPpKnee.visibility = View.GONE
-        binding.ivPpAnkle.visibility = View.GONE
+        binding.ivFPDNeck.visibility = View.GONE
+        binding.ivFPDShoulder.visibility = View.GONE
+        binding.ivFPDWrist.visibility = View.GONE
+        binding.ivFPDStomach.visibility = View.GONE
+        binding.ivFPDHipJoint.visibility = View.GONE
+        binding.ivFPDKnee.visibility = View.GONE
+        binding.ivFPDAnkle.visibility = View.GONE
 
-        setPartCheck(binding.cbPpNeck, binding.ivPpNeck)
-        setPartCheck(binding.cbPpShoulder, binding.ivPpShoulder)
-        setPartCheck(binding.cbPpWrist, binding.ivPpWrist)
-        setPartCheck(binding.cbPpStomach, binding.ivPpStomach)
-        setPartCheck(binding.cbPpHipJoint, binding.ivPpHipJoint)
-        setPartCheck(binding.cbPpKnee, binding.ivPpKnee)
-        setPartCheck(binding.cbPpAnkle, binding.ivPpAnkle)
+        setPartCheck(binding.cbFPDNeck, binding.ivFPDNeck)
+        setPartCheck(binding.cbFPDShoulder, binding.ivFPDShoulder)
+        setPartCheck(binding.cbFPDWrist, binding.ivFPDWrist)
+        setPartCheck(binding.cbFPDStomach, binding.ivFPDStomach)
+        setPartCheck(binding.cbFPDHipJoint, binding.ivFPDHipJoint)
+        setPartCheck(binding.cbFPDKnee, binding.ivFPDKnee)
+        setPartCheck(binding.cbFPDAnkle, binding.ivFPDAnkle)
 
     }
     // 체크 연동

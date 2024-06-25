@@ -19,7 +19,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.dialog.FavoriteBSDialogFragment
 import com.tangoplus.tangoq.listener.OnFavoriteDetailClickListener
 import com.tangoplus.tangoq.R
@@ -32,31 +31,31 @@ import java.io.ByteArrayOutputStream
 import java.lang.IllegalArgumentException
 
 class FavoriteRVAdapter(
-    var fvList: MutableList<FavoriteVO>,
+    private var fvList: MutableList<FavoriteVO>,
     val listener: OnFavoriteDetailClickListener,
     private val selectedClickListener: OnFavoriteSelectedClickListener,
     private val fragment: Fragment,
-    var xmlName: String,
+    private var xmlName: String,
 
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var selectPosition : Int = -1
-    inner class fvViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val cvFv = view.findViewById<CardView>(R.id.cvFv)
-        val vFvTab = view.findViewById<View>(R.id.vFvTab)
-        val tvPickName = view.findViewById<TextView>(R.id.tvFvName)
-        val tvFvTime = view.findViewById<TextView>(R.id.tvFvTime)
-        val tvFvCount = view.findViewById<TextView>(R.id.tvFvCount)
-        val tvFvRegDate = view.findViewById<TextView>(R.id.tvFvRegDate)
-        val ivFvThumbnail1 = view.findViewById<ImageView>(R.id.ivFvThumbnail1)
-        val ivFvThumbnail2 = view.findViewById<ImageView>(R.id.ivFvThumbnail2)
-        val ivFvThumbnail3 = view.findViewById<ImageView>(R.id.ivFvThumbnail3)
-        val ivFvThumbnail4 = view.findViewById<ImageView>(R.id.ivFvThumbnail4)
-        val llFvThumbnailBottom = view.findViewById<LinearLayout>(R.id.llFvThumbnailBottom)
-        val ivFvThumbnailNull = view.findViewById<ImageView>(R.id.ivFvThumbnailNull)
-        val clFvThumbnail4 = view.findViewById<ConstraintLayout>(R.id.clFvThumbnail4)
-        val tvFvThumbnailMore = view.findViewById<TextView>(R.id.tvFvThumbnailMore)
-        val ibtnFvMore = view.findViewById<ImageButton>(R.id.ibtnFvMore)
-        val vFv = view.findViewById<View>(R.id.vFv)
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var selectPosition : Int = -1
+    inner class FvViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val cvFv : CardView= view.findViewById(R.id.cvFv)
+        val vFvTab : View = view.findViewById(R.id.vFvTab)
+        val tvPickName : TextView = view.findViewById(R.id.tvFvName)
+        val tvFvTime : TextView = view.findViewById(R.id.tvFvTime)
+        val tvFvCount : TextView = view.findViewById(R.id.tvFvCount)
+        val tvFvRegDate : TextView = view.findViewById(R.id.tvFvRegDate)
+        val ivFvThumbnail1 : ImageView = view.findViewById(R.id.ivFvThumbnail1)
+        val ivFvThumbnail2 : ImageView = view.findViewById(R.id.ivFvThumbnail2)
+        val ivFvThumbnail3 : ImageView = view.findViewById(R.id.ivFvThumbnail3)
+        val ivFvThumbnail4 : ImageView = view.findViewById(R.id.ivFvThumbnail4)
+        val llFvThumbnailBottom : LinearLayout = view.findViewById(R.id.llFvThumbnailBottom)
+        val ivFvThumbnailNull : ImageView = view.findViewById(R.id.ivFvThumbnailNull)
+        val clFvThumbnail4 : ConstraintLayout = view.findViewById(R.id.clFvThumbnail4)
+        val tvFvThumbnailMore : TextView = view.findViewById(R.id.tvFvThumbnailMore)
+        val ibtnFvMore : ImageButton = view.findViewById(R.id.ibtnFvMore)
+        val vFv : View = view.findViewById(R.id.vFv)
         fun setThumbnailGone() {
             ivFvThumbnail1.visibility = View.GONE
             ivFvThumbnail2.visibility = View.GONE
@@ -65,22 +64,22 @@ class FavoriteRVAdapter(
         }
     }
 
-    inner class addViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val cbFvA = view.findViewById<CheckBox>(R.id.cbFvA)
-        val tvFvAName = view.findViewById<TextView>(R.id.tvFvAName)
-        val tvFvATime = view.findViewById<TextView>(R.id.tvFvATime)
-        val tvFvACount = view.findViewById<TextView>(R.id.tvFvACount)
-        val tvFvARegDate = view.findViewById<TextView>(R.id.tvFvARegDate)
-        val ivFvAThumbnail1 = view.findViewById<ImageView>(R.id.ivFvAThumbnail1)
-        val ivFvAThumbnail2 = view.findViewById<ImageView>(R.id.ivFvAThumbnail2)
-        val ivFvAThumbnail3 = view.findViewById<ImageView>(R.id.ivFvAThumbnail3)
-        val ivFvAThumbnail4 = view.findViewById<ImageView>(R.id.ivFvAThumbnail4)
-        val llFvAThumbnailBottom = view.findViewById<LinearLayout>(R.id.llFvAThumbnailBottom)
-        val ivFvAThumbnailNull = view.findViewById<ImageView>(R.id.ivFvAThumbnailNull)
-        val clFvAThumbnail4 = view.findViewById<ConstraintLayout>(R.id.clFvAThumbnail4)
-        val tvFvAThumbnailMore = view.findViewById<TextView>(R.id.tvFvAThumbnailMore)
-        val ivFvACheck = view.findViewById<ImageView>(R.id.ivFvACheck)
-        val vFvA = view.findViewById<View>(R.id.vFvA)
+    inner class AddViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val cbFvA : CheckBox = view.findViewById(R.id.cbFvA)
+        val tvFvAName : TextView = view.findViewById(R.id.tvFvAName)
+        val tvFvATime : TextView = view.findViewById(R.id.tvFvATime)
+        val tvFvACount : TextView = view.findViewById(R.id.tvFvACount)
+        val tvFvARegDate : TextView = view.findViewById(R.id.tvFvARegDate)
+        val ivFvAThumbnail1 : ImageView = view.findViewById(R.id.ivFvAThumbnail1)
+        val ivFvAThumbnail2 : ImageView = view.findViewById(R.id.ivFvAThumbnail2)
+        val ivFvAThumbnail3 : ImageView = view.findViewById(R.id.ivFvAThumbnail3)
+        val ivFvAThumbnail4 : ImageView = view.findViewById(R.id.ivFvAThumbnail4)
+        val llFvAThumbnailBottom : LinearLayout = view.findViewById(R.id.llFvAThumbnailBottom)
+        val ivFvAThumbnailNull : ImageView = view.findViewById(R.id.ivFvAThumbnailNull)
+        val clFvAThumbnail4 : ConstraintLayout = view.findViewById(R.id.clFvAThumbnail4)
+        val tvFvAThumbnailMore : TextView = view.findViewById(R.id.tvFvAThumbnailMore)
+        val ivFvACheck : ImageView = view.findViewById(R.id.ivFvACheck)
+        val vFvA : View = view.findViewById(R.id.vFvA)
 
         fun setThumbnailGone() {
             ivFvAThumbnail1.visibility = View.GONE
@@ -102,11 +101,11 @@ class FavoriteRVAdapter(
         return when (viewType) {
             0 -> {
                 val binding = RvFvItemBinding.inflate(inflater, parent, false)
-                fvViewHolder(binding.root)
+                FvViewHolder(binding.root)
             }
             1 -> {
                 val binding = RvFavoriteAddItemBinding.inflate(inflater, parent, false)
-                addViewHolder(binding.root)
+                AddViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("invalid view type binding")
         }
@@ -119,7 +118,7 @@ class FavoriteRVAdapter(
 
 
         when (holder) {
-            is fvViewHolder -> {
+            is FvViewHolder -> {
                 holder.ivFvThumbnailNull.visibility = View.GONE
                 holder.tvPickName.text = currentItem.favoriteName
                 holder.tvFvCount.text = currentItem.favoriteTotalCount
@@ -138,7 +137,7 @@ class FavoriteRVAdapter(
                     val byteArray = bitmapToByteArray(capturedBitmap)
                     bundle.putParcelable("Favorite", currentItem)
                     bundle.putByteArray("img", byteArray)
-                    Log.v("byteArray", "${byteArray}")
+                    Log.v("byteArray", "$byteArray")
 
 
                     bsFragment.arguments = bundle
@@ -158,32 +157,32 @@ class FavoriteRVAdapter(
                         holder.tvFvTime.text = "0"
                     }
                     1 -> {
-                        val list = listOf<ImageView>(holder.ivFvThumbnail1)
+                        val list = listOf(holder.ivFvThumbnail1)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         holder.ivFvThumbnail2.visibility = View.GONE
                         holder.llFvThumbnailBottom.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(1), list , listOf(true, false, false, false))
                     }
                     2 -> {
-                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2)
+                        val list = listOf(holder.ivFvThumbnail1, holder.ivFvThumbnail2)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         holder.llFvThumbnailBottom.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(2), list , listOf(true, true, false, false))
                     }
                     3 -> {
-                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3)
+                        val list = listOf(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         holder.clFvThumbnail4.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(3), list , listOf(true, true, true, false))
 
                     }
                     4 -> {
-                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3, holder.ivFvThumbnail4)
+                        val list = listOf(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3, holder.ivFvThumbnail4)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(4), list , listOf(true, true, true, true))
                     }
                     else -> { // ------! 5개 이상일 때 !------
-                        val list = listOf<ImageView>(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3, holder.ivFvThumbnail4)
+                        val list = listOf(holder.ivFvThumbnail1, holder.ivFvThumbnail2, holder.ivFvThumbnail3, holder.ivFvThumbnail4)
                         holder.ivFvThumbnailNull.visibility = View.GONE
                         holder.vFv.visibility = View.VISIBLE
                         holder.tvFvThumbnailMore.visibility = View.VISIBLE
@@ -195,7 +194,7 @@ class FavoriteRVAdapter(
                     }
                 } // ------! 썸네일 처리 끝 !------
             }
-            is addViewHolder -> {
+            is AddViewHolder -> {
                 holder.ivFvAThumbnailNull.visibility = View.GONE
                 holder.tvFvAName.text = currentItem.favoriteName
                 holder.tvFvACount.text = currentItem.favoriteTotalCount
@@ -240,32 +239,32 @@ class FavoriteRVAdapter(
                         holder.tvFvATime.text = "0"
                     }
                     1 -> {
-                        val list = listOf<ImageView>(holder.ivFvAThumbnail1)
+                        val list = listOf(holder.ivFvAThumbnail1)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         holder.ivFvAThumbnail2.visibility = View.GONE
                         holder.llFvAThumbnailBottom.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(1), list , listOf(true, false, false, false))
                     }
                     2 -> {
-                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2)
+                        val list = listOf(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         holder.llFvAThumbnailBottom.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(2), list , listOf(true, true, false, false))
                     }
                     3 -> {
-                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3)
+                        val list = listOf(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         holder.clFvAThumbnail4.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(3), list , listOf(true, true, true, false))
 
                     }
                     4 -> {
-                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3, holder.ivFvAThumbnail4)
+                        val list = listOf(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3, holder.ivFvAThumbnail4)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         setThumbnails(holder, currentItem.imgThumbnails!!.take(4), list , listOf(true, true, true, true))
                     }
                     else -> { // ------! 5개 이상일 때 !------
-                        val list = listOf<ImageView>(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3, holder.ivFvAThumbnail4)
+                        val list = listOf(holder.ivFvAThumbnail1, holder.ivFvAThumbnail2, holder.ivFvAThumbnail3, holder.ivFvAThumbnail4)
                         holder.ivFvAThumbnailNull.visibility = View.GONE
                         holder.vFvA.visibility = View.VISIBLE
                         holder.tvFvAThumbnailMore.visibility = View.VISIBLE

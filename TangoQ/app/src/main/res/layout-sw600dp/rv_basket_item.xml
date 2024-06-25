@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout56"
     android:layout_width="match_parent"
-    android:layout_height="130dp"
+    android:layout_height="150dp"
     android:background="@color/white"
     android:paddingLeft="20dp"
     android:paddingTop="12dp"
@@ -13,7 +13,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView11"
-        android:layout_width="110dp"
+        android:layout_width="130dp"
         android:layout_height="0dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
@@ -40,7 +40,7 @@
         android:singleLine="true"
         android:text="목 관절 운동 프로그램"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout13"
@@ -72,8 +72,8 @@
 
         <ImageButton
             android:id="@+id/ibtnBkMinus"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:background="@drawable/effect_ibtn_20dp"
             android:backgroundTint="@color/white"
@@ -94,8 +94,8 @@
 
         <ImageButton
             android:id="@+id/ibtnBkPlus"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:background="@drawable/effect_ibtn_20dp"
             android:backgroundTint="@color/white"

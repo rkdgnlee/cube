@@ -10,7 +10,7 @@ import com.tangoplus.tangoq.databinding.ItemSpinnerBinding
 
 
 @Suppress("UNREACHABLE_CODE")
-class SpinnerAdapter(context:Context, private val resId: Int, private val list: List<String>) : ArrayAdapter<String>(context, resId, list) {
+class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>) : ArrayAdapter<String>(context, resId, list) {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

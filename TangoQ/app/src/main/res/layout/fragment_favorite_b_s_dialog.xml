@@ -18,7 +18,7 @@
         app:layout_anchorGravity="center">
 
         <TextView
-            android:id="@+id/tvFrBSName"
+            android:id="@+id/tvFBsName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -31,7 +31,7 @@
             app:layout_constraintTop_toTopOf="@+id/cardView7" />
 
         <ImageButton
-            android:id="@+id/ibtnFrBsExit"
+            android:id="@+id/ibtnFBsExit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -43,7 +43,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/llFrBSPlay"
+            android:id="@+id/llFBSPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/effect_ibtn_20dp"
@@ -63,7 +63,7 @@
                 android:src="@drawable/icon_play" />
 
             <TextView
-                android:id="@+id/tvFrBSPlay"
+                android:id="@+id/tvFBSPlay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -73,7 +73,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llFrBSEdit"
+            android:id="@+id/llFBSEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/effect_ibtn_20dp"
@@ -81,7 +81,7 @@
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSPlay">
+            app:layout_constraintTop_toBottomOf="@+id/llFBSPlay">
 
             <ImageView
                 android:id="@+id/imageView21"
@@ -110,7 +110,7 @@
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSEdit">
+            app:layout_constraintTop_toBottomOf="@+id/llFBSEdit">
 
             <ImageView
                 android:id="@+id/imageView25"
@@ -121,7 +121,7 @@
                 android:src="@drawable/icon_share" />
 
             <TextView
-                android:id="@+id/tvFrBSShare"
+                android:id="@+id/tvFBSShare"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -131,7 +131,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llFrBSChange"
+            android:id="@+id/llFBSChange"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/effect_ibtn_20dp"
@@ -150,7 +150,7 @@
                 android:src="@drawable/icon_change" />
 
             <TextView
-                android:id="@+id/tvFrBSChange"
+                android:id="@+id/tvFBSChange"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -160,7 +160,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llFrBSAddExercise"
+            android:id="@+id/llFBSAddExercise"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/effect_ibtn_20dp"
@@ -168,7 +168,7 @@
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSChange">
+            app:layout_constraintTop_toBottomOf="@+id/llFBSChange">
 
             <ImageView
                 android:id="@+id/imageView4"
@@ -199,7 +199,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llFrBSAddExercise">
+            app:layout_constraintTop_toBottomOf="@+id/llFBSAddExercise">
 
             <ImageView
                 android:id="@+id/imageView27"
@@ -227,7 +227,7 @@
             android:layout_marginTop="20dp"
             app:cardCornerRadius="4dp"
             app:cardElevation="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/llFrBSPlay"
+            app:layout_constraintBottom_toTopOf="@+id/llFBSPlay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
@@ -244,7 +244,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/ivFrBSThumbnail1"
+                        android:id="@+id/ivFBSThumbnail1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -252,7 +252,7 @@
                         android:src="@color/black" />
 
                     <ImageView
-                        android:id="@+id/ivFrBSThumbnail2"
+                        android:id="@+id/ivFBSThumbnail2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -262,14 +262,14 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/llFrBSThumbnailBottom"
+                    android:id="@+id/llFBSThumbnailBottom"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/ivFrBSThumbnail3"
+                        android:id="@+id/ivFBSThumbnail3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -287,21 +287,21 @@
             </LinearLayout>
 
             <View
-                android:id="@+id/vFrBS"
+                android:id="@+id/vFBS"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#59000000"
                 android:visibility="invisible" />
 
             <ImageView
-                android:id="@+id/ivFrBSThumbnailNull"
+                android:id="@+id/ivFBSThumbnailNull"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/drawable_fv_null"
                 android:visibility="invisible" />
 
             <TextView
-                android:id="@+id/tvFrBSThumbnailMore"
+                android:id="@+id/tvFBSThumbnailMore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"

@@ -52,7 +52,7 @@ dependencies {
 
 
     // 외부 라이브러리
-    implementation ("io.github.ShawnLin013:number-picker:2.4.13")
+    implementation("io.github.ShawnLin013:number-picker:2.4.13")
     implementation("com.github.shuhart:StepView:v1.5.1")
     implementation("com.seosh817:circularseekbar:1.0.2")
     implementation("com.github.bumptech.glide:glide:4.16.0")
@@ -68,6 +68,7 @@ dependencies {
     implementation("com.kizitonwose.calendar:view:2.5.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("com.github.skydoves:balloon:1.6.4")
+    implementation("com.github.skydoves:progressview:1.1.3")
 
 
     // api
@@ -75,10 +76,10 @@ dependencies {
     implementation("com.kakao.sdk:v2-common:2.19.0")
     implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation("com.kakao.sdk:v2-auth:2.19.0")
-    implementation("com.google.gms:google-services:4.4.1")
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.gms:google-services:4.4.2")
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
-    implementation("com.google.firebase:firebase-analytics:22.0.0")
+    implementation("com.google.firebase:firebase-analytics:22.0.1")
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
@@ -122,8 +123,8 @@ dependencies {
     implementation("com.arthenica:ffmpeg-kit-full:4.5")
 
     // 내부 라이브러리
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
-    implementation("androidx.fragment:fragment-ktx:1.7.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
+    implementation("androidx.fragment:fragment-ktx:1.8.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")

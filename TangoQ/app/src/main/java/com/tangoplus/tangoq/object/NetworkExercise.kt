@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.`object`
 
 import com.tangoplus.tangoq.data.ExerciseVO
 import android.util.Log
+import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -20,7 +21,7 @@ object NetworkExercise {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                Log.w("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
+                Log.w("http>EcCategory", "Success to execute request!: $responseBody")
                 val jsonArr = responseBody?.let { JSONObject(it) }?.optJSONArray("data")
                 val categorySet = mutableSetOf<Pair<Int, String>>()
                 if (jsonArr != null) {
@@ -69,7 +70,7 @@ object NetworkExercise {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                Log.e("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
+                Log.e("http>Cate>Search", "Success to execute request!: $responseBody")
 
                 val exerciseDataList = mutableListOf<ExerciseVO>()
                 val jsonArr = responseBody?.let { JSONObject(it) }?.optJSONArray("data")
@@ -117,7 +118,7 @@ object NetworkExercise {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                Log.e("OKHTTP3/ExerciseFetch", "Success to execute request!: $responseBody")
+                Log.e("OKHTTP3/Exercise", "Success to execute request!: $responseBody")
 
                 val exerciseDataList = mutableListOf<ExerciseVO>()
                 val jsonArr = responseBody?.let { JSONObject(it) }?.optJSONArray("data")

@@ -8,7 +8,7 @@ class OnSingleClickListener(private val clickListener: View.OnClickListener) : V
 
         // ---- 클릭 방지 시간 설정 ----
         const val CLICK_INTERVAL : Long = 1000
-        const val Tag = "OnSingleClickListener"
+        const val TAG = "OnSingleClickListener"
     }
     private var clickable = true
 
@@ -20,7 +20,7 @@ class OnSingleClickListener(private val clickListener: View.OnClickListener) : V
                 clickListener.onClick(v)
             }
         } else {
-            Log.d(Tag, "wainting for a while")
+            Log.d(TAG, "wainting for a while")
         }
     }
 }

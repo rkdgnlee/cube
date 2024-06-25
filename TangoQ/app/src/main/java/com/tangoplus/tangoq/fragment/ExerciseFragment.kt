@@ -14,14 +14,13 @@ import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
-import com.tangoplus.tangoq.listener.onCategoryScrollListener
+import com.tangoplus.tangoq.listener.OnCategoryScrollListener
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseCategory
 import kotlinx.coroutines.launch
 
 
-@Suppress("UNREACHABLE_CODE")
-class ExerciseFragment : Fragment(), onCategoryScrollListener {
+class ExerciseFragment : Fragment(), OnCategoryScrollListener {
     lateinit var binding : FragmentExerciseBinding
 //    var verticalDataList = mutableListOf<ExerciseVO>()
     val viewModel : FavoriteViewModel by activityViewModels()
@@ -63,9 +62,9 @@ class ExerciseFragment : Fragment(), onCategoryScrollListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        binding.sflEc.startShimmer()
-        binding.nsvEc.isNestedScrollingEnabled = false
-        binding.rvEcMainCategory.isNestedScrollingEnabled = false
-        binding.rvEcMainCategory.overScrollMode = 0
+        binding.nsvE.isNestedScrollingEnabled = false
+        binding.rvEMainCategory.isNestedScrollingEnabled = false
+        binding.rvEMainCategory.overScrollMode = 0
 //        binding.ibtnEcACTVClear.setOnClickListener {
 //            binding.actvEcSearch.text.clear()
 //        }
@@ -142,11 +141,11 @@ class ExerciseFragment : Fragment(), onCategoryScrollListener {
             typeArrayList.add(Pair(9, "발목"))
             try { // ------! rv vertical 시작 !------
 
-                Log.v("카테고리size", "mainCategoryList: ${categoryArrayList}, subCategoryList: ${typeArrayList}")
+                Log.v("cateSize", "mainCategoryList: ${categoryArrayList}, subCategoryList: ${typeArrayList}")
                 val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, 0, this@ExerciseFragment,"mainCategory")
-                binding.rvEcMainCategory.adapter = adapter
+                binding.rvEMainCategory.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvEcMainCategory.layoutManager = linearLayoutManager
+                binding.rvEMainCategory.layoutManager = linearLayoutManager
                 // ------! rv vertical 끝 !------
             } catch (e: Exception) {
                 Log.e(TAG, "Error: ${e.message}")
@@ -169,15 +168,15 @@ class ExerciseFragment : Fragment(), onCategoryScrollListener {
         val scrollViewLocation = IntArray(2)
 
         // 4. 스크롤 뷰의 위치를 'window' 기준으로 계산하여 배열에 저장합니다.
-        binding.nsvEc.getLocationInWindow(scrollViewLocation)
+        binding.nsvE.getLocationInWindow(scrollViewLocation)
         val scrollViewTop = scrollViewLocation[1]
         // 5. 현재 스크롤 뷰의 스크롤된 y 위치를 얻습니다.
-        val scrollY = binding.nsvEc.scrollY
+        val scrollY = binding.nsvE.scrollY
         // 6. 스크롤할 위치를 계산합니다.
         //    현재 스크롤 위치에 뷰의 상대 위치를 더하여 올바른 스크롤 위치를 계산합니다.
         val scrollTo = scrollY + viewTop - scrollViewTop
         // 7. 스크롤 뷰를 해당 위치로 스크롤합니다.
-        binding.nsvEc.smoothScrollTo(0, scrollTo)
+        binding.nsvE.smoothScrollTo(0, scrollTo)
     }
 
 //    private fun initializeBluetoothAdapter() {

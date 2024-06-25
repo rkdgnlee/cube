@@ -16,7 +16,7 @@
         android:background="@drawable/background_bottomsheet">
 
         <TextView
-            android:id="@+id/tvEcBSName"
+            android:id="@+id/tvEBSName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -24,22 +24,22 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ivEcBsThumbnail"
-            app:layout_constraintStart_toEndOf="@+id/ivEcBsThumbnail"
-            app:layout_constraintTop_toTopOf="@+id/ivEcBsThumbnail" />
+            app:layout_constraintBottom_toBottomOf="@+id/ivEBsThumbnail"
+            app:layout_constraintStart_toEndOf="@+id/ivEBsThumbnail"
+            app:layout_constraintTop_toTopOf="@+id/ivEBsThumbnail" />
 
         <ImageView
-            android:id="@+id/ivEcBsThumbnail"
+            android:id="@+id/ivEBsThumbnail"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="32dp"
             android:src="@drawable/profile_default"
-            app:layout_constraintBottom_toTopOf="@+id/llEcBSPlay"
+            app:layout_constraintBottom_toTopOf="@+id/llEBsPlay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/ibtnEcBsExit"
+            android:id="@+id/ibtnEBsExit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -50,7 +50,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/llEcBSPlay"
+            android:id="@+id/llEBsPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/effect_ibtn_20dp"
@@ -63,7 +63,7 @@
             app:layout_constraintVertical_bias="0.25">
 
             <ImageView
-                android:id="@+id/ivRE"
+                android:id="@+id/ivEBsPlay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -80,7 +80,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llEcBSAddList"
+            android:id="@+id/llEBSAddList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/effect_ibtn_20dp"
@@ -108,7 +108,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llEcBSAddSet"
+            android:id="@+id/llEBSAddSet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/effect_ibtn_20dp"
@@ -117,7 +117,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llEcBSPlay">
+            app:layout_constraintTop_toBottomOf="@+id/llEBsPlay">
 
             <ImageView
                 android:id="@+id/imageView4"
@@ -137,7 +137,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llEcBSShare"
+            android:id="@+id/llEBSShare"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
@@ -146,7 +146,7 @@
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llEcBSAddSet">
+            app:layout_constraintTop_toBottomOf="@+id/llEBSAddSet">
 
             <ImageView
                 android:id="@+id/imageView25"
@@ -174,7 +174,7 @@
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llEcBSShare">
+            app:layout_constraintTop_toBottomOf="@+id/llEBSShare">
 
             <ImageView
                 android:id="@+id/imageView26"
@@ -194,7 +194,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llEcBSDelete"
+            android:id="@+id/llEBSDelete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
@@ -204,7 +204,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llEcBSAddList">
+            app:layout_constraintTop_toBottomOf="@+id/llEBSAddList">
 
             <ImageView
                 android:id="@+id/imageView27"
@@ -215,7 +215,7 @@
                 android:src="@drawable/icon_trash" />
 
             <TextView
-                android:id="@+id/tvFrBSDelete"
+                android:id="@+id/tvEBsDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"

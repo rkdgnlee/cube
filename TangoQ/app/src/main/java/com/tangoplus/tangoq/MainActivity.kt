@@ -1,28 +1,15 @@
 package com.tangoplus.tangoq
 
-import android.annotation.SuppressLint
 import android.app.UiModeManager
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.health.connect.client.HealthConnectClient
-import androidx.health.connect.client.PermissionController
-import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
-import androidx.health.connect.client.request.AggregateGroupByDurationRequest
-import androidx.health.connect.client.request.ReadRecordsRequest
-import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
@@ -33,19 +20,18 @@ import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
+import com.tangoplus.tangoq.`object`.NetworkHistory.fetchViewingHistory
+import com.tangoplus.tangoq.`object`.Singleton_t_history
 import kotlinx.coroutines.launch
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     val mViewModel : MeasureViewModel by viewModels()
-    val eViewModel : FavoriteViewModel by viewModels()
+    private val eViewModel : FavoriteViewModel by viewModels()
+
 //    lateinit var requestPermissions : ActivityResultLauncher<Set<String>>
 //    val backStack = Stack<Int>()
-    var selectedTabId = R.id.main
+    private var selectedTabId = R.id.main
 //    lateinit var  healthConnectClient : HealthConnectClient
 //    val endTime = LocalDateTime.now()
 //    val startTime = LocalDateTime.now().minusDays(1)
@@ -64,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+        val singletonTHistory = Singleton_t_history.getInstance(this@MainActivity)
         // ------! 다크모드 메뉴 이름 설정 시작 !------
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         val isNightMode = uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
@@ -112,6 +98,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.profile -> {}
             }
         }
+        // TODO 시청기록 singleton으로 받아오기
+//        lifecycleScope.launch {
+//            singletonTHistory.viewingHistory = fetchViewingHistory(this@MainActivity, getString(R.string.IP_ADDRESS_t_viewing_history)).toMutableList()
+//        }
 
 //        binding.ibtnAlarm.setOnClickListener {
 //            val intent = Intent(this@MainActivity, AlarmActivity::class.java)
@@ -162,7 +152,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun setCurrentFragment(itemId: Int) {
+    private fun setCurrentFragment(itemId: Int) {
         val fragment = when(itemId) {
             R.id.main -> MainFragment()
             R.id.exercise -> ExerciseFragment()
@@ -313,12 +303,21 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         // ------! 0일 때만 피드백 켜지게 !------
 
-        var feedbackData = intent?.getSerializableExtra("feedback_finish")
-        if (feedbackData != null ) {
+
+        val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, String, Int>
+        Log.v("intent>serializable", "$feedbackData")
+        if (feedbackData != null) {
             if (eViewModel.isDialogShown.value == false) {
-                eViewModel.exerciseLog.value = feedbackData as Triple<Int, String, Int>
-                val dialog = FeedbackDialogFragment()
-                dialog.show(supportFragmentManager, "FeedbackDialogFragment")
+                eViewModel.exerciseLog.value = feedbackData
+
+                // 이미 DialogFragment가 표시되어 있는지 확인
+                val fragmentManager = supportFragmentManager
+                val existingDialog = fragmentManager.findFragmentByTag("FeedbackDialogFragment")
+
+                if (existingDialog == null) {
+                    val dialog = FeedbackDialogFragment()
+                    dialog.show(fragmentManager, "FeedbackDialogFragment")
+                }
             } else {
                 eViewModel.isDialogShown.value = true
             }

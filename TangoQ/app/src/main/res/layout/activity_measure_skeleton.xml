@@ -2,14 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clPS"
+    android:id="@+id/clMeasureSkeleton"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
     tools:context=".MeasureSkeletonActivity">
 
     <!--    <com.tangoplus.tangoq.view.CameraSurfaceView-->
-    <!--        android:id="@+id/csvPS"-->
+    <!--        android:id="@+id/csvMeasureSkeleton"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"-->
     <!--        app:layout_constraintBottom_toBottomOf="parent"-->
@@ -39,7 +39,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvPSGuide"
+        android:id="@+id/tvMeasureSkeletonGuide"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#80000000"
@@ -55,7 +55,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/ivPSFrame"
+        android:id="@+id/ivMeasureSkeletonFrame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -67,7 +67,7 @@
         app:srcCompat="@drawable/drawable_measure_0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clPSTop"
+        android:id="@+id/clMeasureSkeletonTop"
         android:layout_width="match_parent"
         android:layout_height="128dp"
         android:background="@drawable/background_radius_8dp_top"
@@ -76,22 +76,22 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvPSCount"
+            android:id="@+id/tvMeasureSkeletonCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:text="프레임에 맞춰 서주세요"
             android:textColor="@color/black"
-            android:textSize="28sp"
+            android:textSize="27sp"
             android:textStyle="bold"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/ibtnPSBack"
+            app:layout_constraintBottom_toTopOf="@+id/svMeasureSkeleton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/ibtnPSBack" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/ibtnPSBack"
+            android:id="@+id/ibtnMeasureSkeletonBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -103,14 +103,14 @@
             app:srcCompat="@drawable/icon_arrow_left" />
 
         <com.shuhart.stepview.StepView
-            android:id="@+id/svPS"
+            android:id="@+id/svMeasureSkeleton"
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ibtnPSBack"
+            app:layout_constraintTop_toBottomOf="@+id/ibtnMeasureSkeletonBack"
             app:sv_animationDuration="250"
             app:sv_animationType="Circle"
             app:sv_background="#00FFFFFF"
@@ -130,7 +130,7 @@
             app:sv_textSize="14sp" />
 
         <com.tomlecollegue.progressbars.HorizontalProgressView
-            android:id="@+id/pvPS"
+            android:id="@+id/pvMeasureSkeleton"
             android:layout_width="0dp"
             android:layout_height="4dp"
             android:layout_marginStart="12dp"
@@ -143,11 +143,11 @@
             app:colorProgress="@color/mainColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/svPS" />
+            app:layout_constraintTop_toBottomOf="@+id/svMeasureSkeleton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clPSBottom"
+        android:id="@+id/clMeasureSkeletonBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_radius_8dp_bottom"
@@ -156,7 +156,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPSStep"
+            android:id="@+id/btnMeasureSkeletonStep"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
@@ -172,5 +172,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/flMeasureSkeleton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

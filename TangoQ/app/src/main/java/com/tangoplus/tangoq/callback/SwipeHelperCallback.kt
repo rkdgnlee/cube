@@ -2,8 +2,10 @@ package com.tangoplus.tangoq.callback
 
 import android.graphics.Canvas
 import android.icu.lang.UCharacter
+import android.os.Build
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.adapter.AlarmRVAdapter
@@ -16,6 +18,7 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
     private var currentDx = 0f
     private var clamp = 0f
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
