@@ -36,28 +36,27 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
 
     var popupWindow : PopupWindow?= null
         inner class horizonViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val ivRcmThumbnail = view.findViewById<ImageView>(R.id.ivRcmThumbnail)
-            val tvRcmExerciseName = view.findViewById<TextView>(R.id.tvRcmExerciseName)
-            val tvRcmExerciseTime = view.findViewById<TextView>(R.id.tvRcmExerciseTime)
-            val tvRcmExerciseStep = view.findViewById<TextView>(R.id.tvRcmExerciseStep)
-            val tvRcmExerciseKcal = view.findViewById<TextView>(R.id.tvRcmExerciseKcal)
-            val ibtnRcmMore = view.findViewById<ImageButton>(R.id.ibtnRcmMore)
-            val vRcmPlay = view.findViewById<View>(R.id.vRcmPlay)
+//            val ivRcmThumbnail : ImageView = view.findViewById(R.id.ivRcmThumbnail)
+            val tvRcmExerciseName: TextView = view.findViewById(R.id.tvRcmExerciseName)
+            val tvRcmExerciseTime: TextView = view.findViewById(R.id.tvRcmExerciseTime)
+            val tvRcmExerciseStep: TextView = view.findViewById(R.id.tvRcmExerciseStep)
+            val tvRcmExerciseKcal: TextView = view.findViewById(R.id.tvRcmExerciseKcal)
+            val ibtnRcmMore: ImageButton = view.findViewById(R.id.ibtnRcmMore)
+            val vRcmPlay: View = view.findViewById(R.id.vRcmPlay)
         }
     inner class rankViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val cvRThumbnail = view.findViewById<CardView>(R.id.cvRThumbnail)
-        val ivRThumbnail1 = view.findViewById<ImageView>(R.id.ivRThumbnail1)
-//        val llRThumbnail = view.findViewById<ImageView>(R.id.llRThumbnail)
-        val ivRThumbnail2 = view.findViewById<ImageView>(R.id.ivRThumbnail2)
-        val ivRThumbnail3 = view.findViewById<ImageView>(R.id.ivRThumbnail3)
-        val tvRanking = view.findViewById<TextView>(R.id.tvRanking)
-        val tvRName = view.findViewById<TextView>(R.id.tvRName)
-        val tvRExplain = view.findViewById<TextView>(R.id.tvRExplain)
-        val ibtnRMore = view.findViewById<ImageButton>(R.id.ibtnRMore)
-        val tvRCount = view.findViewById<TextView>(R.id.tvRCount)
-        val tvRTime = view.findViewById<TextView>(R.id.tvRTime)
-//        val pvR = view.findViewById<PlayerView>(R.id.pvR)
-        val vR = view.findViewById<View>(R.id.vR)
+        val cvPIThumbnail: CardView = view.findViewById(R.id.cvPIThumbnail)
+        val ivPIThumbnail1: ImageView = view.findViewById(R.id.ivPIThumbnail1)
+//        val llRThumbnail = view.findViewById<ImageView>(R.id.llPIThumbnail)
+        val ivPIThumbnail2: ImageView = view.findViewById(R.id.ivPIThumbnail2)
+        val ivPIThumbnail3: ImageView = view.findViewById(R.id.ivPIThumbnail3)
+        val tvPIRanking: TextView = view.findViewById(R.id.tvPIRanking)
+        val tvPIName: TextView = view.findViewById(R.id.tvPIName)
+        val tvPIExplain: TextView = view.findViewById(R.id.tvPIExplain)
+        val ibtnPIMore: ImageButton = view.findViewById(R.id.ibtnPIMore)
+        val tvPICount: TextView = view.findViewById(R.id.tvPICount)
+        val tvPITime: TextView = view.findViewById(R.id.tvPITime)
+        val vPI: View = view.findViewById(R.id.vPI)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -125,26 +124,26 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
             }
             is rankViewHolder -> {
 //                val lpitemView = holder.itemView.layoutParams
-//                val lpcv = holder.cvRThumbnail.layoutParams
+//                val lpcv = holder.cvPIThumbnail.layoutParams
 //                val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 //                lpitemView.height = (screenHeight * 0.24).toInt()  // 화면 높이의 25%로 설정
 //                lpcv.height = (screenHeight * 0.15).toInt()
 //                holder.itemView.layoutParams = lpitemView
-//                holder.cvRThumbnail.layoutParams = lpcv
+//                holder.cvPIThumbnail.layoutParams = lpcv
 
 
-                holder.tvRName.text = currentItem.programName
-                holder.tvRanking.text = "${position + 1}"
-                holder.tvRTime.text = (if (currentItem.programTime <= 60) {
+                holder.tvPIName.text = currentItem.programName
+                holder.tvPIRanking.text = "${position + 1}"
+                holder.tvPITime.text = (if (currentItem.programTime <= 60) {
                     "${currentItem.programTime}초"
                 } else {
                     "${currentItem.programTime / 60}분 ${currentItem.programTime % 60}초"
                 }).toString()
-                holder.tvRCount.text = "${currentItem.programCount} 개"
-                holder.tvRExplain.text = currentItem.programDescription
+                holder.tvPICount.text = "${currentItem.programCount} 개"
+                holder.tvPIExplain.text = currentItem.programDescription
 
                 // ------! more 버튼 시작 !------
-                holder.ibtnRMore.setOnClickListener { view ->
+                holder.ibtnPIMore.setOnClickListener { view ->
                     if (popupWindow?.isShowing == true) {
                         popupWindow?.dismiss()
                         popupWindow =  null
@@ -199,24 +198,24 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                 Glide.with(holder.itemView.context)
                     .load(currentItem.imgThumbnails!![2])
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(holder.ivRThumbnail1)
+                    .into(holder.ivPIThumbnail1)
                 Glide.with(holder.itemView.context)
                     .load(currentItem.imgThumbnails!![1])
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(holder.ivRThumbnail2)
+                    .into(holder.ivPIThumbnail2)
                 Glide.with(holder.itemView.context)
                     .load(currentItem.imgThumbnails!![0])
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(holder.ivRThumbnail3)
+                    .into(holder.ivPIThumbnail3)
 
                 // -------! 이미지 썸네일 끝 !------
 
                 // -------! 클릭 재생 시작 !-------
-                holder.vR.setOnClickListener {
+                holder.vPI.setOnClickListener {
                     val urls = storePickUrl(currentItem.exercises!!)
                     val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
                     intent.putStringArrayListExtra("urls", ArrayList(urls))
-                    fragment.requireContext().startActivity(intent)
+//                    fragment.requireContext().startActivity(intent)
                     startForResult.launch(intent)
                 }
 

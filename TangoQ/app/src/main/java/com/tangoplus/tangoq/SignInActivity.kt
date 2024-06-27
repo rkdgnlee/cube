@@ -49,7 +49,7 @@ import java.util.regex.Pattern
 class SignInActivity : AppCompatActivity() {
     lateinit var binding : ActivitySignInBinding
     val viewModel : SignInViewModel by viewModels()
-    val auth = Firebase.auth
+    private val auth = Firebase.auth
     var verificationId = ""
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +64,7 @@ class SignInActivity : AppCompatActivity() {
         binding.etPw.visibility = View.GONE
         binding.llPwRepeat.visibility = View.GONE
         binding.etPwRepeat.visibility = View.GONE
-        binding.btnSI.visibility = View.GONE
+        binding.btnSignIn.visibility = View.GONE
         binding.llId.visibility = View.GONE
         binding.etId.visibility = View.GONE
         binding.tvNameGuide.visibility = View.GONE
@@ -74,7 +74,7 @@ class SignInActivity : AppCompatActivity() {
         binding.btnAuthSend.isEnabled = false
         binding.etAuthNumber.isEnabled = false
         binding.btnAuthConfirm.isEnabled = false
-        binding.btnSI.isEnabled = false
+        binding.btnSignIn.isEnabled = false
 
         // ------! 구글 토큰 로그인 설정 시 !------
         val userString = intent.getStringExtra("google_user")
@@ -92,7 +92,7 @@ class SignInActivity : AppCompatActivity() {
         } else {
             viewModel.User.value = JSONObject()
         }
-        binding.svSI.getState()
+        binding.svSignIn.state
             .animationType(StepView.ANIMATION_CIRCLE)
             .steps(object : ArrayList<String?>() {
                 init {
@@ -109,7 +109,7 @@ class SignInActivity : AppCompatActivity() {
         // -----! 초기 버튼 숨기기 및 세팅 끝 !-----
 
         // -----! progress bar 시작 !-----
-        binding.pvSI.progress = 25
+        binding.pvSignIn.progress = 25
         // -----! progress bar 끝 !-----
 
         // -----! 통신사 선택 시작 !-----
@@ -118,7 +118,7 @@ class SignInActivity : AppCompatActivity() {
         } // -----! 통신사 선택 끝 !-----
 
         // -----! 회원가입 입력 창 anime 시작  !-----
-        TransitionManager.beginDelayedTransition(binding.llSI, SignInTransition())
+        TransitionManager.beginDelayedTransition(binding.llSignIn, SignInTransition())
 
         // -----! 휴대폰 인증 시작 !-----
 
@@ -134,16 +134,18 @@ class SignInActivity : AppCompatActivity() {
                 this@SignInActivity.verificationId = verificationId
                 Log.v("onCodeSent", "메시지 발송 성공")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
-                Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSI), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSignIn), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 binding.btnAuthConfirm.isEnabled = true
             }
         }
         binding.btnAuthSend.setOnSingleClickListener {
-            val transformMobile = phoneNumber82(binding.etMobile.text.toString())
+            var transformMobile = phoneNumber82(binding.etMobile.text.toString())
             val dialog = AlertDialog.Builder(this)
                 .setTitle("📩 문자 인증 ")
                 .setMessage("$transformMobile 로 인증 하시겠습니까?")
                 .setPositiveButton("예") { _, _ ->
+                    transformMobile = transformMobile.replace("-", "")
+                    Log.w("전화번호", transformMobile)
                     val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(transformMobile)
                         .setTimeout(60L, TimeUnit.SECONDS)
@@ -153,13 +155,10 @@ class SignInActivity : AppCompatActivity() {
                     PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
                     auth.setLanguageCode("kr")
 
-
-                    transformMobile.replace("-", "")
-                    transformMobile.replace("-", "")
-                    Log.w("전화번호", transformMobile)
                     val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                     alphaAnimation.duration = 600
                     binding.etAuthNumber.isEnabled = true
+                    binding.btnAuthConfirm.visibility = View.VISIBLE
 
                     val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                     objectAnimator.duration = 1000
@@ -172,8 +171,6 @@ class SignInActivity : AppCompatActivity() {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
 
-            // TODO 일단 열어놓기
-            binding.btnAuthConfirm.isEnabled = true
         }
         // -----! 휴대폰 인증 끝 !-----
 
@@ -183,16 +180,18 @@ class SignInActivity : AppCompatActivity() {
         binding.btnAuthConfirm.setOnSingleClickListener {
             val credential = PhoneAuthProvider.getCredential(verificationId, binding.etAuthNumber.text.toString())
             signInWithPhoneAuthCredential(credential)
+
+
         }  // -----! 인증 문자 확인 끝 !-----
 
-        binding.etName.setOnEditorActionListener {v, actionId, event ->
+        binding.etName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 binding.etEmail.requestFocus()
                 return@setOnEditorActionListener true
             }
             false
         }
-        binding.etEmailId.setOnEditorActionListener { v, actionId, event ->
+        binding.etEmailId.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                 alphaAnimation.duration = 600
@@ -208,9 +207,10 @@ class SignInActivity : AppCompatActivity() {
             }
             false
         }
-        val domain_list = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-        binding.spinner.adapter = SpinnerAdapter(this, com.tangoplus.tangoq.R.layout.item_spinner, domain_list)
+        val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
+        binding.spinner.adapter = SpinnerAdapter(this, com.tangoplus.tangoq.R.layout.item_spinner, domainList)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            @SuppressLint("SetTextI18n")
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -238,7 +238,7 @@ class SignInActivity : AppCompatActivity() {
 //        binding.psvSIEmail.setSpinnerAdapter(actAdapter)
 //        binding.psvSIEmail.setText(domain_list.firstOrNull(), false)
 
-        binding.etId.setOnEditorActionListener { v, actionId, event ->
+        binding.etId.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                 alphaAnimation.duration = 600
@@ -247,35 +247,36 @@ class SignInActivity : AppCompatActivity() {
                 binding.etPw.startAnimation(alphaAnimation)
                 binding.llPwRepeat.startAnimation(alphaAnimation)
                 binding.etPwRepeat.startAnimation(alphaAnimation)
-                binding.btnSI.startAnimation(alphaAnimation)
+                binding.btnSignIn.startAnimation(alphaAnimation)
+
                 binding.llPwCondition.visibility = View.VISIBLE
                 binding.etPw.visibility = View.VISIBLE
                 binding.llPwRepeat.visibility = View.VISIBLE
                 binding.etPwRepeat.visibility = View.VISIBLE
-                binding.btnSI.visibility = View.VISIBLE
+                binding.btnSignIn.visibility = View.VISIBLE
 
 
                 val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                 objectAnimator.duration = 1000
                 objectAnimator.start()
-                binding.pvSI.progress = 75
+                binding.pvSignIn.progress = 75
                 binding.etPw.requestFocus()
-                binding.svSI.go(2, true)
+                binding.svSignIn.go(2, true)
                 return@setOnEditorActionListener true
             }
             false
         }
 
-        binding.btnSI.setOnSingleClickListener {
+        binding.btnSignIn.setOnSingleClickListener {
             showAgreementBottomSheetDialog(this)
 
         }
         val mobilePattern = "^010-\\d{4}-\\d{4}\$"
-        val MobilePattern = Pattern.compile(mobilePattern)
+        val mobilePatternCheck = Pattern.compile(mobilePattern)
         val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&.^])[A-Za-z[0-9]$@$!%*#?&.^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
         val idPattern = "^[a-zA-Z0-9]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
-        val IdPattern = Pattern.compile(idPattern)
-        val Pwpattern = Pattern.compile(pwPattern)
+        val idPatternCheck = Pattern.compile(idPattern)
+        val pwPatternCheck = Pattern.compile(pwPattern)
 
         // ------! 핸드폰 번호 조건 코드 !-----
         binding.etMobile.addTextChangedListener(object: TextWatcher {
@@ -292,8 +293,8 @@ class SignInActivity : AppCompatActivity() {
                     else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
                 }
                 isFormatting = false
-                Log.w("전화번호형식", "${MobilePattern.matcher(binding.etMobile.text.toString()).find()}")
-                viewModel.mobileCondition.value = MobilePattern.matcher(binding.etMobile.text.toString()).find()
+                Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()}")
+                viewModel.mobileCondition.value = mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()
                 if (viewModel.mobileCondition.value == true) {
                     viewModel.User.value?.put("user_mobile", s.toString() )
                     binding.btnAuthSend.isEnabled = true
@@ -305,8 +306,9 @@ class SignInActivity : AppCompatActivity() {
 
         // ----- ! ID 조건 코드 ! -----
         binding.etId.addTextChangedListener(object : TextWatcher {
+            @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
-                viewModel.idCondition.value = IdPattern.matcher(binding.etId.text.toString()).find()
+                viewModel.idCondition.value = idPatternCheck.matcher(binding.etId.text.toString()).find()
                 if (viewModel.idCondition.value == true) {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor))
                     binding.tvIdCondition.text = "사용 가능합니다"
@@ -323,7 +325,7 @@ class SignInActivity : AppCompatActivity() {
         binding.etPw.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
-                viewModel.pwCondition.value = Pwpattern.matcher(binding.etPw.text.toString()).find()
+                viewModel.pwCondition.value = pwPatternCheck.matcher(binding.etPw.text.toString()).find()
                 if (viewModel.pwCondition.value == true) {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor))
                     binding.tvPwCondition.text = "사용 가능합니다"
@@ -339,15 +341,16 @@ class SignInActivity : AppCompatActivity() {
         })
         // ----- ! 비밀번호 확인 코드 ! -----
         binding.etPwRepeat.addTextChangedListener(object : TextWatcher {
+            @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
                 viewModel.pwCompare.value = (binding.etPw.text.toString() == binding.etPwRepeat.text.toString())
                 if (viewModel.pwCompare.value == true) {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor))
                     binding.tvPwRepeat.text = "일치합니다"
-                    binding.pvSI.progress = 100
-                    binding.svSI.go(3, true)
-                    binding.tvSIIntro.text = "하단의 완료 버튼을 눌러주세요"
-                    binding.btnSI.isEnabled = true
+                    binding.pvSignIn.progress = 100
+                    binding.svSignIn.go(3, true)
+                    binding.TextView124.text = "하단의 완료 버튼을 눌러주세요"
+                    binding.btnSignIn.isEnabled = true
                 } else {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor))
                     binding.tvPwRepeat.text = "다시 입력해주세요"
@@ -362,10 +365,11 @@ class SignInActivity : AppCompatActivity() {
         }) //-----! 입력 문자 조건 끝 !-----
 
         // -----! 뒤로 가기 버튼 시작 !-----
-        binding.btnBckSI.setOnSingleClickListener {
+        binding.btnSignInBack.setOnSingleClickListener {
             finish()
         }
     } // -----! 회원가입 입력 창 anime 끝 !-----
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
@@ -386,20 +390,17 @@ class SignInActivity : AppCompatActivity() {
                         binding.tvNameGuide.visibility = View.VISIBLE
                         binding.etName.visibility = View.VISIBLE
                         binding.llEmail.visibility= View.VISIBLE
-                        binding.tvSIIntro.text = "이름과 이메일을 입력해주세요"
+                        binding.TextView124.text = "이름과 이메일을 입력해주세요"
                         val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                         objectAnimator.duration = 1000
                         objectAnimator.start()
-                        binding.pvSI.progress = 50
+                        binding.pvSignIn.progress = 50
                         binding.etName.requestFocus()
-                        binding.svSI.go(1, true)
+                        binding.svSignIn.go(1, true)
                         // ------! 번호 인증 완료 !------
-                        val snackbar = Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSI), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
-                        snackbar.setAction("확인", object: View.OnClickListener {
-                            override fun onClick(v: View?) {
-                                snackbar.dismiss()
-                            }
-                        })
+
+                        val snackbar = Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSignIn), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
+                        snackbar.setAction("확인") { snackbar.dismiss() }
                         snackbar.setActionTextColor(Color.WHITE)
                         snackbar.show()
                     }
@@ -408,11 +409,11 @@ class SignInActivity : AppCompatActivity() {
                 }
             }
     }
-    fun phoneNumber82(msg: String) : String {
+    private fun phoneNumber82(msg: String) : String {
         val firstNumber: String = msg.substring(0,3)
         var phoneEdit = msg.substring(3)
         when (firstNumber) {
-            "010" -> phoneEdit = "+82 10$phoneEdit"
+            "010" -> phoneEdit = "+8210$phoneEdit"
             "011" -> phoneEdit = "+8211$phoneEdit"
             "016" -> phoneEdit = "+8216$phoneEdit"
             "017" -> phoneEdit = "+8217$phoneEdit"
@@ -424,7 +425,7 @@ class SignInActivity : AppCompatActivity() {
     }
     private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
         val bottomsheetfragment = SignInBSDialogFragment()
-        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.onTelecomSelectedListener {
+        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.OnTelecomSelectedListener {
             override fun onTelecomSelected(telecom: String) {
                 binding.tvTelecom.text = telecom
             }
@@ -435,7 +436,7 @@ class SignInActivity : AppCompatActivity() {
 
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
         val bottomSheetFragment = AgreementBottomSheetDialogFragment()
-        bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.onAgreeListener {
+        bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.OnAgreeListener {
             override fun onFinish() {
 
                 // TODO 동의 간주 후, 연락처 보내기
@@ -450,19 +451,22 @@ class SignInActivity : AppCompatActivity() {
                         Log.w("현재VM값", "${viewModel.User.value}")
                     }
                 }
-                val JsonObj = viewModel.User.value
-                getUserSELECTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), viewModel.User.value?.optString("user_mobile").toString()) { jsonObj ->
-                    if (jsonObj?.getInt("status") == 404) {
-                        fetchUserINSERTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), JsonObj.toString()) {
-                            if (JsonObj != null) {
-                                NetworkUser.StoreUserInSingleton(this@SignInActivity, JsonObj)
+                val jsonObj = viewModel.User.value
+                getUserSELECTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), viewModel.User.value?.optString("user_mobile").toString()) { jo ->
+                    if (jo?.getInt("status") == 404) {
+                        fetchUserINSERTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj.toString()) {
+                            if (jsonObj != null) {
+                                val joInData = JSONObject()
+                                joInData.put("data", jsonObj)
+                                NetworkUser.storeUserInSingleton(this@SignInActivity, joInData)
                                 Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
                                 setupInit()
                             }
                         } // 기존에 정보가 있을 경우
                     } else {
-                        viewModel.User.value = null
-
+                        runOnUiThread {
+                            viewModel.User.value = null
+                        }
                         MainInit()
                     }
                 }
@@ -490,6 +494,6 @@ class SignInActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        binding.nsvSI.isNestedScrollingEnabled = false
+        binding.nsvSignIn.isNestedScrollingEnabled = false
     }
 }

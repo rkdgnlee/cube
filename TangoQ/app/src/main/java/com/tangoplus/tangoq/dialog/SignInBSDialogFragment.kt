@@ -10,10 +10,10 @@ import com.tangoplus.tangoq.databinding.FragmentSignInBottomSheetDialogBinding
 
 class SignInBSDialogFragment: BottomSheetDialogFragment() {
     lateinit var binding: FragmentSignInBottomSheetDialogBinding
-    interface onTelecomSelectedListener {
+    interface OnTelecomSelectedListener {
         fun onTelecomSelected(telecom:String)
     }
-    private var listener: onTelecomSelectedListener? = null
+    private var listener: OnTelecomSelectedListener? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -24,7 +24,7 @@ class SignInBSDialogFragment: BottomSheetDialogFragment() {
     }
 
 
-    fun setOnCarrierSelectedListener(listener: onTelecomSelectedListener) {
+    fun setOnCarrierSelectedListener(listener: OnTelecomSelectedListener) {
         this.listener = listener
     }
 

@@ -5,7 +5,8 @@
     android:id="@+id/clMC"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
     android:background="@drawable/background_dialog">
 
     <ImageView
@@ -18,7 +19,7 @@
         app:layout_constraintHorizontal_bias="0.54"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@color/deleteColor" />
+        app:srcCompat="@drawable/drawable_main_category_1" />
 
     <TextView
         android:id="@+id/tvMCName"
@@ -30,6 +31,7 @@
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

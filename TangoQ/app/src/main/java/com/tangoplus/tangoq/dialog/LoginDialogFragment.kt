@@ -39,26 +39,26 @@ class LoginDialogFragment : DialogFragment() {
 
         // ------! 로그인 시작 !------
         val idPattern = "^[\\s\\S]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
-        val IdPattern = Pattern.compile(idPattern)
+        val idPatternCheck = Pattern.compile(idPattern)
         val pwPattern = "^[\\s\\S]{4,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴 ^[a-zA-Z0-9]{6,20}$
-        val Pwpattern = Pattern.compile(pwPattern)
-        binding.etLiId.addTextChangedListener(object: TextWatcher {
+        val pwPatternCheck = Pattern.compile(pwPattern)
+        binding.etLDId.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 viewModel.id.value = s.toString()
-                viewModel.currentidCon.value = IdPattern.matcher(binding.etLiId.text.toString()).find()
-                Log.v("아이디비밀번호", "${viewModel.currentidCon.value} ,${viewModel.idPwCondition.value}")
+                viewModel.currentIdCon.value = idPatternCheck.matcher(binding.etLDId.text.toString()).find()
+                Log.v("idPw", "${viewModel.currentIdCon.value} ,${viewModel.idPwCondition.value}")
 
             }
         })
-        binding.etLiPw.addTextChangedListener(object : TextWatcher {
+        binding.etLDPw.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 viewModel.pw.value = s.toString()
-                viewModel.currentPwCon.value = Pwpattern.matcher(binding.etLiPw.text.toString()).find()
-                Log.v("아이디비밀번호", "${viewModel.currentPwCon.value} ,${viewModel.idPwCondition.value}")
+                viewModel.currentPwCon.value = pwPatternCheck.matcher(binding.etLDPw.text.toString()).find()
+                Log.v("idPw", "${viewModel.currentPwCon.value} ,${viewModel.idPwCondition.value}")
             }
         })
 
@@ -66,14 +66,16 @@ class LoginDialogFragment : DialogFragment() {
 //            viewModel.idPwCondition.value = if (viewModel.currentidCon.value == true && (viewModel.currentPwCon.value == true)) true else false
 ////            Log.v("idpwcondition", "${viewModel.currentidCon.value}, pw: ${viewModel.currentPwCon.value}, both: ${viewModel.idPwCondition.value}")
 //        }
-        binding.btnLiLogin.setOnClickListener {
+        binding.btnLDLogin.setOnClickListener {
             if (viewModel.idPwCondition.value == true) {
                 NetworkUser.getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), viewModel.id.value.toString(), viewModel.pw.value.toString()) { jsonObj ->
+
                     Log.v("json", "${jsonObj?.getInt("status")}")
                     if (jsonObj?.getInt("status") == 201) { // 기존에 정보가 있을 경우 - 로그인 성공
                         requireActivity().runOnUiThread {
+                            binding.btnLDLogin.isEnabled = false
                             viewModel.User.value = null
-                            NetworkUser.StoreUserInSingleton(requireContext(), jsonObj)
+                            NetworkUser.storeUserInSingleton(requireContext(), jsonObj)
                             Log.e("로그인>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             startActivity(intent)
@@ -84,8 +86,8 @@ class LoginDialogFragment : DialogFragment() {
                             MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                                 setTitle("⚠️ 알림")
                                 setMessage("아이디 또는 비밀번호가 올바르지 않습니다.")
-                                setPositiveButton("확인") { dialog, _ ->
-                                    binding.etLiPw.text.clear()
+                                setPositiveButton("확인") { _, _ ->
+                                    binding.etLDPw.text.clear()
                                 }
                                 create()
                             }.show()
@@ -96,7 +98,10 @@ class LoginDialogFragment : DialogFragment() {
         } // ------! 로그인 끝 !------
 
         // ------! 비밀번호 및 아이디 찾기 시작 !------
-
+        binding.tvLDFind.setOnClickListener {
+            val dialog = FindAccountDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "FindAccountDialogFragment")
+        }
         // ------! 비밀번호 및 아이디 찾기 시작 !------
     }
 

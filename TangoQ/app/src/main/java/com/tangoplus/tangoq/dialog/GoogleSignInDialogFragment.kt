@@ -30,7 +30,7 @@ import com.tangoplus.tangoq.SetupActivity
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentGoogleSignInDialogBinding
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUser.StoreUserInSingleton
+import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserINSERTJson
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
@@ -43,7 +43,7 @@ class GoogleSignInDialogFragment : DialogFragment() {
     val viewModel : SignInViewModel by activityViewModels()
     val auth = Firebase.auth
     var verificationId = ""
-    lateinit var transformMobile : String
+    private lateinit var transformMobile : String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -112,14 +112,14 @@ class GoogleSignInDialogFragment : DialogFragment() {
                         Log.v("viewModelJson", "${viewModel.googleJson}")
 
                         fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), viewModel.googleJson.toString()) { // TODO insert가 제대로 동작하는지 확인해야함
-                            StoreUserInSingleton(requireActivity(), jsonObj)
+                            storeUserInSingleton(requireActivity(), jsonObj)
                             Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                             setupInit()
                         }
                     } else {
                         fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), viewModel.googleJson.toString(), transformMobile) {
                             if (jsonObj != null) {
-                                StoreUserInSingleton(requireActivity(), jsonObj)
+                                storeUserInSingleton(requireActivity(), jsonObj)
                             }
                         }
                         Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
@@ -154,6 +154,7 @@ class GoogleSignInDialogFragment : DialogFragment() {
         val intent = Intent(requireActivity(), MainActivity::class.java)
         startActivity(intent)
     }
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
@@ -195,7 +196,7 @@ class GoogleSignInDialogFragment : DialogFragment() {
     }
     private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
         val bottomsheetfragment = SignInBSDialogFragment()
-        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.onTelecomSelectedListener {
+        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.OnTelecomSelectedListener {
             override fun onTelecomSelected(telecom: String) {
                 binding.tvGSTelecom.text = telecom
             }

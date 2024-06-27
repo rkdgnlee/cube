@@ -1,8 +1,8 @@
 package com.tangoplus.tangoq.fragment
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.AlarmActivity
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.adapter.BannerVPAdapter
 import com.tangoplus.tangoq.adapter.ProgramRVAdapter
 import com.tangoplus.tangoq.listener.OnRVClickListener
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
@@ -41,11 +41,11 @@ class MainFragment : Fragment(), OnRVClickListener {
     lateinit var binding: FragmentMainBinding
     val viewModel: FavoriteViewModel by activityViewModels()
     val bViewModel : BannerViewModel by activityViewModels()
-    val mViewModel : MeasureViewModel by activityViewModels()
+//    val mViewModel : MeasureViewModel by activityViewModels()
     private var bannerPosition = Int.MAX_VALUE/2
     private var bannerHandler = HomeBannerHandler()
     private val intervalTime = 2400.toLong()
-    var popupWindow : PopupWindow?= null
+//    var popupWindow : PopupWindow?= null
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,18 +63,9 @@ class MainFragment : Fragment(), OnRVClickListener {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // ------! 태블릿 창 크기 조절 !------
-//        val lpClTop = binding.clTop.layoutParams
-//        val lpVpBanner = binding.vpMBanner.layoutParams
-//        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-//        lpClTop.height = (screenHeight * 0.4).toInt()
-//        lpVpBanner.height = (screenHeight * 0.175).toInt()
-//        binding.clTop.layoutParams = lpClTop
-//        binding.vpMBanner.layoutParams = lpVpBanner
-
 
         // -----! 스크롤 관리 !-----
         binding.nsvM.isNestedScrollingEnabled = false
@@ -88,7 +79,7 @@ class MainFragment : Fragment(), OnRVClickListener {
         }
 
         // ------! 점수 시작 !------
-        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
+//        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         binding.ivMScoreDown.visibility = View.GONE
         binding.ivMScoreUp.visibility = View.GONE
 //        // TODO 점수 변동에 따른 화살표 VISIBLE 처리
@@ -108,10 +99,10 @@ class MainFragment : Fragment(), OnRVClickListener {
 //            binding.ivMScoreDone.visibility = View.VISIBLE
 //            binding.ivMScoreUp.visibility = View.GONE
 //        }
-//        binding.btnMMeasure.setOnClickListener {
-//            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
-//            bnv.selectedItemId = R.id.measure
-//        }
+        binding.btnMMeasure.setOnClickListener {
+            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
+            bnv.selectedItemId = R.id.measure
+        }
 //        // TODO 운동 기록에 맞게 HPV 연동 필요
         binding.tvMTodayTime.text = "16"
         binding.tvMTodaySteps.text = "1138"
@@ -147,6 +138,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                     when (state) {
                         ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
                         ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
+                        ViewPager2.SCROLL_STATE_SETTLING -> {}
                     }
                 }
             })
@@ -233,13 +225,7 @@ class MainFragment : Fragment(), OnRVClickListener {
 
 
                 // ------! 하단 RV Adapter 시작 !------
-
-
-
-
-
 //                setRVAdapter(verticalDataList)
-
                 // -----! vertical 어댑터 끝 !-----
 
                 // -----! spinner 연결 시작 !-----
@@ -302,13 +288,14 @@ class MainFragment : Fragment(), OnRVClickListener {
         bannerHandler.removeMessages(0)
     } // -----! 배너 끝 !------
 
+    @SuppressLint("HandlerLeak")
     private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             if (msg.what == 0 && bViewModel.BannerList.isNotEmpty()) {
                 binding.vpMBanner.setCurrentItem(++bannerPosition, true)
                 // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산
-                val currentIndex = bannerPosition % bViewModel.BannerList.size // 65536  % 5
+//                val currentIndex = bannerPosition % bViewModel.BannerList.size // 65536  % 5
 
 //                // ProgressBar의 값을 계산
 //                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
@@ -317,6 +304,7 @@ class MainFragment : Fragment(), OnRVClickListener {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun setRVAdapter (programList: MutableList<ProgramVO>) {
         val adapter = ProgramRVAdapter(programList, this@MainFragment, this@MainFragment,"rank", startForResult)
         adapter.programs = programList

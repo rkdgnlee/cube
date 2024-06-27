@@ -28,7 +28,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/etFrDFName"
+            android:id="@+id/etFDaName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -55,10 +55,10 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFrDFName" />
+            app:layout_constraintTop_toBottomOf="@+id/etFDaName" />
 
         <EditText
-            android:id="@+id/etFrDFDescript"
+            android:id="@+id/etFDaDescript"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -82,11 +82,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFrDFDescript"
+            app:layout_constraintTop_toBottomOf="@+id/etFDaDescript"
             app:layout_constraintVertical_bias="1.0">
 
             <TextView
-                android:id="@+id/tvFrDFCancel"
+                android:id="@+id/tvFDaCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -97,7 +97,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvFrDFConfirm"
+                android:id="@+id/tvFDaConfirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

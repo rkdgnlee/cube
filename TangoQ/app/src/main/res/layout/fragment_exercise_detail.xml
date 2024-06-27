@@ -122,19 +122,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/subColor800"
-                android:textSize="22sp"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/subColor700"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sflED" />
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout8" />
 
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/sflED"
                 android:layout_width="match_parent"
-                android:layout_height="600dp"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout8">
+                app:layout_constraintTop_toBottomOf="@+id/tvEDCategoryName">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -174,10 +174,9 @@
                 android:id="@+id/rvEDAll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvEDCategoryName" />
+                app:layout_constraintTop_toBottomOf="@+id/sflED" />
 
             <TextView
                 android:id="@+id/tvGuideNull"
@@ -188,6 +187,7 @@
                 android:textColor="@color/subColor300"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"

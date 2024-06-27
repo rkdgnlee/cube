@@ -10,7 +10,6 @@ import com.tangoplus.tangoq.Room.Message
 import com.tangoplus.tangoq.databinding.RvAlarmItemBinding
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 class AlarmRVAdapter(var alarmList: MutableList<Message>, private val clicklistener: OnAlarmClickListener, private val deletelistener: OnAlarmDeleteListener) : RecyclerView.Adapter<AlarmRVAdapter.MyViewHolder>() {
@@ -18,15 +17,15 @@ class AlarmRVAdapter(var alarmList: MutableList<Message>, private val clickliste
     inner class MyViewHolder(private val binding: RvAlarmItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
             alarm: Message,
-            clicklistener: OnAlarmClickListener,
-            deletelistener: OnAlarmDeleteListener
+            clickListener: OnAlarmClickListener,
+            deleteListener: OnAlarmDeleteListener
         ) {
             binding.tvAlarm.text = alarm.message
             binding.tvAlarmDelete.setOnClickListener {
-                deletelistener.onAlarmDelete(alarm.id)
+                deleteListener.onAlarmDelete(alarm.id)
             }
             binding.tvAlarm.setOnClickListener {
-                clicklistener.onAlarmClick(alarm.route)
+                clickListener.onAlarmClick(alarm.route)
             }
             val timeStampMillis = Duration.between(Instant.now(), Instant.ofEpochMilli(alarm.timestamp)).abs().toMillis()
 

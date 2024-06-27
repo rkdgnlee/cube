@@ -3,19 +3,17 @@ package com.tangoplus.tangoq.dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentPoseViewDialogBinding
 
 
 class PoseViewDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPoseViewDialogBinding
+
 
     companion object {
         private const val ARG_IMAGE_PATH = "image_path"
@@ -39,14 +37,15 @@ class PoseViewDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.ibtnPVExit.setOnClickListener {
+        binding.ibtnPVDExit.setOnClickListener {
             dismiss()
         }
+        // TODO DB에서 URL받아와서 할껀지, 아니면 그냥 저장소꺼 가져올껀지? 근데 db가 맞음
         val imagePath = arguments?.getString(ARG_IMAGE_PATH)
         if (imagePath != null) {
             Glide.with(this)
                 .load(imagePath)
-                .into(binding.ivPVPose)
+                .into(binding.ivPVDPose)
         }
 
     }

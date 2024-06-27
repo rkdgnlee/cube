@@ -18,7 +18,7 @@
             android:background="@color/white">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clWd"
+                android:id="@+id/clW"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:background="@color/subColor100"
@@ -28,7 +28,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/ibtnWd"
+                    android:id="@+id/ibtnW"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -47,9 +47,9 @@
                     android:textColor="@color/black"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/ibtnWd"
-                    app:layout_constraintStart_toEndOf="@+id/ibtnWd"
-                    app:layout_constraintTop_toTopOf="@+id/ibtnWd" />
+                    app:layout_constraintBottom_toBottomOf="@+id/ibtnW"
+                    app:layout_constraintStart_toEndOf="@+id/ibtnW"
+                    app:layout_constraintTop_toTopOf="@+id/ibtnW" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -74,7 +74,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/tvWdWarning"
+                android:id="@+id/tvWWarning"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -84,7 +84,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clWd" />
+                app:layout_constraintTop_toBottomOf="@+id/clW" />
 
             <TextView
                 android:id="@+id/textView113"
@@ -98,7 +98,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvWdWarning" />
+                app:layout_constraintTop_toBottomOf="@+id/tvWWarning" />
 
             <TextView
                 android:id="@+id/textView115"
@@ -142,7 +142,7 @@
 
 
             <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/cbWd"
+                android:id="@+id/cbW"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -166,7 +166,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView115" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilWd"
+                android:id="@+id/tilW"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -181,7 +181,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView117">
 
                 <AutoCompleteTextView
-                    android:id="@+id/actvWd"
+                    android:id="@+id/actvW"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

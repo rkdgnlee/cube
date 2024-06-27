@@ -16,10 +16,8 @@ class AlarmReceiver: BroadcastReceiver() {
         val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "0629731260"
         val channelName = "TangoQ"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+        notificationManager.createNotificationChannel(channel)
 
         val notification: Notification = NotificationCompat.Builder(context, channelId)
             .setContentTitle("TangoQ")

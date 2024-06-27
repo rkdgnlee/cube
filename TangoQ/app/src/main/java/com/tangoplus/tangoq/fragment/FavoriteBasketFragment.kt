@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
@@ -25,6 +23,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBasketBinding
+import com.tangoplus.tangoq.`object`.Singleton_t_history
 import kotlinx.coroutines.launch
 
 
@@ -33,7 +32,8 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
     private lateinit var adapter: ExerciseRVAdapter
     val viewModel : FavoriteViewModel by activityViewModels()
     var title = ""
-    private val SEARCH_HISTORY = "search_history"
+    private val searchHistory = "search_history"
+    private lateinit var singletonInstance: Singleton_t_history
 
     companion object {
         private const val ARG_TITLE = "title"
@@ -53,10 +53,13 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
         return binding.root
     }
 
-    @SuppressLint("SuspiciousIndentation")
+    @SuppressLint("SuspiciousIndentation", "NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        singletonInstance = Singleton_t_history.getInstance(requireContext())
         title = requireArguments().getString(ARG_TITLE).toString()
+
         lifecycleScope.launch {
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
             Log.w(ContentValues.TAG, "jsonArr: ${responseArrayList[0]}")
@@ -113,7 +116,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                 }
 
                 // ------! actv 포커싱 시작 !------
-                binding.actvFBSearch.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                binding.actvFBSearch.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         loadSearchHistory()
                     }
@@ -150,7 +153,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
 //                    }
 //                })
                 // ------! enter를 눌렀을 때 해당 텍스트로 관절 검색 !------
-                binding.actvFBSearch.setOnEditorActionListener{v, actionId, event ->
+                binding.actvFBSearch.setOnEditorActionListener{ _, actionId, event ->
                     if (actionId == EditorInfo.IME_ACTION_NEXT || event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
 
                         // ------! enter 클릭시 동작 시작 !------
@@ -175,12 +178,12 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                 }
 
 // 사용자가 항목을 선택했을 때 필터링된 결과를 리사이클러뷰에 표시
-                binding.actvFBSearch.setOnItemClickListener { parent, view, position, id ->
+                binding.actvFBSearch.setOnItemClickListener { parent, _, position, _ ->
                     val selectedItem = parent.getItemAtPosition(position) as String
                     val filterList = allDataList.filter { item ->
                         item.exerciseName == selectedItem
                     }.toMutableList()
-                    val adapter = ExerciseRVAdapter(this@FavoriteBasketFragment, filterList, "basket")
+                    val adapter = ExerciseRVAdapter(this@FavoriteBasketFragment, filterList, singletonInstance.viewingHistory?.toList() ?: listOf(),"basket")
                     binding.rvFB.adapter = adapter
                     val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                     binding.rvFB.layoutManager = linearLayoutManager
@@ -194,11 +197,11 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
             }
         }
 
-        binding.btnPickBasketFinish.setOnClickListener {
+        binding.btnFBFinish.setOnClickListener {
 
             // -----! 어댑터의 리스트를 담아서 exerciseunit에 담기 시작 !-----
             val selectedItems = viewModel.getExerciseBasketUnit() // + 숫자 추가해놓은 곳에서 가져오기
-            Log.w("기존 VM ExerciseUnit", "${selectedItems}")
+            Log.w("기존 VM ExerciseUnit", "$selectedItems")
             viewModel.addExercises(selectedItems)
             // -----! 어댑터의 리스트를 담아서 exerciseunit에 담기 끝 !-----
 
@@ -223,7 +226,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
 
     }
     private fun linkAdapter(list : MutableList<ExerciseVO>) {
-        adapter = ExerciseRVAdapter(this@FavoriteBasketFragment,list,"basket")
+        adapter = ExerciseRVAdapter(this@FavoriteBasketFragment,list,listOf(),"basket")
 
         adapter.basketListener = this@FavoriteBasketFragment
         binding.rvFB.adapter = adapter
@@ -233,6 +236,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateRecyclerView(filteredExercises: List<ExerciseVO>) {
         // RecyclerView 어댑터에 필터링된 데이터를 설정
         val adapter = binding.rvFB.adapter as ExerciseRVAdapter
@@ -242,8 +246,8 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
     }
 
     private fun loadSearchHistory() {
-        val searchHistory = requireActivity().getSharedPreferences(SEARCH_HISTORY, Context.MODE_PRIVATE)
-        val history = searchHistory.getStringSet(SEARCH_HISTORY, setOf())?.toMutableList()
+        val searchHistory = requireActivity().getSharedPreferences(searchHistory, Context.MODE_PRIVATE)
+        val history = searchHistory.getStringSet(this.searchHistory, setOf())?.toMutableList()
         if (history != null) {
             val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, history)
             binding.actvFBSearch.setAdapter(adapter)
@@ -251,10 +255,10 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
     }
 
     private fun saveSearchQuery(query: String) {
-        val searchHistory = requireActivity().getSharedPreferences(SEARCH_HISTORY, Context.MODE_PRIVATE)
-        val history = searchHistory.getStringSet(SEARCH_HISTORY, setOf())?.toMutableSet()
+        val searchHistory = requireActivity().getSharedPreferences(searchHistory, Context.MODE_PRIVATE)
+        val history = searchHistory.getStringSet(this.searchHistory, setOf())?.toMutableSet()
         history?.add(query)
-        searchHistory.edit().putStringSet(SEARCH_HISTORY, history).apply()
+        searchHistory.edit().putStringSet(this.searchHistory, history).apply()
     }
 
 

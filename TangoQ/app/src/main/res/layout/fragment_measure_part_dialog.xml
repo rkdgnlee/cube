@@ -24,7 +24,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
         <ImageButton
-            android:id="@+id/ibtnMPBack"
+            android:id="@+id/ibtnMPDBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -40,7 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
-            app:layout_constraintBottom_toTopOf="@+id/btnMPSet"
+            app:layout_constraintBottom_toTopOf="@+id/btnMPDSet"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,15 +53,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="통증부위 선택"
+            android:textColor="@color/subColor800"
             android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ibtnMPBack"
-            app:layout_constraintStart_toEndOf="@+id/ibtnMPBack"
-            app:layout_constraintTop_toTopOf="@+id/ibtnMPBack"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnMPDBack"
+            app:layout_constraintStart_toEndOf="@+id/ibtnMPDBack"
+            app:layout_constraintTop_toTopOf="@+id/ibtnMPDBack" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnMPSet"
+            android:id="@+id/btnMPDSet"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"

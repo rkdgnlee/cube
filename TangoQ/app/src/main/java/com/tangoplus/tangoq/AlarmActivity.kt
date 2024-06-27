@@ -22,16 +22,16 @@ import kotlinx.coroutines.withContext
 
 class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteListener {
     lateinit var binding : ActivityAlarmBinding
-    lateinit var messageDao: MessageDao
-    lateinit var messages : MutableList<Message>
-    lateinit var alarmRecyclerViewAdapter : AlarmRVAdapter
+    private lateinit var messageDao: MessageDao
+    private lateinit var messages : MutableList<Message>
+    private lateinit var alarmRecyclerViewAdapter : AlarmRVAdapter
     @SuppressLint("ClickableViewAccessibility", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.imgbtnbckAlarm.setOnClickListener {
+        binding.ibtnAlarmBack.setOnClickListener {
 //            val intent = Intent(this@AlarmActivity, MainActivity::class.java)
 //            startActivity(intent)
             finish()
@@ -42,8 +42,8 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
         ).build()
         messageDao = db.messageDao()
         CoroutineScope(Dispatchers.IO).launch {
-            val messages = messageDao.getAllMessages().toMutableList()
-
+//            val messages = messageDao.getAllMessages().toMutableList()
+//
             withContext(Dispatchers.Main) {
                 val alarmList = mutableListOf<Message>(
 //                    Message(1, "즉시 시작할 것", timestamp =  0 ,route = "home_intermediate" ),
@@ -53,17 +53,17 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
                 )
                 // -----! alarm touchhelper 연동 시작 !-----
                 val alarmRecyclerViewAdapter = AlarmRVAdapter(alarmList, this@AlarmActivity, this@AlarmActivity)
-                val SwipeHelperCallback = SwipeHelperCallback().apply {
+                val swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
                 }
 
-                val itemTouchHelper = ItemTouchHelper(SwipeHelperCallback)
+                val itemTouchHelper = ItemTouchHelper(swipeHelperCallback)
                 itemTouchHelper.attachToRecyclerView(binding.rvAlarm)
                 binding.rvAlarm.apply {
                     layoutManager = LinearLayoutManager(applicationContext)
                     adapter = alarmRecyclerViewAdapter
                     setOnTouchListener{ _, _ ->
-                        SwipeHelperCallback.removePreviousClamp(binding.rvAlarm)
+                        swipeHelperCallback.removePreviousClamp(binding.rvAlarm)
                         false
                     }
                 } // -----! alarm touchhelper 연동 끝 !-----

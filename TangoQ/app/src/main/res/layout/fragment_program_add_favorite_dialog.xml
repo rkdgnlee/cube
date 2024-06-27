@@ -7,7 +7,7 @@
     tools:context=".dialog.ProgramAddFavoriteDialogFragment">
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvPAV"
+        android:id="@+id/nsvPAFD"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -28,7 +28,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/ibtnPAVBack"
+                    android:id="@+id/ibtnPAFDBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -48,14 +48,14 @@
                     android:textColor="@color/subColor800"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/ibtnPAVBack"
-                    app:layout_constraintStart_toEndOf="@+id/ibtnPAVBack"
-                    app:layout_constraintTop_toTopOf="@+id/ibtnPAVBack" />
+                    app:layout_constraintBottom_toBottomOf="@+id/ibtnPAFDBack"
+                    app:layout_constraintStart_toEndOf="@+id/ibtnPAFDBack"
+                    app:layout_constraintTop_toTopOf="@+id/ibtnPAFDBack" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPAV"
+                android:id="@+id/rvPAFD"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -63,11 +63,11 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPAVName"
+                app:layout_constraintTop_toBottomOf="@+id/tvPAFDName"
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
-                android:id="@+id/tvPAVName"
+                android:id="@+id/tvPAFDName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -89,7 +89,7 @@
         android:background="@drawable/background_radius_8dp_bottom">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPAVFinish"
+            android:id="@+id/btnPAFDFinish"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

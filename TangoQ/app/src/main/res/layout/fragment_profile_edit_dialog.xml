@@ -7,7 +7,7 @@
     tools:context=".dialog.ProfileEditDialogFragment">
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvPfE"
+        android:id="@+id/nsvPED"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -18,30 +18,54 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout7"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@color/subColor100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageButton
+                    android:id="@+id/ibtnPEDBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="@color/subColor100"
+                    android:padding="4dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_arrow_left"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView135"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="내정보 변경"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/ibtnPEDBack"
+                    app:layout_constraintStart_toEndOf="@+id/ibtnPEDBack"
+                    app:layout_constraintTop_toTopOf="@+id/ibtnPEDBack" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/civPE"
+                android:id="@+id/civPED"
                 android:layout_width="76dp"
                 android:layout_height="76dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="20dp"
                 android:src="@drawable/profile_default"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout7"
                 app:layout_constraintVertical_bias="0.0" />
-
-            <ImageButton
-                android:id="@+id/ibtnPEBack"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/effect_ibtn_20dp"
-                android:backgroundTint="@color/white"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/imageView33"
@@ -49,9 +73,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:src="@drawable/icon_edit"
-                app:layout_constraintBottom_toBottomOf="@+id/civPE"
-                app:layout_constraintStart_toEndOf="@+id/civPE"
-                app:layout_constraintTop_toTopOf="@+id/civPE"
+                app:layout_constraintBottom_toBottomOf="@+id/civPED"
+                app:layout_constraintStart_toEndOf="@+id/civPED"
+                app:layout_constraintTop_toTopOf="@+id/civPED"
                 app:layout_constraintVertical_bias="0.482" />
 
             <LinearLayout
@@ -65,7 +89,7 @@
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/civPE">
+                app:layout_constraintTop_toBottomOf="@+id/civPED">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -85,13 +109,13 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/tvPEMobile"
+                        android:id="@+id/tvPEDMobile"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="4dp"
                         android:layout_weight="2"
                         android:gravity="center_vertical"
-                        android:text="010-0000-0000"
+                        android:text="v1234321@gmail.com"
                         android:textColor="@color/subColor800"
                         android:textSize="16sp" />
 
@@ -114,7 +138,7 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/tvPEName"
+                        android:id="@+id/tvPEDName"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="4dp"
@@ -278,7 +302,7 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/etPEId"
+                android:id="@+id/etPEDId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -310,7 +334,7 @@
                 app:layout_constraintTop_toTopOf="@+id/linearLayout15" />
 
             <EditText
-                android:id="@+id/etPEPassword"
+                android:id="@+id/etPEDPassword"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -345,7 +369,7 @@
                 app:layout_constraintVertical_bias="0.0">
 
                 <EditText
-                    android:id="@+id/etPEEmailId"
+                    android:id="@+id/etPEDEmailId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -377,7 +401,7 @@
 
                     <ImageView
 
-                        android:id="@+id/ivPESpn"
+                        android:id="@+id/ivPEDSpn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
@@ -388,7 +412,7 @@
 
                     <EditText
 
-                        android:id="@+id/etPEEmail"
+                        android:id="@+id/etPEDEmail"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginStart="8dp"
@@ -406,7 +430,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Spinner
-                        android:id="@+id/spnPE"
+                        android:id="@+id/spnPED"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginStart="8dp"
@@ -414,7 +438,7 @@
                         android:layout_marginBottom="4dp"
                         android:background="@color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/ivPESpn"
+                        app:layout_constraintEnd_toStartOf="@+id/ivPEDSpn"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -425,12 +449,13 @@
                 android:id="@+id/textView71"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="32dp"
                 android:text="아이디 변경"
                 android:textColor="@color/subColor800"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/etPEId"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout17" />
 
             <TextView
@@ -444,7 +469,7 @@
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEPasswordRepeat" />
+                app:layout_constraintTop_toBottomOf="@+id/etPEDPasswordRepeat" />
 
             <TextView
                 android:id="@+id/textView92"
@@ -457,10 +482,10 @@
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEId" />
+                app:layout_constraintTop_toBottomOf="@+id/etPEDId" />
 
             <EditText
-                android:id="@+id/etPEPasswordRepeat"
+                android:id="@+id/etPEDPasswordRepeat"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -475,7 +500,7 @@
                 android:textColorHint="@color/subColor200"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEPassword" />
+                app:layout_constraintTop_toBottomOf="@+id/etPEDPassword" />
 
             <LinearLayout
                 android:id="@+id/linearLayout16"
@@ -489,7 +514,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnPEFinish"
+                    android:id="@+id/btnPEDFinish"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
@@ -506,7 +531,7 @@
                     app:cornerRadius="8dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnPEGoSetup"
+                    android:id="@+id/btnPEDGoSetup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
@@ -525,6 +550,116 @@
                     app:cornerRadius="8dp" />
             </LinearLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clPEDAgreement3"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnPEDAgreement3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
+
+                <TextView
+                    android:id="@+id/textView136"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="[선택] 마케팅 정보 수신 동의"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivPEDAgreement3"
+                    app:layout_constraintStart_toEndOf="@+id/ivPEDAgreement3"
+                    app:layout_constraintTop_toTopOf="@+id/ivPEDAgreement3" />
+
+                <ImageView
+                    android:id="@+id/ivPEDAgreement3"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/icon_part_checkbox_disabled"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <ImageButton
+                android:id="@+id/ibtnPEDAgreement3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:src="@drawable/icon_arrow_right_agreement"
+                app:layout_constraintBottom_toBottomOf="@+id/clPEDAgreement3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/clPEDAgreement3" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clPEDAgreementMk1"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/clPEDAgreement3">
+
+                <ImageView
+                    android:id="@+id/ivPEDAgreementMk1"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/icon_part_checkbox_disabled"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView137"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="문자메시지(SMS, LMS 등)"
+                    android:textColor="@color/subColor800"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivPEDAgreementMk1"
+                    app:layout_constraintStart_toEndOf="@+id/ivPEDAgreementMk1"
+                    app:layout_constraintTop_toTopOf="@+id/ivPEDAgreementMk1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clPEDAgreementMk2"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/clPEDAgreementMk1">
+
+                <ImageView
+                    android:id="@+id/ivPEDAgreementMk2"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/icon_part_checkbox_disabled"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView138"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="이메일"
+                    android:textColor="@color/subColor800"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivPEDAgreementMk2"
+                    app:layout_constraintStart_toEndOf="@+id/ivPEDAgreementMk2"
+                    app:layout_constraintTop_toTopOf="@+id/ivPEDAgreementMk2" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

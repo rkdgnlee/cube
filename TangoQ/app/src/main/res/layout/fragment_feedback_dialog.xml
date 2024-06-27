@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_gravity="right"
     tools:context=".dialog.FeedbackDialogFragment">
 
     <ImageView
@@ -40,7 +41,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView5"
                 android:layout_width="0dp"
-                android:layout_height="196dp"
+                android:layout_height="128dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="20dp"
@@ -51,13 +52,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView58">
 
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    app:dividerColor="@color/subColor150" />
+                <!--                <com.google.android.material.divider.MaterialDivider-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="1dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginLeft="20dp"-->
+                <!--                    android:layout_marginRight="20dp"-->
+                <!--                    app:dividerColor="@color/subColor150" />-->
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="1dp"
@@ -88,7 +89,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="8dp"
                                 android:text="운동 시간"
                                 android:textColor="@color/subColor700"
                                 android:textSize="16sp"
@@ -106,8 +107,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <ImageView
                                 android:id="@+id/imageView38"
@@ -130,7 +130,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="8dp"
                                 android:text="운동 개수"
                                 android:textColor="@color/subColor700"
                                 android:textSize="16sp"
@@ -148,8 +148,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/textView74"
@@ -176,110 +175,110 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
+                    <!--                    <LinearLayout-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="match_parent"-->
+                    <!--                        android:layout_weight="1"-->
+                    <!--                        android:orientation="horizontal">-->
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
+                    <!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:layout_height="match_parent"-->
+                    <!--                            android:layout_weight="1">-->
 
-                            <TextView
-                                android:id="@+id/textView68"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
-                                android:text="소모 칼로리"
-                                android:textColor="@color/subColor700"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView68"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="16dp"-->
+                    <!--                                android:layout_marginTop="16dp"-->
+                    <!--                                android:text="소모 칼로리"-->
+                    <!--                                android:textColor="@color/subColor700"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent" />-->
 
-                            <TextView
-                                android:id="@+id/tvFKcal"
-                                android:layout_width="32dp"
-                                android:layout_height="wrap_content"
-                                android:text="160"
-                                android:textColor="@color/black"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/tvFKcal"-->
+                    <!--                                android:layout_width="32dp"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="160"-->
+                    <!--                                android:textColor="@color/black"-->
+                    <!--                                android:textSize="18sp"-->
+                    <!--                                android:textStyle="bold"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--                                app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent"-->
+                    <!--                                app:layout_constraintVertical_bias="0.6" />-->
 
-                            <TextView
-                                android:id="@+id/textView72"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="Kcal"
-                                android:textColor="@color/subColor500"
-                                android:textSize="16sp"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"
-                                app:layout_constraintStart_toEndOf="@+id/tvFKcal"
-                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView72"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="4dp"-->
+                    <!--                                android:text="Kcal"-->
+                    <!--                                android:textColor="@color/subColor500"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintStart_toEndOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />-->
 
-                            <ImageView
-                                android:id="@+id/imageView42"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="4dp"
-                                android:src="@drawable/icon_kcal_sub_800"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"
-                                app:layout_constraintEnd_toStartOf="@+id/tvFKcal"
-                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <!--                            <ImageView-->
+                    <!--                                android:id="@+id/imageView42"-->
+                    <!--                                android:layout_width="24dp"-->
+                    <!--                                android:layout_height="24dp"-->
+                    <!--                                android:layout_marginEnd="4dp"-->
+                    <!--                                android:src="@drawable/icon_kcal_sub_800"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintEnd_toStartOf="@+id/tvFKcal"-->
+                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />-->
+                    <!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
+                    <!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:layout_height="match_parent"-->
+                    <!--                            android:layout_weight="1">-->
 
-                            <TextView
-                                android:id="@+id/textView70"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="16dp"
-                                android:text="자세 정확도"
-                                android:textColor="@color/subColor700"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView70"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="16dp"-->
+                    <!--                                android:layout_marginTop="16dp"-->
+                    <!--                                android:text="자세 정확도"-->
+                    <!--                                android:textColor="@color/subColor700"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent" />-->
 
-                            <TextView
-                                android:id="@+id/tvFAccuracy"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="68"
-                                android:textColor="@color/black"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.6" />
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/tvFAccuracy"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="68"-->
+                    <!--                                android:textColor="@color/black"-->
+                    <!--                                android:textSize="18sp"-->
+                    <!--                                android:textStyle="bold"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--                                app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                                app:layout_constraintTop_toTopOf="parent"-->
+                    <!--                                app:layout_constraintVertical_bias="0.6" />-->
 
-                            <TextView
-                                android:id="@+id/textView73"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="%"
-                                android:textColor="@color/subColor500"
-                                android:textSize="16sp"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFAccuracy"
-                                app:layout_constraintStart_toEndOf="@+id/tvFAccuracy"
-                                app:layout_constraintTop_toTopOf="@+id/tvFAccuracy" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
+                    <!--                            <TextView-->
+                    <!--                                android:id="@+id/textView73"-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:layout_marginStart="4dp"-->
+                    <!--                                android:text="%"-->
+                    <!--                                android:textColor="@color/subColor500"-->
+                    <!--                                android:textSize="16sp"-->
+                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFAccuracy"-->
+                    <!--                                app:layout_constraintStart_toEndOf="@+id/tvFAccuracy"-->
+                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFAccuracy" />-->
+                    <!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
+                    <!--                    </LinearLayout>-->
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -362,76 +361,72 @@
                 android:id="@+id/textView62"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="28dp"
                 android:text="운동 피로도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rbtnIntensity3" />
+                app:layout_constraintTop_toBottomOf="@+id/rgIntensity" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue1"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+            <RadioGroup
+                android:id="@+id/rgFatigue"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView75"
-                app:layout_constraintStart_toStartOf="@+id/textView75"
-                app:layout_constraintTop_toBottomOf="@+id/textView75" />
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView77">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue2"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView76"
-                app:layout_constraintStart_toStartOf="@+id/textView76"
-                app:layout_constraintTop_toBottomOf="@+id/textView76" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue1"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue3"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView77"
-                app:layout_constraintStart_toStartOf="@+id/textView77"
-                app:layout_constraintTop_toBottomOf="@+id/textView77" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue2"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue4"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0"
-                android:gravity="center"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView78"
-                app:layout_constraintStart_toStartOf="@+id/textView78"
-                app:layout_constraintTop_toBottomOf="@+id/textView78" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue3"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnFatigue5"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView79"
-                app:layout_constraintStart_toStartOf="@+id/textView79"
-                app:layout_constraintTop_toBottomOf="@+id/textView79" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue4"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnFatigue5"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+            </RadioGroup>
 
             <TextView
                 android:id="@+id/textView75"
@@ -485,7 +480,7 @@
                 android:id="@+id/textView79"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="3dp"
                 android:text="심각한 통증"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
@@ -493,81 +488,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView78" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction1"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView85"
-                app:layout_constraintStart_toStartOf="@+id/textView85"
-                app:layout_constraintTop_toBottomOf="@+id/textView85" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction2"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center|center_vertical"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView86"
-                app:layout_constraintStart_toStartOf="@+id/textView86"
-                app:layout_constraintTop_toBottomOf="@+id/textView86" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction3"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal|center_vertical"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView87"
-                app:layout_constraintStart_toStartOf="@+id/textView87"
-                app:layout_constraintTop_toBottomOf="@+id/textView87" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction4"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView88"
-                app:layout_constraintStart_toStartOf="@+id/textView88"
-                app:layout_constraintTop_toBottomOf="@+id/textView88" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnSatisfaction5"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView89"
-                app:layout_constraintStart_toStartOf="@+id/textView89"
-                app:layout_constraintTop_toBottomOf="@+id/textView89" />
-
             <TextView
                 android:id="@+id/textView63"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
                 android:text="운동 만족도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rbtnFatigue3" />
+                app:layout_constraintTop_toBottomOf="@+id/rgFatigue" />
 
             <TextView
                 android:id="@+id/textView85"
@@ -676,66 +609,129 @@
 
             </FrameLayout>
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity1"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+            <RadioGroup
+                android:id="@+id/rgIntensity"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView80"
-                app:layout_constraintStart_toStartOf="@+id/textView80"
-                app:layout_constraintTop_toBottomOf="@+id/textView80" />
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView82">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity2"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:buttonTint="@color/white"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView81"
-                app:layout_constraintStart_toStartOf="@+id/textView81"
-                app:layout_constraintTop_toBottomOf="@+id/textView81" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity1"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity3"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView82"
-                app:layout_constraintStart_toStartOf="@+id/textView82"
-                app:layout_constraintTop_toBottomOf="@+id/textView82" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity2"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/white"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity4"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView83"
-                app:layout_constraintStart_toStartOf="@+id/textView83"
-                app:layout_constraintTop_toBottomOf="@+id/textView83" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity3"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rbtnIntensity5"
-                style="@style/Widget.App.RadioButton"
-                android:layout_width="32dp"
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity4"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnIntensity5"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/rgSatisfaction"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:theme="@style/Widget.App.RadioButton"
-                app:buttonTint="@color/tint_main_white"
-                app:layout_constraintEnd_toEndOf="@+id/textView84"
-                app:layout_constraintStart_toStartOf="@+id/textView84"
-                app:layout_constraintTop_toBottomOf="@+id/textView84" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView87">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction1"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction2"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center|center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction3"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction4"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbtnSatisfaction5"
+                    style="@style/Widget.App.RadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/Widget.App.RadioButton"
+                    app:buttonTint="@color/tint_main_white" />
+            </RadioGroup>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clMItem"
     android:layout_width="match_parent"
-    android:layout_height="110dp"
+    android:layout_height="128dp"
     android:background="@color/white">
 
     <View
-        android:id="@+id/vM"
+        android:id="@+id/vEI"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/effect_ibtn_20dp"
@@ -20,10 +20,9 @@
         app:layout_constraintVertical_bias="1.0" />
 
 
-
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView8"
-        android:layout_width="90dp"
+        android:layout_width="106dp"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
@@ -35,17 +34,26 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/ivMThumbnail"
+            android:id="@+id/ivEIThumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:clipToOutline="true"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/background_button" />
+
+        <com.tomlecollegue.progressbars.HorizontalProgressView
+            android:id="@+id/hpvEIHistory"
+            android:layout_width="106dp"
+            android:layout_height="8dp"
+            android:layout_gravity="bottom|center"
+            android:background="#00FFFFFF"
+            android:scrollbars="horizontal"
+            app:colorBackground="#00F5F5F5"
+            app:colorProgress="@color/deleteColor" />
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/tvMName"
+        android:id="@+id/tvEIName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -53,16 +61,16 @@
         android:singleLine="true"
         android:text="목 관절 운동 프로그램"
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ibtnMMore"
+        app:layout_constraintEnd_toStartOf="@+id/ibtnEIMore"
         app:layout_constraintStart_toEndOf="@+id/cardView8"
         app:layout_constraintTop_toTopOf="@+id/cardView8"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/tvMSymptom"
+        android:id="@+id/tvEISymptom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -71,9 +79,9 @@
         android:textColor="@color/subColor500"
 
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/tvMName"
-        app:layout_constraintStart_toStartOf="@+id/tvMName"
-        app:layout_constraintTop_toBottomOf="@+id/tvMName" />
+        app:layout_constraintEnd_toEndOf="@+id/tvEIName"
+        app:layout_constraintStart_toStartOf="@+id/tvEIName"
+        app:layout_constraintTop_toBottomOf="@+id/tvEIName" />
 
     <ImageView
         android:id="@+id/imageView5"
@@ -83,8 +91,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/cardView8"
         app:layout_constraintEnd_toStartOf="@+id/imageView6"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/tvMSymptom"
-        app:layout_constraintTop_toBottomOf="@+id/tvMSymptom"
+        app:layout_constraintStart_toStartOf="@+id/tvEISymptom"
+        app:layout_constraintTop_toBottomOf="@+id/tvEISymptom"
         app:layout_constraintVertical_bias="0.9"
         app:srcCompat="@drawable/icon_rv_summary_time" />
 
@@ -99,63 +107,63 @@
         app:layout_constraintTop_toTopOf="@+id/imageView5"
         app:srcCompat="@drawable/icon_rv_summary_intensity" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/imageView7"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="76dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/tvMStage"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/tvMStage"-->
-<!--        app:srcCompat="@drawable/icon_kcal_main_color" />-->
+    <!--    <ImageView-->
+    <!--        android:id="@+id/imageView7"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="76dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/tvEIStage"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/tvEIStage"-->
+    <!--        app:srcCompat="@drawable/icon_kcal_main_color" />-->
 
     <TextView
-        android:id="@+id/tvMTime"
+        android:id="@+id/tvEITime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="1분 20초"
-        android:textSize="16sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5" />
 
     <TextView
-        android:id="@+id/tvMStage"
+        android:id="@+id/tvEIStage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="초급"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView6"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="@+id/imageView6" />
 
-<!--    <TextView-->
-<!--        android:id="@+id/tvMKcal"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="4dp"-->
-<!--        android:text="48"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="16sp"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/imageView7"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/imageView7"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/imageView7" />-->
-<!--    <TextView-->
-<!--        android:id="@+id/textView15"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="2dp"-->
-<!--        android:text="Kcal"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="16sp"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/tvMKcal"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/tvMKcal"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/tvMKcal" />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/tvMKcal"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="4dp"-->
+    <!--        android:text="48"-->
+    <!--        android:textColor="@color/black"-->
+    <!--        android:textSize="16sp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/imageView7"-->
+    <!--        app:layout_constraintStart_toEndOf="@+id/imageView7"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/imageView7" />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/textView15"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="2dp"-->
+    <!--        android:text="Kcal"-->
+    <!--        android:textColor="@color/black"-->
+    <!--        android:textSize="16sp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/tvMKcal"-->
+    <!--        app:layout_constraintStart_toEndOf="@+id/tvMKcal"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/tvMKcal" />-->
     <ImageButton
-        android:id="@+id/ibtnMMore"
+        android:id="@+id/ibtnEIMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"

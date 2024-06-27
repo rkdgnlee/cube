@@ -3,10 +3,7 @@ package com.tangoplus.tangoq.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.health.connect.client.HealthConnectClient
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.ktx.auth
@@ -29,14 +23,12 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditDialogFragment
-import com.tangoplus.tangoq.fragment.SettingsFragment
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
-import com.tangoplus.tangoq.fragment.ReportFragment
-import com.tangoplus.tangoq.fragment.WithdrawalFragment
+
 import java.lang.IllegalArgumentException
 
 class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
@@ -44,13 +36,13 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
     private val VIEW_TYPE_NORMAL = 0
     private val VIEW_TYPE_SPECIAL_ITEM = 1
     inner class MyViewHolder(view : View) : RecyclerView.ViewHolder(view) {
-        val btnPfName = view.findViewById<TextView>(R.id.tvPfSettingsName)
-        val ivPf = view.findViewById<ImageView>(R.id.ivPf)
-        val cltvPfSettings = view.findViewById<ConstraintLayout>(R.id.cltvPfSettings)
+        val btnPfName : TextView = view.findViewById(R.id.tvPfSettingsName)
+        val ivPf : ImageView = view.findViewById(R.id.ivPf)
+        val cltvPfSettings : ConstraintLayout = view.findViewById(R.id.cltvPfSettings)
     }
     inner class SpecialItemViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         @SuppressLint("UseSwitchCompatOrMaterialCode")
-        val schPfS = view.findViewById<MaterialSwitch>(R.id.schPfS)
+        val schPfS: MaterialSwitch = view.findViewById(R.id.schPfS)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -162,13 +154,9 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                         val sharedPref = fragment.requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
                         val darkMode = sharedPref?.getBoolean("darkMode", false)
                         if (darkMode != null) {
-                            if (darkMode == true ) {
-                                myViewHolder.schPfS.isChecked = true
-                            } else {
-                                myViewHolder.schPfS.isChecked = false
-                            }
+                            myViewHolder.schPfS.isChecked = darkMode == true
                         }
-                        myViewHolder.schPfS.setOnCheckedChangeListener{CompoundButton, isChecked ->
+                        myViewHolder.schPfS.setOnCheckedChangeListener{ _, isChecked ->
                             booleanClickListener.onSwitchChanged(isChecked)
 
                         }
@@ -180,7 +168,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == 1 && first == true) {
+        return if (position == 1 && first) {
             VIEW_TYPE_SPECIAL_ITEM
         } else {
             VIEW_TYPE_NORMAL
@@ -191,15 +179,15 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
 
     }
 
-    private fun showSettingsFragment() {
-        val DeviceSettingsFragment = SettingsFragment()
-        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-            replace(R.id.flMain, DeviceSettingsFragment)
-            addToBackStack(null)
-            commit()
-        }
-    }
+//    private fun showSettingsFragment() {
+//        val DeviceSettingsFragment = SettingsFragment()
+//        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+//            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//            replace(R.id.flMain, DeviceSettingsFragment)
+//            addToBackStack(null)
+//            commit()
+//        }
+//    }
 
 
 

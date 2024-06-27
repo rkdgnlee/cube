@@ -13,7 +13,7 @@
         android:background="@color/white">
 
         <ImageButton
-            android:id="@+id/ibtnPpBack"
+            android:id="@+id/ibtnFPDBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -33,16 +33,16 @@
             android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/ibtnPpBack"
-            app:layout_constraintStart_toEndOf="@+id/ibtnPpBack"
-            app:layout_constraintTop_toTopOf="@+id/ibtnPpBack" />
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnFPDBack"
+            app:layout_constraintStart_toEndOf="@+id/ibtnFPDBack"
+            app:layout_constraintTop_toTopOf="@+id/ibtnFPDBack" />
 
 
         <Button
-            android:id="@+id/btnPpFinish"
+            android:id="@+id/btnFPDFinish"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="12dp"
             android:backgroundTint="@color/mainColor"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -61,7 +61,7 @@
             android:layout_height="640dp"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="48dp"
-            app:layout_constraintBottom_toTopOf="@+id/btnPpFinish"
+            app:layout_constraintBottom_toTopOf="@+id/btnFPDFinish"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView30">
@@ -247,7 +247,7 @@
                     app:layout_constraintGuide_percent="0.86" />
 
                 <CheckBox
-                    android:id="@+id/cbPpNeck"
+                    android:id="@+id/cbFPDNeck"
                     android:layout_width="wrap_content"
                     android:layout_height="34dp"
                     android:background="@drawable/background_stroke_check_20dp"
@@ -263,7 +263,7 @@
                     app:layout_constraintStart_toStartOf="@+id/guideline13" />
 
                 <CheckBox
-                    android:id="@+id/cbPpShoulder"
+                    android:id="@+id/cbFPDShoulder"
                     android:layout_width="wrap_content"
                     android:layout_height="34dp"
                     android:layout_marginBottom="12dp"
@@ -279,7 +279,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <CheckBox
-                    android:id="@+id/cbPpWrist"
+                    android:id="@+id/cbFPDWrist"
                     android:layout_width="wrap_content"
                     android:layout_height="34dp"
                     android:layout_marginEnd="8dp"
@@ -295,7 +295,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/guideline15" />
 
                 <CheckBox
-                    android:id="@+id/cbPpStomach"
+                    android:id="@+id/cbFPDStomach"
                     android:layout_width="wrap_content"
                     android:layout_height="34dp"
                     android:background="@drawable/background_stroke_check_20dp"
@@ -311,7 +311,7 @@
                     app:layout_constraintTop_toTopOf="@+id/guideline6" />
 
                 <CheckBox
-                    android:id="@+id/cbPpHipJoint"
+                    android:id="@+id/cbFPDHipJoint"
                     android:layout_width="wrap_content"
                     android:layout_height="34dp"
                     android:background="@drawable/background_stroke_check_20dp"
@@ -326,7 +326,7 @@
                     app:layout_constraintStart_toStartOf="@+id/guideline13" />
 
                 <CheckBox
-                    android:id="@+id/cbPpKnee"
+                    android:id="@+id/cbFPDKnee"
                     android:layout_width="wrap_content"
                     android:layout_height="34dp"
                     android:background="@drawable/background_stroke_check_20dp"
@@ -342,7 +342,7 @@
                     app:layout_constraintVertical_bias="0.514" />
 
                 <CheckBox
-                    android:id="@+id/cbPpAnkle"
+                    android:id="@+id/cbFPDAnkle"
                     android:layout_width="wrap_content"
                     android:layout_height="34dp"
                     android:background="@drawable/background_stroke_check_20dp"
@@ -358,20 +358,20 @@
                     app:layout_constraintVertical_bias="0.529" />
 
                 <ImageView
-                    android:id="@+id/ivPpNeck"
+                    android:id="@+id/ivFPDNeck"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/drawable_select_part"
+                    android:src="@drawable/drawable_select_part_disabled"
                     app:layout_constraintBottom_toTopOf="@+id/guideline4"
                     app:layout_constraintEnd_toStartOf="@+id/guideline2"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
                     app:layout_constraintTop_toTopOf="@+id/guideline" />
 
                 <ImageView
-                    android:id="@+id/ivPpShoulder"
+                    android:id="@+id/ivFPDShoulder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/drawable_select_part"
+                    android:src="@drawable/drawable_select_part_disabled"
                     app:layout_constraintBottom_toTopOf="@+id/guideline5"
                     app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="@+id/guideline15"
@@ -379,19 +379,19 @@
                     app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
-                    android:id="@+id/ivPpWrist"
+                    android:id="@+id/ivFPDWrist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/drawable_select_part"
+                    android:src="@drawable/drawable_select_part_disabled"
                     app:layout_constraintBottom_toTopOf="@+id/guideline7"
                     app:layout_constraintEnd_toStartOf="@+id/guideline15"
                     app:layout_constraintStart_toStartOf="@+id/guideline17" />
 
                 <ImageView
-                    android:id="@+id/ivPpHipJoint"
+                    android:id="@+id/ivFPDHipJoint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/drawable_select_part"
+                    android:src="@drawable/drawable_select_part_disabled"
                     app:layout_constraintBottom_toTopOf="@+id/guideline8"
                     app:layout_constraintEnd_toStartOf="@+id/guideline2"
                     app:layout_constraintStart_toStartOf="@+id/guideline21"
@@ -399,20 +399,20 @@
                     app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
-                    android:id="@+id/ivPpStomach"
+                    android:id="@+id/ivFPDStomach"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/drawable_select_part"
+                    android:src="@drawable/drawable_select_part_disabled"
                     app:layout_constraintBottom_toTopOf="@+id/guideline7"
                     app:layout_constraintEnd_toStartOf="@+id/guideline22"
                     app:layout_constraintStart_toStartOf="@+id/guideline20"
                     app:layout_constraintTop_toTopOf="@+id/guideline6" />
 
                 <ImageView
-                    android:id="@+id/ivPpKnee"
+                    android:id="@+id/ivFPDKnee"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/drawable_select_part"
+                    android:src="@drawable/drawable_select_part_disabled"
                     app:layout_constraintBottom_toTopOf="@+id/guideline10"
                     app:layout_constraintEnd_toStartOf="@+id/guideline19"
                     app:layout_constraintHorizontal_bias="0.6"
@@ -420,10 +420,10 @@
                     app:layout_constraintTop_toTopOf="@+id/guideline9" />
 
                 <ImageView
-                    android:id="@+id/ivPpAnkle"
+                    android:id="@+id/ivFPDAnkle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/drawable_select_part"
+                    android:src="@drawable/drawable_select_part_disabled"
                     app:layout_constraintEnd_toStartOf="@+id/guideline19"
                     app:layout_constraintStart_toStartOf="@+id/guideline2"
                     app:layout_constraintTop_toTopOf="@+id/guideline11" />

@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.`object`
 
 import android.content.ContentValues
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteVO
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +23,7 @@ import java.io.IOException
 
 object NetworkFavorite {
     // 즐겨찾기 넣기
-    fun insertFavoriteItemJson(myUrl: String, json: String, callback: (JSONObject?) -> Unit) {
+    fun insertFavoriteItemJson(myUrl: String, json: String, context: Context ,callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
@@ -31,17 +33,18 @@ object NetworkFavorite {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+                Log.e("http>Response", "Failed to execute request!")
+                Toast.makeText(context, "데이터 연결이 실패했습니다. 잠시 후에 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
-                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                Log.e("http>Response", "$responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
                 callback(jsonObj__)
             }
         })
     }
-    fun updateFavoriteItemJson(myUrl: String, favorite_sn: String, json:String, callback: (JSONObject?) -> Unit) {
+    fun updateFavoriteItemJson(myUrl: String, favorite_sn: String, json:String, context: Context ,callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
@@ -50,18 +53,19 @@ object NetworkFavorite {
             .build()
         client.newCall(request).enqueue(object: Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+                Log.e("http>Response", "Failed to execute request!")
+                Toast.makeText(context, "데이터 연결이 실패했습니다. 잠시 후에 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                Log.e("http>Response", "$responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
                 callback(jsonObj__)
             }
         })
     }
-    fun deleteFavoriteItemSn(myUrl: String, favorite_sn: String, callback: () -> Unit) {
+    fun deleteFavoriteItemSn(myUrl: String, favorite_sn: String, context: Context ,callback: () -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}delete.php?favorite_sn=$favorite_sn")
@@ -69,28 +73,29 @@ object NetworkFavorite {
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+                Log.e("http>Response", "Failed to execute request!")
+                Toast.makeText(context, "데이터 연결이 실패했습니다. 잠시 후에 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                Log.e("http>Response", "$responseBody")
                 callback()
             }
         })
 
     }
     // 즐겨찾기 목록 조회 (PickItems에 담기)
-    suspend fun fetchFavoriteItemsJsonByEmail(myUrl: String, email: String): MutableList<FavoriteVO>? {
+    suspend fun fetchFavoriteItemsJsonByEmail(myUrl: String, email: String): MutableList<FavoriteVO> {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}read.php?user_email=$email")
+            .url("${myUrl}read.php?user_mobile=$email")
             .get()
             .build()
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use {response ->
                 val responseBody = response.body?.string()
-                Log.e("OKHTTP3/picklistfetch", "Success to execute request")
+                Log.e("HTTP>favoriteFetch", "Success to execute request")
                 val jsonArr = responseBody?.let { JSONObject(it) }?.optJSONArray("data")
                 val favoriteList = mutableListOf<FavoriteVO>()
                 if (jsonArr != null) {
@@ -112,7 +117,7 @@ object NetworkFavorite {
             }
         }
     }
-    suspend fun fetchFavoriteItemJsonBySn(myUrl: String, sn: String): JSONObject? {
+    suspend fun fetchFavoriteItemJsonBySn(myUrl: String, sn: String): JSONObject {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}read.php?favorite_sn=$sn")
@@ -121,7 +126,7 @@ object NetworkFavorite {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use {response ->
                 val responseBody = response.body?.string().let { JSONObject(it) }
-                Log.e("OKHTTP3/favoriteListFetch", "Success to execute request!: $responseBody")
+                Log.e("HTTP>favoriteFetch", "Success to execute request!: $responseBody")
                 responseBody
             }
         }

@@ -9,7 +9,7 @@
     tools:context=".SetupActivity">
 
     <ImageButton
-        android:id="@+id/btnBckSu"
+        android:id="@+id/btnBckSetup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -22,7 +22,7 @@
         app:srcCompat="@drawable/icon_arrow_left" />
 
     <TextView
-        android:id="@+id/tvSuIntro"
+        android:id="@+id/tvSetupIntro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -30,12 +30,12 @@
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/btnBckSu"
-        app:layout_constraintStart_toEndOf="@+id/btnBckSu"
-        app:layout_constraintTop_toTopOf="@+id/btnBckSu" />
+        app:layout_constraintBottom_toBottomOf="@+id/btnBckSetup"
+        app:layout_constraintStart_toEndOf="@+id/btnBckSetup"
+        app:layout_constraintTop_toTopOf="@+id/btnBckSetup" />
 
     <com.shuhart.stepview.StepView
-        android:id="@+id/svSu"
+        android:id="@+id/svSetup"
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:layout_marginStart="20dp"
@@ -43,7 +43,7 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSuIntro"
+        app:layout_constraintTop_toBottomOf="@+id/tvSetupIntro"
         app:sv_animationDuration="250"
         app:sv_animationType="Circle"
         app:sv_background="@color/white"
@@ -63,7 +63,7 @@
         app:sv_textSize="16sp" />
 
     <com.tomlecollegue.progressbars.HorizontalProgressView
-        android:id="@+id/pvSu"
+        android:id="@+id/pvSetup"
         android:layout_width="0dp"
         android:layout_height="4dp"
         android:layout_marginStart="20dp"
@@ -74,7 +74,7 @@
         app:colorProgress="@color/mainColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/svSu"
+        app:layout_constraintTop_toBottomOf="@+id/svSetup"
         app:strokeWidth="4dp" />
 
     <androidx.viewpager2.widget.ViewPager2
@@ -85,7 +85,7 @@
         app:layout_constraintBottom_toTopOf="@+id/btnSu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSuSkip" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSetupSkip" />
 
     <Button
         android:id="@+id/btnSu"
@@ -107,7 +107,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/tvSuSkip"
+        android:id="@+id/tvSetupSkip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -115,9 +115,9 @@
         android:textColor="@color/subColor800"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/pvSu"
-        app:layout_constraintStart_toStartOf="@+id/pvSu"
-        app:layout_constraintTop_toBottomOf="@+id/pvSu" />
+        app:layout_constraintEnd_toEndOf="@+id/pvSetup"
+        app:layout_constraintStart_toStartOf="@+id/pvSetup"
+        app:layout_constraintTop_toBottomOf="@+id/pvSetup" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

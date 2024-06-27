@@ -21,13 +21,13 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -51,7 +51,6 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.SetupActivity
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
@@ -74,6 +73,10 @@ class ProfileEditDialogFragment : DialogFragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private lateinit var userJson : JSONObject
+    private val agreement3 = MutableLiveData(false)
+    private val agreementMk1 = MutableLiveData(false)
+    private val agreementMk2 = MutableLiveData(false)
+    private val marketingAgree = MutableLiveData(false)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -82,11 +85,12 @@ class ProfileEditDialogFragment : DialogFragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.snsCount = 0
-        binding.ibtnPEBack.setOnClickListener {
+        binding.ibtnPEDBack.setOnClickListener {
             dismiss()
         }
         // -----! 이미지 로드 시작 !-----
@@ -99,7 +103,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                 Glide.with(this)
                     .load(imageUri)
                     .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                    .into(binding.civPE)
+                    .into(binding.civPED)
             }
         } // -----! 이미지 로드 끝 !-----
 
@@ -107,8 +111,8 @@ class ProfileEditDialogFragment : DialogFragment() {
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")!!
 
         // ------! 이름, 전화번호 세팅 !------
-        binding.tvPEMobile.setText(userJson.optString("user_mobile"))
-        binding.tvPEName.setText(userJson.optString("user_name"))
+        binding.tvPEDMobile.text = userJson.optString("user_mobile")
+        binding.tvPEDName.text = userJson.optString("user_name")
 
 
         // ------! 소셜 계정 로그인 연동 시작 !------
@@ -116,17 +120,17 @@ class ProfileEditDialogFragment : DialogFragment() {
         // first: google second: kakao third: naver
         val snsIntegrations = checkSNSLogin(userJson)
 
-        if (snsIntegrations.first == true) {
+        if (snsIntegrations.first) {
             binding.tvGoogleInteCheck.text = "연동완료"
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
         }
-        if (snsIntegrations.second == true) {
+        if (snsIntegrations.second) {
             binding.tvKakaoIntecheck.text = "연동완료"
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
         }
-        if (snsIntegrations.third == true) {
+        if (snsIntegrations.third) {
             binding.tvNaverInteCheck.text = "연동완료"
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
@@ -137,49 +141,54 @@ class ProfileEditDialogFragment : DialogFragment() {
         if (currentUser == null) {
 
             launcher = registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult(), ActivityResultCallback { result ->
-                    Log.v(CommonDefines.TAG, "resultCode: ${result.resultCode}입니다.")
-                    if (result.resultCode == AppCompatActivity.RESULT_OK) {
-                        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                        try {
-                            task.getResult(ApiException::class.java)?.let { account ->
-                                val tokenId = account.idToken
-                                if (tokenId != null && tokenId != "") {
-                                    val credential: AuthCredential =
-                                        GoogleAuthProvider.getCredential(account.idToken, null)
-                                    firebaseAuth.signInWithCredential(credential)
-                                        .addOnCompleteListener {
-                                            if (firebaseAuth.currentUser != null) {
-                                                // ---- Google 토큰에서 가져오기 시작 ----
-                                                val user: FirebaseUser = firebaseAuth.currentUser!!
-                                                val jsonObj = JSONObject()
-                                                jsonObj.put("google_login_id", user.uid)
-                                                Log.v("소셜계정연동", "jsonObj: $jsonObj")
-                                                fetchUserUPDATEJson(
-                                                    getString(R.string.IP_ADDRESS_t_user),
-                                                    jsonObj.toString(),
-                                                    userJson.getString("user_email")
-                                                ) {
-                                                    requireActivity().runOnUiThread {
-                                                        binding.tvGoogleInteCheck.text = "연동완료"
-                                                        viewModel.snsCount += 1
-                                                    }
-
-                                                    Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")?.put("google_login_id", user.uid)
-                                                    Log.v("구글>singleton", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                Log.v(CommonDefines.TAG, "resultCode: ${result.resultCode}입니다.")
+                if (result.resultCode == AppCompatActivity.RESULT_OK) {
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    try {
+                        task.getResult(ApiException::class.java)?.let { account ->
+                            val tokenId = account.idToken
+                            if (tokenId != null && tokenId != "") {
+                                val credential: AuthCredential =
+                                    GoogleAuthProvider.getCredential(account.idToken, null)
+                                firebaseAuth.signInWithCredential(credential)
+                                    .addOnCompleteListener {
+                                        if (firebaseAuth.currentUser != null) {
+                                            // ---- Google 토큰에서 가져오기 시작 ----
+                                            val user: FirebaseUser = firebaseAuth.currentUser!!
+                                            val jsonObj = JSONObject()
+                                            jsonObj.put("google_login_id", user.uid)
+                                            Log.v("소셜계정연동", "jsonObj: $jsonObj")
+                                            fetchUserUPDATEJson(
+                                                getString(R.string.IP_ADDRESS_t_user),
+                                                jsonObj.toString(),
+                                                userJson.getString("user_email")
+                                            ) {
+                                                requireActivity().runOnUiThread {
+                                                    binding.tvGoogleInteCheck.text = "연동완료"
+                                                    viewModel.snsCount += 1
                                                 }
 
-                                                // ---- Google 토큰에서 가져오기 끝 ----
+                                                Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject(
+                                                    "data"
+                                                )?.put("google_login_id", user.uid)
+                                                Log.v(
+                                                    "구글>singleton",
+                                                    "${Singleton_t_user.getInstance(requireContext()).jsonObject}"
+                                                )
                                             }
+
+                                            // ---- Google 토큰에서 가져오기 끝 ----
                                         }
-                                }
-                            } ?: throw Exception()
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                                    }
+                            }
+                        } ?: throw Exception()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
-            )
+            }
         }
         // ---- firebase 초기화 및 Google Login API 연동 끝 ----
 
@@ -226,22 +235,22 @@ class ProfileEditDialogFragment : DialogFragment() {
 
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
-                Log.e("카카오톡", "카카오톡 로그인 실패 $error")
+                Log.e("kakaoTalk", "kakaoTalk 로그인 실패 $error")
                 when {
                     error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                        Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
+                        Log.e("kakaoTalk", "접근이 거부 됨(동의 취소) $error")
                     }
                 }
             } else if (token != null) {
-                Log.e("카카오톡", "로그인에 성공하였습니다.")
-                UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
-                    if (error != null) {
-                        Log.e(CommonDefines.TAG, "토큰 정보 보기 실패", error)
+                Log.e("kakaoTalk", "로그인에 성공하였습니다.")
+                UserApiClient.instance.accessTokenInfo { tokenInfo, error1 ->
+                    if (error1 != null) {
+                        Log.e(CommonDefines.TAG, "토큰 정보 보기 실패", error1)
                     }
                     else if (tokenInfo != null) {
-                        UserApiClient.instance.me { user, error ->
-                            if (error != null) {
-                                Log.e(CommonDefines.TAG, "사용자 정보 요청 실패", error)
+                        UserApiClient.instance.me { user, error2 ->
+                            if (error2 != null) {
+                                Log.e(CommonDefines.TAG, "사용자 정보 요청 실패", error2)
                             }
                             else if (user != null) {
                                 val jsonObj = JSONObject()
@@ -318,7 +327,7 @@ class ProfileEditDialogFragment : DialogFragment() {
 
         // ------! id, pw, EmailId VM에 값 보존 시작 !------
         viewModel.id.value = userJson.optString("user_id")
-        binding.etPEId.addTextChangedListener(object: TextWatcher {
+        binding.etPEDId.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
@@ -326,12 +335,12 @@ class ProfileEditDialogFragment : DialogFragment() {
             }
         })
         viewModel.id.observe(viewLifecycleOwner) {id ->
-            if (id != binding.etPEId.text.toString()) {
-                binding.etPEId.setText(id)
+            if (id != binding.etPEDId.text.toString()) {
+                binding.etPEDId.setText(id)
             }
         }
 
-        binding.etPEPassword.addTextChangedListener(object: TextWatcher{
+        binding.etPEDPassword.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
@@ -339,11 +348,11 @@ class ProfileEditDialogFragment : DialogFragment() {
             }
         })
         viewModel.pw.observe(viewLifecycleOwner) {pw ->
-            if (pw != binding.etPEPassword.text.toString()) {
-                binding.etPEPassword.setText(pw)
+            if (pw != binding.etPEDPassword.text.toString()) {
+                binding.etPEDPassword.setText(pw)
             }
         }
-        binding.etPEEmailId.addTextChangedListener(object: TextWatcher{
+        binding.etPEDEmailId.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
@@ -351,42 +360,61 @@ class ProfileEditDialogFragment : DialogFragment() {
             }
         })
         viewModel.emailId.observe(viewLifecycleOwner) {emailId ->
-            if (emailId != binding.etPEEmailId.text.toString()) {
-                binding.etPEEmailId.setText(emailId)
+            if (emailId != binding.etPEDEmailId.text.toString()) {
+                binding.etPEDEmailId.setText(emailId)
             }
         }
         // ------! id, pw, EmailId VM에 값 보존 끝 !------
         val userEmail = userJson.optString("user_email")
-        binding.etPEEmailId.setText(userEmail.substring(0, userEmail.indexOf("@")))
+        binding.etPEDEmailId.setText(userEmail.substring(0, userEmail.indexOf("@")))
 
 
-        val domain_list = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-        binding.spnPE.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domain_list)
-        binding.spnPE.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        when (userEmail.substringAfter("@")) {
+            "gmail.com" -> {
+                binding.spnPED.setSelection(0)
+            }
+            "naver.com" -> {
+                binding.spnPED.setSelection(1)
+            }
+            "kakao.com" -> {
+                binding.spnPED.setSelection(2)
+            }
+            else -> {
+                binding.etPEDEmail.visibility = View.GONE
+                binding.etPEDEmail.setText(userEmail.substringAfter("@"))
+                binding.spnPED.visibility = View.VISIBLE
+            }
+        }
+
+
+
+        val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
+        binding.spnPED.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domainList)
+        binding.spnPED.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
                 id: Long
             ) {
-                binding.spnPE.getItemAtPosition(position).toString()
+                binding.spnPED.getItemAtPosition(position).toString()
                 if (position == 3) {
-                    binding.etPEEmail.visibility = View.VISIBLE
-                    binding.spnPE.visibility = View.GONE
-                    binding.ivPESpn.setOnClickListener{
-                        binding.spnPE.performClick()
-                        binding.spnPE.visibility = View.VISIBLE
+                    binding.etPEDEmail.visibility = View.VISIBLE
+                    binding.spnPED.visibility = View.GONE
+                    binding.ivPEDSpn.setOnClickListener{
+                        binding.spnPED.performClick()
+                        binding.spnPED.visibility = View.VISIBLE
                     }
 
                 } else {
-                    binding.etPEEmail.visibility = View.GONE
-                    binding.etPEEmail.setText("")
-                    binding.spnPE.visibility = View.VISIBLE
+                    binding.etPEDEmail.visibility = View.GONE
+                    binding.etPEDEmail.setText("")
+                    binding.spnPED.visibility = View.VISIBLE
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-        binding.civPE.setOnClickListener {
+        binding.civPED.setOnClickListener {
             when {
                 ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
                     navigateGallery()
@@ -398,28 +426,72 @@ class ProfileEditDialogFragment : DialogFragment() {
             }
         }
 
-        binding.btnPEFinish.setOnClickListener {
+        // ------! 광고성 수신 동의 시작 !------
+        binding.clPEDAgreement3.setOnClickListener{
+            val newValue = agreement3.value?.not() ?: false
+            binding.ivPEDAgreement3.setImageResource(
+                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+
+            binding.ivPEDAgreementMk1.setImageResource(
+                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+            binding.ivPEDAgreementMk2.setImageResource(
+                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+            agreement3.value = newValue
+            agreementMk1.value = newValue
+            agreementMk2.value = newValue
+        }
+        binding.ibtnPEDAgreement3.setOnClickListener {
+            val dialog = AgreementDetailDialogFragment.newInstance("agreement3")
+            dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+        }
+        binding.clPEDAgreementMk1.setOnClickListener {
+            val newValue = agreementMk1.value?.not() ?: false
+            binding.ivPEDAgreementMk1.setImageResource(
+                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+            agreementMk1.value = newValue
+        }
+        binding.clPEDAgreementMk2.setOnClickListener {
+            val newValue = agreementMk2.value?.not() ?: false
+            binding.ivPEDAgreementMk2.setImageResource(
+                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+            agreementMk2.value = newValue
+        }
+        agreementMk1.observe(viewLifecycleOwner) {
+            updateAgreeMarketingAllState()
+        }
+
+        agreementMk2.observe(viewLifecycleOwner) {
+            updateAgreeMarketingAllState()
+        }
+
+
+        binding.btnPEDFinish.setOnClickListener {
             userJson.put("user_id", viewModel.id.value.toString())
             userJson.put("user_password", viewModel.pw.value.toString())
-            when (binding.spnPE.selectedItemPosition) {
+            when (binding.spnPED.selectedItemPosition) {
                 0, 1, 2 -> {
-                    viewModel.User.value?.put("user_email", "${binding.etPEEmailId.text}@${binding.spnPE.selectedItem as String}")
+                    viewModel.User.value?.put("user_email", "${binding.etPEDEmailId.text}@${binding.spnPED.selectedItem as String}")
                     userJson.put("user_email", viewModel.User.value?.optString("user_email"))
                 }
                 else -> {
-                    viewModel.User.value?.put("user_email", "${binding.etPEEmailId.text}@${binding.etPEEmail.text}")
+                    viewModel.User.value?.put("user_email", "${binding.etPEDEmailId.text}@${binding.etPEDEmail.text}")
                     userJson.put("user_email", viewModel.User.value?.optString("user_email"))
                 }
             }
 
-            val user_email = userJson.optString("user_email")
-            val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
+            val userEditEmail = userJson.optString("user_email")
+            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
             fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), userJson.toString(), encodedUserEmail) {
                 Log.w(ContentValues.TAG +" 싱글톤객체추가", userJson.optString("user_weight").toString())
                 dismiss()
             }
         }
-        binding.btnPEGoSetup.setOnClickListener {
+        binding.btnPEDGoSetup.setOnClickListener {
             val intent = Intent(requireContext(), SetupActivity::class.java)
             startActivity(intent)
         }
@@ -457,7 +529,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                     Glide.with(this)
                         .load(selectedImageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                        .into(binding.civPE)
+                        .into(binding.civPED)
                     viewModel.ivProfile.value = selectedImageUri
                 } else {
                     Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
@@ -514,15 +586,16 @@ class ProfileEditDialogFragment : DialogFragment() {
         }
 
 
-        Log.v("sns", "google: ${google} kakao: ${kakao} naver : ${naver}")
+        Log.v("sns", "google: $google kakao: $kakao naver : $naver")
         return Triple(google, kakao, naver)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showLogoutDialog(title: String) {
         MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
             setTitle("알림")
             setMessage("${title}의 소셜 로그인 연동을\n해제하시겠습니까?")
-            setPositiveButton("예") { dialog, _ ->
+            setPositiveButton("예") { _, _ ->
                 when (title) {
                     "구글" -> {
                         Firebase.auth.signOut()
@@ -570,9 +643,19 @@ class ProfileEditDialogFragment : DialogFragment() {
                     }
                 }
             }
-            setNegativeButton("아니오") { dialog, _ ->
+            setNegativeButton("아니오") { _, _ ->
             }
             create()
         }.show()
+    }
+
+    private fun updateAgreeMarketingAllState() {
+        val allChecked = agreementMk1.value == true && agreementMk2.value == true
+        if (marketingAgree.value != allChecked) {
+            marketingAgree.value = allChecked
+            binding.ivPEDAgreement3.setImageResource(
+                if (allChecked) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+        }
     }
 }

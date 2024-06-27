@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -16,31 +17,33 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.callback.ItemTouchCallback
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.listener.BasketItemTouchListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.RvBasketItemBinding
 import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
-import com.tangoplus.tangoq.listener.OnMoreClickListener
+import com.tomlecollegue.progressbars.HorizontalProgressView
 import java.lang.IllegalArgumentException
 import java.util.Collections
 
 
-@Suppress("UNREACHABLE_CODE")
-class ExerciseRVAdapter (private val fragment: Fragment,
+class ExerciseRVAdapter (
+    private val fragment: Fragment,
     var exerciseList: MutableList<ExerciseVO>,
+    var viewingHistory : List<HistoryVO>,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
         ItemTouchCallback.AddItemTouchListener
 {
     var basketListener: BasketItemTouchListener? = null
-    val onMoreClickListener : OnMoreClickListener? = null
     lateinit var addListener: OnStartDragListener
     interface OnStartDragListener {
         fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
@@ -48,50 +51,50 @@ class ExerciseRVAdapter (private val fragment: Fragment,
     fun startDrag(listener: OnStartDragListener) {
         this.addListener = listener
     }
-    var popupWindow : PopupWindow?= null
+    private var popupWindow : PopupWindow?= null
 
     // -----! main !-----
     inner class mainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivMThumbnail = view.findViewById<ImageView>(R.id.ivMThumbnail)
-        val tvMName = view.findViewById<TextView>(R.id.tvMName)
-        val tvMSymptom = view.findViewById<TextView>(R.id.tvMSymptom)
-        val tvMTime = view.findViewById<TextView>(R.id.tvMTime)
-        val tvMStage = view.findViewById<TextView>(R.id.tvMStage)
+        val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
+        val tvEIName : TextView = view.findViewById(R.id.tvEIName)
+        val tvEISymptom : TextView= view.findViewById(R.id.tvEISymptom)
+        val tvEITime : TextView= view.findViewById(R.id.tvEITime)
+        val tvEIStage : TextView = view.findViewById(R.id.tvEIStage)
 //        val tvMKcal = view.findViewById<TextView>(R.id.tvMKcal)
-        val ibtnMMore = view.findViewById<ImageButton>(R.id.ibtnMMore)
-        val vM = view.findViewById<View>(R.id.vM)
-
+        val ibtnEIMore : ImageButton= view.findViewById(R.id.ibtnEIMore)
+        val vEI : View = view.findViewById(R.id.vEI)
+        val hpvEIHistory : HorizontalProgressView = view.findViewById(R.id.hpvEIHistory)
     }
 
     // -----! favorite edit !-----
     inner class editViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val ivEditThumbnail = view.findViewById<ImageView>(R.id.ivEditThumbnail)
-        val tvEditName = view.findViewById<TextView>(R.id.tvEditName)
-        val tvEditSymptom = view.findViewById<TextView>(R.id.tvEditSymptom)
-        val tvEditTime = view.findViewById<TextView>(R.id.tvEditTime)
-        val tvEditIntensity = view.findViewById<TextView>(R.id.tvEditIntensity)
+        val ivEditThumbnail : ImageView = view.findViewById(R.id.ivEditThumbnail)
+        val tvEditName : TextView = view.findViewById(R.id.tvEditName)
+        val tvEditSymptom : TextView = view.findViewById(R.id.tvEditSymptom)
+        val tvEditTime : TextView= view.findViewById(R.id.tvEditTime)
+        val tvEditIntensity : TextView = view.findViewById(R.id.tvEditIntensity)
 //        val tvEditCount = view.findViewById<TextView>(R.id.tvEditCount)
-        val ivEditDrag = view.findViewById<ImageView>(R.id.ivEditDrag)
+        val ivEditDrag : ImageView= view.findViewById(R.id.ivEditDrag)
     }
     // -----! favorite basket !-----
     inner class basketViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivBkThumbnail = view.findViewById<ImageView>(R.id.ivBkThumbnail)
-        val tvBkName = view.findViewById<TextView>(R.id.tvBkName)
-        val tvBkSymptom = view.findViewById<TextView>(R.id.tvBkSymptom)
+        val ivBkThumbnail : ImageView= view.findViewById(R.id.ivBkThumbnail)
+        val tvBkName : TextView = view.findViewById(R.id.tvBkName)
+        val tvBkSymptom : TextView = view.findViewById(R.id.tvBkSymptom)
 //        val tvBkTime = view.findViewById<TextView>(R.id.tvBkTime)
 //        val tvBkIntensity = view.findViewById<TextView>(R.id.tvBkIntensity)
-        val ibtnBkPlus = view.findViewById<ImageButton>(R.id.ibtnBkPlus)
-        val ibtnBkMinus = view.findViewById<ImageButton>(R.id.ibtnBkMinus)
-        val tvBkCount = view.findViewById<TextView>(R.id.tvBkCount)
+        val ibtnBkPlus : ImageButton = view.findViewById(R.id.ibtnBkPlus)
+        val ibtnBkMinus : ImageButton = view.findViewById(R.id.ibtnBkMinus)
+        val tvBkCount : TextView = view.findViewById(R.id.tvBkCount)
     }
 
     inner class recommendViewHolder(view:View) : RecyclerView.ViewHolder(view) {
-        val tvRcPName = view.findViewById<TextView>(R.id.tvRcPName)
-        val tvRcPTime = view.findViewById<TextView>(R.id.tvRcPTime)
-        val tvRcPStage = view.findViewById<TextView>(R.id.tvRcPStage)
-        val tvRcPKcal = view.findViewById<TextView>(R.id.tvRcPKcal)
-        val ivRcPThumbnail = view.findViewById<ImageView>(R.id.ivRcPThumbnail)
-        val vRPTN = view.findViewById<View>(R.id.vRPTN)
+        val tvRcPName : TextView = view.findViewById(R.id.tvRcPName)
+        val tvRcPTime : TextView= view.findViewById(R.id.tvRcPTime)
+        val tvRcPStage : TextView = view.findViewById(R.id.tvRcPStage)
+        val tvRcPKcal : TextView = view.findViewById(R.id.tvRcPKcal)
+        val ivRcPThumbnail : ImageView = view.findViewById(R.id.ivRcPThumbnail)
+        val vRPTN : View = view.findViewById(R.id.vRPTN)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -100,7 +103,6 @@ class ExerciseRVAdapter (private val fragment: Fragment,
             "edit" -> 1
             "basket" -> 2
             "recommend" -> 3
-            "rank" -> 4
             else -> throw IllegalArgumentException("invalied view type")
         }
     }
@@ -133,28 +135,34 @@ class ExerciseRVAdapter (private val fragment: Fragment,
         return exerciseList.size
     }
 
-    @SuppressLint("ClickableViewAccessibility", "MissingInflatedId", "InflateParams")
+    @SuppressLint("ClickableViewAccessibility", "MissingInflatedId", "InflateParams", "SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = exerciseList[position]
+        val currentExerciseItem = exerciseList[position]
+//        val currentHistoryItem = viewingHistory[position]
 
-        val second = "${currentItem.videoDuration?.toInt()?.div(60)}분 ${currentItem.videoDuration?.toInt()?.rem(60)}초"
+        val second = "${currentExerciseItem.videoDuration?.toInt()?.div(60)}분 ${currentExerciseItem.videoDuration?.toInt()?.rem(60)}초"
 
         when (holder) {
             is mainViewHolder -> {
                 // -----! recyclerview에서 운동군 보여주기 !------
-                holder.tvMSymptom.text = currentItem.relatedSymptom.toString()
-                holder.tvMName.text = currentItem.exerciseName
-                holder.tvMTime.text = second
-                holder.tvMStage.text = currentItem.exerciseStage
+                holder.tvEISymptom.text = currentExerciseItem.relatedSymptom.toString()
+                holder.tvEIName.text = currentExerciseItem.exerciseName
+                holder.tvEITime.text = second
+                holder.tvEIStage.text = currentExerciseItem.exerciseStage
 
 
                 Glide.with(fragment.requireContext())
-                    .load("${currentItem.imageFilePathReal}")
+                    .load("${currentExerciseItem.imageFilePathReal}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(holder.ivMThumbnail)
-                // ------! 점점점 버튼 시작 !------
+                    .into(holder.ivEIThumbnail)
 
-                holder.ibtnMMore.setOnClickListener {view ->
+                // ------! 시청 기록 시작 !------\
+//                if (currentExerciseItem.exerciseId == currentHistoryItem.exerciseId) {
+//                    holder.hpvEIHistory.progress = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt()!!))!! * 100
+//                }
+
+                // ------! 점점점 버튼 시작 !------
+                holder.ibtnEIMore.setOnClickListener {view ->
                     if (popupWindow?.isShowing == true) {
                         popupWindow?.dismiss()
                         popupWindow =  null
@@ -167,19 +175,22 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                         popupWindow = PopupWindow(popupView, width, height)
                         popupWindow!!.showAsDropDown(view)
                         popupView.findViewById<TextView>(R.id.tvPMPlay).setOnClickListener {
-
+                            val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
+                            intent.putExtra("exercise_id", currentExerciseItem.exerciseId)
+                            intent.putExtra("video_url", currentExerciseItem.videoFilepath)
+                            fragment.startActivityForResult(intent, 8080)
                         }
                         popupView.findViewById<TextView>(R.id.tvPMGoThumbnail).setOnClickListener {
                             val dialogFragment = PlayThumbnailDialogFragment().apply {
                                 arguments = Bundle().apply {
-                                    putParcelable("ExerciseUnit", currentItem)
+                                    putParcelable("ExerciseUnit", currentExerciseItem)
                                 }
                             }
                             dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                         }
                         popupView.findViewById<TextView>(R.id.tvPMAddFavorite).setOnClickListener {
                             val exerciseUnit = mutableListOf<ExerciseVO>()
-                            exerciseUnit.add(currentItem)
+                            exerciseUnit.add(currentExerciseItem)
                             val program = ProgramVO(0, mutableListOf(), "", 0, "","","", exerciseUnit)
                             val bundle = Bundle().apply {
                                 putParcelable("Program", program)
@@ -198,29 +209,29 @@ class ExerciseRVAdapter (private val fragment: Fragment,
                     }
                 }
                 // ------ ! thumbnail 시작 !------
-                holder.vM.setOnClickListener {
-                    val DialogFragment = PlayThumbnailDialogFragment().apply {
+                holder.vEI.setOnClickListener {
+                    val dialogFragment = PlayThumbnailDialogFragment().apply {
                         arguments = Bundle().apply {
-                            putParcelable("ExerciseUnit", currentItem)
+                            putParcelable("ExerciseUnit", currentExerciseItem)
                         }
                     }
-                    DialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                 }
             }
 
             is editViewHolder -> {
-                holder.tvEditSymptom.text = currentItem.relatedSymptom.toString()
-//                holder.tvPickAddJoint.text = currentItem.relatedJoint.toString()
+                holder.tvEditSymptom.text = currentExerciseItem.relatedSymptom.toString()
+//                holder.tvPickAddJoint.text = currentExerciseItem.relatedJoint.toString()
 
                 // ------! 썸네일 !------
                 Glide.with(fragment.requireContext())
-                    .load("${currentItem.imageFilePathReal}")
+                    .load("${currentExerciseItem.imageFilePathReal}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.ivEditThumbnail)
 
-                holder.tvEditName.text = currentItem.exerciseName
+                holder.tvEditName.text = currentExerciseItem.exerciseName
                 holder.tvEditTime.text = second
-                holder.ivEditDrag.setOnTouchListener { view, event ->
+                holder.ivEditDrag.setOnTouchListener { _, event ->
                     if (event.action == MotionEvent.ACTION_DOWN) {
                         addListener.onStartDrag(holder)
                     }
@@ -234,53 +245,53 @@ class ExerciseRVAdapter (private val fragment: Fragment,
 
             }
             is basketViewHolder -> {
-                holder.tvBkSymptom.text = currentItem.relatedSymptom.toString()
-                holder.tvBkName.text = currentItem.exerciseName
-//                holder.tvBkTime.text = currentItem.videoTime
+                holder.tvBkSymptom.text = currentExerciseItem.relatedSymptom.toString()
+                holder.tvBkName.text = currentExerciseItem.exerciseName
+//                holder.tvBkTime.text = currentExerciseItem.videoTime
 
                 // ------! 썸네일 !------
                 Glide.with(fragment.requireContext())
-                    .load("${currentItem.imageFilePathReal}")
+                    .load("${currentExerciseItem.imageFilePathReal}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.ivBkThumbnail)
                 holder.ibtnBkPlus.setOnClickListener {
-                    currentItem.quantity += 1
-                    basketListener?.onBasketItemQuantityChanged(currentItem.exerciseId.toString(), currentItem.quantity)
-                    Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentItem.exerciseId.toString(), currentItem.quantity)}")
+                    currentExerciseItem.quantity += 1
+                    basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)
+                    Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)}")
                     holder.tvBkCount.text = ( holder.tvBkCount.text.toString().toInt() + 1 ). toString()
 
                 }
                 holder.ibtnBkMinus.setOnClickListener {
-                    if (currentItem.quantity > 0) {
-                        currentItem.quantity -= 1
-                        basketListener?.onBasketItemQuantityChanged(currentItem.exerciseId.toString(), currentItem.quantity)
-                        Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentItem.exerciseId.toString(), currentItem.quantity)}")
-                        holder.tvBkCount.text = currentItem.quantity.toString()
+                    if (currentExerciseItem.quantity > 0) {
+                        currentExerciseItem.quantity -= 1
+                        basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)
+                        Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)}")
+                        holder.tvBkCount.text = currentExerciseItem.quantity.toString()
                     }
                 }
-                holder.tvBkCount.text = currentItem.quantity.toString()
+                holder.tvBkCount.text = currentExerciseItem.quantity.toString()
             }
             // ------! play thumbnail 추천 운동 시작 !------
             is recommendViewHolder -> {
-                holder.tvRcPName.text = (if (currentItem.exerciseName.toString().length >= 10) {
-                    currentItem.exerciseName.toString().substring(0, 8)
+                holder.tvRcPName.text = (if (currentExerciseItem.exerciseName.toString().length >= 10) {
+                    currentExerciseItem.exerciseName.toString().substring(0, 8)
                 } else {
-                    currentItem.exerciseName
+                    currentExerciseItem.exerciseName
                 }).toString()
                 holder.tvRcPTime.text = second
-                holder.tvRcPStage.text = currentItem.exerciseStage
+                holder.tvRcPStage.text = currentExerciseItem.exerciseStage
                 holder.tvRcPKcal.text
                 Glide.with(holder.itemView.context)
-                    .load(currentItem.imageFilePathReal)
+                    .load(currentExerciseItem.imageFilePathReal)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.ivRcPThumbnail)
                 holder.vRPTN.setOnClickListener {
-                    val DialogFragment = PlayThumbnailDialogFragment().apply {
+                    val dialogFragment = PlayThumbnailDialogFragment().apply {
                         arguments = Bundle().apply {
-                            putParcelable("ExerciseUnit", currentItem)
+                            putParcelable("ExerciseUnit", currentExerciseItem)
                         }
                     }
-                    DialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                 }
             }
         }

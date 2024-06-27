@@ -7,7 +7,7 @@
     tools:context=".fragment.ExerciseFragment">
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvEc"
+        android:id="@+id/nsvE"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -43,7 +43,7 @@
                     android:id="@+id/imageView47"
                     android:layout_width="64dp"
                     android:layout_height="38dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="4dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/app_logo"
@@ -54,9 +54,9 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvEcMainCategory"
+                android:id="@+id/rvEMainCategory"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

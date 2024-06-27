@@ -33,9 +33,9 @@ class SetupActivity : AppCompatActivity() {
         val user_email = t_userData?.optString("user_email")
         Log.v("싱글턴", "${t_userData}")
 
-        binding.pvSu.progress = viewModel.setupProgress
-        binding.svSu.go(viewModel.setupStep, false)
-        binding.svSu.getState()
+        binding.pvSetup.progress = viewModel.setupProgress
+        binding.svSetup.go(viewModel.setupStep, false)
+        binding.svSetup.getState()
             .animationType(StepView.ANIMATION_CIRCLE)
             .steps(object : ArrayList<String?>() {
                 init {
@@ -61,12 +61,12 @@ class SetupActivity : AppCompatActivity() {
             if (binding.btnSu.text == "완료") {
                 val JsonObj = JSONObject()
                 JsonObj.put("user_gender", viewModel.User.value?.optString("user_gender"))
-                Log.w("${ContentValues.TAG}, 성별", viewModel.User.value?.optString("user_gender").toString())
+                Log.w("성별", viewModel.User.value?.optString("user_gender").toString())
                 JsonObj.put("user_height", viewModel.User.value?.optString("user_height"))
-                Log.w("${ContentValues.TAG}, 키", viewModel.User.value?.optString("user_height").toString())
+                Log.w("키", viewModel.User.value?.optString("user_height").toString())
                 JsonObj.put("user_weight", viewModel.User.value?.optString("user_weight"))
-                Log.w("${ContentValues.TAG}, 몸무게", viewModel.User.value?.optString("user_weight").toString())
-                Log.w("${ContentValues.TAG}, JSON몸통", "$JsonObj")
+                Log.w("몸무게", viewModel.User.value?.optString("user_weight").toString())
+                Log.w("JSON몸통", "$JsonObj")
                 Log.v("이메일", "$user_email")
                 if (user_email != null) {
                     val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
@@ -87,10 +87,10 @@ class SetupActivity : AppCompatActivity() {
                 viewModel.setupStep += 1
                 binding.vp2Su.currentItem = viewModel.setupStep
 
-                binding.svSu.go(viewModel.setupStep, true)
-                if (binding.pvSu.progress in 0 ..100) {
+                binding.svSetup.go(viewModel.setupStep, true)
+                if (binding.pvSetup.progress in 0 ..100) {
                     viewModel.setupProgress += 25
-                    binding.pvSu.progress = viewModel.setupProgress
+                    binding.pvSetup.progress = viewModel.setupProgress
                 }
             }
         }
@@ -108,23 +108,23 @@ class SetupActivity : AppCompatActivity() {
         }) // -----! 페이지 변경 call back 메소드 끝 !-----
 
         // ------! 이전 버튼 시작 !------
-        binding.btnBckSu.setOnSingleClickListener {
+        binding.btnBckSetup.setOnSingleClickListener {
             if (binding.vp2Su.currentItem == 0) {
 
             } else {
                 viewModel.setupStep -= 1
                 binding.vp2Su.currentItem = viewModel.setupStep
-                binding.svSu.go(viewModel.setupStep, true)
-                if (binding.pvSu.progress in 0 ..100) {
+                binding.svSetup.go(viewModel.setupStep, true)
+                if (binding.pvSetup.progress in 0 ..100) {
                     viewModel.setupProgress -= 25
-                    binding.pvSu.progress = viewModel.setupProgress
+                    binding.pvSetup.progress = viewModel.setupProgress
                 }
             }
         }
         // ------! 이전 버튼 끝 !------
 
         // ------! 스킵 시작 !------
-        binding.tvSuSkip.setOnSingleClickListener {
+        binding.tvSetupSkip.setOnSingleClickListener {
             val intent = Intent(this@SetupActivity, MainActivity::class.java)
             startActivity(intent)
             finishAffinity()
@@ -135,7 +135,6 @@ class SetupActivity : AppCompatActivity() {
         val viewPager = binding.vp2Su
         viewPager.isUserInputEnabled = false
         viewPager.adapter = SetupVPAdapter(this)
-
     }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
@@ -149,10 +148,10 @@ class SetupActivity : AppCompatActivity() {
         } else {
             viewModel.setupStep -= 1
             binding.vp2Su.currentItem = viewModel.setupStep
-            binding.svSu.go(viewModel.setupStep, true)
-            if (binding.pvSu.progress in 0 ..100) {
+            binding.svSetup.go(viewModel.setupStep, true)
+            if (binding.pvSetup.progress in 0 ..100) {
                 viewModel.setupProgress -= 25
-                binding.pvSu.progress = viewModel.setupProgress
+                binding.pvSetup.progress = viewModel.setupProgress
             }
         }
     }

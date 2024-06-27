@@ -1,19 +1,12 @@
 package com.tangoplus.tangoq.dialog
 
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.FileProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.FragmentExerciseBSDialogBinding
-import java.io.File
-import java.io.FileOutputStream
 
 
 class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
@@ -32,27 +25,27 @@ class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
         val bundle = arguments
         val exerciseUnit = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
 
-        binding.tvEcBSName.text = exerciseUnit?.exerciseName
+        binding.tvEBSName.text = exerciseUnit?.exerciseName
 //        binding.ivFrBsThumbnail.setImageResource(R.drawable)
-        binding.llEcBSPlay.setOnClickListener {
+        binding.llEBsPlay.setOnClickListener {
             dismiss()
-            val DialogFragment = PlayThumbnailDialogFragment().apply {
+            val dialogFragment = PlayThumbnailDialogFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable("ExerciseUnit", exerciseUnit)
                 }
             }
-            DialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+            dialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
 //            requireActivity().supportFragmentManager.beginTransaction().apply {
 //                replace(R.id.flMain, DialogFragment)
 //                commit()
 //            }
         }
-        binding.ibtnEcBsExit.setOnClickListener {
+        binding.ibtnEBsExit.setOnClickListener {
             dismiss()
         }
 
         // ------! 공유하기 시작 !------
-        binding.llEcBSShare.setOnClickListener {
+        binding.llEBSShare.setOnClickListener {
 //            val bitmap = Bitmap.createBitmap(binding.ClMs.width, binding.ClMs.height, Bitmap.Config.ARGB_8888)
 //            val canvas = Canvas(bitmap)
 //            binding.ClMs.draw(canvas)

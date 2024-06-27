@@ -5,7 +5,7 @@
     android:id="@+id/coordinatorlayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#00FFFFFF"
+    android:background="@drawable/effect_ibtn_12dp"
     app:layout_behavior="@string/bottom_sheet_behavior"
     tools:context=".dialog.AgreementBottomSheetDialogFragment">
 
@@ -13,111 +13,56 @@
         android:id="@+id/ConstraintLayout17"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_bottomsheet">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView14"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp"
-            app:cardCornerRadius="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <CheckBox
-                android:id="@+id/cbAgreementAll"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:gravity="center|left"
-                android:padding="16dp"
-                android:text="모든 약관에 동의"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                android:theme="@style/Theme.App.Checkbox" />
-
-        </androidx.cardview.widget.CardView>
-
-        <CheckBox
-            android:id="@+id/cbAgreement1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="32dp"
-            android:gravity="center|left"
-            android:padding="12dp"
-            android:text="[필수] 서비스 약관 동의"
-            android:textColor="@color/subColor800"
-            android:textSize="18sp"
-            android:theme="@style/Theme.App.Checkbox"
-            app:layout_constraintEnd_toEndOf="@+id/cardView14"
-            app:layout_constraintStart_toStartOf="@+id/cardView14"
-            app:layout_constraintTop_toBottomOf="@+id/cardView14" />
+        android:background="@drawable/background_bottomsheet"
+        app:layout_anchor="@+id/ConstraintLayout17"
+        app:layout_anchorGravity="center">
 
         <ImageButton
             android:id="@+id/ibtnAgreement1"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="right"
-            android:background="#FFFFFF"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/effect_ibtn_12dp"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_arrow_right_agreement"
-            app:layout_constraintBottom_toBottomOf="@+id/cbAgreement1"
-            app:layout_constraintStart_toEndOf="@+id/cbAgreement1"
-            app:layout_constraintTop_toTopOf="@+id/cbAgreement1" />
+            app:layout_constraintBottom_toBottomOf="@+id/clAgreement1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/clAgreement1" />
 
         <ImageButton
             android:id="@+id/ibtnAgreement2"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="right"
+            android:layout_marginEnd="20dp"
             android:background="#FFFFFF"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_arrow_right_agreement"
-            app:layout_constraintBottom_toBottomOf="@+id/cbAgreement2"
-            app:layout_constraintStart_toEndOf="@+id/cbAgreement2"
-            app:layout_constraintTop_toBottomOf="@+id/cbAgreement1" />
+            app:layout_constraintBottom_toBottomOf="@+id/clAgreement2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/clAgreement2" />
 
-        <CheckBox
-            android:id="@+id/cbAgreement2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center|left"
-            android:padding="12dp"
-            android:text="[필수] 개인정보 수집 · 이용 동의"
-            android:textColor="@color/subColor800"
-            android:textSize="18sp"
-            android:theme="@style/Theme.App.Checkbox"
-            app:layout_constraintEnd_toEndOf="@+id/cbAgreement1"
-            app:layout_constraintStart_toStartOf="@+id/cbAgreement1"
-            app:layout_constraintTop_toBottomOf="@+id/cbAgreement1" />
-
-        <CheckBox
-            android:id="@+id/cbAgreement4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:gravity="center|left"
-            android:padding="12dp"
-            android:text="[선택] 마케팅 정보 수신 동의"
-            android:textColor="@color/subColor800"
-            android:textSize="18sp"
-            android:theme="@style/Theme.App.Checkbox"
-            app:layout_constraintStart_toStartOf="@+id/cbAgreement2"
-            app:layout_constraintTop_toBottomOf="@+id/cbAgreement2" />
+        <ImageButton
+            android:id="@+id/ibtnAgreement3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="right"
+            android:layout_marginEnd="20dp"
+            android:background="#FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_arrow_right_agreement"
+            app:layout_constraintBottom_toBottomOf="@+id/clAgreement3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/clAgreement3" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnAgreementFinish"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/subColor500"
@@ -125,14 +70,241 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="16dp"
-            android:text="확인"
+            android:text="가입하기"
             android:textColor="@color/white"
             android:textSize="20sp"
             app:cornerRadius="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cbAgreement4" />
+            app:layout_constraintTop_toBottomOf="@+id/clAgreementMk2" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clAgreementAll"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintEnd_toStartOf="@+id/ibtnAgreementExit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivAgreementAll"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_part_checkbox_disabled" />
+
+            <TextView
+                android:id="@+id/textView127"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="모든 약관의 동의"
+                android:textColor="@color/subColor800"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAgreementAll"
+                app:layout_constraintStart_toEndOf="@+id/ivAgreementAll"
+                app:layout_constraintTop_toTopOf="@+id/ivAgreementAll" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/materialDivider22"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:dividerColor="@color/subColor100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clAgreementAll" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clAgreement3"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/ibtnAgreement3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clAgreement2">
+
+            <ImageView
+                android:id="@+id/ivAgreement3"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_part_checkbox_disabled" />
+
+            <TextView
+                android:id="@+id/textView130"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="[선택] 마케팅 정보 수신 동의"
+                android:textColor="@color/subColor800"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAgreement3"
+                app:layout_constraintStart_toEndOf="@+id/ivAgreement3"
+                app:layout_constraintTop_toTopOf="@+id/ivAgreement3" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clAgreement1"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/ibtnAgreement1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialDivider22">
+
+            <TextView
+                android:id="@+id/textView131"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="[필수] 서비스 약관 동의"
+                android:textColor="@color/subColor800"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAgreement1"
+                app:layout_constraintStart_toEndOf="@+id/ivAgreement1"
+                app:layout_constraintTop_toTopOf="@+id/ivAgreement1" />
+
+            <ImageView
+                android:id="@+id/ivAgreement1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_part_checkbox_disabled" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clAgreement2"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/ibtnAgreement2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clAgreement1">
+
+            <ImageView
+                android:id="@+id/ivAgreement2"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox_disabled"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_part_checkbox_disabled" />
+
+            <TextView
+                android:id="@+id/textView132"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="[필수] 개인정보 수집 · 이용 동의"
+                android:textColor="@color/subColor800"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAgreement2"
+                app:layout_constraintStart_toEndOf="@+id/ivAgreement2"
+                app:layout_constraintTop_toTopOf="@+id/ivAgreement2" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageButton
+            android:id="@+id/ibtnAgreementExit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/white"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_exit"
+            app:layout_constraintBottom_toBottomOf="@+id/clAgreementAll"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/clAgreementAll" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clAgreementMk1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clAgreement3">
+
+            <ImageView
+                android:id="@+id/ivAgreementMk1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox_disabled"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView137"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="문자메시지(SMS, LMS 등)"
+                android:textColor="@color/subColor800"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAgreementMk1"
+                app:layout_constraintStart_toEndOf="@+id/ivAgreementMk1"
+                app:layout_constraintTop_toTopOf="@+id/ivAgreementMk1" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clAgreementMk2"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clAgreementMk1">
+
+            <ImageView
+                android:id="@+id/ivAgreementMk2"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox_disabled"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView138"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="이메일"
+                android:textColor="@color/subColor800"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAgreementMk2"
+                app:layout_constraintStart_toEndOf="@+id/ivAgreementMk2"
+                app:layout_constraintTop_toTopOf="@+id/ivAgreementMk2" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

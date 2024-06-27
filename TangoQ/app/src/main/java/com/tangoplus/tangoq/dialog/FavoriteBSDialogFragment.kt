@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -36,6 +37,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -58,52 +60,52 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                 0 -> {
                     val imgBitmap = BitmapFactory.decodeByteArray(imgByteArray, 0, imgByteArray!!.size)
                     // ------! null 이미지와 favorite more버튼은 ivFvbsNull을 사용함(favorite는 bitmap으로 캡쳐해서 가져옴) !------
-                    binding.ivFrBSThumbnailNull.visibility = View.VISIBLE
-                    binding.ivFrBSThumbnailNull.setImageBitmap(imgBitmap)
+                    binding.ivFBSThumbnailNull.visibility = View.VISIBLE
+                    binding.ivFBSThumbnailNull.setImageBitmap(imgBitmap)
                     setVisibility(false)
                 }
                 1 -> {
                     val itemCount = favorite.exercises?.size
-                    binding.vFrBS.visibility = View.INVISIBLE
+                    binding.vFBS.visibility = View.INVISIBLE
                     Log.v("썸네일갯수", "${itemCount}")
                     when (itemCount) {
                         0 -> {
-                            binding.ivFrBSThumbnailNull.visibility = View.VISIBLE
-                            binding.tvFrBSThumbnailMore.visibility = View.INVISIBLE
+                            binding.ivFBSThumbnailNull.visibility = View.VISIBLE
+                            binding.tvFBSThumbnailMore.visibility = View.INVISIBLE
                             setVisibility(false)
                         }
                         1 -> {
-                            val list = listOf(binding.ivFrBSThumbnail1)
-                            binding.ivFrBSThumbnailNull.visibility = View.GONE
-                            binding.ivFrBSThumbnail2.visibility = View.GONE
-                            binding.llFrBSThumbnailBottom.visibility = View.GONE
+                            val list = listOf(binding.ivFBSThumbnail1)
+                            binding.ivFBSThumbnailNull.visibility = View.GONE
+                            binding.ivFBSThumbnail2.visibility = View.GONE
+                            binding.llFBSThumbnailBottom.visibility = View.GONE
                             setThumbnails(favorite.imgThumbnails!!.take(1), list, listOf(true, false, false, false))
                         }
                         2 -> {
-                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2)
-                            binding.ivFrBSThumbnailNull.visibility = View.GONE
-                            binding.llFrBSThumbnailBottom.visibility = View.GONE
+                            val list = listOf(binding.ivFBSThumbnail1, binding.ivFBSThumbnail2)
+                            binding.ivFBSThumbnailNull.visibility = View.GONE
+                            binding.llFBSThumbnailBottom.visibility = View.GONE
                             setThumbnails(favorite.imgThumbnails!!.take(2), list, listOf(true, true, false, false))
                         }
                         3 -> {
-                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2 , binding.ivFrBSThumbnail3)
-                            binding.ivFrBSThumbnailNull.visibility = View.GONE
+                            val list = listOf(binding.ivFBSThumbnail1, binding.ivFBSThumbnail2 , binding.ivFBSThumbnail3)
+                            binding.ivFBSThumbnailNull.visibility = View.GONE
                             binding.ivFrBSThumbnail4.visibility = View.GONE
                             setThumbnails(favorite.imgThumbnails!!.take(3), list, listOf(true, true, true, false))
                         }
                         4 -> {
-                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2, binding.ivFrBSThumbnail3, binding.ivFrBSThumbnail4)
-                            binding.ivFrBSThumbnailNull.visibility = View.GONE
+                            val list = listOf(binding.ivFBSThumbnail1, binding.ivFBSThumbnail2, binding.ivFBSThumbnail3, binding.ivFrBSThumbnail4)
+                            binding.ivFBSThumbnailNull.visibility = View.GONE
                             setThumbnails(favorite.imgThumbnails!!.take(4), list, listOf(true, true, true, true))
                         }
                         else -> {
-                            val list = listOf(binding.ivFrBSThumbnail1, binding.ivFrBSThumbnail2, binding.ivFrBSThumbnail3, binding.ivFrBSThumbnail4)
-                            binding.ivFrBSThumbnailNull.visibility = View.GONE
-                            binding.vFrBS.visibility = View.VISIBLE
-                            binding.tvFrBSThumbnailMore.visibility = View.VISIBLE
+                            val list = listOf(binding.ivFBSThumbnail1, binding.ivFBSThumbnail2, binding.ivFBSThumbnail3, binding.ivFrBSThumbnail4)
+                            binding.ivFBSThumbnailNull.visibility = View.GONE
+                            binding.vFBS.visibility = View.VISIBLE
+                            binding.tvFBSThumbnailMore.visibility = View.VISIBLE
                             setThumbnails(favorite.imgThumbnails!!.take(4), list, listOf(true, true, true, true))
                             if (itemCount != null) {
-                                binding.tvFrBSThumbnailMore.text = "+ ${itemCount - 4}"
+                                binding.tvFBSThumbnailMore.text = "+ ${itemCount - 4}"
                             }
                         }
                     }
@@ -111,12 +113,12 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
             } // ------! 썸네일 사진 4개 끝 !------
 
 
-            binding.tvFrBSName.text = favorite.favoriteName
-            binding.llFrBSPlay.setOnClickListener{
+            binding.tvFBSPlay.text = favorite.favoriteName
+            binding.llFBSPlay.setOnClickListener{
                 // TODO 재생목록 만들어서 FULLSCREEN
             }
             // ---! 편집하기 !---
-            binding.llFrBSEdit.setOnClickListener {
+            binding.llFBSEdit.setOnClickListener {
                 dismiss()
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -134,7 +136,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                 startActivity(Intent.createChooser(intent, chooserTitle))
             }
             // ---! 운동 추가하기 !---
-            binding.llFrBSAddExercise.setOnClickListener {
+            binding.llFBSAddExercise.setOnClickListener {
                 dismiss()
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -143,7 +145,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                         .commit()
                 }
             }
-            binding.llFrBSChange.setOnClickListener{
+            binding.llFBSChange.setOnClickListener{
                 dismiss()
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -158,7 +160,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                     setMessage("플레이리스트에서 삭제하시겠습니까?")
                     setPositiveButton("확인") { dialog, _ ->
                         deleteFavoriteItemSn(getString(R.string.IP_ADDRESS_t_favorite),
-                            favorite.favoriteSn.toString()
+                            favorite.favoriteSn.toString(), requireContext()
                         ) {
                             requireActivity().supportFragmentManager.beginTransaction().apply {
 //                                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -174,7 +176,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
             }
 
         } // ------! 즐겨찾기 홈에서 경로 설정 끝 !------
-        binding.ibtnFrBsExit.setOnClickListener { dismiss() }
+        binding.ibtnFBsExit.setOnClickListener { dismiss() }
     }
 
     // ------! 이미지 썸네일 함수 시작 !------
@@ -196,14 +198,14 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
     }
     private fun setVisibility(tf : Boolean){
         if (tf) {
-            binding.ivFrBSThumbnail1.visibility = View.VISIBLE
-            binding.ivFrBSThumbnail2.visibility = View.VISIBLE
-            binding.ivFrBSThumbnail3.visibility = View.VISIBLE
+            binding.ivFBSThumbnail1.visibility = View.VISIBLE
+            binding.ivFBSThumbnail2.visibility = View.VISIBLE
+            binding.ivFBSThumbnail3.visibility = View.VISIBLE
             binding.ivFrBSThumbnail4.visibility = View.VISIBLE
         } else {
-            binding.ivFrBSThumbnail1.visibility = View.GONE
-            binding.ivFrBSThumbnail2.visibility = View.GONE
-            binding.ivFrBSThumbnail3.visibility = View.GONE
+            binding.ivFBSThumbnail1.visibility = View.GONE
+            binding.ivFBSThumbnail2.visibility = View.GONE
+            binding.ivFBSThumbnail3.visibility = View.GONE
             binding.ivFrBSThumbnail4.visibility = View.GONE
         }
     }

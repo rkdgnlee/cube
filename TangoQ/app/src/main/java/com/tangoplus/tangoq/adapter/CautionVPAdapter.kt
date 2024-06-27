@@ -3,9 +3,7 @@ package com.tangoplus.tangoq.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.PagerAdapter
 
 class CautionVPAdapter(private val layouts: List<Int>) : RecyclerView.Adapter<CautionVPAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

@@ -83,14 +83,12 @@ class MediaProjectionService : Service() {
         val channelId = "ScreenCaptureServiceChannel"
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         Log.v("serviceinit", channelId)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Screen Capture Service",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(
+            channelId,
+            "Screen Capture Service",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
 
         val notification: Notification = Notification.Builder(this, channelId)
             .setContentTitle("Screen Capture Service")
@@ -188,7 +186,6 @@ class MediaProjectionService : Service() {
 
         fos?.use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
-            Toast.makeText(this, "Image saved to gallery", Toast.LENGTH_SHORT).show()
             callback?.onCaptureComplete(filename)
         }
 
@@ -308,11 +305,8 @@ class MediaProjectionService : Service() {
             FileInputStream(videoFilePath).use { inputStream ->
                 inputStream.copyTo(outputStream)
             }
-            Toast.makeText(this, "촬영한 비디오가 갤러리에 저장됐습니다 !", Toast.LENGTH_LONG).show()
-
         } ?: run {
             Toast.makeText(this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
-
         }
     }
     // ------! 비디오 저장 끝 !------

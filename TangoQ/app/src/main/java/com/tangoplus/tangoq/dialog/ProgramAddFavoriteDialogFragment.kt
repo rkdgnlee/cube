@@ -29,6 +29,7 @@ import com.tangoplus.tangoq.`object`.NetworkFavorite
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByEmail
 import com.tangoplus.tangoq.`object`.NetworkFavorite.updateFavoriteItemJson
+import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -41,6 +42,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
     val viewModel : FavoriteViewModel by activityViewModels()
     private lateinit var adapter: ExerciseRVAdapter
     private lateinit var program: ProgramVO
+    private lateinit var singletonInstance: Singleton_t_history
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,23 +56,21 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        singletonInstance = Singleton_t_history.getInstance(requireContext())
         viewModel.favoriteList.value = mutableListOf()
-        binding.nsvPAV.isNestedScrollingEnabled = false
-        binding.rvPAV.isNestedScrollingEnabled = false
-        binding.rvPAV.overScrollMode = 0
+        binding.nsvPAFD.isNestedScrollingEnabled = false
+        binding.rvPAFD.isNestedScrollingEnabled = false
+        binding.rvPAFD.overScrollMode = 0
 
         // ------! program 데이터 bundle, singleton에서 전화번호 가져오기 시작 !------
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         val user_email = t_userData?.optString("user_email")
-
         val bundle = arguments
 
 
-        program = bundle?.getParcelable<ProgramVO>("Program")!!
+        program = bundle?.getParcelable("Program")!!
         // ------! program 데이터 bundle, singleton에서 전화번호 가져오기 끝 !------
-
-
-        binding.ibtnPAVBack.setOnClickListener {
+        binding.ibtnPAFDBack.setOnClickListener {
             dismiss()
         }
 
@@ -118,17 +118,17 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
             }
 
 
-            viewModel.favoriteList.observe(viewLifecycleOwner) { jsonArray ->
+            viewModel.favoriteList.observe(viewLifecycleOwner) {
 //                 아무것도 없을 때 나오는 캐릭터
                 linkFavoriteAdapter(viewModel.favoriteList.value!!)
             } // -----! appClass list관리 끝 !-----
 
             // ------! 버튼 text로 finish 단계 감지 시작 !------
 
-            binding.btnPAVFinish.setOnClickListener {
-                when (binding.btnPAVFinish.text) {
+            binding.btnPAFDFinish.setOnClickListener {
+                when (binding.btnPAFDFinish.text) {
                     "운동 고르기" -> {
-                        binding.btnPAVFinish.text = "완료하기"
+                        binding.btnPAFDFinish.text = "완료하기"
                         linkBaksetAdapter(program.exercises!!)
                     }
                     "완료하기" -> {
@@ -147,7 +147,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
                         Log.v("viewModel.selectedFavorite", "${viewModel.selectedFavorite}")
                         val jsonObject = JSONObject()
                         jsonObject.put("exercise_ids", JSONArray(exerciseIds))
-                        updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), viewModel.selectedFavorite.favoriteSn.toString(), jsonObject.toString()) {
+                        updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), viewModel.selectedFavorite.favoriteSn.toString(), jsonObject.toString(), requireContext()) {
                             requireActivity().runOnUiThread{
                                 viewModel.allExercises.value = mutableListOf()
                             }
@@ -172,20 +172,20 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
     private fun linkFavoriteAdapter(list : MutableList<FavoriteVO>) {
         val adapter = FavoriteRVAdapter(list,this@ProgramAddFavoriteDialogFragment,this@ProgramAddFavoriteDialogFragment, this@ProgramAddFavoriteDialogFragment, "add")
 
-        binding.rvPAV.adapter = adapter
+        binding.rvPAFD.adapter = adapter
         val linearLayoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.rvPAV.layoutManager = linearLayoutManager
+        binding.rvPAFD.layoutManager = linearLayoutManager
 
     }
 
     private fun linkBaksetAdapter(list : MutableList<ExerciseVO>) {
         Log.v("program", "${program}")
-        adapter = ExerciseRVAdapter(this@ProgramAddFavoriteDialogFragment,list,"basket")
+        adapter = ExerciseRVAdapter(this@ProgramAddFavoriteDialogFragment,list, singletonInstance.viewingHistory?.toList() ?: listOf(),"basket")
         adapter.basketListener = this@ProgramAddFavoriteDialogFragment
-        binding.rvPAV.adapter = adapter
+        binding.rvPAFD.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.rvPAV.layoutManager = linearLayoutManager
+        binding.rvPAFD.layoutManager = linearLayoutManager
         viewModel.allExercises.value = program.exercises
     }
     override fun onBasketItemQuantityChanged(descriptionId: String, newQuantity: Int) {

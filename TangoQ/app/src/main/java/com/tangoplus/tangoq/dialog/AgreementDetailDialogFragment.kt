@@ -33,10 +33,6 @@ class AgreementDetailDialogFragment : DialogFragment() {
         }
     }
     lateinit var binding: FragmentAgreementDetailDialogBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,6 +69,7 @@ class AgreementDetailDialogFragment : DialogFragment() {
         val agreementText = when (agreementType) {
             "agreement1" -> { readAgreementFromFile(R.raw.agreement1) }
             "agreement2" -> readAgreementFromFile(R.raw.agreement2)
+            "agreement3" -> readAgreementFromFile(R.raw.agreement3)
             else -> ""
         }
         val builder = AlertDialog.Builder(requireContext())
@@ -92,10 +89,12 @@ class AgreementDetailDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.background_dialog))
         val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
         if (agreementType == "agreement1") {
-            requireContext().dialogFragmentResize(0.9f, 0.8f)
+            dialogFragmentResize(0.8f, 0.7f)
+        } else {
+            dialogFragmentResize(0.8f, 0.7f)
         }
     }
-    private fun Context.dialogFragmentResize(width: Float, height: Float) {
+    private fun dialogFragmentResize(width: Float, height: Float) {
         val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         if (Build.VERSION.SDK_INT < 30) {
