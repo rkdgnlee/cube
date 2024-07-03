@@ -16,10 +16,12 @@ import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackPartDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_user
+import org.json.JSONObject
 
 
 class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
@@ -42,12 +44,12 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         binding.btnFPDFinish.setOnClickListener {
 //            viewModel.parts.value //
             dismiss()
-            Log.v("VM>part", "${viewModel.feedbackparts.value}")
+            Log.v("VM>part", "${viewModel.feedbackParts.value}")
 
             // ------! db 전송 시작 !------
             val partsList = mutableListOf<String>()
             for (i in 0 until viewModel.parts.value?.size!!) {
-                partsList.add(viewModel.feedbackparts.value!![i].second)
+                partsList.add(viewModel.feedbackParts.value!![i].partName)
             }
             userJson?.optString("user_mobile")
 //            insertMeasurePartsByJson(getString(R.string.IP_ADDRESS_t_favorite),)
@@ -75,25 +77,31 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
     // 체크 연동
     fun setPartCheck(cb:CheckBox, iv: ImageView) {
         // ------! 기존 데이터 받아서 쓰기 !------
-        val part = Triple(cb.text.toString(), cb.text.toString(), cb.isChecked)
-        cb.isChecked = viewModel.feedbackparts.value?.contains(part) == true
+//        val part = Triple(cb.text.toString(), cb.text.toString(), cb.isChecked)
+        val part = MeasureVO(
+            partName = cb.text.toString(),
+            select = cb.isChecked,
+            drawableName = "",
+            anglesNDistances = JSONObject()
+        )
+        cb.isChecked = viewModel.feedbackParts.value?.contains(part) == true
 
         cb.setOnCheckedChangeListener { buttonView, isChecked ->
             when (isChecked) {
                 true -> {
                     iv.setImageResource(R.drawable.drawable_select_part_enabled)
-                    viewModel.addFeedbackPart(Triple(cb.text.toString(), cb.text.toString(), true))
+                    viewModel.addFeedbackPart(part)
                 }
                 else -> {
                     iv.setImageResource(R.drawable.drawable_select_part_disabled)
-                    viewModel.deleteFeedbackPart(Triple(cb.text.toString(), cb.text.toString(), false))
+                    viewModel.deleteFeedbackPart(part)
                 }
             }
         }
     }
 
     fun setvmPart(cb: CheckBox, iv: ImageView) {
-        val enabledPart = viewModel.feedbackparts.value?.find { it.first == cb.text }
+        val enabledPart = viewModel.feedbackParts.value?.find { it.partName == cb.text }
         if (enabledPart != null) {
             cb.isEnabled = true
             setPartCheck(cb, iv)
@@ -111,8 +119,8 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
-    override fun onPartCheck(part: Triple<String,String, Boolean>) {
-        if (part.third) {
+    override fun onPartCheck(part: MeasureVO) {
+        if (part.select) {
             viewModel.addFeedbackPart(part)
             Log.v("viewModel.part", "${viewModel.parts.value}")
         } else {

@@ -117,11 +117,11 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             Toast.makeText(fragment.requireContext(), "현재 v1.0 입니다.", Toast.LENGTH_SHORT).show()
                         }
                         "개인정보 처리방침" -> {
-                            val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
+                            val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
                             dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
                         }
                         "서비스 이용약관" -> {
-                            val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
+                            val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
                             dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
                         }
                         "로그아웃" -> {

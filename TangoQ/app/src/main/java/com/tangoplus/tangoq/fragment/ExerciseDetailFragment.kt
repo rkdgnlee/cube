@@ -4,28 +4,26 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
+import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
-import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
-import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
-import com.tangoplus.tangoq.`object`.NetworkHistory.fetchViewingHistory
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseByCategory
 import com.tangoplus.tangoq.`object`.Singleton_t_history
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import io.reactivex.Single
 import kotlinx.coroutines.launch
 
 
@@ -48,20 +46,21 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
     companion object {
         private const val ARG_CATEGORY_ID = "category_id"
         private const val ARG_CATEGORY_NAME = "cagetory_name"
-        private const val ARG_SERACH_ID = "search_id"
-        private const val ARG_SERACH_NAME = "search_name"
+//        private const val ARG_SERACH_ID = "search_id"
+//        private const val ARG_SERACH_NAME = "search_name"
 
-        fun newInstance(category: Pair<Int, String>, type : Pair<Int, String>): ExerciseDetailFragment {
+        fun newInstance(category: Pair<Int, String>): ExerciseDetailFragment {
             val fragment = ExerciseDetailFragment()
             val args = Bundle()
             args.putInt(ARG_CATEGORY_ID, category.first)
             args.putString(ARG_CATEGORY_NAME, category.second)
-            args.putInt(ARG_SERACH_ID, type.first)
-            args.putString(ARG_SERACH_NAME, type.second)
+//            args.putInt(ARG_SERACH_ID, type.first)
+//            args.putString(ARG_SERACH_NAME, type.second)
             fragment.arguments = args
             return fragment
         }
     }
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -71,7 +70,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 
         val categoryId = arguments?.getInt(ARG_CATEGORY_ID)
         val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
-        val searchId = arguments?.getInt(ARG_SERACH_ID)
+//        val searchId = arguments?.getInt(ARG_SERACH_ID)
 //        val searchName = arguments?.getString(ARG_SERACH_NAME)
         // ------! 선택 카테고리 & 타입 가져오기  !------
 
@@ -82,7 +81,15 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 //        binding.ibtnEDACTVClear.setOnClickListener {
 //            binding.actvEDSearch.text.clear()
 //        }
-        binding.tvEDCategoryName.text = categoryName
+
+        when (categoryId) {
+            1 -> binding.tvEDMainCategoryName.text = "기본 밸런스"
+            2 -> binding.tvEDMainCategoryName.text = "스트레칭"
+            3 -> binding.tvEDMainCategoryName.text = "근골격 개선 운동"
+            4 -> binding.tvEDMainCategoryName.text = "근골격 스트레칭"
+            5 -> binding.tvEDMainCategoryName.text = "기구활용 운동"
+        }
+        binding.tvEDMainCategoryName.textSize = 24f
         binding.ibtnEDBack.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
 //                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_in_left)
@@ -92,33 +99,62 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         }
 
         // -----! 카테고리  시작 !-----
-//        val CategoryList = arrayOf("전체","목", "어깨", "팔", "척추", "하체", "몸통", "발목", "전신", "코어")
-//        val adapter2 = ExerciseJointTypeRVAdapter(CategoryList,  this@ExerciseDetailFragment )
-//        adapter2.category = CategoryList
-//        binding.rvEcCategory.adapter = adapter2
-//        val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-//        binding.rvEcCategory.layoutManager = linearLayoutManager2
+        val categoryList = listOf("전체","목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎", "발목")
+        val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryList, this@ExerciseDetailFragment, this@ExerciseDetailFragment, "subCategory" )
+        binding.rvEDCategory.adapter = adapter2
+        val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.rvEDCategory.layoutManager = linearLayoutManager2
         // -----! 카테고리 끝 !-----
 
         lifecycleScope.launch {
-            // TODO 여기서 CATEGORY에 맞게도 필터링 되야 함.
+            filteredDataList  = fetchExerciseByCategory(getString(R.string.IP_ADDRESS_t_exercise_description), categoryId!!)
 
-            filteredDataList  = fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_exercise_description), categoryId!!, searchId!!)
             // ------! 자동완성 시작 !------
+            val exerciseNames = filteredDataList.map { it.exerciseName }.distinct()
+            val adapterActv = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, exerciseNames)
+            binding.actvEDSearch.setAdapter(adapterActv)
 
-//            binding.actvEDSearch.setAdapter(adapterActv)
-//
-//            binding.actvEDSearch.setOnItemClickListener { parent, view, position, id ->
-//                val selectedItem = parent.getItemAtPosition(position) as String
-//                val filterList = verticalDataList.filter { item ->
-//                    item.exerciseName == selectedItem
-//                }.toMutableList()
-//                val adapter = ExerciseRVAdapter(this@ExerciseFragment, filterList, "mainCategory")
-//                binding.rvEcAll.adapter = adapter
-//                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//                binding.rvEcAll.layoutManager = linearLayoutManager
-//                adapter.notifyDataSetChanged()
-//            } // ------! 자동완성 끝 !------
+            binding.ibtnEDACTVClear.setOnClickListener {
+                binding.actvEDSearch.text.clear()
+
+                updateRecyclerView(filteredDataList)
+            }
+            binding.actvEDSearch.setOnEditorActionListener{ _, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_NEXT || event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+
+                    // ------! enter 클릭시 동작 시작 !------
+                    val inputText = binding.actvEDSearch.text.toString()
+                    if (inputText.isNotEmpty()) {
+                        val regex = Regex(".*$inputText.*", RegexOption.IGNORE_CASE) // 대소문자 구분하지 않는 정규 표현식
+                        val filteredExercises = filteredDataList.filter {
+                            it.exerciseName!!.matches(regex)
+                        }.distinct().toMutableList()
+                        updateRecyclerView(filteredExercises)
+                    }
+                    binding.actvEDSearch.dismissDropDown()
+                    true
+                    // ------! enter 클릭시 동작 끝 !------
+                } else {
+                    false
+                }
+            }
+            // 사용자가 항목을 선택했을 때 필터링된 결과를 리사이클러뷰에 표시
+            binding.actvEDSearch.setOnItemClickListener { parent, _, position, _ ->
+                val selectedItem = parent.getItemAtPosition(position) as String
+                val filterList = filteredDataList.filter { item ->
+                    item.exerciseName == selectedItem
+                }.toMutableList()
+                val adapter = ExerciseRVAdapter(
+                    this@ExerciseDetailFragment,
+                    filterList,
+                    singletonInstance.viewingHistory?.toList() ?: listOf(),
+                    "main")
+                binding.rvEDAll.adapter = adapter
+                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding.rvEDAll.layoutManager = linearLayoutManager
+                adapter.notifyDataSetChanged()
+            }
+            // ------! 자동완성 끝 !------
 
             // ------! 시청 기록 시작 !------
 
@@ -200,6 +236,11 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 //            scanLeDevice(true)
 //        }
     }
+    private fun updateRecyclerView(exercises : MutableList<ExerciseVO>) {
+        val adapter = binding.rvEDAll.adapter as ExerciseRVAdapter
+        adapter.exerciseList = exercises.toMutableList()
+        adapter.notifyDataSetChanged()
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCategoryClick(category: String) {
@@ -207,7 +248,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
             filteredDataList
         } else {
             filteredDataList.filter { item ->
-                item.relatedSymptom!!.contains(category)
+                item.relatedJoint!!.contains(category)
             }.toMutableList()
         }
         val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filterList, singletonInstance.viewingHistory?.toList() ?: listOf(),"main")

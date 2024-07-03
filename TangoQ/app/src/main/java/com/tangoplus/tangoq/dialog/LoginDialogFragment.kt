@@ -20,6 +20,8 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
+import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerToken
+import org.json.JSONObject
 import java.util.regex.Pattern
 
 class LoginDialogFragment : DialogFragment() {
@@ -68,7 +70,12 @@ class LoginDialogFragment : DialogFragment() {
 //        }
         binding.btnLDLogin.setOnClickListener {
             if (viewModel.idPwCondition.value == true) {
-                NetworkUser.getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), viewModel.id.value.toString(), viewModel.pw.value.toString()) { jsonObj ->
+                val jsonObject = JSONObject()
+                jsonObject.put("user_id", viewModel.id.value)
+                jsonObject.put("user_pw", viewModel.pw.value)
+
+
+                NetworkUser.getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObject, getServerToken(requireContext()).toString()) { jsonObj ->
 
                     Log.v("json", "${jsonObj?.getInt("status")}")
                     if (jsonObj?.getInt("status") == 201) { // 기존에 정보가 있을 경우 - 로그인 성공
@@ -112,5 +119,4 @@ class LoginDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
-
 }

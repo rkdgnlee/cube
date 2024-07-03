@@ -14,23 +14,14 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.Room.Database
-import com.tangoplus.tangoq.Room.Message
-import com.tangoplus.tangoq.Room.MessageDao
+import com.tangoplus.tangoq.data.MessageVO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
-    private lateinit var messageDao: MessageDao
-
     override fun onCreate() {
         super.onCreate()
-        val db = Room.databaseBuilder(
-            applicationContext,
-            Database::class.java, "tangoqDB"
-        ).build()
-        messageDao = db.messageDao()
     }
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
@@ -42,14 +33,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 message.data["title"].toString(),
                 message.data["message"].toString()
             )
-            val messageToStore = Message(
+            val messageToStore = MessageVO(
                 message = message.data["message"].toString(),
                 timestamp = System.currentTimeMillis(),
                 route = "AlarmActivity"
             )
-            CoroutineScope(Dispatchers.IO).launch {
-                messageDao.insert(messageToStore)
-            }
         } else {
             // 메시지에 알림 페이로드가 포함되어 있는지 확인
             message.notification?.let {
@@ -57,14 +45,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     message.notification!!.title.toString(),
                     message.notification!!.body.toString()
                 )
-                val messageToStore = Message(
+                val messageToStore = MessageVO(
                     message = message.notification!!.body.toString(),
                     timestamp = System.currentTimeMillis(),
                     route = "AlarmActivity"
                 )
-                CoroutineScope(Dispatchers.IO).launch {
-                    messageDao.insert(messageToStore)
-                }
             }
         }
     }

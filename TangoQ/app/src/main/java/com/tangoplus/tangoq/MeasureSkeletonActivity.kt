@@ -43,9 +43,11 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.callback.CaptureCallback
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.data.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityMeasureSkeletonBinding
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
@@ -119,7 +121,7 @@ companion object {
 //    var hasExecuted = false
 //    var isTimerRunning = false
     private var repeatCount = BigDecimal("0.0")
-    private val maxRepeats = BigDecimal("7.0")
+    private val maxRepeats = BigDecimal("6.0")
 //    private var isLooping = false
     private var progress = 12
     private var serviceBound = false
@@ -174,22 +176,18 @@ companion object {
                         // ------! 종료 후 다시 세팅 !------
                         mediaProjectionService?.captureScreen{
                             Log.v("캡쳐종료시점", "step: $repeatCount, latestResult: $latestResult")
-
                             resultBundleToJson(latestResult!!, repeatCount)
                             updateUI()
                             isCapture = false
 
-
-                            if (repeatCount == maxRepeats) {
-                                binding.btnMeasureSkeletonStep.text = "완료하기"
-                                binding.pvMeasureSkeleton.progress = 100
-                                mCountDown.cancel()
-                                Log.v("repeat", "Max repeats reached, stopping the loop")
-                            }
+//                            if (repeatCount == maxRepeats) {
+//                                binding.btnMeasureSkeletonStep.text = "완료하기"
+//                                binding.pvMeasureSkeleton.progress = 100
+//
+//                            }
                         }
                     }
                 }
-//                isTimerRunning = false
                 binding.btnMeasureSkeletonStep.isEnabled = true
             }
         }
@@ -334,9 +332,19 @@ companion object {
 //            val intentBack = Intent(this, MainActivity::class.java)
 //            intentBack.putExtra("finishMeasure", true)
 //            startActivity(intentBack)
-            val intent = Intent(this@MeasureSkeletonActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+
+            MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                setTitle("알림")
+                setMessage("측정을 종료하시겠습니까 ?")
+                setPositiveButton("예") { dialog, _ ->
+                    val activityIntent = Intent(this@MeasureSkeletonActivity, MainActivity::class.java)
+                    startActivity(activityIntent)
+                    finish()
+                }
+                setNegativeButton("아니오") { dialog, _ ->
+                   dialog.dismiss()
+                }
+            }.show()
         }
 
         // ------! 주의사항 키기 !------
@@ -384,7 +392,7 @@ companion object {
         binding.clMeasureSkeletonTop.visibility = View.INVISIBLE
         binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
         binding.clMeasureSkeletonBottom.visibility = View.INVISIBLE
-        startCameraShutterAnimation()
+        if (repeatCount != BigDecimal("2.0")) startCameraShutterAnimation()
 
 
         setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
@@ -422,6 +430,10 @@ companion object {
             }
             maxRepeats -> {
                 binding.pvMeasureSkeleton.progress = 100
+                binding.tvMeasureSkeletonCount.text = "측정이 완료됐습니다 !"
+                binding.btnMeasureSkeletonStep.text = "완료하기"
+                mCountDown.cancel()
+                Log.v("repeat", "Max repeats reached, stopping the loop")
             }
             BigDecimal("2.9") -> {
                 repeatCount = repeatCount.plus(BigDecimal("0.1"))
@@ -440,6 +452,7 @@ companion object {
                 val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.toInt()}", "drawable", packageName))
                 binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
             }
+
         }
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount}")
 
@@ -755,13 +768,9 @@ companion object {
                     // 목 밸런스 점수
                     val neckAngle = calculateSlope(middleShoulder.first, middleShoulder.second, nose.first, nose.second)
 
-
                     joScore.put("result_balance_score_angle_stomach", calculateBalanceScore(stomachAngle))
                     joScore.put("result_balance_score_angle_neck", calculateBalanceScore(neckAngle))
                     saveJsonToSingleton(BigDecimal("10.0"), joScore)
-
-
-
 
                 }
                 BigDecimal("4.0") -> { // 오른쪽보기 (왼쪽 팔)
@@ -885,29 +894,32 @@ companion object {
     }
     private fun startCameraShutterAnimation() {
         // 첫 번째 애니메이션: VISIBLE로 만들고 alpha를 0에서 1로
-        binding.flMeasureSkeleton?.visibility = View.VISIBLE
-        val fadeIn = ObjectAnimator.ofFloat(binding.flMeasureSkeleton, "alpha", 0f, 1f).apply {
-            duration = 100 // 0.1초
-            interpolator = AccelerateDecelerateInterpolator()
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.flMeasureSkeleton.visibility = View.VISIBLE
+            val fadeIn = ObjectAnimator.ofFloat(binding.flMeasureSkeleton, "alpha", 0f, 1f).apply {
+                duration = 50 // 0.1초
+                interpolator = AccelerateDecelerateInterpolator()
+            }
 
-        // 두 번째 애니메이션: alpha를 1에서 0으로 만들고, 끝난 후 INVISIBLE로 설정
-        val fadeOut = ObjectAnimator.ofFloat(binding.flMeasureSkeleton, "alpha", 1f, 0f).apply {
-            duration = 100 // 0.1초
-            interpolator = AccelerateDecelerateInterpolator()
-            addListener(object : AnimatorListenerAdapter() {
+            // 두 번째 애니메이션: alpha를 1에서 0으로 만들고, 끝난 후 INVISIBLE로 설정
+            val fadeOut = ObjectAnimator.ofFloat(binding.flMeasureSkeleton, "alpha", 1f, 0f).apply {
+                duration = 50 // 0.1초
+                interpolator = AccelerateDecelerateInterpolator()
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        binding.flMeasureSkeleton.visibility = View.INVISIBLE
+                    }
+                })
+            }
+
+            // 애니메이션 시작
+            fadeIn.start()
+            fadeIn.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    binding.flMeasureSkeleton?.visibility = View.INVISIBLE
+                    fadeOut.start()
                 }
             })
-        }
+        }, 150)
 
-        // 애니메이션 시작
-        fadeIn.start()
-        fadeIn.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                fadeOut.start()
-            }
-        })
     }
 }

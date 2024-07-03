@@ -19,7 +19,7 @@
         app:layout_constraintHorizontal_bias="0.54"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/drawable_main_category_1" />
+        app:srcCompat="@drawable/drawable_main_category_0" />
 
     <TextView
         android:id="@+id/tvMCName"

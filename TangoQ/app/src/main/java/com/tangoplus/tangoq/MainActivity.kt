@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         // ------! 다크모드 메뉴 이름 설정 끝 !------
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-
+        AlarmReceiver()
         // -----! 초기 화면 설정 !-----
         if (savedInstanceState == null) {
 //            backStack.push(selectedTabId)

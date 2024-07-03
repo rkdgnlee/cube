@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
@@ -87,6 +88,12 @@ class ReportFragment : Fragment(), OnReportClickListener {
             binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
         }
         binding.nextMonthButton.setOnClickListener {
+            // 선택된 날짜 초기화
+            val oldDate = selectedDate
+            selectedDate = null
+            if (oldDate != null) {
+                binding.cvRCalendar.notifyDateChanged(oldDate)
+            }
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
@@ -95,8 +102,14 @@ class ReportFragment : Fragment(), OnReportClickListener {
         }
 
         binding.previousMonthButton.setOnClickListener {
-            if (currentMonth == YearMonth.now().minusMonths(24)) {
+            // 선택된 날짜 초기화
+            val oldDate = selectedDate
+            selectedDate = null
+            if (oldDate != null) {
+                binding.cvRCalendar.notifyDateChanged(oldDate)
+            }
 
+            if (currentMonth == YearMonth.now().minusMonths(24)) {
             } else {
                 currentMonth = currentMonth.minusMonths(1)
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
@@ -120,8 +133,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
             override fun bind(container: DayViewContainer, day: CalendarDay) {
                 container.date.text = day.date.dayOfMonth.toString()
                 container.date.textSize = 20f
-                Log.v("container.date", "${container.date.text}")
-
+                container.date.setPadding(24)
                 // ------! 선택 날짜 !------
                 if (day.date == selectedDate) {
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.mainColor))
@@ -135,7 +147,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
                     if (day.position == DayPosition.MonthDate) {
                         container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor700))
                     } else {
-                        container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor200))
+                        container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor150))
                     }
                 }
 
@@ -151,15 +163,20 @@ class ReportFragment : Fragment(), OnReportClickListener {
                     }
                 }
             }
+
             override fun create(view: View): DayViewContainer {
                 return DayViewContainer(view)
             }
+
         } // ------! calendar 끝 !------
 
 
         val parts = mutableListOf<MeasureVO>() // TODO Triple<분류, 파일명, 데이터>
 
-        parts.add(MeasureVO(partName = "정면 자세", anglesNDistances = singletonInstance.jsonObject?.optJSONObject("0")))
+        parts.add(MeasureVO(
+            partName = "정면 자세",
+            anglesNDistances = singletonInstance.jsonObject?.optJSONObject("0")
+        ))
         parts.add(MeasureVO(partName = "팔꿉 측정 자세", anglesNDistances = singletonInstance.jsonObject?.optJSONObject("1")))
 
         // ------! 측정 관련 7가지 json에서 가져오기 시작 !------

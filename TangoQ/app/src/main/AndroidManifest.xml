@@ -15,6 +15,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 저장소 권한 -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -77,16 +79,7 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <data
-                    android:host="oauth"
-                    android:scheme="kakaoa5d0bc7cde69e2321d62d6eed07e4ec3" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".AlarmActivity"
@@ -106,7 +99,16 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" >
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <data
+                    android:host="oauth"
+                    android:scheme="kakaoa5d0bc7cde69e2321d62d6eed07e4ec3" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".IntroActivity"
@@ -150,9 +152,11 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/mainColor" />
-
+        <receiver android:name=".broadcastReceiver.AlarmReceiver"
+            android:exported="true" />
     </application>
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
     </queries>
+
 </manifest>

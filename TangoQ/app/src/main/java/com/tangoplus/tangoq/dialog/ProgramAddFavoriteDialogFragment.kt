@@ -70,15 +70,14 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
 
         program = bundle?.getParcelable("Program")!!
         // ------! program 데이터 bundle, singleton에서 전화번호 가져오기 끝 !------
-        binding.ibtnPAFDBack.setOnClickListener {
-            dismiss()
-        }
+
 
         // ------! 먼저 즐겨찾기 목록을 보여주기 !------
         lifecycleScope.launch {
             val favoriteList = fetchFavoriteItemsJsonByEmail(getString(R.string.IP_ADDRESS_t_favorite), user_email.toString())
-
-            if (favoriteList != null) {
+            Log.v("favoriteList", "$favoriteList")
+            if (favoriteList.isNotEmpty()) {
+                binding.tvPAFDGuide.visibility = View.INVISIBLE
                 for (i in favoriteList.indices) {
                     val favoriteItem = favoriteList[i]
                     val imgList = mutableListOf<String>()
@@ -115,6 +114,8 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
                     viewModel.favoriteList.value?.add(favoriteItem) // 썸네일, 시리얼넘버, 이름까지 포함한 dataclass로 만든 favoriteVO형식의 리스트
                     // 일단 운동은 비워놓고, detail에서 넣음
                 }
+            } else {
+                binding.tvPAFDGuide.visibility = View.VISIBLE
             }
 
 
@@ -122,6 +123,16 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
 //                 아무것도 없을 때 나오는 캐릭터
                 linkFavoriteAdapter(viewModel.favoriteList.value!!)
             } // -----! appClass list관리 끝 !-----
+
+
+            binding.ibtnPAFDBack.setOnClickListener {
+                if (binding.btnPAFDFinish.text == "운동 고르기") {
+                    dismiss()
+                } else {
+                    binding.btnPAFDFinish.text = "운동 고르기"
+                    linkFavoriteAdapter(viewModel.favoriteList.value!!)
+                }
+            }
 
             // ------! 버튼 text로 finish 단계 감지 시작 !------
 
@@ -194,7 +205,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
             viewModel.addExerciseBasketUnit(exercise, newQuantity)
         }
         viewModel.setQuantity(descriptionId, newQuantity)
-        Log.w("장바구니viewmodel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.exerciseId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.quantity}")
+        Log.w("장바구니viewModel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.exerciseId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.quantity}")
     }
 
     override fun onFavoriteClick(title: String) { }

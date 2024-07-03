@@ -47,7 +47,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
         val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         val user_email = t_userData?.optString("user_email")
 
-        binding.tvFTitle.text = "${t_userData?.optString("user_name")} 님의\n플레이리스트 목록"
+        binding.tvFTitle.text = "${t_userData?.optString("user_name")  ?: "미설정" } 님의\n플레이리스트 목록"
 
         // ------! 즐겨 찾기 1개 추가 시작 !------
         binding.btnFAdd.setOnClickListener {
@@ -63,7 +63,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
             val favoriteList = fetchFavoriteItemsJsonByEmail(getString(R.string.IP_ADDRESS_t_favorite), user_email.toString()) // user_mobile 넣기
 
             // ------! list관리 시작 !------
-            if (favoriteList != null) {
+            if (favoriteList.isNotEmpty()) {
                 binding.tvFEmpty.visibility = View.INVISIBLE
                 viewModel.favoriteList.value?.clear()
                 viewModel.exerciseUnits.value?.clear()

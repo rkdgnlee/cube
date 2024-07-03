@@ -15,7 +15,7 @@
         <FrameLayout
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
-            android:layout_height="250dp">
+            android:layout_height="230dp">
 
             <com.google.android.exoplayer2.ui.PlayerView
                 android:id="@+id/pvPTD"
@@ -25,7 +25,9 @@
                 app:controller_layout_id="@layout/exo_player_control_view"
                 app:resize_mode="fixed_width"
                 app:surface_type="surface_view"
-                app:use_controller="true" />
+                app:use_controller="true">
+
+            </com.google.android.exoplayer2.ui.PlayerView>
         </FrameLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -44,9 +46,9 @@
                     android:id="@+id/tvPTDName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="20dp"
                     android:text="어깨 관절 운동 프로그램(2)"
                     android:textColor="@color/black"
                     android:textSize="25sp"
@@ -122,8 +124,32 @@
                         android:textColor="@color/subColor800"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tvPTDFrequency"
+                        app:layout_constraintStart_toEndOf="@+id/textView59"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPTDFrequency"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:singleLine="true"
+                        android:text="매일"
+                        android:textColor="@color/subColor800"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/imageView8"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/imageView8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="60dp"
+                        android:src="@drawable/icon_count_subcolor"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -132,63 +158,92 @@
                     android:id="@+id/materialDivider7"
                     android:layout_width="0dp"
                     android:layout_height="2dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="28dp"
+                    android:layout_marginEnd="8dp"
                     app:dividerColor="@color/subColor300"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
                 <TextView
+                    android:id="@+id/textView50"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:text="관절, 근육"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider7" />
+
+                <TextView
+                    android:id="@+id/textView51"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="운동 자세"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/textView50"
+                    app:layout_constraintTop_toBottomOf="@+id/textView50" />
+
+                <TextView
+                    android:id="@+id/textView52"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="운동 횟수"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/textView51"
+                    app:layout_constraintTop_toBottomOf="@+id/textView51" />
+
+                <TextView
                     android:id="@+id/tvPTDRelatedJoint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="10dp"
                     android:text="어깨"
                     android:textColor="@color/subColor800"
-                    android:textSize="19sp"
+                    android:textSize="17sp"
+                    android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="@+id/textView50"
                     app:layout_constraintStart_toEndOf="@+id/textView50"
-                    app:layout_constraintTop_toTopOf="@+id/textView50"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toTopOf="@+id/textView50" />
 
                 <TextView
                     android:id="@+id/tvPTDRelatedMuscle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:singleLine="true"
                     android:text="후면 삼각근, 승모근"
                     android:textColor="@color/subColor800"
-                    android:textSize="19sp"
+                    android:textSize="17sp"
+                    android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="@+id/tvPTDRelatedJoint"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/tvPTDRelatedJoint"
                     app:layout_constraintTop_toTopOf="@+id/tvPTDRelatedJoint" />
-
-                <TextView
-                    android:id="@+id/tvPTDFrequency"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="매일"
-                    android:textColor="@color/subColor800"
-                    android:textSize="19sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView51"
-                    app:layout_constraintStart_toStartOf="@+id/tvPTDRelatedJoint"
-                    app:layout_constraintTop_toTopOf="@+id/textView51" />
 
                 <TextView
                     android:id="@+id/tvPTDInitialPosture"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:text="큐브 또는 벤치 위에 앉은 자세"
+                    android:layout_marginEnd="10dp"
+                    android:text="큐브 또는 벤치 위에 앉은 자세로"
                     android:textColor="@color/subColor800"
-                    android:textSize="19sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView52"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView51"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/tvPTDFrequency"
-                    app:layout_constraintTop_toTopOf="@+id/textView52" />
+                    app:layout_constraintStart_toStartOf="@+id/tvPTDRelatedJoint"
+                    app:layout_constraintTop_toTopOf="@+id/textView51" />
 
                 <TextView
                     android:id="@+id/tvPTDMethod"
@@ -209,48 +264,14 @@
                     android:id="@+id/materialDivider8"
                     android:layout_width="0dp"
                     android:layout_height="2dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="8dp"
                     app:dividerColor="@color/subColor300"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPTDInitialPosture" />
-
-                <TextView
-                    android:id="@+id/textView50"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="32dp"
-                    android:text="관절, 근육"
-                    android:textColor="@color/subColor800"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/materialDivider7" />
-
-                <TextView
-                    android:id="@+id/textView51"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="추천 빈도"
-                    android:textColor="@color/subColor800"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/textView50"
-                    app:layout_constraintTop_toBottomOf="@+id/textView50" />
-
-                <TextView
-                    android:id="@+id/textView52"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="운동 장소"
-                    android:textColor="@color/subColor800"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/textView51"
-                    app:layout_constraintTop_toBottomOf="@+id/textView51" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView52" />
 
                 <TextView
                     android:id="@+id/textView53"
@@ -352,6 +373,19 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView99" />
+
+                <TextView
+                    android:id="@+id/tvPTDIntensity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:text="10-15회, 3세트 실시"
+                    android:textColor="@color/subColor800"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView52"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvPTDInitialPosture"
+                    app:layout_constraintTop_toTopOf="@+id/textView52" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

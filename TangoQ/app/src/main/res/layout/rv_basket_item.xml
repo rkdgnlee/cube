@@ -104,17 +104,26 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView60"
+        android:id="@+id/tvBITime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:text="세트 추가"
+        android:layout_marginStart="8dp"
+        android:text="00:00초"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/tvBkSymptom"
-        app:layout_constraintTop_toBottomOf="@+id/tvBkSymptom"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintBottom_toBottomOf="@+id/imageView42"
+        app:layout_constraintStart_toEndOf="@+id/imageView42"
+        app:layout_constraintTop_toTopOf="@+id/imageView42" />
+
+    <ImageView
+        android:id="@+id/imageView42"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout13"
+        app:layout_constraintStart_toEndOf="@+id/cardView11"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout13"
+        app:srcCompat="@drawable/icon_rv_summary_time" />
 
     <!--    <ImageView-->
     <!--        android:id="@+id/imageView5"-->

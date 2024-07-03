@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.PainPartRVAdpater
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasurePartDialogBinding
@@ -32,22 +33,25 @@ class MeasurePartDialogFragment : DialogFragment(), OnPartCheckListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val ppList = mutableListOf<Triple<String, String, Boolean>>()
-        ppList.add(Triple("drawable_pain1", "손목", false))
-        ppList.add(Triple("drawable_pain2", "척추", false))
-        ppList.add(Triple("drawable_pain3", "팔꿉", false))
-        ppList.add(Triple("drawable_pain4", "목", false))
-        ppList.add(Triple("drawable_pain5", "발목", false))
-        ppList.add(Triple("drawable_pain6", "어깨", false))
-        ppList.add(Triple("drawable_pain7", "무릎", false))
-        ppList.add(Triple("drawable_pain8", "복부", false))
+        val ppList = mutableListOf<MeasureVO>()
+        val parts = listOf("손목", "척추", "팔꿉", "목", "발목", "어깨", "무릎", "복부")
+        for (i in parts.indices) {
+            val measureVO = MeasureVO(
+                partName = parts[i],
+                drawableName = "drawable_pain${i+1}",
+                select = false,
+                anglesNDistances = null
+            )
+            ppList.add(measureVO)
+        }
 
         for ( i in ppList.indices ) {
-            val matchingPart = viewModel.parts.value?.find { it.second == ppList[i].second }
+            val matchingPart = viewModel.parts.value?.find { it.partName == ppList[i].partName }
             if (matchingPart != null) {
-                ppList[i] = ppList[i].copy(third = matchingPart.third)
+                ppList[i] = ppList[i].copy(select = matchingPart.select)
             }
         }
+
         val adapter = PainPartRVAdpater(this@MeasurePartDialogFragment, ppList, "selectPp",this@MeasurePartDialogFragment)
         binding.rvMP.adapter = adapter
         val linearLayoutManager =
@@ -70,8 +74,8 @@ class MeasurePartDialogFragment : DialogFragment(), OnPartCheckListener {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
-    override fun onPartCheck(part: Triple<String, String, Boolean>) {
-        if (part.third) {
+    override fun onPartCheck(part: MeasureVO) {
+        if (part.select) {
             viewModel.addPart(part)
             Log.v("viewModel.part", "${viewModel.parts.value}")
         } else {

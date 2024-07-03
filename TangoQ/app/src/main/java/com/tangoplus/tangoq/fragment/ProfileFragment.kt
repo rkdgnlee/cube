@@ -54,25 +54,28 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         val t_userdata = Singleton_t_user.getInstance(requireContext())
         val userJson= t_userdata.jsonObject?.getJSONObject("data")
         Log.v("Singleton>Profile", "${userJson}")
-        binding.tvPfName.text = userJson?.optString("user_name")
-        binding.tvPHeight.text = userJson?.optString("user_height") + " cm"
-        binding.tvPWeight.text = userJson?.optString("user_weight") + " kg"
-        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-        val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
-        binding.tvPAge.text = "$age 세"
+        if (userJson != null) {
+            binding.tvPfName.text = userJson.optString("user_name")
+            binding.tvPHeight.text = userJson.optString("user_height") + " cm"
+            binding.tvPWeight.text = userJson.optString("user_weight") + " kg"
+            val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+            val age = (c.get(Calendar.YEAR) - userJson.optString("user_birthday").substring(0, 4)!!.toInt()).toString()
+            binding.tvPAge.text = "$age 세"
 
-        binding.tvPAge.text = if (age == null) "미설정" else "$age 세"
-        // ----- 이미지 로드 시작 -----
-        val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-        val imageUri = sharedPreferences.getString("imageUri", null)
-        if (imageUri != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                Glide.with(this)
-                    .load(imageUri)
-                    .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                    .into(binding.civP)
+            binding.tvPAge.text = if (age == "") "미설정" else "$age 세"
+            // ----- 이미지 로드 시작 -----
+            val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+            val imageUri = sharedPreferences.getString("imageUri", null)
+            if (imageUri != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    Glide.with(this)
+                        .load(imageUri)
+                        .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                        .into(binding.civP)
+                }
             }
         }
+
 
         binding.ibtnPAlarm.setOnClickListener {
             val intent = Intent(requireContext(), AlarmActivity::class.java)

@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.PlayFullScreenActivity
-import com.tangoplus.tangoq.dialog.RecommendBSDialogFragment
 import com.tangoplus.tangoq.listener.OnRVClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO

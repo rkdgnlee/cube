@@ -38,7 +38,6 @@ import com.tangoplus.tangoq.`object`.NetworkUser
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -89,20 +88,20 @@ class SplashActivity : AppCompatActivity() {
                 // ------! 푸쉬 알림 끝 !-----
 
                 // ----- 인 앱 알림 시작 -----
-                AlarmReceiver()
-                val intent = Intent(this, AlarmReceiver::class.java)
-                val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-                val calander: Calendar = Calendar.getInstance().apply {
-                    timeInMillis = System.currentTimeMillis()
-                    set(Calendar.HOUR_OF_DAY, 17)
-                }
-                val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
-                alarmManager.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    calander.timeInMillis,
-                    AlarmManager.INTERVAL_DAY,
-                    pendingIntent
-                )
+//                AlarmReceiver()
+//                val intent = Intent(this, AlarmReceiver::class.java)
+//                val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+//                val calander: Calendar = Calendar.getInstance().apply {
+//                    timeInMillis = System.currentTimeMillis()
+//                    set(Calendar.HOUR_OF_DAY, 17)
+//                }
+//                val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
+//                alarmManager.setInexactRepeating(
+//                    AlarmManager.RTC_WAKEUP,
+//                    calander.timeInMillis,
+//                    AlarmManager.INTERVAL_DAY,
+//                    pendingIntent
+//                )
                 // ----- 인 앱 알림 끝 -----
 
                 val t_userData = Singleton_t_user.getInstance(this)
@@ -120,116 +119,116 @@ class SplashActivity : AppCompatActivity() {
 
 
 
-                val Handler = Handler(Looper.getMainLooper())
-                Handler.postDelayed({
-                    // ----- 네이버 토큰 있음 시작 -----
-                    if (naverTokenExist == NidOAuthLoginState.OK) {
-                        Log.e("네이버 로그인", "$naverTokenExist")
-                        val naverToken = NaverIdLoginSDK.getAccessToken()
-                        val url = "https://openapi.naver.com/v1/nid/me"
-                        val request = Request.Builder()
-                            .url(url)
-                            .addHeader("Authorization", "Bearer $naverToken")
-                            .build()
-                        val client = OkHttpClient()
-                        client.newCall(request).enqueue(object : Callback {
-                            override fun onFailure(call: Call, e: IOException) { }
-                            override fun onResponse(call: Call, response: Response) {
-                                if (response.isSuccessful) {
-                                    val jsonBody = response.body?.string()?.let { JSONObject(it) }?.getJSONObject("response")
-                                    val jsonObj = JSONObject()
-                                    jsonObj.put("user_name",jsonBody?.optString("name"))
-                                    jsonObj.put("user_email",jsonBody?.optString("email"))
-                                    jsonObj.put("user_birthday",jsonBody?.optString("birthyear")+"-"+jsonBody?.optString("birthday"))
-                                    jsonObj.put("user_gender", if (jsonBody?.optString("gender") == "M") "남자" else "여자")
-                                    val naverMobile = jsonBody?.optString("mobile")?.replaceFirst("010", "+8210")
-                                    jsonObj.put("naver_login_id", jsonBody?.optString("id"))
-                                    jsonObj.put("user_mobile", naverMobile)
-                                    // -----! 전화번호 변환 !-----
-                                    val encodedNaverEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                                    if (naverMobile != null) {
-                                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) { jsonObject ->
-                                            if (jsonObject != null) {
-                                                NetworkUser.storeUserInSingleton(this@SplashActivity, jsonObject)
-                                                Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                            }
-                                            MainInit()
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                        // ----- 네이버 토큰 있음 끝 -----
-
-                        // ----- 구글 토큰 있음 시작 -----
-                    } else if (googleUserExist != null) {
-                        val user = FirebaseAuth.getInstance().currentUser
-                        user!!.getIdToken(true)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    val JsonObj = JSONObject()
-                                    JsonObj.put("google_login_id", user.uid)
-                                    getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("google_login_id")) {jsonObject ->
-                                        if (jsonObject != null) {
-                                            NetworkUser.storeUserInSingleton(this, jsonObject)
-                                            Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                        }
-                                        MainInit()
-                                    }
-                                }
-                            }
-                        // ----- 구글 토큰 있음 끝 -----
-
-                        // ----- 카카오 토큰 있음 시작 -----
-                    } else if (AuthApiClient.instance.hasToken()) {
-                        UserApiClient.instance.me { user, error ->
-                            if (error != null) {
-                                Log.e(ContentValues.TAG, "사용자 정보 요청 실패", error)
-                            }
-                            else if (user != null) {
-                                Log.i(ContentValues.TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
-                                val jsonObj = JSONObject()
-                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
-                                jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M") {
-                                    "남자"
-                                } else {
-                                    "여자"
-                                }
-                                jsonObj.put("user_gender", kakaoUserGender)
-                                jsonObj.put("user_mobile", kakaoMobile)
-                                jsonObj.put("user_email", user.kakaoAccount?.email.toString())
-                                jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
-                                jsonObj.put("kakao_login_id" , user.id.toString())
-                                Log.w("splKakao>Login", jsonObj.getString("user_email"))
-
-
-                                val encodedKakaoEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-
-                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) {jsonObject ->
-                                    if (jsonObject != null) {
-                                        NetworkUser.storeUserInSingleton(this, jsonObject)
-                                        Log.e("Spl카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                    }
-                                    MainInit()
-                                }
-                            }
-                        }
-                    }
-                    else if (getEncryptedJwtToken(this@SplashActivity) != null) {
-                        val token = getEncryptedJwtToken(this@SplashActivity)
-                        //TODO 자체 로그인 토큰 존재 확인해야함 ! -> token으로 값을 다 받아올건지. token으로 select하는 api가 필요함.
-                    }
-                    else {
-                        // 로그인 정보가 없을 경우
+//                val Handler = Handler(Looper.getMainLooper())
+//                Handler.postDelayed({
+//                    // ----- 네이버 토큰 있음 시작 -----
+//                    if (naverTokenExist == NidOAuthLoginState.OK) {
+//                        Log.e("네이버 로그인", "$naverTokenExist")
+//                        val naverToken = NaverIdLoginSDK.getAccessToken()
+//                        val url = "https://openapi.naver.com/v1/nid/me"
+//                        val request = Request.Builder()
+//                            .url(url)
+//                            .addHeader("Authorization", "Bearer $naverToken")
+//                            .build()
+//                        val client = OkHttpClient()
+//                        client.newCall(request).enqueue(object : Callback {
+//                            override fun onFailure(call: Call, e: IOException) { }
+//                            override fun onResponse(call: Call, response: Response) {
+//                                if (response.isSuccessful) {
+//                                    val jsonBody = response.body?.string()?.let { JSONObject(it) }?.getJSONObject("response")
+//                                    val jsonObj = JSONObject()
+//                                    jsonObj.put("user_name",jsonBody?.optString("name"))
+//                                    jsonObj.put("user_email",jsonBody?.optString("email"))
+//                                    jsonObj.put("user_birthday",jsonBody?.optString("birthyear")+"-"+jsonBody?.optString("birthday"))
+//                                    jsonObj.put("user_gender", if (jsonBody?.optString("gender") == "M") "남자" else "여자")
+//                                    val naverMobile = jsonBody?.optString("mobile")?.replaceFirst("010", "+8210")
+//                                    jsonObj.put("naver_login_id", jsonBody?.optString("id"))
+//                                    jsonObj.put("user_mobile", naverMobile)
+//                                    // -----! 전화번호 변환 !-----
+//                                    val encodedNaverEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
+//                                    if (naverMobile != null) {
+//                                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) { jsonObject ->
+//                                            if (jsonObject != null) {
+//                                                NetworkUser.storeUserInSingleton(this@SplashActivity, jsonObject)
+//                                                Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+//                                            }
+//                                            MainInit()
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        })
+//                        // ----- 네이버 토큰 있음 끝 -----
+//
+//                        // ----- 구글 토큰 있음 시작 -----
+//                    } else if (googleUserExist != null) {
+//                        val user = FirebaseAuth.getInstance().currentUser
+//                        user!!.getIdToken(true)
+//                            .addOnCompleteListener { task ->
+//                                if (task.isSuccessful) {
+//                                    val JsonObj = JSONObject()
+//                                    JsonObj.put("google_login_id", user.uid)
+//                                    getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("google_login_id")) {jsonObject ->
+//                                        if (jsonObject != null) {
+//                                            NetworkUser.storeUserInSingleton(this, jsonObject)
+//                                            Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+//                                        }
+//                                        MainInit()
+//                                    }
+//                                }
+//                            }
+//                        // ----- 구글 토큰 있음 끝 -----
+//
+//                        // ----- 카카오 토큰 있음 시작 -----
+//                    } else if (AuthApiClient.instance.hasToken()) {
+//                        UserApiClient.instance.me { user, error ->
+//                            if (error != null) {
+//                                Log.e(ContentValues.TAG, "사용자 정보 요청 실패", error)
+//                            }
+//                            else if (user != null) {
+//                                Log.i(ContentValues.TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
+//                                val jsonObj = JSONObject()
+//                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
+//                                jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
+//                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M") {
+//                                    "남자"
+//                                } else {
+//                                    "여자"
+//                                }
+//                                jsonObj.put("user_gender", kakaoUserGender)
+//                                jsonObj.put("user_mobile", kakaoMobile)
+//                                jsonObj.put("user_email", user.kakaoAccount?.email.toString())
+//                                jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
+//                                jsonObj.put("kakao_login_id" , user.id.toString())
+//                                Log.w("splKakao>Login", jsonObj.getString("user_email"))
+//
+//
+//                                val encodedKakaoEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
+//
+//                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) {jsonObject ->
+//                                    if (jsonObject != null) {
+//                                        NetworkUser.storeUserInSingleton(this, jsonObject)
+//                                        Log.e("Spl카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+//                                    }
+//                                    MainInit()
+//                                }
+//                            }
+//                        }
+//                    }
+//                    else if (getEncryptedJwtToken(this@SplashActivity) != null) {
+//                        val token = getEncryptedJwtToken(this@SplashActivity)
+//                        //TODO 자체 로그인 토큰 존재 확인해야함 ! -> token으로 값을 다 받아올건지. token으로 select하는 api가 필요함.
+//                    }
+//                    else {
+//                        // 로그인 정보가 없을 경우
                         IntroInit()
-                    }
-                }, 1500)
-
-
-
-                // ----- 카카오 토큰 있음 끝 -----
-                // ---- 화면 경로 설정 끝 ----
+//                    }
+//                }, 1500)
+//
+//
+//
+//                // ----- 카카오 토큰 있음 끝 -----
+//                // ---- 화면 경로 설정 끝 ----
             }
             false -> {
                 Toast.makeText(this, "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show()
@@ -262,7 +261,7 @@ class SplashActivity : AppCompatActivity() {
         val name = getString(R.string.channel_name)
         val descriptionText = getString(R.string.channel_description)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val mChannel = NotificationChannel("5000", name, importance)
+        val mChannel = NotificationChannel(descriptionText , name, importance)
         mChannel.description = descriptionText
         // 채널을 등록해야 알림을 받을 수 있음
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager

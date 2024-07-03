@@ -29,6 +29,7 @@ import com.tangoplus.tangoq.databinding.RvBasketItemBinding
 import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
+import com.tangoplus.tangoq.databinding.VpExerciseItemBinding
 import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
 import com.tomlecollegue.progressbars.HorizontalProgressView
 import java.lang.IllegalArgumentException
@@ -86,6 +87,7 @@ class ExerciseRVAdapter (
         val ibtnBkPlus : ImageButton = view.findViewById(R.id.ibtnBkPlus)
         val ibtnBkMinus : ImageButton = view.findViewById(R.id.ibtnBkMinus)
         val tvBkCount : TextView = view.findViewById(R.id.tvBkCount)
+        val tvBITime : TextView = view.findViewById(R.id.tvBITime)
     }
 
     inner class recommendViewHolder(view:View) : RecyclerView.ViewHolder(view) {
@@ -97,12 +99,20 @@ class ExerciseRVAdapter (
         val vRPTN : View = view.findViewById(R.id.vRPTN)
     }
 
+    inner class dailyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvVEIName : TextView = view.findViewById(R.id.tvVEIName)
+        val tvVEITime : TextView = view.findViewById(R.id.tvVEITime)
+        val ivVEIThumbnail : ImageView = view.findViewById(R.id.ivVEIThumbnail)
+        val tvVEIStage : TextView = view.findViewById(R.id.tvVEIStage)
+        val vVEI : View = view.findViewById(R.id.vVEI)
+    }
     override fun getItemViewType(position: Int): Int {
         return when (xmlname) {
             "main" -> 0
             "edit" -> 1
             "basket" -> 2
             "recommend" -> 3
+            "daily" -> 4
             else -> throw IllegalArgumentException("invalied view type")
         }
     }
@@ -126,7 +136,10 @@ class ExerciseRVAdapter (
                 val binding = RvRecommendPTnItemBinding.inflate(inflater, parent, false)
                 recommendViewHolder(binding.root)
             }
-
+            4 -> {
+                val binding = VpExerciseItemBinding.inflate(inflater, parent, false)
+                dailyViewHolder(binding.root)
+            }
             else -> throw IllegalArgumentException("invalid view type binding")
         }
     }
@@ -248,7 +261,11 @@ class ExerciseRVAdapter (
                 holder.tvBkSymptom.text = currentExerciseItem.relatedSymptom.toString()
                 holder.tvBkName.text = currentExerciseItem.exerciseName
 //                holder.tvBkTime.text = currentExerciseItem.videoTime
-
+                holder.tvBITime.text = (if (currentExerciseItem.videoDuration?.toInt()!! <= 60) {
+                    "${currentExerciseItem.videoDuration}초"
+                } else {
+                    "${currentExerciseItem.videoDuration!!.toInt() / 60}분 ${currentExerciseItem.videoDuration!!.toInt() % 60}초"
+                }).toString()
                 // ------! 썸네일 !------
                 Glide.with(fragment.requireContext())
                     .load("${currentExerciseItem.imageFilePathReal}")
@@ -273,11 +290,7 @@ class ExerciseRVAdapter (
             }
             // ------! play thumbnail 추천 운동 시작 !------
             is recommendViewHolder -> {
-                holder.tvRcPName.text = (if (currentExerciseItem.exerciseName.toString().length >= 10) {
-                    currentExerciseItem.exerciseName.toString().substring(0, 8)
-                } else {
-                    currentExerciseItem.exerciseName
-                }).toString()
+                holder.tvRcPName.text = currentExerciseItem.exerciseName
                 holder.tvRcPTime.text = second
                 holder.tvRcPStage.text = currentExerciseItem.exerciseStage
                 holder.tvRcPKcal.text
@@ -286,6 +299,28 @@ class ExerciseRVAdapter (
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.ivRcPThumbnail)
                 holder.vRPTN.setOnClickListener {
+                    val dialogFragment = PlayThumbnailDialogFragment().apply {
+                        arguments = Bundle().apply {
+                            putParcelable("ExerciseUnit", currentExerciseItem)
+                        }
+                    }
+                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                }
+            }
+            is dailyViewHolder -> {
+                holder.tvVEIName.text = currentExerciseItem.exerciseName
+                Glide.with(holder.itemView.context)
+                    .load(currentExerciseItem.imageFilePathReal)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivVEIThumbnail)
+                holder.tvVEIStage.text = currentExerciseItem.exerciseStage
+                holder.tvVEITime.text = (if (currentExerciseItem.videoDuration?.toInt()!! <= 60) {
+                    "${currentExerciseItem.videoDuration}초"
+                } else {
+                    "${currentExerciseItem.videoDuration!!.toInt() / 60}분 ${currentExerciseItem.videoDuration!!.toInt() % 60}초"
+                }).toString()
+
+                holder.vVEI.setOnClickListener {
                     val dialogFragment = PlayThumbnailDialogFragment().apply {
                         arguments = Bundle().apply {
                             putParcelable("ExerciseUnit", currentExerciseItem)

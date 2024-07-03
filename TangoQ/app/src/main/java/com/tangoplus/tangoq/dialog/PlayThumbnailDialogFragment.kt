@@ -1,7 +1,11 @@
 package com.tangoplus.tangoq.dialog
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -25,12 +29,16 @@ import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
+import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.listener.OnMoreClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_history
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
@@ -52,14 +60,13 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
         singletonInstance = Singleton_t_history.getInstance(requireContext())
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
 
-// -----! 각 설명들 textView에 넣기 !-----
+        // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = exerciseData?.videoFilepath.toString()
-        Log.w("동영상url", videoUrl)
         binding.tvPTDName.text = exerciseData?.exerciseName.toString()
         binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
@@ -70,16 +77,13 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         binding.tvPTDMethod.text = exerciseData?.exerciseMethod.toString()
         binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
         binding.tvPTDRelatedMuscle.text = exerciseData?.relatedMuscle.toString()
+        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
 
 
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
         // -----! 하단 운동 시작 버튼 시작 !-----
         binding.btnPTDPlay.setOnClickListener {
-//            val intent = Intent(this, PlayFullScreenActivity::class.java)
-//            intent.putExtra("video_url", videoUrl)
-//            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
-//            startActivityForResult(intent, 8080)
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putExtra("exercise_id", exerciseData?.exerciseId)
             intent.putExtra("video_url", videoUrl)
@@ -87,19 +91,21 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
             viewModel.isDialogShown.value = false
-        } // -----! 하단 운동 시작 버튼 끝 !-----
 
+            // ------! 오늘의 운동 갯수에 넣기 시작 !------
+            val prefsManager = PreferencesManager(requireContext())
+            val userEmail = userJson?.optString("user_email").toString()
+            if (prefsManager.getStoredInt(userEmail) <= 5) {
+                prefsManager.incrementStoredInt(userEmail)
+                Log.v("savedCount", "${prefsManager.getStoredInt(userEmail)}")
+            } // ------! 오늘의 운동 갯수에 넣기  끝 !------
+            if (exerciseData?.exerciseFrequency?.length!! >= 3) {
+                setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 20)
+                Log.v("notification 완료", "Success make plan to send notification Alarm")
+            }
+        } // ------! 하단 운동 시작 버튼 끝 !------
 
-//        // -----! 전체화면 구현 로직 시작 !-----
-//        val fullscreenButton = binding.pvPlay.findViewById<ImageButton>(com.google.android.exoplayer2.ui.R.id.exo_fullscreen)
-//
-//        fullscreenButton.setOnClickListener {
-//            val intent = Intent(this, PlayFullScreenActivity::class.java)
-//            intent.putExtra("video_url", videoUrl)
-//            intent.putExtra("current_position", simpleExoPlayer?.currentPosition)
-//
-//            startActivityForResult(intent, 8080)
-//        }
+//        // ------! 전체화면 구현 로직 시작 !------
         val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
             dismiss()
@@ -133,19 +139,6 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         lifecycleScope.launch {
             val responseArrayList =
                 NetworkExercise.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
-
-//            val jointKeyword =
-//                exerciseData?.relatedMuscle!!.contains("복근")
-//                when (exerciseData?.relatedMuscle!!.contains(it)) {
-//                    "복근", "척추기립근", "광배근" -> "척추"
-//                    "둔근", "둔근 근육", "햄스트링", "대퇴사두근",-> "엉덩"
-//                    "회전근개", "삼각근", "견갑거근" -> "어깨"
-//                    "사각근", "승모근" -> "목"
-//                    "내전근", "장딴지근", "가자미근" -> "무릎"
-//                    "이두근", "삼두", "전완" -> "팔꿉"
-//                else -> ""
-//            }
-
             try {
                 // 전체데이터에서 현재 데이터(exerciseData)와 비교함.
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
@@ -216,5 +209,28 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
             initPlayer()
         }
     }
+//매일 아침, 저녁 잠자기 전에 실시
+    @SuppressLint("ScheduleExactAlarm")
+    private fun setNotificationAlarm(title:String, text: String, hour: Int) {
+        val alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+    // 오늘 저녁 8시의 시간을 설정
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.HOUR_OF_DAY, hour)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    if (calendar.timeInMillis <= System.currentTimeMillis()) {
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
+    }
+    val requestCode = System.currentTimeMillis().toInt()
+
+    val intent = Intent(requireContext(), AlarmReceiver::class.java).apply {
+        putExtra("title", title)
+        putExtra("text", text)
+    }
+    val pendingIntent = PendingIntent.getBroadcast(requireContext(), requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
+    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
+    Log.v("현재 시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
+    }
 }

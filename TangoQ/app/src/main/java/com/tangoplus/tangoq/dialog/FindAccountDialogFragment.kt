@@ -33,7 +33,6 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -174,25 +173,25 @@ class FindAccountDialogFragment : DialogFragment() {
                 "아이디 찾기" -> {
                     binding.clFADMobile.visibility = View.GONE
 
-                    getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), URLEncoder.encode(binding.etFADMobile.text.toString(), "UTF-8")) { jo ->
-                        if (jo?.getInt("status") == 404) {
-                            requireActivity().runOnUiThread {
-                                val dialog = AlertDialog.Builder(requireContext())
-                                    .setTitle("알림⚠️")
-                                    .setMessage("일치하는 계정이 없습니다.\n다시 시도해주세요")
-                                    .setPositiveButton("예") { _, _ -> }
-                                    .show()
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
-                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
-                            }
-                        } else if (jo?.getInt("status") == 200) {
-                            requireActivity().runOnUiThread{
-                                binding.clFADId.visibility = View.VISIBLE
-                                binding.tvFADIdFinded.text = maskString(jo.optJSONObject("data")?.getString("user_id") ?: "")
-                            }
-                        }
-
-                    }
+//                    getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), URLEncoder.encode(binding.etFADMobile.text.toString(), "UTF-8")) { jo ->
+//                        if (jo?.getInt("status") == 404) {
+//                            requireActivity().runOnUiThread {
+//                                val dialog = AlertDialog.Builder(requireContext())
+//                                    .setTitle("알림⚠️")
+//                                    .setMessage("일치하는 계정이 없습니다.\n다시 시도해주세요")
+//                                    .setPositiveButton("예") { _, _ -> }
+//                                    .show()
+//                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+//                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
+//                            }
+//                        } else if (jo?.getInt("status") == 200) {
+//                            requireActivity().runOnUiThread{
+//                                binding.clFADId.visibility = View.VISIBLE
+//                                binding.tvFADIdFinded.text = maskString(jo.optJSONObject("data")?.getString("user_id") ?: "")
+//                            }
+//                        }
+//
+//                    }
                     binding.btnFADAuthSend.text= "초기 화면으로"
                 }
                 "비밀번호 찾기" -> {

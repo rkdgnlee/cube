@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.security.crypto.EncryptedSharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -34,13 +35,18 @@ import com.tangoplus.tangoq.`object`.CommonDefines.TAG
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserINSERTJson
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
+
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.BannerViewModel
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
+import com.tangoplus.tangoq.db.SecurePreferencesManager
+import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerToken
+import com.tangoplus.tangoq.db.SecurePreferencesManager.saveServerToken
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
+import com.tangoplus.tangoq.`object`.NetworkUser.getTokenByUserJson
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,12 +64,16 @@ class IntroActivity : AppCompatActivity() {
 //    private var bannerPosition = Int.MAX_VALUE/2
 //    private var bannerHandler = HomeBannerHandler()
     private val intervalTime = 2200.toLong()
+    private lateinit var securePref : EncryptedSharedPreferences
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityIntroBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // ------! token 저장할  securedPref init !------
+        securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
 
 //        val bottomSheetFragment = AgreementBottomSheetDialogFragment()
 //        val fragmentManager = this@IntroActivity.supportFragmentManager
@@ -98,53 +108,39 @@ class IntroActivity : AppCompatActivity() {
                                             jsonObj.put("user_name", user.displayName.toString())
                                             jsonObj.put("user_email", user.email.toString())
                                             jsonObj.put("google_login_id", user.uid)
+                                            jsonObj.put("google_token", tokenId) // 토큰 값
 
-                                            val encodedUserEmail = URLEncoder.encode(
-                                                jsonObj.getString("user_email"),
-                                                "UTF-8"
-                                            )
-                                            Log.w("구글가입>메일", encodedUserEmail)
-                                            getUserSELECTJson(
-                                                getString(R.string.IP_ADDRESS_t_user),
-                                                encodedUserEmail
-                                            ) {
-                                                if (jsonObj.getInt("status") == 404) {
-                                                    fetchUserINSERTJson(
-                                                        getString(R.string.IP_ADDRESS_t_user),
-                                                        jsonObj.toString()
-                                                    ) {
-                                                        val singletonJson = JSONObject()
-                                                        singletonJson.put("data", jsonObj)
-                                                        storeUserInSingleton(this@IntroActivity, singletonJson)
-                                                        Log.e(
-                                                            "구글>싱글톤",
-                                                            "${Singleton_t_user.getInstance(this).jsonObject}"
-                                                        )
-                                                        setupInit()
+//                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
+                                            Log.w("구글>토큰", tokenId)
+                                            getTokenByUserJson(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                                when (jo?.optString("response_code")) {
+                                                    "200" -> {
+                                                        saveServerToken(this@IntroActivity, jo.optString("user_token"))
+                                                        getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                                                            if (jo2 != null) {
+                                                                storeUserInSingleton(this@IntroActivity, jo2)
+                                                                Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                                                                setupInit()
+                                                            }
+                                                        }
                                                     }
-                                                } else {
-                                                    fetchUserUPDATEJson(
-                                                        getString(R.string.IP_ADDRESS_t_user),
-                                                        jsonObj.toString(),
-                                                        encodedUserEmail
-                                                    ) {
-                                                        storeUserInSingleton(this, jsonObj)
-                                                        Log.e(
-                                                            "구글>싱글톤",
-                                                            "${Singleton_t_user.getInstance(this).jsonObject}"
-                                                        )
-                                                        MainInit()
+                                                    "201" -> { // ------! 기존 정보가 있다 !------
+                                                        getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                                                            if (jo2 != null) {
+                                                                storeUserInSingleton(this@IntroActivity, jo2)
+                                                                Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                                                                MainInit()
+                                                            }
+                                                        }
+                                                    }
+                                                    "404" -> {
+                                                        Log.v("responseCode404", "response: $jo")
                                                     }
                                                 }
-                                            } // ----- GOOGLE API에서 DB에 넣는 공간 끝 -----
-
-                                            val googleSignInToken = account.idToken ?: ""
-                                            if (googleSignInToken != "") {
-                                                Log.e(TAG, "googleSignInToken : $googleSignInToken")
-                                            } else {
-                                                Log.e(TAG, "googleSignInToken =  null")
                                             }
-                                            // ---- Google 토큰에서 가져오기 끝 ----
+                                        // ------! GOOGLE API에서 DB에 넣는 공간 끝 !------
+
+                                        // ------! Google 토큰에서 가져오기 끝 !------
                                         }
                                     }
                             }
@@ -197,6 +193,7 @@ class IntroActivity : AppCompatActivity() {
                     override fun onFailure(httpStatus: Int, message: String) {}
 
                     override fun onSuccess(result: NidProfileResponse) {
+                        Log.v("네이버>token", "${NaverIdLoginSDK.getAccessToken()}")
                         val jsonObj = JSONObject()
                         val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
                         val naverGender : String = if (result.profile?.gender.toString() == "M") {
@@ -211,37 +208,45 @@ class IntroActivity : AppCompatActivity() {
                         jsonObj.put("user_birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
                         jsonObj.put("naver_login_id" , result.profile?.id.toString())
 
-                        Log.i("네이버이메일", jsonObj.getString("user_email"))
-                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-
-                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), naverMobile) { jo ->
-                            if (jo?.getInt("status") == 404) {
-                                fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString()) {
-                                    val singletonJson = JSONObject()
-                                    singletonJson.put("data", jsonObj)
-                                    storeUserInSingleton(this@IntroActivity, singletonJson)
-                                    Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                                    setupInit() // 최초 회원가입
-                                }
-                            } else {
-                                fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString(), naverMobile) {
-                                    if (jo != null) {
-                                        storeUserInSingleton(this@IntroActivity, jsonObj)
+//                        Log.v("네이버이메일", jsonObj.getString("user_email"))
+//                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
+//
+                        getTokenByUserJson(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                            when (jo?.optString("response_code")) {
+                                "200" -> {
+                                    saveServerToken(this@IntroActivity, jo.optString("user_token"))
+                                    getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                                        if (jo2 != null) {
+                                            storeUserInSingleton(this@IntroActivity, jo2)
+                                            Log.v("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+                                            setupInit()
+                                        }
                                     }
-                                    Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                                    MainInit()
+                                }
+                                "201" -> { // ------! 기존 정보가 있다 !------
+                                    getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                                        if (jo2 != null) {
+                                            storeUserInSingleton(this@IntroActivity, jo2)
+                                            Log.v("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+                                            MainInit()
+                                        }
+                                    }
+                                }
+                                "404" -> {
+                                    Log.v("responseCode404", "response: $jo")
                                 }
                             }
                         }
                     }
                 })
-                // ---- 네이버 로그인 성공 동작 끝 ----
+                // ------! 네이버 로그인 성공 동작 끝 !------
             }
         }
         binding.btnOAuthLoginImg.setOnClickListener {
             NaverIdLoginSDK.authenticate(this, oauthLoginCallback)
         }
-// ---- 카카오톡 OAuth 불러오기 ----
+
+        // ------! 카카오톡 OAuth 불러오기 !------
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("카카오톡", "카카오톡 로그인 실패 $error")
@@ -266,11 +271,7 @@ class IntroActivity : AppCompatActivity() {
                                 Log.v("카카오핸드폰번호", "${user.kakaoAccount?.phoneNumber}")
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M") {
-                                    "남자"
-                                } else {
-                                    "여자"
-                                }
+                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
                                 Log.v("카카오계정정보", " ${user.kakaoAccount?.gender}, ${user.kakaoAccount?.phoneNumber}")
                                 jsonObj.put("user_gender", kakaoUserGender)
                                 jsonObj.put("user_mobile", kakaoMobile)
@@ -278,24 +279,31 @@ class IntroActivity : AppCompatActivity() {
                                 jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 jsonObj.put("kakao_login_id" , user.id.toString())
 
-                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                                Log.w("카카오가입>메일", encodedUserEmail)
-                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), encodedUserEmail) { jo ->
-                                    if (jo?.getInt("status") == 404) {
-                                        fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString()) {
-                                            val singletonJson = JSONObject()
-                                            singletonJson.put("data", jsonObj)
-                                            storeUserInSingleton(this@IntroActivity, singletonJson)
-                                            Log.e("카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                            setupInit()
-                                        }
-                                    } else {
-                                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString(), encodedUserEmail) {
-                                            if (jo != null) {
-                                                storeUserInSingleton(this, jsonObj)
+//                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
+//                                Log.w("카카오가입>메일", encodedUserEmail)
+                                getTokenByUserJson(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                    when (jo?.optString("response_code")) {
+                                        "200" -> {
+                                            saveServerToken(this@IntroActivity, jo.optString("user_token"))
+                                            getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                                                if (jo2 != null) {
+                                                    storeUserInSingleton(this@IntroActivity, jo2)
+                                                    Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                                                    setupInit()
+                                                }
                                             }
-                                            Log.e("카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                            MainInit()
+                                        }
+                                        "201" -> { // ------! 기존 정보가 있다 !------
+                                            getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                                                if (jo2 != null) {
+                                                    storeUserInSingleton(this@IntroActivity, jo2)
+                                                    Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                                                    MainInit()
+                                                }
+                                            }
+                                        }
+                                        "404" -> {
+                                            Log.v("responseCode404", "response: $jo")
                                         }
                                     }
                                 }

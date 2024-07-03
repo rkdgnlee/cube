@@ -33,7 +33,6 @@ import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserINSERTJson
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import java.util.concurrent.TimeUnit
 
@@ -106,30 +105,30 @@ class GoogleSignInDialogFragment : DialogFragment() {
             binding.btnGSAuthConfirm.isEnabled = true
         }
         binding.btnGSAuthConfirm.setOnSingleClickListener {
-            if (binding.btnGSAuthConfirm.text == "가입 완료하기") {
-                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), transformMobile) {jsonObj ->
-                    if ( jsonObj?.getInt("status") == 404 ) {
-                        Log.v("viewModelJson", "${viewModel.googleJson}")
-
-                        fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), viewModel.googleJson.toString()) { // TODO insert가 제대로 동작하는지 확인해야함
-                            storeUserInSingleton(requireActivity(), jsonObj)
-                            Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
-                            setupInit()
-                        }
-                    } else {
-                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), viewModel.googleJson.toString(), transformMobile) {
-                            if (jsonObj != null) {
-                                storeUserInSingleton(requireActivity(), jsonObj)
-                            }
-                        }
-                        Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
-                        mainInit()
-                    }
-                }
-            } else {
-                val credential = PhoneAuthProvider.getCredential(verificationId, binding.etGSAuthNumber.text.toString())
-                signInWithPhoneAuthCredential(credential)
-            }
+//            if (binding.btnGSAuthConfirm.text == "가입 완료하기") {
+//                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), transformMobile) {jsonObj ->
+//                    if ( jsonObj?.getInt("status") == 404 ) {
+//                        Log.v("viewModelJson", "${viewModel.googleJson}")
+//
+//                        fetchUserINSERTJson(getString(R.string.IP_ADDRESS_t_user), viewModel.googleJson.toString()) { // TODO insert가 제대로 동작하는지 확인해야함
+//                            storeUserInSingleton(requireActivity(), jsonObj)
+//                            Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+//                            setupInit()
+//                        }
+//                    } else {
+//                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), viewModel.googleJson.toString(), transformMobile) {
+//                            if (jsonObj != null) {
+//                                storeUserInSingleton(requireActivity(), jsonObj)
+//                            }
+//                        }
+//                        Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+//                        mainInit()
+//                    }
+//                }
+//            } else {
+//                val credential = PhoneAuthProvider.getCredential(verificationId, binding.etGSAuthNumber.text.toString())
+//                signInWithPhoneAuthCredential(credential)
+//            }
 
         }  // -----! 인증 문자 확인 끝 !-----
         // -----! 휴대폰 인증 끝 !-----

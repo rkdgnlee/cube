@@ -6,25 +6,29 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.room.Room
 import com.tangoplus.tangoq.adapter.AlarmRVAdapter
 import com.tangoplus.tangoq.callback.SwipeHelperCallback
+import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.databinding.ActivityAlarmBinding
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
-import com.tangoplus.tangoq.Room.Database
-import com.tangoplus.tangoq.Room.Message
-import com.tangoplus.tangoq.Room.MessageDao
-import com.tangoplus.tangoq.databinding.ActivityAlarmBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import kotlin.math.min
 
 class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteListener {
     lateinit var binding : ActivityAlarmBinding
-    private lateinit var messageDao: MessageDao
-    private lateinit var messages : MutableList<Message>
+    private lateinit var swipeHelperCallback: SwipeHelperCallback
     private lateinit var alarmRecyclerViewAdapter : AlarmRVAdapter
+    private lateinit var alarmList : MutableList<MessageVO>
+
+
     @SuppressLint("ClickableViewAccessibility", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,28 +36,47 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
         setContentView(binding.root)
 
         binding.ibtnAlarmBack.setOnClickListener {
-//            val intent = Intent(this@AlarmActivity, MainActivity::class.java)
-//            startActivity(intent)
             finish()
         }
-        val db = Room.databaseBuilder(
-            applicationContext,
-            Database::class.java, "tangoqDB"
-        ).build()
-        messageDao = db.messageDao()
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ko", "KR"))
+
+        val now: Long = System.currentTimeMillis()
+        val date = Date(now)
+        // 30분 전
+        val calendar = Calendar.getInstance()
+        calendar.setTime(date)
+        calendar.add(Calendar.MINUTE, -37)
+        val minute = calendar.time
+        val stringMinute = dateFormat.format(minute)
+        val longMinute = dateFormat.parse(stringMinute)?.time
+
+        calendar.add(Calendar.HOUR, -6)
+        val hour = calendar.time
+        val stringHour = dateFormat.format(hour)
+        val longHour = dateFormat.parse(stringHour)?.time
+
+        calendar.add(Calendar.DATE, -2)
+        val day = calendar.time
+        val stringDay = dateFormat.format(day)
+        val longDay = dateFormat.parse(stringDay)?.time
+
+        // 현재
+        val stringMinuteTime = date
+        val stringTime = dateFormat.format(date)
+        val longTime = dateFormat.parse(stringTime)?.time
+
         CoroutineScope(Dispatchers.IO).launch {
-//            val messages = messageDao.getAllMessages().toMutableList()
-//
             withContext(Dispatchers.Main) {
-                val alarmList = mutableListOf<Message>(
-//                    Message(1, "즉시 시작할 것", timestamp =  0 ,route = "home_intermediate" ),
-//                    Message(2, "미션이 부여됐습니다", timestamp =  3 , route = "pick"),
-//                    Message(3,"운동 마무리 루틴", timestamp =  20 ,route = "report_goal"),
-//                    Message(4,"기기 연결이 완료 됐습니다.", timestamp =  388 , route = "profile")
+                alarmList = mutableListOf(
+                    MessageVO(1, "즉시 시작할 것", timestamp =  longTime ,route = "home_intermediate" ),
+                    MessageVO(2, "미션이 부여됐습니다", timestamp =  longMinute , route = "pick"),
+                    MessageVO(3,"운동 마무리 루틴", timestamp =  longHour ,route = "report_goal"),
+                    MessageVO(4,"기기 연결이 완료 됐습니다.", timestamp =  longDay , route = "profile")
                 )
                 // -----! alarm touchhelper 연동 시작 !-----
                 val alarmRecyclerViewAdapter = AlarmRVAdapter(alarmList, this@AlarmActivity, this@AlarmActivity)
-                val swipeHelperCallback = SwipeHelperCallback().apply {
+                swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
                 }
 
@@ -70,10 +93,6 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
                 alarmRecyclerViewAdapter.notifyDataSetChanged()
             }
         }
-
-
-
-
     }
 
     override fun onAlarmClick(fragmentId: String) {
@@ -84,14 +103,24 @@ class AlarmActivity : AppCompatActivity(), OnAlarmClickListener, OnAlarmDeleteLi
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onAlarmDelete(messageId: Long) {
+    override fun onAlarmDelete(sn: Long) {
+        // ------! 삭제 후 스와이프 초기화 시작 !------
+        alarmList.remove(alarmList.find { it.sn == sn })
+        swipeHelperCallback.removePreviousClamp(binding.rvAlarm)
+        binding.rvAlarm.adapter?.notifyDataSetChanged()
+        binding.rvAlarm.post {
+            binding.rvAlarm.invalidateItemDecorations()
+        }
+
+        // ------! 삭제 후 스와이프 초기화 끝 !------
+
         CoroutineScope(Dispatchers.IO).launch {
-            messageDao.deleteMessage(messageId)
-            withContext(Dispatchers.Main) {
-                val dm = messages.find { it.id == messageId }
-                messages.removeAt(messages.indexOf(dm))
-                alarmRecyclerViewAdapter.notifyDataSetChanged()
-            }
+//            messageDao.deleteMessage(messageId)
+//            withContext(Dispatchers.Main) {
+//                val dm = messages.find { it.id == messageId }
+//                messages.removeAt(messages.indexOf(dm))
+//                alarmRecyclerViewAdapter.notifyDataSetChanged()
+//            }
         }
     }
 }

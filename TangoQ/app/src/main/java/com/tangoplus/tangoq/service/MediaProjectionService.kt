@@ -207,10 +207,10 @@ class MediaProjectionService : Service() {
         mediaRecorder?.apply {
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setVideoSize(1080, 1920) // Change according to your requirement
+            setVideoSize(1080, 2280)
             setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            setVideoEncodingBitRate(256 * 500)
-            setVideoFrameRate(30)
+            setVideoEncodingBitRate(900 * 1024 * 2280)
+            setVideoFrameRate(40)
             setOutputFile(videoFilePath)
             prepare()
         }

@@ -45,18 +45,6 @@
         app:layout_constraintTop_toTopOf="@+id/tvPpName"
         app:srcCompat="@drawable/icon_more_800" />
 
-    <TextView
-        android:id="@+id/textView29"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="각도변화 :"
-        android:textColor="@color/subColor700"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout8"
-        app:layout_constraintStart_toEndOf="@+id/linearLayout8"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout8" />
-
     <LinearLayout
         android:id="@+id/linearLayout8"
         android:layout_width="0dp"
@@ -96,10 +84,11 @@
         android:id="@+id/tvPpScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="5%"
         android:textColor="@color/subColor700"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView29"
-        app:layout_constraintStart_toEndOf="@+id/textView29"
-        app:layout_constraintTop_toTopOf="@+id/textView29" />
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout8"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout8"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout8" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -127,7 +127,7 @@ class ReportRVAdapter(val parts : MutableList<MeasureVO>, private val fragment: 
                     addTab("손", holder.tlRE)
                     addTab("엉덩", holder.tlRE)
                     addTab("무릎", holder.tlRE)
-                    setTabListener(holder, currentItem, tabs, "res_ov_hd_sq_fnt_horiz_ang_")
+                    setTabListener(holder, currentItem, tabs, "res_ov_hd_sq_fnt_horiz_ang_", "_left")
                 }
                 "왼쪽 측면 자세" -> { // 왼쪽
                     holder.cvRELine.rotation = 90f

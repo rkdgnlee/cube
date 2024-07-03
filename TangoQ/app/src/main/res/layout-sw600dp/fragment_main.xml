@@ -89,17 +89,18 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/clTop"
                     android:layout_width="match_parent"
-                    android:layout_height="500dp"
+                    android:layout_height="460dp"
                     android:background="@color/subColor100"
                     android:padding="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <LinearLayout
                         android:id="@+id/linearLayout12"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="200dp"
                         android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -115,284 +116,340 @@
                             app:cardElevation="0dp">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint13"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@color/white">
 
-                                <TextView
-                                    android:id="@+id/textView18"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
-                                    android:text="보"
-                                    android:textColor="@color/black"
-                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySteps"
-                                    app:layout_constraintStart_toEndOf="@+id/tvMTodaySteps"
-                                    app:layout_constraintTop_toTopOf="@+id/tvMTodaySteps"
-                                    app:layout_constraintVertical_bias="0.0" />
+                                <!--                                <TextView-->
+                                <!--                                    android:id="@+id/textView18"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginStart="4dp"-->
+                                <!--                                    android:text="보"-->
+                                <!--                                    android:textColor="@color/black"-->
+                                <!--                                    android:textSize="18sp"-->
+                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySteps"-->
+                                <!--                                    app:layout_constraintStart_toEndOf="@+id/tvMTodaySteps"-->
+                                <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMTodaySteps"-->
+                                <!--                                    app:layout_constraintVertical_bias="0.0" />-->
 
                                 <TextView
                                     android:id="@+id/textView11"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginTop="8dp"
+                                    android:layout_marginStart="40dp"
+                                    android:layout_marginTop="20dp"
                                     android:text="오늘의 운동"
                                     android:textColor="@color/black"
-                                    android:textSize="20sp"
+                                    android:textSize="22sp"
                                     android:textStyle="bold"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 
-                                <ImageView
-                                    android:id="@+id/imageView8"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
-                                    android:src="@drawable/icon_time"
-                                    app:layout_constraintStart_toStartOf="@+id/textView11"
+                                <!--                                <ImageView-->
+                                <!--                                    android:id="@+id/imageView8"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginTop="16dp"-->
+                                <!--                                    android:src="@drawable/icon_time"-->
+                                <!--                                    app:layout_constraintStart_toStartOf="@+id/textView11"-->
+                                <!--                                    app:layout_constraintTop_toBottomOf="@+id/textView11" />-->
+
+                                <!--                                <ImageView-->
+                                <!--                                    android:id="@+id/imageView9"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginTop="16dp"-->
+                                <!--                                    android:src="@drawable/icon_kcal_circle"-->
+                                <!--                                    app:layout_constraintStart_toStartOf="@+id/imageView8"-->
+                                <!--                                    app:layout_constraintTop_toBottomOf="@+id/imageView8" />-->
+
+                                <!--                                <TextView-->
+                                <!--                                    android:id="@+id/tvMTodayTime"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginStart="8dp"-->
+                                <!--                                    android:text="00"-->
+                                <!--                                    android:textColor="@color/subColor500"-->
+                                <!--                                    android:textSize="18sp"-->
+                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/imageView8"-->
+                                <!--                                    app:layout_constraintStart_toEndOf="@+id/imageView8"-->
+                                <!--                                    app:layout_constraintTop_toTopOf="@+id/imageView8" />-->
+
+                                <!--                                <TextView-->
+                                <!--                                    android:id="@+id/tvMTodaySteps"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginStart="8dp"-->
+                                <!--                                    android:text="86"-->
+                                <!--                                    android:textColor="@color/black"-->
+                                <!--                                    android:textSize="18sp"-->
+                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/imageView9"-->
+                                <!--                                    app:layout_constraintStart_toEndOf="@+id/imageView9"-->
+                                <!--                                    app:layout_constraintTop_toTopOf="@+id/imageView9" />-->
+
+                                <androidx.viewpager2.widget.ViewPager2
+                                    android:id="@+id/vpMDaily"
+                                    android:layout_width="0dp"
+                                    android:layout_height="90dp"
+                                    android:layout_marginStart="40dp"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="40dp"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
-                                <ImageView
-                                    android:id="@+id/imageView9"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                <!--                                <TextView-->
+                                <!--                                    android:id="@+id/textView17"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginStart="4dp"-->
+                                <!--                                    android:text="분"-->
+                                <!--                                    android:textColor="@color/subColor500"-->
+                                <!--                                    android:textSize="18sp"-->
+                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodayTime"-->
+                                <!--                                    app:layout_constraintStart_toEndOf="@+id/tvMTodayTime"-->
+                                <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMTodayTime" />-->
+
+                                <!--                                <com.tomlecollegue.progressbars.HorizontalProgressView-->
+                                <!--                                    android:id="@+id/hpvMDailyFirst"-->
+                                <!--                                    android:layout_width="0dp"-->
+                                <!--                                    android:layout_height="4dp"-->
+                                <!--                                    android:layout_marginStart="8dp"-->
+                                <!--                                    android:layout_marginEnd="16dp"-->
+                                <!--                                    android:background="@color/white"-->
+                                <!--                                    app:colorBackground="@color/subColor100"-->
+                                <!--                                    app:colorProgress="@color/mainColor"-->
+                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/textView17"-->
+                                <!--                                    app:layout_constraintEnd_toEndOf="parent"-->
+                                <!--                                    app:layout_constraintStart_toEndOf="@+id/textView11"-->
+                                <!--                                    app:layout_constraintTop_toTopOf="@+id/textView17" />-->
+
+                                <!--                                <com.tomlecollegue.progressbars.HorizontalProgressView-->
+                                <!--                                    android:id="@+id/hpvMDailySecond"-->
+                                <!--                                    android:layout_width="0dp"-->
+                                <!--                                    android:layout_height="4dp"-->
+                                <!--                                    android:background="@color/white"-->
+                                <!--                                    app:colorBackground="@color/subColor100"-->
+                                <!--                                    app:colorProgress="@color/mainColor"-->
+                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/textView18"-->
+                                <!--                                    app:layout_constraintEnd_toEndOf="@+id/hpvMDailyFirst"-->
+                                <!--                                    app:layout_constraintStart_toStartOf="@+id/hpvMDailyFirst"-->
+                                <!--                                    app:layout_constraintTop_toTopOf="@+id/textView18" />-->
+
+                                <ImageButton
+                                    android:id="@+id/ibtnMvpPrevious"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginStart="20dp"
+                                    android:background="@drawable/effect_ibtn_12dp"
+                                    android:backgroundTint="@color/white"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/icon_arrow_left"
+                                    app:layout_constraintBottom_toBottomOf="@+id/vpMDaily"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="@+id/vpMDaily" />
+
+                                <ImageButton
+                                    android:id="@+id/ibtnMvpNext"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginEnd="20dp"
+                                    android:background="@drawable/effect_ibtn_12dp"
+                                    android:backgroundTint="@color/white"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/icon_arrow_right"
+                                    app:layout_constraintBottom_toBottomOf="@+id/vpMDaily"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@+id/vpMDaily" />
+
+                                <com.google.android.material.divider.MaterialDivider
+                                    android:id="@+id/materialDivider15"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:layout_marginStart="40dp"
                                     android:layout_marginTop="10dp"
-                                    android:src="@drawable/icon_kcal_circle"
-                                    app:layout_constraintStart_toStartOf="@+id/imageView8"
-                                    app:layout_constraintTop_toBottomOf="@+id/imageView8" />
-
-                                <ImageView
-                                    android:id="@+id/imageView10"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp"
-                                    android:src="@drawable/icon_goal"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toStartOf="@+id/imageView9"
-                                    app:layout_constraintTop_toBottomOf="@+id/imageView9" />
-
-                                <TextView
-                                    android:id="@+id/tvMTodayTime"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:text="00"
-                                    android:textColor="@color/subColor500"
-                                    app:layout_constraintBottom_toBottomOf="@+id/imageView8"
-                                    app:layout_constraintStart_toEndOf="@+id/imageView8"
-                                    app:layout_constraintTop_toTopOf="@+id/imageView8" />
-
-                                <TextView
-                                    android:id="@+id/tvMTodaySteps"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:text="86"
-                                    android:textColor="@color/black"
-                                    app:layout_constraintBottom_toBottomOf="@+id/imageView9"
-                                    app:layout_constraintStart_toEndOf="@+id/imageView9"
-                                    app:layout_constraintTop_toTopOf="@+id/imageView9" />
+                                    android:layout_marginEnd="40dp"
+                                    app:dividerColor="@color/subColor200"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/vpMDaily" />
 
                                 <TextView
                                     android:id="@+id/tvMTodaySet"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:text="0/0"
-                                    android:textColor="@color/black"
-                                    app:layout_constraintBottom_toBottomOf="@+id/imageView10"
-                                    app:layout_constraintStart_toEndOf="@+id/imageView10"
-                                    app:layout_constraintTop_toTopOf="@+id/imageView10" />
-
-                                <TextView
-                                    android:id="@+id/textView17"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
-                                    android:text="분"
-                                    android:textColor="@color/subColor500"
-                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodayTime"
-                                    app:layout_constraintStart_toEndOf="@+id/tvMTodayTime"
-                                    app:layout_constraintTop_toTopOf="@+id/tvMTodayTime" />
-
-                                <TextView
-                                    android:id="@+id/textView19"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
-                                    android:text="개"
-                                    android:textColor="@color/black"
-                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySet"
-                                    app:layout_constraintStart_toEndOf="@+id/tvMTodaySet"
-                                    app:layout_constraintTop_toTopOf="@+id/tvMTodaySet" />
+                                    android:layout_marginStart="20dp"
+                                    android:text="완료 0/0 개"
+                                    android:textColor="@color/subColor800"
+                                    android:textSize="20sp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/materialDivider15" />
 
                                 <com.tomlecollegue.progressbars.HorizontalProgressView
-                                    android:id="@+id/hpvMDailyFirst"
+                                    android:id="@+id/hpvMDailyThird"
                                     android:layout_width="0dp"
-                                    android:layout_height="2dp"
+                                    android:layout_height="8dp"
                                     android:layout_marginStart="8dp"
                                     android:layout_marginEnd="16dp"
                                     android:background="@color/white"
                                     app:colorBackground="@color/subColor100"
                                     app:colorProgress="@color/mainColor"
-                                    app:layout_constraintBottom_toBottomOf="@+id/textView17"
+                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySet"
                                     app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toEndOf="@+id/textView11"
-                                    app:layout_constraintTop_toTopOf="@+id/textView17" />
-
-                                <com.tomlecollegue.progressbars.HorizontalProgressView
-                                    android:id="@+id/hpvMDailySecond"
-                                    android:layout_width="0dp"
-                                    android:layout_height="2dp"
-                                    android:background="@color/white"
-                                    app:colorBackground="@color/subColor100"
-                                    app:colorProgress="@color/mainColor"
-                                    app:layout_constraintBottom_toBottomOf="@+id/textView18"
-                                    app:layout_constraintEnd_toEndOf="@+id/hpvMDailyFirst"
-                                    app:layout_constraintStart_toStartOf="@+id/hpvMDailyFirst"
-                                    app:layout_constraintTop_toTopOf="@+id/textView18" />
-
-                                <com.tomlecollegue.progressbars.HorizontalProgressView
-                                    android:id="@+id/hpvMDailyThird"
-                                    android:layout_width="0dp"
-                                    android:layout_height="2dp"
-                                    android:background="@color/white"
-                                    app:colorBackground="@color/subColor100"
-                                    app:colorProgress="@color/mainColor"
-                                    app:layout_constraintBottom_toBottomOf="@+id/textView19"
-                                    app:layout_constraintEnd_toEndOf="@+id/hpvMDailySecond"
-                                    app:layout_constraintHorizontal_bias="0.0"
-                                    app:layout_constraintStart_toStartOf="@+id/hpvMDailySecond"
-                                    app:layout_constraintTop_toTopOf="@+id/textView19" />
-                            </androidx.constraintlayout.widget.ConstraintLayout>
-                        </androidx.cardview.widget.CardView>
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="20dp"
-                            android:layout_weight="3"
-                            android:background="@color/white"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="0dp">
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/constraintLayout13"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@color/white">
+                                    app:layout_constraintStart_toEndOf="@+id/tvMTodaySet"
+                                    app:layout_constraintTop_toTopOf="@+id/tvMTodaySet" />
 
                                 <TextView
-                                    android:id="@+id/textView20"
-                                    android:layout_width="wrap_content"
+                                    android:id="@+id/tvMvpCount"
+                                    android:layout_width="40dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginTop="8dp"
-                                    android:text="신체 밸런스"
-                                    android:textColor="@color/black"
-                                    android:textSize="20sp"
-                                    android:textStyle="bold"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                                <ImageView
-                                    android:id="@+id/imageView11"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/icon_circle_graph"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintVertical_bias="0.6" />
-
-                                <TextView
-                                    android:id="@+id/tvMBalanceScore"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginEnd="8dp"
-                                    android:layout_marginBottom="8dp"
-                                    android:text="미설정"
-                                    android:textColor="@color/subColor500"
+                                    android:layout_marginEnd="40dp"
+                                    android:background="@drawable/background_rectangle_8dp"
+                                    android:backgroundTint="@color/subColor400"
+                                    android:gravity="center"
+                                    android:padding="4dp"
+                                    android:text="1/3"
+                                    android:textColor="@color/white"
                                     android:textSize="16sp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent" />
+                                    app:layout_constraintBottom_toBottomOf="@+id/textView11"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@+id/textView11" />
 
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginEnd="4dp"
-                                    android:orientation="horizontal"
-                                    app:layout_constraintBottom_toBottomOf="@+id/tvMBalanceScore"
-                                    app:layout_constraintEnd_toStartOf="@+id/tvMBalanceScore"
-                                    app:layout_constraintTop_toTopOf="@+id/tvMBalanceScore">
-
-                                    <ImageView
-                                        android:id="@+id/ivMScoreDone"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:src="@drawable/icon_score_done" />
-
-                                    <ImageView
-                                        android:id="@+id/ivMScoreUp"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:src="@drawable/icon_score_up" />
-
-                                    <ImageView
-                                        android:id="@+id/ivMScoreDown"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:src="@drawable/icon_score_down" />
-                                </LinearLayout>
                             </androidx.constraintlayout.widget.ConstraintLayout>
                         </androidx.cardview.widget.CardView>
+
+                        <!--                        <androidx.cardview.widget.CardView-->
+                        <!--                            android:layout_width="match_parent"-->
+                        <!--                            android:layout_height="match_parent"-->
+                        <!--                            android:layout_marginStart="20dp"-->
+                        <!--                            android:layout_weight="3"-->
+                        <!--                            android:background="@color/white"-->
+                        <!--                            app:cardCornerRadius="12dp"-->
+                        <!--                            app:cardElevation="0dp">-->
+
+                        <!--                            <androidx.constraintlayout.widget.ConstraintLayout-->
+                        <!--                                android:id="@+id/constraintLayout13"-->
+                        <!--                                android:layout_width="match_parent"-->
+                        <!--                                android:layout_height="match_parent"-->
+                        <!--                                android:background="@color/white">-->
+
+                        <!--                                <TextView-->
+                        <!--                                    android:id="@+id/textView20"-->
+                        <!--                                    android:layout_width="wrap_content"-->
+                        <!--                                    android:layout_height="wrap_content"-->
+                        <!--                                    android:layout_marginStart="8dp"-->
+                        <!--                                    android:layout_marginTop="8dp"-->
+                        <!--                                    android:text="신체 밸런스"-->
+                        <!--                                    android:textColor="@color/black"-->
+                        <!--                                    android:textSize="24sp"-->
+                        <!--                                    android:textStyle="bold"-->
+                        <!--                                    app:layout_constraintStart_toStartOf="parent"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="parent" />-->
+
+                        <!--                                <ImageView-->
+                        <!--                                    android:id="@+id/imageView11"-->
+                        <!--                                    android:layout_width="0dp"-->
+                        <!--                                    android:layout_height="0dp"-->
+                        <!--                                    android:layout_marginStart="36dp"-->
+                        <!--                                    android:layout_marginTop="20dp"-->
+                        <!--                                    android:layout_marginBottom="20dp"-->
+                        <!--                                    android:src="@drawable/drawable_balance_circle"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="parent"-->
+                        <!--                                    app:layout_constraintEnd_toEndOf="parent"-->
+                        <!--                                    app:layout_constraintStart_toStartOf="parent"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="parent" />-->
+
+                        <!--                                <TextView-->
+                        <!--                                    android:id="@+id/tvMBalanceScore"-->
+                        <!--                                    android:layout_width="wrap_content"-->
+                        <!--                                    android:layout_height="wrap_content"-->
+                        <!--                                    android:layout_marginStart="4dp"-->
+                        <!--                                    android:layout_marginBottom="8dp"-->
+                        <!--                                    android:text="미설정"-->
+                        <!--                                    android:textColor="@color/subColor800"-->
+                        <!--                                    android:textSize="20sp"-->
+                        <!--                                    android:textStyle="bold"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="parent"-->
+                        <!--                                    app:layout_constraintStart_toEndOf="@+id/linearLayout19" />-->
+
+                        <!--                                <LinearLayout-->
+                        <!--                                    android:id="@+id/linearLayout19"-->
+                        <!--                                    android:layout_width="0dp"-->
+                        <!--                                    android:layout_height="wrap_content"-->
+                        <!--                                    android:layout_marginStart="12dp"-->
+                        <!--                                    android:orientation="horizontal"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMBalanceScore"-->
+                        <!--                                    app:layout_constraintStart_toStartOf="parent"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMBalanceScore">-->
+
+                        <!--                                    <ImageView-->
+                        <!--                                        android:id="@+id/ivMScoreDone"-->
+                        <!--                                        android:layout_width="wrap_content"-->
+                        <!--                                        android:layout_height="wrap_content"-->
+                        <!--                                        android:layout_weight="1"-->
+                        <!--                                        android:src="@drawable/icon_score_done" />-->
+
+                        <!--                                    <ImageView-->
+                        <!--                                        android:id="@+id/ivMScoreUp"-->
+                        <!--                                        android:layout_width="wrap_content"-->
+                        <!--                                        android:layout_height="wrap_content"-->
+                        <!--                                        android:layout_weight="1"-->
+                        <!--                                        android:src="@drawable/icon_score_up" />-->
+
+                        <!--                                    <ImageView-->
+                        <!--                                        android:id="@+id/ivMScoreDown"-->
+                        <!--                                        android:layout_width="wrap_content"-->
+                        <!--                                        android:layout_height="wrap_content"-->
+                        <!--                                        android:layout_weight="1"-->
+                        <!--                                        android:src="@drawable/icon_score_down" />-->
+                        <!--                                </LinearLayout>-->
+                        <!--                            </androidx.constraintlayout.widget.ConstraintLayout>-->
+                        <!--                        </androidx.cardview.widget.CardView>-->
                     </LinearLayout>
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView22"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="2dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="2dp"
-                        android:layout_marginBottom="4dp"
                         android:background="#00FFFFFF"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="1dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/btnMMeasure">
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout12">
 
                         <androidx.viewpager2.widget.ViewPager2
                             android:id="@+id/vpMBanner"
                             android:layout_width="match_parent"
-                            android:layout_height="228dp" />
+                            android:layout_height="156dp" />
                     </androidx.cardview.widget.CardView>
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnMMeasure"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:background="@drawable/effect_ibtn_12dp"
-                        android:backgroundTint="@color/white"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="20dp"
-                        android:stateListAnimator="@null"
-                        android:text="측정하기"
-                        android:textColor="@color/black"
-                        android:textSize="18sp"
-                        app:cornerRadius="12dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/linearLayout12" />
+                    <!--                    <androidx.appcompat.widget.AppCompatButton-->
+                    <!--                        android:id="@+id/btnMMeasure"-->
+                    <!--                        android:layout_width="0dp"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_marginTop="15dp"-->
+                    <!--                        android:background="@drawable/effect_ibtn_12dp"-->
+                    <!--                        android:backgroundTint="@color/white"-->
+                    <!--                        android:insetTop="0dp"-->
+                    <!--                        android:insetBottom="0dp"-->
+                    <!--                        android:padding="16dp"-->
+                    <!--                        android:stateListAnimator="@null"-->
+                    <!--                        android:text="추천 운동 하러 가기"-->
+                    <!--                        android:textColor="@color/black"-->
+                    <!--                        android:textSize="18sp"-->
+                    <!--                        android:textStyle="bold"-->
+                    <!--                        app:cornerRadius="12dp"-->
+                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--                        app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                        app:layout_constraintTop_toBottomOf="@+id/linearLayout12" />-->
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView

@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.listener.OnPartCheckListener
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.databinding.RvPainPartItemBinding
 import com.tangoplus.tangoq.databinding.RvSelectPainPartItemBinding
 import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
@@ -21,7 +23,7 @@ import com.tangoplus.tangoq.fragment.ReportDiseaseFragment
 import com.tangoplus.tangoq.fragment.ReportFragment
 import java.lang.IllegalArgumentException
 
-class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<Triple<String, String, Boolean>>, private var xmlname: String, private val onPartCheckListener: OnPartCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<MeasureVO>, private var xmlname: String, private val onPartCheckListener: OnPartCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var popupWindow : PopupWindow?= null
     inner class SelectPpViewHolder(view: View) :RecyclerView.ViewHolder(view) {
         val tvSPp : TextView = view.findViewById(R.id.tvSPp)
@@ -68,12 +70,12 @@ class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<T
         val currentItem = parts[position]
 
         if (holder is ppViewHolder) {
-            holder.tvPpName.text = currentItem.second
+            holder.tvPpName.text = currentItem.partName
             holder.ibtnPpMore.setOnClickListener {
-                onPartCheckListener.onPartCheck(Triple(currentItem.first, currentItem.second, true))
+                onPartCheckListener.onPartCheck(currentItem)
             }
             val resourceId = holder.itemView.context.resources.getIdentifier(
-                currentItem.first, "drawable", holder.itemView.context.packageName
+                currentItem.drawableName, "drawable", holder.itemView.context.packageName
             )
             holder.ivPp.setImageResource(resourceId)
 
@@ -106,7 +108,7 @@ class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<T
                         popupWindow!!.dismiss()
                     }
                     popupView.findViewById<TextView>(R.id.tvPPP3).setOnClickListener {
-                        val dialog = PoseViewDialogFragment.newInstance(currentItem.second)
+                        val dialog = PoseViewDialogFragment.newInstance(currentItem.drawableName) // TODO drawableName이 아니라 실제 파일 String에 대한 값을 MeasureVO에 추가해야할수도
                         dialog.show(fragment.requireActivity().supportFragmentManager, "PoseViewDialogFragment")
                         popupWindow!!.dismiss()
                     }
@@ -117,10 +119,14 @@ class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<T
 
             }
             // ------! 점수 상승 icon control 시작 !------
-            holder.ivPpDone.visibility = View.GONE
-            holder.ivPpDown.visibility = View.GONE
+//            holder.ivPpDone.visibility = View.GONE
+//            holder.ivPpDown.visibility = View.GONE
 
-            holder.tvPpScore
+            if (currentItem.anglesNDistances == null) {
+                holder.tvPpScore.text = "미설정"
+                holder.ivPpUp.visibility = View.GONE
+                holder.ivPpDown.visibility = View.GONE
+            }
             // ------! 점수 상승 icon control 끝 !------
 //            val resourceId = holder.itemView.context.resources.getIdentifier(
 //                currentItem.first, "drawable", holder.itemView.context.packageName
@@ -130,14 +136,15 @@ class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<T
         } else if (holder is SelectPpViewHolder) {
 
             holder.cbSPp.setOnCheckedChangeListener { _, isChecked ->
-                onPartCheckListener.onPartCheck(Triple(currentItem.first, currentItem.second, isChecked))
+                currentItem.select = isChecked
+                onPartCheckListener.onPartCheck(currentItem)
                 when (isChecked) {
                     true -> holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_enabled)
                     false -> holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_disabled)
                 }
             }
             // ------! 값 보존 !------
-            when (currentItem.third) {
+            when (currentItem.select) {
                 true -> {
                     holder.ivSPpCheck.setImageResource(R.drawable.icon_checkbox_enabled)
                     holder.cbSPp.isChecked = true
@@ -147,9 +154,11 @@ class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<T
                     holder.cbSPp.isChecked = false
                 }
             }
-            holder.tvSPp.text = currentItem.second
+
+            // ------! 부위 이름, drawable !------
+            holder.tvSPp.text = currentItem.partName
             val resourceId = holder.itemView.context.resources.getIdentifier(
-                currentItem.first, "drawable", holder.itemView.context.packageName
+                currentItem.drawableName, "drawable", holder.itemView.context.packageName
             )
             holder.ivSPp.setImageResource(resourceId)
         }

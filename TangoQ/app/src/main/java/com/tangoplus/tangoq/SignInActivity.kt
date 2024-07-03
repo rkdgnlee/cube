@@ -22,6 +22,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
@@ -31,15 +32,18 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUser
-import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserINSERTJson
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserSELECTJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
+import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerToken
+import com.tangoplus.tangoq.db.SecurePreferencesManager.saveServerToken
+import com.tangoplus.tangoq.`object`.NetworkUser.getTokenByUserJson
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
+import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.transition.SignInTransition
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
@@ -349,7 +353,7 @@ class SignInActivity : AppCompatActivity() {
                     binding.tvPwRepeat.text = "일치합니다"
                     binding.pvSignIn.progress = 100
                     binding.svSignIn.go(3, true)
-                    binding.TextView124.text = "하단의 완료 버튼을 눌러주세요"
+                    binding.tvSignInGuide.text = "하단의 완료 버튼을 눌러주세요"
                     binding.btnSignIn.isEnabled = true
                 } else {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor))
@@ -390,7 +394,7 @@ class SignInActivity : AppCompatActivity() {
                         binding.tvNameGuide.visibility = View.VISIBLE
                         binding.etName.visibility = View.VISIBLE
                         binding.llEmail.visibility= View.VISIBLE
-                        binding.TextView124.text = "이름과 이메일을 입력해주세요"
+                        binding.tvSignInGuide.text = "이름과 이메일을 입력해주세요"
                         val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                         objectAnimator.duration = 1000
                         objectAnimator.start()
@@ -452,27 +456,43 @@ class SignInActivity : AppCompatActivity() {
                     }
                 }
                 val jsonObj = viewModel.User.value
-                getUserSELECTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), viewModel.User.value?.optString("user_mobile").toString()) { jo ->
-                    if (jo?.getInt("status") == 404) {
-                        fetchUserINSERTJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj.toString()) {
-                            if (jsonObj != null) {
-                                val joInData = JSONObject()
-                                joInData.put("data", jsonObj)
-                                NetworkUser.storeUserInSingleton(this@SignInActivity, joInData)
-                                Log.e("네이버>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
-                                setupInit()
+                if (jsonObj != null) {
+                    getTokenByUserJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                        when (jo?.optString("response_code")) {
+                            "200" -> {
+                                saveServerToken(this@SignInActivity, jo.optString("user_token"))
+                                getUserIdentifyJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@SignInActivity).toString()) { jo2 ->
+                                    if (jo2 != null) {
+                                        storeUserInSingleton(this@SignInActivity, jo2)
+                                        Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
+                                        val intent = Intent(this@SignInActivity, IntroActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                }
                             }
-                        } // 기존에 정보가 있을 경우
-                    } else {
-                        runOnUiThread {
-                            viewModel.User.value = null
+                            "201" -> { // ------! 기존 정보가 있다 !------
+                                MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                    setTitle("알림")
+                                    setMessage("기존에 가입된 정보가 있습니다.")
+                                    setPositiveButton("돌아가기") { dialog, _ ->
+                                        val intent = Intent(this@SignInActivity, IntroActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                    create()
+                                }.show()
+                            }
+                            "404" -> {
+                                Log.v("responseCode404", "response: $jo")
+                            }
                         }
-                        MainInit()
                     }
                 }
+                binding.lav.playAnimation()
+
             }
         })
-//        bottomSheetFragment.isCancelable = false
         val fragmentManager = context.supportFragmentManager
         bottomSheetFragment.show(fragmentManager, bottomSheetFragment.tag)
     }
@@ -480,17 +500,6 @@ class SignInActivity : AppCompatActivity() {
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
-    }
-
-    private fun MainInit() {
-        val intent = Intent(this ,MainActivity::class.java)
-        startActivity(intent)
-        finishAffinity()
-    }
-    private fun setupInit() {
-        val intent = Intent(this, SetupActivity::class.java)
-        startActivity(intent)
-        finish()
     }
     override fun onResume() {
         super.onResume()

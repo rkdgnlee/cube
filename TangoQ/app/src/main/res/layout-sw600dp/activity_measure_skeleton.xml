@@ -38,23 +38,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivMeasureSkeletonFrame"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="86dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="86dp"
-        app:layout_constraintBottom_toTopOf="@+id/clMeasureSkeletonBottom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/view_finder"
-        app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop"
-        app:layout_constraintVertical_bias="0.6"
-        app:srcCompat="@drawable/drawable_measure_0" />
-
     <TextView
-        android:id="@+id/tvPSGuide"
+        android:id="@+id/tvMeasureSkeletonGuide"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#80000000"
@@ -68,6 +53,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivMeasureSkeletonFrame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="128dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="128dp"
+        app:layout_constraintBottom_toTopOf="@+id/clMeasureSkeletonBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/view_finder"
+        app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop"
+        app:layout_constraintVertical_bias="0.6"
+        app:srcCompat="@drawable/drawable_measure_0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clMeasureSkeletonTop"
@@ -175,5 +175,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:id="@+id/flMeasureSkeleton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

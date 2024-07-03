@@ -3,25 +3,26 @@ package com.tangoplus.tangoq.data
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import org.json.JSONObject
 
 class MeasureViewModel : ViewModel() {
-    val parts = MutableLiveData(mutableListOf<Triple<String,String, Boolean>>()) // drawable, 부위 이름, 체크여부
+    val parts = MutableLiveData(mutableListOf<MeasureVO>()) // drawable, 부위 이름, 체크여부
     val steps = MutableLiveData(mutableListOf<Long>())
     val totalSteps = MutableLiveData<String>()
     val calory = MutableLiveData<String>()
 
-    val feedbackparts = MutableLiveData(mutableListOf<Triple<String,String, Boolean>>())
+    val feedbackParts = MutableLiveData(mutableListOf<MeasureVO>())
 
     init {
         parts.value = mutableListOf()
         steps.value = mutableListOf()
         totalSteps.value = ""
         calory.value = ""
-        feedbackparts.value = mutableListOf()
+        feedbackParts.value = mutableListOf()
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun addPart(part: Triple<String, String, Boolean>) {
+    fun addPart(part: MeasureVO) {
         val updatedPart = parts.value?.toMutableList() ?: mutableListOf()
         if (!updatedPart.contains(part)) {
             updatedPart.add(part)
@@ -29,25 +30,25 @@ class MeasureViewModel : ViewModel() {
         parts.value = updatedPart
     }
 
-    fun deletePart(part: Triple<String, String, Boolean>) {
+    fun deletePart(part: MeasureVO) {
         val updatedPart = parts.value?.toMutableList() ?: mutableListOf()
-        updatedPart.removeAll { it.first == part.first }
+        updatedPart.removeAll { it.partName == part.partName }
         parts.value = updatedPart
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun addFeedbackPart(part: Triple<String, String, Boolean>) {
-        val updatedPart = feedbackparts.value?.toMutableList() ?: mutableListOf()
+    fun addFeedbackPart(part: MeasureVO) {
+        val updatedPart = feedbackParts.value?.toMutableList() ?: mutableListOf()
         if (!updatedPart.contains(part)) {
             updatedPart.add(part)
         }
-        feedbackparts.value = updatedPart
+        feedbackParts.value = updatedPart
     }
 
-    fun deleteFeedbackPart(part: Triple<String, String, Boolean>) {
-        val updatedPart = feedbackparts.value?.toMutableList() ?: mutableListOf()
-        updatedPart.removeAll { it.first == part.first }
-        feedbackparts.value = updatedPart
+    fun deleteFeedbackPart(part: MeasureVO) {
+        val updatedPart = feedbackParts.value?.toMutableList() ?: mutableListOf()
+        updatedPart.removeAll { it.partName == part.partName }
+        feedbackParts.value = updatedPart
     }
 
 }

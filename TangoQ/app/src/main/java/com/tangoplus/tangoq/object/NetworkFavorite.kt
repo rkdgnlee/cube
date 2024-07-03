@@ -44,11 +44,11 @@ object NetworkFavorite {
             }
         })
     }
-    fun updateFavoriteItemJson(myUrl: String, favorite_sn: String, json:String, context: Context ,callback: (JSONObject?) -> Unit) {
+    fun updateFavoriteItemJson(myUrl: String, favoriteSn: String, json:String, context: Context ,callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
-            .url("$myUrl/update.php?favorite_sn=$favorite_sn")
+            .url("$myUrl/update.php?favorite_sn=$favoriteSn")
             .patch(body)
             .build()
         client.newCall(request).enqueue(object: Callback {
@@ -65,10 +65,10 @@ object NetworkFavorite {
             }
         })
     }
-    fun deleteFavoriteItemSn(myUrl: String, favorite_sn: String, context: Context ,callback: () -> Unit) {
+    fun deleteFavoriteItemSn(myUrl: String, favoriteSn: String, context: Context ,callback: () -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}delete.php?favorite_sn=$favorite_sn")
+            .url("${myUrl}delete.php?favorite_sn=$favoriteSn")
             .delete()
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -85,7 +85,7 @@ object NetworkFavorite {
         })
 
     }
-    // 즐겨찾기 목록 조회 (PickItems에 담기)
+    // 즐겨찾기 목록 조회 (PickItems에 담기) token + jsonObject로 조회?
     suspend fun fetchFavoriteItemsJsonByEmail(myUrl: String, email: String): MutableList<FavoriteVO> {
         val client = OkHttpClient()
         val request = Request.Builder()

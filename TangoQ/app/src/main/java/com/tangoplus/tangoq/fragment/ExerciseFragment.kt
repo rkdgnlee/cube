@@ -11,16 +11,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
-
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnCategoryScrollListener
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
-import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseCategory
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseAll
 import kotlinx.coroutines.launch
 
 
-class ExerciseFragment : Fragment(), OnCategoryScrollListener {
+class ExerciseFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseBinding
 //    var verticalDataList = mutableListOf<ExerciseVO>()
     val viewModel : FavoriteViewModel by activityViewModels()
@@ -127,22 +127,13 @@ class ExerciseFragment : Fragment(), OnCategoryScrollListener {
 //
 //        }
         lifecycleScope.launch {
-            val categoryArrayList = fetchExerciseCategory(getString(R.string.IP_ADDRESS_t_exercise_description))
+            val categoryArrayList = fetchExerciseAll(getString(R.string.IP_ADDRESS_t_exercise_description)).sortedBy { it.first }.toMutableList()
 //            val typeArrayList = fetchExerciseType(getString(R.string.IP_ADDRESS_t_Exercise_Description))
-            val typeArrayList = mutableListOf<Pair<Int, String>>()
-            typeArrayList.add(Pair(1, "목관절"))
-            typeArrayList.add(Pair(2, "어깨"))
-            typeArrayList.add(Pair(3, "팔꿉"))
-            typeArrayList.add(Pair(4, "손목"))
-            typeArrayList.add(Pair(5, "척추"))
-            typeArrayList.add(Pair(6, "복부"))
-            typeArrayList.add(Pair(7, "엉덩"))
-            typeArrayList.add(Pair(8, "무릎"))
-            typeArrayList.add(Pair(9, "발목"))
-            try { // ------! rv vertical 시작 !------
+            val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
 
-                Log.v("cateSize", "mainCategoryList: ${categoryArrayList}, subCategoryList: ${typeArrayList}")
-                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, 0, this@ExerciseFragment,"mainCategory")
+            try { // ------! rv vertical 시작 !------
+                Log.v("cateSize", "mainCategoryList: ${categoryArrayList}, subCategoryList: $typeArrayList")
+                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, "mainCategory" )
                 binding.rvEMainCategory.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 binding.rvEMainCategory.layoutManager = linearLayoutManager
@@ -153,31 +144,35 @@ class ExerciseFragment : Fragment(), OnCategoryScrollListener {
         }
     }
 
-    override fun categoryScroll(view: View) {
-        scrollToView(view)
+    override fun onCategoryClick(category: String) {
+
     }
+
+//    override fun categoryScroll(view: View) {
+//        scrollToView(view)
+//    }
 
     // ------! 이미지 스크롤 !------
-    private fun scrollToView(view: View) {
-        // 1. 뷰의 위치를 저장할 배열을 생성합니다.
-        val location = IntArray(2)
-        // 2. 뷰의 위치를 'window' 기준으로 계산하여 배열에 저장합니다
-        view.getLocationInWindow(location)
-        val viewTop = location[1]
-        // 3. 스크롤 뷰의 위치를 저장할 배열을 생성합니다.
-        val scrollViewLocation = IntArray(2)
-
-        // 4. 스크롤 뷰의 위치를 'window' 기준으로 계산하여 배열에 저장합니다.
-        binding.nsvE.getLocationInWindow(scrollViewLocation)
-        val scrollViewTop = scrollViewLocation[1]
-        // 5. 현재 스크롤 뷰의 스크롤된 y 위치를 얻습니다.
-        val scrollY = binding.nsvE.scrollY
-        // 6. 스크롤할 위치를 계산합니다.
-        //    현재 스크롤 위치에 뷰의 상대 위치를 더하여 올바른 스크롤 위치를 계산합니다.
-        val scrollTo = scrollY + viewTop - scrollViewTop
-        // 7. 스크롤 뷰를 해당 위치로 스크롤합니다.
-        binding.nsvE.smoothScrollTo(0, scrollTo)
-    }
+//    private fun scrollToView(view: View) {
+//        // 1. 뷰의 위치를 저장할 배열을 생성합니다.
+//        val location = IntArray(2)
+//        // 2. 뷰의 위치를 'window' 기준으로 계산하여 배열에 저장합니다
+//        view.getLocationInWindow(location)
+//        val viewTop = location[1]
+//        // 3. 스크롤 뷰의 위치를 저장할 배열을 생성합니다.
+//        val scrollViewLocation = IntArray(2)
+//
+//        // 4. 스크롤 뷰의 위치를 'window' 기준으로 계산하여 배열에 저장합니다.
+//        binding.nsvE.getLocationInWindow(scrollViewLocation)
+//        val scrollViewTop = scrollViewLocation[1]
+//        // 5. 현재 스크롤 뷰의 스크롤된 y 위치를 얻습니다.
+//        val scrollY = binding.nsvE.scrollY
+//        // 6. 스크롤할 위치를 계산합니다.
+//        //    현재 스크롤 위치에 뷰의 상대 위치를 더하여 올바른 스크롤 위치를 계산합니다.
+//        val scrollTo = scrollY + viewTop - scrollViewTop
+//        // 7. 스크롤 뷰를 해당 위치로 스크롤합니다.
+//        binding.nsvE.smoothScrollTo(0, scrollTo)
+//    }
 
 //    private fun initializeBluetoothAdapter() {
 //        val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)

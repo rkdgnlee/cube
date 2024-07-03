@@ -38,12 +38,14 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.GraphVO
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
 import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import java.io.File
 import java.io.FileOutputStream
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 
@@ -150,28 +152,22 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         // TODO 1. t_measure등에서 가져오는 결과값이 있다 --> 밸런스 점수, 뭐 측정일자 같은거 업데이트
         // TODO 2. 일단 통증 부위를 일단 넣을 수 있게.
         viewModel.parts.observe(viewLifecycleOwner) { parts ->
-            Log.v("현재 파츠", "${viewModel.parts.value}")
             if (parts.isEmpty()) {
                 binding.llMsEmpty.visibility = View.VISIBLE
-                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                val leftAdapter = PainPartRVAdpater(this@MeasureFragment, parts, "Pp", this@MeasureFragment)
-                binding.rvMsLeft.adapter = leftAdapter
-                binding.rvMsLeft.layoutManager = linearLayoutManager
+                setPainPartRV(parts)
 
             } else if (parts.size == 1) {
                 binding.llMsEmpty.visibility = View.GONE
                 binding.rvMsRight.visibility = View.GONE
                 (binding.rvMsLeft.layoutParams as ViewGroup.MarginLayoutParams).rightMargin = 0
-                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                val leftAdapter = PainPartRVAdpater(this@MeasureFragment, parts, "Pp", this@MeasureFragment)
-                binding.rvMsLeft.adapter = leftAdapter
-                binding.rvMsLeft.layoutManager = linearLayoutManager
+                setPainPartRV(parts)
             } else {
                 binding.llMsEmpty.visibility = View.GONE
                 binding.rvMsRight.visibility = View.VISIBLE
                 (binding.rvMsLeft.layoutParams as ViewGroup.MarginLayoutParams).rightMargin = 8
+
+                // ------! 왼쪽 painpart !------
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 val leftData = parts.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
                 val leftadapter = PainPartRVAdpater(this@MeasureFragment, leftData, "Pp", this@MeasureFragment)
                 binding.rvMsLeft.adapter = leftadapter
@@ -179,9 +175,10 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                     binding.rvMsLeft.layoutManager = linearLayoutManager
                 }
 
+                // ------! 오른쪽 painpart !------
+                val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 val rightData = parts.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
                 val rightAdapter = PainPartRVAdpater(this@MeasureFragment, rightData, "Pp", this@MeasureFragment)
-                Log.v("adapter데이터", "${leftData}, ${rightData}")
                 binding.rvMsRight.adapter = rightAdapter
                 if (rightData.isNotEmpty()) {
                     binding.rvMsRight.layoutManager = linearLayoutManager2
@@ -202,11 +199,14 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         // ------! 리포트 버튼 끝 !------
 
         binding.btnMsGetRecommend.setOnClickListener {
-//            goExerciseDetailFragment(viewModel.parts.value?.sortedBy { it.first. })
+            // TODO partName에 대해서 가장 높은 점수인것만 가져오는 거지
+            /* 근데 말이 안되는게, ExerciseDetailFragment는 대분류로 움직이는 건데, 특정 dialogFragment안에서 추가적으로 어떤 것들만 볼 수 있게. 추천 운동 (전체화면 느낌)
+            * r*/
+//            val worstPart = viewModel.parts.value?.sortedBy { it.anglesNDistances?.getJSONObject(BigDecimal("10.0").toString())?.optDouble("result_balance_score_angle_ankle") }
+//                ?.get(0)
+//            goExerciseDetailFragment(Pair(worstPart.))
+
         }
-
-
-
 
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMs
@@ -397,23 +397,23 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
     }
 
     // ------! 추천 운동 받기 시작 !------
-    private fun goExerciseDetailFragment(parts: Triple<String, String, Boolean>) {
+    private fun goExerciseDetailFragment(parts: MeasureVO) {
         /** 1. 관절의 데이터 점수를 가져와서
          *  2. 추천 운동은 그 데이터 점수에서 가장 낮은 걸 가져와서 해당 값에 맞게 가야하는거지.
-         *  3.
+         *  3. 내가 팔꿉에 대한 뭐 통증이 그렇게 나오면, exercise_search= 3
          * */
         val category = Pair(0, "전체")
-        val search = Pair(transformJointNum(parts), parts.second)
+        val search = Pair(transformJointNum(parts), parts.partName)
         requireActivity().supportFragmentManager.beginTransaction().apply {
             setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-            add(R.id.flMain, ExerciseDetailFragment.newInstance(category, search))
+            add(R.id.flMain, ExerciseDetailFragment.newInstance(search))
 //            addToBackStack(null)
             commit()
         }
     }
 
-    private fun transformJointNum(part: Triple<String, String, Boolean>) : Int {
-        return when (part.second) {
+    private fun transformJointNum(part: MeasureVO) : Int {
+        return when (part.partName) {
             "손목" -> 1
             "척추" -> 2
             "팔꿉" -> 3
@@ -430,7 +430,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
 
     @SuppressLint("MissingInflatedId", "InflateParams")
-    override fun onPartCheck(part: Triple<String, String, Boolean>) {
+    override fun onPartCheck(part: MeasureVO) {
         if (popupWindow?.isShowing == true) {
             popupWindow?.dismiss()
             popupWindow = null
@@ -452,7 +452,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                 popupWindow?.dismiss()
             }
             popupView.findViewById<TextView>(R.id.tvPPP2).setOnClickListener{
-                val dialog = PoseViewDialogFragment.newInstance(part.second)
+                val dialog = PoseViewDialogFragment.newInstance(part.drawableName) // TODO drawableName이 아니라 실제 파일 String에 대한 값을 MeasureVO에 추가해야함
                 dialog.show(requireActivity().supportFragmentManager, "PoseViewDialogFragment")
                 popupWindow?.dismiss()
             }
@@ -466,6 +466,14 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             }
         }
     }
+
+    private fun setPainPartRV(parts:  MutableList<MeasureVO>) {
+        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val leftAdapter = PainPartRVAdpater(this@MeasureFragment, parts, "Pp", this@MeasureFragment)
+        binding.rvMsLeft.adapter = leftAdapter
+        binding.rvMsLeft.layoutManager = linearLayoutManager
+    }
+
     private fun startBounceAnimation(view: View) {
         val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.1f, 1f).apply {
             duration = 800
@@ -478,10 +486,13 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             repeatMode = ObjectAnimator.REVERSE
         }
 
-
         val animatorSet = AnimatorSet()
         animatorSet.playTogether(scaleX, scaleY)
         animatorSet.interpolator = AccelerateDecelerateInterpolator()
         animatorSet.start()
     }
+
+//    override fun onPartCheck(part: Triple<String, String, Boolean>) {
+//
+//    }
 }

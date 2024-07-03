@@ -177,7 +177,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                     }
                 }
 
-// 사용자가 항목을 선택했을 때 필터링된 결과를 리사이클러뷰에 표시
+            // 사용자가 항목을 선택했을 때 필터링된 결과를 리사이클러뷰에 표시
                 binding.actvFBSearch.setOnItemClickListener { parent, _, position, _ ->
                     val selectedItem = parent.getItemAtPosition(position) as String
                     val filterList = allDataList.filter { item ->
@@ -190,7 +190,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                     adapter.notifyDataSetChanged()
                 }
 
-// -----! 자동완성 검색 끝 !-----
+            // -----! 자동완성 검색 끝 !-----
 
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Error storing exercises", e)
@@ -217,8 +217,6 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, FavoriteEditFragment.newInstance(title))
                     .addToBackStack(null)
-
-
                 remove(FavoriteBasketFragment()).commit()
             }
 
@@ -227,7 +225,6 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
     }
     private fun linkAdapter(list : MutableList<ExerciseVO>) {
         adapter = ExerciseRVAdapter(this@FavoriteBasketFragment,list,listOf(),"basket")
-
         adapter.basketListener = this@FavoriteBasketFragment
         binding.rvFB.adapter = adapter
         val linearLayoutManager =

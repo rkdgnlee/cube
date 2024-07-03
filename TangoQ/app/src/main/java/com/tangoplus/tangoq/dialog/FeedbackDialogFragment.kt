@@ -47,14 +47,14 @@ class FeedbackDialogFragment : DialogFragment() {
 
             val parts = mutableListOf<String>()
 
-            for (i in 0 until mViewModel.feedbackparts.value?.size!!) {
-                parts.add(mViewModel.feedbackparts.value!![i].second)
+            for (i in 0 until mViewModel.feedbackParts.value?.size!!) {
+                parts.add(mViewModel.feedbackParts.value!![i].partName)
             }
 
             jsonObj.put("user_email", userJson?.optString("user_email"))
-            jsonObj.put("fatigue_score",getCheckedRadioButtonIndex(binding.rgFatigue!!))
-            jsonObj.put("satisfaction_score",getCheckedRadioButtonIndex(binding.rgSatisfaction!!))
-            jsonObj.put("intensity_score",getCheckedRadioButtonIndex(binding.rgIntensity!!))
+            jsonObj.put("fatigue_score",getCheckedRadioButtonIndex(binding.rgFatigue))
+            jsonObj.put("satisfaction_score",getCheckedRadioButtonIndex(binding.rgSatisfaction))
+            jsonObj.put("intensity_score",getCheckedRadioButtonIndex(binding.rgIntensity))
             jsonObj.put("pain_parts", parts)
 
             Log.v("피드백 점수", "$jsonObj")
