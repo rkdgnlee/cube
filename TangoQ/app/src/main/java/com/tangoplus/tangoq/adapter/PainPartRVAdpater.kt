@@ -25,13 +25,6 @@ import java.lang.IllegalArgumentException
 
 class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<MeasureVO>, private var xmlname: String, private val onPartCheckListener: OnPartCheckListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var popupWindow : PopupWindow?= null
-    inner class SelectPpViewHolder(view: View) :RecyclerView.ViewHolder(view) {
-        val tvSPp : TextView = view.findViewById(R.id.tvSPp)
-        val ivSPp : ImageView = view.findViewById(R.id.ivSPp)
-        val cbSPp : CheckBox = view.findViewById(R.id.cbSPp)
-        val ivSPpCheck : ImageView = view.findViewById(R.id.ivSPpCheck)
-
-    }
 
     inner class ppViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val tvPpName : TextView = view.findViewById(R.id.tvPpName)
@@ -42,6 +35,14 @@ class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<M
         val ivPpDown : ImageView = view.findViewById(R.id.ivPpDown)
         val tvPpScore : TextView = view.findViewById(R.id.tvPpScore)
     }
+
+    inner class SelectPpViewHolder(view: View) :RecyclerView.ViewHolder(view) {
+        val tvSPp : TextView = view.findViewById(R.id.tvSPp)
+        val ivSPp : ImageView = view.findViewById(R.id.ivSPp)
+        val cbSPp : CheckBox = view.findViewById(R.id.cbSPp)
+        val ivSPpCheck : ImageView = view.findViewById(R.id.ivSPpCheck)
+    }
+
 
     override fun getItemViewType(position: Int): Int {
         return when (xmlname) {
@@ -94,23 +95,18 @@ class PainPartRVAdpater(val fragment: Fragment, private var parts: MutableList<M
                     popupView.findViewById<TextView>(R.id.tvPPP1).setOnClickListener {
                         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                             setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                            add(R.id.flMain, ReportDiseaseFragment())
-                            commit()
-                        }
-                        popupWindow!!.dismiss()
-                    }
-                    popupView.findViewById<TextView>(R.id.tvPPP2).setOnClickListener {
-                        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                             add(R.id.flMain, ReportFragment())
                             commit()
                         }
                         popupWindow!!.dismiss()
                     }
-                    popupView.findViewById<TextView>(R.id.tvPPP3).setOnClickListener {
+                    popupView.findViewById<TextView>(R.id.tvPPP2).setOnClickListener {
                         val dialog = PoseViewDialogFragment.newInstance(currentItem.drawableName) // TODO drawableName이 아니라 실제 파일 String에 대한 값을 MeasureVO에 추가해야할수도
                         dialog.show(fragment.requireActivity().supportFragmentManager, "PoseViewDialogFragment")
                         popupWindow!!.dismiss()
+                    }
+                    popupView.findViewById<TextView>(R.id.tvPPP3).setOnClickListener {
+
                     }
                     popupWindow!!.isOutsideTouchable = true
                     popupWindow!!.isFocusable = true

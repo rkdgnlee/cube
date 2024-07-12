@@ -71,23 +71,10 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.setOnItemSelectedListener {
             if (selectedTabId != it.itemId) {
                 selectedTabId = it.itemId
-//                if (backStack.isEmpty() || backStack.peek() != it.itemId) {
-//                    backStack.push(it.itemId)
-//                }
             }
-
-//            setTopLayoutFull(binding.flMain, binding.clMain)
             setCurrentFragment(selectedTabId)
-
-//            if (it.itemId == R.id.favorite || it.itemId == R.id.exercise) {
-//                setTopLayoutFull(binding.flMain, binding.clMain)
-//            } else {
-//                setOptiLayout(binding.flMain,  binding.clMain ,binding.cvCl)
-//            }
             true
-
         }
-
 
         binding.bnbMain.setOnItemReselectedListener {
             when(it.itemId) {
@@ -303,8 +290,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         // ------! 0일 때만 피드백 켜지게 !------
-
-
         val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, String, Int>
         Log.v("intent>serializable", "$feedbackData")
         if (feedbackData != null) {

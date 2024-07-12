@@ -34,7 +34,7 @@ class MeasurePartDialogFragment : DialogFragment(), OnPartCheckListener {
         super.onViewCreated(view, savedInstanceState)
 
         val ppList = mutableListOf<MeasureVO>()
-        val parts = listOf("손목", "척추", "팔꿉", "목", "발목", "어깨", "무릎", "복부")
+        val parts = listOf("목", "어깨", "팔꿉", "손목", "복부", "척추", "무릎", "발목")
         for (i in parts.indices) {
             val measureVO = MeasureVO(
                 partName = parts[i],

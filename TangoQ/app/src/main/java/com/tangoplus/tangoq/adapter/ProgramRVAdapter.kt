@@ -26,6 +26,7 @@ import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.RvProgramItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendHorizontalItemBinding
+import com.tangoplus.tangoq.dialog.PlayProgramThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
 import java.lang.IllegalArgumentException
@@ -101,9 +102,9 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                     "${currentItem.programTime / 60}분 ${currentItem.programTime % 60}초"
                 }).toString()
                 holder.tvRcmExerciseKcal.text = currentItem.programCount
-                holder.ibtnRcmMore.setOnClickListener {
-                    val bsFragment = RecommendBSDialogFragment()
-                    val bundle = Bundle()
+//                holder.ibtnRcmMore.setOnClickListener {
+//                    val bsFragment = RecommendBSDialogFragment()
+//                    val bundle = Bundle()
 //            val FavoriteVOfromProgramm = FavoriteItemVO(
 //                favoriteSn = 102,
 //                favoriteName = currentItem.programName.toString(),
@@ -111,26 +112,17 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
 //                favoriteDisclosure = "",
 //                exercises = currentItem.exercises
 //            )
-                    bundle.putParcelable("Program", currentItem)
-
-                    bsFragment.arguments = bundle
-                    val fragmentManager = fragment.requireActivity().supportFragmentManager
-                    bsFragment.show(fragmentManager, bsFragment.tag)
-                }
+//                    bundle.putParcelable("Program", currentItem)
+//
+//                    bsFragment.arguments = bundle
+//                    val fragmentManager = fragment.requireActivity().supportFragmentManager
+//                    bsFragment.show(fragmentManager, bsFragment.tag)
+//                }
                 holder.vRcmPlay.setOnClickListener {
                     onRVClickListener.onRVClick(currentItem)
                 }
             }
             is rankViewHolder -> {
-//                val lpitemView = holder.itemView.layoutParams
-//                val lpcv = holder.cvPIThumbnail.layoutParams
-//                val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-//                lpitemView.height = (screenHeight * 0.24).toInt()  // 화면 높이의 25%로 설정
-//                lpcv.height = (screenHeight * 0.15).toInt()
-//                holder.itemView.layoutParams = lpitemView
-//                holder.cvPIThumbnail.layoutParams = lpcv
-
-
                 holder.tvPIName.text = currentItem.programName
                 holder.tvPIRanking.text = "${position + 1}"
                 holder.tvPITime.text = (if (currentItem.programTime <= 60) {
@@ -163,11 +155,11 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                             fragment.requireContext().startActivity(intent)
                             startForResult.launch(intent)
                             popupWindow!!.dismiss()
-                        } // ------! 팝업 1 재생 시작 !------
+                        } // ------! 팝업 2 자세히 보기 시작 !------
                         popupView.findViewById<TextView>(R.id.tvPMGoThumbnail).setOnClickListener {
-                            val dialogFragment = PlayThumbnailDialogFragment().apply {
+                            val dialogFragment = PlayProgramThumbnailDialogFragment().apply {
                                 arguments = Bundle().apply {
-                                    putParcelable("ExerciseUnit", currentItem.exercises!![0])
+                                    putParcelable("Program", currentItem)
                                 }
                             }
                             dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
@@ -248,7 +240,7 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
             }
         }
     }
-    // TODO exoplayer에서 5초 뒤로가기 앞으로 가기 해야함
+
     private fun storePickUrl(currentItem : MutableList<ExerciseVO>) : MutableList<String> {
         val urls = mutableListOf<String>()
         for (i in currentItem.indices) {

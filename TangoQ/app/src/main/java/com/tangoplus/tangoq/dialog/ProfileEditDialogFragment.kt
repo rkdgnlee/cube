@@ -76,7 +76,6 @@ class ProfileEditDialogFragment : DialogFragment() {
     private val agreement3 = MutableLiveData(false)
     private val agreementMk1 = MutableLiveData(false)
     private val agreementMk2 = MutableLiveData(false)
-    private val marketingAgree = MutableLiveData(false)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -96,7 +95,6 @@ class ProfileEditDialogFragment : DialogFragment() {
         // -----! 이미지 로드 시작 !-----
         val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
 
-
         val imageUri = sharedPreferences.getString("imageUri", null)
         if (imageUri != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -108,7 +106,7 @@ class ProfileEditDialogFragment : DialogFragment() {
         } // -----! 이미지 로드 끝 !-----
 
         // ------! 싱글턴에서 가져오기 !------
-        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")!!
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")!!
 
         // ------! 이름, 전화번호 세팅 !------
         binding.tvPEDMobile.text = userJson.optString("user_mobile")
@@ -160,24 +158,24 @@ class ProfileEditDialogFragment : DialogFragment() {
                                             val jsonObj = JSONObject()
                                             jsonObj.put("google_login_id", user.uid)
                                             Log.v("소셜계정연동", "jsonObj: $jsonObj")
-                                            fetchUserUPDATEJson(
-                                                getString(R.string.IP_ADDRESS_t_user),
-                                                jsonObj.toString(),
-                                                userJson.getString("user_email")
-                                            ) {
-                                                requireActivity().runOnUiThread {
-                                                    binding.tvGoogleInteCheck.text = "연동완료"
-                                                    viewModel.snsCount += 1
-                                                }
-
-                                                Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject(
-                                                    "data"
-                                                )?.put("google_login_id", user.uid)
-                                                Log.v(
-                                                    "구글>singleton",
-                                                    "${Singleton_t_user.getInstance(requireContext()).jsonObject}"
-                                                )
-                                            }
+//                                            fetchUserUPDATEJson(
+//                                                getString(R.string.IP_ADDRESS_t_user),
+//                                                jsonObj.toString(),
+//                                                userJson.getString("user_email")
+//                                            ) {
+//                                                requireActivity().runOnUiThread {
+//                                                    binding.tvGoogleInteCheck.text = "연동완료"
+//                                                    viewModel.snsCount += 1
+//                                                }
+//
+//                                                Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject(
+//                                                    "data"
+//                                                )?.put("google_login_id", user.uid)
+//                                                Log.v(
+//                                                    "구글>singleton",
+//                                                    "${Singleton_t_user.getInstance(requireContext()).jsonObject}"
+//                                                )
+//                                            }
 
                                             // ---- Google 토큰에서 가져오기 끝 ----
                                         }
@@ -219,13 +217,13 @@ class ProfileEditDialogFragment : DialogFragment() {
                         val jsonObj = JSONObject()
                         val uid = result.profile?.id.toString()
                         jsonObj.put("naver_login_id" , uid)
-                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString(), userJson.optString("user_email")) {
-                            Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")?.put("naver_login_id", uid)
-                            requireActivity().runOnUiThread{
-                                binding.tvNaverInteCheck.text = "연동완료"
-                                viewModel.snsCount += 1
-                            }
-                        }
+//                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString(), userJson.optString("user_email")) {
+//                            Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")?.put("naver_login_id", uid)
+//                            requireActivity().runOnUiThread{
+//                                binding.tvNaverInteCheck.text = "연동완료"
+//                                viewModel.snsCount += 1
+//                            }
+//                        }
 
                     }
                 })
@@ -255,14 +253,14 @@ class ProfileEditDialogFragment : DialogFragment() {
                             else if (user != null) {
                                 val jsonObj = JSONObject()
                                 jsonObj.put("kakao_login_id" , user.id.toString())
-                               fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString(), userJson.optString("user_email")) {
-                                   Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("kakao_login_id", user.id.toString())
-                                   requireActivity().runOnUiThread{
-                                       binding.tvKakaoIntecheck.text = "연동완료"
-                                       viewModel.snsCount += 1
-                                   }
-
-                               }
+//                               fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.toString(), userJson.optString("user_email")) {
+//                                   Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("kakao_login_id", user.id.toString())
+//                                   requireActivity().runOnUiThread{
+//                                       binding.tvKakaoIntecheck.text = "연동완료"
+//                                       viewModel.snsCount += 1
+//                                   }
+//
+//                               }
 
                             }
                         }
@@ -285,7 +283,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                 }
                 "연동완료" -> {
                     if (viewModel.snsCount > 1) {
-                        showLogoutDialog("구글")
+//                        showLogoutDialog("구글")
                         Log.v("snsCount>google", "${viewModel.snsCount}")
                     }
                 }
@@ -303,7 +301,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                 }
                 "연동완료" -> {
                     if (viewModel.snsCount > 1) {
-                        showLogoutDialog("카카오")
+//                        showLogoutDialog("카카오")
                         Log.v("snsCount>카카오", "${viewModel.snsCount}")
                     }
                 }
@@ -317,7 +315,7 @@ class ProfileEditDialogFragment : DialogFragment() {
                 }
                 "연동완료" -> {
                     if (viewModel.snsCount > 1) {
-                        showLogoutDialog("네이버")
+//                        showLogoutDialog("네이버")
                         Log.v("snsCount>네이버", "${viewModel.snsCount}")
                     }
                 }
@@ -386,8 +384,6 @@ class ProfileEditDialogFragment : DialogFragment() {
             }
         }
 
-
-
         val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
         binding.spnPED.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domainList)
         binding.spnPED.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -425,7 +421,14 @@ class ProfileEditDialogFragment : DialogFragment() {
                 )
             }
         }
-
+        when (userJson.optInt("sms_agree")) {
+            1 -> agreementMk1.value = true
+            else -> agreementMk1.value = false
+        }
+        when (userJson.optInt("email_agree")) {
+            1 -> agreementMk2.value = true
+            else -> agreementMk2.value = false
+        }
         // ------! 광고성 수신 동의 시작 !------
         binding.clPEDAgreement3.setOnClickListener{
             val newValue = agreement3.value?.not() ?: false
@@ -461,18 +464,28 @@ class ProfileEditDialogFragment : DialogFragment() {
             )
             agreementMk2.value = newValue
         }
+        agreement3.observe(viewLifecycleOwner) {
+            updateAgreeMarketingAllState()
+        }
+
+
         agreementMk1.observe(viewLifecycleOwner) {
+            Log.v("광고성1", "${agreementMk1.value}")
             updateAgreeMarketingAllState()
         }
 
         agreementMk2.observe(viewLifecycleOwner) {
             updateAgreeMarketingAllState()
-        }
+            Log.v("광고성2", "${agreementMk2.value}")
 
+        }
 
         binding.btnPEDFinish.setOnClickListener {
             userJson.put("user_id", viewModel.id.value.toString())
             userJson.put("user_password", viewModel.pw.value.toString())
+            userJson.put("sms_receive", agreementMk1.value)
+            userJson.put("email_receive", agreementMk2.value)
+
             when (binding.spnPED.selectedItemPosition) {
                 0, 1, 2 -> {
                     viewModel.User.value?.put("user_email", "${binding.etPEDEmailId.text}@${binding.spnPED.selectedItem as String}")
@@ -486,10 +499,10 @@ class ProfileEditDialogFragment : DialogFragment() {
 
             val userEditEmail = userJson.optString("user_email")
             val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
-            fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), userJson.toString(), encodedUserEmail) {
-                Log.w(ContentValues.TAG +" 싱글톤객체추가", userJson.optString("user_weight").toString())
-                dismiss()
-            }
+//            fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), userJson.toString(), encodedUserEmail) {
+//                Log.w(ContentValues.TAG +" 싱글톤객체추가", userJson.optString("user_weight").toString())
+//                dismiss()
+//            }
         }
         binding.btnPEDGoSetup.setOnClickListener {
             val intent = Intent(requireContext(), SetupActivity::class.java)
@@ -565,95 +578,101 @@ class ProfileEditDialogFragment : DialogFragment() {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
-    private fun checkSNSLogin(jsonObject: JSONObject) : Triple<Boolean, Boolean, Boolean> {
+    private fun checkSNSLogin(jsonObject: JSONObject?) : Triple<Boolean, Boolean, Boolean> {
         var google = false
         var kakao = false
         var naver = false
-
-        val googleLoginId = jsonObject.optString("google_login_id")
-        if (googleLoginId != null && googleLoginId.isNotEmpty() && googleLoginId != "null") {
-            google = true
-        }
-
-        val kakaoLoginId = jsonObject.optString("kakao_login_id")
-        if (kakaoLoginId != null && kakaoLoginId.isNotEmpty() && kakaoLoginId != "null") {
-            kakao = true
-        }
-
-        val naverLoginId = jsonObject.optString("naver_login_id")
-        if (naverLoginId != null && naverLoginId.isNotEmpty() && naverLoginId != "null") {
-            naver = true
-        }
-
-
-        Log.v("sns", "google: $google kakao: $kakao naver : $naver")
+//
+//        val googleLoginId = jsonObject.optString("google_login_id")
+//        if (googleLoginId != null && googleLoginId.isNotEmpty() && googleLoginId != "null") {
+//            google = true
+//        }
+//
+//        val kakaoLoginId = jsonObject.optString("kakao_login_id")
+//        if (kakaoLoginId != null && kakaoLoginId.isNotEmpty() && kakaoLoginId != "null") {
+//            kakao = true
+//        }
+//
+//        val naverLoginId = jsonObject.optString("naver_login_id")
+//        if (naverLoginId != null && naverLoginId.isNotEmpty() && naverLoginId != "null") {
+//            naver = true
+//        }
+//
+//
+//        Log.v("sns", "google: $google kakao: $kakao naver : $naver")
         return Triple(google, kakao, naver)
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun showLogoutDialog(title: String) {
-        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-            setTitle("알림")
-            setMessage("${title}의 소셜 로그인 연동을\n해제하시겠습니까?")
-            setPositiveButton("예") { _, _ ->
-                when (title) {
-                    "구글" -> {
-                        Firebase.auth.signOut()
-                        viewModel.snsCount -= 1
-                        Log.e("로그아웃", "Firebase sign out successful")
-                        val jsonObject = JSONObject()
-                        jsonObject.put("google_login_id", "")
-                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObject.toString(), userJson.optString("user_email")) {
-                            requireActivity().runOnUiThread {
-                                binding.tvGoogleInteCheck.text = "미연결"
-                                Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("google_login_id", "")
-                            }
-                        }
-                    }
-                    "네이버" -> {
-                        NaverIdLoginSDK.logout()
-                        viewModel.snsCount -= 1
-                        Log.e("로그아웃", "Naver sign out successful")
-                        val jsonObject = JSONObject()
-                        jsonObject.put("naver_login_id", "")
-                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObject.toString(), userJson.optString("user_email")) {
-                            requireActivity().runOnUiThread {
-                                binding.tvNaverInteCheck.text = "미연결"
-                                Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("naver_login_id", "")
-                            }
-                        }
-                    }
-                    "카카오" -> {
-                        viewModel.snsCount -= 1
-                        UserApiClient.instance.unlink { error->
-                            if (error != null) {
-                                Log.e("로그아웃", "KAKAO Sign out failed", error)
-                            } else {
-                                    Log.e("로그아웃", "KAKAO Sign out successful")
-                            }
-                        }
-                        val jsonObject = JSONObject()
-                        jsonObject.put("kakao_login_id", "")
-                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObject.toString(), userJson.optString("user_email")) {
-                            requireActivity().runOnUiThread {
-                                binding.tvKakaoIntecheck.text = "미연결"
-                                Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("kakao_login_id", "")
-                            }
-                        }
-                    }
-                }
-            }
-            setNegativeButton("아니오") { _, _ ->
-            }
-            create()
-        }.show()
-    }
+//    @SuppressLint("SetTextI18n")
+//    private fun showLogoutDialog(title: String) {
+//        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+//            setTitle("알림")
+//            setMessage("${title}의 소셜 로그인 연동을\n해제하시겠습니까?")
+//            setPositiveButton("예") { _, _ ->
+//                when (title) {
+//                    "구글" -> {
+//                        Firebase.auth.signOut()
+//                        viewModel.snsCount -= 1
+//                        Log.e("로그아웃", "Firebase sign out successful")
+//                        val jsonObject = JSONObject()
+//                        jsonObject.put("google_login_id", "")
+//                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObject.toString(), userJson.optString("user_email")) {
+//                            requireActivity().runOnUiThread {
+//                                binding.tvGoogleInteCheck.text = "미연결"
+//                                Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("google_login_id", "")
+//                            }
+//                        }
+//                    }
+//                    "네이버" -> {
+//                        NaverIdLoginSDK.logout()
+//                        viewModel.snsCount -= 1
+//                        Log.e("로그아웃", "Naver sign out successful")
+//                        val jsonObject = JSONObject()
+//                        jsonObject.put("naver_login_id", "")
+//                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObject.toString(), userJson.optString("user_email")) {
+//                            requireActivity().runOnUiThread {
+//                                binding.tvNaverInteCheck.text = "미연결"
+//                                Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("naver_login_id", "")
+//                            }
+//                        }
+//                    }
+//                    "카카오" -> {
+//                        viewModel.snsCount -= 1
+//                        UserApiClient.instance.unlink { error->
+//                            if (error != null) {
+//                                Log.e("로그아웃", "KAKAO Sign out failed", error)
+//                            } else {
+//                                    Log.e("로그아웃", "KAKAO Sign out successful")
+//                            }
+//                        }
+//                        val jsonObject = JSONObject()
+//                        jsonObject.put("kakao_login_id", "")
+//                        fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), jsonObject.toString(), userJson.optString("user_email")) {
+//                            requireActivity().runOnUiThread {
+//                                binding.tvKakaoIntecheck.text = "미연결"
+//                                Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")?.put("kakao_login_id", "")
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            setNegativeButton("아니오") { _, _ ->
+//            }
+//            create()
+//        }.show()
+//    }
 
     private fun updateAgreeMarketingAllState() {
         val allChecked = agreementMk1.value == true && agreementMk2.value == true
-        if (marketingAgree.value != allChecked) {
-            marketingAgree.value = allChecked
+        if (agreement3.value != allChecked) {
+            agreement3.value = allChecked
             binding.ivPEDAgreement3.setImageResource(
+                if (allChecked) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+            binding.ivPEDAgreementMk1.setImageResource(
+                if (allChecked) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+            )
+            binding.ivPEDAgreementMk2.setImageResource(
                 if (allChecked) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
             )
         }

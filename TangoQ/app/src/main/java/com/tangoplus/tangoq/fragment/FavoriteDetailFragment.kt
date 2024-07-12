@@ -94,17 +94,14 @@ class FavoriteDetailFragment : Fragment(){
          *
          * */
 
-
-
         // -----! 운동 picklist, 제목 가져오기 시작 !-----
         lifecycleScope.launch {
             binding.sflFV.startShimmer()
 
-
-            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)!!
+            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), currentSn)
             favoriteItem = jsonToFavoriteItemVO(snData)
 //
-//            // ------! 즐겨찾기 넣어서 가져오기 !------
+//            // ------! 즐겨찾기 넣어서 가져오기 !------v
             currentItem = viewModel.favoriteList.value?.find { it.favoriteSn == currentSn.toInt() }!!
             Log.v("Detail>CurrentItem", "sn: ${currentItem.favoriteSn} ,갯수: ${currentItem.imgThumbnails!!.size}")
             currentItem.exercises = favoriteItem.exercises
@@ -209,7 +206,7 @@ class FavoriteDetailFragment : Fragment(){
         lifecycleScope.launch {
             binding.sflFV.startShimmer()
             Log.v("현재 Sn", sn)
-            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn)!!
+            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn)
             favoriteItem = jsonToFavoriteItemVO(snData)
 
             currentItem = viewModel.favoriteList.value?.find { it.favoriteName == title }!!

@@ -135,7 +135,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
     private fun goExerciseDetail(category : Pair<Int, String>) {
         Log.v("ClickIndex", "category: $category")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-//            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
             add(R.id.flMain, ExerciseDetailFragment.newInstance(category))
 //            addToBackStack(null)
             commit()

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,11 +22,13 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
+import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
@@ -75,31 +78,23 @@ class IntroActivity : AppCompatActivity() {
         // ------! token 저장할  securedPref init !------
         securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
 
-//        val bottomSheetFragment = AgreementBottomSheetDialogFragment()
-//        val fragmentManager = this@IntroActivity.supportFragmentManager
-//        bottomSheetFragment.show(fragmentManager, bottomSheetFragment.tag)
-//        val dialog = MeasureSkeletonDialogFragment()
-//        dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
-
         val currentUser = Firebase.auth.currentUser
         if (currentUser == null) {
             firebaseAuth = FirebaseAuth.getInstance()
-            launcher = registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-                Log.v(TAG, "resultCode: ${result.resultCode}입니다.")
+            launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                Log.v("google", "1, resultCode: ${result.resultCode}입니다.")
                 if (result.resultCode == RESULT_OK) {
+                    Log.v("google", "2, resultCode: ${result.resultCode}입니다.")
                     val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                     try {
+                        Log.v("google", "3, resultCode: ${result.resultCode}입니다.")
                         task.getResult(ApiException::class.java)?.let { account ->
                             val tokenId = account.idToken
                             if (tokenId != null && tokenId != "") {
-                                val credential: AuthCredential =
-                                    GoogleAuthProvider.getCredential(account.idToken, null)
-                                firebaseAuth.signInWithCredential(credential)
-                                    .addOnCompleteListener {
+                                val credential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
+                                firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
                                         if (firebaseAuth.currentUser != null) {
-                                            Log.d("로그인", "${firebaseAuth.currentUser}")
+
                                             // ---- Google 토큰에서 가져오기 시작 ----
                                             val user: FirebaseUser = firebaseAuth.currentUser!!
 
@@ -108,33 +103,20 @@ class IntroActivity : AppCompatActivity() {
                                             jsonObj.put("user_name", user.displayName.toString())
                                             jsonObj.put("user_email", user.email.toString())
                                             jsonObj.put("google_login_id", user.uid)
-                                            jsonObj.put("google_token", tokenId) // 토큰 값
-
+                                            jsonObj.put("google_id_token", tokenId) // 토큰 값
+                                            jsonObj.put("user_mobile", user.phoneNumber)
+                                            jsonObj.put("user_provider_id", user.providerId)
+                                            jsonObj.put("firebase_auth_tenant_id", firebaseAuth.tenantId)
+                                            jsonObj.put("google_result_data", result.data)
+                                            jsonObj.put("social_account", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                                            Log.w("구글>토큰", tokenId)
+                                            Log.v("jsonObj", "$jsonObj")
                                             getTokenByUserJson(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
-                                                when (jo?.optString("response_code")) {
-                                                    "200" -> {
-                                                        saveServerToken(this@IntroActivity, jo.optString("user_token"))
-                                                        getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
-                                                            if (jo2 != null) {
-                                                                storeUserInSingleton(this@IntroActivity, jo2)
-                                                                Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                                                setupInit()
-                                                            }
-                                                        }
-                                                    }
-                                                    "201" -> { // ------! 기존 정보가 있다 !------
-                                                        getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
-                                                            if (jo2 != null) {
-                                                                storeUserInSingleton(this@IntroActivity, jo2)
-                                                                Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                                                MainInit()
-                                                            }
-                                                        }
-                                                    }
-                                                    "404" -> {
-                                                        Log.v("responseCode404", "response: $jo")
+                                                if (jo != null) {
+                                                    when (jo.optString("response_code")) {
+                                                        "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 0) }
+                                                        "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 1) }
+                                                        "404" -> { Log.v("responseCode404", "response: $jo") }
                                                     }
                                                 }
                                             }
@@ -175,65 +157,45 @@ class IntroActivity : AppCompatActivity() {
             override fun onError(errorCode: Int, message: String) {
                 onFailure(errorCode, message)
             }
-
             override fun onFailure(httpStatus: Int, message: String) {
                 val errorCode = NaverIdLoginSDK.getLastErrorCode().code
                 val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-                Toast.makeText(
-                    this@IntroActivity,
-                    "errorCode: $errorCode, errorDesc: $errorDescription",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@IntroActivity, "로그인에 실패했습니다.\n다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                Log.e("failed Login to NAVER", "errorCode: $errorCode, errorDesc: $errorDescription")
             }
-
             override fun onSuccess() {
                 // ---- 네이버 로그인 성공 동작 시작 ----
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                     override fun onError(errorCode: Int, message: String) {}
                     override fun onFailure(httpStatus: Int, message: String) {}
-
                     override fun onSuccess(result: NidProfileResponse) {
                         Log.v("네이버>token", "${NaverIdLoginSDK.getAccessToken()}")
                         val jsonObj = JSONObject()
                         val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
-                        val naverGender : String = if (result.profile?.gender.toString() == "M") {
-                            "남자"
-                        } else {
-                            "여자"
-                        }
+                        val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
                         jsonObj.put("user_name", result.profile?.name.toString())
                         jsonObj.put("user_gender", naverGender)
                         jsonObj.put("user_mobile", naverMobile)
                         jsonObj.put("user_email", result.profile?.email.toString())
                         jsonObj.put("user_birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
                         jsonObj.put("naver_login_id" , result.profile?.id.toString())
+                        jsonObj.put("user_age" , result.profile?.age)
+                        jsonObj.put("result_code" , result.resultCode)
+                        jsonObj.put("result_message" , result.message)
+                        jsonObj.put("user_ci" , result.profile?.ci)
+                        jsonObj.put("access_token" , NaverIdLoginSDK.getAccessToken())
+                        jsonObj.put("refresh_token" , NaverIdLoginSDK.getRefreshToken())
 
+                        jsonObj.put("social_account", "naver")
+                        Log.v("jsonObj", "$jsonObj")
 //                        Log.v("네이버이메일", jsonObj.getString("user_email"))
 //                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-//
                         getTokenByUserJson(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
-                            when (jo?.optString("response_code")) {
-                                "200" -> {
-                                    saveServerToken(this@IntroActivity, jo.optString("user_token"))
-                                    getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
-                                        if (jo2 != null) {
-                                            storeUserInSingleton(this@IntroActivity, jo2)
-                                            Log.v("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                                            setupInit()
-                                        }
-                                    }
-                                }
-                                "201" -> { // ------! 기존 정보가 있다 !------
-                                    getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
-                                        if (jo2 != null) {
-                                            storeUserInSingleton(this@IntroActivity, jo2)
-                                            Log.v("네이버>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                                            MainInit()
-                                        }
-                                    }
-                                }
-                                "404" -> {
-                                    Log.v("responseCode404", "response: $jo")
+                            if (jo != null) {
+                                when (jo.optString("response_code")) {
+                                    "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 0) }
+                                    "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 1) }
+                                    "404" -> { Log.v("responseCode404", "response: $jo") }
                                 }
                             }
                         }
@@ -278,32 +240,22 @@ class IntroActivity : AppCompatActivity() {
                                 jsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 jsonObj.put("kakao_login_id" , user.id.toString())
+                                jsonObj.put("properties" , user.properties)
+                                jsonObj.put("group_user_token" , user.groupUserToken)
+                                jsonObj.put("id_token", token.idToken)
+                                jsonObj.put("refresh_token", token.refreshToken)
+                                jsonObj.put("access_token", token.accessToken)
+                                jsonObj.put("social_account", "kakao")
 
+                                Log.v("jsonObj", "$jsonObj")
 //                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
 //                                Log.w("카카오가입>메일", encodedUserEmail)
                                 getTokenByUserJson(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
-                                    when (jo?.optString("response_code")) {
-                                        "200" -> {
-                                            saveServerToken(this@IntroActivity, jo.optString("user_token"))
-                                            getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
-                                                if (jo2 != null) {
-                                                    storeUserInSingleton(this@IntroActivity, jo2)
-                                                    Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                                    setupInit()
-                                                }
-                                            }
-                                        }
-                                        "201" -> { // ------! 기존 정보가 있다 !------
-                                            getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
-                                                if (jo2 != null) {
-                                                    storeUserInSingleton(this@IntroActivity, jo2)
-                                                    Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                                    MainInit()
-                                                }
-                                            }
-                                        }
-                                        "404" -> {
-                                            Log.v("responseCode404", "response: $jo")
+                                    if (jo != null) {
+                                        when (jo.optString("response_code")) {
+                                            "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 0) }
+                                            "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 1) }
+                                            "404" -> { Log.v("responseCode404", "response: $jo") }
                                         }
                                     }
                                 }
@@ -333,14 +285,11 @@ class IntroActivity : AppCompatActivity() {
         }
 
         // -----! 배너 시작 !-----
-
-
 //        viewModel.BannerList.add(ImageUrl1)
 //        viewModel.BannerList.add(ImageUrl2)
 //        viewModel.BannerList.add(ImageUrl3)
 //        viewModel.BannerList.add(ImageUrl4)
 //        viewModel.BannerList.add(ImageUrl5)
-//
 //        val bannerAdapter = BannerVPAdapter(viewModel.BannerList, "intro",this@IntroActivity)
 //        bannerAdapter.notifyDataSetChanged()
 //        binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -359,11 +308,6 @@ class IntroActivity : AppCompatActivity() {
 //        }
 
     }
-    private fun MainInit() {
-        val intent = Intent(this ,MainActivity::class.java)
-        startActivity(intent)
-        finishAffinity()
-    }
 //    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
 //        override fun handleMessage(msg: Message) {
 //            super.handleMessage(msg)
@@ -378,26 +322,13 @@ class IntroActivity : AppCompatActivity() {
 //            }
 //        }
 //    }
-
 //    private fun autoScrollStart(intervalTime: Long) {
 //        bannerHandler.removeMessages(0)
 //        bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
-//
 //    }
 //    private fun autoScrollStop() {
 //        bannerHandler.removeMessages(0)
-//    } // -----! 배너 끝 !-----
-
-    private fun setupInit() {
-        val intent = Intent(this, SetupActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
-    }
-
+//    }
 //    override fun onResume() {
 //        super.onResume()
 //        autoScrollStart(intervalTime)
@@ -407,4 +338,74 @@ class IntroActivity : AppCompatActivity() {
 //        super.onPause()
 //        autoScrollStop()
 //    }
+// -----! 배너 끝 !-----
+
+    private fun MainInit() {
+        val intent = Intent(this ,MainActivity::class.java)
+        startActivity(intent)
+        finishAffinity()
+    }
+    private fun setupInit() {
+        val intent = Intent(this, SetupActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+    private fun saveTokenAndIdentifyUser(jo: JSONObject, jsonObj: JSONObject, situation: Int) {
+        when (situation) {
+            0 -> {
+                saveServerToken(this@IntroActivity, jo.optString("user_token"))
+                Log.v("save>Token", "${getServerToken(this@IntroActivity)}")
+
+                // ------! 광고성 수신 동의 문자 시작 !-------
+                val bottomSheetFragment = AgreementBottomSheetDialogFragment()
+                bottomSheetFragment.isCancelable = false
+                bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+                bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.OnAgreeListener {
+                    override fun onFinish(agree: Boolean) {
+                        if (agree) {
+                            jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
+                            jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
+                            Log.v("Intro>SMS", "$jsonObj")
+
+                            getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                                storeUserInSingleton(this@IntroActivity, jo)
+                                Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+                                setupInit()
+                            }
+                        } else {
+
+                            // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
+                            if (Firebase.auth.currentUser != null) {
+                                Firebase.auth.signOut()
+                                Log.d("로그아웃", "Firebase sign out successful")
+                            } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
+                                NaverIdLoginSDK.logout()
+                                Log.d("로그아웃", "Naver sign out successful")
+                            } else if (AuthApiClient.instance.hasToken()) {
+                                UserApiClient.instance.logout { error->
+                                    if (error != null) {
+                                        Log.e("로그아웃", "KAKAO Sign out failed", error)
+                                    } else {
+                                        Log.e("로그아웃", "KAKAO Sign out successful")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+            1 -> {
+                getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
+                    storeUserInSingleton(this@IntroActivity, jo)
+                    Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                    MainInit()
+                }
+            }
+        }
+    }
+
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
+    }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout64"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="74dp"
     android:background="@color/white">
 
     <CheckBox
@@ -20,8 +20,8 @@
 
     <ImageView
         android:id="@+id/ivSPp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_marginStart="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

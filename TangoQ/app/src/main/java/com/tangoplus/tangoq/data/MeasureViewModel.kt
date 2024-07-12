@@ -7,17 +7,17 @@ import org.json.JSONObject
 
 class MeasureViewModel : ViewModel() {
     val parts = MutableLiveData(mutableListOf<MeasureVO>()) // drawable, 부위 이름, 체크여부
-    val steps = MutableLiveData(mutableListOf<Long>())
-    val totalSteps = MutableLiveData<String>()
-    val calory = MutableLiveData<String>()
-
+//    val steps = MutableLiveData(mutableListOf<Long>())
+//    val totalSteps = MutableLiveData<String>()
+//    val calory = MutableLiveData<String>()
+//
     val feedbackParts = MutableLiveData(mutableListOf<MeasureVO>())
 
     init {
         parts.value = mutableListOf()
-        steps.value = mutableListOf()
-        totalSteps.value = ""
-        calory.value = ""
+//        steps.value = mutableListOf()
+//        totalSteps.value = ""
+//        calory.value = ""
         feedbackParts.value = mutableListOf()
     }
 

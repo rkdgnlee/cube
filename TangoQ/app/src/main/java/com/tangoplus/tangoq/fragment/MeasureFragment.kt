@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -20,6 +21,8 @@ import android.widget.TextView
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -28,7 +31,16 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.tabs.TabLayout
+import com.skydoves.balloon.ArrowPositionRules
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.BalloonSizeSpec
+import com.skydoves.balloon.showAlignBottom
+import com.skydoves.balloon.showAlignEnd
+import com.skydoves.balloon.showAlignStart
 import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.adapter.PainPartRVAdpater
 import com.tangoplus.tangoq.data.Measurement
@@ -43,10 +55,17 @@ import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
 import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import org.apache.commons.math3.distribution.NormalDistribution
 import java.io.File
 import java.io.FileOutputStream
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import kotlin.math.absoluteValue
+import kotlin.math.exp
+import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
+import kotlin.math.sqrt
 
 
 class MeasureFragment : Fragment(), OnPartCheckListener {
@@ -226,8 +245,10 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 //        }
         val weekList = listOf("월", "화", "수", "목", "금", "토", "일")
         for (i in weekList) {
-//            lcDataList.add(GraphVO(i, Random.nextInt(10)))
-            lcDataList.add(GraphVO(i, 1))
+            var y = 88
+//            lcDataList.add(GraphVO(i, i.length.p))
+            lcDataList.add(GraphVO(i, y))
+            y += 1
         }
         val lcEntries : MutableList<Entry> = mutableListOf()
         for (i in lcDataList.indices) {
@@ -286,109 +307,278 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         }
         // ---- 꺾은선 그래프 코드 끝 ----
 
-        val bcLabels = mutableListOf<String>()
-        viewModel.steps.observe(viewLifecycleOwner) { steps ->
-            if (steps.isNotEmpty()) {
-                val bcDataList : MutableList<GraphVO> = mutableListOf()
-                for (i in 0 until steps.size) {
-//                    val timeLabel = String.format("%02d:00", hour) // 시간 형식을 "00:00"으로 포맷
-                    bcDataList.add(GraphVO((i+1).toString(), steps[i].toInt()))
-                    // 30분 뒤의 시간 추가
-//                    val halfHourLabel = String.format("%02d:30", hour)
-                }
-                // ---- 막대 그래프 코드 시작 ----
-                val barChart = binding.bcMs
-                barChart.setTouchEnabled(false)
-//        val roundedBarChartRenderer = roundedBar
-//        barChart.renderer = RoundedBarChart
-                val bcXAxis = barChart.xAxis
-                val bcYAxisLeft = barChart.axisLeft
-                val bcYAxisRight = barChart.axisRight
-                val bcLegend = barChart.legend
+        val lineChartND = requireActivity().findViewById<LineChart>(R.id.lcMSNS)
+        val mean = 0.0
+        val stdDev = 1.0
+        val ndText = "70"
+        val zScore : Double
+//        when (ndText) {
+//            "60%" -> zScore = 0.842
+//            "70%" -> zScore = 1.04
+//            "80%" -> zScore = 1.28
+//            "90%" -> zScore = 1.645
+//        }
+        zScore = 1.04
+        val entries = ArrayList<Entry>()
+        val entriesHighlighted = ArrayList<Entry>()
+
+        // -------! 사용자 밸런스 점수의 백분위 값 !------
+        val userValue = 0.625
 
 
-                Log.v("steps", "$bcDataList")
-                val rcEntries : MutableList<BarEntry> = mutableListOf()
-                for (i in bcDataList.indices) {
-                    // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
-                    rcEntries.add(BarEntry(i.toFloat(), bcDataList[i].yAxis.toFloat()))
-                }
-                val bcLineDataSet = BarDataSet(rcEntries, "")
-                bcLineDataSet.apply {
-                    color = resources.getColor(R.color.mainColor, null)
-                    valueTextSize = 0F
-                }
+        // ------! balloon 시작 !------
+        val balloon = Balloon.Builder(requireContext())
+            .setWidthRatio(0.6f)
+            .setHeight(BalloonSizeSpec.WRAP)
+            .setText("밸런스 점수 중간값의 ±${ndText.toInt() / 2}%를\n정상 범위로 판단합니다.")
+            .setTextColorResource(R.color.subColor800)
+            .setTextSize(15f)
+            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+            .setArrowSize(0)
+            .setMargin(6)
+            .setPadding(12)
+            .setCornerRadius(8f)
+            .setBackgroundColorResource(R.color.subColor100)
+            .setBalloonAnimation(BalloonAnimation.ELASTIC)
+            .setLifecycleOwner(viewLifecycleOwner)
+            .build()
+        binding.ivMsInfo.setOnClickListener{
+            binding.ivMsInfo.showAlignEnd(balloon)
+            balloon.dismissWithDelay(2500L)
+        }
 
-                bcXAxis.apply {
-                    textSize = 12f
-                    textColor = resources.getColor(R.color.subColor500)
-                    labelRotationAngle = 1.5F
-                    setDrawAxisLine(false)
-                    setDrawGridLines(false)
-                    bcXAxis.valueFormatter = IndexAxisValueFormatter()
-                    setLabelCount(12, false)
-                    bcXAxis.position = XAxis.XAxisPosition.BOTTOM
-//            axisLineWidth = 0f
+        // -------! 500개의 범위 !------
+        for (x in -250..250) {
+            val xValue = x / 100.0
+            val yValue = (1 / (stdDev * sqrt(2 * Math.PI))) * exp(-0.5 * ((xValue - mean) / stdDev).pow(2))
+            entries.add(Entry(xValue.toFloat(), yValue.toFloat()))
 
-                }
-                bcYAxisLeft.apply {
-                    gridColor = R.color.subColor200
-                    setDrawGridLines(true)
-                    setDrawAxisLine(false)
-//            setDrawGridLinesBehindData(true)
-//            setDrawZeroLine(false)
-                    setLabelCount(3, false)
-                    setDrawLabels(false)
-//            textColor = resources.getColor(R.color.subColor500)
-//            axisLineWidth = 1.5f
-                }
-                bcYAxisRight.apply {
-                    setDrawGridLines(false)
-                    setDrawAxisLine(false)
-                    setLabelCount(0, false)
-                    setDrawLabels(false)
-
-                }
-                bcLegend.apply {
-                    bcLegend.formSize = 0f
-                }
-                barChart.apply {
-                    data = BarData(bcLineDataSet)
-                    notifyDataSetChanged()
-                    description.text = ""
-                    setScaleEnabled(false)
-                    invalidate()
-                }
-                // ------! 막대 그래프 코드 끝 !------
+            // 설정된 구간에 따라 색상 변경 zScore로 표준편차 적용 (60%, 70%, 80%, 90%)
+            if (xValue > -zScore && xValue < zScore) {
+                entriesHighlighted.add(Entry(xValue.toFloat(), yValue.toFloat()))
             }
         }
+        val dataSet = LineDataSet(entries, "").apply {
+            setCircleColors(resources.getColor(R.color.secondaryColor, null))
+            circleSize = 1.5f
+            highlightLineWidth = 0f
+            highLightColor = Color.TRANSPARENT
+        }
+        val dataSetHighlighted = LineDataSet(entriesHighlighted, "80% Range").apply {
+            setCircleColors(resources.getColor(R.color.mainColor, null))
+            circleSize = 1.5f
+            setDrawFilled(true)
+            fillColor = resources.getColor(R.color.mainColor)
+            highlightLineWidth = 0f
+            highLightColor = Color.TRANSPARENT
+        }
+
+        val userEntry = Entry(userValue.toFloat(), ((1 / (stdDev * sqrt(2 * Math.PI))) * exp(-0.5 * ((userValue - mean) / stdDev).pow(2))).toFloat())
+        val userDataSet = LineDataSet(listOf(userEntry), "User Value")
+        userDataSet.apply {
+            setDrawCircles(true)
+            circleRadius = 5f
+            setCircleColors(resources.getColor(R.color.subColor800, null))
+            highlightLineWidth = 0f
+            highLightColor = Color.TRANSPARENT
+//            setDrawValues(true)
+//            valueTextSize = 12f
+//            valueTextColor = resources.getColor(R.color.subColor800, null)
+
+        }
+
+        val lineData = LineData()
+        lineData.addDataSet(dataSet)
+        lineData.addDataSet(dataSetHighlighted)
+        lineData.addDataSet(userDataSet)
+
+
+
+        lineChartND.apply {
+            setTouchEnabled(true)
+            isDoubleTapToZoomEnabled = false
+            data = lineData
+            description.isEnabled = false
+            legend.isEnabled = false
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener{
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    // ------! info popup 창 시작 !------
+                    val ballonText = if (userValue.absoluteValue <= zScore.absoluteValue) {
+                        "정상범위에 있습니다"
+                    } else if (userValue > zScore) {
+                        "평균보다 밸런스 점수가 좋습니다 !계속 유지하세요"
+                    } else {
+                        "밸런스 점수가 평균보다 낮습니다. 꾸준한 운동이 필요합니다"
+                    }
+                     val balloon2 = Balloon.Builder(requireContext())
+                        .setWidthRatio(0.5f)
+                        .setHeight(BalloonSizeSpec.WRAP)
+                        .setText("결과값 ${userValue}로\n$ballonText")
+                        .setTextColorResource(R.color.subColor800)
+                        .setTextSize(15f)
+                        .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                        .setArrowSize(0)
+                        .setMargin(10)
+                        .setPadding(12)
+                        .setCornerRadius(8f)
+                        .setBackgroundColorResource(R.color.subColor100)
+                        .setBalloonAnimation(BalloonAnimation.ELASTIC)
+                        .setLifecycleOwner(viewLifecycleOwner)
+                        .build()
+                    // ------! info popup 창 끝 !------
+
+                    Log.v("showBalloon", "true")
+                    lineChartND.showAlignEnd(balloon2)
+                    balloon2.dismissWithDelay(3000L)
+                }
+                override fun onNothingSelected() {}
+            })
+
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawAxisLine(true)
+                setDrawGridLines(false)
+                setDrawLabels(false)  // X축 레이블 숨김
+                axisMinimum = -2f
+                axisMaximum = 2f
+                labelCount = 10
+            }
+            axisLeft.apply {
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+//                setLabelCount(5, false)
+                setDrawLabels(false)  // Y축 레이블 숨김
+                axisMinimum = 0f
+                axisMaximum = 0.5f
+            }
+            axisRight.apply {
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+                setDrawLabels(false)
+            }
+            invalidate()
+        }
+
+        val limitLine = LimitLine(zScore.toFloat(), "")
+        val limitLine2 = LimitLine(-zScore.toFloat(), "")
+        limitLine.lineColor = resources.getColor(R.color.mainColor, null)
+        limitLine.lineWidth = 2f
+        limitLine2.lineWidth = 2f
+        limitLine2.lineColor = resources.getColor(R.color.mainColor, null)
+        limitLine.textColor = resources.getColor(R.color.subColor800, null)
+        limitLine.textSize = 16f
+        limitLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_BOTTOM
+
+        lineChartND.xAxis.addLimitLine(limitLine)
+        lineChartND.xAxis.addLimitLine(limitLine2)
+//        lineChartND.apply {
+//            data = lineData
+//            setTouchEnabled(false)
+//            setScaleEnabled(false)
+//        }
+//        val bcLabels = mutableListOf<String>()
+//        viewModel.steps.observe(viewLifecycleOwner) { steps ->
+//            if (steps.isNotEmpty()) {
+//                val bcDataList : MutableList<GraphVO> = mutableListOf()
+//                for (i in 0 until steps.size) {
+////                    val timeLabel = String.format("%02d:00", hour) // 시간 형식을 "00:00"으로 포맷
+//                    bcDataList.add(GraphVO((i+1).toString(), steps[i].toInt()))
+//                    // 30분 뒤의 시간 추가
+////                    val halfHourLabel = String.format("%02d:30", hour)
+//                }
+//                // ---- 막대 그래프 코드 시작 ----
+//                val barChart = binding.bcMs
+//                barChart.setTouchEnabled(false)
+////        val roundedBarChartRenderer = roundedBar
+////        barChart.renderer = RoundedBarChart
+//                val bcXAxis = barChart.xAxis
+//                val bcYAxisLeft = barChart.axisLeft
+//                val bcYAxisRight = barChart.axisRight
+//                val bcLegend = barChart.legend
+//
+//
+//                Log.v("steps", "$bcDataList")
+//                val rcEntries : MutableList<BarEntry> = mutableListOf()
+//                for (i in bcDataList.indices) {
+//                    // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
+//                    rcEntries.add(BarEntry(i.toFloat(), bcDataList[i].yAxis.toFloat()))
+//                }
+//                val bcLineDataSet = BarDataSet(rcEntries, "")
+//                bcLineDataSet.apply {
+//                    color = resources.getColor(R.color.mainColor, null)
+//                    valueTextSize = 0F
+//                }
+//
+//                bcXAxis.apply {
+//                    textSize = 12f
+//                    textColor = resources.getColor(R.color.subColor500)
+//                    labelRotationAngle = 1.5F
+//                    setDrawAxisLine(false)
+//                    setDrawGridLines(false)
+//                    bcXAxis.valueFormatter = IndexAxisValueFormatter()
+//                    setLabelCount(12, false)
+//                    bcXAxis.position = XAxis.XAxisPosition.BOTTOM
+////            axisLineWidth = 0f
+//
+//                }
+//                bcYAxisLeft.apply {
+//                    gridColor = R.color.subColor200
+//                    setDrawGridLines(true)
+//                    setDrawAxisLine(false)
+////            setDrawGridLinesBehindData(true)
+////            setDrawZeroLine(false)
+//                    setLabelCount(3, false)
+//                    setDrawLabels(false)
+////            textColor = resources.getColor(R.color.subColor500)
+////            axisLineWidth = 1.5f
+//                }
+//                bcYAxisRight.apply {
+//                    setDrawGridLines(false)
+//                    setDrawAxisLine(false)
+//                    setLabelCount(0, false)
+//                    setDrawLabels(false)
+//
+//                }
+//                bcLegend.apply {
+//                    bcLegend.formSize = 0f
+//                }
+//                barChart.apply {
+//                    data = BarData(bcLineDataSet)
+//                    notifyDataSetChanged()
+//                    description.text = ""
+//                    setScaleEnabled(false)
+//                    invalidate()
+//                }
+//                // ------! 막대 그래프 코드 끝 !------
+//            }
+//        }
         // ------! 막대그래프 시간 세팅 시작 !------
         Log.v("현재 시", "${endTime.hour}")
-        when (endTime.hour) {
-            in  0 .. 5-> {
-                binding.llMs.removeView(binding.tv0000)
-                binding.llMs.addView(binding.tv0000, 3)
-            }
-            in 6 .. 11 -> {
-                binding.llMs.removeView(binding.tv0600)
-                binding.llMs.addView(binding.tv0600, 3)
-                binding.llMs.removeView(binding.tv0000)
-                binding.llMs.addView(binding.tv0000, 2)
-            }
-            in 12 .. 17 -> {
-                binding.llMs.removeView(binding.tv1800)
-                binding.llMs.addView(binding.tv1800, 0)
-            }
-        }
+//        when (endTime.hour) {
+//            in  0 .. 5-> {
+//                binding.llMs.removeView(binding.tv0000)
+//                binding.llMs.addView(binding.tv0000, 3)
+//            }
+//            in 6 .. 11 -> {
+//                binding.llMs.removeView(binding.tv0600)
+//                binding.llMs.addView(binding.tv0600, 3)
+//                binding.llMs.removeView(binding.tv0000)
+//                binding.llMs.addView(binding.tv0000, 2)
+//            }
+//            in 12 .. 17 -> {
+//                binding.llMs.removeView(binding.tv1800)
+//                binding.llMs.addView(binding.tv1800, 0)
+//            }
+//        }
         // ------! 막대그래프 시간 세팅 끝 !------
 
-        viewModel.totalSteps.observe(viewLifecycleOwner) { totalSteps ->
-            if (totalSteps != null) {
-                binding.tvMsSteps.text = "- ${viewModel.totalSteps.value} 보"
-            } else {
-                binding.tvMsSteps.text = " - 0 보"
-            }
-        }
+//        viewModel.totalSteps.observe(viewLifecycleOwner) { totalSteps ->
+//            if (totalSteps != null) {
+//                binding.tvMsSteps.text = "- ${viewModel.totalSteps.value} 보"
+//            } else {
+//                binding.tvMsSteps.text = " - 0 보"
+//            }
+//        }
 //        viewModel.calory.observe(viewLifecycleOwner) {calory ->
 //            if (calory != null) {
 //                binding.tvMsCalory.text = calory
@@ -495,4 +685,8 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 //    override fun onPartCheck(part: Triple<String, String, Boolean>) {
 //
 //    }
+    fun calculatePercentile(value: Double, mean: Double, stdDev: Double): Double {
+        val normalDistribution = NormalDistribution(mean, stdDev)
+        return normalDistribution.cumulativeProbability(value) * 100
+    }
 }

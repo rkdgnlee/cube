@@ -89,7 +89,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/clTop"
                     android:layout_width="match_parent"
-                    android:layout_height="460dp"
+                    android:layout_height="500dp"
                     android:background="@color/subColor100"
                     android:padding="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -428,7 +428,7 @@
                         <androidx.viewpager2.widget.ViewPager2
                             android:id="@+id/vpMBanner"
                             android:layout_width="match_parent"
-                            android:layout_height="156dp" />
+                            android:layout_height="222dp" />
                     </androidx.cardview.widget.CardView>
 
                     <!--                    <androidx.appcompat.widget.AppCompatButton-->

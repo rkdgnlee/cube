@@ -82,7 +82,7 @@
                     android:id="@+id/tvMsLastDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2024.04.11"
+                    android:text="기록 없음"
                     android:textColor="@color/subColor500"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
@@ -123,7 +123,7 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tabGravity="start"
+                    app:tabGravity="center"
                     app:tabIndicatorAnimationDuration="600"
                     app:tabIndicatorColor="@color/mainColor"
                     app:tabIndicatorFullWidth="true"
@@ -158,7 +158,7 @@
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="32dp"
                     android:text="주간 요약"
                     android:textSize="26sp"
                     android:textStyle="bold"
@@ -169,7 +169,7 @@
                     android:id="@+id/ClMs"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/background_stroke_1dp_sub_color"
                     android:padding="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -253,12 +253,12 @@
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMsShare"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/effect_ibtn_12dp"
-                        android:backgroundTint="@color/subColor100"
+                        android:backgroundTint="@color/white"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:paddingLeft="48dp"
@@ -268,13 +268,15 @@
                         android:stateListAnimator="@null"
                         android:text="공유하기"
                         android:textColor="@color/subColor800"
-                        android:textSize="18sp"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
                         app:cornerRadius="12dp" />
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMsMeasurement"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
@@ -286,9 +288,10 @@
                         android:paddingRight="24dp"
                         android:paddingBottom="12dp"
                         android:stateListAnimator="@null"
-                        android:text="자세 측정하기"
+                        android:text="측정하기"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
                         app:cornerRadius="12dp" />
                 </LinearLayout>
 
@@ -296,7 +299,7 @@
                     android:id="@+id/textView40"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="32dp"
                     android:text="통증 부위 관리"
                     android:textColor="@color/subColor800"
                     android:textSize="24sp"
@@ -405,36 +408,36 @@
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMsGetReport"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/effect_ibtn_12dp"
-                        android:backgroundTint="@color/subColor100"
+                        android:backgroundTint="@color/white"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:stateListAnimator="@null"
-                        android:text="측정 결과 보기"
+                        android:text="리포트 받기"
                         android:textColor="@color/subColor800"
-                        android:textSize="16sp"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
                         app:cornerRadius="8dp" />
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMsGetRecommend"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/effect_ibtn_12dp"
-                        android:backgroundTint="@color/secondaryColor"
-                        android:drawableStart="@drawable/icon_plus_small"
+                        android:backgroundTint="@color/mainColor"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:paddingLeft="24dp"
                         android:stateListAnimator="@null"
-                        android:text="맞춤 운동 추천 받기"
+                        android:text="맞춤 운동 추천"
                         android:textColor="@color/white"
-                        android:textSize="16sp"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
                         app:cornerRadius="8dp" />
                 </LinearLayout>
 
@@ -442,8 +445,8 @@
                     android:id="@+id/textView56"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="오늘 움직임"
+                    android:layout_marginTop="32dp"
+                    android:text="밸런스 점수"
                     android:textColor="@color/black"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -455,7 +458,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:layout_marginBottom="28dp"
+                    android:layout_marginBottom="80dp"
+                    android:background="@drawable/background_stroke_1dp_sub_color_8dp"
                     android:padding="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -464,117 +468,100 @@
 
                     <ImageView
 
-                        android:id="@+id/imageView23"
+                        android:id="@+id/ivMsInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="4dp"
-                        android:src="@drawable/icon_graph_legend"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_marginStart="5dp"
+                        android:src="@drawable/icon_info"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView"
+                        app:layout_constraintStart_toEndOf="@+id/textView"
+                        app:layout_constraintTop_toTopOf="@+id/textView" />
 
                     <TextView
 
+                        android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="기간별 변화 척도"
+                        android:layout_marginTop="5dp"
+                        android:text="40대 밸런스 점수 분포"
                         android:textColor="@color/subColor700"
-                        android:textSize="12sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView23"
-                        app:layout_constraintStart_toEndOf="@+id/imageView23"
-                        app:layout_constraintTop_toTopOf="@+id/imageView23" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@+id/lcMSNS"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.github.mikephil.charting.charts.BarChart
-
-                        android:id="@+id/bcMs"
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/lcMSNS"
                         android:layout_width="0dp"
                         android:layout_height="156dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="48dp"
+                        android:layout_marginTop="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                    </com.github.mikephil.charting.charts.BarChart>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-
-                        android:id="@+id/tvMsSteps"
+                        android:id="@+id/textView17"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="340kcal"
-                        android:textColor="@color/subColor500"
-                        android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/bcMs" />
-
-                    <TextView
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:text="총 걸음수"
+                        android:layout_marginTop="1dp"
+                        android:text="오른쪽에 위치할 수록 밸런스 점수가 좋습니다."
                         android:textColor="@color/subColor700"
-                        android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvMsSteps"
-                        app:layout_constraintEnd_toStartOf="@+id/tvMsSteps"
-                        app:layout_constraintTop_toTopOf="@+id/tvMsSteps" />
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/lcMSNS" />
 
-                    <LinearLayout
-                        android:id="@+id/llMs"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintBottom_toBottomOf="@+id/bcMs"
-                        app:layout_constraintEnd_toEndOf="@+id/bcMs"
-                        app:layout_constraintStart_toStartOf="@+id/bcMs"
-                        app:layout_constraintTop_toTopOf="@+id/bcMs"
-                        app:layout_constraintVertical_bias="0.85">
+                    <!--                    <LinearLayout-->
+                    <!--                        android:id="@+id/llMs"-->
+                    <!--                        android:layout_width="0dp"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:orientation="horizontal"-->
+                    <!--                        app:layout_constraintBottom_toBottomOf="@+id/lcMSNS"-->
+                    <!--                        app:layout_constraintEnd_toEndOf="@+id/lcMSNS"-->
+                    <!--                        app:layout_constraintStart_toStartOf="@+id/lcMSNS">-->
 
-                        <TextView
-                            android:id="@+id/tv0000"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="00:00"
-                            android:textColor="@color/subColor700"
-                            android:textSize="12sp" />
+                    <!--                        <TextView-->
+                    <!--                            android:id="@+id/tv0000"-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_weight="1"-->
+                    <!--                            android:gravity="center"-->
+                    <!--                            android:text="00:00"-->
+                    <!--                            android:textColor="@color/subColor700"-->
+                    <!--                            android:textSize="12sp" />-->
 
-                        <TextView
-                            android:id="@+id/tv0600"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="06:00"
-                            android:textColor="@color/subColor700"
-                            android:textSize="12sp" />
+                    <!--                        <TextView-->
+                    <!--                            android:id="@+id/tv0600"-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_weight="1"-->
+                    <!--                            android:gravity="center"-->
+                    <!--                            android:text="06:00"-->
+                    <!--                            android:textColor="@color/subColor700"-->
+                    <!--                            android:textSize="12sp" />-->
 
-                        <TextView
-                            android:id="@+id/tv1200"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="12:00"
-                            android:textColor="@color/subColor700"
-                            android:textSize="12sp" />
+                    <!--                        <TextView-->
+                    <!--                            android:id="@+id/tv1200"-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_weight="1"-->
+                    <!--                            android:gravity="center"-->
+                    <!--                            android:text="12:00"-->
+                    <!--                            android:textColor="@color/subColor700"-->
+                    <!--                            android:textSize="12sp" />-->
 
-                        <TextView
-                            android:id="@+id/tv1800"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="18:00"
-                            android:textColor="@color/subColor700"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                    <!--                        <TextView-->
+                    <!--                            android:id="@+id/tv1800"-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_weight="1"-->
+                    <!--                            android:gravity="center"-->
+                    <!--                            android:text="18:00"-->
+                    <!--                            android:textColor="@color/subColor700"-->
+                    <!--                            android:textSize="12sp" />-->
+                    <!--                    </LinearLayout>-->
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

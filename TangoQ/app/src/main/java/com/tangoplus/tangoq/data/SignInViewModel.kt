@@ -16,11 +16,15 @@ class SignInViewModel: ViewModel() {
     var pw = MutableLiveData("")
     var emailId = MutableLiveData("")
 
+    // ------! 약관 동의 !------
+    val agreementMk1 = MutableLiveData(false)
+    val agreementMk2 = MutableLiveData(false)
+    val marketingAgree = MutableLiveData(false)
+
+
+
+
     val ivProfile = MutableLiveData<Uri>()
-
-    // 구글 로그인에 담을 json
-    val googleJson = JSONObject()
-
     var snsCount = 0
 
 

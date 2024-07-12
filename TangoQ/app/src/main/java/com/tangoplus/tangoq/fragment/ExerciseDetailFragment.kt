@@ -38,7 +38,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentExerciseDetailBinding.inflate(inflater)
-//        (activity as? MainActivity)?.setTopLayoutFull(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
 
         return binding.root
@@ -46,16 +45,13 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
     companion object {
         private const val ARG_CATEGORY_ID = "category_id"
         private const val ARG_CATEGORY_NAME = "cagetory_name"
-//        private const val ARG_SERACH_ID = "search_id"
-//        private const val ARG_SERACH_NAME = "search_name"
+
 
         fun newInstance(category: Pair<Int, String>): ExerciseDetailFragment {
             val fragment = ExerciseDetailFragment()
             val args = Bundle()
             args.putInt(ARG_CATEGORY_ID, category.first)
             args.putString(ARG_CATEGORY_NAME, category.second)
-//            args.putInt(ARG_SERACH_ID, type.first)
-//            args.putString(ARG_SERACH_NAME, type.second)
             fragment.arguments = args
             return fragment
         }
@@ -70,17 +66,12 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 
         val categoryId = arguments?.getInt(ARG_CATEGORY_ID)
         val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
-//        val searchId = arguments?.getInt(ARG_SERACH_ID)
-//        val searchName = arguments?.getString(ARG_SERACH_NAME)
         // ------! 선택 카테고리 & 타입 가져오기  !------
 
         binding.sflED.startShimmer()
         binding.nsvED.isNestedScrollingEnabled = false
         binding.rvEDAll.isNestedScrollingEnabled = false
         binding.rvEDAll.overScrollMode = 0
-//        binding.ibtnEDACTVClear.setOnClickListener {
-//            binding.actvEDSearch.text.clear()
-//        }
 
         when (categoryId) {
             1 -> binding.tvEDMainCategoryName.text = "기본 밸런스"
@@ -92,7 +83,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         binding.tvEDMainCategoryName.textSize = 24f
         binding.ibtnEDBack.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
-//                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_in_left)
+                //            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, ExerciseFragment())
                 commit()
             }

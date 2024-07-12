@@ -40,7 +40,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
-                android:background="@color/white"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_arrow_left"
                 app:layout_constraintStart_toStartOf="parent"
@@ -140,7 +142,7 @@
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/sflFV"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_marginTop="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -169,12 +171,12 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvFV"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_marginBottom="16dp"
                 app:layout_constraintBottom_toTopOf="@+id/btnFVEdit"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider9"
                 app:layout_constraintVertical_bias="0.0" />
 
             <Button

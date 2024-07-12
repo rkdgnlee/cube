@@ -2,6 +2,8 @@ package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -57,9 +59,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
         singletonInstance = Singleton_t_measure.getInstance(requireContext())
 
         setBadgeOnFlR()
-
         binding.tvRMeasureHistory.text = "최근 측정 기록 - ${selectedDate.year}년 ${getCurrentMonthInKorean(currentMonth)} ${selectedDate.dayOfMonth}일"
-
 
         binding.ibtnRBack.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -110,6 +110,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
             }
 
             if (currentMonth == YearMonth.now().minusMonths(24)) {
+
             } else {
                 currentMonth = currentMonth.minusMonths(1)
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
@@ -159,10 +160,46 @@ class ReportFragment : Fragment(), OnReportClickListener {
                         if (oldDate != null) {
                             binding.cvRCalendar.notifyDateChanged(oldDate)
                         }
-                        binding.cvRCalendar.notifyDateChanged(day.date)
+                        binding.cvRCalendar.notifyDateChanged(selectedDate)
+
+                        // ------! 하드 코딩 - 하루 전에 측정 기록 있음 !------
+                        if (selectedDate == LocalDate.now().minusDays(1)) {
+                            if (binding.mcvRShowPosture.visibility == View.GONE) {
+                                binding.mcvRShowPosture.visibility = View.VISIBLE
+                                binding.mcvRShowPosture.alpha = 0f
+                                binding.mcvRShowPosture.animate().apply {
+                                    duration = 150
+                                    alpha(1f)
+                                    withEndAction {
+                                        binding.mcvRShowPosture.rotation = 0f
+                                    }
+                                }
+                            }
+                        } else if (binding.mcvRShowPosture.visibility == View.VISIBLE) {
+                            binding.mcvRShowPosture.animate().apply {
+                                duration = 150
+                                alpha(0f)
+                                withEndAction {
+                                    binding.mcvRShowPosture.visibility = View.GONE
+                                }
+                            }
+                        }
                     }
                 }
-            }
+                // ------! 자세 보기 버튼 클릭 시작 !------
+                binding.btnRShowPosture.setOnClickListener {
+                    binding.mcvRPosture.visibility = View.VISIBLE
+                    binding.mcvRPosture.animate().apply {
+                        duration = 150
+                        rotation(0f)
+                    }
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        scrollToView(binding.btnRShowPosture)
+                    }, 170)
+
+                    binding.tvRMeasureDate.text = "측정일 - $selectedDate"
+                }
+            } // ------! 자세 보기 버튼 클릭 끝 !------
 
             override fun create(view: View): DayViewContainer {
                 return DayViewContainer(view)
@@ -271,7 +308,7 @@ class ReportFragment : Fragment(), OnReportClickListener {
         binding.tvRBadge.layoutParams = layoutParams
 
         // 뱃지를 View에 연결
-        binding.flR.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        binding.flR.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             BadgeUtils.attachBadgeDrawable(badgeDrawable, binding.tvRBadge, binding.flR)
         } // ------! 분석 뱃지 끝 !------
     }

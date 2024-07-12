@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,6 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -38,7 +41,13 @@ class LoginDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        binding.etLDId.requestFocus()
+        binding.etLDId.postDelayed({
+            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.etLDId, InputMethodManager.SHOW_IMPLICIT)
+        }, 250)
+        val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
         // ------! 로그인 시작 !------
         val idPattern = "^[\\s\\S]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
         val idPatternCheck = Pattern.compile(idPattern)
@@ -51,7 +60,6 @@ class LoginDialogFragment : DialogFragment() {
                 viewModel.id.value = s.toString()
                 viewModel.currentIdCon.value = idPatternCheck.matcher(binding.etLDId.text.toString()).find()
                 Log.v("idPw", "${viewModel.currentIdCon.value} ,${viewModel.idPwCondition.value}")
-
             }
         })
         binding.etLDPw.addTextChangedListener(object : TextWatcher {
@@ -114,7 +122,7 @@ class LoginDialogFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        // full Screen code
+
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

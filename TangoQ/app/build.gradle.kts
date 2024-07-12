@@ -69,7 +69,7 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")
-
+    implementation("org.apache.commons:commons-math3:3.6.1")
 
     // api
     implementation("com.navercorp.nid:oauth:5.9.1")

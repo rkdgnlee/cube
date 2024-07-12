@@ -18,12 +18,12 @@ import java.io.IOException
 object NetworkUser {
 
     // ------! 간편 로그인 정보 주고 토큰 발급 받기 !------
-    fun getTokenByUserJson(myUrl: String, userJsonObject: JSONObject,callback: (JSONObject?) -> Unit) {
+    fun getTokenByUserJson(myUrl: String, userJsonObject: JSONObject, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, userJsonObject.toString())
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url(myUrl)
+            .url("${myUrl}oauth_create.php")
             .post(body)
             .build()
         client.newCall(request).enqueue(object : Callback{
@@ -42,33 +42,6 @@ object NetworkUser {
             }
         })
     }
-
-
-
-//    // ------! 자체 로그인에서 정보 가져오기 !------
-//    fun getUserSELECTJson(myUrl: String, userToken: String, userJsonObject: JSONObject, callback: (JSONObject?) -> Unit) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = RequestBody.create(mediaType, userJsonObject.toString())
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//            .url("${myUrl}read.php")
-//            .header("token", userToken)
-//            .post(body)
-//            .build()
-//
-//        client.newCall(request).enqueue(object : Callback {
-//            override fun onFailure(call: Call, e: IOException) {
-//                Log.e("응답실패", "Failed to execute request!")
-//            }
-//            override fun onResponse(call: Call, response: Response)  {
-//                val responseBody = response.body?.string()
-//                Log.e("응답성공", "$responseBody")
-//                val jsonObj__ = responseBody?.let { JSONObject(it) }
-//                callback(jsonObj__)
-//            }
-//        })
-//    }
-
     // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------  ###  ### ---> 여기서도 토큰이 생김
     fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -92,12 +65,6 @@ object NetworkUser {
             }
         })
     }
-
-
-
-
-
-
 
     /* ------------------------------------------CRUD---------------------------------------------*/
     fun fetchUserINSERTJson(myUrl : String, json: String, callback: () -> Unit){

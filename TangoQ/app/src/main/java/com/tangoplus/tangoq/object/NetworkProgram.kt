@@ -19,8 +19,9 @@ object NetworkProgram {
             .build()
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use {response ->
-                val responseBody = response.body?.string()
+                val responseBody = response.body?.string()?.substringAfter("db conn ok")
                 Log.v("http3/programFetch", "Success to execute request!: $responseBody")
+
                 val jsonInfo = responseBody?.let { JSONObject(it) }?.optJSONObject("favorite info")
                 val jsonExerciseArr = responseBody?.let { JSONObject(it) }?.getJSONArray("program_detail_data")
                 var time = 0

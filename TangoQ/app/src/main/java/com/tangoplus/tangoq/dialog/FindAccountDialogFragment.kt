@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.dialog
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -15,8 +16,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
@@ -33,9 +36,9 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
-import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
+
 
 class FindAccountDialogFragment : DialogFragment() {
     lateinit var binding : FragmentFindAccountDialogBinding
@@ -67,6 +70,8 @@ class FindAccountDialogFragment : DialogFragment() {
         // ------! 탭으로 아이디 비밀번호 레이아웃 나누기 시작 !------
         binding.tlFAB.addOnTabSelectedListener(object : OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
+                val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
+                imm!!.hideSoftInputFromWindow(view.windowToken, 0)
                 when(tab?.position) {
                     0 -> {
                         binding.clFADMobile.visibility = View.VISIBLE

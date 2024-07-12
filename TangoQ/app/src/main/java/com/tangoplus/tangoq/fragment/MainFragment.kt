@@ -32,6 +32,8 @@ import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
+import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
+import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgramVOBySn
 import kotlinx.coroutines.launch
@@ -92,10 +94,11 @@ class MainFragment : Fragment(), OnRVClickListener {
         val userEmail = userJson?.optString("user_email").toString()
         val prefsManager = PreferencesManager(requireContext())
         val currentValue = prefsManager.getStoredInt(userEmail)
-        Log.v("저장값", "${currentValue}")
+        Log.v("currentValue", "${currentValue}")
         // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
         binding.tvMTodaySet.text = "$currentValue/5 개"
         binding.hpvMDailyThird.progress = (currentValue  * 100 ) / 5
+
         when (age.toInt()) {
             in 0 .. 20 -> {
                 lifecycleScope.launch {
@@ -147,6 +150,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                     }
                 }
             }
+
         }
         binding.ibtnMvpPrevious.setOnClickListener {
             if ( binding.vpMDaily.currentItem >= 1) {
@@ -214,6 +218,7 @@ class MainFragment : Fragment(), OnRVClickListener {
 //        } // ------! 점수 끝 !------
 
         // ------! 중앙 홍보 배너 시작 !------
+
         bViewModel.BannerList.add("drawable_banner_1")
         bViewModel.BannerList.add("drawable_banner_2")
 
@@ -304,9 +309,9 @@ class MainFragment : Fragment(), OnRVClickListener {
 //                        binding.hpvMRecommend.progress = progress.toInt()
 //                    }
 //                }) // ------! horizontal과 progressbar 연동 끝 !------
-
             val programVOList = mutableListOf<ProgramVO>()
-            for (i in 10 downTo 2) {
+
+            for (i in 10 downTo 8) {
                 programVOList.add(fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), i.toString()))
             }
             binding.sflM.stopShimmer()

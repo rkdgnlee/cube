@@ -11,8 +11,9 @@
     <color name="subColor500">#D9D9D9</color>
     <color name="subColor700">#DFDFE0</color>
     <color name="subColor800">#F5F5F5</color>
+
     <color name="successColor">#45FF02</color>
-    <!--    <color name="failColor">#FFA100</color>-->
     <color name="conditionSuccessColor">#7AA2E3</color>
-    <color name="deleteColor">#FF5555</color>
+    <color name="deleteColor">#FF3B30</color>
+    <color name="opacityColor">#B3454545</color>
 </resources>

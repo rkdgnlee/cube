@@ -71,9 +71,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
                     // 일단 favorite 1
                     val favoriteItem = favoriteList[i]
                     val imgList = mutableListOf<String>()
-                    val exerciseItemBySn = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite),
-                        favoriteItem.favoriteSn.toString()
-                    )
+                    val exerciseItemBySn = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteItem.favoriteSn.toString())
                     // ------! 1 운동 항목에 넣기 !------
                     val exerciseUnits = mutableListOf<ExerciseVO>()
                     if (exerciseItemBySn != null) {
