@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
@@ -32,15 +33,16 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
     private lateinit var adapter: ExerciseRVAdapter
     val viewModel : FavoriteViewModel by activityViewModels()
     var title = ""
+    var sn = 0
     private val searchHistory = "search_history"
     private lateinit var singletonInstance: Singleton_t_history
 
     companion object {
-        private const val ARG_TITLE = "title"
-        fun newInstance(title: String): FavoriteBasketFragment {
+        private const val ARG_SN = "SN"
+        fun newInstance(sn: Int): FavoriteBasketFragment {
             val fragment = FavoriteBasketFragment()
             val args = Bundle()
-            args.putString(ARG_TITLE, title)
+            args.putInt(ARG_SN, sn)
             fragment.arguments = args
             return fragment
         }
@@ -58,7 +60,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
         super.onViewCreated(view, savedInstanceState)
 
         singletonInstance = Singleton_t_history.getInstance(requireContext())
-        title = requireArguments().getString(ARG_TITLE).toString()
+        sn = requireArguments().getInt(ARG_SN)
 
         lifecycleScope.launch {
             val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
@@ -205,23 +207,21 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
             viewModel.addExercises(selectedItems)
             // -----! 어댑터의 리스트를 담아서 exerciseunit에 담기 끝 !-----
 
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flMain, FavoriteEditFragment.newInstance(title))
-                commit()
-            }
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                replace(R.id.flMain, FavoriteEditFragment.newInstance(sn))
+//                commit()
+//            }
             viewModel.exerciseBasketUnits.value?.clear()
-
         }
+
         binding.ibtnFBBack.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flMain, FavoriteEditFragment.newInstance(title))
-                    .addToBackStack(null)
-                remove(FavoriteBasketFragment()).commit()
-            }
-
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//                replace(R.id.flMain, FavoriteEditFragment.newInstance(sn))
+//                    .addToBackStack(null)
+//                remove(FavoriteBasketFragment()).commit()
+//            }
         }
-
     }
     private fun linkAdapter(list : MutableList<ExerciseVO>) {
         adapter = ExerciseRVAdapter(this@FavoriteBasketFragment,list,listOf(),"basket")
@@ -232,7 +232,6 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
         binding.rvFB.layoutManager = linearLayoutManager
 
     }
-
     @SuppressLint("NotifyDataSetChanged")
     fun updateRecyclerView(filteredExercises: List<ExerciseVO>) {
         // RecyclerView 어댑터에 필터링된 데이터를 설정

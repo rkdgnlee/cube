@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/splash_image" />
+        android:src="@drawable/drawable_intro_banner" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:id="@+id/constraintLayout27"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#99000000">
+            android:background="#B2000000">
 
             <TextView
                 android:id="@+id/textView58"
@@ -38,6 +38,22 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                android:id="@+id/cpbFb"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                app:cpb_background_progressbar_color_end="#3B3B3B"
+                app:cpb_background_progressbar_color_start="#3B3B3B"
+                app:cpb_background_progressbar_width="12dp"
+                app:cpb_progressbar_color="#FFFFFF"
+                app:cpb_progressbar_color_end="#FFFFFF"
+                app:cpb_progressbar_color_start="#FFFFFF"
+                app:cpb_round_border="true"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/cardView5" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView5"
                 android:layout_width="0dp"
@@ -45,241 +61,93 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="20dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="#00FFFFFF"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cpbFb"
                 app:layout_constraintTop_toBottomOf="@+id/textView58">
 
-                <!--                <com.google.android.material.divider.MaterialDivider-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="1dp"-->
-                <!--                    android:layout_gravity="center"-->
-                <!--                    android:layout_marginLeft="20dp"-->
-                <!--                    android:layout_marginRight="20dp"-->
-                <!--                    app:dividerColor="@color/subColor150" />-->
 
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    app:dividerColor="@color/subColor150" />
-
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_weight="1"
+                    android:background="#33000000">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/tvFbCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="4"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView41"
+                        app:layout_constraintStart_toStartOf="@+id/imageView41"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.75" />
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
+                    <ImageView
+                        android:id="@+id/imageView41"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/icon_autocomplete_button_hollow"
+                        android:tint="#FFFFFF"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.75"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/textView64"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="8dp"
-                                android:text="운동 시간"
-                                android:textColor="@color/subColor700"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                    <ImageView
+                        android:id="@+id/imageView38"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="20dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icon_time_sub_800"
+                        android:tint="#FFFFFF"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.25"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:id="@+id/tvFTime"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="11:12"
-                                android:textColor="@color/black"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/tvFbTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11:12"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView38"
+                        app:layout_constraintStart_toStartOf="@+id/imageView38"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.75" />
 
-                            <ImageView
-                                android:id="@+id/imageView38"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="4dp"
-                                android:src="@drawable/icon_time_sub_800"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFTime"
-                                app:layout_constraintEnd_toStartOf="@+id/tvFTime"
-                                app:layout_constraintTop_toTopOf="@+id/tvFTime" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Time"
+                        android:textColor="#FFFFFF"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView38"
+                        app:layout_constraintStart_toStartOf="@+id/imageView38"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView38" />
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-
-                            <TextView
-                                android:id="@+id/textView66"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="8dp"
-                                android:text="운동 개수"
-                                android:textColor="@color/subColor700"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <TextView
-                                android:id="@+id/tvFCount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="4"
-                                android:textColor="@color/black"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <TextView
-                                android:id="@+id/textView74"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="개"
-                                android:textColor="@color/subColor800"
-                                android:textSize="16sp"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFCount"
-                                app:layout_constraintStart_toEndOf="@+id/tvFCount"
-                                app:layout_constraintTop_toTopOf="@+id/tvFCount"
-                                app:layout_constraintVertical_bias="1.0" />
-
-                            <ImageView
-                                android:id="@+id/imageView41"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_marginEnd="4dp"
-                                android:src="@drawable/icon_autocomplete_button_hollow"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvFCount"
-                                app:layout_constraintEnd_toStartOf="@+id/tvFCount"
-                                app:layout_constraintTop_toTopOf="@+id/tvFCount" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-
-                    <!--                    <LinearLayout-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="match_parent"-->
-                    <!--                        android:layout_weight="1"-->
-                    <!--                        android:orientation="horizontal">-->
-
-                    <!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
-                    <!--                            android:layout_width="match_parent"-->
-                    <!--                            android:layout_height="match_parent"-->
-                    <!--                            android:layout_weight="1">-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:id="@+id/textView68"-->
-                    <!--                                android:layout_width="wrap_content"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:layout_marginStart="16dp"-->
-                    <!--                                android:layout_marginTop="16dp"-->
-                    <!--                                android:text="소모 칼로리"-->
-                    <!--                                android:textColor="@color/subColor700"-->
-                    <!--                                android:textSize="16sp"-->
-                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                                app:layout_constraintTop_toTopOf="parent" />-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:id="@+id/tvFKcal"-->
-                    <!--                                android:layout_width="32dp"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:text="160"-->
-                    <!--                                android:textColor="@color/black"-->
-                    <!--                                android:textSize="18sp"-->
-                    <!--                                android:textStyle="bold"-->
-                    <!--                                app:layout_constraintBottom_toBottomOf="parent"-->
-                    <!--                                app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                                app:layout_constraintTop_toTopOf="parent"-->
-                    <!--                                app:layout_constraintVertical_bias="0.6" />-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:id="@+id/textView72"-->
-                    <!--                                android:layout_width="wrap_content"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:layout_marginStart="4dp"-->
-                    <!--                                android:text="Kcal"-->
-                    <!--                                android:textColor="@color/subColor500"-->
-                    <!--                                android:textSize="16sp"-->
-                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"-->
-                    <!--                                app:layout_constraintStart_toEndOf="@+id/tvFKcal"-->
-                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />-->
-
-                    <!--                            <ImageView-->
-                    <!--                                android:id="@+id/imageView42"-->
-                    <!--                                android:layout_width="24dp"-->
-                    <!--                                android:layout_height="24dp"-->
-                    <!--                                android:layout_marginEnd="4dp"-->
-                    <!--                                android:src="@drawable/icon_kcal_sub_800"-->
-                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFKcal"-->
-                    <!--                                app:layout_constraintEnd_toStartOf="@+id/tvFKcal"-->
-                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFKcal" />-->
-                    <!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-                    <!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
-                    <!--                            android:layout_width="match_parent"-->
-                    <!--                            android:layout_height="match_parent"-->
-                    <!--                            android:layout_weight="1">-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:id="@+id/textView70"-->
-                    <!--                                android:layout_width="wrap_content"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:layout_marginStart="16dp"-->
-                    <!--                                android:layout_marginTop="16dp"-->
-                    <!--                                android:text="자세 정확도"-->
-                    <!--                                android:textColor="@color/subColor700"-->
-                    <!--                                android:textSize="16sp"-->
-                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                                app:layout_constraintTop_toTopOf="parent" />-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:id="@+id/tvFAccuracy"-->
-                    <!--                                android:layout_width="wrap_content"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:text="68"-->
-                    <!--                                android:textColor="@color/black"-->
-                    <!--                                android:textSize="18sp"-->
-                    <!--                                android:textStyle="bold"-->
-                    <!--                                app:layout_constraintBottom_toBottomOf="parent"-->
-                    <!--                                app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                                app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                                app:layout_constraintTop_toTopOf="parent"-->
-                    <!--                                app:layout_constraintVertical_bias="0.6" />-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:id="@+id/textView73"-->
-                    <!--                                android:layout_width="wrap_content"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:layout_marginStart="4dp"-->
-                    <!--                                android:text="%"-->
-                    <!--                                android:textColor="@color/subColor500"-->
-                    <!--                                android:textSize="16sp"-->
-                    <!--                                app:layout_constraintBottom_toBottomOf="@+id/tvFAccuracy"-->
-                    <!--                                app:layout_constraintStart_toEndOf="@+id/tvFAccuracy"-->
-                    <!--                                app:layout_constraintTop_toTopOf="@+id/tvFAccuracy" />-->
-                    <!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
-                    <!--                    </LinearLayout>-->
-                </LinearLayout>
+                    <TextView
+                        android:id="@+id/textView17"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Exercise"
+                        android:textColor="#FFFFFF"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView41"
+                        app:layout_constraintStart_toStartOf="@+id/imageView41"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView41" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
 
@@ -287,280 +155,354 @@
                 android:id="@+id/textView61"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:text="운동 강도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.505"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView5" />
+                app:layout_constraintTop_toBottomOf="@+id/view11" />
 
-            <TextView
-                android:id="@+id/textView80"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView24"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
                 android:layout_marginStart="20dp"
-                android:text="매우 저강도"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView81"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView81" />
-
-            <TextView
-                android:id="@+id/textView81"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="저강도"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView82"
-                app:layout_constraintEnd_toStartOf="@+id/textView82"
-                app:layout_constraintStart_toEndOf="@+id/textView80"
-                app:layout_constraintTop_toTopOf="@+id/textView82" />
-
-            <TextView
-                android:id="@+id/textView82"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="보통이다"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView61" />
-
-            <TextView
-                android:id="@+id/textView83"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="고강도"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView82"
-                app:layout_constraintEnd_toStartOf="@+id/textView84"
-                app:layout_constraintStart_toEndOf="@+id/textView82"
-                app:layout_constraintTop_toTopOf="@+id/textView82" />
-
-            <TextView
-                android:id="@+id/textView84"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
-                android:text="매우 고강도"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView83"
+                app:cardBackgroundColor="#00FFFFFF"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView83" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView61">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#33000000"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvFbIntensity1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="매우\n낮다"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view16"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbIntensity2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="저강도"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view17"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbIntensity3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="보통"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view18"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbIntensity4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="고강도"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view19"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbIntensity5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="매우\n고강도"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/textView62"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:text="운동 피로도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rgIntensity" />
+                app:layout_constraintTop_toBottomOf="@+id/cardView24" />
 
-            <RadioGroup
-                android:id="@+id/rgFatigue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView77">
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnFatigue1"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnFatigue2"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnFatigue3"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnFatigue4"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnFatigue5"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-            </RadioGroup>
-
-            <TextView
-                android:id="@+id/textView75"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView25"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
                 android:layout_marginStart="20dp"
-                android:text="무통증"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView76"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView76" />
-
-            <TextView
-                android:id="@+id/textView76"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="미약한 통증"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/rbtnFatigue3"
-                app:layout_constraintEnd_toStartOf="@+id/textView77"
-                app:layout_constraintStart_toEndOf="@+id/textView75"
-                app:layout_constraintTop_toTopOf="@+id/textView77" />
-
-            <TextView
-                android:id="@+id/textView77"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="보통"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                app:cardBackgroundColor="#00FFFFFF"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView62" />
+                app:layout_constraintTop_toBottomOf="@+id/textView62">
 
-            <TextView
-                android:id="@+id/textView78"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="상당한 통증"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/rbtnFatigue3"
-                app:layout_constraintEnd_toStartOf="@+id/textView79"
-                app:layout_constraintStart_toEndOf="@+id/textView77"
-                app:layout_constraintTop_toTopOf="@+id/textView77" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#40000000"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView79"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="3dp"
-                android:text="심각한 통증"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/rbtnFatigue4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView78" />
+                    <TextView
+                        android:id="@+id/tvFbFatigue1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="매우\n낮다"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view12"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbFatigue2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="저강도"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view13"
+                        android:layout_width="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbFatigue3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="보통"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view14"
+                        android:layout_width="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbFatigue4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="높다"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view15"
+                        android:layout_width="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbFatigue5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="매우\n높다"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/textView63"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="운동 만족도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rgFatigue" />
+                app:layout_constraintTop_toBottomOf="@+id/cardView25" />
 
-            <TextView
-                android:id="@+id/textView85"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView26"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
                 android:layout_marginStart="20dp"
-                android:text="많이 아쉽다"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView86"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView86" />
-
-            <TextView
-                android:id="@+id/textView86"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="아쉽다"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/rbtnSatisfaction3"
-                app:layout_constraintEnd_toStartOf="@+id/textView87"
-                app:layout_constraintStart_toEndOf="@+id/textView85"
-                app:layout_constraintTop_toTopOf="@+id/textView87" />
-
-            <TextView
-                android:id="@+id/textView87"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="보통이다"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView63" />
-
-            <TextView
-                android:id="@+id/textView88"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="만족"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/rbtnSatisfaction3"
-                app:layout_constraintEnd_toStartOf="@+id/textView89"
-                app:layout_constraintStart_toEndOf="@+id/textView87"
-                app:layout_constraintTop_toTopOf="@+id/textView87" />
-
-            <TextView
-                android:id="@+id/textView89"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
-                android:text="매우 만족"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView88"
+                app:cardBackgroundColor="#00FFFFFF"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView88" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView63">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#40000000"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvFbSatisfaction1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="많이\n아쉽다"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view20"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbSatisfaction2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="아쉽다"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view21"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbSatisfaction3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="보통"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view22"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbSatisfaction4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="만족"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:id="@+id/view23"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
+                    <TextView
+                        android:id="@+id/tvFbSatisfaction5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="매우\n만족"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <FrameLayout
                 android:id="@+id/frameLayout2"
@@ -584,7 +526,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="6dp"
                         android:layout_weight="3"
-                        android:backgroundTint="@color/conditionSuccessColor"
+                        android:backgroundTint="@color/secondaryColor"
+                        android:drawableLeft="@drawable/icon_autocomplete_button_hollow"
+                        android:drawableTint="#FFFFFF"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:text="통증체크"
@@ -609,129 +553,45 @@
 
             </FrameLayout>
 
-            <RadioGroup
-                android:id="@+id/rgIntensity"
+            <View
+                android:id="@+id/view11"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_height="2dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/color_gradient_white_middle_verti"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView82">
+                app:layout_constraintTop_toBottomOf="@+id/cardView5" />
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnIntensity1"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnIntensity2"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:buttonTint="@color/white"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnIntensity3"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnIntensity4"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnIntensity5"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-            </RadioGroup>
-
-            <RadioGroup
-                android:id="@+id/rgSatisfaction"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvFbSkip"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="건너뛰기"
+                android:textColor="#99FFFFFF"
+                android:textSize="20dp"
+                app:layout_constraintBottom_toTopOf="@+id/frameLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView87">
+                app:layout_constraintTop_toBottomOf="@+id/cardView26"
+                app:layout_constraintVertical_bias="1.0" />
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnSatisfaction1"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnSatisfaction2"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center|center_vertical"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnSatisfaction3"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnSatisfaction4"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbtnSatisfaction5"
-                    style="@style/Widget.App.RadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/Widget.App.RadioButton"
-                    app:buttonTint="@color/tint_main_white" />
-            </RadioGroup>
+            <TextView
+                android:id="@+id/tvFbPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100%"
+                android:textColor="#FFFFFF"
+                android:textSize="28dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/cpbFb"
+                app:layout_constraintEnd_toEndOf="@+id/cpbFb"
+                app:layout_constraintStart_toStartOf="@+id/cpbFb"
+                app:layout_constraintTop_toTopOf="@+id/cpbFb" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

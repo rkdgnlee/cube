@@ -163,7 +163,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/recommend_thumbnail" />
+                    app:srcCompat="@color/black" />
 
                 <ImageView
                     android:id="@+id/ivFvAThumbnail2"
@@ -171,7 +171,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/icon_api_kakao_logo" />
+                    app:srcCompat="@color/conditionSuccessColor" />
             </LinearLayout>
 
             <LinearLayout
@@ -187,7 +187,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/naver_icon" />
+                    app:srcCompat="@color/deleteColor" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/clFvAThumbnail4"
@@ -205,7 +205,22 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@android:drawable/progress_indeterminate_horizontal" />
+                        app:srcCompat="@color/ic_launcher_background" />
+
+                    <TextView
+                        android:id="@+id/tvFvAThumbnailMore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="+4"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/ivFvAThumbnail4" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -218,18 +233,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#59000000"
-            android:visibility="invisible" />
-
-        <TextView
-            android:id="@+id/tvFvAThumbnailMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_margin="8dp"
-            android:text="+4"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
             android:visibility="invisible" />
 
     </androidx.cardview.widget.CardView>

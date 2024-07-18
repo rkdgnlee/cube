@@ -36,6 +36,8 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -123,11 +125,6 @@ class FindAccountDialogFragment : DialogFragment() {
             }
         }) // ------! 핸드폰 번호 - 시작 !------
 
-
-
-
-
-
         // ------! 인증 문자 확인 시작 !------
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {}
@@ -178,7 +175,7 @@ class FindAccountDialogFragment : DialogFragment() {
                 "아이디 찾기" -> {
                     binding.clFADMobile.visibility = View.GONE
 
-//                    getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), URLEncoder.encode(binding.etFADMobile.text.toString(), "UTF-8")) { jo ->
+//                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), URLEncoder.encode(binding.etFADMobile.text.toString(), "UTF-8")) { jo ->
 //                        if (jo?.getInt("status") == 404) {
 //                            requireActivity().runOnUiThread {
 //                                val dialog = AlertDialog.Builder(requireContext())
@@ -195,7 +192,6 @@ class FindAccountDialogFragment : DialogFragment() {
 //                                binding.tvFADIdFinded.text = maskString(jo.optJSONObject("data")?.getString("user_id") ?: "")
 //                            }
 //                        }
-//
 //                    }
                     binding.btnFADAuthSend.text= "초기 화면으로"
                 }

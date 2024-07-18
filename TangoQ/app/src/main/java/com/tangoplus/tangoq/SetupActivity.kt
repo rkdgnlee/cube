@@ -28,9 +28,9 @@ class SetupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // -----! singletom에 넣고, update 통신 !-----
-        val t_userData = Singleton_t_user.getInstance(this).jsonObject?.optJSONObject("data")
+        val t_userData = Singleton_t_user.getInstance(this).jsonObject?.optJSONObject("login_data")
 
-        val user_email = t_userData?.optString("user_email")
+        val userSn = t_userData?.optString("user_sn")
         Log.v("싱글턴", "${t_userData}")
 
         binding.pvSetup.progress = viewModel.setupProgress
@@ -67,11 +67,9 @@ class SetupActivity : AppCompatActivity() {
                 JsonObj.put("user_weight", viewModel.User.value?.optString("user_weight"))
                 Log.w("몸무게", viewModel.User.value?.optString("user_weight").toString())
                 Log.w("JSON몸통", "$JsonObj")
-                Log.v("이메일", "$user_email")
-                if (user_email != null) {
-                    val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
-                    Log.w("encodedUserEmail", encodedUserEmail)
-                    fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), encodedUserEmail) {
+
+                if (userSn != null) {
+                    fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.toString(), userSn) {
                         t_userData.put("user_gender", viewModel.User.value?.optString("user_gender"))
                         t_userData.put("user_height", viewModel.User.value?.optString("user_height"))
                         t_userData.put("user_weight", viewModel.User.value?.optString("user_weight"))

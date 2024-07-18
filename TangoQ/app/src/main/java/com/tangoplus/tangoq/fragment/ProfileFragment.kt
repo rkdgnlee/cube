@@ -52,17 +52,31 @@ class ProfileFragment : Fragment(), BooleanClickListener {
 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("data")
+        val userJson= t_userdata.jsonObject?.getJSONObject("login_data")
         Log.v("Singleton>Profile", "${userJson}")
         if (userJson != null) {
             binding.tvPfName.text = userJson.optString("user_name")
-            binding.tvPHeight.text = userJson.optString("user_height") + " cm"
-            binding.tvPWeight.text = userJson.optString("user_weight") + " kg"
-            val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-            val age = (c.get(Calendar.YEAR) - userJson.optString("user_birthday").substring(0, 4)!!.toInt()).toString()
-            binding.tvPAge.text = "$age 세"
 
-            binding.tvPAge.text = if (age == "") "미설정" else "$age 세"
+            val height = when (userJson.optDouble("user_height")) {
+                in 0.0 .. 250.0 -> { userJson.optDouble("user_height").toInt().toString() + "cm" }
+                else -> { "미설정" }
+            }
+            binding.tvPHeight.text = height.toString()
+
+            val weight = when(userJson.optDouble("user_weight")) {
+                in 0.0 .. 150.0 -> { userJson.optDouble("user_weight").toInt().toString() + "kg" }
+                else -> { "미설정" }
+            }
+            binding.tvPWeight.text = weight.toString()
+
+            val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+            binding.tvPAge.text = try {
+                (c.get(Calendar.YEAR) - userJson.optString("user_birthday").substring(0, 4).toInt()).toString() + "세"
+            } catch (e: Exception) {
+                "미설정"
+            }
+
+
             // ----- 이미지 로드 시작 -----
             val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
             val imageUri = sharedPreferences.getString("imageUri", null)

@@ -17,8 +17,8 @@ import java.io.IOException
 
 object NetworkUser {
 
-    // ------! 간편 로그인 정보 주고 토큰 발급 받기 !------
-    fun getTokenByUserJson(myUrl: String, userJsonObject: JSONObject, callback: (JSONObject?) -> Unit) {
+    // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------
+    fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, userJsonObject.toString())
         val client = OkHttpClient()
@@ -32,18 +32,39 @@ object NetworkUser {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.e("Token응답성공", "$responseBody")
+                val responseBody = response.body?.string()?.substringAfter("response: ")
+                Log.e("SDK응답성공", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
                 callback(jo)
-                /**  TODO responseBody의 응답 코드에 맞게 처리 하기 (만료됐으니 갱신 된건 뭐 201, 정상 처리는 200, 올바르지 않은 토큰 404 등)
-                 TODO 갱신된 토큰은 응답을 감지해서 이를 저장하고 요청해야 한다.
-                */
             }
         })
     }
-    // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------  ###  ### ---> 여기서도 토큰이 생김
+
+    // ------! 마케팅 수신 동의 관련 insert문 !------  ###  ### ---> 여기서도 토큰이 생김
     fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = RequestBody.create(mediaType, idPw.toString())
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}read.php")
+            .header("user_token", userToken)
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                val jsonObj__ = responseBody?.let { JSONObject(it) }
+                callback(jsonObj__)
+            }
+        })
+    }
+    // ------! 마케팅 수신 동의 관련 insert문 !------  ###  ### ---> 여기서도 토큰이 생김
+    fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, idPw.toString())
         val client = OkHttpClient()
@@ -87,11 +108,11 @@ object NetworkUser {
         })
     }
 
-    fun fetchUserUPDATEJson(myUrl : String, json: String, email: String, callback: () -> Unit) {
+    fun fetchUserUPDATEJson(myUrl : String, json: String, sn: String, callback: () -> Unit) {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json )
         val request = Request.Builder()
-            .url("${myUrl}update.php?user_mobile=$email")
+            .url("${myUrl}update.php?user_sn=$sn")
             .patch(body)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -107,10 +128,10 @@ object NetworkUser {
         })
     }
 
-    fun fetchUserDeleteJson(myUrl : String, email:String, callback: () -> Unit) {
+    fun fetchUserDeleteJson(myUrl : String, sn:String, callback: () -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}delete.php?user_email=$email")
+            .url("${myUrl}delete.php?user_sn=$sn")
             .delete()
             .build()
         client.newCall(request).enqueue(object : Callback {

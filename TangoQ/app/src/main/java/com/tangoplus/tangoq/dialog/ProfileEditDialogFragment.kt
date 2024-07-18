@@ -106,7 +106,7 @@ class ProfileEditDialogFragment : DialogFragment() {
         } // -----! 이미지 로드 끝 !-----
 
         // ------! 싱글턴에서 가져오기 !------
-        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")!!
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")!!
 
         // ------! 이름, 전화번호 세팅 !------
         binding.tvPEDMobile.text = userJson.optString("user_mobile")
@@ -421,14 +421,16 @@ class ProfileEditDialogFragment : DialogFragment() {
                 )
             }
         }
-        when (userJson.optInt("sms_agree")) {
+        when (userJson.optInt("sms_receive")) {
             1 -> agreementMk1.value = true
             else -> agreementMk1.value = false
         }
-        when (userJson.optInt("email_agree")) {
+        Log.v("userJson", userJson.optInt("sms_receive").toString())
+        when (userJson.optInt("email_receive")) {
             1 -> agreementMk2.value = true
             else -> agreementMk2.value = false
         }
+        Log.v("userJson", userJson.optInt("email_receive").toString())
         // ------! 광고성 수신 동의 시작 !------
         binding.clPEDAgreement3.setOnClickListener{
             val newValue = agreement3.value?.not() ?: false

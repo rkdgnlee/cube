@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout65"
     android:layout_width="match_parent"
-    android:layout_height="130dp"
+    android:layout_height="150dp"
     android:background="@color/white">
 
     <ImageView
         android:id="@+id/imageView14"
-        android:layout_width="110dp"
+        android:layout_width="130dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"

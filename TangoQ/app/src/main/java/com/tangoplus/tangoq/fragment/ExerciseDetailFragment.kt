@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,13 +20,16 @@ import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
+import com.tangoplus.tangoq.fragment.FavoriteEditFragment.Companion
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
+import com.tangoplus.tangoq.listener.OnExerciseAddClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseByCategory
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import kotlinx.coroutines.launch
+import java.util.ArrayList
 
 
-class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
+class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnExerciseAddClickListener {
     lateinit var binding : FragmentExerciseDetailBinding
     private var filteredDataList = mutableListOf<ExerciseVO>()
     val viewModel : FavoriteViewModel by activityViewModels()
@@ -38,20 +40,23 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentExerciseDetailBinding.inflate(inflater)
-        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
+//        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
 
         return binding.root
     }
+
     companion object {
         private const val ARG_CATEGORY_ID = "category_id"
         private const val ARG_CATEGORY_NAME = "cagetory_name"
+        private const val ARG_SN = "SN"
 
-
-        fun newInstance(category: Pair<Int, String>): ExerciseDetailFragment {
+        fun newInstance(category: Pair<Int, String>, sn: Int): ExerciseDetailFragment {
             val fragment = ExerciseDetailFragment()
             val args = Bundle()
             args.putInt(ARG_CATEGORY_ID, category.first)
             args.putString(ARG_CATEGORY_NAME, category.second)
+            args.putInt(ARG_SN, sn)
+
             fragment.arguments = args
             return fragment
         }
@@ -66,6 +71,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 
         val categoryId = arguments?.getInt(ARG_CATEGORY_ID)
         val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
+        val sn = arguments?.getInt(ARG_SN)
         // ------! 선택 카테고리 & 타입 가져오기  !------
 
         binding.sflED.startShimmer()
@@ -91,7 +97,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 
         // -----! 카테고리  시작 !-----
         val categoryList = listOf("전체","목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎", "발목")
-        val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryList, this@ExerciseDetailFragment, this@ExerciseDetailFragment, "subCategory" )
+        val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryList, this@ExerciseDetailFragment, this@ExerciseDetailFragment, sn!! ,"subCategory" )
         binding.rvEDCategory.adapter = adapter2
         val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvEDCategory.layoutManager = linearLayoutManager2
@@ -149,24 +155,33 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
 
             // ------! 시청 기록 시작 !------
 
-
-
-
             // ------! 시청 기록 끝 !------
 
             try {
                 binding.sflED.stopShimmer()
                 binding.sflED.visibility= View.GONE
                 filteredDataList = filteredDataList.toMutableList()
-                val adapter = ExerciseRVAdapter(
-                    this@ExerciseDetailFragment,
-                    filteredDataList,
-                    singletonInstance.viewingHistory?.toList() ?: listOf(),
-                    "main")
-                adapter.exerciseList = filteredDataList
-                binding.rvEDAll.adapter = adapter
-                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvEDAll.layoutManager = linearLayoutManager
+                Log.v("EDsn", "$sn")
+                // ------! 즐겨찾기 추가에서 왔을 때 !------
+                if (sn == -1 ) {
+                    val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filteredDataList, singletonInstance.viewingHistory?.toList() ?: listOf(), "main")
+                    adapter.exerciseList = filteredDataList
+                    binding.rvEDAll.adapter = adapter
+                    val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                    binding.rvEDAll.layoutManager = linearLayoutManager
+                    binding.btnEDFinish.visibility = View.GONE
+                } else {
+                    val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filteredDataList, singletonInstance.viewingHistory?.toList() ?: listOf(), "basket")
+                    adapter.exerciseList = filteredDataList
+                    // ------! click listener 설정 시작 !------
+                    adapter.setOnExerciseAddClickListener(this@ExerciseDetailFragment)
+                    // ------! click listener 설정 끝 !------
+
+                    binding.rvEDAll.adapter = adapter
+                    val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                    binding.rvEDAll.layoutManager = linearLayoutManager
+                    binding.btnEDFinish.visibility = View.VISIBLE
+                }
 
                 if (filteredDataList.isEmpty()) {
                     binding.tvGuideNull.visibility = View.VISIBLE
@@ -175,44 +190,23 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
                 }
 
 //                // ------! rv vertical 끝 !------
-
-//                val filterList = arrayListOf<String>()
-//                filterList.add("필터")
-//                filterList.add("최신순")
-//                filterList.add("인기순")
-//                filterList.add("추천순")
-//                binding.spnEDFilter.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
-//                binding.spnEDFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-//                    @SuppressLint("NotifyDataSetChanged")
-//                    override fun onItemSelected(
-//                        parent: AdapterView<*>?,
-//                        view: View?,
-//                        position: Int,
-//                        id: Long
-//                    ) {
-//                        when (position) {
-//                            0 -> {}
-//                            1 -> {
-////                                verticalDataList.sortBy { it.exerciseId }
-////                                adapter.notifyDataSetChanged()
-//                            }
-//                            2 -> {
-////                                verticalDataList.sortByDescending { it.videoDuration }
-////                                adapter.notifyDataSetChanged()
-//                            }
-//                            3 -> {
-////                                verticalDataList.sortBy { it.exerciseIntensity }
-////                                adapter.notifyDataSetChanged()
-//                            }
-//                        }
-//                    }
-//                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-//                }
-
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Error storing exercises", e)
             } // ------! rv all rv 끝 !------
         }
+        binding.btnEDFinish.setOnClickListener{
+            // ------! basketUnit에 들어가 있는 내용 즐겨찾기에 담기 !------
+            val selectedItems = viewModel.getExerciseBasketUnit()
+            Log.v("selectedItems", "${selectedItems.size}, $selectedItems")
+            viewModel.addExercises(selectedItems)
+            Log.v("selectedItems", "exerciseUnits: ${viewModel.exerciseUnits.value}, ")
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, FavoriteEditFragment.newInstance(sn))
+                commit()
+            }
+            viewModel.exerciseBasketUnits.value?.clear()
+        }
+
 //        binding.ibtnEDBLEConnect.setOnClickListener {
 //            if (!isReceiverRegistered) {
 //                if (!mBtAdapter?.isEnabled()!!) {
@@ -249,14 +243,20 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener {
         adapter.notifyDataSetChanged()
     }
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_in_left)
-                replace(R.id.flMain, ExerciseFragment())
-                commit()
-            }
-
-        }
+    override fun onExerciseAddClick(exerciseVO: ExerciseVO) {
+        viewModel.addExerciseBasketUnit(exerciseVO, 1)
+        Log.v("basketUnit.size", "${viewModel.exerciseBasketUnits.value?.size}")
     }
+
+
+//    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+//        override fun handleOnBackPressed() {
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+////                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_in_left)
+//                replace(R.id.flMain, ExerciseFragment())
+//                commit()
+//            }
+//        }
+//    }
+
 }

@@ -38,8 +38,8 @@ class FavoriteAddDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-        val user_email = t_userData?.optString("user_email")
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+        val userSn = t_userData?.optString("user_sn")
 
         binding.etFDaName.setOnTouchListener{ v, event ->
             val DRAWABLE_RIHGT = 2
@@ -52,54 +52,40 @@ class FavoriteAddDialogFragment : DialogFragment() {
             }
             false
         }
-        binding.etFDaDescript.setOnTouchListener{ v, event ->
-            val DRAWABLE_RIHGT = 2
-            if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= (binding.etFDaDescript.right - binding.etFDaDescript.compoundDrawables[DRAWABLE_RIHGT].bounds.width())) {
-
-                    binding.etFDaDescript.text.clear()
-                    return@setOnTouchListener true
-                }
-            }
-            false
-        }
+//
         binding.tvFDaCancel.setOnClickListener { dismiss() }
         binding.tvFDaConfirm.setOnClickListener {
             val jsonObj = JSONObject()
             jsonObj.put("favorite_name", binding.etFDaName.text)
-            jsonObj.put("favorite_description", binding.etFDaDescript.text)
-            jsonObj.put("user_mobile", user_email)
+            jsonObj.put("user_sn", userSn)
             Log.v("즐겨찾기JSON", "$jsonObj")
 
-            insertFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), jsonObj.toString(), requireContext()) { responseJson ->
-//                val newFavoriteItem = FavoriteItemVO(
-//                    favoriteSn = responseJson!!.getInt("favorite_sn"),
-//                    favoriteName = responseJson.optString("favorite_name"),
-//                    favoriteExplain = responseJson.optString("favorite_description"),
-//                    exercises = mutableListOf(),
-//                    imgThumbnailList = mutableListOf(),
-//                )
-                val data = responseJson?.getJSONArray("seletedData")?.optJSONObject(0)?.optJSONObject("data")
-                val newFavoriteItem = FavoriteVO(
-                    favoriteSn = data!!.getInt("favorite_sn"),
-                    favoriteName = data.optString("favorite_name"),
-                    favoriteExplain = data.optString("favorite_description"),
-                    exercises = mutableListOf(),
-                    imgThumbnails = mutableListOf(),
-                )
-//                requireActivity().runOnUiThread {
-//                    val updatedList = viewModel.favoriteList.value?.toMutableList() ?: mutableListOf()
-//                    updatedList.add(newFavoriteItem)
-//                    viewModel.favoriteList.value = updatedList
+            if (userSn != null) {
+                insertFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), jsonObj.toString(), requireContext()) { responseJson ->
+                    Log.v("response", "${responseJson}")
+//                    val newFavoriteItem = FavoriteVO(
+//                        favoriteSn = responseJson!!.getInt("favorite_sn"),
+//                        favoriteName = responseJson.optString("favorite_name"),
+//                        favoriteExplain = responseJson.optString("favorite_description"),
+//                        exercises = mutableListOf(),
+//                        imgThumbnails = mutableListOf(),)
+//                    Log.v("newFavoriteItem", "${newFavoriteItem}")
+//                    val data = responseJson.getJSONArray("seletedData").optJSONObject(0)?.optJSONObject("data")
+
+//                    requireActivity().runOnUiThread {
+//                        val updatedList = viewModel.favoriteList.value?.toMutableList() ?: mutableListOf()
+//                        updatedList.add(newFavoriteItem)
+//                        viewModel.favoriteList.value = updatedList
+//                        Log.v("newFavoriteItem", "newFavoriteItem: $newFavoriteItem")
+//                        dismiss()
+//                    }
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flMain, FavoriteFragment())
+                            .commit()
+                    }
 //                    Log.v("newFavoriteItem", "newFavoriteItem: $newFavoriteItem")
-//                    dismiss()
-//                }
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flMain, FavoriteFragment())
-                        .commit()
+                    dismiss()
                 }
-                Log.v("newFavoriteItem", "newFavoriteItem: $newFavoriteItem")
-                dismiss()
             }
         }
 

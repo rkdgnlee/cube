@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.FavoriteRVAdapter
@@ -22,7 +23,7 @@ import com.tangoplus.tangoq.dialog.FavoriteAddDialogFragment
 import com.tangoplus.tangoq.listener.OnFavoriteSelectedClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.jsonToExerciseVO
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByEmail
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonBySn
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -44,11 +45,12 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
         super.onViewCreated(view, savedInstanceState)
 
         // ------! singleton에서 전화번호 가져오기 시작 !------
-        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-        val user_email = t_userData?.optString("user_email")
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+        val userSn = t_userData?.optString("user_sn")
 
         binding.tvFTitle.text = "${t_userData?.optString("user_name")  ?: "미설정" } 님의\n플레이리스트 목록"
-
+        viewModel.favoriteList.value?.clear()
+        viewModel.exerciseUnits.value?.clear()
         // ------! 즐겨 찾기 1개 추가 시작 !------
         binding.btnFAdd.setOnClickListener {
             val dialog = FavoriteAddDialogFragment()
@@ -59,49 +61,23 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
 //        val encodedUserEmail = URLEncoder.encode(user_email, "UTF-8")
         lifecycleScope.launch {
 
-            // ------! 핸드폰 번호로 PickItems 가져오기 시작 !------
-            val favoriteList = fetchFavoriteItemsJsonByEmail(getString(R.string.IP_ADDRESS_t_favorite), user_email.toString()) // user_mobile 넣기
+            // ------! Sn으로 Favorites 가져오기 시작 !------
+            val favoriteList = fetchFavoriteItemsJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), userSn.toString())
+            viewModel.favoriteList.value = favoriteList
+            Log.v("favoriteCount", "${viewModel.favoriteList.value!!.size}")
 
             // ------! list관리 시작 !------
+            val favoriteItems = mutableListOf<FavoriteVO>()
             if (favoriteList.isNotEmpty()) {
-                binding.tvFEmpty.visibility = View.INVISIBLE
-                viewModel.favoriteList.value?.clear()
-                viewModel.exerciseUnits.value?.clear()
-                for (i in favoriteList.indices) { // 즐겨찾기 루프
-                    // 일단 favorite 1
-                    val favoriteItem = favoriteList[i]
-                    val imgList = mutableListOf<String>()
-                    val exerciseItemBySn = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteItem.favoriteSn.toString())
-                    // ------! 1 운동 항목에 넣기 !------
-                    val exerciseUnits = mutableListOf<ExerciseVO>()
-                    if (exerciseItemBySn != null) {
-                        val exercises = exerciseItemBySn.optJSONArray("exercise_detail_data")
-                        if (exercises != null) {
-                            var time = 0
-                            for (j in 0 until exercises.length()) {
-                                // ------! json array만큼 전부 일단 반복해서 변수 추가 !------
-                                exerciseUnits.add(jsonToExerciseVO(exercises.get(j) as JSONObject))
-                                time += ( (exercises[j] as JSONObject).optString("video_duration").toInt())
-                            }
-                            favoriteItem.favoriteTotalTime = (time / 60).toString()
-                            favoriteItem.exercises = exerciseUnits
-                        }
-                    } // ------! 2 시간 항목에 넣기 !------
+                for (i in favoriteList.indices) {
 
-                    // ------! 3 이미지썸네일 항목에 넣기 !------
-                    val exerciseSize = favoriteItem.exercises?.size
+                    // ------! 1 favorite sn 목록가져오기 !------
+                    val favoriteItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteList[i].favoriteSn.toString())
 
-                    for (k in 0 until exerciseSize!!) {
-                        if (k < 4) {
-                            imgList.add( favoriteItem.exercises!![k].imageFilePathReal.toString())
-                            Log.v("썸네일", "$imgList")
-                        }
-                    }
-                    favoriteItem.imgThumbnails = imgList
-
-                    viewModel.favoriteList.value?.add(favoriteItem) // 썸네일, 시리얼넘버, 이름까지 포함한 dataclass로 만든 favoriteVO형식의 리스트
-                    // 일단 운동은 비워놓고, detail에서 넣음
+                    // ------! 2 운동 디테일 채우기 !------
+                    favoriteItems.add(favoriteItem)
                 }
+                viewModel.favoriteList.value = favoriteItems
             }
 
             viewModel.favoriteList.observe(viewLifecycleOwner) { jsonArray ->
@@ -110,11 +86,12 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
                     binding.sflF.stopShimmer()
                     binding.sflF.visibility = View.GONE
                     binding.tvFEmpty.visibility = View.VISIBLE
+
 //                    binding.ivPickNull.visibility = View.VISIBLE
                 } else {
                     binding.sflF.stopShimmer()
                     binding.sflF.visibility = View.GONE
-                    binding.tvFEmpty.visibility = View.VISIBLE
+                    binding.tvFEmpty.visibility = View.GONE
                 }
                 val favoriteRvAdapter = FavoriteRVAdapter(viewModel.favoriteList.value!!, this@FavoriteFragment, this@FavoriteFragment, this@FavoriteFragment,"main")
                 binding.rvF.adapter = favoriteRvAdapter
@@ -137,9 +114,9 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
             // ------! 핸드폰 번호로 PickItems 가져오기 끝 !------
         }
 
-    override fun onFavoriteClick(title: String) {
+    override fun onFavoriteClick(sn: Int) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flMain, FavoriteDetailFragment.newInstance(title))
+            replace(R.id.flMain, FavoriteDetailFragment.newInstance(sn))
             addToBackStack(null)
             commit()
 

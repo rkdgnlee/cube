@@ -46,7 +46,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="25"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView13"
@@ -54,24 +53,12 @@
         app:layout_constraintTop_toTopOf="@+id/imageView13" />
 
     <TextView
-        android:id="@+id/textView14"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="분"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFvTime"
-        app:layout_constraintStart_toEndOf="@+id/tvFvTime"
-        app:layout_constraintTop_toTopOf="@+id/tvFvTime" />
-
-    <TextView
         android:id="@+id/tvFvName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:text="즐겨찾기 일일이"
+        android:text="_"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -86,7 +73,7 @@
         android:layout_height="18dp"
         android:layout_marginStart="2dp"
         android:maxLength="30"
-        android:text="2024.04.24"
+        android:text="_"
         android:textColor="@color/subColor500"
 
         android:textSize="14sp"
@@ -109,24 +96,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:text="4"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView7"
         app:layout_constraintStart_toEndOf="@+id/imageView7"
         app:layout_constraintTop_toTopOf="@+id/imageView7" />
-
-    <TextView
-        android:id="@+id/textView15"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="개"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFvCount"
-        app:layout_constraintStart_toEndOf="@+id/tvFvCount"
-        app:layout_constraintTop_toTopOf="@+id/tvFvCount" />
 
     <TextView
         android:id="@+id/textView65"
@@ -240,7 +214,7 @@
             android:layout_margin="12dp"
             android:text="+4"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold"
             android:visibility="invisible" />
 

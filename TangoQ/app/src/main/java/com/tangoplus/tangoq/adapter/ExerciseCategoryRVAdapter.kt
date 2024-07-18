@@ -1,36 +1,35 @@
 package com.tangoplus.tangoq.adapter
 
-import android.os.Handler
-import android.os.Looper
+import android.content.res.ColorStateList
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.card.MaterialCardView
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
-import com.tangoplus.tangoq.listener.OnCategoryScrollListener
 
 class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int, String>>,
                                 private val subCategorys: List<String>,
                                 private val fragment: Fragment,
                                 private val onCategoryClickListener: OnCategoryClickListener,
+                                private val sn : Int,
 //                                private val mainCategoryIndex: Int,
 //                                private val onCategoryScrollListener: OnCategoryScrollListener,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-
+    private var selectedPosition = RecyclerView.NO_POSITION
     inner class MainCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
 //        val tvMCName : TextView = view.findViewById(R.id.tvMCName)
         val ivMCThumbnail : ImageView = view.findViewById(R.id.ivMCThumbnail)
@@ -125,18 +124,35 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
             is SubCategoryViewHolder -> {
                 val currentItem = subCategorys[position]
                 holder.tvSCName.text = currentItem
+                val adapterPosition = holder.adapterPosition
+
+                if (adapterPosition == selectedPosition) {
+//                    holder.tvSCName.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor200))
+                    holder.tvSCName.setBackgroundResource(R.drawable.background_stroke_1dp_main_color_28dp)
+                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.mainColor))
+                } else {
+                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
+                    holder.tvSCName.setBackgroundResource(R.drawable.background_stroke_1dp_sub_color_28dp)
+                }
 
                 holder.tvSCName.setOnClickListener {
                     onCategoryClickListener.onCategoryClick(currentItem)
+                    val previousPosition = selectedPosition
+                    selectedPosition = adapterPosition
+                    notifyItemChanged(previousPosition) // 이전 선택된 아이템 갱신
+                    notifyItemChanged(selectedPosition) // 새로 선택된 아이템 갱신
+                    Log.v("subCategoryIndex", "$selectedPosition")
                 }
             }
         }
     }
+
     private fun goExerciseDetail(category : Pair<Int, String>) {
         Log.v("ClickIndex", "category: $category")
+        Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
             setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-            add(R.id.flMain, ExerciseDetailFragment.newInstance(category))
+            add(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
 //            addToBackStack(null)
             commit()
         }

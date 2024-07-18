@@ -121,11 +121,11 @@ class FavoriteRVAdapter(
             is FvViewHolder -> {
                 holder.ivFvThumbnailNull.visibility = View.GONE
                 holder.tvPickName.text = currentItem.favoriteName
-                holder.tvFvCount.text = currentItem.favoriteTotalCount
-                holder.tvFvTime.text = currentItem.favoriteTotalTime
+                holder.tvFvCount.text = "${currentItem.favoriteTotalCount} 개"
+                holder.tvFvTime.text = "${currentItem.favoriteTotalTime?.toInt()?.div(60)}분 ${currentItem.favoriteTotalTime?.toInt()?.rem(60)}초"
                 holder.tvFvRegDate.text = currentItem.favoriteRegDate?.substring(0, 11)
                 holder.vFvTab.setOnClickListener {
-                    listener.onFavoriteClick(currentItem.favoriteName.toString())
+                    listener.onFavoriteClick(currentItem.favoriteSn)
                 }
                 // ------! 바텀시트 썸네일 처리 시작 !------
                 holder.ibtnFvMore.setOnClickListener {
@@ -299,6 +299,7 @@ class FavoriteRVAdapter(
     private fun loadImage(context: Context, url: String, imageView: ImageView) {
         Glide.with(context)
             .load(url)
+            .override(100)
             .into(imageView)
     }
 

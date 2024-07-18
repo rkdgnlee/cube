@@ -1,175 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/subColor200"
     tools:context=".fragment.FavoriteEditFragment">
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabtnFEFinish"
-        style="@style/Stroke.FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:padding="16dp"
-        android:text="완료하기"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:backgroundTint="@color/white"
-        app:icon="@drawable/icon_autocomplete_button_hollow"
-        app:iconTint="@color/black" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="240dp">
 
-    <androidx.core.widget.NestedScrollView
+        <View
+            android:id="@+id/view9"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#4D000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ibtnFEBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="#00FFFFFF"
+            android:padding="4dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_arrow_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/etFEName"
+            android:layout_width="156dp"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:maxLength="15"
+            android:padding="12dp"
+            android:text="어깨 루틴"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ibtnFEBack" />
+
+        <ImageView
+            android:id="@+id/imageView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_edit"
+            android:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/etFEName"
+            app:layout_constraintStart_toEndOf="@+id/etFEName"
+            app:layout_constraintTop_toTopOf="@+id/etFEName" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clFE"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:background="@drawable/background_bottomsheet"
+        android:paddingTop="10dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout26"
+        <!--        <ImageButton-->
+        <!--            android:id="@+id/ibtnFEMore"-->
+        <!--            android:layout_width="36dp"-->
+        <!--            android:layout_height="36dp"-->
+        <!--            android:layout_marginTop="16dp"-->
+        <!--            android:layout_marginEnd="20dp"-->
+        <!--            android:background="@color/subColor100"-->
+        <!--            android:scaleType="centerCrop"-->
+        <!--            android:src="@drawable/icon_more"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvFE"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/ibtnFEBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <!--        <ImageButton-->
-            <!--            android:id="@+id/ibtnFEMore"-->
-            <!--            android:layout_width="36dp"-->
-            <!--            android:layout_height="36dp"-->
-            <!--            android:layout_marginTop="16dp"-->
-            <!--            android:layout_marginEnd="20dp"-->
-            <!--            android:background="@color/subColor100"-->
-            <!--            android:scaleType="centerCrop"-->
-            <!--            android:src="@drawable/icon_more"-->
-            <!--            app:layout_constraintEnd_toEndOf="parent"-->
-            <!--            app:layout_constraintTop_toTopOf="parent" />-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/etFEName"
-                android:layout_width="156dp"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:gravity="center"
-                android:maxLength="15"
-                android:padding="12dp"
-                android:text="어깨 루틴"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ibtnFEBack" />
-
-            <EditText
-                android:id="@+id/etFEExplain"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:backgroundTint="@color/white"
-                android:ems="10"
-                android:gravity="center"
-                android:inputType="text"
-                android:maxLength="25"
-                android:text="설명설명설명"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etFEName" />
-
-            <ImageView
-                android:id="@+id/imageView15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/icon_edit"
-                app:layout_constraintBottom_toBottomOf="@+id/etFEName"
-                app:layout_constraintStart_toEndOf="@+id/etFEName"
-                app:layout_constraintTop_toTopOf="@+id/etFEName" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/icon_edit"
-                app:layout_constraintBottom_toBottomOf="@+id/etFEExplain"
-                app:layout_constraintStart_toEndOf="@+id/etFEExplain"
-                app:layout_constraintTop_toTopOf="@+id/etFEExplain" />
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nsvFE"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fillViewport="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider6"
-                app:layout_constraintVertical_bias="0.0">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFE"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvFE"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider6" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider6"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="20dp"
+                    app:dividerColor="@color/subColor100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout24"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvFE"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnFEGoBasket"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-
-
-                        android:layout_marginBottom="20dp"
-                        app:layout_constraintBottom_toTopOf="@+id/btnFEGoBasket"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0" />
-
-                    <Button
-                        android:id="@+id/btnFEGoBasket"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1.25"
+                        android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/secondaryColor"
-                        android:drawableLeft="@drawable/icon_plus_small"
+                        android:drawableLeft="@drawable/icon_add"
+                        android:drawableTint="@color/white"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:paddingLeft="48dp"
-                        android:paddingRight="48dp"
+                        android:padding="16dp"
+                        android:stateListAnimator="@null"
                         android:text="운동 추가하기"
                         android:textColor="@color/white"
                         android:textSize="18sp"
-                        app:cornerRadius="12dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        android:textStyle="bold"
+                        app:cornerRadius="12dp" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.core.widget.NestedScrollView>
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/fabtnFEFinish"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:padding="16dp"
+                        android:stateListAnimator="@null"
+                        android:text="완료하기"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/mainColor"
+                        app:iconTint="@color/black" />
+                </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider6"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="24dp"
-                app:dividerColor="@color/subColor200"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etFEExplain" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

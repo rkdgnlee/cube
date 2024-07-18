@@ -12,13 +12,11 @@ data class FavoriteVO (
     var favoriteRegDate : String? = "",
     var favoriteTotalTime : String? = "",
     var favoriteTotalCount : String? = "",
-    var favoriteExplain : String? = "",
     var exercises : MutableList<ExerciseVO>?
 ) : Parcelable {
     constructor(parcel: Parcel): this(
         parcel.createStringArrayList(),
         parcel.readInt(),
-        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -34,7 +32,6 @@ data class FavoriteVO (
         dest.writeString(favoriteRegDate)
         dest.writeString(favoriteTotalTime)
         dest.writeString(favoriteTotalCount)
-        dest.writeString(favoriteExplain)
         dest.writeTypedList(exercises)
     }
     companion object CREATOR : Parcelable.Creator<FavoriteVO> {

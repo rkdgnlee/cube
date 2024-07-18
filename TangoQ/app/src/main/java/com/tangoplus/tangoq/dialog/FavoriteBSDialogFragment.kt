@@ -51,7 +51,6 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
             if (imgByteArray != null) {
                 // index = 0 : bytearray값 존재 ->
                 // index = 1 : imgThumbnails에서 전부 glide
-
                 index = 0
             } else {
                 index = 1
@@ -113,7 +112,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
             } // ------! 썸네일 사진 4개 끝 !------
 
 
-            binding.tvFBSPlay.text = favorite.favoriteName
+            binding.tvFBsName.text = favorite.favoriteName
             binding.llFBSPlay.setOnClickListener{
                 // TODO 재생목록 만들어서 FULLSCREEN
             }
@@ -122,7 +121,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                 dismiss()
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                    replace(R.id.flMain, FavoriteEditFragment.newInstance(favorite.favoriteName.toString()))
+                    replace(R.id.flMain, FavoriteEditFragment.newInstance(favorite.favoriteSn))
                     remove(FavoriteDetailFragment()).commit()
                 }
             }
@@ -140,7 +139,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                 dismiss()
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                    replace(R.id.flMain, FavoriteBasketFragment.newInstance(favorite.favoriteName.toString()))
+                    replace(R.id.flMain, FavoriteBasketFragment.newInstance(favorite.favoriteSn))
                         .addToBackStack(null)
                         .commit()
                 }
@@ -149,7 +148,7 @@ class FavoriteBSDialogFragment : BottomSheetDialogFragment() {
                 dismiss()
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                    replace(R.id.flMain, FavoriteEditFragment.newInstance(favorite.favoriteName.toString()))
+                    replace(R.id.flMain, FavoriteEditFragment.newInstance(favorite.favoriteSn))
                     remove(FavoriteDetailFragment()).commit()
                 }
             }

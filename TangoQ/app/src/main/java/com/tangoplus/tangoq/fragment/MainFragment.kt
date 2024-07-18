@@ -34,6 +34,8 @@ import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
+import com.tangoplus.tangoq.dialog.PlayProgramThumbnailDialogFragment
+import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgramVOBySn
 import kotlinx.coroutines.launch
@@ -85,83 +87,89 @@ class MainFragment : Fragment(), OnRVClickListener {
             startActivity(intent)
         } // ------! 알람 intent !------
 
-        // ------! v1.0 초기 연령 별 추천 운동 시작 !------
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-//        val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
-        val age = 58
-        // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
-        val userEmail = userJson?.optString("user_email").toString()
-        val prefsManager = PreferencesManager(requireContext())
-        val currentValue = prefsManager.getStoredInt(userEmail)
-        Log.v("currentValue", "${currentValue}")
-        // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
-        binding.tvMTodaySet.text = "$currentValue/5 개"
-        binding.hpvMDailyThird.progress = (currentValue  * 100 ) / 5
+        when (isNetworkAvailable(requireContext())) {
+            true -> {
+                // ------! v1.0 초기 연령 별 추천 운동 시작 !------
+                val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+                val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+//                val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
+                val age = "0"
+                Log.v("age", "$age")
+                // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
+                val userSn = userJson?.optString("user_sn").toString()
+                val prefsManager = PreferencesManager(requireContext())
+                val currentValue = prefsManager.getStoredInt(userSn)
+                Log.v("currentValue", "userEmail: ${userSn}, currentValue: ${currentValue}")
+                binding.tvMTodaySet.text = "완료 $currentValue /5 개"
+                binding.hpvMDailyThird.progress = (currentValue  * 100 ) / 5
 
-        when (age.toInt()) {
-            in 0 .. 20 -> {
-                lifecycleScope.launch {
-                    val exercises = fetchExercise(2, Random.nextInt(5, 9))
-                    requireActivity().runOnUiThread {
-                        setVpItems(exercises)
-                        binding.tvMTodaySet.text = "$currentValue/5 개"
-                        binding.hpvMDailyThird.progress = (currentValue  * 100 ) / 5
-                    }
+                bViewModel.dailyProgress.observe(viewLifecycleOwner) {
+                    binding.tvMTodaySet.text = "완료 $it /5 개"
+                    binding.hpvMDailyThird.progress = (it  * 100 ) / 5
                 }
-            }
-            in 21 .. 39 -> {
-                lifecycleScope.launch {
-                    val exercises = fetchExercise(3, Random.nextInt(1, 9))
-                    requireActivity().runOnUiThread {
-                        setVpItems(exercises)
-                    }
-                }
-            }
-            in 40 .. 50 -> {
-                lifecycleScope.launch {
-                    val exercises = fetchExercise(5, Random.nextInt(5, 9))
-                    requireActivity().runOnUiThread {
-                        setVpItems(exercises)
-                    }
-                }
-            }
-            in 50 .. 60 -> {
-                lifecycleScope.launch {
-                    val exercises = fetchExercise(3, Random.nextInt(1, 9))
-                    requireActivity().runOnUiThread {
-                        setVpItems(exercises)
-                    }
-                }
-            }
-            in 60 .. 80 -> {
-                lifecycleScope.launch {
-                    val exercises = fetchExercise(1, Random.nextInt(3, 9))
-                    requireActivity().runOnUiThread {
-                        setVpItems(exercises)
-                    }
-                }
-            }
-            else -> {
-                lifecycleScope.launch {
-                    val exercises = fetchExercise(4, Random.nextInt( 1,9))
-                    requireActivity().runOnUiThread {
-                        setVpItems(exercises)
-                    }
-                }
-            }
+                // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
 
-        }
-        binding.ibtnMvpPrevious.setOnClickListener {
-            if ( binding.vpMDaily.currentItem >= 1) {
-                binding.vpMDaily.currentItem -= 1
-            }
-        }
-        binding.ibtnMvpNext.setOnClickListener {
-            if ( binding.vpMDaily.currentItem < 3) {
-                binding.vpMDaily.currentItem += 1
-            }
-        }
+                when (age.toInt()) {
+                    in 0 .. 20 -> {
+                        lifecycleScope.launch {
+                            val exercises = fetchExercise(2, Random.nextInt(5, 9))
+                            requireActivity().runOnUiThread {
+                                setVpItems(exercises)
+                            }
+                        }
+                    }
+                    in 21 .. 39 -> {
+                        lifecycleScope.launch {
+                            val exercises = fetchExercise(3, Random.nextInt(1, 9))
+                            requireActivity().runOnUiThread {
+                                setVpItems(exercises)
+                            }
+                        }
+                    }
+                    in 40 .. 50 -> {
+                        lifecycleScope.launch {
+                            val exercises = fetchExercise(5, Random.nextInt(5, 9))
+                            requireActivity().runOnUiThread {
+                                setVpItems(exercises)
+                            }
+                        }
+                    }
+                    in 50 .. 60 -> {
+                        lifecycleScope.launch {
+                            val exercises = fetchExercise(3, Random.nextInt(1, 9))
+                            requireActivity().runOnUiThread {
+                                setVpItems(exercises)
+                            }
+                        }
+                    }
+                    in 60 .. 80 -> {
+                        lifecycleScope.launch {
+                            val exercises = fetchExercise(1, Random.nextInt(3, 9))
+                            requireActivity().runOnUiThread {
+                                setVpItems(exercises)
+                            }
+                        }
+                    }
+                    else -> {
+                        lifecycleScope.launch {
+                            val exercises = fetchExercise(4, Random.nextInt( 1,9))
+                            requireActivity().runOnUiThread {
+                                setVpItems(exercises)
+                            }
+                        }
+                    }
+
+                }
+                binding.ibtnMvpPrevious.setOnClickListener {
+                    if ( binding.vpMDaily.currentItem >= 1) {
+                        binding.vpMDaily.currentItem -= 1
+                    }
+                }
+                binding.ibtnMvpNext.setOnClickListener {
+                    if ( binding.vpMDaily.currentItem < 3) {
+                        binding.vpMDaily.currentItem += 1
+                    }
+                }
 
 //        binding.btnMMeasure.setOnClickListener {
 ////            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
@@ -173,11 +181,11 @@ class MainFragment : Fragment(), OnRVClickListener {
 //            }
 //            dialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
 //        }
-        // ------! 추천 운동 및 운동 썸네일 바로 가기 !------
+                // ------! 추천 운동 및 운동 썸네일 바로 가기 !------
 
-    // ------! v1.0 초기 연령 별 추천 운동 끝 !------
+                // ------! v1.0 초기 연령 별 추천 운동 끝 !------
 
-        // ------! 점수 시작 !------
+                // ------! 점수 시작 !------
 //        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
 //        binding.ivMScoreDown.visibility = View.GONE
 //        binding.ivMScoreUp.visibility = View.GONE
@@ -217,33 +225,8 @@ class MainFragment : Fragment(), OnRVClickListener {
 //            }
 //        } // ------! 점수 끝 !------
 
-        // ------! 중앙 홍보 배너 시작 !------
-
-        bViewModel.BannerList.add("drawable_banner_1")
-        bViewModel.BannerList.add("drawable_banner_2")
-
-        val bannerAdpater = BannerVPAdapter(bViewModel.BannerList, "main", requireContext())
-        bannerAdpater.notifyDataSetChanged()
-        binding.vpMBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.vpMBanner.adapter = bannerAdpater
-        binding.vpMBanner.setCurrentItem(bannerPosition, false)
-        binding.vpMBanner.apply {
-            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageScrollStateChanged(state: Int) {
-                    super.onPageScrollStateChanged(state)
-                    when (state) {
-                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
-                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
-                        ViewPager2.SCROLL_STATE_SETTLING -> {}
-                    }
-                }
-            })
-        } // ------! 중앙 홍보 배너 끝 !------
-
-
-
-        // ------! db에서 받아서 뿌려주기 시작 !------
-        lifecycleScope.launch {
+                // ------! db에서 받아서 뿌려주기 시작 !------
+                lifecycleScope.launch {
 //            // TODO 프로그램을 불러오거나 전체에서 필터링해서 만들어야 함
 //            val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
 ////            Log.v("MainF>RV", "$responseArrayList")
@@ -309,24 +292,24 @@ class MainFragment : Fragment(), OnRVClickListener {
 //                        binding.hpvMRecommend.progress = progress.toInt()
 //                    }
 //                }) // ------! horizontal과 progressbar 연동 끝 !------
-            val programVOList = mutableListOf<ProgramVO>()
+                    val programVOList = mutableListOf<ProgramVO>()
 
-            for (i in 10 downTo 8) {
-                programVOList.add(fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), i.toString()))
-            }
-            binding.sflM.stopShimmer()
-            binding.sflM.visibility = View.GONE
-            binding.hpvMRecommend.visibility = View.INVISIBLE
-            binding.spnMFilter.visibility = View.INVISIBLE
-            setRVAdapter(programVOList)
+                    for (i in 10 downTo 8) {
+                        programVOList.add(fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), i.toString()))
+                    }
+                    binding.sflM.stopShimmer()
+                    binding.sflM.visibility = View.GONE
+//                    binding.hpvMRecommend.visibility = View.INVISIBLE
+//                    binding.spnMFilter.visibility = View.INVISIBLE
+                    setRVAdapter(programVOList)
 
 
 
-                // ------! 하단 RV Adapter 시작 !------
+                    // ------! 하단 RV Adapter 시작 !------
 //                setRVAdapter(verticalDataList)
-                // -----! vertical 어댑터 끝 !-----
+                    // -----! vertical 어댑터 끝 !-----
 
-                // -----! spinner 연결 시작 !-----
+                    // -----! spinner 연결 시작 !-----
 //                val filterList = arrayListOf<String>()
 //                filterList.add("최신순")
 //                filterList.add("인기순")
@@ -361,13 +344,41 @@ class MainFragment : Fragment(), OnRVClickListener {
 //            } catch (e: Exception) {
 //                Log.e(ContentValues.TAG, "Error storing exercises", e)
 //            } // -----! 하단 RV Adapter 끝 !-----
+                }
+            }
+            false -> {
+
+            }
         }
+        // ------! 중앙 홍보 배너 시작 !------
+
+        bViewModel.bannerList.add("drawable_banner_1")
+        bViewModel.bannerList.add("drawable_banner_2")
+
+        val bannerAdpater = BannerVPAdapter(bViewModel.bannerList, "main", requireContext())
+        bannerAdpater.notifyDataSetChanged()
+        binding.vpMBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.vpMBanner.adapter = bannerAdpater
+        binding.vpMBanner.setCurrentItem(bannerPosition, false)
+        binding.vpMBanner.apply {
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrollStateChanged(state: Int) {
+                    super.onPageScrollStateChanged(state)
+                    when (state) {
+                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
+                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
+                        ViewPager2.SCROLL_STATE_SETTLING -> {}
+                    }
+                }
+            })
+        } // ------! 중앙 홍보 배너 끝 !------
     }
     override fun onRVClick(program: ProgramVO) {
-        val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-        val url = storeUrl(program)
-        intent.putStringArrayListExtra("resourceList", ArrayList(url))
-        startActivityForResult(intent, 8080)
+//        val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
+//        val url = storeUrl(program)
+//        intent.putStringArrayListExtra("resourceList", ArrayList(url))
+//        startActivityForResult(intent, 8080)
+
     }
     private fun storeUrl(program: ProgramVO) : MutableList<String> {
         val exercises = program.exercises
@@ -390,7 +401,7 @@ class MainFragment : Fragment(), OnRVClickListener {
     private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
-            if (msg.what == 0 && bViewModel.BannerList.isNotEmpty()) {
+            if (msg.what == 0 && bViewModel.bannerList.isNotEmpty()) {
                 binding.vpMBanner.setCurrentItem(++bannerPosition, true)
                 // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산
 //                val currentIndex = bannerPosition % bViewModel.BannerList.size // 65536  % 5
@@ -407,7 +418,7 @@ class MainFragment : Fragment(), OnRVClickListener {
         val adapter = ProgramRVAdapter(programList, this@MainFragment, this@MainFragment,"rank", startForResult)
         adapter.programs = programList
         binding.rvM.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvM.layoutManager = linearLayoutManager
         adapter.notifyDataSetChanged()
     }
@@ -436,7 +447,7 @@ class MainFragment : Fragment(), OnRVClickListener {
                 override fun onPageScrollStateChanged(state: Int) {
                     super.onPageScrollStateChanged(state)
                     if (state == ViewPager2.SCROLL_STATE_IDLE) {
-                        binding.tvMvpCount.text = "${binding.vpMDaily.currentItem + 1}/${if (exercises.size < 3) exercises.size else 3}"
+//                        binding.tvMvpCount.text = "${binding.vpMDaily.currentItem + 1}/${if (exercises.size < 3) exercises.size else 3}"
                     }
                 }
             })

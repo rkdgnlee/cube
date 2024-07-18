@@ -12,58 +12,70 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/ibtnMAlarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/effect_ibtn_20dp"
-            android:backgroundTint="@color/white"
-            android:padding="4dp"
-            android:src="@drawable/icon_alarm"
-            app:layout_constraintBottom_toBottomOf="@+id/textView119"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView16"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView119"
-            app:layout_constraintVertical_bias="0.333" />
-
-        <ImageView
-            android:id="@+id/imageView19"
-            android:layout_width="64dp"
-            android:layout_height="38dp"
-
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/app_logo" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView119"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="측정"
-            android:textColor="@color/black"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView19"
-            app:layout_constraintStart_toEndOf="@+id/imageView19"
-            app:layout_constraintTop_toTopOf="@+id/imageView19" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout13"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:id="@+id/ibtnMAlarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="@color/white"
+                    android:padding="4dp"
+                    android:src="@drawable/icon_alarm"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageView19"
+                    android:layout_width="64dp"
+                    android:layout_height="38dp"
+
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="10dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/app_logo" />
+
+                <TextView
+                    android:id="@+id/textView119"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="측정"
+                    android:textColor="@color/black"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView19"
+                    app:layout_constraintStart_toEndOf="@+id/imageView19"
+                    app:layout_constraintTop_toTopOf="@+id/imageView19" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="64dp"
             android:fillViewport="true"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/cardView16">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout33"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp">
+                android:background="@color/white">
 
                 <TextView
                     android:id="@+id/textView48"
@@ -71,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:text="님의 통증 차트"
-                    android:textColor="@color/black"
+                    android:textColor="@color/subColor800"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/tvMsUserName"
@@ -82,9 +94,10 @@
                     android:id="@+id/tvMsLastDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="40dp"
                     android:text="기록 없음"
                     android:textColor="@color/subColor500"
-                    android:textSize="14sp"
+                    android:textSize="18sp"
                     app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvMsAddPart" />
@@ -95,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:text="마지막 측정 : "
                     android:textColor="@color/subColor500"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvMsLastDate"
                     app:layout_constraintEnd_toStartOf="@+id/tvMsLastDate"
                     app:layout_constraintTop_toTopOf="@+id/tvMsLastDate"
@@ -106,6 +119,7 @@
                     android:layout_width="0dp"
                     android:layout_height="3dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="40dp"
                     app:dividerColor="@color/subColor200"
                     app:layout_constraintBottom_toBottomOf="@+id/tabLayout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -116,11 +130,10 @@
                     android:id="@+id/tabLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="20dp"
                     android:background="@drawable/background_tablayout_underline"
                     android:paddingRight="4dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:tabGravity="center"
@@ -134,7 +147,7 @@
                     app:tabPaddingStart="20dp"
                     app:tabRippleColor="@color/subColor100"
                     app:tabSelectedTextColor="@color/mainColor"
-                    app:tabTextAppearance="@style/TextAppearance.AppCompat.Body2"
+                    app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
                     app:tabTextColor="@color/subColor500">
 
                     <com.google.android.material.tabs.TabItem
@@ -158,18 +171,21 @@
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="20dp"
                     android:text="주간 요약"
-                    android:textSize="28sp"
+                    android:textColor="@color/subColor900"
+                    android:textSize="26sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/materialDivider3"
+                    app:layout_constraintStart_toStartOf="@+id/tabLayout"
                     app:layout_constraintTop_toBottomOf="@+id/materialDivider3" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/ClMs"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="40dp"
                     android:background="@drawable/background_stroke_1dp_sub_color"
                     android:padding="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -202,11 +218,11 @@
                         android:id="@+id/lcMs"
                         android:layout_width="0dp"
                         android:layout_height="156dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
-                        android:background="@drawable/background_gradient_maincolor"
+                        android:background="@drawable/color_gradient_sub_color_300"
                         android:backgroundTint="@color/white"
                         app:layout_constraintBottom_toTopOf="@+id/tvMsBalanceScore"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -220,7 +236,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="미설정"
-                        android:textColor="@color/black"
+                        android:textColor="@color/subColor800"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -231,7 +247,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="밸런스 점수 - "
-                        android:textColor="@color/black"
+                        android:textColor="@color/subColor800"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/tvMsBalanceScore"
@@ -239,17 +255,40 @@
                         app:layout_constraintTop_toTopOf="@+id/tvMsBalanceScore"
                         app:layout_constraintVertical_bias="0.0" />
 
+                    <ImageView
+                        android:id="@+id/imageView24"
+                        android:layout_width="0dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/line_dash_horizontal"
+                        app:layout_constraintBottom_toBottomOf="@+id/lcMs"
+                        app:layout_constraintEnd_toEndOf="@+id/lcMs"
+                        app:layout_constraintStart_toStartOf="@+id/lcMs"
+                        app:layout_constraintTop_toTopOf="@+id/lcMs"
+                        app:layout_constraintVertical_bias="0.2" />
+
+                    <ImageView
+                        android:id="@+id/imageView28"
+                        android:layout_width="0dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/line_dash_horizontal"
+                        app:layout_constraintBottom_toBottomOf="@+id/lcMs"
+                        app:layout_constraintEnd_toEndOf="@+id/lcMs"
+                        app:layout_constraintStart_toStartOf="@+id/lcMs"
+                        app:layout_constraintTop_toTopOf="@+id/lcMs"
+                        app:layout_constraintVertical_bias="0.65" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:id="@+id/linearLayout4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="40dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ClMs">
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMsShare"
@@ -262,9 +301,9 @@
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:paddingLeft="48dp"
-                        android:paddingTop="12dp"
+                        android:paddingTop="16dp"
                         android:paddingRight="48dp"
-                        android:paddingBottom="12dp"
+                        android:paddingBottom="16dp"
                         android:stateListAnimator="@null"
                         android:text="공유하기"
                         android:textColor="@color/subColor800"
@@ -284,8 +323,8 @@
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:paddingLeft="24dp"
-                        android:paddingTop="12dp"
-                        android:paddingRight="24dp"
+                        android:paddingTop="16dp"
+                        android:paddingRight="16dp"
                         android:paddingBottom="12dp"
                         android:stateListAnimator="@null"
                         android:text="측정하기"
@@ -299,10 +338,11 @@
                     android:id="@+id/textView40"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="30dp"
                     android:text="통증 부위 관리"
-                    android:textColor="@color/subColor800"
-                    android:textSize="28sp"
+                    android:textColor="@color/subColor900"
+                    android:textSize="26sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
@@ -311,13 +351,15 @@
                     android:id="@+id/tvMsAddPart"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="40dp"
                     android:background="@drawable/effect_ibtn_12dp"
                     android:paddingStart="8dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
-                    android:text="+ 부위 편집하기"
+                    android:text="+ 더보기"
                     android:textColor="@color/subColor800"
                     android:textSize="20sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/textView40"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView40" />
@@ -326,7 +368,9 @@
                     android:id="@+id/linearLayout5"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="40dp"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -353,7 +397,7 @@
                                 android:gravity="center"
                                 android:text="통증 부위를\n추가해주세요 💪"
                                 android:textColor="@color/subColor500"
-                                android:textSize="16sp"
+                                android:textSize="18sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -391,7 +435,7 @@
                     android:layout_marginTop="8dp"
                     android:text="000"
                     android:textColor="@color/subColor800"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@+id/textView40"
                     app:layout_constraintTop_toBottomOf="@+id/textView40" />
@@ -399,9 +443,13 @@
                 <LinearLayout
                     android:id="@+id/linearLayout6"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginEnd="40dp"
+                    android:layout_marginBottom="100dp"
                     android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
@@ -409,13 +457,15 @@
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMsGetReport"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/white"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
                         android:stateListAnimator="@null"
                         android:text="리포트 받기"
                         android:textColor="@color/subColor800"
@@ -426,13 +476,15 @@
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMsGetRecommend"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
                         android:stateListAnimator="@null"
                         android:text="맞춤 운동 추천"
                         android:textColor="@color/white"
@@ -445,23 +497,25 @@
                     android:id="@+id/textView56"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:text="밸런스 점수"
-                    android:textColor="@color/black"
-                    android:textSize="28sp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="30dp"
+                    android:text="평균 밸런스"
+                    android:textColor="@color/subColor900"
+                    android:textSize="26sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+                    app:layout_constraintTop_toBottomOf="@+id/ClMs" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
 
+                    android:id="@+id/constraintLayout3"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="80dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="40dp"
                     android:background="@drawable/background_stroke_1dp_sub_color_8dp"
                     android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView56">
@@ -471,23 +525,52 @@
                         android:id="@+id/ivMsInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
                         android:src="@drawable/icon_info"
                         android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView"
-                        app:layout_constraintStart_toEndOf="@+id/textView"
-                        app:layout_constraintTop_toTopOf="@+id/textView" />
+                        app:layout_constraintStart_toStartOf="@+id/lcMSNS"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
 
                         android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="40대 밸런스 점수 분포"
+                        android:layout_marginStart="10dp"
+                        android:text="40대 평균"
                         android:textColor="@color/subColor700"
-                        android:textSize="18sp"
-                        app:layout_constraintStart_toStartOf="@+id/lcMSNS"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/ivMsInfo"
+                        app:layout_constraintStart_toEndOf="@+id/ivMsInfo"
+                        app:layout_constraintTop_toTopOf="@+id/ivMsInfo" />
+
+                    <ImageView
+                        android:id="@+id/imageView11"
+                        android:layout_width="0dp"
+                        android:layout_height="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="#00000000"
+                        android:src="@drawable/line_dash_horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/imageView23"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:src="@drawable/line_dash_vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <com.github.mikephil.charting.charts.LineChart
@@ -497,21 +580,10 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="36dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@color/white"
+                        android:background="#00FFFFFF"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView17"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
-                        android:text="오른쪽에 위치할 수록 밸런스 점수가 좋습니다."
-                        android:textColor="@color/subColor700"
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/lcMSNS" />
 
                     <!--                    <LinearLayout-->
                     <!--                        android:id="@+id/llMs"-->

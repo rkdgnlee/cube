@@ -95,7 +95,7 @@
         app:srcCompat="@drawable/icon_rv_summary_time" />
 
     <ImageView
-        android:id="@+id/imageView6"
+        android:id="@+id/ivEIStage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
@@ -124,14 +124,14 @@
         android:text="회복"
         android:textColor="@color/subColor800"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
-        app:layout_constraintStart_toEndOf="@+id/imageView6"
-        app:layout_constraintTop_toTopOf="@+id/imageView6" />
+        app:layout_constraintBottom_toBottomOf="@+id/ivEIStage"
+        app:layout_constraintStart_toEndOf="@+id/ivEIStage"
+        app:layout_constraintTop_toTopOf="@+id/ivEIStage" />
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        app:dividerColor="@color/subColor200"
+        app:dividerColor="@color/subColor100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

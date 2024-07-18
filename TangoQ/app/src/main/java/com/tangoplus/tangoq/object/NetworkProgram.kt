@@ -22,14 +22,14 @@ object NetworkProgram {
                 val responseBody = response.body?.string()?.substringAfter("db conn ok")
                 Log.v("http3/programFetch", "Success to execute request!: $responseBody")
 
-                val jsonInfo = responseBody?.let { JSONObject(it) }?.optJSONObject("favorite info")
+                val jsonInfo = responseBody?.let { JSONObject(it) }?.optJSONObject("exercise_program_info")
                 val jsonExerciseArr = responseBody?.let { JSONObject(it) }?.getJSONArray("program_detail_data")
                 var time = 0
                 val exercises = mutableListOf<ExerciseVO>()
                 val imgUrls = mutableSetOf<String>()
                 for (i in 0 until jsonExerciseArr?.length()!!) {
                     // ------! 시간 + 운동 + imgUrl 넣기 !------
-                    time += jsonExerciseArr.getJSONObject(i).getString("video_duration").toInt()
+//                    time += jsonExerciseArr.getJSONObject(i).getString("video_duration").toInt()
                     exercises.add(jsonToExerciseVO(jsonExerciseArr.getJSONObject(i)))
                     imgUrls.add(jsonExerciseArr.getJSONObject(i).getString("image_filepath_real"))
 
@@ -38,9 +38,8 @@ object NetworkProgram {
                     programSn = jsonInfo?.optString("exercise_program_sn")!!.toInt(),
                     imgThumbnails = imgUrls.toMutableList(),
                     programName = jsonInfo.optString("exercise_program_name"),
-                    programTime = time,
+                    programTime = JSONObject(responseBody).optInt("total_video_time"),
                     programStage = "",
-                    programDescription = jsonInfo.optString("exercise_program_description"),
                     programCount = "${jsonInfo.getString("exercise_ids").split(", ").count()}",
 //                    programVideoUrl = jsonExerciseArr.getJSONObject(1).optString("video_filepath"),
                     exercises = exercises

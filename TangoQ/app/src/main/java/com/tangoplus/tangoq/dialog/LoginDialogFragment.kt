@@ -24,6 +24,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerToken
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import org.json.JSONObject
 import java.util.regex.Pattern
 
@@ -83,7 +84,7 @@ class LoginDialogFragment : DialogFragment() {
                 jsonObject.put("user_pw", viewModel.pw.value)
 
 
-                NetworkUser.getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObject, getServerToken(requireContext()).toString()) { jsonObj ->
+                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObject) { jsonObj ->
 
                     Log.v("json", "${jsonObj?.getInt("status")}")
                     if (jsonObj?.getInt("status") == 201) { // 기존에 정보가 있을 경우 - 로그인 성공

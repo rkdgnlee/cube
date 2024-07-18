@@ -165,7 +165,7 @@ object NetworkExercise {
             }
         }
     }
-    // 전체 조회
+    // 20개만 조회
     suspend fun fetchExerciseJson(myUrl: String): List<ExerciseVO> {
         val client = OkHttpClient()
         val request = Request.Builder()

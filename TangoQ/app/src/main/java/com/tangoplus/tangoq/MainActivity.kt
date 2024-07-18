@@ -2,6 +2,8 @@ package com.tangoplus.tangoq
 
 import android.app.UiModeManager
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,8 +23,11 @@ import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
+import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.`object`.DeepLinkUtil
 import com.tangoplus.tangoq.`object`.NetworkHistory.fetchViewingHistory
 import com.tangoplus.tangoq.`object`.Singleton_t_history
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -51,23 +56,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val singletonTHistory = Singleton_t_history.getInstance(this@MainActivity)
+
+
         // ------! 다크모드 메뉴 이름 설정 시작 !------
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         val isNightMode = uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
 //        binding.tvCurrentPage.text = (if (isNightMode) "내정보" else "내정보")
         // ------! 다크모드 메뉴 이름 설정 끝 !------
 
+
+
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        val singletonTHistory = Singleton_t_history.getInstance(this@MainActivity)
         AlarmReceiver()
+
         // -----! 초기 화면 설정 !-----
-        if (savedInstanceState == null) {
-//            backStack.push(selectedTabId)
-            setCurrentFragment(selectedTabId)
+        handlePendingDeepLink()
+        val showMeasureFragment = intent.getBooleanExtra("showMeasureFragment", false)
+        if (showMeasureFragment) {
+            // MeasureFragment로 교체
+            setCurrentFragment(R.id.measure);
+        } else if (savedInstanceState == null) {
+            // 초기 화면 설정
+            setCurrentFragment(selectedTabId);
         }
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
-
+        // -----! 초기 화면 설정 끝 !-----
         binding.bnbMain.setOnItemSelectedListener {
             if (selectedTabId != it.itemId) {
                 selectedTabId = it.itemId
@@ -156,6 +171,39 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
     }
+    // ------! 딥링크 처리 시작 !------
+    private fun handlePendingDeepLink() {
+        val prefs = getSharedPreferences("DeepLinkPrefs", Context.MODE_PRIVATE)
+        val pendingDeepLink = prefs.getString("pending_deep_link", null)
+        if (pendingDeepLink != null) {
+            // 딥링크 처리
+            handleDeepLink(Uri.parse(pendingDeepLink))
+            // 처리 후 임시 저장된 딥링크 정보 삭제
+            prefs.edit().remove("pending_deep_link").apply()
+        }
+    }
+
+    fun handleDeepLink(uri: Uri) {
+        val path = uri.path
+        if (path?.startsWith("/content/") == true) {
+            val encodedData = path.substringAfterLast("/")
+            val exercise = DeepLinkUtil.decodeExercise(encodedData)
+            if (exercise != null) {
+                // exercise를 사용하여 필요한 작업 수행
+                val dialogFragment = PlayThumbnailDialogFragment().apply {
+                    arguments = Bundle().apply {
+                        putParcelable("ExerciseUnit", exercise)
+                    }
+                }
+                dialogFragment.show(supportFragmentManager, "PlayThumbnailDialogFragment")
+
+            } else {
+                // 디코딩 실패 시 처리
+                Log.e("ErrorDeepLink", "Failed to access deepLink")
+            }
+        }
+    } // ------! 딥링크 처리 끝 !------
+
 //    fun setFullLayout(frame: FrameLayout, const : ConstraintLayout) {
 //        val constraintSet = ConstraintSet()
 //        constraintSet.clone(const)

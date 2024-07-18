@@ -98,10 +98,17 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" >
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="tangoq"
+                    android:host="tangoq.com"
+                    android:pathPrefix="/content" />
             </intent-filter>
             <intent-filter>
                 <data

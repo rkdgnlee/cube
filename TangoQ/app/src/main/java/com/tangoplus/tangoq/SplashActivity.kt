@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -38,6 +39,7 @@ import com.tangoplus.tangoq.`object`.NetworkUser
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -104,6 +106,15 @@ class SplashActivity : AppCompatActivity() {
 //                )
                 // ----- 인 앱 알림 끝 -----
 
+                // -------! 딥링크 처리 시작 !------
+                val deepLink = intent?.data
+                if (deepLink != null) {
+                    // 딥링크 정보를 임시 저장
+                    saveDeepLinkTemp(deepLink)
+                }
+
+                // -------! 딥링크 처리 끝 !------
+
                 val t_userData = Singleton_t_user.getInstance(this)
 
                 // -----! 다크모드 및 설정 불러오기 시작 !-----
@@ -134,25 +145,26 @@ class SplashActivity : AppCompatActivity() {
                             override fun onFailure(call: Call, e: IOException) { }
                             override fun onResponse(call: Call, response: Response) {
                                 if (response.isSuccessful) {
+
                                     val jsonBody = response.body?.string()?.let { JSONObject(it) }?.getJSONObject("response")
+
                                     val jsonObj = JSONObject()
+
                                     jsonObj.put("user_name",jsonBody?.optString("name"))
-                                    jsonObj.put("user_email",jsonBody?.optString("email"))
-                                    jsonObj.put("user_birthday",jsonBody?.optString("birthyear")+"-"+jsonBody?.optString("birthday"))
                                     jsonObj.put("user_gender", if (jsonBody?.optString("gender") == "M") "남자" else "여자")
                                     val naverMobile = jsonBody?.optString("mobile")?.replaceFirst("010", "+8210")
-                                    jsonObj.put("naver_login_id", jsonBody?.optString("id"))
                                     jsonObj.put("user_mobile", naverMobile)
-                                    // -----! 전화번호 변환 !-----
-                                    val encodedNaverEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                                    if (naverMobile != null) {
-//                                        getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) { jsonObject ->
-//                                            if (jsonObject != null) {
-//                                                NetworkUser.storeUserInSingleton(this@SplashActivity, jsonObject)
-//                                                Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-//                                            }
-//                                            MainInit()
-//                                        }
+                                    jsonObj.put("user_email",jsonBody?.optString("email"))
+                                    jsonObj.put("user_birthday",jsonBody?.optString("birthyear")+"-"+jsonBody?.optString("birthday"))
+                                    jsonObj.put("naver_login_id", jsonBody?.optString("id"))
+                                    jsonObj.put("social_account", "naver")
+
+                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                        if (jo != null) {
+                                            NetworkUser.storeUserInSingleton(this@SplashActivity, jo)
+                                            Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+                                        }
+                                        MainInit()
                                     }
                                 }
                             }
@@ -165,15 +177,20 @@ class SplashActivity : AppCompatActivity() {
                         user!!.getIdToken(true)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    val JsonObj = JSONObject()
-                                    JsonObj.put("google_login_id", user.uid)
-//                                    getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), JsonObj.getString("google_login_id")) {jsonObject ->
-//                                        if (jsonObject != null) {
-//                                            NetworkUser.storeUserInSingleton(this, jsonObject)
-//                                            Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-//                                        }
-//                                        MainInit()
-//                                    }
+                                    val jsonObj = JSONObject()
+                                    jsonObj.put("google_login_id", user.uid)
+                                    jsonObj.put("user_name", user.displayName.toString())
+                                    jsonObj.put("user_email", user.email.toString())
+                                    jsonObj.put("google_login_id", user.uid)
+                                    jsonObj.put("user_mobile", user.phoneNumber)
+                                    jsonObj.put("social_account", "google")
+                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                        if (jo != null) {
+                                            NetworkUser.storeUserInSingleton(this, jo)
+                                            Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+                                        }
+                                        MainInit()
+                                    }
                                 }
                             }
                         // ----- 구글 토큰 있음 끝 -----
@@ -182,35 +199,27 @@ class SplashActivity : AppCompatActivity() {
                     } else if (AuthApiClient.instance.hasToken()) {
                         UserApiClient.instance.me { user, error ->
                             if (error != null) {
-                                Log.e(ContentValues.TAG, "사용자 정보 요청 실패", error)
+                                Log.e("kakaoError", "사용자 정보 요청 실패", error)
                             }
                             else if (user != null) {
                                 Log.i(ContentValues.TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
                                 val jsonObj = JSONObject()
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M") {
-                                    "남자"
-                                } else {
-                                    "여자"
-                                }
+                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
                                 jsonObj.put("user_gender", kakaoUserGender)
                                 jsonObj.put("user_mobile", kakaoMobile)
                                 jsonObj.put("user_email", user.kakaoAccount?.email.toString())
                                 jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 jsonObj.put("kakao_login_id" , user.id.toString())
-                                Log.w("splKakao>Login", jsonObj.getString("user_email"))
-
-
-                                val encodedKakaoEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-
-//                                getUserSELECTJson(getString(R.string.IP_ADDRESS_t_user), jsonObj.optString("user_mobile")) {jsonObject ->
-//                                    if (jsonObject != null) {
-//                                        NetworkUser.storeUserInSingleton(this, jsonObject)
-//                                        Log.e("Spl카카오>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-//                                    }
-//                                    MainInit()
-//                                }
+                                jsonObj.put("social_account", "kakao")
+                                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                    if (jo != null) {
+                                        NetworkUser.storeUserInSingleton(this, jo)
+                                        Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+                                    }
+                                    MainInit()
+                                }
                             }
                         }
                     }
@@ -232,6 +241,7 @@ class SplashActivity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     val intent = Intent(this, IntroActivity::class.java)
                     startActivity(intent)
+                    finish()
                 }, 4000
                 )
             }
@@ -329,5 +339,11 @@ class SplashActivity : AppCompatActivity() {
                 null
             }
         }
+    }
+
+    private fun saveDeepLinkTemp(deepLink: Uri) {
+        // SharedPreferences나 ViewModel 등을 사용하여 딥링크 정보 임시 저장
+        val prefs = getSharedPreferences("DeepLinkPrefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("pending_deep_link", deepLink.toString()).apply()
     }
 }

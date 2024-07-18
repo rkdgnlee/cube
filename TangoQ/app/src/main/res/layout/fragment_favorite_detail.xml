@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,199 +7,387 @@
     android:background="@color/white"
     tools:context=".fragment.FavoriteDetailFragment">
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabtnFDPlay"
-        style="@style/Stroke.FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:padding="16dp"
-        android:text="재생하기"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:backgroundTint="@color/white"
-        app:icon="@drawable/icon_play_circle"
-        app:iconTint="@color/black" />
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvFV"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="240dp"
+        android:background="@color/white">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout25"
+        <ImageView
+            android:id="@+id/ivFDThumbnailNull"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="#4D000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout22"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/ibtnFDBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/ibtnFDMore"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="20dp"
-                android:background="@color/white"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_more_800"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPickDetail"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:background="@color/subColor100"
-                android:gravity="center"
-                android:paddingBottom="0dp"
-                android:textColorHint="@color/black"
-                app:boxBackgroundColor="@color/white"
-                app:boxBackgroundMode="outline"
-                app:boxCollapsedPaddingTop="0dp"
-                app:boxStrokeColor="@color/black"
-                app:counterTextColor="@color/white"
-                app:endIconDrawable="@drawable/icon_autocomplete_button_hollow"
-                app:endIconMinSize="24dp"
-                app:endIconMode="dropdown_menu"
-                app:endIconScaleType="centerCrop"
-                app:endIconTint="@color/subColor800"
-                app:expandedHintEnabled="true"
-                app:helperTextTextColor="@color/black"
-                app:hintTextColor="@color/black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-
-                app:layout_constraintTop_toBottomOf="@+id/ibtnFDBack"
-                app:placeholderTextColor="@color/black"
-                app:prefixTextColor="@color/black"
-                app:startIconTint="@color/subColor500"
-                app:suffixTextColor="@color/black">
-
-                <AutoCompleteTextView
-                    android:id="@+id/actFVDetail"
-                    android:layout_width="196dp"
-                    android:layout_height="64dp"
-                    android:layout_gravity="left"
-                    android:background="@color/subColor100"
-                    android:backgroundTint="@color/white"
-                    android:editable="false"
-                    android:gravity="center|center_vertical"
-                    android:inputType="none"
-                    android:maxLength="14"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:popupBackground="@color/white"
-                    android:text="-"
-                    android:textColor="@color/black"
-                    android:textColorHighlight="@color/black"
-                    android:textColorHint="@color/black"
-                    android:textSize="16sp"
-                    app:dropDownBackgroundTint="@color/white" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <TextView
-                android:id="@+id/tvFDExplain"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:maxLength="30"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="normal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.497"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider9"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="36dp"
-                app:dividerColor="@color/subColor200"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvFDExplain" />
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/sflFV"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider9">
-
-                <LinearLayout
+                <ImageView
+                    android:id="@+id/ivFDThumbnail1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@color/white" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                <ImageView
+                    android:id="@+id/ivFDThumbnail2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@color/white" />
+            </LinearLayout>
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+            <LinearLayout
+                android:id="@+id/llFDThumbnailBottom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                <ImageView
+                    android:id="@+id/ivFDThumbnail3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@color/white" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                <ImageView
+                    android:id="@+id/ivFDThumbnail4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@color/white" />
+            </LinearLayout>
+        </LinearLayout>
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+        <View
+            android:id="@+id/view8"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#4D000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ibtnFDBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="#00FFFFFF"
+            android:padding="4dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_arrow_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ibtnFDMore"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="#00FFFFFF"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_more_800"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPickDetail"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:paddingBottom="0dp"
+            android:textColorHint="@color/black"
+            app:boxBackgroundColor="@color/white"
+            app:boxBackgroundMode="outline"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxStrokeColor="@color/black"
+            app:counterTextColor="@color/white"
+            app:endIconDrawable="@drawable/icon_autocomplete_button_hollow"
+            app:endIconMinSize="24dp"
+            app:endIconMode="dropdown_menu"
+            app:endIconScaleType="centerCrop"
+            app:endIconTint="@color/white"
+            app:expandedHintEnabled="true"
+
+            app:helperTextTextColor="@color/black"
+            app:hintTextColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ibtnFDBack"
+            app:placeholderTextColor="@color/black"
+            app:prefixTextColor="@color/black"
+            app:startIconTint="@color/subColor500"
+            app:suffixTextColor="@color/black">
+
+            <AutoCompleteTextView
+                android:id="@+id/actFVDetail"
+                android:layout_width="196dp"
+                android:layout_height="64dp"
+                android:layout_gravity="left"
+                android:background="@color/white"
+                android:backgroundTint="#00FFFFFF"
+                android:editable="false"
+                android:gravity="center|center_vertical"
+                android:inputType="none"
+                android:maxLength="14"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:popupBackground="@color/white"
+                android:text="-"
+                android:textColor="@color/white"
+                android:textColorHighlight="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:dropDownBackgroundTint="@color/white" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tvFDExplain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:maxLength="30"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilPickDetail" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clFD"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_bottomsheet"
+        android:paddingTop="10dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout21"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/background_radius_12dp"
+                    android:backgroundTint="@color/subColor100"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/imageView59"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:src="@drawable/icon_time_sub_800" />
+
+                            <TextView
+                                android:id="@+id/tvFDTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:text="25분"
+                                android:textColor="@color/subColor800"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/imageView60"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:src="@drawable/icon_count_subcolor" />
+
+                            <TextView
+                                android:id="@+id/tvFDCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="10dp"
+                                android:text="5개"
+                                android:textColor="@color/subColor800"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider9"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="20dp"
+                    app:dividerColor="@color/subColor100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout21" />
 
-            </com.facebook.shimmer.ShimmerFrameLayout>
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sflFV"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider9">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvFV"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toTopOf="@+id/btnFVEdit"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider9"
-                app:layout_constraintVertical_bias="0.0" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnFVEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/secondaryColor"
-                android:drawableLeft="@drawable/icon_edit"
-                android:drawableTint="@color/white"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingLeft="48dp"
-                android:paddingRight="48dp"
-                android:text="목록 편집하기"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:cornerRadius="12dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                        <include layout="@layout/rv_shimmer_favorite_item" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+                        <include layout="@layout/rv_shimmer_favorite_item" />
 
-</FrameLayout>
+                        <include layout="@layout/rv_shimmer_favorite_item" />
+
+                        <include layout="@layout/rv_shimmer_favorite_item" />
+
+                        <include layout="@layout/rv_shimmer_favorite_item" />
+
+                    </LinearLayout>
+
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sflFV">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout19"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvFV"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <Button
+                        android:id="@+id/btnFVEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1.5"
+                        android:backgroundTint="@color/secondaryColor"
+                        android:drawableTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="순서편집"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="12dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/fabtnFDPlay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/mainColor"
+                        android:padding="16dp"
+                        android:stateListAnimator="@null"
+                        android:text="재생하기"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:icon="@drawable/icon_play_circle"
+                        app:iconTint="@color/black" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

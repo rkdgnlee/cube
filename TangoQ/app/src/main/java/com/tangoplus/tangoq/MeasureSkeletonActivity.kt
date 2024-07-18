@@ -338,6 +338,7 @@ companion object {
                 setMessage("측정을 종료하시겠습니까 ?")
                 setPositiveButton("예") { dialog, _ ->
                     val activityIntent = Intent(this@MeasureSkeletonActivity, MainActivity::class.java)
+                    intent.putExtra("showMeasureFragment", true);
                     startActivity(activityIntent)
                     finish()
                 }

@@ -12,54 +12,68 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <ImageButton
-            android:id="@+id/ibtnMAlarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/effect_ibtn_20dp"
-            android:backgroundTint="@color/white"
-            android:padding="4dp"
-            android:src="@drawable/icon_alarm"
-            app:layout_constraintBottom_toBottomOf="@+id/textView22"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView23"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView22"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <ImageView
-            android:id="@+id/imageView19"
-            android:layout_width="64dp"
-            android:layout_height="38dp"
-
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/app_logo" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView22"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="메인"
-            android:textColor="@color/black"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView19"
-            app:layout_constraintStart_toEndOf="@+id/imageView19"
-            app:layout_constraintTop_toTopOf="@+id/imageView19" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:id="@+id/ibtnMAlarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="@color/white"
+                    android:padding="4dp"
+                    android:src="@drawable/icon_alarm"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageView19"
+                    android:layout_width="64dp"
+                    android:layout_height="38dp"
+
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/app_logo" />
+
+                <TextView
+                    android:id="@+id/textView22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="메인"
+                    android:textColor="@color/black"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView19"
+                    app:layout_constraintStart_toEndOf="@+id/imageView19"
+                    app:layout_constraintTop_toTopOf="@+id/imageView19" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nsvM"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="64dp"
             android:fillViewport="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/cardView23">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout31"
@@ -67,382 +81,237 @@
                 android:layout_height="match_parent"
                 android:background="@color/white">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clTop"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView2"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    android:background="@color/subColor100"
-                    android:padding="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="2"
+                    android:background="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <LinearLayout
-                        android:id="@+id/linearLayout12"
-                        android:layout_width="0dp"
-                        android:layout_height="200dp"
-                        android:orientation="horizontal"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/cardView2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="2"
-                            android:background="@color/white"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="0dp">
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/constraint13"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@color/white">
-
-                                <!--                                <TextView-->
-                                <!--                                    android:id="@+id/textView18"-->
-                                <!--                                    android:layout_width="wrap_content"-->
-                                <!--                                    android:layout_height="wrap_content"-->
-                                <!--                                    android:layout_marginStart="4dp"-->
-                                <!--                                    android:text="보"-->
-                                <!--                                    android:textColor="@color/black"-->
-                                <!--                                    android:textSize="18sp"-->
-                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySteps"-->
-                                <!--                                    app:layout_constraintStart_toEndOf="@+id/tvMTodaySteps"-->
-                                <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMTodaySteps"-->
-                                <!--                                    app:layout_constraintVertical_bias="0.0" />-->
-
-                                <TextView
-                                    android:id="@+id/textView11"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginTop="20dp"
-                                    android:text="오늘의 운동"
-                                    android:textColor="@color/black"
-                                    android:textSize="22sp"
-                                    android:textStyle="bold"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                                <!--                                <ImageView-->
-                                <!--                                    android:id="@+id/imageView8"-->
-                                <!--                                    android:layout_width="wrap_content"-->
-                                <!--                                    android:layout_height="wrap_content"-->
-                                <!--                                    android:layout_marginTop="16dp"-->
-                                <!--                                    android:src="@drawable/icon_time"-->
-                                <!--                                    app:layout_constraintStart_toStartOf="@+id/textView11"-->
-                                <!--                                    app:layout_constraintTop_toBottomOf="@+id/textView11" />-->
-
-                                <!--                                <ImageView-->
-                                <!--                                    android:id="@+id/imageView9"-->
-                                <!--                                    android:layout_width="wrap_content"-->
-                                <!--                                    android:layout_height="wrap_content"-->
-                                <!--                                    android:layout_marginTop="16dp"-->
-                                <!--                                    android:src="@drawable/icon_kcal_circle"-->
-                                <!--                                    app:layout_constraintStart_toStartOf="@+id/imageView8"-->
-                                <!--                                    app:layout_constraintTop_toBottomOf="@+id/imageView8" />-->
-
-                                <!--                                <TextView-->
-                                <!--                                    android:id="@+id/tvMTodayTime"-->
-                                <!--                                    android:layout_width="wrap_content"-->
-                                <!--                                    android:layout_height="wrap_content"-->
-                                <!--                                    android:layout_marginStart="8dp"-->
-                                <!--                                    android:text="00"-->
-                                <!--                                    android:textColor="@color/subColor500"-->
-                                <!--                                    android:textSize="18sp"-->
-                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/imageView8"-->
-                                <!--                                    app:layout_constraintStart_toEndOf="@+id/imageView8"-->
-                                <!--                                    app:layout_constraintTop_toTopOf="@+id/imageView8" />-->
-
-                                <!--                                <TextView-->
-                                <!--                                    android:id="@+id/tvMTodaySteps"-->
-                                <!--                                    android:layout_width="wrap_content"-->
-                                <!--                                    android:layout_height="wrap_content"-->
-                                <!--                                    android:layout_marginStart="8dp"-->
-                                <!--                                    android:text="86"-->
-                                <!--                                    android:textColor="@color/black"-->
-                                <!--                                    android:textSize="18sp"-->
-                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/imageView9"-->
-                                <!--                                    app:layout_constraintStart_toEndOf="@+id/imageView9"-->
-                                <!--                                    app:layout_constraintTop_toTopOf="@+id/imageView9" />-->
-
-                                <androidx.viewpager2.widget.ViewPager2
-                                    android:id="@+id/vpMDaily"
-                                    android:layout_width="0dp"
-                                    android:layout_height="90dp"
-                                    android:layout_marginStart="15dp"
-                                    android:layout_marginTop="4dp"
-                                    android:layout_marginEnd="15dp"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/textView11" />
-
-                                <!--                                <TextView-->
-                                <!--                                    android:id="@+id/textView17"-->
-                                <!--                                    android:layout_width="wrap_content"-->
-                                <!--                                    android:layout_height="wrap_content"-->
-                                <!--                                    android:layout_marginStart="4dp"-->
-                                <!--                                    android:text="분"-->
-                                <!--                                    android:textColor="@color/subColor500"-->
-                                <!--                                    android:textSize="18sp"-->
-                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodayTime"-->
-                                <!--                                    app:layout_constraintStart_toEndOf="@+id/tvMTodayTime"-->
-                                <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMTodayTime" />-->
-
-                                <!--                                <com.tomlecollegue.progressbars.HorizontalProgressView-->
-                                <!--                                    android:id="@+id/hpvMDailyFirst"-->
-                                <!--                                    android:layout_width="0dp"-->
-                                <!--                                    android:layout_height="4dp"-->
-                                <!--                                    android:layout_marginStart="8dp"-->
-                                <!--                                    android:layout_marginEnd="16dp"-->
-                                <!--                                    android:background="@color/white"-->
-                                <!--                                    app:colorBackground="@color/subColor100"-->
-                                <!--                                    app:colorProgress="@color/mainColor"-->
-                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/textView17"-->
-                                <!--                                    app:layout_constraintEnd_toEndOf="parent"-->
-                                <!--                                    app:layout_constraintStart_toEndOf="@+id/textView11"-->
-                                <!--                                    app:layout_constraintTop_toTopOf="@+id/textView17" />-->
-
-                                <!--                                <com.tomlecollegue.progressbars.HorizontalProgressView-->
-                                <!--                                    android:id="@+id/hpvMDailySecond"-->
-                                <!--                                    android:layout_width="0dp"-->
-                                <!--                                    android:layout_height="4dp"-->
-                                <!--                                    android:background="@color/white"-->
-                                <!--                                    app:colorBackground="@color/subColor100"-->
-                                <!--                                    app:colorProgress="@color/mainColor"-->
-                                <!--                                    app:layout_constraintBottom_toBottomOf="@+id/textView18"-->
-                                <!--                                    app:layout_constraintEnd_toEndOf="@+id/hpvMDailyFirst"-->
-                                <!--                                    app:layout_constraintStart_toStartOf="@+id/hpvMDailyFirst"-->
-                                <!--                                    app:layout_constraintTop_toTopOf="@+id/textView18" />-->
-
-                                <ImageButton
-                                    android:id="@+id/ibtnMvpPrevious"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_marginStart="4dp"
-                                    android:background="@drawable/effect_ibtn_12dp"
-                                    android:backgroundTint="#00FFFFFF"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/icon_arrow_left"
-                                    app:layout_constraintBottom_toBottomOf="@+id/vpMDaily"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="@+id/vpMDaily" />
-
-                                <ImageButton
-                                    android:id="@+id/ibtnMvpNext"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_marginEnd="4dp"
-                                    android:background="@drawable/effect_ibtn_12dp"
-                                    android:backgroundTint="#00FFFFFF"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/icon_arrow_right"
-                                    app:layout_constraintBottom_toBottomOf="@+id/vpMDaily"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintTop_toTopOf="@+id/vpMDaily" />
-
-                                <com.google.android.material.divider.MaterialDivider
-                                    android:id="@+id/materialDivider15"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="2dp"
-                                    android:layout_marginStart="20dp"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginEnd="20dp"
-                                    app:dividerColor="@color/subColor200"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/vpMDaily" />
-
-                                <TextView
-                                    android:id="@+id/tvMTodaySet"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="20dp"
-                                    android:text="0/0 개"
-                                    android:textColor="@color/subColor800"
-                                    android:textSize="18sp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/materialDivider15" />
-
-                                <com.tomlecollegue.progressbars.HorizontalProgressView
-                                    android:id="@+id/hpvMDailyThird"
-                                    android:layout_width="0dp"
-                                    android:layout_height="8dp"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:background="@color/white"
-                                    app:colorBackground="@color/subColor100"
-                                    app:colorProgress="@color/mainColor"
-                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySet"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toEndOf="@+id/tvMTodaySet"
-                                    app:layout_constraintTop_toTopOf="@+id/tvMTodaySet" />
-
-                                <TextView
-                                    android:id="@+id/tvMvpCount"
-                                    android:layout_width="40dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginEnd="20dp"
-                                    android:background="@drawable/background_rectangle_8dp"
-                                    android:backgroundTint="@color/subColor400"
-                                    android:gravity="center"
-                                    android:padding="2dp"
-                                    android:text="1/3"
-                                    android:textColor="@color/white"
-                                    app:layout_constraintBottom_toBottomOf="@+id/textView11"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintTop_toTopOf="@+id/textView11" />
-
-                            </androidx.constraintlayout.widget.ConstraintLayout>
-                        </androidx.cardview.widget.CardView>
-
-                        <!--                        <androidx.cardview.widget.CardView-->
-                        <!--                            android:layout_width="match_parent"-->
-                        <!--                            android:layout_height="match_parent"-->
-                        <!--                            android:layout_marginStart="20dp"-->
-                        <!--                            android:layout_weight="3"-->
-                        <!--                            android:background="@color/white"-->
-                        <!--                            app:cardCornerRadius="12dp"-->
-                        <!--                            app:cardElevation="0dp">-->
-
-                        <!--                            <androidx.constraintlayout.widget.ConstraintLayout-->
-                        <!--                                android:id="@+id/constraintLayout13"-->
-                        <!--                                android:layout_width="match_parent"-->
-                        <!--                                android:layout_height="match_parent"-->
-                        <!--                                android:background="@color/white">-->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constraint13"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/subColor100">
 
                         <!--                                <TextView-->
-                        <!--                                    android:id="@+id/textView20"-->
-                        <!--                                    android:layout_width="wrap_content"-->
-                        <!--                                    android:layout_height="wrap_content"-->
-                        <!--                                    android:layout_marginStart="8dp"-->
-                        <!--                                    android:layout_marginTop="8dp"-->
-                        <!--                                    android:text="신체 밸런스"-->
-                        <!--                                    android:textColor="@color/black"-->
-                        <!--                                    android:textSize="24sp"-->
-                        <!--                                    android:textStyle="bold"-->
-                        <!--                                    app:layout_constraintStart_toStartOf="parent"-->
-                        <!--                                    app:layout_constraintTop_toTopOf="parent" />-->
-
-                        <!--                                <ImageView-->
-                        <!--                                    android:id="@+id/imageView11"-->
-                        <!--                                    android:layout_width="0dp"-->
-                        <!--                                    android:layout_height="0dp"-->
-                        <!--                                    android:layout_marginStart="36dp"-->
-                        <!--                                    android:layout_marginTop="20dp"-->
-                        <!--                                    android:layout_marginBottom="20dp"-->
-                        <!--                                    android:src="@drawable/drawable_balance_circle"-->
-                        <!--                                    app:layout_constraintBottom_toBottomOf="parent"-->
-                        <!--                                    app:layout_constraintEnd_toEndOf="parent"-->
-                        <!--                                    app:layout_constraintStart_toStartOf="parent"-->
-                        <!--                                    app:layout_constraintTop_toTopOf="parent" />-->
-
-                        <!--                                <TextView-->
-                        <!--                                    android:id="@+id/tvMBalanceScore"-->
+                        <!--                                    android:id="@+id/textView18"-->
                         <!--                                    android:layout_width="wrap_content"-->
                         <!--                                    android:layout_height="wrap_content"-->
                         <!--                                    android:layout_marginStart="4dp"-->
-                        <!--                                    android:layout_marginBottom="8dp"-->
-                        <!--                                    android:text="미설정"-->
-                        <!--                                    android:textColor="@color/subColor800"-->
-                        <!--                                    android:textSize="20sp"-->
-                        <!--                                    android:textStyle="bold"-->
-                        <!--                                    app:layout_constraintBottom_toBottomOf="parent"-->
-                        <!--                                    app:layout_constraintStart_toEndOf="@+id/linearLayout19" />-->
+                        <!--                                    android:text="보"-->
+                        <!--                                    android:textColor="@color/black"-->
+                        <!--                                    android:textSize="18sp"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySteps"-->
+                        <!--                                    app:layout_constraintStart_toEndOf="@+id/tvMTodaySteps"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMTodaySteps"-->
+                        <!--                                    app:layout_constraintVertical_bias="0.0" />-->
 
-                        <!--                                <LinearLayout-->
-                        <!--                                    android:id="@+id/linearLayout19"-->
-                        <!--                                    android:layout_width="0dp"-->
+                        <TextView
+                            android:id="@+id/textView11"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="20dp"
+                            android:text="오늘의 추천운동"
+                            android:textColor="@color/subColor800"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!--                                <ImageView-->
+                        <!--                                    android:id="@+id/imageView8"-->
+                        <!--                                    android:layout_width="wrap_content"-->
                         <!--                                    android:layout_height="wrap_content"-->
-                        <!--                                    android:layout_marginStart="12dp"-->
-                        <!--                                    android:orientation="horizontal"-->
-                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMBalanceScore"-->
-                        <!--                                    app:layout_constraintStart_toStartOf="parent"-->
-                        <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMBalanceScore">-->
+                        <!--                                    android:layout_marginTop="16dp"-->
+                        <!--                                    android:src="@drawable/icon_time"-->
+                        <!--                                    app:layout_constraintStart_toStartOf="@+id/textView11"-->
+                        <!--                                    app:layout_constraintTop_toBottomOf="@+id/textView11" />-->
 
-                        <!--                                    <ImageView-->
-                        <!--                                        android:id="@+id/ivMScoreDone"-->
-                        <!--                                        android:layout_width="wrap_content"-->
-                        <!--                                        android:layout_height="wrap_content"-->
-                        <!--                                        android:layout_weight="1"-->
-                        <!--                                        android:src="@drawable/icon_score_done" />-->
+                        <!--                                <ImageView-->
+                        <!--                                    android:id="@+id/imageView9"-->
+                        <!--                                    android:layout_width="wrap_content"-->
+                        <!--                                    android:layout_height="wrap_content"-->
+                        <!--                                    android:layout_marginTop="16dp"-->
+                        <!--                                    android:src="@drawable/icon_kcal_circle"-->
+                        <!--                                    app:layout_constraintStart_toStartOf="@+id/imageView8"-->
+                        <!--                                    app:layout_constraintTop_toBottomOf="@+id/imageView8" />-->
 
-                        <!--                                    <ImageView-->
-                        <!--                                        android:id="@+id/ivMScoreUp"-->
-                        <!--                                        android:layout_width="wrap_content"-->
-                        <!--                                        android:layout_height="wrap_content"-->
-                        <!--                                        android:layout_weight="1"-->
-                        <!--                                        android:src="@drawable/icon_score_up" />-->
+                        <!--                                <TextView-->
+                        <!--                                    android:id="@+id/tvMTodayTime"-->
+                        <!--                                    android:layout_width="wrap_content"-->
+                        <!--                                    android:layout_height="wrap_content"-->
+                        <!--                                    android:layout_marginStart="8dp"-->
+                        <!--                                    android:text="00"-->
+                        <!--                                    android:textColor="@color/subColor500"-->
+                        <!--                                    android:textSize="18sp"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/imageView8"-->
+                        <!--                                    app:layout_constraintStart_toEndOf="@+id/imageView8"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="@+id/imageView8" />-->
 
-                        <!--                                    <ImageView-->
-                        <!--                                        android:id="@+id/ivMScoreDown"-->
-                        <!--                                        android:layout_width="wrap_content"-->
-                        <!--                                        android:layout_height="wrap_content"-->
-                        <!--                                        android:layout_weight="1"-->
-                        <!--                                        android:src="@drawable/icon_score_down" />-->
-                        <!--                                </LinearLayout>-->
-                        <!--                            </androidx.constraintlayout.widget.ConstraintLayout>-->
-                        <!--                        </androidx.cardview.widget.CardView>-->
-                    </LinearLayout>
+                        <!--                                <TextView-->
+                        <!--                                    android:id="@+id/tvMTodaySteps"-->
+                        <!--                                    android:layout_width="wrap_content"-->
+                        <!--                                    android:layout_height="wrap_content"-->
+                        <!--                                    android:layout_marginStart="8dp"-->
+                        <!--                                    android:text="86"-->
+                        <!--                                    android:textColor="@color/black"-->
+                        <!--                                    android:textSize="18sp"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/imageView9"-->
+                        <!--                                    app:layout_constraintStart_toEndOf="@+id/imageView9"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="@+id/imageView9" />-->
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView14"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="2dp"
-                        android:background="#00FFFFFF"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="1dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/linearLayout12">
-
-                        <androidx.viewpager2.widget.ViewPager2
-                            android:id="@+id/vpMBanner"
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView22"
                             android:layout_width="match_parent"
-                            android:layout_height="128dp" />
-                    </androidx.cardview.widget.CardView>
+                            android:layout_height="110dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginEnd="15dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView11">
 
-                    <!--                    <androidx.appcompat.widget.AppCompatButton-->
-                    <!--                        android:id="@+id/btnMMeasure"-->
-                    <!--                        android:layout_width="0dp"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_marginTop="15dp"-->
-                    <!--                        android:background="@drawable/effect_ibtn_12dp"-->
-                    <!--                        android:backgroundTint="@color/white"-->
-                    <!--                        android:insetTop="0dp"-->
-                    <!--                        android:insetBottom="0dp"-->
-                    <!--                        android:padding="16dp"-->
-                    <!--                        android:stateListAnimator="@null"-->
-                    <!--                        android:text="추천 운동 하러 가기"-->
-                    <!--                        android:textColor="@color/black"-->
-                    <!--                        android:textSize="18sp"-->
-                    <!--                        android:textStyle="bold"-->
-                    <!--                        app:cornerRadius="12dp"-->
-                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                        app:layout_constraintStart_toStartOf="parent"-->
-                    <!--                        app:layout_constraintTop_toBottomOf="@+id/linearLayout12" />-->
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                            <androidx.viewpager2.widget.ViewPager2
+                                android:id="@+id/vpMDaily"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
+                        <!--                                <TextView-->
+                        <!--                                    android:id="@+id/textView17"-->
+                        <!--                                    android:layout_width="wrap_content"-->
+                        <!--                                    android:layout_height="wrap_content"-->
+                        <!--                                    android:layout_marginStart="4dp"-->
+                        <!--                                    android:text="분"-->
+                        <!--                                    android:textColor="@color/subColor500"-->
+                        <!--                                    android:textSize="18sp"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/tvMTodayTime"-->
+                        <!--                                    app:layout_constraintStart_toEndOf="@+id/tvMTodayTime"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="@+id/tvMTodayTime" />-->
+
+                        <!--                                <com.tomlecollegue.progressbars.HorizontalProgressView-->
+                        <!--                                    android:id="@+id/hpvMDailyFirst"-->
+                        <!--                                    android:layout_width="0dp"-->
+                        <!--                                    android:layout_height="4dp"-->
+                        <!--                                    android:layout_marginStart="8dp"-->
+                        <!--                                    android:layout_marginEnd="16dp"-->
+                        <!--                                    android:background="@color/white"-->
+                        <!--                                    app:colorBackground="@color/subColor100"-->
+                        <!--                                    app:colorProgress="@color/mainColor"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/textView17"-->
+                        <!--                                    app:layout_constraintEnd_toEndOf="parent"-->
+                        <!--                                    app:layout_constraintStart_toEndOf="@+id/textView11"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="@+id/textView17" />-->
+
+                        <!--                                <com.tomlecollegue.progressbars.HorizontalProgressView-->
+                        <!--                                    android:id="@+id/hpvMDailySecond"-->
+                        <!--                                    android:layout_width="0dp"-->
+                        <!--                                    android:layout_height="4dp"-->
+                        <!--                                    android:background="@color/white"-->
+                        <!--                                    app:colorBackground="@color/subColor100"-->
+                        <!--                                    app:colorProgress="@color/mainColor"-->
+                        <!--                                    app:layout_constraintBottom_toBottomOf="@+id/textView18"-->
+                        <!--                                    app:layout_constraintEnd_toEndOf="@+id/hpvMDailyFirst"-->
+                        <!--                                    app:layout_constraintStart_toStartOf="@+id/hpvMDailyFirst"-->
+                        <!--                                    app:layout_constraintTop_toTopOf="@+id/textView18" />-->
+
+                        <ImageButton
+                            android:id="@+id/ibtnMvpPrevious"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginStart="4dp"
+                            android:background="@drawable/effect_ibtn_12dp"
+                            android:backgroundTint="#00FFFFFF"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/icon_arrow_left"
+                            app:layout_constraintBottom_toBottomOf="@+id/cardView22"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/cardView22" />
+
+                        <ImageButton
+                            android:id="@+id/ibtnMvpNext"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="4dp"
+                            android:background="@drawable/effect_ibtn_12dp"
+                            android:backgroundTint="#00FFFFFF"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/icon_arrow_right"
+                            app:layout_constraintBottom_toBottomOf="@+id/cardView22"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/cardView22" />
+
+                        <TextView
+                            android:id="@+id/tvMTodaySet"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="12dp"
+                            android:text="완료 0/0 개"
+                            android:textColor="@color/subColor800"
+                            android:textSize="18sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView22" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="6dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:stateListAnimator="@null"
+                            app:cardBackgroundColor="@color/subColor100"
+                            app:cardCornerRadius="4dp"
+                            app:cardElevation="0dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvMTodaySet"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/tvMTodaySet"
+                            app:layout_constraintTop_toTopOf="@+id/tvMTodaySet">
+
+                            <com.tomlecollegue.progressbars.HorizontalProgressView
+                                android:id="@+id/hpvMDailyThird"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/subColor100"
+                                app:colorBackground="@color/subColor400"
+                                app:colorProgress="@color/mainColor" />
+                        </androidx.cardview.widget.CardView>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView14"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="추천 운동 받기"
-                    android:textColor="@color/black"
-                    android:textSize="24dp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="#00FFFFFF"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="1dp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/clTop" />
+                    app:layout_constraintTop_toBottomOf="@+id/cardView2">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpMBanner"
+                        android:layout_width="match_parent"
+                        android:layout_height="128dp" />
+                </androidx.cardview.widget.CardView>
 
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/sflM"
@@ -455,11 +324,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <include layout="@layout/rv_shimmer_program_item" />
-
-                        <include layout="@layout/rv_shimmer_program_item" />
+                        android:orientation="horizontal">
 
                         <include layout="@layout/rv_shimmer_program_item" />
 
@@ -468,59 +333,26 @@
                     </LinearLayout>
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMRecommend"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/clTop" />
-
-                <com.tomlecollegue.progressbars.HorizontalProgressView
-                    android:id="@+id/hpvMRecommend"
-                    android:layout_width="186dp"
-                    android:layout_height="4dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/white"
-                    android:visibility="invisible"
-                    app:colorBackground="@color/subColor200"
-                    app:colorProgress="@color/mainColor"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rvMRecommend" />
-
                 <TextView
                     android:id="@+id/textView10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="30dp"
                     android:text="추천 프로그램"
                     android:textColor="@color/black"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/hpvMRecommend" />
-
-                <Spinner
-                    android:id="@+id/spnMFilter"
-                    android:layout_width="104dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/background_stroke_1dp_sub_color_spinner"
-                    android:paddingLeft="10dp"
-                    android:popupBackground="@color/white"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView10"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView10" />
+                    app:layout_constraintTop_toBottomOf="@+id/cardView14" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvM"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_marginBottom="64dp"
+                    android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

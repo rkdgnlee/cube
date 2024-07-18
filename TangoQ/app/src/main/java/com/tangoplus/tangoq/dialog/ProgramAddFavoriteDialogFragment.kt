@@ -27,7 +27,7 @@ import com.tangoplus.tangoq.listener.OnFavoriteSelectedClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.`object`.NetworkFavorite
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonByEmail
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonBySn
 import com.tangoplus.tangoq.`object`.NetworkFavorite.updateFavoriteItemJson
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -63,8 +63,8 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
         binding.rvPAFD.overScrollMode = 0
 
         // ------! program 데이터 bundle, singleton에서 전화번호 가져오기 시작 !------
-        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-        val user_email = t_userData?.optString("user_email")
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+        val userSn = t_userData?.optString("user_sn")
         val bundle = arguments
 
 
@@ -74,45 +74,19 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
 
         // ------! 먼저 즐겨찾기 목록을 보여주기 !------
         lifecycleScope.launch {
-            val favoriteList = fetchFavoriteItemsJsonByEmail(getString(R.string.IP_ADDRESS_t_favorite), user_email.toString())
-            Log.v("favoriteList", "$favoriteList")
+            val favoriteList = fetchFavoriteItemsJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), userSn.toString())
+            val favoriteItems = mutableListOf<FavoriteVO>()
             if (favoriteList.isNotEmpty()) {
                 binding.tvPAFDGuide.visibility = View.INVISIBLE
+
                 for (i in favoriteList.indices) {
-                    val favoriteItem = favoriteList[i]
-                    val imgList = mutableListOf<String>()
-                    val exerciseItemBySn = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite),
-                        favoriteItem.favoriteSn.toString()
-                    )
-                    // ------! 1 운동 항목에 넣기 !------
-                    val exerciseUnits = mutableListOf<ExerciseVO>()
-                    if (exerciseItemBySn != null) {
-                        val exercises = exerciseItemBySn.optJSONArray("exercise_detail_data")
-                        if (exercises != null) {
-                            var time = 0
-                            for (j in 0 until exercises.length()) {
-                                // ------! json array만큼 전부 일단 반복해서 변수 추가 !------
-                                exerciseUnits.add(NetworkExercise.jsonToExerciseVO(exercises.get(j) as JSONObject))
-                                time += ( (exercises[j] as JSONObject).optString("video_duration").toInt())
-                            }
-                            favoriteItem.favoriteTotalTime = (time / 60).toString()
-                            favoriteItem.exercises = exerciseUnits
-                        }
-                    } // ------! 2 시간 항목에 넣기 !------
 
-                    // ------! 3 이미지썸네일 항목에 넣기 !------
-                    val ExerciseSize = favoriteItem.exercises?.size
+                    // ------! 1 favorite sn 목록가져오기 !------
+                    val favoriteItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteList[i].favoriteSn.toString())
 
-                    for (k in 0 until ExerciseSize!!) {
-                        if (k < 4) {
-                            imgList.add( favoriteItem.exercises!![k].imageFilePathReal.toString())
-                            Log.v("썸네일", "${imgList}")
-                        }
-                    }
-                    favoriteItem.imgThumbnails = imgList
-
-                    viewModel.favoriteList.value?.add(favoriteItem) // 썸네일, 시리얼넘버, 이름까지 포함한 dataclass로 만든 favoriteVO형식의 리스트
-                    // 일단 운동은 비워놓고, detail에서 넣음
+                    // ------! 2 운동 디테일 채우기 !------
+                    favoriteItems.add(favoriteItem)
+                    viewModel.favoriteList.value = favoriteItems
                 }
             } else {
                 binding.tvPAFDGuide.visibility = View.VISIBLE
@@ -134,8 +108,19 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
                 }
             }
 
-            // ------! 버튼 text로 finish 단계 감지 시작 !------
+            // ------! 즐겨찾기 눌렀을 때만 다음으로 넘어가게 하기
 
+            viewModel.selectedFavorite.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    binding.btnPAFDFinish.isEnabled = true
+                } else {
+                    binding.btnPAFDFinish.isEnabled = false
+                }
+                Log.v("selectedFavorite", "${viewModel.selectedFavorite}")
+            }
+
+
+            // ------! 버튼 text로 finish 단계 감지 시작 !------
             binding.btnPAFDFinish.setOnClickListener {
                 when (binding.btnPAFDFinish.text) {
                     "운동 고르기" -> {
@@ -148,7 +133,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
                         viewModel.addExercises(selectedItems)
                         val exerciseIds = mutableListOf<Int>()
 
-                        val updatedExercises = viewModel.selectedFavorite.exercises?.plus(selectedItems)
+                        val updatedExercises = viewModel.selectedFavorite.value?.exercises?.plus(selectedItems)
                         for (i in updatedExercises!!.indices) {
                             updatedExercises[i].exerciseId.let {
                                 exerciseIds.add(it!!.toInt())
@@ -158,7 +143,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
                         Log.v("viewModel.selectedFavorite", "${viewModel.selectedFavorite}")
                         val jsonObject = JSONObject()
                         jsonObject.put("exercise_ids", JSONArray(exerciseIds))
-                        updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), viewModel.selectedFavorite.favoriteSn.toString(), jsonObject.toString(), requireContext()) {
+                        updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), viewModel.selectedFavorite.value?.favoriteSn.toString(), jsonObject.toString(), requireContext()) {
                             requireActivity().runOnUiThread{
                                 viewModel.allExercises.value = mutableListOf()
                             }
@@ -208,11 +193,11 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
         Log.w("장바구니viewModel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.exerciseId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.quantity}")
     }
 
-    override fun onFavoriteClick(title: String) { }
+    override fun onFavoriteClick(sn: Int) { }
 
     override fun onFavoriteSelected(favoriteVO: FavoriteVO) {
-        viewModel.selectedFavorite = favoriteVO
-        Log.v("selectedFavorite", "selectedFavorite: ${viewModel.selectedFavorite}")
+        viewModel.selectedFavorite.value = favoriteVO
+
     }
 
 }

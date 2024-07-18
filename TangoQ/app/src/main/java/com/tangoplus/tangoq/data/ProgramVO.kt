@@ -9,7 +9,6 @@ data class ProgramVO(
     var programName : String? = "",
     var programTime : Int = 0,
     var programStage : String? = "",
-    var programDescription : String? = "",
     var programCount : String? = "",
     var exercises : MutableList<ExerciseVO>?
 ): Parcelable {
@@ -18,7 +17,6 @@ data class ProgramVO(
         parcel.createStringArrayList(),
         parcel.readString(),
         parcel.readInt(),
-        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.createTypedArrayList(ExerciseVO.CREATOR)
@@ -31,7 +29,6 @@ data class ProgramVO(
         dest.writeStringList(imgThumbnails)
         dest.writeString(programName)
         dest.writeInt(programTime)
-        dest.writeString(programDescription)
         dest.writeString(programStage)
         dest.writeString(programCount)
         dest.writeTypedList(exercises)

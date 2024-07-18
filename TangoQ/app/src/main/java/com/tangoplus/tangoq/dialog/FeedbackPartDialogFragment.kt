@@ -38,7 +38,7 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("login_data")
 
         // ------! RV checkbox 취합 시작 !------
         binding.btnFPDFinish.setOnClickListener {
@@ -100,16 +100,16 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
         }
     }
 
-    fun setvmPart(cb: CheckBox, iv: ImageView) {
-        val enabledPart = viewModel.feedbackParts.value?.find { it.partName == cb.text }
-        if (enabledPart != null) {
-            cb.isEnabled = true
-            setPartCheck(cb, iv)
-        } else {
-            cb.isEnabled = false
-            setPartCheck(cb, iv)
-        }
-    }
+//    fun setvmPart(cb: CheckBox, iv: ImageView) {
+//        val enabledPart = viewModel.feedbackParts.value?.find { it.partName == cb.text }
+//        if (enabledPart != null) {
+//            cb.isEnabled = true
+//            setPartCheck(cb, iv)
+//        } else {
+//            cb.isEnabled = false
+//            setPartCheck(cb, iv)
+//        }
+//    }
 
     override fun onResume() {
         super.onResume()

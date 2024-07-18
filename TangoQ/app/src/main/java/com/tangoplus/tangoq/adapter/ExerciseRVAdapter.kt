@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -13,6 +14,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,7 +32,10 @@ import com.tangoplus.tangoq.databinding.RvEditItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.databinding.VpExerciseItemBinding
+import com.tangoplus.tangoq.dialog.ExerciseBSDialogFragment
+import com.tangoplus.tangoq.dialog.FavoriteBSDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
+import com.tangoplus.tangoq.listener.OnExerciseAddClickListener
 import com.tomlecollegue.progressbars.HorizontalProgressView
 import java.lang.IllegalArgumentException
 import java.util.Collections
@@ -45,6 +50,12 @@ class ExerciseRVAdapter (
         ItemTouchCallback.AddItemTouchListener
 {
     var basketListener: BasketItemTouchListener? = null
+
+    private var onExerciseAddClickListener: OnExerciseAddClickListener? = null
+    fun setOnExerciseAddClickListener(listener: OnExerciseAddClickListener) {
+        this.onExerciseAddClickListener = listener
+    }
+    // ------! edit drag swipe listener 시작 !------
     lateinit var addListener: OnStartDragListener
     interface OnStartDragListener {
         fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
@@ -52,6 +63,8 @@ class ExerciseRVAdapter (
     fun startDrag(listener: OnStartDragListener) {
         this.addListener = listener
     }
+    // ------! edit drag swipe listener 끝 !------
+
     private var popupWindow : PopupWindow?= null
 
     // -----! main !-----
@@ -61,7 +74,6 @@ class ExerciseRVAdapter (
         val tvEISymptom : TextView= view.findViewById(R.id.tvEISymptom)
         val tvEITime : TextView= view.findViewById(R.id.tvEITime)
         val tvEIStage : TextView = view.findViewById(R.id.tvEIStage)
-//        val tvMKcal = view.findViewById<TextView>(R.id.tvMKcal)
         val ibtnEIMore : ImageButton= view.findViewById(R.id.ibtnEIMore)
         val vEI : View = view.findViewById(R.id.vEI)
         val hpvEIHistory : HorizontalProgressView = view.findViewById(R.id.hpvEIHistory)
@@ -82,12 +94,12 @@ class ExerciseRVAdapter (
         val ivBkThumbnail : ImageView= view.findViewById(R.id.ivBkThumbnail)
         val tvBkName : TextView = view.findViewById(R.id.tvBkName)
         val tvBkSymptom : TextView = view.findViewById(R.id.tvBkSymptom)
-//        val tvBkTime = view.findViewById<TextView>(R.id.tvBkTime)
-//        val tvBkIntensity = view.findViewById<TextView>(R.id.tvBkIntensity)
-        val ibtnBkPlus : ImageButton = view.findViewById(R.id.ibtnBkPlus)
-        val ibtnBkMinus : ImageButton = view.findViewById(R.id.ibtnBkMinus)
-        val tvBkCount : TextView = view.findViewById(R.id.tvBkCount)
+        val tvBkStage : TextView = view.findViewById(R.id.tvBkStage)
+        val cvBkState : CardView = view.findViewById(R.id.cvBkState)
+        val ivBkStage : ImageView = view.findViewById(R.id.ivBkStage)
+        val tvBkRepeat : TextView = view.findViewById(R.id.tvBkRepeat)
         val tvBITime : TextView = view.findViewById(R.id.tvBITime)
+        val vBk : View = view.findViewById(R.id.vBk)
     }
 
     inner class recommendViewHolder(view:View) : RecyclerView.ViewHolder(view) {
@@ -167,6 +179,7 @@ class ExerciseRVAdapter (
                 Glide.with(fragment.requireContext())
                     .load("${currentExerciseItem.imageFilePathReal}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(180)
                     .into(holder.ivEIThumbnail)
 
                 // ------! 시청 기록 시작 !------\
@@ -176,50 +189,12 @@ class ExerciseRVAdapter (
 
                 // ------! 점점점 버튼 시작 !------
                 holder.ibtnEIMore.setOnClickListener {view ->
-                    if (popupWindow?.isShowing == true) {
-                        popupWindow?.dismiss()
-                        popupWindow =  null
-                    } else {
-                        val inflater = LayoutInflater.from(view?.context)
-                        val popupView = inflater.inflate(R.layout.pw_main_item, null)
-                        val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view?.context?.resources?.displayMetrics).toInt()
-                        val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 162f, view?.context?.resources?.displayMetrics).toInt()
-
-                        popupWindow = PopupWindow(popupView, width, height)
-                        popupWindow!!.showAsDropDown(view)
-                        popupView.findViewById<TextView>(R.id.tvPMPlay).setOnClickListener {
-                            val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
-                            intent.putExtra("exercise_id", currentExerciseItem.exerciseId)
-                            intent.putExtra("video_url", currentExerciseItem.videoFilepath)
-                            fragment.startActivityForResult(intent, 8080)
-                        }
-                        popupView.findViewById<TextView>(R.id.tvPMGoThumbnail).setOnClickListener {
-                            val dialogFragment = PlayThumbnailDialogFragment().apply {
-                                arguments = Bundle().apply {
-                                    putParcelable("ExerciseUnit", currentExerciseItem)
-                                }
-                            }
-                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-                        }
-                        popupView.findViewById<TextView>(R.id.tvPMAddFavorite).setOnClickListener {
-                            val exerciseUnit = mutableListOf<ExerciseVO>()
-                            exerciseUnit.add(currentExerciseItem)
-                            val program = ProgramVO(0, mutableListOf(), "", 0, "","","", exerciseUnit)
-                            val bundle = Bundle().apply {
-                                putParcelable("Program", program)
-                            }
-                            val dialog = ProgramAddFavoriteDialogFragment().apply {
-                                arguments = bundle
-                            }
-                            dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramAddFavoriteDialogFragment")
-                            popupWindow!!.dismiss()
-                        }
-                        popupView.findViewById<ImageButton>(R.id.ibtnPMExit).setOnClickListener {
-                            popupWindow!!.dismiss()
-                        }
-                        popupWindow!!.isOutsideTouchable = true
-                        popupWindow!!.isFocusable = true
-                    }
+                    val bsFragment = ExerciseBSDialogFragment()
+                    val bundle = Bundle()
+                    bundle.putParcelable("exerciseUnit", currentExerciseItem)
+                    bsFragment.arguments = bundle
+                    val fragmentManager = fragment.requireActivity().supportFragmentManager
+                    bsFragment.show(fragmentManager, bsFragment.tag)
                 }
                 // ------ ! thumbnail 시작 !------
                 holder.vEI.setOnClickListener {
@@ -240,6 +215,7 @@ class ExerciseRVAdapter (
                 Glide.with(fragment.requireContext())
                     .load("${currentExerciseItem.imageFilePathReal}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(180)
                     .into(holder.ivEditThumbnail)
 
                 holder.tvEditName.text = currentExerciseItem.exerciseName
@@ -249,13 +225,7 @@ class ExerciseRVAdapter (
                         addListener.onStartDrag(holder)
                     }
                     return@setOnTouchListener false
-
                 }
-//            holder.btnPickAddDelete.setOnClickListener {
-//                verticalList.removeAt(holder.position)
-//                notifyItemRemoved(holder.position)
-//            }
-
             }
             is basketViewHolder -> {
                 holder.tvBkSymptom.text = currentExerciseItem.relatedSymptom.toString()
@@ -270,23 +240,29 @@ class ExerciseRVAdapter (
                 Glide.with(fragment.requireContext())
                     .load("${currentExerciseItem.imageFilePathReal}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(180)
                     .into(holder.ivBkThumbnail)
-                holder.ibtnBkPlus.setOnClickListener {
-                    currentExerciseItem.quantity += 1
-                    basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)
-                    Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)}")
-                    holder.tvBkCount.text = ( holder.tvBkCount.text.toString().toInt() + 1 ). toString()
 
+                holder.vBk.setOnClickListener{
+                    onExerciseAddClickListener?.onExerciseAddClick(currentExerciseItem)
                 }
-                holder.ibtnBkMinus.setOnClickListener {
-                    if (currentExerciseItem.quantity > 0) {
-                        currentExerciseItem.quantity -= 1
-                        basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)
-                        Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)}")
-                        holder.tvBkCount.text = currentExerciseItem.quantity.toString()
-                    }
-                }
-                holder.tvBkCount.text = currentExerciseItem.quantity.toString()
+
+//                holder.ibtnBkPlus.setOnClickListener {
+//                    currentExerciseItem.quantity += 1
+//                    basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)
+//                    Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)}")
+//                    holder.tvBkCount.text = ( holder.tvBkCount.text.toString().toInt() + 1 ). toString()
+//
+//                }
+//                holder.ibtnBkMinus.setOnClickListener {
+//                    if (currentExerciseItem.quantity > 0) {
+//                        currentExerciseItem.quantity -= 1
+//                        basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)
+//                        Log.w("basketTouch", "${basketListener?.onBasketItemQuantityChanged(currentExerciseItem.exerciseId.toString(), currentExerciseItem.quantity)}")
+//                        holder.tvBkCount.text = currentExerciseItem.quantity.toString()
+//                    }
+//                }
+//                holder.tvBkCount.text = currentExerciseItem.quantity.toString()
             }
             // ------! play thumbnail 추천 운동 시작 !------
             is recommendViewHolder -> {
@@ -297,6 +273,7 @@ class ExerciseRVAdapter (
                 Glide.with(holder.itemView.context)
                     .load(currentExerciseItem.imageFilePathReal)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(200)
                     .into(holder.ivRcPThumbnail)
                 holder.vRPTN.setOnClickListener {
                     val dialogFragment = PlayThumbnailDialogFragment().apply {
@@ -312,6 +289,7 @@ class ExerciseRVAdapter (
                 Glide.with(holder.itemView.context)
                     .load(currentExerciseItem.imageFilePathReal)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(180)
                     .into(holder.ivVEIThumbnail)
                 holder.tvVEIStage.text = currentExerciseItem.exerciseStage
                 holder.tvVEITime.text = (if (currentExerciseItem.videoDuration?.toInt()!! <= 60) {
@@ -342,5 +320,9 @@ class ExerciseRVAdapter (
         exerciseList.removeAt(position)
         notifyItemRemoved(position)
     }
-
+    fun addItems(newItems: MutableList<ExerciseVO>) {
+        val startPos = exerciseList.size
+        exerciseList.addAll(newItems)
+        notifyItemRangeInserted(startPos, newItems.size)
+    }
 }

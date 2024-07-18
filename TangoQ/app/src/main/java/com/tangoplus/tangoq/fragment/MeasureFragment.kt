@@ -1,7 +1,5 @@
 package com.tangoplus.tangoq.fragment
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
@@ -15,18 +13,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -38,9 +35,7 @@ import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.skydoves.balloon.showAlignBottom
 import com.skydoves.balloon.showAlignEnd
-import com.skydoves.balloon.showAlignStart
 import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.adapter.PainPartRVAdpater
 import com.tangoplus.tangoq.data.Measurement
@@ -54,17 +49,15 @@ import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
 import com.tangoplus.tangoq.dialog.PoseViewDialogFragment
+import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import org.apache.commons.math3.distribution.NormalDistribution
 import java.io.File
 import java.io.FileOutputStream
-import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.math.absoluteValue
 import kotlin.math.exp
 import kotlin.math.pow
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 import kotlin.math.sqrt
 
 
@@ -93,6 +86,15 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         binding.ibtnMAlarm.setOnClickListener {
             val intent = Intent(requireContext(), AlarmActivity::class.java)
             startActivity(intent)
+        }
+
+        when (isNetworkAvailable(requireContext())) {
+            true -> {
+
+            }
+            false -> {
+
+            }
         }
         // ------! tab & enum class 관리 시작 !------
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
@@ -164,7 +166,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         } // ------! 통증 부위 관리 끝 !------
 
         // ------!  이름 + 통증 부위 시작 !------
-        val t_userdata = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("data")
+        val t_userdata = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("login_data")
 
         binding.tvMsUserName.text = t_userdata?.optString("user_name")
 
@@ -258,21 +260,21 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         val lcLineDataSet = LineDataSet(lcEntries, "")
         lcLineDataSet.apply {
             color = resources.getColor(R.color.mainColor, null)
-            circleRadius = 3F
-            lineWidth = 3F
-            mode = LineDataSet.Mode.LINEAR
+            circleRadius = 4F
+            lineWidth = 4F
+            mode = LineDataSet.Mode.STEPPED
             valueTextSize = 0F
             setCircleColors(resources.getColor(R.color.mainColor))
-            setDrawCircleHole(true)
+            setDrawCircleHole(false)
             setDrawFilled(true)
-            fillColor = resources.getColor(R.color.mainColor)
+            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_sub_color_300)
         }
 
         lcXAxis.apply {
             textSize = 14f
             textColor = resources.getColor(R.color.subColor500)
             labelRotationAngle = 2F
-            setDrawAxisLine(true)
+            setDrawAxisLine(false)
             setDrawGridLines(false)
             lcXAxis.valueFormatter = (IndexAxisValueFormatter(lcDataList.map { it.xAxis }))
             setLabelCount(lcDataList.size, true)
@@ -280,7 +282,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             axisLineWidth = 1.0f
         }
         lcYAxisLeft.apply {
-            setDrawGridLines(true)
+            setDrawGridLines(false)
             setDrawAxisLine(false)
 //            setDrawGridLinesBehindData(true)
 //            setDrawZeroLine(false)
@@ -338,8 +340,8 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             .setMargin(6)
             .setPadding(12)
             .setCornerRadius(8f)
-            .setBackgroundColorResource(R.color.subColor100)
-            .setBalloonAnimation(BalloonAnimation.ELASTIC)
+            .setBackgroundColorResource(R.color.white)
+            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
         binding.ivMsInfo.setOnClickListener{
@@ -364,23 +366,40 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             highlightLineWidth = 0f
             highLightColor = Color.TRANSPARENT
         }
+//        val cardView = CardView(requireContext()).apply {
+//            layoutParams = LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                resources.getDimensionPixelSize(R.dimen.card_height)
+//            )
+//            radius = resources.getDimension(R.dimen.card_corner_radius)
+//            elevation = resources.getDimension(R.dimen.card_corner_elevation)
+//
+//        }
         val dataSetHighlighted = LineDataSet(entriesHighlighted, "80% Range").apply {
             setCircleColors(resources.getColor(R.color.mainColor, null))
             circleSize = 1.5f
             setDrawFilled(true)
-            fillColor = resources.getColor(R.color.mainColor)
+            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_sub_color_300)
+//            fillColor = resources.getColor(R.color.mainColor)
             highlightLineWidth = 0f
             highLightColor = Color.TRANSPARENT
+
+
         }
 
         val userEntry = Entry(userValue.toFloat(), ((1 / (stdDev * sqrt(2 * Math.PI))) * exp(-0.5 * ((userValue - mean) / stdDev).pow(2))).toFloat())
         val userDataSet = LineDataSet(listOf(userEntry), "User Value")
         userDataSet.apply {
             setDrawCircles(true)
-            circleRadius = 5f
-            setCircleColors(resources.getColor(R.color.subColor800, null))
+            circleRadius = 8f
+            setCircleColors(resources.getColor(R.color.mainColor, null))
+            circleHoleRadius = 4f
+            setDrawCircleHole(true)
+            setDrawFilled(false)
+//            fillColor = resources.getColor(R.color.mainColor)
             highlightLineWidth = 0f
             highLightColor = Color.TRANSPARENT
+//            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_main)
 //            setDrawValues(true)
 //            valueTextSize = 12f
 //            valueTextColor = resources.getColor(R.color.subColor800, null)
@@ -421,8 +440,8 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
                         .setMargin(10)
                         .setPadding(12)
                         .setCornerRadius(8f)
-                        .setBackgroundColorResource(R.color.subColor100)
-                        .setBalloonAnimation(BalloonAnimation.ELASTIC)
+                        .setBackgroundColorResource(R.color.white)
+                        .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
                         .setLifecycleOwner(viewLifecycleOwner)
                         .build()
                     // ------! info popup 창 끝 !------
@@ -436,7 +455,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
-                setDrawAxisLine(true)
+                setDrawAxisLine(false)
                 setDrawGridLines(false)
                 setDrawLabels(false)  // X축 레이블 숨김
                 axisMinimum = -2f
@@ -459,18 +478,15 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
             invalidate()
         }
 
-        val limitLine = LimitLine(zScore.toFloat(), "")
-        val limitLine2 = LimitLine(-zScore.toFloat(), "")
-        limitLine.lineColor = resources.getColor(R.color.mainColor, null)
-        limitLine.lineWidth = 2f
-        limitLine2.lineWidth = 2f
-        limitLine2.lineColor = resources.getColor(R.color.mainColor, null)
-        limitLine.textColor = resources.getColor(R.color.subColor800, null)
-        limitLine.textSize = 16f
-        limitLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_BOTTOM
-
-        lineChartND.xAxis.addLimitLine(limitLine)
-        lineChartND.xAxis.addLimitLine(limitLine2)
+//        val limitLine = LimitLine(zScore.toFloat(), "")
+//        val limitLine2 = LimitLine(-zScore.toFloat(), "")
+//        limitLine.lineColor = resources.getColor(R.color.mainColor, null)
+//        limitLine.lineWidth = 0f
+//        limitLine2.lineWidth = 0f
+//        limitLine2.lineColor = resources.getColor(R.color.mainColor, null)
+//
+//        lineChartND.xAxis.addLimitLine(limitLine)
+//        lineChartND.xAxis.addLimitLine(limitLine2)
 //        lineChartND.apply {
 //            data = lineData
 //            setTouchEnabled(false)
@@ -553,7 +569,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
 //            }
 //        }
         // ------! 막대그래프 시간 세팅 시작 !------
-        Log.v("현재 시", "${endTime.hour}")
+//        Log.v("현재 시", "${endTime.hour}")
 //        when (endTime.hour) {
 //            in  0 .. 5-> {
 //                binding.llMs.removeView(binding.tv0000)
@@ -596,7 +612,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         val search = Pair(transformJointNum(parts), parts.partName)
         requireActivity().supportFragmentManager.beginTransaction().apply {
             setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-            add(R.id.flMain, ExerciseDetailFragment.newInstance(search))
+            add(R.id.flMain, ExerciseDetailFragment.newInstance(search, -1))
 //            addToBackStack(null)
             commit()
         }
@@ -664,23 +680,23 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         binding.rvMsLeft.layoutManager = linearLayoutManager
     }
 
-    private fun startBounceAnimation(view: View) {
-        val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.1f, 1f).apply {
-            duration = 800
-            repeatCount = ObjectAnimator.INFINITE
-            repeatMode = ObjectAnimator.REVERSE
-        }
-        val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.1f, 1f).apply {
-            duration = 800
-            repeatCount = ObjectAnimator.INFINITE
-            repeatMode = ObjectAnimator.REVERSE
-        }
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(scaleX, scaleY)
-        animatorSet.interpolator = AccelerateDecelerateInterpolator()
-        animatorSet.start()
-    }
+//    private fun startBounceAnimation(view: View) {
+//        val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.1f, 1f).apply {
+//            duration = 800
+//            repeatCount = ObjectAnimator.INFINITE
+//            repeatMode = ObjectAnimator.REVERSE
+//        }
+//        val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.1f, 1f).apply {
+//            duration = 800
+//            repeatCount = ObjectAnimator.INFINITE
+//            repeatMode = ObjectAnimator.REVERSE
+//        }
+//
+//        val animatorSet = AnimatorSet()
+//        animatorSet.playTogether(scaleX, scaleY)
+//        animatorSet.interpolator = AccelerateDecelerateInterpolator()
+//        animatorSet.start()
+//    }
 
 //    override fun onPartCheck(part: Triple<String, String, Boolean>) {
 //

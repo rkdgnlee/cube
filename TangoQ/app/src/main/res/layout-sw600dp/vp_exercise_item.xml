@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clVEI"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <View
+        android:id="@+id/vVEI"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/effect_ibtn_20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView21"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="20dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivVEIThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToOutline="true"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/background_button" />
+
+        <com.tomlecollegue.progressbars.HorizontalProgressView
+            android:id="@+id/hpvVEIHistory"
+            android:layout_width="106dp"
+            android:layout_height="8dp"
+            android:layout_gravity="bottom|center"
+            android:background="#00FFFFFF"
+            android:scrollbars="horizontal"
+            app:colorBackground="#00F5F5F5"
+            app:colorProgress="@color/deleteColor" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tvVEIName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:singleLine="true"
+        android:text="목 관절 운동 프로그램"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardView21"
+        app:layout_constraintTop_toTopOf="@+id/cardView21"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <!--    <ImageView-->
+    <!--        android:id="@+id/imageView7"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="76dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/tvEIStage"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/tvEIStage"-->
+    <!--        app:srcCompat="@drawable/icon_kcal_main_color" />-->
+
+    <ImageView
+        android:id="@+id/imageView57"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView21"
+        app:layout_constraintStart_toEndOf="@+id/cardView21"
+        app:layout_constraintTop_toBottomOf="@+id/tvVEIName"
+        app:srcCompat="@drawable/icon_time_sub_800" />
+
+    <ImageView
+        android:id="@+id/imageView58"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintBottom_toBottomOf="@+id/imageView57"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.35"
+        app:layout_constraintStart_toEndOf="@+id/imageView57"
+        app:layout_constraintTop_toTopOf="@+id/imageView57"
+        app:srcCompat="@drawable/icon_step_subcolor" />
+
+    <TextView
+        android:id="@+id/tvVEITime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="1분 20초"
+        android:textColor="@color/subColor800"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView57"
+        app:layout_constraintStart_toEndOf="@+id/imageView57"
+        app:layout_constraintTop_toTopOf="@+id/imageView57" />
+
+    <TextView
+        android:id="@+id/tvVEIStage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="초급"
+        android:textColor="@color/subColor800"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView58"
+        app:layout_constraintStart_toEndOf="@+id/imageView58"
+        app:layout_constraintTop_toTopOf="@+id/imageView58" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

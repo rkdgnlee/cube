@@ -94,6 +94,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val videoUrl = intent.getStringExtra("video_url")
         exerciseId = intent.getStringExtra("exercise_id").toString()
         val urls = intent.getStringArrayListExtra("urls")
+        val totalTime = intent.getIntExtra("total_time", 0)
+        Log.v("totalTime", "${totalTime}")
         val url_list = ArrayList<String>()
 
         if (!urls.isNullOrEmpty()) {
@@ -126,7 +128,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             // ------! 모든 재생 목록 종료 !------
                             if (currentWindowIndex == url_list.size - 1) {
                                 val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
-                                viewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${currentWindowIndex + 1}", 56)
+                                viewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${currentWindowIndex + 1}", totalTime) // third 총 시간
                                 val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                                 intent.putExtra("feedback_finish", viewModel.exerciseLog.value)
                                 Log.v("feedback_finish", "VM_exercise_log: ${viewModel.exerciseLog.value}")

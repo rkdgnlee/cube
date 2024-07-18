@@ -41,7 +41,6 @@ import com.tangoplus.tangoq.db.SecurePreferencesManager.saveServerToken
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUser.getTokenByUserJson
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -463,39 +462,39 @@ class SignInActivity : AppCompatActivity() {
                     jsonObj?.put("email_receive", if (viewModel.agreementMk2.value == true) 1 else 0)
                     // ------! 광고성 넣기 끝 !------
 
-                    if (jsonObj != null) {
-                        getTokenByUserJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
-                            when (jo?.optString("response_code")) {
-                                "200" -> {
-                                    saveServerToken(this@SignInActivity, jo.optString("user_token"))
-                                    getUserIdentifyJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@SignInActivity).toString()) { jo2 ->
-                                        if (jo2 != null) {
-                                            storeUserInSingleton(this@SignInActivity, jo2)
-                                            Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
-                                            val intent = Intent(this@SignInActivity, IntroActivity::class.java)
-                                            startActivity(intent)
-                                            finish()
-                                        }
-                                    }
-                                }
-                                "201" -> { // ------! 기존 정보가 있다 !------
-                                    MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                        setTitle("알림")
-                                        setMessage("기존에 가입된 정보가 있습니다.")
-                                        setPositiveButton("돌아가기") { dialog, _ ->
-                                            val intent = Intent(this@SignInActivity, IntroActivity::class.java)
-                                            startActivity(intent)
-                                            finish()
-                                        }
-                                        create()
-                                    }.show()
-                                }
-                                "404" -> {
-                                    Log.v("responseCode404", "response: $jo")
-                                }
-                            }
-                        }
-                    }
+//                    if (jsonObj != null) {
+//                        getTokenByUserJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+//                            when (jo?.optString("response_code")) {
+//                                "200" -> {
+//                                    saveServerToken(this@SignInActivity, jo.optString("user_token"))
+//                                    getUserIdentifyJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@SignInActivity).toString()) { jo2 ->
+//                                        if (jo2 != null) {
+//                                            storeUserInSingleton(this@SignInActivity, jo2)
+//                                            Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
+//                                            val intent = Intent(this@SignInActivity, IntroActivity::class.java)
+//                                            startActivity(intent)
+//                                            finish()
+//                                        }
+//                                    }
+//                                }
+//                                "201" -> { // ------! 기존 정보가 있다 !------
+//                                    MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+//                                        setTitle("알림")
+//                                        setMessage("기존에 가입된 정보가 있습니다.")
+//                                        setPositiveButton("돌아가기") { dialog, _ ->
+//                                            val intent = Intent(this@SignInActivity, IntroActivity::class.java)
+//                                            startActivity(intent)
+//                                            finish()
+//                                        }
+//                                        create()
+//                                    }.show()
+//                                }
+//                                "404" -> {
+//                                    Log.v("responseCode404", "response: $jo")
+//                                }
+//                            }
+//                        }
+//                    }
                 }
 
             }

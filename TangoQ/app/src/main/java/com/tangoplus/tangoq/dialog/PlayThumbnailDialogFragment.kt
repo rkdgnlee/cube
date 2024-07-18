@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,16 +26,21 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.SplashActivity
+import com.tangoplus.tangoq.adapter.MuscleRVAdpater
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
+import com.tangoplus.tangoq.data.BannerViewModel
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.listener.OnMoreClickListener
+import com.tangoplus.tangoq.`object`.DeepLinkUtil
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
@@ -44,6 +50,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
     val viewModel: FavoriteViewModel by activityViewModels()
+    val bViewModel : BannerViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
 //    private var playWhenReady = true
 //    private var currentWindow = 0
@@ -60,7 +67,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
         singletonInstance = Singleton_t_history.getInstance(requireContext())
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
@@ -70,23 +77,42 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         binding.tvPTDName.text = exerciseData?.exerciseName.toString()
         binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
-        binding.tvPTDTime.text = exerciseData?.videoDuration
+        binding.tvPTDTime.text = "${exerciseData?.videoDuration} 초"
         binding.tvPTDStage.text = exerciseData?.exerciseStage
         binding.tvPTDFrequency.text = exerciseData?.exerciseFrequency.toString()
-        binding.tvPTDInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
+//        binding.tvPTDInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
         binding.tvPTDMethod.text = exerciseData?.exerciseMethod.toString()
         binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
         binding.tvPTDRelatedMuscle.text = exerciseData?.relatedMuscle.toString()
-        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
-
+//        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
 
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
+
+        // ------! 관련 관절, 근육 recyclerview 시작 !------
+        val muscleList = exerciseData?.relatedMuscle?.split(", ")?.toMutableList()
+        val muscleAdapter = MuscleRVAdpater(this@PlayThumbnailDialogFragment, muscleList)
+        binding.rvPTMuscle.adapter = muscleAdapter
+        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.rvPTMuscle.layoutManager = layoutManager
+        // ------! 관련 관절, 근육 recyclerview 끝 !------
+
+        // ------! 공유 버튼 시작 !------
+        binding.ibtnPTDShare.setOnClickListener {
+            if (exerciseData != null) {
+                shareContent(exerciseData)
+            }
+        } // ------! 공유 버튼 끝 !------
+
+
+
+
         // -----! 하단 운동 시작 버튼 시작 !-----
         binding.btnPTDPlay.setOnClickListener {
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putExtra("exercise_id", exerciseData?.exerciseId)
             intent.putExtra("video_url", videoUrl)
+            intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
@@ -95,10 +121,11 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
             // ------! 오늘의 운동 갯수에 넣기 시작 !------
             val prefsManager = PreferencesManager(requireContext())
             val userEmail = userJson?.optString("user_email").toString()
-            if (prefsManager.getStoredInt(userEmail) <= 5) {
+            if (prefsManager.getStoredInt(userEmail) < 5) {
                 prefsManager.incrementStoredInt(userEmail)
-                Log.v("savedCount", "${prefsManager.getStoredInt(userEmail)}")
+                bViewModel.dailyProgress.value = prefsManager.getStoredInt(userEmail)
             } // ------! 오늘의 운동 갯수에 넣기  끝 !------
+
             if (exerciseData?.exerciseFrequency?.length!! >= 3) {
                 setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 20)
                 Log.v("notification 완료", "Success make plan to send notification Alarm")
@@ -156,6 +183,23 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         // ------! 관련 운동 횡 rv 끝 !------
 
     }
+    // ------! 딥링크로 앱 공유 시작 !------
+
+    // 딥링크 생성
+    fun generateDeepLink(exercise: ExerciseVO): String {
+        val encodedData = DeepLinkUtil.encodeExercise(exercise)
+        return "tangoq://tangoq.com/content/$encodedData"
+    }
+
+    // 딥링크 공유
+    fun shareContent(content: ExerciseVO) {
+        val deepLink = generateDeepLink(content)
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, deepLink)
+        startActivity(Intent.createChooser(shareIntent, "Share via"))
+    }
+    // ------! 딥링크로 앱 공유 끝 !------
 
     override fun onResume() {
         super.onResume()

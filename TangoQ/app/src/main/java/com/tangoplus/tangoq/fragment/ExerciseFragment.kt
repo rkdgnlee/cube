@@ -11,13 +11,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
+import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
+import com.tangoplus.tangoq.fragment.FavoriteEditFragment.Companion
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnCategoryScrollListener
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
+import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseAll
 import kotlinx.coroutines.launch
+import java.util.ArrayList
 
 
 class ExerciseFragment : Fragment(), OnCategoryClickListener {
@@ -50,6 +54,17 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 //        requireActivity().getSharedPreferences("TangoQ", Context.MODE_PRIVATE)
 //    }
 
+    companion object {
+        private const val ARG_SN = "SN"
+        fun newInstance(sn : Int): ExerciseFragment {
+            val fragment = ExerciseFragment()
+            val args = Bundle()
+            args.putInt(ARG_SN, sn)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,6 +80,8 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         binding.nsvE.isNestedScrollingEnabled = false
         binding.rvEMainCategory.isNestedScrollingEnabled = false
         binding.rvEMainCategory.overScrollMode = 0
+        val sn = arguments?.getInt(ARG_SN) ?: -1
+        Log.v("EDsn", "$sn")
 //        binding.ibtnEcACTVClear.setOnClickListener {
 //            binding.actvEcSearch.text.clear()
 //        }
@@ -126,22 +143,30 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 //            Toast.makeText(requireContext(), "저전력 블루투스가 지원되지 않습니다.", Toast.LENGTH_LONG).show()
 //
 //        }
-        lifecycleScope.launch {
-            val categoryArrayList = fetchExerciseAll(getString(R.string.IP_ADDRESS_t_exercise_description)).sortedBy { it.first }.toMutableList()
+        when (isNetworkAvailable(requireContext())) {
+            true -> {
+                lifecycleScope.launch {
+                    val categoryArrayList = fetchExerciseAll(getString(R.string.IP_ADDRESS_t_exercise_description)).sortedBy { it.first }.toMutableList()
 //            val typeArrayList = fetchExerciseType(getString(R.string.IP_ADDRESS_t_Exercise_Description))
-            val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
+                    val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
 
-            try { // ------! rv vertical 시작 !------
-                Log.v("cateSize", "mainCategoryList: ${categoryArrayList}, subCategoryList: $typeArrayList")
-                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, "mainCategory" )
-                binding.rvEMainCategory.adapter = adapter
-                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvEMainCategory.layoutManager = linearLayoutManager
-                // ------! rv vertical 끝 !------
-            } catch (e: Exception) {
-                Log.e(TAG, "Error: ${e.message}")
+                    try { // ------! rv vertical 시작 !------
+                        Log.v("cateSize", "mainCategoryList: ${categoryArrayList}, subCategoryList: $typeArrayList")
+                        val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, sn,"mainCategory" )
+                        binding.rvEMainCategory.adapter = adapter
+                        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                        binding.rvEMainCategory.layoutManager = linearLayoutManager
+                        // ------! rv vertical 끝 !------
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error: ${e.message}")
+                    }
+                }
+            }
+            false -> {
+
             }
         }
+
     }
 
     override fun onCategoryClick(category: String) {
