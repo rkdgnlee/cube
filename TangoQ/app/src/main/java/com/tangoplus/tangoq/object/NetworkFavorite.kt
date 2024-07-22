@@ -6,10 +6,12 @@ import android.util.Log
 import android.widget.Toast
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteVO
+import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -24,7 +26,17 @@ import java.io.IOException
 object NetworkFavorite {
     // 즐겨찾기 넣기
     fun insertFavoriteItemJson(myUrl: String, json: String, context: Context ,callback: (JSONObject?) -> Unit) {
-        val client = OkHttpClient()
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
         val request = Request.Builder()
             .url("${myUrl}/favorite_add.php")
@@ -38,14 +50,24 @@ object NetworkFavorite {
             }
             override fun onResponse(call: Call, response: Response)  {
                 val responseBody = response.body?.string()
-                Log.e("http>Response", "$responseBody")
+                Log.v("http>Response", "$responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
                 callback(jsonObj__)
             }
         })
     }
     fun updateFavoriteItemJson(myUrl: String, favoriteSn: String, json:String, context: Context ,callback: (JSONObject?) -> Unit) {
-        val client = OkHttpClient()
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
             .url("$myUrl/update.php?favorite_sn=$favoriteSn")
@@ -59,14 +81,24 @@ object NetworkFavorite {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.e("http>Response", "$responseBody")
+                Log.v("http>Response", "$responseBody")
                 val jsonObj__ = responseBody?.let { JSONObject(it) }
                 callback(jsonObj__)
             }
         })
     }
     fun deleteFavoriteItemSn(myUrl: String, favoriteSn: String, context: Context ,callback: () -> Unit) {
-        val client = OkHttpClient()
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+
         val request = Request.Builder()
             .url("${myUrl}delete.php?favorite_sn=$favoriteSn")
             .delete()
@@ -79,23 +111,34 @@ object NetworkFavorite {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.e("http>Response", "$responseBody")
+                Log.v("http>Response", "$responseBody")
                 callback()
             }
         })
 
     }
     // 즐겨찾기 목록 조회 (PickItems에 담기) token + jsonObject로 조회?
-    suspend fun fetchFavoriteItemsJsonBySn(myUrl: String, sn: String): MutableList<FavoriteVO> {
-        val client = OkHttpClient()
+    suspend fun fetchFavoritesBySn(myUrl: String, sn: String, context: Context): MutableList<FavoriteVO> {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
         val request = Request.Builder()
             .url("${myUrl}read.php?user_sn=$sn")
             .get()
             .build()
+
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use {response ->
                 val responseBody = response.body?.string()
-                Log.e("HTTP>favoriteFetch", "Success to execute request")
+                Log.v("favorites", "$responseBody")
+                Log.v("favorites", "Success to execute request")
                 val jsonArr = responseBody?.let { JSONObject(it) }?.optJSONArray("data")
                 val favoriteList = mutableListOf<FavoriteVO>()
                 if (jsonArr != null) {
@@ -117,8 +160,18 @@ object NetworkFavorite {
             }
         }
     }
-    suspend fun fetchFavoriteItemJsonBySn(myUrl: String, sn: String) : FavoriteVO {
-        val client = OkHttpClient()
+    suspend fun fetchFavoriteItemJsonBySn(myUrl: String, sn: String, context: Context) : FavoriteVO {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+
         val request = Request.Builder()
             .url("${myUrl}read.php?favorite_sn=$sn")
             .get()
@@ -126,7 +179,7 @@ object NetworkFavorite {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use {response ->
                 val responseBody = response.body?.string().let { JSONObject(it) }
-                Log.e("HTTP>favoriteFetch", "Success to execute request!: $responseBody")
+                Log.v("HTTP>favoriteFetch", "Success to execute request!: $responseBody")
                 val exerciseUnits = mutableListOf<ExerciseVO>()
                 val exercises = responseBody.optJSONArray("exercise_detail_data")
                 var time = 0

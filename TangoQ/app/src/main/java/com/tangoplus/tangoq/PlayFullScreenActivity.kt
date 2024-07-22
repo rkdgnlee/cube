@@ -95,7 +95,9 @@ class PlayFullScreenActivity : AppCompatActivity() {
         exerciseId = intent.getStringExtra("exercise_id").toString()
         val urls = intent.getStringArrayListExtra("urls")
         val totalTime = intent.getIntExtra("total_time", 0)
-        Log.v("totalTime", "${totalTime}")
+        Log.v("url들", "videoUrl: $videoUrl, urls: $urls")
+
+        // ------! 이걸로 재생 1개든 여러 개든 이곳에 담음 !------
         val url_list = ArrayList<String>()
 
         if (!urls.isNullOrEmpty()) {
@@ -103,6 +105,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         } else if (videoUrl != null) {
             url_list.add(videoUrl)
         }
+
         if (url_list.isNotEmpty()) {
             playbackPosition = intent.getLongExtra("current_position", 0L)
             if (pViewModel.currentPlaybackPosition.value != null && pViewModel.currentWindowIndex.value != null) {
@@ -125,6 +128,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                         Player.STATE_ENDED -> {
                             Log.v("PlaybackState", "Player.STATE_ENDED")
                             val currentWindowIndex = simpleExoPlayer!!.currentWindowIndex
+
                             // ------! 모든 재생 목록 종료 !------
                             if (currentWindowIndex == url_list.size - 1) {
                                 val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
@@ -247,7 +251,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
     }
 
     private fun showExitDialog() {
-
         if (isExitDialogVisible) return
         isExitDialogVisible = true
         MaterialAlertDialogBuilder(this@PlayFullScreenActivity, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
@@ -270,11 +273,10 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 // ------! 시청 기록 넣기 끝 !------
 
 
-
-//                val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-//                startActivity(intent)
+                val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                startActivity(intent)
                 finish()
-
             }
             setNegativeButton("아니오") { dialog, _ ->
                 chronometer.start()
@@ -336,7 +338,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         if (simpleExoPlayer != null) {
             simpleExoPlayer?.release()
             simpleExoPlayer = null
-            Log.v("exoplayerExit", "SimpleExoPlayer released and null")
+            Log.v("exoplayerExit", "SimpleExoPlayer released and null, finish")
         }
     }
     override fun onSaveInstanceState(outState: Bundle) {
@@ -344,11 +346,5 @@ class PlayFullScreenActivity : AppCompatActivity() {
         outState.putLong("playbackPosition", simpleExoPlayer?.currentPosition ?: 0L)
         outState.putInt("currentWindow", simpleExoPlayer?.currentWindowIndex ?: 0)
         outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-
     }
 }

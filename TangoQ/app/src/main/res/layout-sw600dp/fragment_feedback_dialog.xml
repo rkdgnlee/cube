@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/drawable_intro_banner" />
+        android:src="@drawable/intro_banner" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -32,21 +32,36 @@
                 android:layout_marginTop="48dp"
                 android:text="운동 평가"
                 android:textColor="#FFFFFF"
-                android:textSize="28dp"
+                android:textSize="30dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvFbPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100%"
+                android:textColor="#FFFFFF"
+                android:textSize="34dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/cpbFb"
+                app:layout_constraintEnd_toEndOf="@+id/cpbFb"
+                app:layout_constraintStart_toStartOf="@+id/cpbFb"
+                app:layout_constraintTop_toTopOf="@+id/cpbFb" />
 
             <com.mikhaellopez.circularprogressbar.CircularProgressBar
                 android:id="@+id/cpbFb"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginStart="40dp"
-                app:cpb_progress_direction="to_right"
+                app:cpb_background_progressbar_color_end="#3B3B3B"
+                app:cpb_background_progressbar_color_start="#3B3B3B"
+                app:cpb_background_progressbar_width="12dp"
                 app:cpb_progressbar_color="#FFFFFF"
-                app:cpb_progressbar_color_end="#3B3B3B"
-                app:cpb_progressbar_color_start="#3B3B3B"
+                app:cpb_progressbar_color_end="#FFFFFF"
+                app:cpb_progressbar_color_start="#FFFFFF"
                 app:cpb_round_border="true"
                 app:layout_constraintBottom_toBottomOf="@+id/cardView5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +72,7 @@
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="40dp"
                 android:layout_marginEnd="40dp"
                 app:cardBackgroundColor="#00FFFFFF"
                 app:cardCornerRadius="12dp"
@@ -79,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:text="4"
                         android:textColor="#FFFFFF"
-                        android:textSize="24dp"
+                        android:textSize="28dp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/imageView41"
@@ -89,9 +104,9 @@
 
                     <ImageView
                         android:id="@+id/imageView41"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginTop="40dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginTop="20dp"
                         android:src="@drawable/icon_autocomplete_button_hollow"
                         android:tint="#FFFFFF"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -101,9 +116,9 @@
 
                     <ImageView
                         android:id="@+id/imageView38"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginTop="40dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginTop="20dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/icon_time_sub_800"
                         android:tint="#FFFFFF"
@@ -118,7 +133,7 @@
                         android:layout_height="wrap_content"
                         android:text="11:12"
                         android:textColor="#FFFFFF"
-                        android:textSize="24dp"
+                        android:textSize="28dp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/imageView38"
@@ -132,6 +147,7 @@
                         android:layout_height="wrap_content"
                         android:text="Time"
                         android:textColor="#FFFFFF"
+                        android:textSize="18dp"
                         app:layout_constraintEnd_toEndOf="@+id/imageView38"
                         app:layout_constraintStart_toStartOf="@+id/imageView38"
                         app:layout_constraintTop_toBottomOf="@+id/imageView38" />
@@ -142,6 +158,7 @@
                         android:layout_height="wrap_content"
                         android:text="Exercise"
                         android:textColor="#FFFFFF"
+                        android:textSize="18dp"
                         app:layout_constraintEnd_toEndOf="@+id/imageView41"
                         app:layout_constraintStart_toStartOf="@+id/imageView41"
                         app:layout_constraintTop_toBottomOf="@+id/imageView41" />
@@ -154,7 +171,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="80dp"
                 android:text="운동 강도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -192,6 +209,14 @@
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
 
+                    <View
+                        android:id="@+id/view16"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
                     <TextView
                         android:id="@+id/tvFbIntensity2"
                         android:layout_width="match_parent"
@@ -201,6 +226,14 @@
                         android:text="저강도"
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
+
+                    <View
+                        android:id="@+id/view17"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
                         android:id="@+id/tvFbIntensity3"
@@ -212,6 +245,14 @@
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
 
+                    <View
+                        android:id="@+id/view18"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
                     <TextView
                         android:id="@+id/tvFbIntensity4"
                         android:layout_width="match_parent"
@@ -221,6 +262,14 @@
                         android:text="고강도"
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
+
+                    <View
+                        android:id="@+id/view19"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
                         android:id="@+id/tvFbIntensity5"
@@ -240,7 +289,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="40dp"
                 android:text="운동 피로도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -278,6 +327,14 @@
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
 
+                    <View
+                        android:id="@+id/view12"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
                     <TextView
                         android:id="@+id/tvFbFatigue2"
                         android:layout_width="match_parent"
@@ -287,6 +344,14 @@
                         android:text="저강도"
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
+
+                    <View
+                        android:id="@+id/view13"
+                        android:layout_width="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
                         android:id="@+id/tvFbFatigue3"
@@ -298,6 +363,14 @@
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
 
+                    <View
+                        android:id="@+id/view14"
+                        android:layout_width="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
                     <TextView
                         android:id="@+id/tvFbFatigue4"
                         android:layout_width="match_parent"
@@ -307,6 +380,14 @@
                         android:text="높다"
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
+
+                    <View
+                        android:id="@+id/view15"
+                        android:layout_width="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
                         android:id="@+id/tvFbFatigue5"
@@ -325,7 +406,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="40dp"
                 android:gravity="center"
                 android:text="운동 만족도"
                 android:textColor="#FFFFFF"
@@ -335,6 +416,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardView25" />
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardView26"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginStart="40dp"
@@ -363,6 +445,14 @@
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
 
+                    <View
+                        android:id="@+id/view20"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
                     <TextView
                         android:id="@+id/tvFbSatisfaction2"
                         android:layout_width="match_parent"
@@ -372,6 +462,14 @@
                         android:text="아쉽다"
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
+
+                    <View
+                        android:id="@+id/view21"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
                         android:id="@+id/tvFbSatisfaction3"
@@ -383,6 +481,14 @@
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
 
+                    <View
+                        android:id="@+id/view22"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
+
                     <TextView
                         android:id="@+id/tvFbSatisfaction4"
                         android:layout_width="match_parent"
@@ -392,6 +498,14 @@
                         android:text="만족"
                         android:textColor="#FFFFFF"
                         android:textSize="22dp" />
+
+                    <View
+                        android:id="@+id/view23"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
                         android:id="@+id/tvFbSatisfaction5"
@@ -432,11 +546,10 @@
                         android:drawableTint="#FFFFFF"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:paddingTop="20dp"
-                        android:paddingBottom="20dp"
+                        android:padding="20dp"
                         android:text="통증체크"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="22dp"
                         android:textStyle="bold"
                         app:cornerRadius="12dp" />
 
@@ -451,7 +564,7 @@
                         android:insetBottom="0dp"
                         android:text="제출하기"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="22dp"
                         android:textStyle="bold"
                         app:cornerRadius="12dp" />
                 </LinearLayout>
@@ -474,14 +587,16 @@
                 android:id="@+id/tvFbSkip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:text="건너뛰기"
                 android:textColor="#99FFFFFF"
-                android:textSize="22sp"
-                android:textStyle="bold"
+                android:textSize="24dp"
                 app:layout_constraintBottom_toTopOf="@+id/frameLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView26"
+                app:layout_constraintVertical_bias="1.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

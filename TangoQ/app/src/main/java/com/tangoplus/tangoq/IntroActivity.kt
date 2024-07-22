@@ -41,8 +41,6 @@ import com.tangoplus.tangoq.data.BannerViewModel
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerToken
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveServerToken
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
@@ -51,7 +49,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.lang.Exception
-import java.net.URLEncoder
 
 
 class IntroActivity : AppCompatActivity() {
@@ -117,7 +114,7 @@ class IntroActivity : AppCompatActivity() {
                                             jsonObj.put("social_account", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                             Log.v("jsonObj", "$jsonObj")
-                                            getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                            getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@IntroActivity) { jo ->
                                                 if (jo != null) {
                                                     when (jo.optString("status")) {
                                                         "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
@@ -190,7 +187,7 @@ class IntroActivity : AppCompatActivity() {
                         Log.v("jsonObj", "$jsonObj")
 //                        Log.v("네이버이메일", jsonObj.getString("user_email"))
 //                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                        getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                        getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@IntroActivity) { jo ->
                             if (jo != null) {
                                 when (jo.optString("status")) {
                                     "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
@@ -244,7 +241,7 @@ class IntroActivity : AppCompatActivity() {
                                 Log.v("jsonObj", "$jsonObj")
 //                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
 //                                Log.w("카카오가입>메일", encodedUserEmail)
-                                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@IntroActivity) { jo ->
                                     if (jo != null) {
                                         when (jo.optString("status")) {
                                             "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }

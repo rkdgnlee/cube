@@ -5,14 +5,14 @@
     android:id="@+id/cltvPfSettings"
     android:layout_width="match_parent"
     android:layout_height="70dp"
-    android:background="@drawable/effect_ibtn_12dp"
+    android:background="@drawable/effect_ibtn"
     android:backgroundTint="@color/white">
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/materialDivider"
         android:layout_width="0dp"
         android:layout_height="2dp"
-        app:dividerColor="@color/subColor200"
+        app:dividerColor="@color/subColor100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -29,20 +29,43 @@
         <ImageView
             android:id="@+id/ivPf"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="28dp"
             android:layout_gravity="center|right"
             android:layout_weight="9"
             app:srcCompat="@drawable/icon_setting_gear" />
 
-        <TextView
-            android:id="@+id/tvPfSettingsName"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.5"
-            android:gravity="center_vertical"
-            android:text="환경설정"
-            android:textColor="@color/subColor800"
-            android:textSize="20sp" />
+            android:layout_weight="1.5">
+
+            <TextView
+                android:id="@+id/tvPfSettingsName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center_vertical"
+                android:text="환경설정"
+                android:textColor="@color/subColor800"
+                android:textSize="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/tvPfInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:textColor="@color/subColor700"
+                android:textSize="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvPfSettingsName"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

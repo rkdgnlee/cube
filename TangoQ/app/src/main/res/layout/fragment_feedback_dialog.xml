@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/drawable_intro_banner" />
+        android:src="@drawable/intro_banner" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -37,6 +37,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvFbPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100%"
+                android:textColor="#FFFFFF"
+                android:textSize="28dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/cpbFb"
+                app:layout_constraintEnd_toEndOf="@+id/cpbFb"
+                app:layout_constraintStart_toStartOf="@+id/cpbFb"
+                app:layout_constraintTop_toTopOf="@+id/cpbFb" />
 
             <com.mikhaellopez.circularprogressbar.CircularProgressBar
                 android:id="@+id/cpbFb"
@@ -579,19 +592,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView26"
                 app:layout_constraintVertical_bias="1.0" />
-
-            <TextView
-                android:id="@+id/tvFbPercent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="100%"
-                android:textColor="#FFFFFF"
-                android:textSize="28dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/cpbFb"
-                app:layout_constraintEnd_toEndOf="@+id/cpbFb"
-                app:layout_constraintStart_toStartOf="@+id/cpbFb"
-                app:layout_constraintTop_toTopOf="@+id/cpbFb" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

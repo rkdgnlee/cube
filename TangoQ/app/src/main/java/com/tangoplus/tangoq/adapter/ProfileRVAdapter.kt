@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -28,15 +27,20 @@ import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
+import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
+import org.json.JSONObject
 
 import java.lang.IllegalArgumentException
 
-class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
+class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean, val case: String) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
     var profilemenulist = mutableListOf<String>()
+    var userJson = JSONObject()
     private val VIEW_TYPE_NORMAL = 0
     private val VIEW_TYPE_SPECIAL_ITEM = 1
-    inner class MyViewHolder(view : View) : RecyclerView.ViewHolder(view) {
-        val btnPfName : TextView = view.findViewById(R.id.tvPfSettingsName)
+    inner class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+        val tvPfSettingsName : TextView = view.findViewById(R.id.tvPfSettingsName)
+        val tvPfInfo: TextView = view.findViewById(R.id.tvPfInfo)
         val ivPf : ImageView = view.findViewById(R.id.ivPf)
         val cltvPfSettings : ConstraintLayout = view.findViewById(R.id.cltvPfSettings)
     }
@@ -50,7 +54,7 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
             VIEW_TYPE_NORMAL -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = RvProfileItemBinding.inflate(inflater, parent, false)
-                MyViewHolder(binding.root)
+                ViewHolder(binding.root)
             }
             VIEW_TYPE_SPECIAL_ITEM -> {
                 val inflater = LayoutInflater.from(parent.context)
@@ -66,86 +70,116 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
         val currentItem = profilemenulist[position]
         when (holder.itemViewType) {
             VIEW_TYPE_NORMAL -> {
-                val myViewHolder = holder as MyViewHolder
-                when (currentItem) {
-                    "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
-                    "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
-                    "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
-                    "로그아웃" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
-                    "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
-                }
-
-                myViewHolder.btnPfName.text = currentItem
-                myViewHolder.cltvPfSettings.setOnClickListener {
-                    when (currentItem) {
-                        "내정보" -> {
-                            holder.ivPf.setImageResource(R.drawable.icon_profile)
-                            val dialogFragment = ProfileEditDialogFragment()
-                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                val ViewHolder = holder as ViewHolder
+                when (case) {
+                    "profile" -> {
+                        when (currentItem) {
+                            "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
+                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+                            "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
+                            "문의하기" -> holder.ivPf.setImageResource(R.drawable.icon_inquire)
+                            "공지사항" -> holder.ivPf.setImageResource(R.drawable.icon_announcement)
+                            "앱 버전" -> holder.ivPf.setImageResource(R.drawable.icon_copy)
+                            "개인정보 처리방침" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
+                            "서비스 이용약관" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
+                            "로그아웃" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
+                            "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
                         }
+                        // ------! 앱 버전 text 설정 시작 !------
+                        ViewHolder.tvPfSettingsName.text = currentItem
+                        if (ViewHolder.tvPfSettingsName.text == "앱 버전") {
+                            val packageInfo = fragment.requireContext().packageManager.getPackageInfo(fragment.requireContext().packageName, 0)
+                            val versionName = packageInfo.versionName
+                            ViewHolder.tvPfInfo.text = "v$versionName"
+                        } else
+                            ViewHolder.tvPfInfo.text = ""
+                        // ------! 앱 버전 text 설정 끝 !------
+
+                        // ------! 각 item 클릭 동작 시작 !------
+                        ViewHolder.cltvPfSettings.setOnClickListener {
+                            when (currentItem) {
+                                "내정보" -> {
+                                    val dialogFragment = ProfileEditDialogFragment()
+                                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                                }
 //                        "연동 관리" -> {
 //                            val settingsIntent = Intent()
 //                            settingsIntent.action = HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
 //                            fragment.startActivity(settingsIntent)
 //                        }
-                        "푸쉬 알림 설정" -> {
-                            val intent = Intent().apply {
-                                action = "android.settings.APP_NOTIFICATION_SETTINGS"
-                                putExtra("android.provider.extra.APP_PACKAGE", fragment.requireContext().packageName)
-                            }
-                            fragment.startActivity(intent)
-                        }
-                        "자주 묻는 질문" -> {
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            val url = Uri.parse("https://tangoplus.co.kr/ko/20")
-                            intent.setData(url)
-                            fragment.startActivity(intent)
-                        }
-                        "문의하기" -> {
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            val url = Uri.parse("https://tangoplus.co.kr/ko/21")
-                            intent.setData(url)
-                            fragment.startActivity(intent)
-                        }
-                        "공지사항" -> {
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            val url = Uri.parse("https://tangoplus.co.kr/ko/18")
-                            intent.setData(url)
-                            fragment.startActivity(intent)
-                        }
-                        "앱 버전" -> {
-                            Toast.makeText(fragment.requireContext(), "현재 v1.0 입니다.", Toast.LENGTH_SHORT).show()
-                        }
-                        "개인정보 처리방침" -> {
-                            val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
-                            dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
-                        }
-                        "서비스 이용약관" -> {
-                            val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
-                            dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
-                        }
-                        "로그아웃" -> {
-                            if (Firebase.auth.currentUser != null) {
-                                Firebase.auth.signOut()
-                                Log.d("로그아웃", "Firebase sign out successful")
-                            } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
-                                NaverIdLoginSDK.logout()
-                                Log.d("로그아웃", "Naver sign out successful")
-                            } else if (AuthApiClient.instance.hasToken()) {
-                                UserApiClient.instance.logout { error->
-                                    if (error != null) {
-                                        Log.e("로그아웃", "KAKAO Sign out failed", error)
-                                    } else {
-                                        Log.e("로그아웃", "KAKAO Sign out successful")
+                                "푸쉬 알림 설정" -> {
+                                    val intent = Intent().apply {
+                                        action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                                        putExtra("android.provider.extra.APP_PACKAGE", fragment.requireContext().packageName)
                                     }
+                                    fragment.startActivity(intent)
+                                }
+                                "자주 묻는 질문" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW)
+                                    val url = Uri.parse("https://tangoplus.co.kr/ko/20")
+                                    intent.setData(url)
+                                    fragment.startActivity(intent)
+                                }
+                                "문의하기" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW)
+                                    val url = Uri.parse("https://tangoplus.co.kr/ko/21")
+                                    intent.setData(url)
+                                    fragment.startActivity(intent)
+                                }
+                                "공지사항" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW)
+                                    val url = Uri.parse("https://tangoplus.co.kr/ko/18")
+                                    intent.setData(url)
+                                    fragment.startActivity(intent)
+                                }
+                                "개인정보 처리방침" -> {
+                                    val dialog = AgreementDetailDialogFragment.newInstance("agreement2")
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
+                                }
+                                "서비스 이용약관" -> {
+                                    val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
+                                }
+                                "로그아웃" -> {
+                                    if (Firebase.auth.currentUser != null) {
+                                        Firebase.auth.signOut()
+                                        Log.d("로그아웃", "Firebase sign out successful")
+                                    } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
+                                        NaverIdLoginSDK.logout()
+                                        Log.d("로그아웃", "Naver sign out successful")
+                                    } else if (AuthApiClient.instance.hasToken()) {
+                                        UserApiClient.instance.logout { error->
+                                            if (error != null) {
+                                                Log.e("로그아웃", "KAKAO Sign out failed", error)
+                                            } else {
+                                                Log.e("로그아웃", "KAKAO Sign out successful")
+                                            }
+                                        }
+                                    } else if (getEncryptedJwtToken(fragment.requireContext()) != null) {
+                                        saveEncryptedJwtToken(fragment.requireContext(), null)
+                                    }
+                                    val intent = Intent(holder.itemView.context, IntroActivity::class.java)
+                                    holder.itemView.context.startActivity(intent)
+                                    fragment.requireActivity().finishAffinity()
                                 }
                             }
-                            val intent = Intent(holder.itemView.context, IntroActivity::class.java)
-                            holder.itemView.context.startActivity(intent)
-                            fragment.requireActivity().finishAffinity()
+                        }
+                    }
+                    // ------! 각 item 클릭 동작 끝 !------
+
+                    "profileEdit" -> {
+                        holder.ivPf.setImageResource(R.drawable.icon_profile)
+                        holder.tvPfSettingsName.text = currentItem
+                        when (holder.tvPfSettingsName.text) {
+                            "이름" -> holder.tvPfInfo.text = userJson.optString("user_name")
+                            "성별" -> holder.tvPfInfo.text = userJson.optString("user_gender") ?: "미설정"
+                            "몸무게" -> holder.tvPfInfo.text = userJson.optString("user_weight") + "kg" ?: "미설정"
+                            "신장" -> holder.tvPfInfo.text = userJson.optString("user_height") + "cm" ?: "미설정"
+                            "이메일" -> holder.tvPfInfo.text = userJson.optString("user_email") ?: "미설정"
                         }
                     }
                 }
+
             } // -----! 다크모드 시작 !-----
             VIEW_TYPE_SPECIAL_ITEM -> {
                 val myViewHolder = holder as SpecialItemViewHolder

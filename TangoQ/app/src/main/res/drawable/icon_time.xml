@@ -10,12 +10,12 @@
         android:strokeWidth="1"
         android:pathData="M10 0.5A9.5 9.5 0 1 0 10 19.5 9.5 9.5 0 1 0 10 0.5z"/>
     <path
-        android:strokeColor="#FFFFFFFF"
+        android:strokeColor="@color/white"
         android:strokeWidth="1"
         android:strokeLineCap="round"
         android:pathData="M10 10V4"/>
     <path
-        android:strokeColor="#FFFFFFFF"
+        android:strokeColor="@color/white"
         android:strokeWidth="1"
         android:strokeLineCap="round"
         android:pathData="M10 10h4"/>

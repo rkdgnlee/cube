@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,13 +20,11 @@ import com.tangoplus.tangoq.data.FavoriteVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.FragmentProgramAddFavoriteDialogBinding
-import com.tangoplus.tangoq.listener.BasketItemTouchListener
+import com.tangoplus.tangoq.listener.OnExerciseAddClickListener
 import com.tangoplus.tangoq.listener.OnFavoriteDetailClickListener
 import com.tangoplus.tangoq.listener.OnFavoriteSelectedClickListener
-import com.tangoplus.tangoq.`object`.NetworkExercise
-import com.tangoplus.tangoq.`object`.NetworkFavorite
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonBySn
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoritesBySn
 import com.tangoplus.tangoq.`object`.NetworkFavorite.updateFavoriteItemJson
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -36,7 +33,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 
-class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListener,
+class ProgramAddFavoriteDialogFragment : DialogFragment(), OnExerciseAddClickListener,
     OnFavoriteDetailClickListener, OnFavoriteSelectedClickListener {
     lateinit var binding : FragmentProgramAddFavoriteDialogBinding
     val viewModel : FavoriteViewModel by activityViewModels()
@@ -71,18 +68,16 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
         program = bundle?.getParcelable("Program")!!
         // ------! program 데이터 bundle, singleton에서 전화번호 가져오기 끝 !------
 
-
-        // ------! 먼저 즐겨찾기 목록을 보여주기 !------
+        // ------! 즐겨찾기 목록을 보여주기 !------
         lifecycleScope.launch {
-            val favoriteList = fetchFavoriteItemsJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), userSn.toString())
+            val favoriteList = fetchFavoritesBySn(getString(R.string.IP_ADDRESS_t_favorite), userSn.toString(), requireContext())
             val favoriteItems = mutableListOf<FavoriteVO>()
             if (favoriteList.isNotEmpty()) {
                 binding.tvPAFDGuide.visibility = View.INVISIBLE
 
                 for (i in favoriteList.indices) {
-
                     // ------! 1 favorite sn 목록가져오기 !------
-                    val favoriteItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteList[i].favoriteSn.toString())
+                    val favoriteItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteList[i].favoriteSn.toString(), requireContext())
 
                     // ------! 2 운동 디테일 채우기 !------
                     favoriteItems.add(favoriteItem)
@@ -91,8 +86,6 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
             } else {
                 binding.tvPAFDGuide.visibility = View.VISIBLE
             }
-
-
             viewModel.favoriteList.observe(viewLifecycleOwner) {
 //                 아무것도 없을 때 나오는 캐릭터
                 linkFavoriteAdapter(viewModel.favoriteList.value!!)
@@ -133,6 +126,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
                         viewModel.addExercises(selectedItems)
                         val exerciseIds = mutableListOf<Int>()
 
+                        // ------! 수정(추가)된 exercise가 담긴 favorite !------
                         val updatedExercises = viewModel.selectedFavorite.value?.exercises?.plus(selectedItems)
                         for (i in updatedExercises!!.indices) {
                             updatedExercises[i].exerciseId.let {
@@ -146,6 +140,7 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
                         updateFavoriteItemJson(getString(R.string.IP_ADDRESS_t_favorite), viewModel.selectedFavorite.value?.favoriteSn.toString(), jsonObject.toString(), requireContext()) {
                             requireActivity().runOnUiThread{
                                 viewModel.allExercises.value = mutableListOf()
+                                viewModel.selectedFavorite.value = null
                             }
                             dismiss()
                         }
@@ -167,7 +162,6 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
 
     private fun linkFavoriteAdapter(list : MutableList<FavoriteVO>) {
         val adapter = FavoriteRVAdapter(list,this@ProgramAddFavoriteDialogFragment,this@ProgramAddFavoriteDialogFragment, this@ProgramAddFavoriteDialogFragment, "add")
-
         binding.rvPAFD.adapter = adapter
         val linearLayoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -176,28 +170,30 @@ class ProgramAddFavoriteDialogFragment : DialogFragment(), BasketItemTouchListen
     }
 
     private fun linkBaksetAdapter(list : MutableList<ExerciseVO>) {
-        Log.v("program", "${program}")
-        adapter = ExerciseRVAdapter(this@ProgramAddFavoriteDialogFragment,list, singletonInstance.viewingHistory?.toList() ?: listOf(),"basket")
-        adapter.basketListener = this@ProgramAddFavoriteDialogFragment
+        adapter = ExerciseRVAdapter(this@ProgramAddFavoriteDialogFragment, list, singletonInstance.viewingHistory?.toList() ?: listOf(),"basket")
+        adapter.setOnExerciseAddClickListener(this@ProgramAddFavoriteDialogFragment)
         binding.rvPAFD.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvPAFD.layoutManager = linearLayoutManager
         viewModel.allExercises.value = program.exercises
-    }
-    override fun onBasketItemQuantityChanged(descriptionId: String, newQuantity: Int) {
-        val exercise = viewModel.allExercises.value?.find { it.exerciseId.toString() == descriptionId }
-        if (exercise != null) {
-            viewModel.addExerciseBasketUnit(exercise, newQuantity)
-        }
-        viewModel.setQuantity(descriptionId, newQuantity)
-        Log.w("장바구니viewModel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.exerciseId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.quantity}")
     }
 
     override fun onFavoriteClick(sn: Int) { }
 
     override fun onFavoriteSelected(favoriteVO: FavoriteVO) {
         viewModel.selectedFavorite.value = favoriteVO
+    }
 
+    override fun onExerciseAddClick(exerciseVO: ExerciseVO, select: Boolean) {
+        if (select) {
+            viewModel.removeExerciseBasketUnit(exerciseVO)
+            Log.v("basketUnit.size", "${viewModel.exerciseBasketUnits.value?.size}")
+        } else {
+            val exercise = exerciseVO
+            exercise.select = true
+            viewModel.addExerciseBasketUnit(exercise)
+            Log.v("basketUnit.size", "${viewModel.exerciseBasketUnits.value?.size}")
+        }
     }
 
 }

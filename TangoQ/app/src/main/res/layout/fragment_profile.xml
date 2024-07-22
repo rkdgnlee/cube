@@ -43,7 +43,7 @@
             android:layout_marginStart="4dp"
             android:text="내정보"
             android:textColor="@color/black"
-            android:textSize="32sp"
+            android:textSize="32dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imageView46"
             app:layout_constraintStart_toEndOf="@+id/imageView46"
@@ -115,6 +115,7 @@
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView36"
                     app:layout_constraintEnd_toStartOf="@+id/textView36"
+                    app:layout_constraintHorizontal_bias="0.4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView36" />
 
@@ -177,6 +178,7 @@
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView36"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.6"
                     app:layout_constraintStart_toEndOf="@+id/textView36"
                     app:layout_constraintTop_toTopOf="@+id/textView36" />
 
@@ -303,6 +305,14 @@
                     app:layout_constraintEnd_toStartOf="@+id/textView39"
                     app:layout_constraintStart_toEndOf="@+id/textView36"
                     app:layout_constraintTop_toTopOf="@+id/textView39" />
+
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/icon_edit_white"
+                    app:layout_constraintBottom_toBottomOf="@+id/civP"
+                    app:layout_constraintEnd_toEndOf="@+id/civP" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

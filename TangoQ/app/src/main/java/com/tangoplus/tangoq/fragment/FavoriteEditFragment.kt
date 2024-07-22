@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,8 +11,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.BundleCompat.getParcelableArrayList
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -69,18 +72,22 @@ class FavoriteEditFragment : Fragment() {
 //        val appClass = requireContext().applicationContext as AppClass
 
         singletonInstance = Singleton_t_history.getInstance(requireContext())
-        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject
         sn = requireArguments().getInt(ARG_SN)
 
-
+        // ------! 현재 골라진 favorite 고르기 !------
         currentItem = viewModel.favoriteList.value?.find { it.favoriteSn == sn }!!
+        viewModel.selectedFavorite.value = currentItem
+        Log.v("selectedFavorite", "${viewModel.selectedFavorite.value}")
+        // ------! 현재 골라진 favorite 고르기 !------
+
         binding.etFEName.setText(currentItem.favoriteName)
 
         // ------! behavior 조작 시작 !------
         val isTablet = resources.configuration.screenWidthDp >= 600
         behavior = BottomSheetBehavior.from(binding.clFE)
         val screenHeight = resources.displayMetrics.heightPixels
-        val topSpaceHeight = resources.getDimensionPixelSize(R.dimen.top_space_height)
+        val topSpaceHeight = resources.getDimensionPixelSize(R.dimen.top_space_height_fragment)
         val peekHeight = screenHeight - topSpaceHeight
         behavior.apply {
             this.peekHeight = peekHeight
@@ -107,7 +114,7 @@ class FavoriteEditFragment : Fragment() {
             binding.etFEName.setText(viewModel.favoriteEditItem.value!!.optString("favorite_name"))
 
         }
-// -----! EditText 셋팅 끝 !-----
+        // -----! EditText 셋팅 끝 !-----
 //        val currentPickItem = appClass.pickItems.value?.get(appClass.pickList.value!!.indexOf(title))
         if (currentPickItem?.exercises != null) {
             val adapter = ExerciseRVAdapter(this@FavoriteEditFragment, currentPickItem.exercises!!, singletonInstance.viewingHistory!!.toList(),"add")
@@ -154,9 +161,9 @@ class FavoriteEditFragment : Fragment() {
 //            }
         }
 
-        binding.nsvFE.isNestedScrollingEnabled = true
-        binding.rvFE.isNestedScrollingEnabled = false
-        binding.rvFE.overScrollMode = View.OVER_SCROLL_NEVER
+
+//        binding.rvFE.isNestedScrollingEnabled = false
+//        binding.rvFE.overScrollMode = View.OVER_SCROLL_NEVER
 
         // -----! 장바구니로 가기 !-----
         binding.btnFEGoBasket.setOnClickListener {

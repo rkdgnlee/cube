@@ -57,7 +57,14 @@
         android:background="@drawable/background_bottomsheet"
         android:paddingTop="10dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
+        <androidx.cardview.widget.CardView
+            android:layout_width="100dp"
+            android:layout_height="4dp"
+            app:cardBackgroundColor="@color/subColor400"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <LinearLayout
             android:id="@+id/linearLayout12"
             android:layout_width="match_parent"

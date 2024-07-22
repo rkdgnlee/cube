@@ -38,7 +38,7 @@ class FavoriteAddDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject
         val userSn = t_userData?.optString("user_sn")
 
         binding.etFDaName.setOnTouchListener{ v, event ->

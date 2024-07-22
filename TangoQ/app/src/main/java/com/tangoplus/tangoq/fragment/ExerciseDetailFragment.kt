@@ -114,7 +114,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnExerciseAd
             binding.ibtnEDACTVClear.setOnClickListener {
                 binding.actvEDSearch.text.clear()
 
-                updateRecyclerView(filteredDataList)
+                updateRecyclerView(sn, filteredDataList)
             }
             binding.actvEDSearch.setOnEditorActionListener{ _, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_NEXT || event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -126,7 +126,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnExerciseAd
                         val filteredExercises = filteredDataList.filter {
                             it.exerciseName!!.matches(regex)
                         }.distinct().toMutableList()
-                        updateRecyclerView(filteredExercises)
+                        updateRecyclerView(sn, filteredExercises)
                     }
                     binding.actvEDSearch.dismissDropDown()
                     true
@@ -150,8 +150,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnExerciseAd
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 binding.rvEDAll.layoutManager = linearLayoutManager
                 adapter.notifyDataSetChanged()
-            }
-            // ------! 자동완성 끝 !------
+            } // ------! 자동완성 끝 !------
 
             // ------! 시청 기록 시작 !------
 
@@ -163,25 +162,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnExerciseAd
                 filteredDataList = filteredDataList.toMutableList()
                 Log.v("EDsn", "$sn")
                 // ------! 즐겨찾기 추가에서 왔을 때 !------
-                if (sn == -1 ) {
-                    val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filteredDataList, singletonInstance.viewingHistory?.toList() ?: listOf(), "main")
-                    adapter.exerciseList = filteredDataList
-                    binding.rvEDAll.adapter = adapter
-                    val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                    binding.rvEDAll.layoutManager = linearLayoutManager
-                    binding.btnEDFinish.visibility = View.GONE
-                } else {
-                    val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filteredDataList, singletonInstance.viewingHistory?.toList() ?: listOf(), "basket")
-                    adapter.exerciseList = filteredDataList
-                    // ------! click listener 설정 시작 !------
-                    adapter.setOnExerciseAddClickListener(this@ExerciseDetailFragment)
-                    // ------! click listener 설정 끝 !------
-
-                    binding.rvEDAll.adapter = adapter
-                    val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                    binding.rvEDAll.layoutManager = linearLayoutManager
-                    binding.btnEDFinish.visibility = View.VISIBLE
-                }
+                updateRecyclerView(sn, filteredDataList)
 
                 if (filteredDataList.isEmpty()) {
                     binding.tvGuideNull.visibility = View.VISIBLE
@@ -221,14 +202,30 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnExerciseAd
 //            scanLeDevice(true)
 //        }
     }
-    private fun updateRecyclerView(exercises : MutableList<ExerciseVO>) {
-        val adapter = binding.rvEDAll.adapter as ExerciseRVAdapter
-        adapter.exerciseList = exercises.toMutableList()
-        adapter.notifyDataSetChanged()
+    private fun updateRecyclerView(sn : Int, exercises : MutableList<ExerciseVO>) {
+        if (sn == -1 ) {
+            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, singletonInstance.viewingHistory?.toList() ?: listOf(), "main")
+            adapter.exerciseList = exercises
+            binding.rvEDAll.adapter = adapter
+            val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.rvEDAll.layoutManager = linearLayoutManager
+            binding.btnEDFinish.visibility = View.GONE
+        } else {
+            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, singletonInstance.viewingHistory?.toList() ?: listOf(), "basket")
+            adapter.exerciseList = exercises
+
+            // ------! click listener 설정 !------
+            adapter.setOnExerciseAddClickListener(this@ExerciseDetailFragment)
+
+            binding.rvEDAll.adapter = adapter
+            val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.rvEDAll.layoutManager = linearLayoutManager
+            binding.btnEDFinish.visibility = View.VISIBLE
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onCategoryClick(category: String) {
+    override fun onCategoryClick(sn : Int , category: String) {
         val filterList: MutableList<ExerciseVO> = if (category == "전체") {
             filteredDataList
         } else {
@@ -236,16 +233,19 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnExerciseAd
                 item.relatedJoint!!.contains(category)
             }.toMutableList()
         }
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, filterList, singletonInstance.viewingHistory?.toList() ?: listOf(),"main")
-        binding.rvEDAll.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.rvEDAll.layoutManager = linearLayoutManager
-        adapter.notifyDataSetChanged()
+        updateRecyclerView(sn, filterList)
     }
 
-    override fun onExerciseAddClick(exerciseVO: ExerciseVO) {
-        viewModel.addExerciseBasketUnit(exerciseVO, 1)
-        Log.v("basketUnit.size", "${viewModel.exerciseBasketUnits.value?.size}")
+    override fun onExerciseAddClick(exerciseVO: ExerciseVO, select: Boolean) {
+        if (select) {
+            viewModel.removeExerciseBasketUnit(exerciseVO)
+            Log.v("basketUnit.size", "${viewModel.exerciseBasketUnits.value?.size}")
+        } else {
+            val exercise = exerciseVO
+            exercise.select = true
+            viewModel.addExerciseBasketUnit(exercise)
+            Log.v("basketUnit.size", "${viewModel.exerciseBasketUnits.value?.size}")
+        }
     }
 
 

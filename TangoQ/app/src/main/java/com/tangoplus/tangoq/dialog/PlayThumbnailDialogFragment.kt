@@ -67,7 +67,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         singletonInstance = Singleton_t_history.getInstance(requireContext())
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")

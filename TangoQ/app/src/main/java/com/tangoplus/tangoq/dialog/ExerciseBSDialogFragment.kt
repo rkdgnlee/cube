@@ -5,16 +5,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.data.FavoriteVO
+import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBSDialogBinding
 
 
 class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentExerciseBSDialogBinding
+    val viewModel: FavoriteViewModel by activityViewModels()
+    var sn = 0
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,9 +49,15 @@ class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
 
         binding.ibtnEBSMinus.setOnClickListener {
             if (count.value!! > 1) count.value = count.value!! - 1
+            if (exerciseUnit != null) {
+                viewModel.selectedFavorite.value?.exercises?.remove(exerciseUnit)
+            }
         }
         binding.ibtnEBSPlus.setOnClickListener {
             if (count.value!! < 10) count.value = count.value!! + 1
+            if (exerciseUnit != null) {
+                viewModel.selectedFavorite.value?.exercises?.add(exerciseUnit)
+            }
         }
         count.observe(viewLifecycleOwner){
             binding.tvEBSCount.text = it.toString()

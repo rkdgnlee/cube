@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.data
 
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.RequiresApi
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -27,10 +29,11 @@ data class ExerciseVO(
     var imageFilePathReal: String? = "",
 
 
-    var quantity: Int = 0
+    var select: Boolean = false
 ) : Parcelable {
 
     //담는거
+    @RequiresApi(Build.VERSION_CODES.Q)
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
@@ -52,11 +55,12 @@ data class ExerciseVO(
         parcel.readString(),
         parcel.readString(),
 
-        parcel.readInt()
+        parcel.readBoolean()
     )
 
     override fun describeContents(): Int = 0
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(exerciseId)
         dest.writeString(exerciseName)
@@ -79,11 +83,12 @@ data class ExerciseVO(
 
         dest.writeString(imageFilePathReal)
 
-        dest.writeInt(quantity)
+        dest.writeBoolean(select)
 
     }
     // 불러오는 거
     companion object CREATOR : Parcelable.Creator<ExerciseVO> {
+        @RequiresApi(Build.VERSION_CODES.Q)
         override fun createFromParcel(parcel: Parcel): ExerciseVO {
             return ExerciseVO(parcel)
         }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clMItem"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="150dp"
     android:background="@color/white">
 
     <View
@@ -22,7 +22,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView8"
-        android:layout_width="120dp"
+        android:layout_width="130dp"
         android:layout_height="0dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="12dp"
@@ -61,7 +61,7 @@
         android:singleLine="true"
         android:text="목 관절 운동 프로그램"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="24dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ibtnEIMore"
@@ -78,7 +78,7 @@
         android:text="증상들 생략.."
         android:textColor="@color/subColor500"
 
-        android:textSize="18sp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="@+id/tvEIName"
         app:layout_constraintStart_toStartOf="@+id/tvEIName"
         app:layout_constraintTop_toBottomOf="@+id/tvEIName" />
@@ -87,13 +87,10 @@
         android:id="@+id/imageView5"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView8"
-        app:layout_constraintEnd_toStartOf="@+id/ivEIStage"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/tvEISymptom"
-        app:layout_constraintTop_toBottomOf="@+id/tvEISymptom"
-        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintStart_toEndOf="@+id/cardView8"
         app:srcCompat="@drawable/icon_rv_summary_time" />
 
     <ImageView
@@ -102,10 +99,10 @@
         android:layout_height="28dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.45"
-        app:layout_constraintStart_toEndOf="@+id/cardView8"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toEndOf="@+id/tvEITime"
         app:layout_constraintTop_toTopOf="@+id/imageView5"
-        app:srcCompat="@drawable/icon_rv_summary_intensity" />
+        app:srcCompat="@drawable/icon_stage_2" />
 
     <!--    <ImageView-->
     <!--        android:id="@+id/imageView7"-->
@@ -121,9 +118,10 @@
         android:id="@+id/tvEITime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:text="1분 20초"
-        android:textSize="20sp"
+        android:textColor="@color/subColor800"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5" />
@@ -134,8 +132,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="초급"
-        android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textColor="@color/subColor800"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/ivEIStage"
         app:layout_constraintStart_toEndOf="@+id/ivEIStage"
         app:layout_constraintTop_toTopOf="@+id/ivEIStage" />
@@ -164,15 +162,46 @@
     <!--        app:layout_constraintTop_toTopOf="@+id/tvMKcal" />-->
     <ImageButton
         android:id="@+id/ibtnEIMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="40dp"
         android:background="@drawable/effect_ibtn_20dp"
-        android:padding="10dp"
+        android:padding="4dp"
         android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/tvEIName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvEIName"
         app:srcCompat="@drawable/icon_more" />
 
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/materialDivider25"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:dividerColor="@color/subColor100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView29"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivEIStage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toEndOf="@+id/tvEIStage"
+        app:layout_constraintTop_toTopOf="@+id/ivEIStage"
+        app:srcCompat="@drawable/icon_recycle" />
+
+    <TextView
+        android:id="@+id/tvEIRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="1회"
+        android:textColor="@color/subColor800"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView29"
+        app:layout_constraintStart_toEndOf="@+id/imageView29"
+        app:layout_constraintTop_toTopOf="@+id/imageView29" />
 </androidx.constraintlayout.widget.ConstraintLayout>

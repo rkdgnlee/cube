@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.listener.BasketItemTouchListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseJson
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
@@ -28,7 +27,7 @@ import com.tangoplus.tangoq.`object`.Singleton_t_history
 import kotlinx.coroutines.launch
 
 
-class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
+class FavoriteBasketFragment : Fragment() {
     lateinit var binding: FragmentFavoriteBasketBinding
     private lateinit var adapter: ExerciseRVAdapter
     val viewModel : FavoriteViewModel by activityViewModels()
@@ -90,18 +89,18 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
                                 linkAdapter(mutableListOf())
                             }
                             2 -> {
-                                val filteredList = allDataList.filter { item -> item.exerciseCategoryId == "3" }.toMutableList()
-                                filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
-                                }
-                                linkAdapter(filteredList)
+//                                val filteredList = allDataList.filter { item -> item.exerciseCategoryId == "3" }.toMutableList()
+//                                filteredList.map { exercise ->
+//                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
+//                                }
+//                                linkAdapter(filteredList)
                             }
                             3 -> {
-                                val filteredList = allDataList.filter { item -> item.exerciseCategoryId == "4" }.toMutableList()
-                                filteredList.map { exercise ->
-                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
-                                }
-                                linkAdapter(filteredList)
+//                                val filteredList = allDataList.filter { item -> item.exerciseCategoryId == "4" }.toMutableList()
+//                                filteredList.map { exercise ->
+//                                    exercise.quantity = viewModel.getQuantityForItem(exercise.exerciseId.toString())
+//                                }
+//                                linkAdapter(filteredList)
                             }
                         }
                     }
@@ -225,7 +224,7 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
     }
     private fun linkAdapter(list : MutableList<ExerciseVO>) {
         adapter = ExerciseRVAdapter(this@FavoriteBasketFragment,list,listOf(),"basket")
-        adapter.basketListener = this@FavoriteBasketFragment
+//        adapter.basketListener = this@FavoriteBasketFragment
         binding.rvFB.adapter = adapter
         val linearLayoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -255,15 +254,5 @@ class FavoriteBasketFragment : Fragment(), BasketItemTouchListener {
         val history = searchHistory.getStringSet(this.searchHistory, setOf())?.toMutableSet()
         history?.add(query)
         searchHistory.edit().putStringSet(this.searchHistory, history).apply()
-    }
-
-
-    override fun onBasketItemQuantityChanged(descriptionId: String, newQuantity: Int) {
-        val exercise = viewModel.allExercises.value?.find { it.exerciseId.toString() == descriptionId }
-        if (exercise != null) {
-            viewModel.addExerciseBasketUnit(exercise, newQuantity)
-        }
-        viewModel.setQuantity(descriptionId, newQuantity)
-        Log.w("장바구니viewmodel", "desId: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.exerciseId}, 횟수: ${viewModel.exerciseBasketUnits.value?.find { it.exerciseId.toString() == descriptionId }?.quantity}")
     }
 }

@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.adapter
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -10,11 +12,14 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -22,7 +27,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.callback.ItemTouchCallback
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
-import com.tangoplus.tangoq.listener.BasketItemTouchListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.HistoryVO
@@ -49,12 +53,16 @@ class ExerciseRVAdapter (
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
         ItemTouchCallback.AddItemTouchListener
 {
-    var basketListener: BasketItemTouchListener? = null
 
+
+    // ------! exerciseDetail 장바구니 담기 시작 !------
     private var onExerciseAddClickListener: OnExerciseAddClickListener? = null
     fun setOnExerciseAddClickListener(listener: OnExerciseAddClickListener) {
         this.onExerciseAddClickListener = listener
     }
+
+    // ------! exerciseDetail 장바구니 담기 끝 !------
+
     // ------! edit drag swipe listener 시작 !------
     lateinit var addListener: OnStartDragListener
     interface OnStartDragListener {
@@ -65,15 +73,15 @@ class ExerciseRVAdapter (
     }
     // ------! edit drag swipe listener 끝 !------
 
-    private var popupWindow : PopupWindow?= null
-
     // -----! main !-----
     inner class mainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
         val tvEIName : TextView = view.findViewById(R.id.tvEIName)
         val tvEISymptom : TextView= view.findViewById(R.id.tvEISymptom)
         val tvEITime : TextView= view.findViewById(R.id.tvEITime)
+        val ivEIStage : ImageView = view.findViewById(R.id.ivEIStage)
         val tvEIStage : TextView = view.findViewById(R.id.tvEIStage)
+        val tvEIRepeat : TextView = view.findViewById(R.id.tvEIRepeat)
         val ibtnEIMore : ImageButton= view.findViewById(R.id.ibtnEIMore)
         val vEI : View = view.findViewById(R.id.vEI)
         val hpvEIHistory : HorizontalProgressView = view.findViewById(R.id.hpvEIHistory)
@@ -98,6 +106,7 @@ class ExerciseRVAdapter (
         val cvBkState : CardView = view.findViewById(R.id.cvBkState)
         val ivBkStage : ImageView = view.findViewById(R.id.ivBkStage)
         val tvBkRepeat : TextView = view.findViewById(R.id.tvBkRepeat)
+        val ibtnBIMore : ImageButton = view.findViewById(R.id.ibtnBIMore)
         val tvBITime : TextView = view.findViewById(R.id.tvBITime)
         val vBk : View = view.findViewById(R.id.vBk)
     }
@@ -173,7 +182,20 @@ class ExerciseRVAdapter (
                 holder.tvEISymptom.text = currentExerciseItem.relatedSymptom.toString()
                 holder.tvEIName.text = currentExerciseItem.exerciseName
                 holder.tvEITime.text = second
-                holder.tvEIStage.text = currentExerciseItem.exerciseStage
+                when (currentExerciseItem.exerciseStage) {
+                    "초급" -> {
+                        holder.ivEIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
+                        holder.tvEIStage.text = "초급자"
+                    }
+                    "중급" -> {
+                        holder.ivEIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_2))
+                        holder.tvEIStage.text = "중급자"
+                    }
+                    "고급" -> {
+                        holder.ivEIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_3))
+                        holder.tvEIStage.text = "상급자"
+                    }
+                }
 
 
                 Glide.with(fragment.requireContext())
@@ -188,7 +210,7 @@ class ExerciseRVAdapter (
 //                }
 
                 // ------! 점점점 버튼 시작 !------
-                holder.ibtnEIMore.setOnClickListener {view ->
+                holder.ibtnEIMore.setOnClickListener {
                     val bsFragment = ExerciseBSDialogFragment()
                     val bundle = Bundle()
                     bundle.putParcelable("exerciseUnit", currentExerciseItem)
@@ -213,9 +235,8 @@ class ExerciseRVAdapter (
 
                 // ------! 썸네일 !------
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePathReal}")
+                    .load("${currentExerciseItem.imageFilePathReal}?width=180&height=180")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(180)
                     .into(holder.ivEditThumbnail)
 
                 holder.tvEditName.text = currentExerciseItem.exerciseName
@@ -228,23 +249,72 @@ class ExerciseRVAdapter (
                 }
             }
             is basketViewHolder -> {
+                // ------!정보 설정 시작 !------
                 holder.tvBkSymptom.text = currentExerciseItem.relatedSymptom.toString()
                 holder.tvBkName.text = currentExerciseItem.exerciseName
-//                holder.tvBkTime.text = currentExerciseItem.videoTime
                 holder.tvBITime.text = (if (currentExerciseItem.videoDuration?.toInt()!! <= 60) {
                     "${currentExerciseItem.videoDuration}초"
                 } else {
                     "${currentExerciseItem.videoDuration!!.toInt() / 60}분 ${currentExerciseItem.videoDuration!!.toInt() % 60}초"
                 }).toString()
-                // ------! 썸네일 !------
+                when (currentExerciseItem.exerciseStage) {
+                    "초급" -> {
+                        holder.ivBkStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
+                        holder.tvBkStage.text = "초급자"
+                    }
+                    "중급" -> {
+                        holder.ivBkStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_2))
+                        holder.tvBkStage.text = "중급자"
+                    }
+                    "고급" -> {
+                        holder.ivBkStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_3))
+                        holder.tvBkStage.text = "상급자"
+                    }
+                }
+
+                // ------!정보 설정 끝 !------
+
+                // ------! 점점점 버튼 + 썸네일 시작 !------
+                holder.ibtnBIMore.setOnClickListener {
+                    val bsFragment = ExerciseBSDialogFragment()
+                    val bundle = Bundle()
+                    bundle.putParcelable("exerciseUnit", currentExerciseItem)
+
+                    bsFragment.arguments = bundle
+                    val fragmentManager = fragment.requireActivity().supportFragmentManager
+                    bsFragment.show(fragmentManager, bsFragment.tag)
+                }
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePathReal}")
+                    .load("${currentExerciseItem.imageFilePathReal}?width=180&height=180")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivBkThumbnail)
+                // ------! 점점점 버튼 + 썸네일 끝 !------
+
+                var clickable = currentExerciseItem.select
+                if (clickable) {
+                    changeBackgroundColor(holder.vBk,
+                        ContextCompat.getColor(fragment.requireContext(), R.color.white),
+                        ContextCompat.getColor(fragment.requireContext(), R.color.opacityColor))
+                    holder.cvBkState.visibility = View.VISIBLE
+                    clickable = true
+                }
 
                 holder.vBk.setOnClickListener{
-                    onExerciseAddClickListener?.onExerciseAddClick(currentExerciseItem)
+                    if (clickable) {
+                        changeBackgroundColor(holder.vBk,
+                            ContextCompat.getColor(fragment.requireContext(), R.color.opacityColor),
+                            ContextCompat.getColor(fragment.requireContext(), R.color.white))
+                        holder.cvBkState.visibility = View.INVISIBLE
+                        clickable = false
+                    } else {
+                        changeBackgroundColor(holder.vBk,
+                            ContextCompat.getColor(fragment.requireContext(), R.color.white),
+                            ContextCompat.getColor(fragment.requireContext(), R.color.opacityColor))
+                        holder.cvBkState.visibility = View.VISIBLE
+                        clickable = true
+                    }
+                    onExerciseAddClickListener?.onExerciseAddClick(currentExerciseItem, !clickable)
                 }
 
 //                holder.ibtnBkPlus.setOnClickListener {
@@ -271,7 +341,7 @@ class ExerciseRVAdapter (
                 holder.tvRcPStage.text = currentExerciseItem.exerciseStage
                 holder.tvRcPKcal.text
                 Glide.with(holder.itemView.context)
-                    .load(currentExerciseItem.imageFilePathReal)
+                    .load("${currentExerciseItem.imageFilePathReal}?width=200&height=200")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(200)
                     .into(holder.ivRcPThumbnail)
@@ -287,7 +357,7 @@ class ExerciseRVAdapter (
             is dailyViewHolder -> {
                 holder.tvVEIName.text = currentExerciseItem.exerciseName
                 Glide.with(holder.itemView.context)
-                    .load(currentExerciseItem.imageFilePathReal)
+                    .load("${currentExerciseItem.imageFilePathReal}?width=180&height=180")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivVEIThumbnail)
@@ -310,6 +380,19 @@ class ExerciseRVAdapter (
         }
     }
 
+    private fun changeBackgroundColor(view:View, startColor: Int, endColor: Int, duration: Long = 350) {
+        val animator = ValueAnimator.ofFloat(0f, 1f)
+        animator.duration = duration
+
+        animator.addUpdateListener { animation ->
+            val fraction = animation.animatedValue as Float
+            val newColor = ColorUtils.blendARGB(startColor, endColor, fraction)
+            view.backgroundTintList = ColorStateList.valueOf(newColor)
+        }
+        animator.interpolator = LinearInterpolator()
+        animator.start()
+    }
+
     override fun onItemMoved(from: Int, to: Int) {
         Collections.swap(exerciseList, from, to)
         notifyItemMoved(from, to)
@@ -319,10 +402,5 @@ class ExerciseRVAdapter (
     override fun onItemSwiped(position: Int) {
         exerciseList.removeAt(position)
         notifyItemRemoved(position)
-    }
-    fun addItems(newItems: MutableList<ExerciseVO>) {
-        val startPos = exerciseList.size
-        exerciseList.addAll(newItems)
-        notifyItemRangeInserted(startPos, newItems.size)
     }
 }

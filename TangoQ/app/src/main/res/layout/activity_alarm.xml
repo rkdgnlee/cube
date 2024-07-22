@@ -36,7 +36,7 @@
             android:layout_marginStart="10dp"
             android:text="알림"
             android:textColor="@color/black"
-            android:textSize="21sp"
+            android:textSize="21dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/ibtnAlarmBack"
             app:layout_constraintStart_toEndOf="@+id/ibtnAlarmBack"

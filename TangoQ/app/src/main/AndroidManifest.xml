@@ -78,7 +78,16 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true">
-
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <data
+                    android:host="oauth"
+                    android:scheme="kakaoa5d0bc7cde69e2321d62d6eed07e4ec3" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".AlarmActivity"
@@ -97,24 +106,9 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="tangoq"
-                    android:host="tangoq.com"
-                    android:pathPrefix="/content" />
-            </intent-filter>
-            <intent-filter>
-                <data
-                    android:host="oauth"
-                    android:scheme="kakaoa5d0bc7cde69e2321d62d6eed07e4ec3" />
-            </intent-filter>
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing">
+
         </activity>
         <activity
             android:name=".IntroActivity"

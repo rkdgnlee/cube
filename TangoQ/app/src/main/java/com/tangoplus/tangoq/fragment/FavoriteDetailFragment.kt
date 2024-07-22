@@ -104,7 +104,7 @@ class FavoriteDetailFragment : Fragment(){
         val isTablet = resources.configuration.screenWidthDp >= 600
         behavior = BottomSheetBehavior.from(binding.clFD)
         val screenHeight = resources.displayMetrics.heightPixels
-        val topSpaceHeight = resources.getDimensionPixelSize(R.dimen.top_space_height)
+        val topSpaceHeight = resources.getDimensionPixelSize(R.dimen.top_space_height_fragment)
         val peekHeight = screenHeight - topSpaceHeight
         behavior.apply {
             this.peekHeight = peekHeight
@@ -112,6 +112,7 @@ class FavoriteDetailFragment : Fragment(){
             expandedOffset = 0
             state = BottomSheetBehavior.STATE_COLLAPSED
             skipCollapsed = false
+
             halfExpandedRatio = if (isTablet) {
                 0.65f
             } else {
@@ -124,7 +125,7 @@ class FavoriteDetailFragment : Fragment(){
         lifecycleScope.launch {
             binding.sflFV.startShimmer()
 
-            currentItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn.toString())
+            currentItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn.toString(), requireContext())
 //            // ------! 즐겨찾기 넣어서 가져오기 시작 !------
 //            currentItem = viewModel.favoriteList.value?.find { it.favoriteSn == sn }!!
             binding.actFVDetail.setText(currentItem.favoriteName)
@@ -141,7 +142,7 @@ class FavoriteDetailFragment : Fragment(){
 
             val favoriteList = mutableListOf<Pair<Int, String>>()
             viewModel.favoriteList.observe(viewLifecycleOwner) { array ->
-                favoriteList.clear()
+//                favoriteList.clear()
                 for (i in 0 until array.size) {
                     favoriteList.add(Pair(array[i].favoriteSn, array[i].favoriteName.toString()))
                 }
@@ -149,26 +150,36 @@ class FavoriteDetailFragment : Fragment(){
 
             val adapter = ACTVAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line , favoriteList)
             binding.actFVDetail.setAdapter(adapter)
-//            binding.actFVDetail.addTextChangedListener(object: TextWatcher {
-//                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {  }
-//                override fun afterTextChanged(s: Editable?) {
-//                    title = s.toString()
-//                    currentItem = viewModel.favoriteList.value?.find { it.favoriteSn == sn }!!
-////                    favoriteSn = viewModel.favoriteList.value?.find { it.favoriteSn == currentItem.favoriteSn }?.favoriteSn.toString() // Pair로 특정 favoriteList하나의 sn을 가져오기
-//                    Log.v("현재Sn", "현재 sn: ${currentItem.favoriteSn}")
-//                    setFVDetail(sn)
-//                }
-//            })
             binding.actFVDetail.setOnItemClickListener { parent, view, position, id ->
                 val selectedPair = parent.adapter.getItem(position) as Pair<Int, String>
                 val selectedSn = selectedPair.first
                 val selectedName = selectedPair.second
-
+                binding.actFVDetail.setText(selectedName, false)
                 Log.v("선택된 항목", "sn : $selectedSn, Name: $selectedName")
                 currentItem = viewModel.favoriteList.value?.find { it.favoriteSn == selectedSn }!!
                 setFVDetail(selectedSn)
+            }
+            // TextInputLayout의 엔드 아이콘 클릭 리스너 설정
+            binding.tilPickDetail.setEndIconOnClickListener {
+                binding.actFVDetail.showDropDown()
+            }
 
+            // 텍스트 변경 리스너 추가
+            binding.actFVDetail.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if (s.isNullOrEmpty()) {
+                        binding.actFVDetail.showDropDown()
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+            })
+
+            // AutoCompleteTextView 클릭 리스너 설정
+            binding.actFVDetail.setOnClickListener {
+                binding.actFVDetail.showDropDown()
             }
         }
         // ----- 운동 favoriteList, 제목 가져오기 끝 -----
@@ -233,6 +244,7 @@ class FavoriteDetailFragment : Fragment(){
     private fun setFVDetail(sn: Int){
         lifecycleScope.launch {
             binding.sflFV.startShimmer()
+//            binding.actFVDetail.setText(currentItem.favoriteName)
             Log.v("현재 Sn", "$sn")
 //            snData = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), sn.toString())
 //            currentItem = jsonToFavoriteItemVO(snData)

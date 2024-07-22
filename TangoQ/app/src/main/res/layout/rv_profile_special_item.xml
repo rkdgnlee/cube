@@ -10,7 +10,7 @@
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="0dp"
         android:layout_height="2dp"
-        app:dividerColor="@color/subColor200"
+        app:dividerColor="@color/subColor100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -37,7 +37,7 @@
             android:paddingEnd="16dp"
             android:text="다크 모드"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="18dp"
             app:thumbTint="#FFFFFF"
             app:trackDecorationTint="@color/tint_main_sub200"
             app:trackTint="@color/tint_main_sub200"

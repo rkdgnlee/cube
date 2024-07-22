@@ -167,7 +167,7 @@
                 android:layout_marginStart="8dp"
                 android:text="운동"
                 android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textSize="32dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView56"
                 app:layout_constraintStart_toEndOf="@+id/imageView56"

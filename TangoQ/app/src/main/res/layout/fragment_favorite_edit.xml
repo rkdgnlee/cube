@@ -38,11 +38,12 @@
 
         <EditText
             android:id="@+id/etFEName"
-            android:layout_width="156dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:background="#00FFFFFF"
             android:gravity="center"
-            android:maxLength="15"
+            android:maxLength="20"
             android:padding="12dp"
             android:text="어깨 루틴"
             android:textColor="@color/white"
@@ -83,20 +84,38 @@
         <!--            android:src="@drawable/icon_more"-->
         <!--            app:layout_constraintEnd_toEndOf="parent"-->
         <!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView28"
+            android:layout_width="100dp"
+            android:layout_height="4dp"
+            app:cardBackgroundColor="@color/subColor400"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/materialDivider6"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="20dp"
+            app:dividerColor="@color/subColor100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView28" />
 
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/nsvFE"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/materialDivider6">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvFE"
@@ -104,16 +123,6 @@
                     android:layout_height="wrap_content"
 
 
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/materialDivider6" />
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:id="@+id/materialDivider6"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginTop="20dp"
-                    app:dividerColor="@color/subColor100"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -128,7 +137,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/rvFE"
-                    app:layout_constraintVertical_bias="0.0">
+                    app:layout_constraintVertical_bias="1.0">
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnFEGoBasket"
@@ -166,7 +175,6 @@
                         app:backgroundTint="@color/mainColor"
                         app:iconTint="@color/black" />
                 </LinearLayout>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 

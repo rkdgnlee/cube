@@ -19,488 +19,219 @@
             android:background="@color/white">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout7"
+                android:id="@+id/constraintLayout4"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:background="@color/subColor100"
+                android:layout_height="70dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/textView71">
 
-                <ImageButton
-                    android:id="@+id/ibtnPEDBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:background="@drawable/effect_ibtn_20dp"
-                    android:backgroundTint="@color/subColor100"
-                    android:padding="4dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/icon_arrow_left"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView15"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="12dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/imageButton2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_api_kakao_logo" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="카카오톡"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardView15"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView135"
+                    android:id="@+id/tvKakaoIntecheck"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="내정보 변경"
-                    android:textColor="@color/black"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/ibtnPEDBack"
-                    app:layout_constraintStart_toEndOf="@+id/ibtnPEDBack"
-                    app:layout_constraintTop_toTopOf="@+id/ibtnPEDBack" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/civPED"
-                android:layout_width="76dp"
-                android:layout_height="76dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/profile_default"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout7"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <ImageView
-                android:id="@+id/imageView33"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/icon_edit"
-                app:layout_constraintBottom_toBottomOf="@+id/civPED"
-                app:layout_constraintStart_toEndOf="@+id/civPED"
-                app:layout_constraintTop_toTopOf="@+id/civPED"
-                app:layout_constraintVertical_bias="0.482" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout15"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_rectangle_8dp"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/civPED">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView91"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="16dp"
-                        android:layout_marginBottom="12dp"
-                        android:layout_weight="5"
-                        android:text="휴대폰번호"
-                        android:textColor="@color/subColor700"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvPEDMobile"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="4dp"
-                        android:layout_weight="2"
-                        android:gravity="center_vertical"
-                        android:text="v1234321@gmail.com"
-                        android:textColor="@color/subColor800"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textView111"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="16dp"
-                        android:layout_weight="5"
-                        android:text="이름"
-                        android:textColor="@color/subColor700"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvPEDName"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="4dp"
-                        android:layout_weight="2"
-                        android:gravity="center_vertical"
-                        android:text="홍길통"
-                        android:textColor="@color/subColor800"
-                        android:textSize="16sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout17"
-                android:layout_width="match_parent"
-                android:layout_height="128dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_rectangle_8dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout15">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clGoogle"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/subColor200">
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView13"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="28dp"
-                        app:cardElevation="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.3">
-
-                        <ImageButton
-                            android:id="@+id/imageButton"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:background="@drawable/effect_ibtn_20dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/icon_api_google_logo" />
-
-                    </androidx.cardview.widget.CardView>
-
-                    <TextView
-                        android:id="@+id/tvGoogleInteCheck"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="미연결"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView13" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginEnd="40dp"
+                    android:text="미연결"
+                    android:textColor="@color/subColor800"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/materialDivider18"
-                    android:layout_width="2dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center_vertical"
-                    app:dividerColor="@color/subColor400" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clKakao"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/subColor200">
+                    android:layout_height="2dp"
+                    app:dividerColor="@color/subColor100"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView15"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="28dp"
-                        app:cardElevation="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.3">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout7"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_weight="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
 
-                        <ImageButton
-                            android:id="@+id/imageButton2"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:background="@drawable/effect_ibtn_20dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/icon_api_kakao_logo" />
-                    </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView13"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="15"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:id="@+id/tvKakaoIntecheck"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="미연결"
-                        app:layout_constraintEnd_toEndOf="@+id/cardView15"
-                        app:layout_constraintStart_toStartOf="@+id/cardView15"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView15" />
+                    <ImageButton
+                        android:id="@+id/imageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_api_google_logo" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/textView19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="3"
+                    android:text="Google"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardView13"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvGoogleInteCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="40dp"
+                    android:layout_weight="10"
+                    android:text="미연결"
+                    android:textColor="@color/subColor800"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="2dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center_vertical"
-                    app:dividerColor="@color/subColor400" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clNaver"
+                    android:id="@+id/materialDivider26"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/subColor200">
+                    android:layout_height="2dp"
+                    app:dividerColor="@color/subColor100"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView17"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="28dp"
-                        app:cardElevation="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.3">
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <ImageButton
-                            android:id="@+id/imageButton3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/effect_ibtn_20dp"
-                            android:src="@drawable/icon_api_naver_logo" />
-                    </androidx.cardview.widget.CardView>
-
-                    <TextView
-                        android:id="@+id/tvNaverInteCheck"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="미연결"
-                        app:layout_constraintEnd_toEndOf="@+id/cardView17"
-                        app:layout_constraintStart_toStartOf="@+id/cardView17"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView17" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/etPEDId"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_stroke_1dp_sub_color_8dp"
-                android:ems="10"
-                android:hint="아이디"
-                android:inputType="text"
-                android:padding="16dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/subColor200"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView71" />
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="2dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                app:dividerColor="@color/subColor400"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout15"
-                app:layout_constraintEnd_toEndOf="@+id/linearLayout15"
-                app:layout_constraintHorizontal_bias="0.26"
-                app:layout_constraintStart_toStartOf="@+id/linearLayout15"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout15" />
-
-            <EditText
-                android:id="@+id/etPEDPassword"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_stroke_1dp_sub_color_8dp"
-                android:ems="10"
-                android:hint="비밀번호"
-                android:inputType="textPassword"
-                android:padding="16dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/subColor200"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView92" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout7"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout17"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="32dp"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout16"
+                android:layout_height="70dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView90"
-                app:layout_constraintVertical_bias="0.0">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout7">
 
-                <EditText
-                    android:id="@+id/etPEDEmailId"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_stroke_1dp_sub_color_8dp"
-                    android:ems="10"
-                    android:hint="이메일"
-                    android:inputType="textEmailAddress"
-                    android:padding="16dp"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/subColor150"
-                    android:textSize="18sp" />
+                    android:layout_marginStart="20dp"
+                    android:text="네이버"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardView17"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1.85"
-                    app:srcCompat="@drawable/icon_at" />
+                <TextView
+                    android:id="@+id/tvNaverInteCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="40dp"
+                    android:text="미연결"
+                    android:textColor="@color/subColor800"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_stroke_1dp_sub_color_8dp">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
+                    <ImageButton
+                        android:id="@+id/imageButton3"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_api_naver_logo" />
 
-                        android:id="@+id/ivPEDSpn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/icon_autocomplete_button" />
-
-                    <EditText
-
-                        android:id="@+id/etPEDEmail"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:background="@color/white"
-                        android:ems="10"
-                        android:inputType="text"
-                        android:maxLength="15"
-                        android:textColor="@color/black"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/ivPESpn"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Spinner
-                        android:id="@+id/spnPED"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:background="@color/white"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/ivPEDSpn"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/textView71"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="32dp"
-                android:text="아이디 변경"
-                android:textColor="@color/subColor800"
-                android:textSize="22sp"
+                android:layout_marginTop="30dp"
+                android:background="@color/subColor400"
+                android:paddingStart="60dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="계정 정보"
+                android:textColor="@color/white"
+                android:textSize="18dp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout17" />
-
-            <TextView
-                android:id="@+id/textView90"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="이메일 변경"
-                android:textColor="@color/subColor800"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEDPasswordRepeat" />
+                app:layout_constraintTop_toBottomOf="@+id/textView135" />
 
             <TextView
                 android:id="@+id/textView92"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="비밀번호 변경"
-                android:textColor="@color/subColor800"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEDId" />
-
-            <EditText
-                android:id="@+id/etPEDPasswordRepeat"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_stroke_1dp_sub_color"
-                android:ems="10"
-                android:hint="비밀번호 확인"
-                android:inputType="textPassword"
-                android:padding="16dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/subColor200"
+                android:background="@color/subColor400"
+                android:paddingStart="60dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="개인정보수정"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etPEDPassword" />
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout17" />
 
             <LinearLayout
                 android:id="@+id/linearLayout16"
@@ -550,6 +281,7 @@
                     app:cornerRadius="8dp" />
             </LinearLayout>
 
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clPEDAgreement3"
                 android:layout_width="0dp"
@@ -557,8 +289,9 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnPEDAgreement3"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
+                app:layout_constraintTop_toBottomOf="@+id/rvPED">
 
                 <TextView
                     android:id="@+id/textView136"
@@ -566,7 +299,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="[선택] 마케팅 정보 수신 동의"
-                    android:textSize="18sp"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18dp"
                     app:layout_constraintBottom_toBottomOf="@+id/ivPEDAgreement3"
                     app:layout_constraintStart_toEndOf="@+id/ivPEDAgreement3"
                     app:layout_constraintTop_toTopOf="@+id/ivPEDAgreement3" />
@@ -580,7 +314,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
             <ImageButton
                 android:id="@+id/ibtnPEDAgreement3"
@@ -633,10 +366,12 @@
                 android:layout_height="40dp"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout16"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clPEDAgreementMk1">
+                app:layout_constraintTop_toBottomOf="@+id/clPEDAgreementMk1"
+                app:layout_constraintVertical_bias="0.0">
 
                 <ImageView
                     android:id="@+id/ivPEDAgreementMk2"
@@ -660,6 +395,43 @@
                     app:layout_constraintStart_toEndOf="@+id/ivPEDAgreementMk2"
                     app:layout_constraintTop_toTopOf="@+id/ivPEDAgreementMk2" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageButton
+                android:id="@+id/ibtnPEDBack"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/effect_ibtn_20dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintBottom_toBottomOf="@+id/textView135"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView135" />
+
+            <TextView
+                android:id="@+id/textView135"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:text="내정보 변경"
+                android:textColor="@color/black"
+                android:textSize="32dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/ibtnPEDBack"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPED"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView92" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

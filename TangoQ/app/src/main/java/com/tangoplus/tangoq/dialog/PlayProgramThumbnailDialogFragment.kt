@@ -75,7 +75,7 @@ class PlayProgramThumbnailDialogFragment : DialogFragment() {
         val isTablet = resources.configuration.screenWidthDp >= 600
         behavior = BottomSheetBehavior.from(binding.clPPTD)
         val screenHeight = resources.displayMetrics.heightPixels
-        val topSpaceHeight = resources.getDimensionPixelSize(R.dimen.top_space_height)
+        val topSpaceHeight = resources.getDimensionPixelSize(R.dimen.top_space_height_dialog)
         val peekHeight = screenHeight - topSpaceHeight
         behavior.apply {
             this.peekHeight = peekHeight

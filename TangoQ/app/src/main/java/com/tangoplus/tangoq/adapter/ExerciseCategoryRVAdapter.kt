@@ -136,7 +136,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 }
 
                 holder.tvSCName.setOnClickListener {
-                    onCategoryClickListener.onCategoryClick(currentItem)
+                    onCategoryClickListener.onCategoryClick(sn, currentItem)
                     val previousPosition = selectedPosition
                     selectedPosition = adapterPosition
                     notifyItemChanged(previousPosition) // 이전 선택된 아이템 갱신

@@ -13,12 +13,12 @@
         android:id="@+id/imageView43"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView19"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/btnIntroLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/drawable_intro_banner" />
+        app:srcCompat="@drawable/intro_banner" />
 
     <LinearLayout
         android:id="@+id/linearLayout10"

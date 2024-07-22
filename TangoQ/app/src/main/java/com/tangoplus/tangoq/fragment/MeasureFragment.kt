@@ -166,7 +166,7 @@ class MeasureFragment : Fragment(), OnPartCheckListener {
         } // ------! 통증 부위 관리 끝 !------
 
         // ------!  이름 + 통증 부위 시작 !------
-        val t_userdata = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("login_data")
+        val t_userdata = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         binding.tvMsUserName.text = t_userdata?.optString("user_name")
 

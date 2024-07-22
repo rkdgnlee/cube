@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clFv"
     android:layout_width="match_parent"
-    android:layout_height="130dp"
+    android:layout_height="128dp"
     android:background="@color/white">
 
     <View
@@ -21,13 +21,13 @@
         android:id="@+id/ibtnFvMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/effect_ibtn_20dp"
         android:backgroundTint="@color/white"
-        android:padding="8dp"
+        android:padding="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFvName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvFvName"
         app:srcCompat="@drawable/icon_more" />
 
     <ImageView
@@ -36,8 +36,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageView7"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textView65"
         app:srcCompat="@drawable/icon_rv_summary_time" />
 
@@ -47,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView13"
         app:layout_constraintStart_toEndOf="@+id/imageView13"
         app:layout_constraintTop_toTopOf="@+id/imageView13" />
@@ -60,7 +58,7 @@
         android:layout_marginTop="4dp"
         android:text="_"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="17dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cvFv"
@@ -76,7 +74,7 @@
         android:text="_"
         android:textColor="@color/subColor500"
 
-        android:textSize="14sp"
+        android:textSize="14dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView65"
         app:layout_constraintStart_toEndOf="@+id/textView65"
         app:layout_constraintTop_toTopOf="@+id/textView65" />
@@ -88,7 +86,8 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cvFv"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toEndOf="@+id/tvFvTime"
         app:srcCompat="@drawable/icon_rv_summary_count" />
 
     <TextView
@@ -97,7 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView7"
         app:layout_constraintStart_toEndOf="@+id/imageView7"
         app:layout_constraintTop_toTopOf="@+id/imageView7" />
@@ -109,13 +108,13 @@
         android:layout_marginTop="4dp"
         android:text="생성일자"
         android:textColor="@color/subColor500"
-        android:textSize="14sp"
+        android:textSize="14dp"
         app:layout_constraintStart_toStartOf="@+id/tvFvName"
         app:layout_constraintTop_toBottomOf="@+id/tvFvName" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvFv"
-        android:layout_width="110dp"
+        android:layout_width="106dp"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"

@@ -4,6 +4,8 @@
     <dimen name="card_height">4dp</dimen>
     <dimen name="card_corner_radius">4dp</dimen>
     <dimen name="card_corner_elevation">0dp</dimen>
-    <dimen name="top_space_height">255dp</dimen>
+    <dimen name="top_space_height_dialog">230dp</dimen>
+    <dimen name="top_space_height_fragment">320dp</dimen>
+
 
 </resources>

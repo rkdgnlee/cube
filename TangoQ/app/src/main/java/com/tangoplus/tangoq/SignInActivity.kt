@@ -36,14 +36,9 @@ import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerToken
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveServerToken
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
-import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
-import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.transition.SignInTransition
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -79,22 +74,6 @@ class SignInActivity : AppCompatActivity() {
         binding.btnAuthConfirm.isEnabled = false
         binding.btnSignIn.isEnabled = false
 
-        // ------! 구글 토큰 로그인 설정 시 !------
-//        val userString = intent.getStringExtra("google_user")
-//        if (userString != null) {
-//            val user = JSONObject(userString)
-//            viewModel.User.value = user
-//
-//            binding.etName.setText(viewModel.User.value!!.optString("user_name").toString())
-//            binding.etName.isEnabled = false
-//
-//            binding.etEmailId.setText(viewModel.User.value!!.optString("user_email").split("@")[0])
-//            binding.etEmailId.isEnabled = false
-//            binding.spinner.setSelection(0)
-//            binding.spinner.isEnabled = false
-//        } else {
-//            viewModel.User.value = JSONObject()
-//        }
         binding.etMobile.requestFocus()
         binding.etMobile.postDelayed({
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -187,7 +166,6 @@ class SignInActivity : AppCompatActivity() {
         binding.btnAuthConfirm.setOnSingleClickListener {
             val credential = PhoneAuthProvider.getCredential(verificationId, binding.etAuthNumber.text.toString())
             signInWithPhoneAuthCredential(credential)
-
 
         }  // -----! 인증 문자 확인 끝 !-----
 

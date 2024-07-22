@@ -8,14 +8,12 @@ plugins {
 android {
     namespace = "com.tangoplus.tangoq"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "com.tangoplus.tangoq"
         minSdk = 27
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }

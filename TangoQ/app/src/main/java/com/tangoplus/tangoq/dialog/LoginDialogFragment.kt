@@ -23,8 +23,11 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerToken
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
+import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptData
+import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedData
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
+import kotlinx.coroutines.Dispatchers
 import org.json.JSONObject
 import java.util.regex.Pattern
 
@@ -81,18 +84,25 @@ class LoginDialogFragment : DialogFragment() {
             if (viewModel.idPwCondition.value == true) {
                 val jsonObject = JSONObject()
                 jsonObject.put("user_id", viewModel.id.value)
-                jsonObject.put("user_pw", viewModel.pw.value)
+                jsonObject.put("user_password", viewModel.pw.value)
 
-
-                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObject) { jsonObj ->
-
-                    Log.v("json", "${jsonObj?.getInt("status")}")
-                    if (jsonObj?.getInt("status") == 201) { // 기존에 정보가 있을 경우 - 로그인 성공
+                getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObject, requireContext()) { jo ->
+                    if (jo?.getInt("status") == 200) { // 기존에 정보가 있을 경우 - 로그인 성공
                         requireActivity().runOnUiThread {
                             binding.btnLDLogin.isEnabled = false
                             viewModel.User.value = null
-                            NetworkUser.storeUserInSingleton(requireContext(), jsonObj)
-                            Log.e("로그인>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+
+                            // ------! 싱글턴 + 암호화 저장 시작 !------
+                            NetworkUser.storeUserInSingleton(requireContext(), jo)
+                            createKey(getString(R.string.SECURE_KEY_ALIAS))
+
+                            saveEncryptedData(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptData(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
+
+                            // ------! 싱글턴 + 암호화 저장 끝 !------
+
+
+
+                            Log.v("login>", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             startActivity(intent)
                             requireActivity().finishAffinity()

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,31 +40,24 @@ class FavoriteViewModel: ViewModel() {
     // 확인버튼 눌렀을 때 전체 다 담기
     fun addExercises(exercises: List<ExerciseVO>) {
         for (exercise in exercises) {
-            repeat(exercise.quantity) {
-                exerciseUnits.value?.add(exercise)
-            }
+            exerciseUnits.value?.add(exercise)
         }
     }
     fun getExerciseBasketUnit(): MutableList<ExerciseVO> {
-        return exerciseBasketUnits.value?.filter { it.quantity >= 1 }?.toMutableList() ?: mutableListOf()
+        return exerciseBasketUnits.value?: mutableListOf()
     }
-    fun addExerciseBasketUnit(exercise : ExerciseVO, quantity: Int) {
+    fun addExerciseBasketUnit(exercise : ExerciseVO) {
+        // ------ ! 장바구니에 없을 때만 추가하는 로직 !------
+        exerciseBasketUnits.value?.add(exercise)
+    }
+
+    fun removeExerciseBasketUnit(exercise : ExerciseVO) {
         val existingExercise = exerciseBasketUnits.value?.find { it.exerciseId.toString() == exercise.exerciseId.toString() }
-        if (existingExercise == null) {
-            exercise.quantity = quantity
-            exerciseBasketUnits.value?.add(exercise)
-        }
+        existingExercise?.select = false
+        exerciseBasketUnits.value?.remove(existingExercise)
+
     }
 
-    // +- 수량 체크
-    fun setQuantity(itemId: String, quantity: Int) {
-        exerciseBasketUnits.value?.find { it.exerciseId.toString() == itemId }?.quantity = quantity
-    }
-
-    fun getQuantityForItem(itemId: String): Int {
-        val item = exerciseBasketUnits.value?.find { it.exerciseId.toString() == itemId }
-        return item?.quantity?: 0
-    }
 //    fun imgThumbnailAdd(imgUrl: String) {
 //        val newList = mutableListOf<String>()
 //        newList.add(imgUrl)

@@ -62,8 +62,8 @@ class FindAccountDialogFragment : DialogFragment() {
 
         // ------! 초기 세팅 시작 !------
         binding.clFADId.visibility = View.GONE
-        binding.clFADPw.visibility = View.GONE
-        binding.tvFADPw.visibility = View.GONE
+        binding.clFADIdResult.visibility = View.GONE
+        binding.clFADResetPassword.visibility = View.GONE
         firebaseAuth = Firebase.auth
         binding.btnFADAuthSend.isEnabled = false
         // ------! 초기 세팅 끝 !------
@@ -78,16 +78,16 @@ class FindAccountDialogFragment : DialogFragment() {
                     0 -> {
                         binding.clFADMobile.visibility = View.VISIBLE
                         binding.clFADId.visibility = View.GONE
-                        binding.clFADPw.visibility = View.GONE
-                        binding.tvFADPw.visibility = View.GONE
+                        binding.clFADIdResult.visibility = View.GONE
+                        binding.clFADResetPassword.visibility = View.GONE
                         binding.btnFADConfirm.text = "인증 하기"
                         binding.btnFADConfirm.isEnabled = false
                     }
                     1 -> {
-                        binding.clFADMobile.visibility = View.GONE
-                        binding.clFADId.visibility = View.GONE
-                        binding.clFADPw.visibility = View.VISIBLE
-                        binding.tvFADPw.visibility = View.GONE
+                        binding.clFADMobile.visibility = View.VISIBLE
+                        binding.clFADId.visibility = View.VISIBLE
+                        binding.clFADIdResult.visibility = View.GONE
+                        binding.clFADResetPassword.visibility = View.GONE
                         binding.btnFADConfirm.text = "비밀번호 찾기"
                         binding.btnFADConfirm.isEnabled = true
                     }
@@ -196,55 +196,55 @@ class FindAccountDialogFragment : DialogFragment() {
                     binding.btnFADAuthSend.text= "초기 화면으로"
                 }
                 "비밀번호 찾기" -> {
-                    val email = when (binding.FADSpinner.selectedItemPosition) {
-                        0, 1, 2 -> {
-                            "${binding.etFADEmailId.text}@${binding.FADSpinner.selectedItem as String}"
-
-                        }
-                        else -> {
-                            "${binding.etFADEmailId.text}@${binding.etFADEmail.text}"
-                        }
-                    }
-                    if (binding.etFADEmailId.text.length != 0) {
-                        firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener{ task ->
-                            if (task.isSuccessful) {
-                                binding.tvFADPw.visibility = View.VISIBLE
-                                binding.clFADPw.visibility = View.GONE
-                                binding.btnFADConfirm.text = "초기 화면으로"
-                            }
-                        }
-                    }
+//                    val email = when (binding.FADSpinner.selectedItemPosition) {
+//                        0, 1, 2 -> {
+//                            "${binding.etFADEmailId.text}@${binding.FADSpinner.selectedItem as String}"
+//
+//                        }
+//                        else -> {
+//                            "${binding.etFADEmailId.text}@${binding.etFADEmail.text}"
+//                        }
+//                    }
+//                    if (binding.etFADEmailId.text.length != 0) {
+//                        firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener{ task ->
+//                            if (task.isSuccessful) {
+//                                binding.tvFADPw.visibility = View.VISIBLE
+//                                binding.clFADPw.visibility = View.GONE
+//                                binding.btnFADConfirm.text = "초기 화면으로"
+//                            }
+//                        }
+//                    }
                 }
             }
         }
         // ------! 비밀번호 재설정 끝 !------
 
-        val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-        binding.FADSpinner.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domainList)
-        binding.FADSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            @SuppressLint("SetTextI18n")
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                binding.FADSpinner.getItemAtPosition(position).toString()
-                if (position == 3) {
-                    binding.etFADEmail.visibility = View.VISIBLE
-                    binding.FADSpinner.visibility = View.GONE
-                    binding.ivFADSpinner.setOnClickListener{
-                        binding.FADSpinner.performClick()
-                        binding.FADSpinner.visibility = View.VISIBLE
-                    }
-                } else {
-                    binding.etFADEmail.visibility = View.GONE
-                    binding.etFADEmail.setText("")
-                    binding.FADSpinner.visibility = View.VISIBLE
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
+//        val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
+//        binding.FADSpinner.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domainList)
+//        binding.FADSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+//            @SuppressLint("SetTextI18n")
+//            override fun onItemSelected(
+//                parent: AdapterView<*>?,
+//                view: View?,
+//                position: Int,
+//                id: Long
+//            ) {
+//                binding.FADSpinner.getItemAtPosition(position).toString()
+//                if (position == 3) {
+//                    binding.etFADEmail.visibility = View.VISIBLE
+//                    binding.FADSpinner.visibility = View.GONE
+//                    binding.ivFADSpinner.setOnClickListener{
+//                        binding.FADSpinner.performClick()
+//                        binding.FADSpinner.visibility = View.VISIBLE
+//                    }
+//                } else {
+//                    binding.etFADEmail.visibility = View.GONE
+//                    binding.etFADEmail.setText("")
+//                    binding.FADSpinner.visibility = View.VISIBLE
+//                }
+//            }
+//            override fun onNothingSelected(parent: AdapterView<*>?) {}
+//        }
 
 
     }

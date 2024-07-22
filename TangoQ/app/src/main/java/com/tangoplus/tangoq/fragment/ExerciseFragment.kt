@@ -169,7 +169,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
     }
 
-    override fun onCategoryClick(category: String) {
+    override fun onCategoryClick(sn: Int, category: String) {
 
     }
 

@@ -38,7 +38,7 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.getJSONObject("login_data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         // ------! RV checkbox 취합 시작 !------
         binding.btnFPDFinish.setOnClickListener {

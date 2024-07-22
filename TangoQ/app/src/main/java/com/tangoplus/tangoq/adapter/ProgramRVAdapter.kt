@@ -43,7 +43,6 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
         val ivPIThumbnail3: ImageView = view.findViewById(R.id.ivPIThumbnail3)
         val tvPIRanking: TextView = view.findViewById(R.id.tvPIRanking)
         val tvPIName: TextView = view.findViewById(R.id.tvPIName)
-        val tvPIExplain: TextView = view.findViewById(R.id.tvPIExplain)
         val ibtnPIMore: ImageButton = view.findViewById(R.id.ibtnPIMore)
         val tvPICount: TextView = view.findViewById(R.id.tvPICount)
         val tvPITime: TextView = view.findViewById(R.id.tvPITime)

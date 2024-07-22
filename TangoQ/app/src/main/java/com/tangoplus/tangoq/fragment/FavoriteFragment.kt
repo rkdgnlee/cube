@@ -8,24 +8,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.FavoriteRVAdapter
 import com.tangoplus.tangoq.listener.OnFavoriteDetailClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.FavoriteViewModel
 import com.tangoplus.tangoq.data.FavoriteVO
 import com.tangoplus.tangoq.databinding.FragmentFavoriteBinding
 import com.tangoplus.tangoq.dialog.FavoriteAddDialogFragment
 import com.tangoplus.tangoq.listener.OnFavoriteSelectedClickListener
-import com.tangoplus.tangoq.`object`.NetworkExercise.jsonToExerciseVO
 import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemJsonBySn
-import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoriteItemsJsonBySn
+import com.tangoplus.tangoq.`object`.NetworkFavorite.fetchFavoritesBySn
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 
 class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSelectedClickListener {
@@ -45,7 +41,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
         super.onViewCreated(view, savedInstanceState)
 
         // ------! singleton에서 전화번호 가져오기 시작 !------
-        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject
         val userSn = t_userData?.optString("user_sn")
 
         binding.tvFTitle.text = "${t_userData?.optString("user_name")  ?: "미설정" } 님의\n플레이리스트 목록"
@@ -62,7 +58,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
         lifecycleScope.launch {
 
             // ------! Sn으로 Favorites 가져오기 시작 !------
-            val favoriteList = fetchFavoriteItemsJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), userSn.toString())
+            val favoriteList = fetchFavoritesBySn(getString(R.string.IP_ADDRESS_t_favorite), userSn.toString(), requireContext())
             viewModel.favoriteList.value = favoriteList
             Log.v("favoriteCount", "${viewModel.favoriteList.value!!.size}")
 
@@ -72,7 +68,7 @@ class FavoriteFragment : Fragment(), OnFavoriteDetailClickListener, OnFavoriteSe
                 for (i in favoriteList.indices) {
 
                     // ------! 1 favorite sn 목록가져오기 !------
-                    val favoriteItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteList[i].favoriteSn.toString())
+                    val favoriteItem = fetchFavoriteItemJsonBySn(getString(R.string.IP_ADDRESS_t_favorite), favoriteList[i].favoriteSn.toString(), requireContext())
 
                     // ------! 2 운동 디테일 채우기 !------
                     favoriteItems.add(favoriteItem)

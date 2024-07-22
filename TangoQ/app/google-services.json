@@ -14,11 +14,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "196772683133-21ggjmk72odd018ej2sq3v03sfqitfqe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tangoplus.tangoq",
+            "certificate_hash": "6bafc422c99612a22453c7d99439a0d8ea9a76e2"
+          }
+        },
+        {
           "client_id": "196772683133-fdp1ms8lit0aop46jhukkkdpc00i7046.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.tangoplus.tangoq",
             "certificate_hash": "56a79fe9b17660533f6a513a6d573755d1ec3da1"
+          }
+        },
+        {
+          "client_id": "196772683133-qiqh69jvddpnblbjqemmah73r0q5vlvm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tangoplus.tangoq",
+            "certificate_hash": "a5d4a0ec01515adb655e3ee88bee9ef2b723b4f4"
           }
         },
         {

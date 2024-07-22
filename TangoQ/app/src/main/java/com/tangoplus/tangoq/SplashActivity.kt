@@ -34,12 +34,16 @@ import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
-import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.`object`.NetworkUser
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
+import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptData
+import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.db.SecurePreferencesManager.loadEncryptedData
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
+import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -47,8 +51,6 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import java.net.URLEncoder
-import java.util.Calendar
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -159,7 +161,7 @@ class SplashActivity : AppCompatActivity() {
                                     jsonObj.put("naver_login_id", jsonBody?.optString("id"))
                                     jsonObj.put("social_account", "naver")
 
-                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
                                             NetworkUser.storeUserInSingleton(this@SplashActivity, jo)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
@@ -184,7 +186,7 @@ class SplashActivity : AppCompatActivity() {
                                     jsonObj.put("google_login_id", user.uid)
                                     jsonObj.put("user_mobile", user.phoneNumber)
                                     jsonObj.put("social_account", "google")
-                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
                                             NetworkUser.storeUserInSingleton(this, jo)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
@@ -213,7 +215,7 @@ class SplashActivity : AppCompatActivity() {
                                 jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 jsonObj.put("kakao_login_id" , user.id.toString())
                                 jsonObj.put("social_account", "kakao")
-                                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
+                                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
                                     if (jo != null) {
                                         NetworkUser.storeUserInSingleton(this, jo)
                                         Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
@@ -224,8 +226,18 @@ class SplashActivity : AppCompatActivity() {
                         }
                     }
                     else if (getEncryptedJwtToken(this@SplashActivity) != null) {
-                        val token = getEncryptedJwtToken(this@SplashActivity)
-                        // TODO 자체 로그인 토큰 존재 확인해야함 ! -> token으로 값을 다 받아올건지. token으로 select하는 api가 필요함.
+
+                        // ------! 자체 로그인 !------
+                        val jsonObj = decryptData(getString(R.string.SECURE_KEY_ALIAS),
+                            loadEncryptedData(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)).toString()
+                        )
+                        getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
+                            if (jo != null) {
+                                storeUserInSingleton(this@SplashActivity, jo)
+                                Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+                                MainInit()
+                            }
+                        }
                     }
                     else {
                         // 로그인 정보가 없을 경우
@@ -286,60 +298,28 @@ class SplashActivity : AppCompatActivity() {
         finish()
     }
 
-    // 토큰 저장
-    private fun saveEncryptedJwtToken(context: Context, token: String, expirationTime: Long) {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        val sharedPreferences : SharedPreferences = EncryptedSharedPreferences.create(
-            "loginEncryptPrefs", masterKeyAlias, context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-        val editor : SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putString("jwt_token", token)
-        editor.putLong("token_expiration_time", expirationTime)
-        editor.apply()
-    }
 
-    // 토큰 로드
-    private fun getEncryptedJwtToken(context: Context): String? {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
-            "loginEncryptPrefs",
-            masterKeyAlias,
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-        val token = sharedPreferences.getString("jwt_token", null)
-        val expirationTime = sharedPreferences.getLong("token_expiration_time", 0)
-        if (token != null && System.currentTimeMillis() > expirationTime) {
-            Log.v("JWT", "Token has expired")
-            return null
-        }
-        return token
-    }
-
-    // 토큰 갱신
-    private fun refreshJwtToken(context: Context): String? {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://yourserver.com/api/token/refresh")
-            .header("Authorization", "Bearer " + getEncryptedJwtToken(context)) // 만료된 토큰을 보내 새 토큰을 요청
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            return if (response.isSuccessful) {
-                val newToken = response.body?.string()
-                val newExpirationTime = System.currentTimeMillis() + 24 * 60 * 60 * 3 // 24시간 * 3 유효기간
-                if (newToken != null) {
-                    saveEncryptedJwtToken(context, newToken, newExpirationTime)
-                }
-                newToken
-            } else {
-                null
-            }
-        }
-    }
+//    // 토큰 갱신
+//    private fun refreshJwtToken(context: Context): String? {
+//        val client = OkHttpClient()
+//        val request = Request.Builder()
+//            .url("https://yourserver.com/api/token/refresh")
+//            .header("Authorization", "Bearer " + getEncryptedJwtToken(context)) // 만료된 토큰을 보내 새 토큰을 요청
+//            .build()
+//
+//        client.newCall(request).execute().use { response ->
+//            return if (response.isSuccessful) {
+//                val newToken = response.body?.string()
+//                val newExpirationTime = System.currentTimeMillis() + 24 * 60 * 60 * 3 // 24시간 * 3 유효기간
+//                if (newToken != null) {
+//                    saveEncryptedJwtToken(context, newToken, newExpirationTime)
+//                }
+//                newToken
+//            } else {
+//                null
+//            }
+//        }
+//    }
 
     private fun saveDeepLinkTemp(deepLink: Uri) {
         // SharedPreferences나 ViewModel 등을 사용하여 딥링크 정보 임시 저장

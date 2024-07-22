@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -51,8 +52,8 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
-        val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("login_data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+
         Log.v("Singleton>Profile", "${userJson}")
         if (userJson != null) {
             binding.tvPfName.text = userJson.optString("user_name")
@@ -61,13 +62,13 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                 in 0.0 .. 250.0 -> { userJson.optDouble("user_height").toInt().toString() + "cm" }
                 else -> { "미설정" }
             }
-            binding.tvPHeight.text = height.toString()
+            binding.tvPHeight.text = height
 
             val weight = when(userJson.optDouble("user_weight")) {
                 in 0.0 .. 150.0 -> { userJson.optDouble("user_weight").toInt().toString() + "kg" }
                 else -> { "미설정" }
             }
-            binding.tvPWeight.text = weight.toString()
+            binding.tvPWeight.text = weight
 
             val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
             binding.tvPAge.text = try {
@@ -104,9 +105,21 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
                     .into(binding.civP)
             }
-        } // ------! 프로필 사진 관찰 끝 !------
+        }
+        binding.civP.setOnClickListener {
+            when {
+                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+                    navigateGallery()
+                }
+                else -> requestPermissions(
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                    1000
+                )
+            }
+        }
+        // ------! 프로필 사진 관찰 끝 !------
 
-
+        // ------! 정보 목록 recyclerView 연결 시작 !------
         val profilemenulist = mutableListOf(
             "내정보",
             "다크 모드",
@@ -121,8 +134,10 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             "로그아웃",
         )
         setAdpater(profilemenulist.subList(0,3), binding.rvPNormal,0)
-        setAdpater(profilemenulist.subList(3,5), binding.rvPHelp, 1)
-        setAdpater(profilemenulist.subList(5, profilemenulist.size), binding.rvPDetail, 2)
+        setAdpater(profilemenulist.subList(3,6), binding.rvPHelp, 1)
+        setAdpater(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
+        // ------! 정보 목록 recyclerView 연결 끝 !------
+
 //        binding.ibtnPfEdit.setOnClickListener {
 //            when {
 //                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
@@ -134,21 +149,6 @@ class ProfileFragment : Fragment(), BooleanClickListener {
 //                )
 //            }
 //        }
-    }
-
-    private fun setAdpater(list: MutableList<String>, rv: RecyclerView, index: Int) {
-        if (index != 0 ) {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false)
-            adapter.profilemenulist = list
-            rv.adapter = adapter
-            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        } else {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true)
-            adapter.profilemenulist = list
-            rv.adapter = adapter
-            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        }
-
         // ------! 회원탈퇴 시작 !------
         binding.tvWithDrawal.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -159,8 +159,23 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             }
         }
 
-        // ------! 회원탈퇴 시작 !------
+        // ------! 회원탈퇴 끝 !------
     }
+
+    private fun setAdpater(list: MutableList<String>, rv: RecyclerView, index: Int) {
+        if (index != 0 ) {
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile")
+            adapter.profilemenulist = list
+            rv.adapter = adapter
+            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        } else {
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile")
+            adapter.profilemenulist = list
+            rv.adapter = adapter
+            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        }
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,

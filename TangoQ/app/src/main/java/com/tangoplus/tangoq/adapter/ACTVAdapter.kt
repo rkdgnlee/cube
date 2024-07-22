@@ -24,4 +24,7 @@ class ACTVAdapter (context: Context, resource: Int, private val items: List<Pair
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         return getView(position, convertView, parent)
     }
+    fun getStringValue(position: Int): String {
+        return items[position].second
+    }
 }

@@ -90,16 +90,17 @@ class MainFragment : Fragment(), OnRVClickListener {
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 // ------! v1.0 초기 연령 별 추천 운동 시작 !------
-                val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("login_data")
+                val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-//                val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
-                val age = "0"
-                Log.v("age", "$age")
+                val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
+//                val age = "0"
                 // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
-                val userSn = userJson?.optString("user_sn").toString()
+                val userSn = userJson.optString("user_sn").toString()
+//                val userSn = "70"
+
                 val prefsManager = PreferencesManager(requireContext())
                 val currentValue = prefsManager.getStoredInt(userSn)
-                Log.v("currentValue", "userEmail: ${userSn}, currentValue: ${currentValue}")
+                Log.v("prefs>CurrentValue", "user_sn: ${userSn}, currentValue: ${currentValue}")
                 binding.tvMTodaySet.text = "완료 $currentValue /5 개"
                 binding.hpvMDailyThird.progress = (currentValue  * 100 ) / 5
 

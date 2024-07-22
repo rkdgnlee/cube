@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FFFFFF</color>
-    <color name="white">#1D1D1D</color>
+    <color name="white">#262626</color>
     <color name="mainColor">#0CDCDC</color>
-    <color name="subColor100">#454545</color>
-    <color name="subColor150">#757575</color>
-    <color name="subColor200">#959595</color>
-    <color name="subColor300">#AEAEAE</color>
-    <color name="subColor400">#C8C8C8</color>
-    <color name="subColor500">#D9D9D9</color>
-    <color name="subColor700">#DFDFE0</color>
-    <color name="subColor800">#F5F5F5</color>
+    <color name="secondaryColor">#6AD4DD</color>
+    <color name="subColor100">#47484C</color>
+    <color name="subColor150">#454545</color>
+    <color name="subColor200">#757575</color>
+    <color name="subColor300">#959595</color>
+    <color name="subColor400">#AEAEAE</color>
+    <color name="subColor500">#C8C8C8</color>
+    <color name="subColor700">#D9D9D9</color>
+    <color name="subColor800">#DFDFE0</color>
+    <color name="subColor900">#F5F5F5</color>
 
     <color name="successColor">#45FF02</color>
     <color name="conditionSuccessColor">#7AA2E3</color>
     <color name="deleteColor">#FF3B30</color>
-    <color name="opacityColor">#B3454545</color>
+    <color name="opacityColor">#4D000000</color>
+    <color name="opacitySubColor">#25C8C8C8</color>
 </resources>

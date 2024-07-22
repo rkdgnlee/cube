@@ -109,72 +109,56 @@
         android:layout_marginStart="10dp"
         android:text="제목"
         android:textColor="@color/subColor800"
-        android:textSize="20sp"
+        android:textSize="20dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/imageView44"
+        app:layout_constraintBottom_toTopOf="@+id/imageView45"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cvPIThumbnail" />
-
-    <TextView
-        android:id="@+id/tvPIExplain"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:maxLines="2"
-        android:singleLine="false"
-        android:text="관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 관절 부위 및 설명관절 부위 및 설명 "
-        android:textColor="@color/subColor800"
-        android:textSize="0sp"
-        app:layout_constraintEnd_toStartOf="@+id/ibtnPIMore"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPIName" />
 
     <TextView
         android:id="@+id/tvPICount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginBottom="10dp"
         android:text="3개"
         android:textColor="@color/subColor800"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView44"
-        app:layout_constraintStart_toEndOf="@+id/imageView44"
-        app:layout_constraintTop_toTopOf="@+id/imageView44"
-        app:layout_constraintVertical_bias="0.0" />
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/imageView44"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvPICount"
+        app:layout_constraintEnd_toStartOf="@+id/tvPICount"
+        app:layout_constraintTop_toTopOf="@+id/tvPICount"
+        app:srcCompat="@drawable/icon_autocomplete_button_hollow" />
+
+    <TextView
+        android:id="@+id/tvPITime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="2분 48초"
+        android:textColor="@color/subColor800"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView45"
+        app:layout_constraintStart_toEndOf="@+id/imageView45"
+        app:layout_constraintTop_toTopOf="@+id/imageView45" />
+
+    <ImageView
+        android:id="@+id/imageView45"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/icon_rv_summary_count" />
-
-    <TextView
-        android:id="@+id/tvPITime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2분 48초"
-        android:textColor="@color/subColor800"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvPICount"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvPICount" />
-
-    <ImageView
-        android:id="@+id/imageView45"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvPITime"
-        app:layout_constraintEnd_toStartOf="@+id/tvPITime"
-        app:layout_constraintTop_toTopOf="@+id/tvPITime"
-        app:srcCompat="@drawable/icon_rv_summary_time" />
+        app:srcCompat="@drawable/icon_time_sub_800" />
 
     <TextView
         android:id="@+id/tvPIRanking"
@@ -184,7 +168,7 @@
         android:layout_marginTop="8dp"
         android:text="1"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="20dp"
         android:textStyle="bold"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
