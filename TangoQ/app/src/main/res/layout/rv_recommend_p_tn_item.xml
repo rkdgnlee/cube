@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView35"
+        android:id="@+id/ivM3"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginTop="8dp"
@@ -28,23 +28,23 @@
 
     <ImageView
 
-        android:id="@+id/imageView36"
+        android:id="@+id/ivM4"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="@+id/imageView35"
-        app:layout_constraintTop_toBottomOf="@+id/imageView35"
+        app:layout_constraintStart_toStartOf="@+id/ivM3"
+        app:layout_constraintTop_toBottomOf="@+id/ivM3"
         app:srcCompat="@drawable/icon_rv_summary_intensity" />
 
     <ImageView
 
-        android:id="@+id/imageView37"
+        android:id="@+id/ivM5"
         android:layout_width="16dp"
 
         android:layout_height="16dp"
         android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="@+id/imageView36"
-        app:layout_constraintTop_toBottomOf="@+id/imageView36"
+        app:layout_constraintStart_toStartOf="@+id/ivM4"
+        app:layout_constraintTop_toBottomOf="@+id/ivM4"
         app:srcCompat="@drawable/icon_kcal_main_color" />
 
     <androidx.cardview.widget.CardView
@@ -90,9 +90,9 @@
         android:text="25"
         android:textColor="@color/black"
         android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView35"
-        app:layout_constraintStart_toEndOf="@+id/imageView35"
-        app:layout_constraintTop_toTopOf="@+id/imageView35"
+        app:layout_constraintBottom_toBottomOf="@+id/ivM3"
+        app:layout_constraintStart_toEndOf="@+id/ivM3"
+        app:layout_constraintTop_toTopOf="@+id/ivM3"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
@@ -103,9 +103,9 @@
         android:text="중급자"
         android:textColor="@color/black"
         android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView36"
-        app:layout_constraintStart_toEndOf="@+id/imageView36"
-        app:layout_constraintTop_toTopOf="@+id/imageView36" />
+        app:layout_constraintBottom_toBottomOf="@+id/ivM4"
+        app:layout_constraintStart_toEndOf="@+id/ivM4"
+        app:layout_constraintTop_toTopOf="@+id/ivM4" />
 
     <TextView
         android:id="@+id/tvRcPKcal"
@@ -115,9 +115,9 @@
         android:text="48"
         android:textColor="@color/black"
         android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView37"
-        app:layout_constraintStart_toEndOf="@+id/imageView37"
-        app:layout_constraintTop_toTopOf="@+id/imageView37"
+        app:layout_constraintBottom_toBottomOf="@+id/ivM5"
+        app:layout_constraintStart_toEndOf="@+id/ivM5"
+        app:layout_constraintTop_toTopOf="@+id/ivM5"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView

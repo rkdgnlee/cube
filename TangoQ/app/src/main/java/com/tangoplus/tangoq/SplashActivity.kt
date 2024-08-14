@@ -163,7 +163,7 @@ class SplashActivity : AppCompatActivity() {
 
                                     getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
-                                            NetworkUser.storeUserInSingleton(this@SplashActivity, jo)
+                                            storeUserInSingleton(this@SplashActivity, jo)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
                                         MainInit()
@@ -225,7 +225,7 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    else if (getEncryptedJwtToken(this@SplashActivity) != null) {
+                    else if (getEncryptedJwtToken(this@SplashActivity) != null && loadEncryptedData(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)) != null) {
 
                         // ------! 자체 로그인 !------
                         val jsonObj = decryptData(getString(R.string.SECURE_KEY_ALIAS),

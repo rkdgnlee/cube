@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.tangoplus.tangoq.data.MessageVO
+import org.json.JSONObject
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -44,8 +45,28 @@ class PreferencesManager(context: Context) {
         setStoredInt(sn, newValue)
         Log.v("PrefsManager", "Incremented: previous=$currentValue, new=$newValue")
         setLastSavedDate(sn, currentDate.timeInMillis)
-
     }
+
+    fun storeFilter(filter1: String, filter2 : String) {
+        prefs.edit().putString(filter1, filter2).apply()
+        Log.v("filter", "$filter1 , $filter2")
+    }
+
+    fun getFilter(filter1: String) : String {
+        return prefs.getString(filter1, "없음").toString()
+    }
+
+    fun hasAnyFilter(): Boolean {
+        val filterKeys = listOf(
+            "재활 부위 선택",
+            "제외 운동",
+            "운동 난이도 설정",
+            "보유 기구 설정",
+            "운동 장소(가능 자세)"
+        )
+        return filterKeys.any { prefs.contains(it) }
+    }
+
     private fun isNewDay(currentDate: Calendar, lastSavedTimestamp: Long): Boolean {
         val lastSavedDate = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
         lastSavedDate.timeInMillis = lastSavedTimestamp

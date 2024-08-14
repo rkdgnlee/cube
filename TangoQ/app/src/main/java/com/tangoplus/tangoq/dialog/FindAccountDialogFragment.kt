@@ -90,6 +90,9 @@ class FindAccountDialogFragment : DialogFragment() {
                         binding.clFADResetPassword.visibility = View.GONE
                         binding.btnFADConfirm.text = "비밀번호 찾기"
                         binding.btnFADConfirm.isEnabled = true
+                        binding.etFADAuthNumber.text = null
+                        binding.etFADMobile.text = null
+
                     }
                 }
             }
@@ -174,8 +177,8 @@ class FindAccountDialogFragment : DialogFragment() {
                 }
                 "아이디 찾기" -> {
                     binding.clFADMobile.visibility = View.GONE
-
-//                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), URLEncoder.encode(binding.etFADMobile.text.toString(), "UTF-8")) { jo ->
+                    // ------! 핸드폰 번호를 보내면 아이디를 알려주는 api 필요 !------
+//                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), , requireContext()) { jo ->
 //                        if (jo?.getInt("status") == 404) {
 //                            requireActivity().runOnUiThread {
 //                                val dialog = AlertDialog.Builder(requireContext())
@@ -196,6 +199,7 @@ class FindAccountDialogFragment : DialogFragment() {
                     binding.btnFADAuthSend.text= "초기 화면으로"
                 }
                 "비밀번호 찾기" -> {
+                    // ------! 비밀번호를 찾기를 하면 아이디와 핸드폰 번호를 맞혀서 일치한다는 번호만 있으면 재설정하는 update하기.
 //                    val email = when (binding.FADSpinner.selectedItemPosition) {
 //                        0, 1, 2 -> {
 //                            "${binding.etFADEmailId.text}@${binding.FADSpinner.selectedItem as String}"
@@ -260,7 +264,7 @@ class FindAccountDialogFragment : DialogFragment() {
                         binding.etFADMobile.isEnabled = false
 
                         // ------! 번호 인증 완료 !------
-                        val snackbar = Snackbar.make(requireActivity().requireViewById(R.id.clSignIn), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
+                        val snackbar = Snackbar.make(requireActivity().requireViewById(R.id.clIntro), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
                         snackbar.setAction("확인") { snackbar.dismiss() }
                         snackbar.setActionTextColor(Color.WHITE)
                         snackbar.show()

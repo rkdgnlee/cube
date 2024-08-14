@@ -17,7 +17,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.ExerciseViewModel
+
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -25,7 +26,7 @@ import org.json.JSONObject
 
 class FeedbackDialogFragment : DialogFragment() {
     lateinit var binding: FragmentFeedbackDialogBinding
-    val viewModel: FavoriteViewModel by activityViewModels()
+    val eViewModel: ExerciseViewModel by activityViewModels()
     val mViewModel : MeasureViewModel by activityViewModels()
 
     private lateinit var fatigues: TextViewGroup
@@ -47,10 +48,10 @@ class FeedbackDialogFragment : DialogFragment() {
         val t_userdata = Singleton_t_user.getInstance(requireContext())
         val userJson= t_userdata.jsonObject?.getJSONObject("login_data")
 
-        val progressTime = viewModel.exerciseLog.value?.first
-        val totalTime = viewModel.exerciseLog.value?.third
+        val progressTime = eViewModel.exerciseLog.value?.first
+        val totalTime = eViewModel.exerciseLog.value?.third
         binding.tvFbTime.text = "${progressTime.toString()} 초" ?: "0초"
-        binding.tvFbCount.text = "${viewModel.exerciseLog.value?.second} 개" ?: "0개"
+        binding.tvFbCount.text = "${eViewModel.exerciseLog.value?.second} 개" ?: "0개"
         val percent = ((progressTime?.times(100))?.div(totalTime!!))?.toFloat()
         Log.v("feedback>percent", "$percent")
         binding.cpbFb.apply {
@@ -90,7 +91,7 @@ class FeedbackDialogFragment : DialogFragment() {
             val jsonObj = JSONObject()
             val parts = mutableListOf<String>()
             for (i in 0 until mViewModel.feedbackParts.value?.size!!) {
-                parts.add(mViewModel.feedbackParts.value!![i].partName)
+                parts.add(mViewModel.feedbackParts.value!![i].name)
             }
             jsonObj.put("user_sn", userJson?.optString("user_sn"))
             jsonObj.put("intensity_score",intensitys.getIndex())
@@ -104,8 +105,8 @@ class FeedbackDialogFragment : DialogFragment() {
 //            startActivity(intent)
 //            requireActivity().finishAffinity()
             dismiss()
-            viewModel.exerciseLog.value = null
-            viewModel.isDialogShown.value = true
+            eViewModel.exerciseLog.value = null
+            eViewModel.isDialogShown.value = true
         }
 
         binding.btnFbPainPartSelect.setOnClickListener {

@@ -50,7 +50,7 @@
                     android:layout_marginTop="8dp"
                     android:text="어깨 관절 운동 프로그램(2)"
                     android:textColor="@color/black"
-                    android:textSize="24sp"
+                    android:textSize="22dp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/ibtnPTDShare"
                     app:layout_constraintStart_toStartOf="parent"

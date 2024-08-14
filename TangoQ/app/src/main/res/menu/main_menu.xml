@@ -14,10 +14,10 @@
         android:id="@+id/measure"
         android:icon="@drawable/bnb_measure"
         android:title="측정" />
-    <item
-        android:id="@+id/favorite"
-        android:icon="@drawable/bnb_favorite"
-        android:title="저장" />
+<!--    <item-->
+<!--        android:id="@+id/favorite"-->
+<!--        android:icon="@drawable/bnb_favorite"-->
+<!--        android:title="저장" />-->
     <item
         android:id="@+id/profile"
         android:icon="@drawable/bnb_profile"

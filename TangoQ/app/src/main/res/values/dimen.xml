@@ -6,6 +6,6 @@
     <dimen name="card_corner_elevation">0dp</dimen>
     <dimen name="top_space_height_dialog">230dp</dimen>
     <dimen name="top_space_height_fragment">320dp</dimen>
-
+    <dimen name="top_space_height_qr_code">680dp</dimen>
 
 </resources>

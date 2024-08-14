@@ -76,101 +76,102 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tvEBSName" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/materialDivider21"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="20dp"
-            app:dividerColor="@color/subColor100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView27" />
+<!--        <com.google.android.material.divider.MaterialDivider-->
+<!--            android:id="@+id/materialDivider21"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="2dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            app:dividerColor="@color/subColor100"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/cardView27" />-->
 
-        <ImageButton
-            android:id="@+id/ibtnEBSMinus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:padding="4dp"
-            android:scaleType="center"
-            android:src="@drawable/icon_minus"
-            app:layout_constraintBottom_toBottomOf="@+id/tvEBSCount"
-            app:layout_constraintEnd_toStartOf="@+id/tvEBSCount"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tvEBSCount" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/ibtnEBSMinus"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@drawable/effect_ibtn_12dp"-->
+<!--            android:padding="4dp"-->
+<!--            android:scaleType="center"-->
+<!--            android:src="@drawable/icon_minus"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/tvEBSCount"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/tvEBSCount"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/tvEBSCount" />-->
 
-        <TextView
-            android:id="@+id/tvEBSCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="25dp"
-            android:layout_weight="1"
-            android:background="@drawable/background_rectangle_sub_color_100_12dp"
-            android:gravity="center"
-            android:paddingStart="40dp"
-            android:paddingTop="15dp"
-            android:paddingEnd="40dp"
-            android:paddingBottom="15dp"
-            android:text="2"
-            android:textColor="@color/subColor800"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialDivider21" />
+<!--        <TextView-->
+<!--            android:id="@+id/tvEBSCount"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_marginTop="25dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@drawable/background_rectangle_sub_color_100_12dp"-->
+<!--            android:gravity="center"-->
+<!--            android:paddingStart="40dp"-->
+<!--            android:paddingTop="15dp"-->
+<!--            android:paddingEnd="40dp"-->
+<!--            android:paddingBottom="15dp"-->
+<!--            android:text="2"-->
+<!--            android:textColor="@color/subColor800"-->
+<!--            android:textSize="20dp"-->
+<!--            android:textStyle="bold"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/materialDivider21" />-->
 
-        <ImageButton
-            android:id="@+id/ibtnEBSPlus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:padding="4dp"
-            android:scaleType="center"
-            android:src="@drawable/icon_plus"
-            app:layout_constraintBottom_toBottomOf="@+id/tvEBSCount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tvEBSCount"
-            app:layout_constraintTop_toTopOf="@+id/tvEBSCount" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/ibtnEBSPlus"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@drawable/effect_ibtn_12dp"-->
+<!--            android:padding="4dp"-->
+<!--            android:scaleType="center"-->
+<!--            android:src="@drawable/icon_plus"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/tvEBSCount"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/tvEBSCount"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/tvEBSCount" />-->
 
-        <TextView
-            android:id="@+id/textView20"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="10dp"
-            android:background="#00FFFFFF"
-            android:text="세트추가"
-            android:textColor="@color/subColor500"
-            android:textSize="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/materialDivider21" />
+<!--        <TextView-->
+<!--            android:id="@+id/textView20"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="32dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:background="#00FFFFFF"-->
+<!--            android:text="세트추가"-->
+<!--            android:textColor="@color/subColor500"-->
+<!--            android:textSize="12dp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/materialDivider21" />-->
 
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/materialDivider24"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="25dp"
-            app:dividerColor="@color/subColor100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvEBSCount" />
+<!--        <com.google.android.material.divider.MaterialDivider-->
+<!--            android:id="@+id/materialDivider24"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="2dp"-->
+<!--            android:layout_marginTop="25dp"-->
+<!--            app:dividerColor="@color/subColor100"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/tvEBSCount" />-->
 
         <LinearLayout
             android:id="@+id/llEBsPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="@drawable/effect_ibtn"
             android:orientation="horizontal"
             android:padding="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialDivider24"
+            app:layout_constraintTop_toBottomOf="@+id/tvEBSSymptom"
             app:layout_constraintVertical_bias="0.0">
 
             <ImageView

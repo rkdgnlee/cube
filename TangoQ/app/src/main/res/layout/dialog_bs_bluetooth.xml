@@ -58,7 +58,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ibtnBtBSBack" />
 
     <ImageView
-        android:id="@+id/imageView34"
+        android:id="@+id/ivM2"
         android:layout_width="0dp"
         android:layout_height="186dp"
         android:layout_marginStart="20dp"
@@ -77,9 +77,9 @@
         android:layout_marginBottom="12dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageView34"
+        app:layout_constraintEnd_toEndOf="@+id/ivM2"
         app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintStart_toStartOf="@+id/imageView34"
+        app:layout_constraintStart_toStartOf="@+id/ivM2"
         app:layout_constraintTop_toBottomOf="@+id/tvBtBSAddress">
 
         <androidx.appcompat.widget.AppCompatButton
@@ -120,9 +120,9 @@
         android:layout_height="wrap_content"
         android:text="디바이스네임"
         android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="@+id/imageView34"
-        app:layout_constraintStart_toStartOf="@+id/imageView34"
-        app:layout_constraintTop_toBottomOf="@+id/imageView34" />
+        app:layout_constraintEnd_toEndOf="@+id/ivM2"
+        app:layout_constraintStart_toStartOf="@+id/ivM2"
+        app:layout_constraintTop_toBottomOf="@+id/ivM2" />
 
     <TextView
         android:id="@+id/tvBtBSAddress"
@@ -131,7 +131,7 @@
         android:layout_marginTop="4dp"
         android:text="맥 어드레스"
         android:textColor="@color/subColor400"
-        app:layout_constraintEnd_toEndOf="@+id/imageView34"
-        app:layout_constraintStart_toStartOf="@+id/imageView34"
+        app:layout_constraintEnd_toEndOf="@+id/ivM2"
+        app:layout_constraintStart_toStartOf="@+id/ivM2"
         app:layout_constraintTop_toBottomOf="@+id/tvBtBSDeviceName" />
 </androidx.constraintlayout.widget.ConstraintLayout>

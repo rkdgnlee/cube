@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/effect_ibtn_12dp"
+    tools:context=".dialog.CustomExerciseDialogFragment">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="4dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCEDStart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/mainColor"
+            android:padding="16dp"
+            android:stateListAnimator="@null"
+            android:text="운동 시작하기"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+            <ImageView
+                android:id="@+id/ibtnCEDBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:padding="4dp"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvCEDTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="주차 맞춤운동"
+                android:textColor="@color/subColor800"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnCEDBack"
+                app:layout_constraintStart_toEndOf="@+id/ibtnCEDBack"
+                app:layout_constraintTop_toTopOf="@+id/ibtnCEDBack" />
+
+            <ImageButton
+                android:id="@+id/ibtnCEDInfo"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_info_800"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCEDTitle"
+                app:layout_constraintStart_toEndOf="@+id/tvCEDTitle"
+                app:layout_constraintTop_toTopOf="@+id/tvCEDTitle" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider11"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ibtnCEDMore" />
+
+            <ImageButton
+                android:id="@+id/ibtnCEDMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:padding="4dp"
+                android:src="@drawable/icon_more_800"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnCEDBack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ibtnCEDBack" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider2"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ibtnCEDMore" />
+
+            <TextView
+                android:id="@+id/tvCEDSet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="전체 진행도 : 3%"
+                android:textColor="@color/subColor800"
+                android:textSize="18dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView12"
+                app:layout_constraintStart_toEndOf="@+id/cardView12"
+                app:layout_constraintTop_toTopOf="@+id/cardView12" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView12"
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/mainColor"
+                app:cardElevation="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_rectangole_sub_color_800_20dp"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:text="1/4주차"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCEDSet"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvCEDSet" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCEDHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCEDSet" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider6"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvCEDHorizontal" />
+
+            <TextView
+                android:id="@+id/tvCEDCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="총 5개"
+                android:textColor="@color/subColor800"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider6" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider9"
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="12dp"
+                app:dividerColor="@color/subColor150"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCEDCount"
+                app:layout_constraintStart_toEndOf="@+id/tvCEDCount"
+                app:layout_constraintTop_toTopOf="@+id/tvCEDCount" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/materialDivider9"
+                app:layout_constraintStart_toEndOf="@+id/materialDivider9"
+                app:layout_constraintTop_toTopOf="@+id/materialDivider9">
+
+                <ImageView
+                    android:id="@+id/imageView65"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/icon_time_sub_800" />
+
+                <TextView
+                    android:id="@+id/tvCEDTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="25분"
+                    android:textColor="@color/subColor800"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider10"
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="20dp"
+                app:dividerColor="@color/subColor150"
+                app:layout_constraintBottom_toBottomOf="@+id/linearLayout26"
+                app:layout_constraintStart_toEndOf="@+id/linearLayout26"
+                app:layout_constraintTop_toTopOf="@+id/linearLayout26" />
+
+            <TextView
+                android:id="@+id/tvCEDStage"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:text="초급자"
+                android:textColor="@color/subColor800"
+                app:layout_constraintBottom_toBottomOf="@+id/materialDivider10"
+                app:layout_constraintStart_toEndOf="@+id/materialDivider10"
+                app:layout_constraintTop_toTopOf="@+id/materialDivider10" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCED"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="80dp"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCEDCount" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

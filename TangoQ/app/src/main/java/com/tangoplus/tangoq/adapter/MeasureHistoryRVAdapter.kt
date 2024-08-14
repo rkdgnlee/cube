@@ -1,0 +1,54 @@
+package com.tangoplus.tangoq.adapter
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
+import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.databinding.RvMeasureItemBinding
+import com.tangoplus.tangoq.fragment.MeasureDetailFragment
+
+class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvMIName: TextView = view.findViewById(R.id.tvMIName)
+        val tvMIPredict: TextView = view.findViewById(R.id.tvMIPredict)
+        val tvMIScore : TextView = view.findViewById(R.id.tvMIScore)
+        val clMI : ConstraintLayout = view.findViewById(R.id.clMI)
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding = RvMeasureItemBinding.inflate(layoutInflater, parent, false)
+        return viewHolder(binding.root)
+    }
+
+    override fun getItemCount(): Int {
+        return measures.size
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val currentItem = measures[position]
+        if (holder is viewHolder) {
+            holder.tvMIName.text = currentItem.name
+            holder.tvMIScore.text = currentItem.score.toString()
+            var explain = ""
+            for (i in 0 until currentItem.dangerParts.size) {
+                explain += currentItem.dangerParts[i] + ", "
+            }
+            holder.tvMIPredict.text = explain
+
+            holder.clMI.setOnClickListener {
+                fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                    setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                    replace(R.id.flMain, MeasureDetailFragment())
+                    addToBackStack(null)
+                    commit()
+                }
+            }
+        }
+    }
+}

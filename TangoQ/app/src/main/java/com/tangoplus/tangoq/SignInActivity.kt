@@ -43,7 +43,6 @@ import com.tangoplus.tangoq.transition.SignInTransition
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
-
 class SignInActivity : AppCompatActivity() {
     lateinit var binding : ActivitySignInBinding
     val viewModel : SignInViewModel by viewModels()
@@ -113,7 +112,9 @@ class SignInActivity : AppCompatActivity() {
 
         // -----! 인증 문자 확인 시작 !-----
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(p0: PhoneAuthCredential) {}
+            override fun onVerificationCompleted(p0: PhoneAuthCredential) {
+                Log.v("verifyComplete", "PhoneAuthCredential: $p0")
+            }
             override fun onVerificationFailed(p0: FirebaseException) {
                 Log.e("failedAuth", "$p0")
             }
@@ -121,19 +122,20 @@ class SignInActivity : AppCompatActivity() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 this@SignInActivity.verificationId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공")
+                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId ,token: $token")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSignIn), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 binding.btnAuthConfirm.isEnabled = true
             }
         }
+
         binding.btnAuthSend.setOnSingleClickListener {
             var transformMobile = phoneNumber82(binding.etMobile.text.toString())
             val dialog = AlertDialog.Builder(this)
                 .setTitle("📩 문자 인증 ")
                 .setMessage("$transformMobile 로 인증 하시겠습니까?")
                 .setPositiveButton("예") { _, _ ->
-                    transformMobile = transformMobile.replace("-", "")
+//                    transformMobile = transformMobile.replace("-", "")
                     Log.w("전화번호", transformMobile)
                     val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(transformMobile)
@@ -396,15 +398,15 @@ class SignInActivity : AppCompatActivity() {
     }
     private fun phoneNumber82(msg: String) : String {
         val firstNumber: String = msg.substring(0,3)
+
         var phoneEdit = msg.substring(3)
         when (firstNumber) {
-            "010" -> phoneEdit = "+8210$phoneEdit"
-            "011" -> phoneEdit = "+8211$phoneEdit"
-            "016" -> phoneEdit = "+8216$phoneEdit"
-            "017" -> phoneEdit = "+8217$phoneEdit"
-            "018" -> phoneEdit = "+8218$phoneEdit"
-            "019" -> phoneEdit = "+8219$phoneEdit"
-            "106" -> phoneEdit = "+82106$phoneEdit"
+            "010" -> phoneEdit = "+82 10$phoneEdit"
+            "011" -> phoneEdit = "+82 11$phoneEdit"
+            "016" -> phoneEdit = "+82 16$phoneEdit"
+            "017" -> phoneEdit = "+82 17$phoneEdit"
+            "018" -> phoneEdit = "+82 18$phoneEdit"
+            "019" -> phoneEdit = "+82 19$phoneEdit"
         }
         return phoneEdit
     }

@@ -11,14 +11,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.FavoriteVO
-import com.tangoplus.tangoq.data.FavoriteViewModel
+
 import com.tangoplus.tangoq.databinding.FragmentExerciseBSDialogBinding
 
 
 class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentExerciseBSDialogBinding
-    val viewModel: FavoriteViewModel by activityViewModels()
+
     var sn = 0
 
     override fun onCreateView(
@@ -44,26 +43,26 @@ class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
             .override(180)
             .into(binding.ivEBsThumbnail)
 
-        // ------! 세트 계산 시작 !------
-        val count = MutableLiveData(1)
-
-        binding.ibtnEBSMinus.setOnClickListener {
-            if (count.value!! > 1) count.value = count.value!! - 1
-            if (exerciseUnit != null) {
-                viewModel.selectedFavorite.value?.exercises?.remove(exerciseUnit)
-            }
-        }
-        binding.ibtnEBSPlus.setOnClickListener {
-            if (count.value!! < 10) count.value = count.value!! + 1
-            if (exerciseUnit != null) {
-                viewModel.selectedFavorite.value?.exercises?.add(exerciseUnit)
-            }
-        }
-        count.observe(viewLifecycleOwner){
-            binding.tvEBSCount.text = it.toString()
-            Log.v("count", "${count.value}")
-        }
-        // ------! 세트 계산 끝 !-------
+//        // ------! 세트 계산 시작 !------
+//        val count = MutableLiveData(1)
+//
+//        binding.ibtnEBSMinus.setOnClickListener {
+//            if (count.value!! > 1) count.value = count.value!! - 1
+//            if (exerciseUnit != null) {
+//                viewModel.selectedFavorite.value?.exercises?.remove(exerciseUnit)
+//            }
+//        }
+//        binding.ibtnEBSPlus.setOnClickListener {
+//            if (count.value!! < 10) count.value = count.value!! + 1
+//            if (exerciseUnit != null) {
+//                viewModel.selectedFavorite.value?.exercises?.add(exerciseUnit)
+//            }
+//        }
+//        count.observe(viewLifecycleOwner){
+//            binding.tvEBSCount.text = it.toString()
+//            Log.v("count", "${count.value}")
+//        }
+//        // ------! 세트 계산 끝 !-------
 
         binding.llEBsPlay.setOnClickListener {
             dismiss()

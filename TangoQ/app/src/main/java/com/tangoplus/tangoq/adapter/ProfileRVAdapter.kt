@@ -12,6 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.ktx.auth
@@ -29,15 +31,20 @@ import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
+import com.tangoplus.tangoq.dialog.LoginDialogFragment
+import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
+import com.tangoplus.tangoq.dialog.ProfileEditBSDialogFragment
+import com.tangoplus.tangoq.fragment.ProfileFragment
 import org.json.JSONObject
 
 import java.lang.IllegalArgumentException
 
-class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean, val case: String) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
+class ProfileRVAdapter(private val fragment: ProfileFragment, private val booleanClickListener: BooleanClickListener, val first: Boolean, val case: String, val fragmentManager: FragmentManager) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
     var profilemenulist = mutableListOf<String>()
     var userJson = JSONObject()
     private val VIEW_TYPE_NORMAL = 0
     private val VIEW_TYPE_SPECIAL_ITEM = 1
+
     inner class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val tvPfSettingsName : TextView = view.findViewById(R.id.tvPfSettingsName)
         val tvPfInfo: TextView = view.findViewById(R.id.tvPfInfo)
@@ -100,13 +107,13 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             when (currentItem) {
                                 "내정보" -> {
                                     val dialogFragment = ProfileEditDialogFragment()
-                                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                                    dialogFragment.setProfileUpdateListener(fragment)
+                                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "ProfileEditDialogFragment")
                                 }
-//                        "연동 관리" -> {
-//                            val settingsIntent = Intent()
-//                            settingsIntent.action = HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
-//                            fragment.startActivity(settingsIntent)
-//                        }
+                                "QR코드 핀번호 로그인" -> {
+                                    val dialog = LoginScanDialogFragment()
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LoginScanDialogFragment")
+                                }
                                 "푸쉬 알림 설정" -> {
                                     val intent = Intent().apply {
                                         action = "android.settings.APP_NOTIFICATION_SETTINGS"
@@ -173,9 +180,25 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                         when (holder.tvPfSettingsName.text) {
                             "이름" -> holder.tvPfInfo.text = userJson.optString("user_name")
                             "성별" -> holder.tvPfInfo.text = userJson.optString("user_gender") ?: "미설정"
-                            "몸무게" -> holder.tvPfInfo.text = userJson.optString("user_weight") + "kg" ?: "미설정"
-                            "신장" -> holder.tvPfInfo.text = userJson.optString("user_height") + "cm" ?: "미설정"
+                            "몸무게" -> holder.tvPfInfo.text = userJson.optString("user_weight") + "kg"
+                            "신장" -> holder.tvPfInfo.text = userJson.optString("user_height") + "cm"
                             "이메일" -> holder.tvPfInfo.text = userJson.optString("user_email") ?: "미설정"
+                        }
+
+
+                        holder.cltvPfSettings.setOnClickListener {
+                            when (holder.tvPfSettingsName.text) {
+                                "몸무게" -> {
+                                    val dialog = ProfileEditBSDialogFragment.newInstance("몸무게")
+                                    dialog.show(fragmentManager, "ProfileEditBSDialogFragment")
+
+                                }
+                                "신장" -> {
+                                    val dialog = ProfileEditBSDialogFragment.newInstance("신장")
+                                    dialog.show(fragmentManager, "ProfileEditBSDialogFragment")
+                                }
+
+                            }
                         }
                     }
                 }
@@ -192,7 +215,6 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                         }
                         myViewHolder.schPfS.setOnCheckedChangeListener{ _, isChecked ->
                             booleanClickListener.onSwitchChanged(isChecked)
-
                         }
                     }
                 }

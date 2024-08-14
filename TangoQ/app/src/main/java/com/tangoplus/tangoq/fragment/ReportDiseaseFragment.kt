@@ -27,7 +27,7 @@ class ReportDiseaseFragment : Fragment() {
         binding.ibtnRD.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flMain, ReportFragment())
+                replace(R.id.flMain, MeasureFragment())
 
                 commit()
             }

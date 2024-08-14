@@ -103,15 +103,15 @@
                     android:background="@color/white"
                     android:orientation="vertical">
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>

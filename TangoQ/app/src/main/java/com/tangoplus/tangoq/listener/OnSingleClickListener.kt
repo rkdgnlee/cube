@@ -20,7 +20,7 @@ class OnSingleClickListener(private val clickListener: View.OnClickListener) : V
                 clickListener.onClick(v)
             }
         } else {
-            Log.d(TAG, "wainting for a while")
+            Log.d(TAG, "wait for click, 1000ms")
         }
     }
 }

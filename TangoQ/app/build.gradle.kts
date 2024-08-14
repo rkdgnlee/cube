@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-    id("kotlin-kapt")
+//    id("kotlin-kapt")
 }
 
 android {
@@ -50,14 +50,11 @@ dependencies {
 
 
     // 외부 라이브러리
-    implementation("io.github.ShawnLin013:number-picker:2.4.13")
     implementation("com.github.shuhart:StepView:v1.5.1")
-    implementation("com.seosh817:circularseekbar:1.0.2")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.tbuonomo:dotsindicator:5.0")
-    implementation("com.github.MackHartley:RoundedProgressBar:3.0.0")
     implementation("com.airbnb.android:lottie:6.4.0")
     implementation("io.github.litao0621:nifty-slider:1.4.6")
     implementation("com.github.TomLeCollegue:ProgressBar-Library-Android-Kotlin:0.1.1")
@@ -69,6 +66,9 @@ dependencies {
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")
     implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
+    implementation("jp.wasabeef:blurry:4.0.1")
+
 
     // api
     implementation("com.navercorp.nid:oauth:5.9.1")
@@ -76,9 +76,9 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation("com.kakao.sdk:v2-auth:2.19.0")
     implementation("com.google.gms:google-services:4.4.2")
-    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
-    implementation("com.google.firebase:firebase-analytics:22.0.1")
+    implementation("com.google.firebase:firebase-analytics:22.0.2")
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
@@ -95,23 +95,23 @@ dependencies {
     implementation("com.android.volley:volley:1.2.1")
 
     // room
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-rxjava3:2.6.1")
-    implementation("androidx.room:room-rxjava2:2.6.1")
-    implementation("androidx.room:room-guava:2.6.1")
-    implementation("androidx.room:room-testing:2.6.1")
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("com.google.android.gms:play-services-fitness:21.2.0")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-    annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
-    //noinspection KaptUsageInsteadOfKsp
-    kapt("androidx.room:room-compiler:2.6.1")
+//    implementation("androidx.room:room-ktx:2.6.1")
+//    implementation("androidx.room:room-runtime:2.6.1")
+//    implementation("androidx.room:room-rxjava3:2.6.1")
+//    implementation("androidx.room:room-rxjava2:2.6.1")
+//    implementation("androidx.room:room-guava:2.6.1")
+//    implementation("androidx.room:room-testing:2.6.1")
+//    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+//    implementation("com.google.android.gms:play-services-fitness:21.2.0")
+//    annotationProcessor("androidx.room:room-compiler:2.6.1")
+//    annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
+//    //noinspection KaptUsageInsteadOfKsp
+//    kapt("androidx.room:room-compiler:2.6.1")
 
 
 
     // 미디어
-    val camera_version = "1.3.3"
+    val camera_version = "1.3.4"
     implementation("androidx.camera:camera-core:$camera_version")
     implementation("androidx.camera:camera-camera2:$camera_version")
     implementation("androidx.camera:camera-lifecycle:$camera_version")
@@ -120,10 +120,11 @@ dependencies {
     implementation("androidx.camera:camera-view:$camera_version")
     implementation(libs.androidx.camera.core)
     implementation("com.arthenica:ffmpeg-kit-full:4.5")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     // 내부 라이브러리
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
-    implementation("androidx.fragment:fragment-ktx:1.8.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation("androidx.fragment:fragment-ktx:1.8.1")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")

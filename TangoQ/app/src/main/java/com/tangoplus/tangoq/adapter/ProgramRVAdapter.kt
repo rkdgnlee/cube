@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -20,15 +19,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.PlayFullScreenActivity
-import com.tangoplus.tangoq.listener.OnRVClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.RvProgramItemBinding
-import com.tangoplus.tangoq.dialog.PlayProgramThumbnailDialogFragment
-import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
-import com.tangoplus.tangoq.dialog.ProgramAddFavoriteDialogFragment
-import java.lang.IllegalArgumentException
+import com.tangoplus.tangoq.listener.OnRVClickListener
 
 class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVClickListener: OnRVClickListener, val fragment : Fragment, val xmlname: String, private val startForResult: ActivityResultLauncher<Intent>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -87,47 +82,40 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
                         popupWindow =  null
                     } else {
                         val inflater = LayoutInflater.from(view?.context)
-                        val popupView = inflater.inflate(R.layout.pw_main_item, null)
-                        val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view?.context?.resources?.displayMetrics).toInt()
-                        val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 162f, view?.context?.resources?.displayMetrics).toInt()
-
-                        popupWindow = PopupWindow(popupView, width, height)
-                        popupWindow!!.showAsDropDown(view)
-
-                        // ------! 팝업 1 재생 시작 !------
-                        popupView.findViewById<TextView>(R.id.tvPMPlay).setOnClickListener {
-                            val urls = storePickUrl(currentItem.exercises!!)
-                            val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
-                            intent.putStringArrayListExtra("urls", ArrayList(urls))
-                            intent.putExtra("total_time", currentItem.programTime)
-                            fragment.requireContext().startActivity(intent)
-                            startForResult.launch(intent)
-                            popupWindow!!.dismiss()
-                        } // ------! 팝업 2 자세히 보기 시작 !------
-                        popupView.findViewById<TextView>(R.id.tvPMGoThumbnail).setOnClickListener {
-                            val dialogFragment = PlayProgramThumbnailDialogFragment().apply {
-                                arguments = Bundle().apply {
-                                    putParcelable("Program", currentItem)
-                                }
-                            }
-                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayProgramThumbnailDialogFragment")
-                            popupWindow!!.dismiss()
-                        } // -------! 팝업 즐겨찾기 추가 !------
-                        popupView.findViewById<TextView>(R.id.tvPMAddFavorite).setOnClickListener {
-                            val bundle = Bundle().apply {
-                                putParcelable("Program", currentItem)
-                            }
-                            val dialog = ProgramAddFavoriteDialogFragment().apply {
-                                arguments = bundle
-                            }
-                            dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramAddFavoriteDialogFragment")
-                            popupWindow!!.dismiss()
-                        }
-                        popupView.findViewById<ImageButton>(R.id.ibtnPMExit).setOnClickListener {
-                            popupWindow!!.dismiss()
-                        }
-                        popupWindow!!.isOutsideTouchable = true
-                        popupWindow!!.isFocusable = true
+//                        val popupView = inflater.inflate(R.layout.pw_main_item, null)
+//                        val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view?.context?.resources?.displayMetrics).toInt()
+//                        val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 162f, view?.context?.resources?.displayMetrics).toInt()
+//
+//                        popupWindow = PopupWindow(popupView, width, height)
+//                        popupWindow!!.showAsDropDown(view)
+//
+//                         //------! 팝업 1 재생 시작 !------
+//                        popupView.findViewById<TextView>(R.id.tvPMPlay).setOnClickListener {
+//                            val urls = storePickUrl(currentItem.exercises!!)
+//                            val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
+//                            intent.putStringArrayListExtra("urls", ArrayList(urls))
+//                            intent.putExtra("total_time", currentItem.programTime)
+//                            fragment.requireContext().startActivity(intent)
+//                            startForResult.launch(intent)
+//                            popupWindow!!.dismiss()
+//                        } // ------! 팝업 2 자세히 보기 시작 !------
+//                        popupView.findViewById<TextView>(R.id.tvPMGoThumbnail).setOnClickListener {
+////                            val dialogFragment = PlayProgramThumbnailDialogFragment().apply {
+////                                arguments = Bundle().apply {
+////                                    putParcelable("Program", currentItem)
+////                                }
+////                            }
+////                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayProgramThumbnailDialogFragment")
+////                            popupWindow!!.dismiss()
+//                        } // -------! 팝업 즐겨찾기 추가 !------
+//                        popupView.findViewById<TextView>(R.id.tvPMAddFavorite).setOnClickListener {
+//
+//                        }
+//                        popupView.findViewById<ImageButton>(R.id.ibtnPMExit).setOnClickListener {
+//                            popupWindow!!.dismiss()
+//                        }
+//                        popupWindow!!.isOutsideTouchable = true
+//                        popupWindow!!.isFocusable = true
                     }
 
 
@@ -157,12 +145,12 @@ class ProgramRVAdapter(var programs: MutableList<ProgramVO>, private val onRVCli
 //                    intent.putStringArrayListExtra("urls", ArrayList(urls))
 ////                    fragment.requireContext().startActivity(intent)
 //                    startForResult.launch(intent)
-                    val dialogFragment = PlayProgramThumbnailDialogFragment().apply {
-                        arguments = Bundle().apply {
-                            putParcelable("Program", currentItem)
-                        }
-                    }
-                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayProgramThumbnailDialogFragment")
+//                    val dialogFragment = PlayProgramThumbnailDialogFragment().apply {
+//                        arguments = Bundle().apply {
+//                            putParcelable("Program", currentItem)
+//                        }
+//                    }
+//                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayProgramThumbnailDialogFragment")
 
                 }
 

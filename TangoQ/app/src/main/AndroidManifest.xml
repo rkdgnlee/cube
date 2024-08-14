@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
     <uses-feature
         android:name="android.hardware.camera.any"
-        android:required="false" />
+        android:required="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -21,29 +21,17 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+    </queries>
 
-<!--    <uses-permission android:name="android.permission.BLUETOOTH" />-->
-<!--    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />-->
-<!--    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />-->
-<!--    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />-->
-<!--    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />-->
-<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
-<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
-<!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
-
-<!--    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>-->
-<!--    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>-->
-<!--    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE"/>-->
-<!--    <uses-permission android:name="android.permission.health.READ_STEPS"/>-->
-<!--    <uses-permission android:name="android.permission.health.WRITE_STEPS"/>-->
-<!--    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>-->
-<!--    <uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED"/>-->
     <application
         android:name=".MyApplication"
         android:allowBackup="false"
@@ -55,17 +43,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TangoQ"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        tools:replace="android:allowBackup"
+        tools:targetApi="31" >
         <activity
-            android:name=".SetupActivity"
-            android:exported="true">
-
+            android:name=".SignInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SigninActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PlaySkeletonActivity"
+            android:exported="true"
+            android:screenOrientation="sensorLandscape" >
         </activity>
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -77,10 +73,11 @@
         </activity>
         <activity
             android:name=".SplashActivity"
-            android:exported="true">
-            <intent-filter android:autoVerify="true">
+            android:exported="true" >
+            <intent-filter android:autoVerify="true" >
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
@@ -90,41 +87,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AlarmActivity"
-            android:exported="true" >
-
-        </activity>
-
-        <activity
             android:name=".MeasureSkeletonActivity"
-            android:exported="true">
-
+            android:exported="true" >
         </activity>
-
         <activity
             android:name=".PlayFullScreenActivity"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".IntroActivity"
             android:exported="true" />
-        <activity
-            android:name=".SignInActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize"/>
 
         <service
             android:name=".service.MediaProjectionService"
-            android:foregroundServiceType="mediaProjection"
             android:enabled="true"
-            android:permission="android.permission.FOREGROUND_SERVICE"
-            android:exported="false">
-        </service>
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection"
+            android:permission="android.permission.FOREGROUND_SERVICE" />
         <service
             android:name=".service.BluetoothLeService"
             android:enabled="true"
@@ -132,32 +114,32 @@
             android:permission="TODO" />
         <service
             android:name=".service.MyFirebaseMessagingService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <provider
-            android:authorities="com.tangoplus.tangoq.provider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.tangoplus.tangoq.provider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_launcher_background" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/mainColor" />
-        <receiver android:name=".broadcastReceiver.AlarmReceiver"
+
+        <receiver
+            android:name=".broadcastReceiver.AlarmReceiver"
             android:exported="true" />
     </application>
-    <queries>
-        <package android:name="com.google.android.apps.healthdata" />
-    </queries>
 
 </manifest>

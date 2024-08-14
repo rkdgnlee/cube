@@ -29,7 +29,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var selectedPosition = RecyclerView.NO_POSITION
+    private var selectedPosition = 0
     inner class MainCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
 //        val tvMCName : TextView = view.findViewById(R.id.tvMCName)
         val ivMCThumbnail : ImageView = view.findViewById(R.id.ivMCThumbnail)
@@ -127,12 +127,11 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 val adapterPosition = holder.adapterPosition
 
                 if (adapterPosition == selectedPosition) {
-//                    holder.tvSCName.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor200))
-                    holder.tvSCName.setBackgroundResource(R.drawable.background_stroke_1dp_main_color_28dp)
-                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.mainColor))
+                    holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_main_color_20dp)
+                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.white))
                 } else {
-                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
-                    holder.tvSCName.setBackgroundResource(R.drawable.background_stroke_1dp_sub_color_28dp)
+                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
+                    holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_20dp)
                 }
 
                 holder.tvSCName.setOnClickListener {
@@ -143,6 +142,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                     notifyItemChanged(selectedPosition) // 새로 선택된 아이템 갱신
                     Log.v("subCategoryIndex", "$selectedPosition")
                 }
+
             }
         }
     }
@@ -151,7 +151,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
         Log.v("ClickIndex", "category: $category")
         Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
             add(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
 //            addToBackStack(null)
             commit()

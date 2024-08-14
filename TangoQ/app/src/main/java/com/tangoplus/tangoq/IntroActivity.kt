@@ -37,11 +37,12 @@ import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.`object`.CommonDefines.TAG
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.Singleton_t_user
-import com.tangoplus.tangoq.data.BannerViewModel
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
+import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
+import com.tangoplus.tangoq.dialog.SetupDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import kotlinx.coroutines.CoroutineScope
@@ -53,7 +54,7 @@ import java.lang.Exception
 
 class IntroActivity : AppCompatActivity() {
     lateinit var binding : ActivityIntroBinding
-    val viewModel : BannerViewModel by viewModels()
+
     val sViewModel  : SignInViewModel by viewModels()
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
@@ -70,7 +71,8 @@ class IntroActivity : AppCompatActivity() {
 
         // ------! token 저장할  securedPref init !------
         securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
-
+//        val dialog = LoginScanDialogFragment()
+//        dialog.show(supportFragmentManager, "LoginScanDialogFragment")
         when (isNetworkAvailable(this)) {
             true -> {
 
@@ -136,7 +138,7 @@ class IntroActivity : AppCompatActivity() {
                 }
             }
         } else {
-            val intent = Intent(this@IntroActivity, SignInActivity::class.java)
+            val intent = Intent(this@IntroActivity, MainActivity::class.java)
             startActivity(intent)
             ActivityCompat.finishAffinity(this@IntroActivity)
         } // ---- firebase 초기화 및 Google Login API 연동 끝 ----
@@ -274,85 +276,24 @@ class IntroActivity : AppCompatActivity() {
             val intent = Intent(this@IntroActivity, SignInActivity::class.java)
             startActivity(intent)
         }
-
-        // -----! 배너 시작 !-----
-//        viewModel.BannerList.add(ImageUrl1)
-//        viewModel.BannerList.add(ImageUrl2)
-//        viewModel.BannerList.add(ImageUrl3)
-//        viewModel.BannerList.add(ImageUrl4)
-//        viewModel.BannerList.add(ImageUrl5)
-//        val bannerAdapter = BannerVPAdapter(viewModel.BannerList, "intro",this@IntroActivity)
-//        bannerAdapter.notifyDataSetChanged()
-//        binding.vpIntroBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-//        binding.vpIntroBanner.adapter = bannerAdapter
-//        binding.vpIntroBanner.setCurrentItem(bannerPosition, false)
-//        binding.vpIntroBanner.apply {
-//            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-//                override fun onPageScrollStateChanged(state: Int) {
-//                    super.onPageScrollStateChanged(state)
-//                    when (state) {
-//                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
-//                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
-//                    }
-//                }
-//            })
-//        }
-
     }
-//    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
-//        override fun handleMessage(msg: Message) {
-//            super.handleMessage(msg)
-//            if (msg.what == 0 && viewModel.BannerList.isNotEmpty()) {
-//                binding.vpIntroBanner.setCurrentItem(++bannerPosition, true)
-//                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산합니다.
-//                val currentIndex = bannerPosition % viewModel.BannerList.size // 65536  % 5
-//
-//                // ProgressBar의 값을 계산합니다.
-//                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
-//                autoScrollStart(intervalTime)
-//            }
-//        }
-//    }
-//    private fun autoScrollStart(intervalTime: Long) {
-//        bannerHandler.removeMessages(0)
-//        bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
-//    }
-//    private fun autoScrollStop() {
-//        bannerHandler.removeMessages(0)
-//    }
-//    override fun onResume() {
-//        super.onResume()
-//        autoScrollStart(intervalTime)
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        autoScrollStop()
-//    }
-// -----! 배너 끝 !-----
 
-    private fun MainInit() {
+    private fun mainInit() {
         val intent = Intent(this ,MainActivity::class.java)
         startActivity(intent)
         finishAffinity()
     }
-    private fun setupInit() {
-        val intent = Intent(this, SetupActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
+
     private fun saveTokenAndIdentifyUser(jo: JSONObject, jsonObj: JSONObject, situation: Int) {
         when (situation) {
-            // ------! 기존 로그인 !------
+            // ------# 기존 로그인 #------
             200 -> {
                 storeUserInSingleton(this@IntroActivity, jo)
                 Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                MainInit()
+                mainInit()
             }
-            // ------! 최초 회원가입 !------
+            // ------# 최초 회원가입 #------
             201 -> {
-//                saveServerToken(this@IntroActivity, jo.optString("user_token"))
-//                Log.v("save>Token", "${getServerToken(this@IntroActivity)}")
 
                 // ------! 광고성 수신 동의 문자 시작 !------
                 val bottomSheetFragment = AgreementBottomSheetDialogFragment()
@@ -364,12 +305,10 @@ class IntroActivity : AppCompatActivity() {
                             jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
                             jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
                             Log.v("Intro>SMS", "$jsonObj")
+                            Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+                            val dialog = SetupDialogFragment.newInstance("startSetup")
+                            dialog.show(supportFragmentManager, "SetupDialogFragment")
 
-//                            insertMarketingBySn(getString(R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@IntroActivity).toString()) { jo2 ->
-//                                storeUserInSingleton(this@IntroActivity, jo)
-                                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                                setupInit()
-//                            }
                         } else {
                             // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
                             if (Firebase.auth.currentUser != null) {

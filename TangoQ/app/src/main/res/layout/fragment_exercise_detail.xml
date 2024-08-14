@@ -98,15 +98,15 @@
                     android:background="@color/white"
                     android:orientation="vertical">
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
-                    <include layout="@layout/rv_shimmer_favorite_item" />
+                    <include layout="@layout/rv_shimmer_exercise_item" />
 
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>
@@ -127,7 +127,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvEDAll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/btnEDFinish"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/sflED" />
@@ -189,6 +190,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/mainColor"
                 android:padding="16dp"
@@ -199,8 +201,7 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvEDAll" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

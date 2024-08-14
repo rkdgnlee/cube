@@ -25,18 +25,20 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileBinding
+import com.tangoplus.tangoq.dialog.AlarmDialogFragment
+import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import java.util.Calendar
 import java.util.TimeZone
 
 
-class ProfileFragment : Fragment(), BooleanClickListener {
+
+class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener {
     lateinit var binding : FragmentProfileBinding
     val viewModel : SignInViewModel by activityViewModels()
     override fun onCreateView(
@@ -55,46 +57,12 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         Log.v("Singleton>Profile", "${userJson}")
-        if (userJson != null) {
-            binding.tvPfName.text = userJson.optString("user_name")
-
-            val height = when (userJson.optDouble("user_height")) {
-                in 0.0 .. 250.0 -> { userJson.optDouble("user_height").toInt().toString() + "cm" }
-                else -> { "미설정" }
-            }
-            binding.tvPHeight.text = height
-
-            val weight = when(userJson.optDouble("user_weight")) {
-                in 0.0 .. 150.0 -> { userJson.optDouble("user_weight").toInt().toString() + "kg" }
-                else -> { "미설정" }
-            }
-            binding.tvPWeight.text = weight
-
-            val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-            binding.tvPAge.text = try {
-                (c.get(Calendar.YEAR) - userJson.optString("user_birthday").substring(0, 4).toInt()).toString() + "세"
-            } catch (e: Exception) {
-                "미설정"
-            }
-
-
-            // ----- 이미지 로드 시작 -----
-            val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-            val imageUri = sharedPreferences.getString("imageUri", null)
-            if (imageUri != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Glide.with(this)
-                        .load(imageUri)
-                        .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                        .into(binding.civP)
-                }
-            }
-        }
+        updateUserData()
 
 
         binding.ibtnPAlarm.setOnClickListener {
-            val intent = Intent(requireContext(), AlarmActivity::class.java)
-            startActivity(intent)
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
         // ------! 프로필 사진 관찰 시작 !------
@@ -123,7 +91,7 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         val profilemenulist = mutableListOf(
             "내정보",
             "다크 모드",
-//            "연동 관리",
+            "QR코드 핀번호 로그인",
             "푸쉬 알림 설정",
             "자주 묻는 질문",
             "문의하기",
@@ -133,9 +101,9 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             "서비스 이용약관",
             "로그아웃",
         )
-        setAdpater(profilemenulist.subList(0,3), binding.rvPNormal,0)
-        setAdpater(profilemenulist.subList(3,6), binding.rvPHelp, 1)
-        setAdpater(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
+        setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
+        setAdapter(profilemenulist.subList(4,6), binding.rvPHelp, 1)
+        setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
 
 //        binding.ibtnPfEdit.setOnClickListener {
@@ -162,14 +130,14 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         // ------! 회원탈퇴 끝 !------
     }
 
-    private fun setAdpater(list: MutableList<String>, rv: RecyclerView, index: Int) {
+    private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile")
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", requireActivity().supportFragmentManager)
             adapter.profilemenulist = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         } else {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile")
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", requireActivity().supportFragmentManager)
             adapter.profilemenulist = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -225,19 +193,48 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             }
         }
     }
+    private fun updateUserData() {
+        // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+        Log.v("Singleton>updateUserData", "$userJson")
+        requireActivity().runOnUiThread {
+            if (userJson != null) {
+                binding.tvPfName.text = userJson.optString("user_name")
 
-    private fun showPermissionContextPopup() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("권한이 필요합니다.")
-            .setMessage("프로필 이미지를 바꾸기 위해서는 갤러리 접근 권한이 필요합니다.")
-            .setPositiveButton("동의하기") { _, _ ->
-                requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1000)
+                val height = when (userJson.optDouble("user_height")) {
+                    in 0.0 .. 250.0 -> { userJson.optDouble("user_height").toInt().toString() + "cm" }
+                    else -> { "미설정" }
+                }
+                binding.tvPHeight.text = height
+
+                val weight = when(userJson.optDouble("user_weight")) {
+                    in 0.0 .. 150.0 -> { userJson.optDouble("user_weight").toInt().toString() + "kg" }
+                    else -> { "미설정" }
+                }
+                binding.tvPWeight.text = weight
+
+                val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+                binding.tvPAge.text = try {
+                    (c.get(Calendar.YEAR) - userJson.optString("user_birthday").substring(0, 4).toInt()).toString() + "세"
+                } catch (e: Exception) {
+                    "미설정"
+                }
+
+
+                // ----- 이미지 로드 시작 -----
+                val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+                val imageUri = sharedPreferences.getString("imageUri", null)
+                if (imageUri != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        Glide.with(this)
+                            .load(imageUri)
+                            .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                            .into(binding.civP)
+                    }
+                }
             }
-            .setNegativeButton("취소하기") { _, _ -> }
-            .create()
-            .show()
+        }
     }
-
     override fun onSwitchChanged(isChecked: Boolean) {
         val sharedPref = requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
         val modeEditor = sharedPref?.edit()
@@ -250,6 +247,10 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             modeEditor?.putBoolean("darkMode", false) ?: false
             modeEditor?.apply()
         }
+    }
+
+    override fun onProfileUpdated() {
+        updateUserData()
     }
 
 }

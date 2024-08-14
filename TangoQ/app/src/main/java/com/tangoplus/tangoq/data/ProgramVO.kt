@@ -12,6 +12,7 @@ data class ProgramVO(
     var programCount : String? = "",
     var exercises : MutableList<ExerciseVO>?
 ): Parcelable {
+
     constructor(parcel: Parcel): this(
         parcel.readInt(),
         parcel.createStringArrayList(),

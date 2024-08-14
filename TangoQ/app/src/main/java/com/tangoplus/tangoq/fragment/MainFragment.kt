@@ -3,65 +3,103 @@ package com.tangoplus.tangoq.fragment
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BlurMaskFilter
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
+import android.icu.util.Measure
+import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.widget.ViewPager2
-import com.tangoplus.tangoq.AlarmActivity
-import com.tangoplus.tangoq.adapter.BannerVPAdapter
-import com.tangoplus.tangoq.adapter.ProgramRVAdapter
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.github.mikephil.charting.animation.ChartAnimator
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.renderer.BarChartRenderer
+import com.github.mikephil.charting.utils.ViewPortHandler
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.skydoves.balloon.ArrowPositionRules
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.BalloonSizeSpec
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.listener.OnRVClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
-import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.db.PreferencesManager
-import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.data.BannerViewModel
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.GraphVO
 import com.tangoplus.tangoq.data.ProgramVO
+import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
-import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
-import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
-import com.tangoplus.tangoq.dialog.PlayProgramThumbnailDialogFragment
+import com.tangoplus.tangoq.dialog.AlarmDialogFragment
+import com.tangoplus.tangoq.dialog.CustomExerciseDialogFragment
+import com.tangoplus.tangoq.dialog.MainFilterDialogFragment
+import com.tangoplus.tangoq.dialog.SetupDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgramVOBySn
+import com.tangoplus.tangoq.view.BarChartRender
+import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.launch
-import java.util.ArrayList
-import java.util.Calendar
-import java.util.TimeZone
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.TextStyle
+import java.util.Date
+import java.util.Locale
 import kotlin.random.Random
 
 
 class MainFragment : Fragment(), OnRVClickListener {
     lateinit var binding: FragmentMainBinding
-    val viewModel: FavoriteViewModel by activityViewModels()
-    val bViewModel : BannerViewModel by activityViewModels()
+
+    val viewModel : UserViewModel by activityViewModels()
 //    val mViewModel : MeasureViewModel by activityViewModels()
     private var bannerPosition = Int.MAX_VALUE/2
-    private var bannerHandler = HomeBannerHandler()
     private val intervalTime = 2400.toLong()
     private lateinit var currentExerciseItem : ExerciseVO
-//    var popupWindow : PopupWindow?= null
     private lateinit var startForResult: ActivityResultLauncher<Intent>
+    lateinit var prefsManager : PreferencesManager
+    val emptyHistory = false
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(inflater)
-        binding.sflM.startShimmer()
+//        binding.sflM.startShimmer()
 
         // ActivityResultLauncher 초기화
         startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -76,304 +114,410 @@ class MainFragment : Fragment(), OnRVClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // -----! 스크롤 관리 !-----
+        // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
-        binding.rvM.isNestedScrollingEnabled = false
-        binding.rvM.overScrollMode = 0
+        prefsManager = PreferencesManager(requireContext())
 
-        // ------! 알람 intent !------
+        // ------# 알람 intent #------
         binding.ibtnMAlarm.setOnClickListener {
-            val intent = Intent(requireContext(), AlarmActivity::class.java)
-            startActivity(intent)
-        } // ------! 알람 intent !------
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+
+//        val dialog = SetupDialogFragment.newInstance("startSetup")
+//        dialog.show(requireActivity().supportFragmentManager, "SetupDialogFragment")
+
 
         when (isNetworkAvailable(requireContext())) {
             true -> {
-                // ------! v1.0 초기 연령 별 추천 운동 시작 !------
                 val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-                val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-                val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
-//                val age = "0"
-                // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
-                val userSn = userJson.optString("user_sn").toString()
+
+                binding.tvMName.text = userJson?.optString("user_name") + " 님"
+
+                // ------! 일주일 간 운동 기록 들어올 곳 시작 !------
+                val weeklySets = listOf(-1f, 38f, 60f, 12f, -1f, 0f, 0f)
+                var finishSets = 0
+                for (indices in weeklySets) {
+                    if (indices > 0f) finishSets += 1
+                }
+
+                // ------# 일주일 정해진 set 가져오기 #------
+                val goalSets = 7
+
+                binding.tvMWeekly.text = "주 ${finishSets} / ${goalSets} 회 "
+                // ------! 일주일 간 운동 기록 들어올 곳 끝 !------
+
+                // ------! bar chart 시작 !------
+                val barChart: BarChart = binding.bcMWeekly
+                barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
+                val entries = ArrayList<BarEntry>()
+
+                for (i in weeklySets.indices) {
+                    val entry = BarEntry(i.toFloat(), weeklySets[i])
+                    entries.add(entry)
+                }
+                val dataSet = BarDataSet(entries, "")
+                dataSet.apply {
+                    color =  resources.getColor(R.color.mainColor, null)
+                    setDrawValues(false)
+                }
+                // BarData 생성 및 차트에 설정
+                val bcdata = BarData(dataSet)
+                bcdata.apply {
+                    barWidth = 0.5f
+                }
+                barChart.data = bcdata
+                // X축 설정
+                barChart.xAxis.apply {
+                    position = XAxis.XAxisPosition.BOTTOM
+                    setDrawGridLines(false)
+                    setDrawAxisLine(false)
+                    labelRotationAngle = 2f
+                    setDrawLabels(false)
+                }
+                barChart.legend.apply {
+                    formSize = 0f
+                }
+                // 왼쪽 Y축 설정
+                barChart.axisLeft.apply {
+                    axisMinimum = -1f // Y축 최소값
+                    setDrawAxisLine(false)
+                    setDrawGridLines(false)
+                    setLabelCount(0, false)
+                    setDrawLabels(false)
+                }
+                // 차트 스타일링 및 설정
+                barChart.apply {
+                    axisRight.isEnabled = false
+                    description.isEnabled = false
+                    legend.isEnabled = false
+                    setDrawValueAboveBar(false)
+                    setDrawGridBackground(false)
+                    setFitBars(false)
+                    animateY(500)
+                    setScaleEnabled(false)
+                    setTouchEnabled(false)
+                    invalidate()
+                }
+
+                // ------! 월화수목금토일 데이터 존재할 시 변경할 구간 시작 !------
+                for (indices in weeklySets) {
+                    if (indices > 0) {
+                        setWeeklyDrawable("ivM${weeklySets.indexOf(indices) + 1}", "icon_week_${weeklySets.indexOf(indices)+1}_enabled")
+                    } else {
+                        setWeeklyDrawable("ivM${weeklySets.indexOf(indices) + 1}", "icon_week_${weeklySets.indexOf(indices)+1}_disabled")
+                    }
+                }
+
+                binding.vMProfile.setOnClickListener{
+                    activity?.let { activity ->
+                        val bnb: BottomNavigationView = activity.findViewById(R.id.bnbMain)
+                        bnb.selectedItemId = R.id.measure
+
+                        activity.supportFragmentManager.executePendingTransactions()
+
+                        val measureFragment = activity.supportFragmentManager.fragments
+                            .find { it is MeasureFragment } as? MeasureFragment
+
+                        measureFragment?.selectDashBoard2()
+                    } ?: run {
+                        Log.e("MainFragment", "Activity is not attached or null")
+                    }
+                }
+                // ------! 월화수목금토일 데이터 존재할 시 변경할 구간 끝 !------
+
+                // ------! 측정 기간 시작 !------
+                //TODO 측정 요약 데이터 가져와야 함.
+                binding.tvMMeasureDuration.text = "기간 06.29 ~ ${SimpleDateFormat("MM.dd").format(Date().time)}"
+
+                // ------! 측정 기간 끝 !------
+
+                // ------! 꺾은선 그래프 시작 !------
+                val lineChart = binding.lcMMeasure
+                val lcXAxis = lineChart.xAxis
+                val lcYAxisLeft = lineChart.axisLeft
+                val lcYAxisRight = lineChart.axisRight
+                val lcLegend = lineChart.legend
+
+                val lcDataList : MutableList<GraphVO> = mutableListOf()
+
+                val weekList = listOf("", "", "", "", "", "", "")
+                for (i in weekList) {
+                    val y = Random.nextInt(70, 99)
+//            lcDataList.add(GraphVO(i, i.length.p))
+                    lcDataList.add(GraphVO(i, y))
+//            y += 1
+                }
+
+                val lcEntries : MutableList<Entry> = mutableListOf()
+                for (i in lcDataList.indices) {
+                    // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
+                    lcEntries.add(Entry(i.toFloat(), lcDataList[i].yAxis.toFloat()))
+                }
+                val lcLineDataSet = LineDataSet(lcEntries, "")
+                lcLineDataSet.apply {
+
+                    color = resources.getColor(R.color.mainColor, null)
+                    lineWidth = 3F
+                    valueTextSize = 0F
+                    circleRadius = 6f
+                    circleHoleRadius = 3f
+                    setCircleColors(resources.getColor(R.color.mainColor))
+                    setDrawCircleHole(true)
+                    setDrawFilled(true)
+//                    fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_sub_color_300)
+                    mode = LineDataSet.Mode.CUBIC_BEZIER
+                    setDrawFilled(false)
+                }
+
+                lcXAxis.apply {
+
+                    labelRotationAngle = 2F
+                    setDrawAxisLine(false)
+                    setDrawGridLines(false)
+                    lcXAxis.valueFormatter = (IndexAxisValueFormatter(lcDataList.map { it.xAxis }))
+                    setLabelCount(lcDataList.size, false)
+                    lcXAxis.position = XAxis.XAxisPosition.BOTTOM
+                }
+                lcYAxisLeft.apply {
+                    setDrawGridLines(false)
+                    setDrawAxisLine(false)
+                    setLabelCount(3, false)
+                    setDrawLabels(false)
+                    axisMinimum = 60f
+                }
+                lcYAxisRight.apply {
+                    setDrawGridLines(false)
+                    setDrawAxisLine(false)
+                    setLabelCount(0, false)
+                    setDrawLabels(false)
+                }
+                lcLegend.apply {
+                    lcLegend.formSize = 0f
+                }
+                lineChart.apply {
+                    data = LineData(lcLineDataSet)
+                    notifyDataSetChanged()
+                    description.text = ""
+                    setScaleEnabled(false)
+                    setTouchEnabled(true)
+                    isDragEnabled = true
+                    invalidate()
+                    data.setDrawValues(false)
+                    for (set in data.dataSets) {
+                        if (set is LineDataSet) {
+                            set.setDrawHighlightIndicators(false)
+                        }
+                    }
+                }
+                // ---- 꺾은선 그래프 코드 끝 ----
+
+
+
+                // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 시작 !------
+                val userSn = userJson?.optString("user_sn").toString()
 //                val userSn = "70"
-
-                val prefsManager = PreferencesManager(requireContext())
-                val currentValue = prefsManager.getStoredInt(userSn)
-                Log.v("prefs>CurrentValue", "user_sn: ${userSn}, currentValue: ${currentValue}")
-                binding.tvMTodaySet.text = "완료 $currentValue /5 개"
-                binding.hpvMDailyThird.progress = (currentValue  * 100 ) / 5
-
-                bViewModel.dailyProgress.observe(viewLifecycleOwner) {
-                    binding.tvMTodaySet.text = "완료 $it /5 개"
-                    binding.hpvMDailyThird.progress = (it  * 100 ) / 5
-                }
-                // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 !------
-
-                when (age.toInt()) {
-                    in 0 .. 20 -> {
-                        lifecycleScope.launch {
-                            val exercises = fetchExercise(2, Random.nextInt(5, 9))
-                            requireActivity().runOnUiThread {
-                                setVpItems(exercises)
-                            }
-                        }
-                    }
-                    in 21 .. 39 -> {
-                        lifecycleScope.launch {
-                            val exercises = fetchExercise(3, Random.nextInt(1, 9))
-                            requireActivity().runOnUiThread {
-                                setVpItems(exercises)
-                            }
-                        }
-                    }
-                    in 40 .. 50 -> {
-                        lifecycleScope.launch {
-                            val exercises = fetchExercise(5, Random.nextInt(5, 9))
-                            requireActivity().runOnUiThread {
-                                setVpItems(exercises)
-                            }
-                        }
-                    }
-                    in 50 .. 60 -> {
-                        lifecycleScope.launch {
-                            val exercises = fetchExercise(3, Random.nextInt(1, 9))
-                            requireActivity().runOnUiThread {
-                                setVpItems(exercises)
-                            }
-                        }
-                    }
-                    in 60 .. 80 -> {
-                        lifecycleScope.launch {
-                            val exercises = fetchExercise(1, Random.nextInt(3, 9))
-                            requireActivity().runOnUiThread {
-                                setVpItems(exercises)
-                            }
-                        }
-                    }
-                    else -> {
-                        lifecycleScope.launch {
-                            val exercises = fetchExercise(4, Random.nextInt( 1,9))
-                            requireActivity().runOnUiThread {
-                                setVpItems(exercises)
-                            }
-                        }
-                    }
-
-                }
-                binding.ibtnMvpPrevious.setOnClickListener {
-                    if ( binding.vpMDaily.currentItem >= 1) {
-                        binding.vpMDaily.currentItem -= 1
-                    }
-                }
-                binding.ibtnMvpNext.setOnClickListener {
-                    if ( binding.vpMDaily.currentItem < 3) {
-                        binding.vpMDaily.currentItem += 1
-                    }
-                }
-
-//        binding.btnMMeasure.setOnClickListener {
-////            val bnv = (activity as MainActivity).findViewById<BottomNavigationView>(R.id.bnbMain)
-////            bnv.selectedItemId = R.id.measure
-//            val dialogFragment = PlayThumbnailDialogFragment().apply {
-//                arguments = Bundle().apply {
-//                    putParcelable("ExerciseUnit", currentExerciseItem)
-//                }
-//            }
-//            dialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-//        }
-                // ------! 추천 운동 및 운동 썸네일 바로 가기 !------
-
-                // ------! v1.0 초기 연령 별 추천 운동 끝 !------
-
-                // ------! 점수 시작 !------
-//        val t_userData = Singleton_t_user.getInstance(requireContext()).jsonObject?.optJSONObject("data")
-//        binding.ivMScoreDown.visibility = View.GONE
-//        binding.ivMScoreUp.visibility = View.GONE
-//        // TODO 점수 변동에 따른 화살표 VISIBLE 처리
-//
-//        if (binding.tvMBalanceScore.text == "미설정") {
-//
-//        } else if (binding.tvMBalanceScore.text.toString().toInt() > 76) {
-//            binding.ivMScoreDown.visibility = View.GONE
-//            binding.ivMScoreDone.visibility = View.GONE
-//            binding.ivMScoreUp.visibility = View.VISIBLE
-//        } else if (binding.tvMBalanceScore.text.toString().toInt() < 76) {
-//            binding.ivMScoreDown.visibility = View.VISIBLE
-//            binding.ivMScoreDone.visibility = View.GONE
-//            binding.ivMScoreUp.visibility = View.GONE
-//        } else {
-//            binding.ivMScoreDown.visibility = View.GONE
-//            binding.ivMScoreDone.visibility = View.VISIBLE
-//            binding.ivMScoreUp.visibility = View.GONE
-//        }
-//        // TODO 운동 기록에 맞게 HPV 연동 필요
-//        binding.tvMTodayTime.text = "16"
-//        binding.tvMTodaySteps.text = "1138"
-//        binding.tvMTodaySet.text = "3/5"
-//        binding.hpvMDailyFirst.progress = 28
-//        binding.hpvMDailySecond.progress = 19
-//        binding.hpvMDailyThird.progress = 60
-//        binding.tvMBalanceScore.text = "87점"
-//
-//        mViewModel.totalSteps.observe(viewLifecycleOwner) { totalSteps ->
-//            if (totalSteps == "" || totalSteps.toInt() == 0) {
-//                binding.tvMTodaySteps.text = "0"
-//                binding.hpvMDailySecond.progress = 0
-//            } else if (totalSteps.toInt() > 0) {
-//                binding.tvMTodaySteps.text = totalSteps
-//                binding.hpvMDailySecond.progress = (totalSteps.toInt() * 100) / 8000
-//            }
-//        } // ------! 점수 끝 !------
+                // ------! sharedPrefs에서 오늘 운동한 횟수 가져오기 끝 !------
 
                 // ------! db에서 받아서 뿌려주기 시작 !------
                 lifecycleScope.launch {
-//            // TODO 프로그램을 불러오거나 전체에서 필터링해서 만들어야 함
-//            val responseArrayList = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
-////            Log.v("MainF>RV", "$responseArrayList")
-//            try {
-//                val verticalDataList = responseArrayList.toMutableList()
-//                val programFliterList = arrayOf("목", "어깨", "팔꿉", "손목", "몸통", "복부", "엉덩", "무릎", "발목", "전신", "유산소", "코어", "몸통")
-//
-//                val groupedExercises = mutableMapOf<String, MutableList<ExerciseVO>>()
-//
-//                // -----! horizontal 추천 rv adapter 시작 !------
-//                verticalDataList.forEach { exerciseVO ->
-//                    programFliterList.forEach { filter ->
-//                        if (exerciseVO.exerciseName?.contains(filter) == true) {
-//                            if (!groupedExercises.containsKey(filter)) {
-//                                groupedExercises[filter] = mutableListOf()
-//                            }
-//                            groupedExercises[filter]?.add(exerciseVO)
-//                        }
-//                    }
-//                }
-//                // TODO 자체 프로그램 수정해야할 곳
-//                groupedExercises.forEach { (filter, exercises) ->
-//
-//                    val programVO = ProgramVO(
-//                        programName = when (filter) {
-//                            "유산소" -> "유산소 프로그램"
-//                            "코어" -> "코어 프로그램"
-//                            else -> filter + "관절 프로그램"
-//                        },
-//                        imgThumbnails = mutableListOf(),
-//                        programCount = "",
-//                        programStage = exercises.first().exerciseStage,
-//                        exercises = exercises
-//                    )
-//
-//                    programVO.programTime = programVO.exercises?.sumOf {
-//                        ((it.videoDuration?.toInt())!! / 60)
-//                    }!!
-//
-//                    programVO.programCount = programVO.exercises?.size.toString()
-//                    if (viewModel.programList.value?.any { it.programName == programVO.programName } == false ) viewModel.programList.value?.add(programVO)
-//
-//                }
-//                if (viewModel.programList.value?.size!! > 1) {
-//                    binding.sflM.stopShimmer()
-//                    binding.sflM.visibility = View.GONE
-//                }
-//                val recommendAadpter = ProgramRVAdapter(viewModel.programList.value!!, this@MainFragment, this@MainFragment, "horizon")
-//                binding.rvMRecommend.adapter = recommendAadpter
-//                val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-//                binding.rvMRecommend.layoutManager = linearLayoutManager2
-//                // ------! horizontal 추천 rv adapter 끝 !------
-//
-//                // ------! horizontal과 progressbar 연동 시작 !------
-//                binding.rvMRecommend.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-//                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                        super.onScrolled(recyclerView, dx, dy)
-//                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-//                        val totalItemCount = layoutManager.itemCount
-//                        val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-//                        Log.v("게이지바", "현재 ${lastVisibleItemPosition.toFloat()}, 전체: ${totalItemCount.toFloat()}")
-//                        val progress = ((lastVisibleItemPosition.toFloat() + 1) * 100 ) / totalItemCount.toFloat()
-//                        binding.hpvMRecommend.progress = progress.toInt()
-//                    }
-//                }) // ------! horizontal과 progressbar 연동 끝 !------
-                    val programVOList = mutableListOf<ProgramVO>()
 
+                    // ------! 맞춤 운동 item 시작 !------
+                    // TODO 프로그램을 불러오거나 전체에서 필터링해서 만들어야 함
+
+                    when (emptyHistory) {
+                        true -> setViewVisibility(true) // 측정기록이 없을 때
+                        else -> {
+                            // 측정 기록이 있을 때
+                            setViewVisibility(false)
+
+                            currentExerciseItem = fetchExerciseById(getString(R.string.IP_ADDRESS_t_exercise_description), "136")
+                            Glide.with(requireContext())
+                                .load("${currentExerciseItem.imageFilePathReal}")
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .into(binding.ivMCustomThumbnail)
+                            binding.tvMCustomName.text = currentExerciseItem.exerciseName
+                            binding.tvMCustomSymptom.text = currentExerciseItem.relatedSymptom
+                            val second = "${currentExerciseItem.videoDuration?.toInt()?.div(60)}분 ${currentExerciseItem.videoDuration?.toInt()?.rem(60)}초"
+                            binding.tvMCustomTime.text = second
+                            when (currentExerciseItem.exerciseStage) {
+                                "초급" -> {
+                                    binding.ivMCustomStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
+                                    binding.tvMCustomStage.text = "초급자"
+                                }
+                                "중급" -> {
+                                    binding.ivMCustomStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
+                                    binding.tvMCustomStage.text = "중급자"
+                                }
+                                "고급" -> {
+                                    binding.ivMCustomStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
+                                    binding.tvMCustomStage.text = "상급자"
+                                }
+                            }
+
+                            // ------! 운동 카운트 및 버튼 경로 변경 !------
+                            val prefsManager = PreferencesManager(requireContext())
+                            val currentValue = prefsManager.getStoredInt(userSn)
+                            Log.v("prefs>CurrentValue", "user_sn: ${userSn}, currentValue: ${currentValue}")
+                            binding.tvMCustomProgress.text = "완료 $currentValue /5 개"
+                            binding.hpvMCustomProgress.progress = (currentValue  * 100 ) / 5
+                            viewModel.dailyProgress.observe(viewLifecycleOwner) {
+                                binding.tvMCustomProgress.text = "완료 $it /5 개"
+                                binding.hpvMCustomProgress.progress = (it  * 100 ) / 5
+                            }
+                            binding.btnMCustom.text = "운동 시작하기"
+                        }
+                    }
+                    // ------! 맞춤 운동 item 끝 !------
+
+                    val programVOList = mutableListOf<ProgramVO>()
                     for (i in 10 downTo 8) {
                         programVOList.add(fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), i.toString()))
                     }
-                    binding.sflM.stopShimmer()
-                    binding.sflM.visibility = View.GONE
-//                    binding.hpvMRecommend.visibility = View.INVISIBLE
-//                    binding.spnMFilter.visibility = View.INVISIBLE
+//                    binding.sflM.stopShimmer()
+//                    binding.sflM.visibility = View.GONE
                     setRVAdapter(programVOList)
 
-
-
-                    // ------! 하단 RV Adapter 시작 !------
-//                setRVAdapter(verticalDataList)
-                    // -----! vertical 어댑터 끝 !-----
-
-                    // -----! spinner 연결 시작 !-----
-//                val filterList = arrayListOf<String>()
-//                filterList.add("최신순")
-//                filterList.add("인기순")
-//                filterList.add("추천순")
-//                binding.spnMFilter.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
-//                binding.spnMFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-//                    override fun onItemSelected(
-//                        parent: AdapterView<*>?,
-//                        view: View?,
-//                        position: Int,
-//                        id: Long
-//                    ) {
-//                        when (position) {
-//                            0 -> {
-////                                setRVAdapter(verticalDataList)
-//                            }
-//                            1 -> {
-//                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.toMutableList()
-////                                setRVAdapter(sortDataList)
-//                                Log.v("정렬된 리스트", "$sortDataList")
-//                            }
-//                            2 -> {
-//                                val sortDataList = verticalDataList.sortedBy { it.videoDuration }.reversed().toMutableList()
-////                                setRVAdapter(sortDataList)
-//                                Log.v("정렬된 리스트", "$sortDataList")
-//                            }
-//                        }
-//                    }
-//                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-//                } // ------! spinner 연결 끝 !------
-//ㅅ
-//            } catch (e: Exception) {
-//                Log.e(ContentValues.TAG, "Error storing exercises", e)
-//            } // -----! 하단 RV Adapter 끝 !-----
-                }
-            }
-            false -> {
-
-            }
-        }
-        // ------! 중앙 홍보 배너 시작 !------
-
-        bViewModel.bannerList.add("drawable_banner_1")
-        bViewModel.bannerList.add("drawable_banner_2")
-
-        val bannerAdpater = BannerVPAdapter(bViewModel.bannerList, "main", requireContext())
-        bannerAdpater.notifyDataSetChanged()
-        binding.vpMBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.vpMBanner.adapter = bannerAdpater
-        binding.vpMBanner.setCurrentItem(bannerPosition, false)
-        binding.vpMBanner.apply {
-            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageScrollStateChanged(state: Int) {
-                    super.onPageScrollStateChanged(state)
-                    when (state) {
-                        ViewPager2.SCROLL_STATE_DRAGGING -> autoScrollStop()
-                        ViewPager2.SCROLL_STATE_IDLE -> autoScrollStart(intervalTime)
-                        ViewPager2.SCROLL_STATE_SETTLING -> {}
+                    binding.btnMCustom.setOnClickListener{
+                        if (binding.btnMCustom.text == "측정하기") {
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flMain, MeasureDashBoard1Fragment())
+                                commit()
+                            }
+                        } else {
+                            val dialog = CustomExerciseDialogFragment()
+                            val bundle = Bundle()
+                            bundle.putParcelable("Program", programVOList[0])
+                            dialog.arguments = bundle
+                            Log.v("program", "${programVOList[0]}")
+                            dialog.show(requireActivity().supportFragmentManager, "CustomExerciseDialogFragment")
+                        }
                     }
                 }
-            })
-        } // ------! 중앙 홍보 배너 끝 !------
+
+
+
+                // ------! 블러 처리 유무 및 기능 유무 시작 !------
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (emptyHistory) {
+
+
+                    } else {
+                        // ------! rvM보여주기 !------
+                        lifecycleScope.launch {
+                            val programVOList = mutableListOf<ProgramVO>()
+
+                            for (i in 10 downTo 8) {
+                                programVOList.add(
+                                    fetchProgramVOBySn(
+                                        getString(R.string.IP_ADDRESS_t_exercise_programs),
+                                        i.toString()
+                                    )
+                                )
+                            }
+                            setRVAdapter(programVOList)
+                        }
+
+                        // ------# 그래프 클릭 시 balloon #------
+
+                        lineChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
+                            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                                e?.let { entry ->
+                                    val balloonMlc = Balloon.Builder(requireContext())
+                                        .setWidthRatio(0.5f)
+                                        .setHeight(BalloonSizeSpec.WRAP)
+                                        .setText("${entry.y.toInt()}점\n${weekList[entry.x.toInt()]}요일")  // 선택된 데이터 포인트의 y값을 텍스트로 설정
+                                        .setTextColorResource(R.color.subColor800)
+                                        .setTextSize(15f)
+                                        .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                                        .setArrowSize(0)
+                                        .setMargin(10)
+                                        .setPadding(12)
+                                        .setCornerRadius(8f)
+                                        .setBackgroundColorResource(R.color.white)
+                                        .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+                                        .setLifecycleOwner(viewLifecycleOwner)
+                                        .build()
+
+
+                                    val pts = FloatArray(2)
+                                    pts[0] = e.x
+                                    pts[1] = e.y
+                                    lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
+                                    balloonMlc.showAtCenter(lineChart, pts[0].toInt(), pts[1].toInt())
+
+                                    Log.v("eeee", "e.x: ${e.x}, e.y: ${e.y}")
+                                }
+                                Log.v("eeee", "e.x: ${e?.x}, e.y: ${e?.y}")
+                            }
+                            override fun onNothingSelected() {}
+                        })
+                    }
+                }
+                // ------! 블러 처리 유무 및 기능 유무 끝 !------
+
+            }
+            false -> {
+                // ------# 인터넷 연결이 없을 때 #------
+            }
+        }
+
+
+
+
+        binding.tvMBlur.setOnClickListener {
+            val bnb : BottomNavigationView = requireActivity().findViewById(R.id.bnbMain)
+            bnb.selectedItemId = R.id.measure
+        }
+
+        binding.tvMFilter.setOnClickListener {
+            val dialog = MainFilterDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "MainFilterDialogFragment")
+        }
+
     }
+
+    fun setViewVisibility(emptyHistory : Boolean) {
+        if (emptyHistory) {
+//            binding.tvMCustomEmpty.visibility = View.VISIBLE
+            binding.clMCustom.visibility = View.GONE
+            binding.tvMCustom.visibility = View.GONE
+            binding.tvMFilter.visibility = View.GONE
+            binding.clMExerciseHistory.visibility = View.GONE
+
+            // ------# 측정 component 크기 조절 #------
+            binding.tvMMeasureTitle.visibility = View.GONE
+            applyBlurToConstraintLayout(binding.clMMeasure, binding.ivMBlur)
+
+            val lp = binding.clMMeasure.layoutParams as ConstraintLayout.LayoutParams
+            lp.apply {
+                height = (150 * (context?.resources?.displayMetrics?.density!!)).toInt()
+            }
+            binding.clMMeasure.layoutParams = lp
+
+        } else {
+            binding.clMCustom.visibility = View.VISIBLE
+            binding.tvMCustom.visibility = View.VISIBLE
+            binding.tvMFilter.visibility = View.VISIBLE
+            binding.clMExerciseHistory.visibility = View.VISIBLE
+            binding.tvMMeasureTitle.visibility = View.VISIBLE
+            binding.tvMBlur.visibility = View.GONE
+            val lp = binding.clMMeasure.layoutParams as ConstraintLayout.LayoutParams
+            lp.apply {
+                height = (200 * (context?.resources?.displayMetrics?.density!!)).toInt()
+            }
+
+        }
+    }
+
+    fun setWeeklyDrawable(ivId: String, drawableName: String) {
+        val resId = resources.getIdentifier(ivId, "id", requireContext().packageName)
+        val imageView = requireActivity().findViewById<ImageView>(resId)
+        val drawableResId = resources.getIdentifier(drawableName, "drawable", requireContext().packageName)
+
+        imageView.setImageResource(drawableResId)
+    }
+
     override fun onRVClick(program: ProgramVO) {
 //        val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
 //        val url = storeUrl(program)
@@ -381,6 +525,16 @@ class MainFragment : Fragment(), OnRVClickListener {
 //        startActivityForResult(intent, 8080)
 
     }
+//    private fun setBlurText(isBlur: Boolean) {
+//        with(binding) {
+//            binding.tvMBlur?.setLayerType(View.LAYER_TYPE_SOFTWARE, null).apply {
+//                if (isBlur) binding.tvMBlur?.paint?.maskFilter =
+//                    BlurMaskFilter(16f , BlurMaskFilter.Blur.NORMAL)
+//                else binding.tvMBlur?.paint?.maskFilter = null
+//            }
+//        }
+//    }
+
     private fun storeUrl(program: ProgramVO) : MutableList<String> {
         val exercises = program.exercises
         val resourceList = mutableListOf<String>()
@@ -389,81 +543,30 @@ class MainFragment : Fragment(), OnRVClickListener {
         }
         return resourceList
     }
-    private fun autoScrollStart(intervalTime: Long) {
-        bannerHandler.removeMessages(0)
-        bannerHandler.sendEmptyMessageDelayed(0, intervalTime)
-
-    }
-    private fun autoScrollStop() {
-        bannerHandler.removeMessages(0)
-    } // -----! 배너 끝 !------
-
-    @SuppressLint("HandlerLeak")
-    private inner class HomeBannerHandler: Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            if (msg.what == 0 && bViewModel.bannerList.isNotEmpty()) {
-                binding.vpMBanner.setCurrentItem(++bannerPosition, true)
-                // ViewPager의 현재 위치를 이미지 리스트의 크기로 나누어 현재 이미지의 인덱스를 계산
-//                val currentIndex = bannerPosition % bViewModel.BannerList.size // 65536  % 5
-
-//                // ProgressBar의 값을 계산
-//                binding.hpvIntro.progress = (currentIndex ) * 100 / (viewModel.BannerList.size -1 )
-                autoScrollStart(intervalTime)
-            }
-        }
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setRVAdapter (programList: MutableList<ProgramVO>) {
-        val adapter = ProgramRVAdapter(programList, this@MainFragment, this@MainFragment,"rank", startForResult)
-        adapter.programs = programList
-        binding.rvM.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.rvM.layoutManager = linearLayoutManager
-        adapter.notifyDataSetChanged()
+//        val adapter = ProgramRVAdapter(programList, this@MainFragment, this@MainFragment,"rank", startForResult)
+//        adapter.programs = programList
+//        binding.rvM.adapter = adapter
+//        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+//        binding.rvM.layoutManager = linearLayoutManager
+//        adapter.notifyDataSetChanged()
     }
 
     private suspend fun fetchExercise(categoryId: Int, searchId: Int) : MutableList<ExerciseVO> {
         return fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_exercise_description), categoryId, searchId)
     }
-//
-    private fun setVpItems(exercises : MutableList<ExerciseVO>) {
-        val exercise : MutableList<ExerciseVO>
-        if (exercises.size < 3) {
-            exercise = exercises.subList(0, exercises.size)
 
-        } else {
-            exercise = exercises.subList(0, 3)
+    fun applyBlurToConstraintLayout(constraintLayout: ConstraintLayout, imageView: ImageView) {
+        constraintLayout.post {
+            Blurry.with(constraintLayout.context)
+                .radius(10)
+                .sampling(2)
+                .async()
+                .capture(constraintLayout) // ConstraintLayout의 스크린샷을 캡처하여 블러 처리
+                .into(imageView) // 블러 처리된 이미지를 ImageView에 설정
         }
-
-        val vpDailyAdapter = ExerciseRVAdapter(this@MainFragment, exercise, listOf(), "daily")
-        binding.vpMDaily.adapter = vpDailyAdapter
-        // ------! dot indicator 시작 !------
-//        binding.diMDaily.attachTo(binding.vpMDaily)
-
-        binding.vpMDaily.apply {
-            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                @SuppressLint("SetTextI18n")
-                override fun onPageScrollStateChanged(state: Int) {
-                    super.onPageScrollStateChanged(state)
-                    if (state == ViewPager2.SCROLL_STATE_IDLE) {
-//                        binding.tvMvpCount.text = "${binding.vpMDaily.currentItem + 1}/${if (exercises.size < 3) exercises.size else 3}"
-                    }
-                }
-            })
-        }
+        Log.v("BLured", "Blur is success")
     }
-
-
-    override fun onResume() {
-        super.onResume()
-        autoScrollStart(intervalTime)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        autoScrollStop()
-    }
-
 }

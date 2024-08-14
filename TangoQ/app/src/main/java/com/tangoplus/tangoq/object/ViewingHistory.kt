@@ -13,6 +13,6 @@ interface ViewingHistory {
     fun getViewingHistory(): List<HistoryVO>
 
     @POST("viewing-history")
-    // TODO 헤더에 넣어야할 거같은데
+
     fun addViewingHistory(@HeaderMap userId : String, @Body history: HistoryVO): Call<Void>
 }

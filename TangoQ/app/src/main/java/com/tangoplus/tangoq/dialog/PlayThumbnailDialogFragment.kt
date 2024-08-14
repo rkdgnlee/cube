@@ -26,31 +26,29 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.SplashActivity
 import com.tangoplus.tangoq.adapter.MuscleRVAdpater
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.data.BannerViewModel
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.FavoriteViewModel
+import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.UserViewModel
+
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
-import com.tangoplus.tangoq.listener.OnMoreClickListener
 import com.tangoplus.tangoq.`object`.DeepLinkUtil
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
+class PlayThumbnailDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
-    val viewModel: FavoriteViewModel by activityViewModels()
-    val bViewModel : BannerViewModel by activityViewModels()
+    val viewModel: ExerciseViewModel by activityViewModels()
+    val uViewModel : UserViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
 //    private var playWhenReady = true
 //    private var currentWindow = 0
@@ -74,12 +72,14 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
 
         // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = exerciseData?.videoFilepath.toString()
+        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData?.exerciseName}")
         binding.tvPTDName.text = exerciseData?.exerciseName.toString()
         binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
         binding.tvPTDTime.text = "${exerciseData?.videoDuration} 초"
         binding.tvPTDStage.text = exerciseData?.exerciseStage
         binding.tvPTDFrequency.text = exerciseData?.exerciseFrequency.toString()
+        binding.tvPTRelatedSymptom.text = exerciseData?.relatedSymptom
 //        binding.tvPTDInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
         binding.tvPTDMethod.text = exerciseData?.exerciseMethod.toString()
         binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
@@ -90,8 +90,16 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
         initPlayer()
 
         // ------! 관련 관절, 근육 recyclerview 시작 !------
-        val muscleList = exerciseData?.relatedMuscle?.split(", ")?.toMutableList()
-        val muscleAdapter = MuscleRVAdpater(this@PlayThumbnailDialogFragment, muscleList)
+        val fullmuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
+            ?.replace(")", "")
+            ?.split(", ")
+            ?.toMutableList()
+        val displayMuscleList = fullmuscleList?.chunked(2)?.map { it.first() }?.toMutableList()
+
+
+
+        Log.v("muscleList", "$displayMuscleList")
+        val muscleAdapter = MuscleRVAdpater(this@PlayThumbnailDialogFragment, displayMuscleList)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
@@ -123,7 +131,7 @@ class PlayThumbnailDialogFragment : DialogFragment(), OnMoreClickListener {
             val userEmail = userJson?.optString("user_email").toString()
             if (prefsManager.getStoredInt(userEmail) < 5) {
                 prefsManager.incrementStoredInt(userEmail)
-                bViewModel.dailyProgress.value = prefsManager.getStoredInt(userEmail)
+                uViewModel.dailyProgress.value = prefsManager.getStoredInt(userEmail)
             } // ------! 오늘의 운동 갯수에 넣기  끝 !------
 
             if (exerciseData?.exerciseFrequency?.length!! >= 3) {

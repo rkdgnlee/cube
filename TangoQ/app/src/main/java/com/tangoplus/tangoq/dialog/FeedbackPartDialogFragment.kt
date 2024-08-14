@@ -23,8 +23,8 @@ import com.tangoplus.tangoq.databinding.FragmentFeedbackPartDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import org.json.JSONObject
 
-
-class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
+//
+class FeedbackPartDialogFragment : DialogFragment() ,OnPartCheckListener {
     lateinit var binding : FragmentFeedbackPartDialogBinding
     val viewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
@@ -49,7 +49,7 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
             // ------! db 전송 시작 !------
             val partsList = mutableListOf<String>()
             for (i in 0 until viewModel.parts.value?.size!!) {
-                partsList.add(viewModel.feedbackParts.value!![i].partName)
+                partsList.add(viewModel.feedbackParts.value!![i].name)
             }
             userJson?.optString("user_mobile")
 //            insertMeasurePartsByJson(getString(R.string.IP_ADDRESS_t_favorite),)
@@ -65,40 +65,40 @@ class FeedbackPartDialogFragment : DialogFragment(), OnPartCheckListener {
 
 
         // ------! 부위 빨갛게 시작 !------
-        setPartCheck(binding.cbFPDNeck, binding.ivFPDNeck)
-        setPartCheck(binding.cbFPDShoulder, binding.ivFPDShoulder)
-        setPartCheck(binding.cbFPDWrist, binding.ivFPDWrist)
-        setPartCheck(binding.cbFPDStomach, binding.ivFPDStomach)
-        setPartCheck(binding.cbFPDHipJoint, binding.ivFPDHipJoint)
-        setPartCheck(binding.cbFPDKnee, binding.ivFPDKnee)
-        setPartCheck(binding.cbFPDAnkle, binding.ivFPDAnkle)
+//        setPartCheck(binding.cbFPDNeck, binding.ivFPDNeck)
+//        setPartCheck(binding.cbFPDShoulder, binding.ivFPDShoulder)
+//        setPartCheck(binding.cbFPDWrist, binding.ivFPDWrist)
+//        setPartCheck(binding.cbFPDStomach, binding.ivFPDStomach)
+//        setPartCheck(binding.cbFPDHipJoint, binding.ivFPDHipJoint)
+//        setPartCheck(binding.cbFPDKnee, binding.ivFPDKnee)
+//        setPartCheck(binding.cbFPDAnkle, binding.ivFPDAnkle)
 
     }
-    // 체크 연동
-    fun setPartCheck(cb:CheckBox, iv: ImageView) {
-        // ------! 기존 데이터 받아서 쓰기 !------
-//        val part = Triple(cb.text.toString(), cb.text.toString(), cb.isChecked)
-        val part = MeasureVO(
-            partName = cb.text.toString(),
-            select = cb.isChecked,
-            drawableName = "",
-            anglesNDistances = JSONObject()
-        )
-        cb.isChecked = viewModel.feedbackParts.value?.contains(part) == true
-
-        cb.setOnCheckedChangeListener { buttonView, isChecked ->
-            when (isChecked) {
-                true -> {
-                    iv.setImageResource(R.drawable.drawable_select_part_enabled)
-                    viewModel.addFeedbackPart(part)
-                }
-                else -> {
-                    iv.setImageResource(R.drawable.drawable_select_part_disabled)
-                    viewModel.deleteFeedbackPart(part)
-                }
-            }
-        }
-    }
+//    // 체크 연동
+//    fun setPartCheck(cb:CheckBox, iv: ImageView) {
+//        // ------! 기존 데이터 받아서 쓰기 !------
+////        val part = Triple(cb.text.toString(), cb.text.toString(), cb.isChecked)
+//        val part = MeasureVO(
+//            partName = cb.text.toString(),
+//            select = cb.isChecked,
+//            drawableName = "",
+//            anglesNDistances = JSONObject()
+//        )
+//        cb.isChecked = viewModel.feedbackParts.value?.contains(part) == true
+//
+//        cb.setOnCheckedChangeListener { buttonView, isChecked ->
+//            when (isChecked) {
+//                true -> {
+//                    iv.setImageResource(R.drawable.drawable_select_part_enabled)
+//                    viewModel.addFeedbackPart(part)
+//                }
+//                else -> {
+//                    iv.setImageResource(R.drawable.drawable_select_part_disabled)
+//                    viewModel.deleteFeedbackPart(part)
+//                }
+//            }
+//        }
+//    }
 
 //    fun setvmPart(cb: CheckBox, iv: ImageView) {
 //        val enabledPart = viewModel.feedbackParts.value?.find { it.partName == cb.text }

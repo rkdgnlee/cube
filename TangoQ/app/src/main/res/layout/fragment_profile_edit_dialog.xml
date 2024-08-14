@@ -19,7 +19,7 @@
             android:background="@color/white">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout4"
+                android:id="@+id/clKakao"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -30,7 +30,7 @@
                     android:id="@+id/cardView15"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="16dp"
                     app:cardCornerRadius="28dp"
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -50,11 +50,11 @@
                     android:id="@+id/textView29"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:text="카카오톡"
                     android:textColor="@color/subColor800"
-                    android:textSize="18dp"
+                    android:textSize="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/cardView15"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -66,6 +66,7 @@
                     android:layout_marginEnd="40dp"
                     android:text="미연결"
                     android:textColor="@color/subColor800"
+                    android:textSize="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -81,19 +82,19 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout7"
+                android:id="@+id/clGoogle"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_weight="2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+                app:layout_constraintTop_toBottomOf="@+id/clKakao">
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardView13"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="15"
                     app:cardCornerRadius="28dp"
                     app:cardElevation="0dp"
@@ -115,11 +116,11 @@
                     android:id="@+id/textView19"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="3"
                     android:text="Google"
                     android:textColor="@color/subColor800"
-                    android:textSize="18dp"
+                    android:textSize="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/cardView13"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -132,6 +133,7 @@
                     android:layout_weight="10"
                     android:text="미연결"
                     android:textColor="@color/subColor800"
+                    android:textSize="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -148,21 +150,21 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout17"
+                android:id="@+id/clNaver"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout7">
+                app:layout_constraintTop_toBottomOf="@+id/clGoogle">
 
                 <TextView
                     android:id="@+id/textView15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="16dp"
                     android:text="네이버"
                     android:textColor="@color/subColor800"
-                    android:textSize="18dp"
+                    android:textSize="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/cardView17"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -174,6 +176,7 @@
                     android:layout_marginEnd="40dp"
                     android:text="미연결"
                     android:textColor="@color/subColor800"
+                    android:textSize="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -182,7 +185,7 @@
                     android:id="@+id/cardView17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="16dp"
                     app:cardCornerRadius="28dp"
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -231,7 +234,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout17" />
+                app:layout_constraintTop_toBottomOf="@+id/clNaver" />
 
             <LinearLayout
                 android:id="@+id/linearLayout16"
@@ -261,24 +264,6 @@
                     android:textSize="18sp"
                     app:cornerRadius="8dp" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnPEDGoSetup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/secondaryColor"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:padding="16dp"
-                    android:stateListAnimator="@null"
-                    android:text="키 몸무게 설정하기"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    app:cornerRadius="8dp" />
             </LinearLayout>
 
 
@@ -298,7 +283,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="[선택] 마케팅 정보 수신 동의"
+                    android:text="[선택] 마케팅 정보 수신 모두 동의"
                     android:textColor="@color/subColor800"
                     android:textSize="18dp"
                     app:layout_constraintBottom_toBottomOf="@+id/ivPEDAgreement3"
