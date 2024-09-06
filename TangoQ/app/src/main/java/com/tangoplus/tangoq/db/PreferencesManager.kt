@@ -11,6 +11,38 @@ import java.util.TimeZone
 class PreferencesManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("daily_set_prefs", Context.MODE_PRIVATE)
 
+    private val LAST_SN_KEY = "last_sn"
+    private val prefs2 : SharedPreferences = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
+
+
+    fun getLastSn(): Int {
+        return prefs2.getInt(LAST_SN_KEY, 0)
+    }
+
+    fun incrementAndGetSn(): Int {
+        val lastSn = getLastSn()
+        val newSn = lastSn + 1
+        prefs2.edit().putInt(LAST_SN_KEY, newSn).apply()
+        return newSn
+    }
+
+    fun setStoredHistory(search: String) {
+        prefs2.edit().putString("${incrementAndGetSn()}_stored_history", search).apply()
+    }
+
+    fun getStoredHistory(sn: Int) : String {
+        return prefs2.getString("${sn}_stored_history", "").toString()
+    }
+
+    fun deleteAllHistory() {
+        prefs2.edit().clear().apply()
+    }
+
+    fun deleteStoredHistory(sn: Int) {
+        prefs2.edit().remove("${sn}_stored_history").apply()
+    }
+
+    // ------# 간단한 운동 기록 저장 #------
     fun getStoredInt(sn: String) : Int {
         return prefs.getInt("${sn}_stored_int", 0)
     }
@@ -75,4 +107,9 @@ class PreferencesManager(context: Context) {
                 (currentDate.get(Calendar.YEAR) == lastSavedDate.get(Calendar.YEAR) &&
                         currentDate.get(Calendar.DAY_OF_YEAR) > lastSavedDate.get(Calendar.DAY_OF_YEAR))
     }
+
+
+
+
+
 }

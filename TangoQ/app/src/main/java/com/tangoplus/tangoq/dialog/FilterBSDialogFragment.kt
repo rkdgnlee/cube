@@ -11,11 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.FilterRVAdapter
-import com.tangoplus.tangoq.adapter.ProgramRVAdapter
 import com.tangoplus.tangoq.data.ProgramViewModel
 import com.tangoplus.tangoq.databinding.FragmentFilterBSDialogBinding
 import com.tangoplus.tangoq.listener.OnFilterSelectedListener
-import org.json.JSONArray
 import org.json.JSONObject
 
 

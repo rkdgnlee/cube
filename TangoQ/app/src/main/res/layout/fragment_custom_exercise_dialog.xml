@@ -7,28 +7,6 @@
     android:background="@drawable/effect_ibtn_12dp"
     tools:context=".dialog.CustomExerciseDialogFragment">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:cardBackgroundColor="@color/white"
-        app:cardElevation="4dp">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCEDStart"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="20dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:backgroundTint="@color/mainColor"
-            android:padding="16dp"
-            android:stateListAnimator="@null"
-            android:text="운동 시작하기"
-            android:textColor="@color/white"
-            android:textSize="18dp" />
-    </androidx.cardview.widget.CardView>
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -39,41 +17,33 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
-            <ImageView
-                android:id="@+id/ibtnCEDBack"
+            <EditText
+                android:id="@+id/etCEDTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:padding="4dp"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvCEDTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="주차 맞춤운동"
+                android:background="@color/white"
+                android:maxLength="15"
+                android:singleLine="true"
+                android:text="_"
                 android:textColor="@color/subColor800"
                 android:textSize="20dp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/ibtnCEDBack"
-                app:layout_constraintStart_toEndOf="@+id/ibtnCEDBack"
-                app:layout_constraintTop_toTopOf="@+id/ibtnCEDBack" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/ibtnCEDInfo"
+                android:id="@+id/ibtnCEDTop"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_info_800"
-                app:layout_constraintBottom_toBottomOf="@+id/tvCEDTitle"
-                app:layout_constraintStart_toEndOf="@+id/tvCEDTitle"
-                app:layout_constraintTop_toTopOf="@+id/tvCEDTitle" />
+                app:layout_constraintBottom_toBottomOf="@+id/etCEDTitle"
+                app:layout_constraintStart_toEndOf="@+id/etCEDTitle"
+                app:layout_constraintTop_toTopOf="@+id/etCEDTitle" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider11"
@@ -92,15 +62,16 @@
                 android:background="@drawable/effect_ibtn_12dp"
                 android:padding="4dp"
                 android:src="@drawable/icon_more_800"
-                app:layout_constraintBottom_toBottomOf="@+id/ibtnCEDBack"
+                app:layout_constraintBottom_toBottomOf="@+id/etCEDTitle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/ibtnCEDBack" />
+                app:layout_constraintTop_toTopOf="@+id/etCEDTitle" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider2"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="10dp"
+                app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ibtnCEDMore" />
@@ -110,13 +81,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="전체 진행도 : 3%"
+                android:text="전체 진행도"
                 android:textColor="@color/subColor800"
                 android:textSize="18dp"
                 app:layout_constraintBottom_toBottomOf="@+id/cardView12"
                 app:layout_constraintStart_toEndOf="@+id/cardView12"
                 app:layout_constraintTop_toTopOf="@+id/cardView12" />
 
+            <com.tomlecollegue.progressbars.HorizontalProgressView
+                android:layout_width="200dp"
+                android:layout_height="4dp"
+                app:colorBackground="@color/subColor200"
+                app:colorProgress="@color/mainColor"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCEDSet"
+                app:layout_constraintStart_toEndOf="@+id/tvCEDSet"
+                app:layout_constraintTop_toTopOf="@+id/tvCEDSet" />
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView12"
                 android:layout_width="4dp"
@@ -129,7 +108,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/tvCEDWeekly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
@@ -148,6 +127,7 @@
                 android:id="@+id/rvCEDHorizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -158,6 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="10dp"
+                app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rvCEDHorizontal" />
@@ -213,7 +194,7 @@
                     android:layout_weight="1"
                     android:text="25분"
                     android:textColor="@color/subColor800"
-                    android:textSize="16sp" />
+                    android:textSize="16dp" />
             </LinearLayout>
 
             <com.google.android.material.divider.MaterialDivider
@@ -233,8 +214,10 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:text="초급자"
                 android:textColor="@color/subColor800"
+                android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/materialDivider10"
                 app:layout_constraintStart_toEndOf="@+id/materialDivider10"
                 app:layout_constraintTop_toTopOf="@+id/materialDivider10" />
@@ -242,16 +225,59 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCED"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="80dp"
+                android:layout_marginBottom="90dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCEDCount" />
+                app:layout_constraintTop_toBottomOf="@+id/tvCEDCount"
+                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/background_bottomsheet"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCEDLeft"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/subColor200"
+            android:padding="16dp"
+            android:stateListAnimator="@null"
+            android:text="취소"
+            android:textColor="@color/subColor800"
+            android:textSize="18dp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCEDRight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/mainColor"
+            android:padding="16dp"
+            android:stateListAnimator="@null"
+            android:text="운동 시작하기"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </LinearLayout>
 
 </FrameLayout>

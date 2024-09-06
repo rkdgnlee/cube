@@ -13,9 +13,6 @@ class ProgramViewModel : ViewModel() {
     val filter4 = MutableLiveData(JSONObject())
     val filter5 = MutableLiveData(JSONObject())
 
-
-
-
     init {
         filter1.value?.put("없음")
         filter2.value?.put("제외 운동", "없음")

@@ -165,7 +165,7 @@ object NetworkExercise {
             }
         }
     }
-    // 20개만 조회
+
     suspend fun fetchExerciseJson(myUrl: String): List<ExerciseVO> {
         val client = OkHttpClient()
         val request = Request.Builder()
@@ -180,7 +180,7 @@ object NetworkExercise {
 
                 val exerciseDataList = mutableListOf<ExerciseVO>()
                 val jsonArr = responseBody?.let { JSONObject(it) }?.optJSONArray("data")
-                Log.v("fetchExerciseJson", "$jsonArr")
+//                Log.v("fetchExerciseJson", "$jsonArr")
                 if (jsonArr != null) {
                     for (i in 0 until jsonArr.length()) {
                         val jsonObject = jsonArr.getJSONObject(i)

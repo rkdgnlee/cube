@@ -113,7 +113,7 @@ class WithdrawalFragment : Fragment() {
                     setPositiveButton("예") { dialog, _ ->
                         val intent = Intent(requireContext(), IntroActivity::class.java)
                         singletonUserInstance.jsonObject = null
-                        singletonMeasureInstance.jsonObject = null
+                        singletonMeasureInstance.measures = null
                         startActivity(intent)
                         requireActivity().finishAffinity()
                     }

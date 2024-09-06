@@ -59,7 +59,7 @@
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider15"
                 android:layout_width="wrap_content"
-                android:layout_height="2dp"
+                android:layout_height="1.5dp"
                 android:layout_marginTop="20dp"
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider16"
                 android:layout_width="wrap_content"
-                android:layout_height="2dp"
+                android:layout_height="1.5dp"
                 android:layout_marginTop="10dp"
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -103,23 +103,23 @@
             <com.github.mikephil.charting.charts.RadarChart
                 android:id="@+id/rcMD"
                 android:layout_width="0dp"
-                android:layout_height="400dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_height="350dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider16" />
 
             <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvMDDate"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
                 android:text="2024.08.07"
                 android:textColor="@color/subColor800"
                 android:textSize="18dp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
                 app:layout_constraintTop_toTopOf="@+id/constraintLayout29" />
 
@@ -144,16 +144,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/rvMD" />
 
             <TextView
-                android:id="@+id/textView11"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvMDParts"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="20dp"
+                android:singleLine="true"
                 android:text="상세 정보"
                 android:textColor="@color/subColor400"
                 android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
-                app:layout_constraintStart_toEndOf="@+id/constraintLayout29" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
+                app:layout_constraintTop_toBottomOf="@+id/tvMDDate" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMD"

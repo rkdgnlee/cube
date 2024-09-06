@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.allViews
 import androidx.core.view.setPadding
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -22,6 +24,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -29,10 +32,14 @@ import com.kizitonwose.calendar.core.yearMonth
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.kizitonwose.calendar.view.ViewContainer
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MD2RVAdpater
-import com.tangoplus.tangoq.data.GraphVO
+import com.tangoplus.tangoq.data.EpisodeVO
+import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.HistoryUnitVO
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
+import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
@@ -40,8 +47,10 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.random.Random
 
@@ -50,8 +59,13 @@ class MeasureDashBoard2Fragment : Fragment() {
     lateinit var binding : FragmentMeasureDashboard2Binding
     var currentMonth = YearMonth.now()
     var selectedDate = LocalDate.now()
-    val exerciseHistorys = mutableListOf<Triple<String, Int, Int>>()
-    var exerciseHistoryDates = mutableListOf<LocalDate>()
+
+    private lateinit var singletonHistory : Singleton_t_history
+    private lateinit var historys: MutableList<MutableList<EpisodeVO>>
+    private val viewModel: ExerciseViewModel by activityViewModels()
+
+    private lateinit var  todayInWeek : List<Int>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,105 +79,107 @@ class MeasureDashBoard2Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // ------! 운동 기록 API 공간 시작 !------
-
-        // TODO 실제 운동 기록 값 넣기
-        exerciseHistorys.add(Triple("2023-08-14 11:54:51", 9, 2))
-        exerciseHistorys.add(Triple("2024-06-03 15:01:30", 16, 3))
-        exerciseHistorys.add(Triple("2024-06-04 09:58:45", 26, 7))
-        exerciseHistorys.add(Triple("2024-06-07 19:28:12", 13, 3))
-        exerciseHistorys.add(Triple("2024-06-13 11:20:53", 22, 6))
-        exerciseHistorys.add(Triple("2024-06-14 22:08:24", 46, 12))
-        exerciseHistorys.add(Triple("2024-07-14 04:51:53", 30, 8))
-        exerciseHistorys.add(Triple("2024-07-31 23:53:41", 29, 7))
-        exerciseHistorys.add(Triple("2024-08-01 18:59:30", 46, 3))
-        exerciseHistorys.add(Triple("2024-08-04 18:08:51", 46, 5))
-        exerciseHistorys.add(Triple("2024-08-09 19:29:59", 46, 6))
-
-        exerciseHistoryDates = exerciseHistorys.map { stringToLocalDate(it.first) }.toMutableList()
+        todayInWeek = sortTodayInWeek()
 
 
-        // ------! 하단 rv 끝 !------
-
-
-        // ------! 목표 그래프 시작 !------
         // ------! 일주일 간 운동 기록 들어올 곳 시작 !------
-        val weeklySets = listOf(-1f, 38f, 60f, 12f, -1f, 0f, 0f)
-        var finishSets = 0
-        for (indices in weeklySets) {
-            if (indices > 0f) finishSets += 1
-        }
+        singletonHistory = Singleton_t_history.getInstance(requireContext())
+        historys = singletonHistory.historys!!
+        (requireActivity() as MainActivity).dataLoaded.observe(viewLifecycleOwner) { isLoaded ->
+            if (isLoaded) {
+                // ------# 일별 운동 담기 #@-
+                // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
+                val weeklySets = mutableListOf<Float>()
+                for (i in 0 until viewModel.weeklyHistorys.size) {
+                    if (viewModel.weeklyHistorys[i].third == 0) {
+                        weeklySets.add(1f)
+                    } else {
+                        weeklySets.add( (viewModel.weeklyHistorys[i].third * 100 / 7).toFloat())
+                    }
+                }
 
-        // ------! bar chart 시작 !------
-        val barChart: BarChart = binding.bcMD2
-        barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
-        val entries = ArrayList<BarEntry>()
+                var finishSets = 0
+                for (indices in weeklySets) {
+                    if (indices > 0f) finishSets += 1
+                }
 
-        for (i in weeklySets.indices) {
-            val entry = BarEntry(i.toFloat(), weeklySets[i])
-            entries.add(entry)
-        }
-        val dataSet = BarDataSet(entries, "")
-        dataSet.apply {
-            color =  resources.getColor(R.color.mainColor, null)
-            setDrawValues(false)
-        }
-        // BarData 생성 및 차트에 설정
-        val bcdata = BarData(dataSet)
-        bcdata.apply {
-            barWidth = 0.5f
-        }
-        barChart.data = bcdata
-        // X축 설정
-        barChart.xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            labelRotationAngle = 2f
-            setDrawLabels(false)
-        }
-        barChart.legend.apply {
-            formSize = 0f
-        }
-        // 왼쪽 Y축 설정
-        barChart.axisLeft.apply {
-            axisMinimum = -1f // Y축 최소값
-            setDrawAxisLine(false)
-            setDrawGridLines(false)
-            setLabelCount(0, false)
-            setDrawLabels(false)
-        }
-        // 차트 스타일링 및 설정
-        barChart.apply {
-            axisRight.isEnabled = false
-            description.isEnabled = false
-            legend.isEnabled = false
-            setDrawValueAboveBar(false)
-            setDrawGridBackground(false)
-            setFitBars(false)
-            animateY(500)
-            setScaleEnabled(false)
-            setTouchEnabled(false)
-            invalidate()
-        }
+                // ------! bar chart 시작 !------
+                val barChart: BarChart = binding.bcMD2
+                barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
+                val entries = ArrayList<BarEntry>()
 
-        // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
-        for ((index, value) in weeklySets.withIndex()) {
-            if (value > 0) {
-                setWeeklyDrawable("ivMD2${index + 1}", "icon_week_${index + 1}_enabled")
-            } else {
-                setWeeklyDrawable("ivMD2${index + 1}", "icon_week_${index + 1}_disabled")
+                for (i in weeklySets.indices) {
+                    val entry = BarEntry(i.toFloat(), weeklySets[i])
+                    entries.add(entry)
+                }
+                val dataSet = BarDataSet(entries, "")
+                dataSet.apply {
+                    color =  resources.getColor(R.color.mainColor, null)
+                    setDrawValues(false)
+                }
+                // BarData 생성 및 차트에 설정
+                val bcdata = BarData(dataSet)
+                bcdata.apply {
+                    barWidth = 0.5f
+                }
+                barChart.data = bcdata
+                // X축 설정
+                barChart.xAxis.apply {
+                    position = XAxis.XAxisPosition.BOTTOM
+                    setDrawGridLines(false)
+                    setDrawAxisLine(false)
+                    labelRotationAngle = 2f
+                    setDrawLabels(false)
+                }
+                barChart.legend.apply {
+                    formSize = 0f
+                }
+                // 왼쪽 Y축 설정
+                barChart.axisLeft.apply {
+                    axisMinimum = -1f // Y축 최소값
+                    setDrawAxisLine(false)
+                    setDrawGridLines(false)
+                    setLabelCount(0, false)
+                    setDrawLabels(false)
+                }
+                // 차트 스타일링 및 설정
+                barChart.apply {
+                    axisRight.isEnabled = false
+                    description.isEnabled = false
+                    legend.isEnabled = false
+                    setDrawValueAboveBar(false)
+                    setDrawGridBackground(false)
+                    setFitBars(false)
+                    animateY(500)
+                    setScaleEnabled(false)
+                    setTouchEnabled(false)
+                    invalidate()
+                }
+
+                // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
+                updateDayImages()
+                Log.v("weeklySets", "${weeklySets}")
+                for ((index, value) in weeklySets.withIndex()) {
+                    if (value > 1.0) {
+                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index ]}_enabled")
+                    } else {
+                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
+                    }
+                }
+
+                // ------# progrees #------
+                var progressCount = 0
+                for (i in weeklySets.indices) {
+                    if (weeklySets[i] > 1f) {
+                        progressCount++
+                    }
+                }
+                binding.tvMD2Progress.text = "완료 $progressCount/${weeklySets.size}"
+                // ---- 꺾은선 그래프 코드 끝 ----
             }
         }
-        // ------# progrees #------
-        var progressCount = 0
 
-        for (i in weeklySets.indices) {
-            if (weeklySets[i] > 1f) {
-                progressCount++
-            }
-        }
-        binding.tvMD2Progress.text = "완료 $progressCount/${weeklySets.size}"
-        // ---- 꺾은선 그래프 코드 끝 ----
+
 
         binding.tvMD2Goal.setOnClickListener {
         }
@@ -184,30 +200,24 @@ class MeasureDashBoard2Fragment : Fragment() {
             }
 
             // ------# 월별로 운동 기록 필터링 #------
-            val filteredExercises = exerciseHistorys.filter { history ->
-                val historyDate = stringToLocalDate(history.first)
-                historyDate.month == currentMonth?.month && historyDate.year == currentMonth?.year
-            }.toMutableList()
-            setAdapter(filteredExercises)
+//            val filteredExercises = viewModel.allHistorys.filter { history ->
+//                val historyDate = stringToLocalDate(history.regDate!!)
+//                historyDate.month == currentMonth?.month && historyDate.year == currentMonth?.year
+//            }.toMutableList()
+//            setAdapter(filteredExercises)
         }
 
         binding.nextMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
             val oldDate = selectedDate
             selectedDate = null
-            if (oldDate != null) {
-                binding.cvMD2Calendar.notifyDateChanged(oldDate)
-            }
+            oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
+
+
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
-                binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
-                binding.cvMD2Calendar.scrollToMonth(currentMonth)
-
-                val filteredExercises = exerciseHistorys.filter { history ->
-                    val historyDate = stringToLocalDate(history.first)
-                    historyDate.month == currentMonth?.month && historyDate.year == currentMonth?.year
-                }.toMutableList()
-                setAdapter(filteredExercises)
+                updateMonthView()
+                updateExerciseList()
             }
         }
 
@@ -216,24 +226,13 @@ class MeasureDashBoard2Fragment : Fragment() {
             // 선택된 날짜 초기화
             val oldDate = selectedDate
             selectedDate = null
-            if (oldDate != null) {
-                binding.cvMD2Calendar.notifyDateChanged(oldDate)
-            }
+            oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
 
-            if (currentMonth == YearMonth.now().minusMonths(24)) {
-
-            } else {
+            if (currentMonth > YearMonth.now().minusMonths(24)) {
                 currentMonth = currentMonth.minusMonths(1)
-                binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
-                binding.cvMD2Calendar.scrollToMonth(currentMonth)
-
-                val filteredExercises = exerciseHistorys.filter { history ->
-                    val historyDate = stringToLocalDate(history.first)
-                    historyDate.month == currentMonth?.month && historyDate.year == currentMonth?.year
-                }.toMutableList()
-                setAdapter(filteredExercises)
+                updateMonthView()
+                updateExerciseList()
             }
-
         }
 
         // ------# 운동 기록 날짜 받아오기 #------
@@ -278,35 +277,42 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
                                 selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
 
-                                binding.tvMD2Date.text = "${selectedDate?.year}월 ${getCurrentMonthInKorean(selectedDate?.yearMonth!!)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
-                                Log.v("selectedDate", "$selectedDate")
+                                selectedDate?.let { selectedDate ->
+                                    val filteredExercises = viewModel.allHistorys.filter { history ->
+                                        history.regDate?.let { regDateString ->
+                                            val historyDate = stringToLocalDate(regDateString)
+                                            historyDate.isEqual(selectedDate)
+                                        } ?: false
+                                    }.toMutableList()
 
-                                // ------# 날짜 선택 시 #------
-                                val filteredExercises = exerciseHistorys.filter { history ->
-                                    val historyDate = stringToLocalDate(history.first)
-                                    historyDate.dayOfMonth == selectedDate?.dayOfMonth && historyDate.month == selectedDate?.month && historyDate.year == selectedDate?.year
-                                }.toMutableList()
-                                setAdapter(filteredExercises)
+                                    setAdapter(filteredExercises)
+                                    binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
+                                } ?: run {
+                                    Log.e("DateSelection", "Selected date is null")
+                                }
+
+
 
                             }
                         }
                     } else {
-                        visibility = View.INVISIBLE
-                        setOnClickListener(null)
+                        text = day.date.dayOfMonth.toString()
+                        textSize = 20f
+                        setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor200))
+                        setOnClickListener { null }
                     }
 
                 }
-
-
-
-
             }
             override fun create(view: View): DayViewContainer {
                 return DayViewContainer(view)
             }
         } // ------! calendar 끝 !------
 
-
+        binding.btnMD2Exercise.setOnClickListener {
+            val bnb : BottomNavigationView = requireActivity().findViewById(R.id.bnbMain)
+            bnb.selectedItemId = R.id.exercise
+        }
 
     }
 
@@ -334,14 +340,16 @@ class MeasureDashBoard2Fragment : Fragment() {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.black))
                 // 현재 날짜에 대한 특별한 배경이 필요하다면 여기에 추가
             }
-            exerciseHistoryDates.contains(day.date) -> {
+            viewModel.datesClassifiedByDay.contains(day.date) -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.mainColor))
+
             }
             day.position == DayPosition.MonthDate -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor700))
             }
             else -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor150))
+
             }
         }
     }
@@ -360,10 +368,64 @@ class MeasureDashBoard2Fragment : Fragment() {
         return localDateTime.toLocalDate()
     }
 
-    private fun setAdapter(exerciseHistorys: MutableList<Triple<String, Int, Int>>) {
+    private fun setAdapter(historys: MutableList<HistoryUnitVO>) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMD2.layoutManager = layoutManager
-        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, exerciseHistorys)
+        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, historys)
         binding.rvMD2.adapter = adapter
+
+        if (historys.isEmpty()) {
+            binding.clMD2Empty.visibility = View.VISIBLE
+        } else {
+            binding.clMD2Empty.visibility = View.GONE
+        }
+    }
+
+    private fun getTime(id: String) : Int {
+        return viewModel.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
+    }
+
+
+
+
+    private fun sortTodayInWeek() : List<Int> {
+        val today = LocalDate.now()
+        val dayOfWeek = today.dayOfWeek.value
+
+        return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it }
+    }
+
+
+    private fun updateDayImages() {
+        val imageViews = listOf(
+            binding.llMD2Week.getChildAt(0),
+            binding.llMD2Week.getChildAt(1),
+            binding.llMD2Week.getChildAt(2),
+            binding.llMD2Week.getChildAt(3),
+            binding.llMD2Week.getChildAt(4),
+            binding.llMD2Week.getChildAt(5),
+            binding.llMD2Week.getChildAt(6)
+        )
+        binding.llMD2Week.removeAllViews()
+
+        Log.v("todayInWeek", "${todayInWeek}")
+        for ( i in 0 until 7) {
+            binding.llMD2Week.addView(imageViews[todayInWeek[i] - 1])
+        }
+    }
+
+    private fun updateMonthView() {
+        binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
+        binding.cvMD2Calendar.scrollToMonth(currentMonth)
+    }
+
+    private fun updateExerciseList() {
+        val filteredExercises = viewModel.allHistorys.filter { history ->
+            history.regDate?.let { regDateString ->
+                val historyDate = stringToLocalDate(regDateString)
+                YearMonth.from(historyDate) == currentMonth
+            } ?: false
+        }.toMutableList()
+        setAdapter(filteredExercises)
     }
 }

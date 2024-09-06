@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".fragment.MeasureAnalysisFragment">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tlMP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/background_tablayout_underline"
+        app:tabIndicatorAnimationDuration="400"
+        app:tabIndicatorColor="@color/mainColor"
+        app:tabIndicatorFullWidth="true"
+        app:tabPaddingEnd="0dp"
+        app:tabPaddingStart="0dp"
+        app:tabRippleColor="#20FFFFFF"
+        app:tabSelectedTextColor="@color/subColor800"
+        app:tabTextAppearance="@style/TextAppearance.AppCompat.Large"
+        app:tabTextColor="@color/subColor300">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="__ 측정" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="__ 측정" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dp"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+            <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                android:id="@+id/ssivMP"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:src="@drawable/poster_splash" />
+
+            <FrameLayout
+                android:id="@+id/flMP"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ssivMP">
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/btgMP"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/background_radius_12dp"
+                    android:backgroundTint="@color/subColor100"
+                    android:padding="6dp"
+                    app:singleSelection="true">
+
+                    <Button
+                        android:id="@+id/btnMP1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/transparent"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:textColor="@color/subColor800"
+                        android:textSize="18dp"
+                        android:visibility="visible"
+                        app:cornerRadius="8dp" />
+
+                    <Button
+                        android:id="@+id/btnMP2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/transparent"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:textColor="@color/subColor800"
+                        android:textSize="18dp"
+                        app:cornerRadius="8dp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <View
+                    android:id="@+id/toggleIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="54dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_radius_12dp"
+                    android:backgroundTint="@color/white" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/llMPVertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/flMP"
+                app:layout_constraintEnd_toEndOf="@+id/flMP"
+                app:layout_constraintHorizontal_bias="0.15"
+                app:layout_constraintStart_toStartOf="@+id/flMP"
+                app:layout_constraintTop_toTopOf="@+id/flMP">
+
+                <ImageView
+                    android:id="@+id/ivMPVertical"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/icon_vertical" />
+
+                <TextView
+                    android:id="@+id/tvMPVertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center"
+                    android:text="수직 분석"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llMPHorizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/flMP"
+                app:layout_constraintEnd_toEndOf="@+id/flMP"
+                app:layout_constraintHorizontal_bias="0.85"
+                app:layout_constraintStart_toStartOf="@+id/flMP"
+                app:layout_constraintTop_toTopOf="@+id/flMP">
+
+                <ImageView
+                    android:id="@+id/ivMPHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/icon_horizontal"
+                    android:tint="@color/subColor400" />
+
+                <TextView
+                    android:id="@+id/tvMPHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center"
+                    android:text="수평 분석"
+                    android:textColor="@color/subColor400"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/flMP"
+                app:layout_constraintVertical_bias="0.0">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMPLeft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMPRight"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

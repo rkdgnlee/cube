@@ -62,12 +62,14 @@ dependencies {
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
+    implementation(libs.androidx.coordinatorlayout)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("jp.wasabeef:blurry:4.0.1")
+    implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
 
 
     // api

@@ -18,31 +18,18 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
-            <ImageButton
-                android:id="@+id/ibtnMHBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="4dp"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <TextView
                 android:id="@+id/textView121"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:text="측정 이력"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/ibtnMHBack"
-                app:layout_constraintStart_toEndOf="@+id/ibtnMHBack"
-                app:layout_constraintTop_toTopOf="@+id/ibtnMHBack" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider3"

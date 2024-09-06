@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,17 +10,18 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.RvMeasureItemBinding
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 
-class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>, private val viewModel : MeasureViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMIName: TextView = view.findViewById(R.id.tvMIName)
-        val tvMIPredict: TextView = view.findViewById(R.id.tvMIPredict)
         val tvMIScore : TextView = view.findViewById(R.id.tvMIScore)
         val clMI : ConstraintLayout = view.findViewById(R.id.clMI)
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = RvMeasureItemBinding.inflate(layoutInflater, parent, false)
@@ -33,13 +35,8 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = measures[position]
         if (holder is viewHolder) {
-            holder.tvMIName.text = currentItem.name
-            holder.tvMIScore.text = currentItem.score.toString()
-            var explain = ""
-            for (i in 0 until currentItem.dangerParts.size) {
-                explain += currentItem.dangerParts[i] + ", "
-            }
-            holder.tvMIPredict.text = explain
+            holder.tvMIName.text = "${currentItem.regDate} 측정 기록"
+            holder.tvMIScore.text = currentItem.overall.toString()
 
             holder.clMI.setOnClickListener {
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -48,6 +45,9 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                     addToBackStack(null)
                     commit()
                 }
+
+                viewModel.selectedMeasure = currentItem
+                Log.w("VM>selectedMeasure", "${viewModel.selectedMeasure}")
             }
         }
     }

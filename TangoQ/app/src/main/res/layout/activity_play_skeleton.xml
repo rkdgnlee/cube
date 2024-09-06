@@ -37,11 +37,11 @@
         android:id="@+id/clPSVerticalAngle"
         android:layout_width="40dp"
         android:layout_height="0dp"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="64dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.cardview.widget.CardView
@@ -68,11 +68,11 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
-        android:layout_width="270dp"
-        android:layout_height="200dp"
-        android:layout_marginEnd="30dp"
+        android:layout_width="280dp"
+        android:layout_height="210dp"
+        android:layout_marginStart="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.7">
 
@@ -91,11 +91,7 @@
         <com.tangoplus.tangoq.mediapipe.OverlayView
             android:id="@+id/olPS"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="@+id/vfPS"
-            app:layout_constraintEnd_toEndOf="@+id/vfPS"
-            app:layout_constraintStart_toStartOf="@+id/vfPS"
-            app:layout_constraintTop_toTopOf="@+id/vfPS" />
+            android:layout_height="match_parent" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

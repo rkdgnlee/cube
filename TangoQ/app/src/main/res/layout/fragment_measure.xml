@@ -22,6 +22,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         app:backgroundTint="@color/mainColor"
+        app:elevation="@null"
         app:iconTint="@color/black" />
 
     <androidx.constraintlayout.widget.ConstraintLayout

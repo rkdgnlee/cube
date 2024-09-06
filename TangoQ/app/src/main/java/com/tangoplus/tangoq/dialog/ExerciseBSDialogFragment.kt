@@ -17,7 +17,6 @@ import com.tangoplus.tangoq.databinding.FragmentExerciseBSDialogBinding
 
 class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentExerciseBSDialogBinding
-
     var sn = 0
 
     override fun onCreateView(
@@ -64,19 +63,19 @@ class ExerciseBSDialogFragment : BottomSheetDialogFragment() {
 //        }
 //        // ------! 세트 계산 끝 !-------
 
-        binding.llEBsPlay.setOnClickListener {
-            dismiss()
-            val dialogFragment = PlayThumbnailDialogFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable("ExerciseUnit", exerciseUnit)
-                }
-            }
-            dialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flMain, DialogFragment)
-//                commit()
+//        binding.llEBsPlay.setOnClickListener {
+//            dismiss()
+//            val dialogFragment = PlayThumbnailDialogFragment().apply {
+//                arguments = Bundle().apply {
+//                    putParcelable("ExerciseUnit", exerciseUnit)
+//                }
 //            }
-        }
+//            dialogFragment.show(requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+////            requireActivity().supportFragmentManager.beginTransaction().apply {
+////                replace(R.id.flMain, DialogFragment)
+////                commit()
+////            }
+//        }
         binding.ibtnEBsExit.setOnClickListener {
             dismiss()
         }

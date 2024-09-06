@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.annotation.OptIn
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.tangoplus.tangoq.MeasureSkeletonActivity
@@ -16,6 +17,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MeasureHistoryRVAdapter
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureHistoryBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
@@ -26,7 +28,8 @@ import kotlin.random.Random
 class MeasureHistoryFragment : Fragment() {
     lateinit var binding : FragmentMeasureHistoryBinding
 
-    private lateinit var singletonInstance: Singleton_t_measure
+    private var singletonMeasure : MutableList<MeasureVO>? = null
+    private val viewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,36 +42,16 @@ class MeasureHistoryFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        singletonInstance = Singleton_t_measure.getInstance(requireContext())
 
-
-        binding.ibtnMHBack.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flMain, MeasureFragment())
-                commit()
-            }
-        }
 
         binding.ibtnMHAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        val measures = mutableListOf<MeasureVO>()
-        for (i in 1 .. 8) {
-            val measure = MeasureVO(
-                "${LocalDate.now().minusDays(i.toLong())}",
-                Random.nextInt(70, 99),
-                listOf("손목", "중지손가락", "후면 삼각근", "정강이근").toMutableList(),
-                "",
-                false,
-                JSONObject()
-            )
-            measures.add(measure)
-        }
-
-        setAdpater(measures)
-        binding.tvMHCount.text = "총 측정건: ${measures.size}건"
+        singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
+        setAdpater(singletonMeasure!!)
+        binding.tvMHCount.text = "총 측정건: ${singletonMeasure!!.size}건"
 
         // -----! spinner 연결 시작 !-----
         val filterList = arrayListOf<String>()
@@ -85,7 +68,7 @@ class MeasureHistoryFragment : Fragment() {
                     ) {
                         when (position) {
                             0 -> {
-                                measures.sortedBy { it.name }
+                                singletonMeasure!!.sortedBy { it.regDate }
                             }
                             1 -> {
 
@@ -106,7 +89,7 @@ class MeasureHistoryFragment : Fragment() {
     }
 
     private fun setAdpater(measures: MutableList<MeasureVO>) {
-        val adapter = MeasureHistoryRVAdapter(this@MeasureHistoryFragment, measures)
+        val adapter = MeasureHistoryRVAdapter(this@MeasureHistoryFragment, measures, viewModel)
         binding.rvMH.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMH.layoutManager = linearLayoutManager

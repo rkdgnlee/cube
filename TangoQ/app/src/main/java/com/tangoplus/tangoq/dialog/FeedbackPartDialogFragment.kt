@@ -49,7 +49,7 @@ class FeedbackPartDialogFragment : DialogFragment() ,OnPartCheckListener {
             // ------! db 전송 시작 !------
             val partsList = mutableListOf<String>()
             for (i in 0 until viewModel.parts.value?.size!!) {
-                partsList.add(viewModel.feedbackParts.value!![i].name)
+                partsList.add(viewModel.feedbackParts.value!![i].regDate)
             }
             userJson?.optString("user_mobile")
 //            insertMeasurePartsByJson(getString(R.string.IP_ADDRESS_t_favorite),)
@@ -120,12 +120,12 @@ class FeedbackPartDialogFragment : DialogFragment() ,OnPartCheckListener {
     }
 
     override fun onPartCheck(part: MeasureVO) {
-        if (part.select) {
-            viewModel.addFeedbackPart(part)
-            Log.v("viewModel.part", "${viewModel.parts.value}")
-        } else {
-            viewModel.deleteFeedbackPart(part)
-        }
+//        if (part.select) {
+//            viewModel.addFeedbackPart(part)
+//            Log.v("viewModel.part", "${viewModel.parts.value}")
+//        } else {
+//            viewModel.deleteFeedbackPart(part)
+//        }
     }
 //    private fun setAnimation(view: View, onOff: Boolean) {
 //        if (onOff) view.visibility = View.VISIBLE

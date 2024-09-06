@@ -11,6 +11,9 @@
         <item name="android:windowBackground">@color/subColor100</item>
         <item name="android:fragment">@color/white</item>
         <item name="android:dialogTheme">@style/AppTheme.DialogFragment</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
     </style>
 
 

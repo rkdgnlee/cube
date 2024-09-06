@@ -6,21 +6,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
+import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
+import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseJson
 import kotlinx.coroutines.launch
 
 
 class ExerciseFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseBinding
 //    var verticalDataList = mutableListOf<ExerciseVO>()
-
+    private val viewModel : ExerciseViewModel by activityViewModels()
 
     // ------! 블루투스 변수 !------
 //    var mDeviceInfoList: ArrayList<BluetoothDeviceInfo> = arrayListOf()
@@ -152,13 +156,25 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
                     try { // ------! rv vertical 시작 !------
 //                        Log.v("cateSize", "mainCategoryList: ${categoryArrayList}, subCategoryList: $typeArrayList")
-                        val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, sn,"mainCategory" )
+                        val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, sn, "mainCategory" )
                         binding.rvEMainCategory.adapter = adapter
                         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                         binding.rvEMainCategory.layoutManager = linearLayoutManager
                         // ------! rv vertical 끝 !------
+
+                        // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
+                        if (viewModel.allExercises.isEmpty()) {
+                            viewModel.allExercises = fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description)).toMutableList()
+                            Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
+                        }
+
                     } catch (e: Exception) {
                         Log.e(TAG, "Error: ${e.message}")
+                    }
+
+                    binding.linearLayout7.setOnClickListener{
+                        val dialog = ExerciseSearchDialogFragment()
+                        dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
                     }
                 }
             }

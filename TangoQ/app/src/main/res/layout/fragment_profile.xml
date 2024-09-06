@@ -16,7 +16,7 @@
             android:id="@+id/ibtnPAlarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/effect_ibtn_20dp"
             android:backgroundTint="@color/white"
             android:padding="4dp"

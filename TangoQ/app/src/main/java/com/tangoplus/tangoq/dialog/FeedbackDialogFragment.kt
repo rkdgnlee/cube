@@ -45,8 +45,7 @@ class FeedbackDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("login_data")
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         val progressTime = eViewModel.exerciseLog.value?.first
         val totalTime = eViewModel.exerciseLog.value?.third
@@ -81,6 +80,8 @@ class FeedbackDialogFragment : DialogFragment() {
 
         binding.tvFbSkip.paintFlags = Paint.UNDERLINE_TEXT_FLAG
         binding.tvFbSkip.setOnClickListener {
+            eViewModel.exerciseLog.value = null
+            eViewModel.isDialogShown.value = true
             dismiss()
         }
 
@@ -91,7 +92,7 @@ class FeedbackDialogFragment : DialogFragment() {
             val jsonObj = JSONObject()
             val parts = mutableListOf<String>()
             for (i in 0 until mViewModel.feedbackParts.value?.size!!) {
-                parts.add(mViewModel.feedbackParts.value!![i].name)
+//                parts.add(mViewModel.feedbackParts.value!![i].name)
             }
             jsonObj.put("user_sn", userJson?.optString("user_sn"))
             jsonObj.put("intensity_score",intensitys.getIndex())

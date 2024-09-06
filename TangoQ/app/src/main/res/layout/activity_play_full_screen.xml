@@ -43,7 +43,7 @@
         android:background="#80000000"
         android:gravity="center"
         android:paddingBottom="256dp"
-        android:text="다음 운동이 곧 시작합니다 !\n준비해 주세요\n\n3"
+        android:text="다음 운동이 곧 시작합니다 !\n동작을 준비해 주세요\n\n3"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"

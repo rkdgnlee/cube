@@ -2,11 +2,12 @@ package com.tangoplus.tangoq.`object`
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.tangoplus.tangoq.data.HistoryVO
+import com.tangoplus.tangoq.data.EpisodeVO
 import org.json.JSONObject
 
 class Singleton_t_history private constructor(context: Context){
-    var viewingHistory : MutableList<HistoryVO>? = null
+    var jsonObject : JSONObject? = null
+    var historys: MutableList<MutableList<EpisodeVO>>? = null
 
     init {
         initialize()
@@ -27,7 +28,7 @@ class Singleton_t_history private constructor(context: Context){
 
     private fun initialize() {
         // JSON 초기화
-        viewingHistory = mutableListOf()
-
+        jsonObject = JSONObject()
+        historys = mutableListOf()
     }
 }

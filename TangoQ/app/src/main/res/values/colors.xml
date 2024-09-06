@@ -16,7 +16,11 @@
 
     <color name="successColor">#45FF02</color>
     <color name="conditionSuccessColor">#7AA2E3</color>
-    <color name="deleteColor">#FF3B30</color>
+    <color name="mainContainerColor">#B9FAFF</color>
+    <color name="deleteColor">#FF5449</color>
+    <color name="deleteContainerColor">#FFDAD6</color>
+    <color name="cautionColor">#FF981D</color>
+    <color name="cautionContainerColor">#FFEFDC</color>
     <color name="opacityColor">#4D000000</color>
     <color name="opacitySubColor">#25959595</color>
 </resources>

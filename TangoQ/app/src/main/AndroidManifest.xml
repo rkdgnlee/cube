@@ -48,13 +48,12 @@
         <activity
             android:name=".SignInActivity"
             android:exported="false" />
-        <activity
-            android:name=".SigninActivity"
-            android:exported="false" />
+
         <activity
             android:name=".PlaySkeletonActivity"
             android:exported="true"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="landscape" >
+
         </activity>
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"

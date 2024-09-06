@@ -4,33 +4,25 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.PopupWindow
-import android.widget.TextView
 import androidx.annotation.OptIn
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.badge.BadgeDrawable
@@ -40,19 +32,16 @@ import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.skydoves.balloon.showAlignBottom
-import com.skydoves.balloon.showAlignEnd
 import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.`object`.Singleton_t_user
-import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.GraphVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard1Binding
+import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.view.BarChartRender
 import org.apache.commons.math3.distribution.NormalDistribution
+import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -62,11 +51,6 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Date
 import java.util.Locale
-import kotlin.math.absoluteValue
-import kotlin.math.exp
-import kotlin.math.pow
-import kotlin.math.sqrt
-import kotlin.random.Random
 
 
 class MeasureDashBoard1Fragment : Fragment() {
@@ -74,11 +58,13 @@ class MeasureDashBoard1Fragment : Fragment() {
     val viewModel : MeasureViewModel by activityViewModels()
     val endTime = LocalDateTime.now()
 //    val startTime = LocalDateTime.now().minusDays(1)
-private var popupWindow : PopupWindow?= null
+    private var popupWindow : PopupWindow?= null
     private var currentMonth = YearMonth.now()
     private var selectedDate = LocalDate.now()
+    private var balloon : Balloon? = null
     // ------! 싱글턴 패턴 객체 가져오기 !------
-    private lateinit var singletonInstance: Singleton_t_measure
+    private lateinit var singletonMeasure: Singleton_t_measure
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -91,7 +77,7 @@ private var popupWindow : PopupWindow?= null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        singletonInstance = Singleton_t_measure.getInstance(requireContext())
+        singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         // ------!  이름 + 통증 부위 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
@@ -105,23 +91,20 @@ private var popupWindow : PopupWindow?= null
             true -> {
                 // ------! 뱃지 및 종합 접수 시작 !------
                 setBadgeOnFlR()
+                binding.tvMD1TotalScore.text = "87"
                 binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${SimpleDateFormat("yyyy.MM.dd").format(Date().time)}"
                 binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                 binding.clMD1PredictDicease.setOnClickListener{
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                        replace(R.id.flMain, ReportDiseaseFragment())
-                        commit()
-                    }
+                    val dialog = ReportDiseaseDialogFragment()
+                    dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
                 }
-
             }
             false -> {
 
             }
         }
 
-        // ------! 공유하기 버튼 시작 !------
+        // ------# 공유하기 버튼 #------
         binding.btnMD1Share.setOnClickListener {
 
             // ------! 그래프 캡처 시작 !------
@@ -143,11 +126,9 @@ private var popupWindow : PopupWindow?= null
             intent.putExtra(Intent.EXTRA_STREAM, fileUri)
             intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
             startActivity(Intent.createChooser(intent, "밸런스 그래프"))
-        } // ------! 공유하기 버튼 끝 !------
+        }
 
-
-
-        // ------ ! 자세히 보기 시작 !------
+        // ------# 자세히 보기 #------
         binding.tvMD1More1.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -245,20 +226,35 @@ private var popupWindow : PopupWindow?= null
         val lcYAxisLeft = lineChart.axisLeft
         val lcYAxisRight = lineChart.axisRight
         val lcLegend = lineChart.legend
+        var startIndex = 0
 
-        val lcDataList : MutableList<GraphVO> = mutableListOf()
-        for (i in 0 until 7) {
-            val y = Random.nextInt(99)
-//            lcDataList.add(GraphVO(i, i.length.p))
-            lcDataList.add(GraphVO("", y))
-//            y += 1
+
+
+        val lcDataList: MutableList<Pair<String, Int>> = mutableListOf()
+
+        val measures = singletonMeasure.measures
+        if (measures?.size != 7) {
+            for (i in 0 until (7 - measures?.size!!)) {
+                lcDataList.add(Pair("", 0))
+            }
         }
 
-        val lcEntries : MutableList<Entry> = mutableListOf()
+        for (i in measures.size - 1 downTo 0) {
+            val measure = measures[i]
+            lcDataList.add(Pair(measure.regDate, measure.overall!!))
+        }
+        Log.v("lcDataList", "${lcDataList}")
         for (i in lcDataList.indices) {
-            // entry는 y축에 넣는 데이터 형식을 말함. Entry의 1번째 인자는 x축의 데이터의 순서, 두 번째 인자는 y값
-            lcEntries.add(Entry(i.toFloat(), lcDataList[i].yAxis.toFloat()))
+            startIndex = i
+            break
         }
+
+        val lcEntries: MutableList<Entry> = mutableListOf()
+        for (i in startIndex until lcDataList.size) {
+            lcEntries.add(Entry((i - startIndex).toFloat(), lcDataList[i].second.toFloat()))
+        }
+
+
         val lcLineDataSet = LineDataSet(lcEntries, "")
         lcLineDataSet.apply {
             color = resources.getColor(R.color.mainColor, null)
@@ -272,12 +268,13 @@ private var popupWindow : PopupWindow?= null
         }
 
         lcXAxis.apply {
+            isEnabled = false
             textSize = 14f
             textColor = resources.getColor(R.color.subColor500)
             labelRotationAngle = 2F
             setDrawAxisLine(false)
             setDrawGridLines(false)
-            valueFormatter = (IndexAxisValueFormatter(lcDataList.map { it.xAxis }))
+
             setLabelCount(lcDataList.size, true)
             position = XAxis.XAxisPosition.BOTTOM
             axisLineWidth = 1.0f
@@ -320,14 +317,18 @@ private var popupWindow : PopupWindow?= null
             description.text = ""
             setScaleEnabled(false)
             invalidate()
-        } // ------! 값 클릭 시 벌룬 나오기 시작 !------
+        }
+        // ------! 값 클릭 시 벌룬 나오기 시작 !------
         lineChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 e?.let { entry ->
+                    val originalIndex = startIndex + entry.x.toInt()
+                    val selectedData = lcDataList[originalIndex]
+                    val balloonText = if (selectedData.first != "") "측정날짜: ${selectedData.first}\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
                     val balloonlc1 = Balloon.Builder(requireContext())
                         .setWidthRatio(0.5f)
                         .setHeight(BalloonSizeSpec.WRAP)
-                        .setText("${entry.y.toInt()}점")  // 선택된 데이터 포인트의 y값을 텍스트로 설정
+                        .setText(balloonText)
                         .setTextColorResource(R.color.subColor800)
                         .setTextSize(15f)
                         .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
@@ -377,28 +378,33 @@ private var popupWindow : PopupWindow?= null
 //
         // ------! balloon 시작 !------
         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-        params.horizontalBias = 0.311f
+        params.horizontalBias = 0.731f
         binding.ivMD1Position.layoutParams = params
         val percent = (params.horizontalBias * 100).toInt()
 
-        val balloon = Balloon.Builder(requireContext())
-            .setWidthRatio(0.6f)
-            .setHeight(BalloonSizeSpec.WRAP)
-            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 50) "상위 ${percent}" else "하위 ${percent}"}%에 위치합니다.")
-            .setTextColorResource(R.color.white)
-            .setTextSize(15f)
-            .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
-            .setArrowSize(0)
-            .setMargin(4)
-            .setPadding(8)
-            .setCornerRadius(16f)
-            .setBackgroundColorResource(R.color.mainColor)
-            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-            .setLifecycleOwner(viewLifecycleOwner)
-            .build()
+        when (percent) {
+            in 0 .. 30 -> {
+                createBalloon(userJson, percent)
+                binding.vMD1Middle.visibility = View.INVISIBLE
+                binding.vMD1Low.visibility = View.VISIBLE
+            }
+            in 70 .. 100 -> {
+                createBalloon(userJson, percent)
+                binding.vMD1Middle.visibility = View.INVISIBLE
+                binding.vMD1Low.visibility = View.GONE
+                binding.vMD1High.visibility = View.VISIBLE
+            }
+            else -> {
+                createBalloon(userJson, percent)
+                binding.vMD1Middle.visibility = View.VISIBLE
+                binding.vMD1High.visibility = View.GONE
+                binding.vMD1Low.visibility = View.GONE
+            }
+        }
+
         binding.ivMD1Position.setOnClickListener{
-            binding.ivMD1Position.showAlignTop(balloon)
-            balloon.dismissWithDelay(2500L)
+            binding.ivMD1Position.showAlignTop(balloon!!)
+            balloon!!.dismissWithDelay(2500L)
         }
 //
 //        // -------! 500개의 범위 !------
@@ -552,7 +558,27 @@ private var popupWindow : PopupWindow?= null
 //        }
     }
     // ------! 추천 운동 받기 끝!------
+    private fun createBalloon(userJson: JSONObject?, percent: Int) {
 
+        balloon = Balloon.Builder(requireContext())
+            .setWidthRatio(0.6f)
+            .setHeight(BalloonSizeSpec.WRAP)
+            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 50) "상위 ${100 - percent}" else "하위 ${percent}"}%에 위치합니다.")
+            .setTextColorResource(R.color.white)
+            .setTextSize(15f)
+            .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
+            .setArrowSize(0)
+            .setMargin(4)
+            .setPadding(8)
+            .setCornerRadius(16f)
+            .setBackgroundColorResource(when (percent) {
+                in 0..30 -> {R.color.deleteColor}
+                else -> {R.color.mainColor}
+            })
+            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+            .setLifecycleOwner(viewLifecycleOwner)
+            .build()
+    }
 
 
 //    @SuppressLint("MissingInflatedId", "InflateParams")

@@ -7,21 +7,6 @@
     android:layout_height="76dp"
     android:background="@drawable/effect_ibtn">
 
-    <TextView
-        android:id="@+id/tvMIPredict"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="5dp"
-        android:singleLine="true"
-        android:text="우려 부위: "
-        android:textColor="@color/subColor400"
-        android:textSize="14dp"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout26"
-        app:layout_constraintEnd_toStartOf="@+id/textView48"
-        app:layout_constraintStart_toEndOf="@+id/constraintLayout26" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout26"
         android:layout_width="60dp"
@@ -36,8 +21,9 @@
 
         <TextView
             android:id="@+id/tvMIScore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
             android:text="98"
             android:textColor="@color/mainColor"
             android:textSize="20dp"
@@ -61,15 +47,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
         android:singleLine="true"
         android:text="2024.05.17"
         android:textSize="18dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView48"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout26"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout26" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView48"

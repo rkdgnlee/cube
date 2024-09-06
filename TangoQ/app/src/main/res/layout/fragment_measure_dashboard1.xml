@@ -142,7 +142,7 @@
 
                     <View
                         android:id="@+id/vMD1Percent"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="10dp"
                         android:background="@drawable/background_rectangle_8dp_100"
                         android:backgroundTint="@color/subColor200"
@@ -151,36 +151,14 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cvMD1Percent"
-                        android:layout_width="0dp"
-                        android:layout_height="10dp"
-                        android:padding="2dp"
-                        app:cardBackgroundColor="@color/mainColor"
-                        app:cardCornerRadius="0dp"
-                        app:cardElevation="2dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/vMD1Percent"
-                        app:layout_constraintStart_toStartOf="@+id/vMD1Percent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent="0.4" />
-
-                    <View
-                        android:id="@+id/view26"
-                        android:layout_width="1.5dp"
-                        android:layout_height="20dp"
-                        android:background="@color/subColor500"
-                        app:layout_constraintBottom_toBottomOf="@+id/vMD1Percent"
-                        app:layout_constraintEnd_toStartOf="@+id/cvMD1Percent"
-                        app:layout_constraintTop_toTopOf="@+id/cvMD1Percent" />
-
                     <View
                         android:id="@+id/view27"
                         android:layout_width="1.5dp"
                         android:layout_height="20dp"
                         android:background="@color/subColor500"
+                        android:elevation="2dp"
                         app:layout_constraintBottom_toBottomOf="@+id/vMD1Percent"
-                        app:layout_constraintStart_toEndOf="@+id/cvMD1Percent"
+                        app:layout_constraintStart_toEndOf="@+id/vMD1Middle"
                         app:layout_constraintTop_toTopOf="@+id/vMD1Percent" />
 
                     <ImageView
@@ -193,6 +171,53 @@
                         app:layout_constraintEnd_toEndOf="@+id/vMD1Percent"
                         app:layout_constraintHorizontal_bias="0.48"
                         app:layout_constraintStart_toStartOf="@+id/vMD1Percent" />
+
+                    <View
+                        android:id="@+id/view26"
+                        android:layout_width="1.5dp"
+                        android:layout_height="20dp"
+                        android:background="@color/subColor500"
+                        android:elevation="2dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/vMD1Percent"
+                        app:layout_constraintEnd_toStartOf="@+id/vMD1Middle"
+                        app:layout_constraintTop_toTopOf="@+id/vMD1Percent" />
+
+                    <View
+                        android:id="@+id/vMD1Low"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/background_rectangle_left_8dp_delete"
+                        android:elevation="2dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/vMD1Percent"
+                        app:layout_constraintEnd_toStartOf="@+id/view26"
+                        app:layout_constraintStart_toStartOf="@+id/vMD1Percent"
+                        app:layout_constraintTop_toTopOf="@+id/vMD1Percent" />
+
+                    <View
+                        android:id="@+id/vMD1Middle"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/background_button"
+                        android:elevation="2dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/vMD1Percent"
+                        app:layout_constraintEnd_toEndOf="@+id/vMD1Percent"
+                        app:layout_constraintStart_toStartOf="@+id/vMD1Percent"
+                        app:layout_constraintTop_toTopOf="@+id/vMD1Percent"
+                        app:layout_constraintWidth_percent="0.38" />
+
+                    <View
+                        android:id="@+id/vMD1High"
+                        android:layout_width="100dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/background_rectangle_right_8dp_main"
+                        android:elevation="2dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/vMD1Percent"
+                        app:layout_constraintEnd_toEndOf="@+id/vMD1Percent"
+                        app:layout_constraintStart_toEndOf="@+id/view27"
+                        app:layout_constraintTop_toTopOf="@+id/vMD1Percent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
@@ -247,7 +272,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvMD1Name">
 
                 <TextView
-                    android:id="@+id/textView64"
+                    android:id="@+id/tvMD1TotalScore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
@@ -269,7 +294,7 @@
                     app:cardBackgroundColor="@color/subColor100"
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView64"
+                    app:layout_constraintStart_toEndOf="@+id/tvMD1TotalScore"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout

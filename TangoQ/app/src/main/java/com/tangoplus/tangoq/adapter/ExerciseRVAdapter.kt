@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +20,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.EpisodeVO
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.dialog.ExerciseBSDialogFragment
@@ -31,7 +32,7 @@ import java.lang.IllegalArgumentException
 class ExerciseRVAdapter (
     private val fragment: Fragment,
     var exerciseList: MutableList<ExerciseVO>,
-    var viewingHistory : List<HistoryVO>,
+    private val episode : EpisodeVO?,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -47,7 +48,8 @@ class ExerciseRVAdapter (
         val tvEIRepeat : TextView = view.findViewById(R.id.tvEIRepeat)
         val ibtnEIMore : ImageButton= view.findViewById(R.id.ibtnEIMore)
         val vEI : View = view.findViewById(R.id.vEI)
-        val hpvEIHistory : HorizontalProgressView = view.findViewById(R.id.hpvEIHistory)
+        val hpvEI : HorizontalProgressView = view.findViewById(R.id.hpvEI)
+        val tvEIFinish : TextView = view.findViewById(R.id.tvEIFinish)
     }
 
     inner class recommendViewHolder(view:View) : RecyclerView.ViewHolder(view) {
@@ -144,6 +146,47 @@ class ExerciseRVAdapter (
                     }
                     dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                 }
+
+                // ------# 시청 기록 및 완료 버튼 #------
+
+                if (episode?.doingExercises != null) {
+                    val currentEpisodeItem = episode.doingExercises[position]
+
+                    val condition = if (currentEpisodeItem.viewCount!! > 0 && currentEpisodeItem.lastPosition!! <= 0) {
+                        0
+                    } else if (currentEpisodeItem.viewCount == 0  && currentEpisodeItem.lastPosition!! > 0) {
+                        1
+                    } else {
+                        2
+                    }
+                    when (condition) {
+                        0 -> { // 재생 및 완료
+                            holder.tvEIFinish.visibility = View.VISIBLE
+                            holder.ibtnEIMore.visibility = View.INVISIBLE
+                            holder.ibtnEIMore.isEnabled = false
+                            holder.vEI.visibility = View.VISIBLE
+                            holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor200)
+                            holder.hpvEI.visibility = View.GONE
+                        }
+                        1 -> { // 재생 시간 중간
+                            holder.tvEIFinish.visibility = View.GONE
+                            holder.hpvEI.visibility = View.VISIBLE
+                            holder.hpvEI.progress = (currentEpisodeItem.lastPosition!! * 100) / currentExerciseItem.videoDuration?.toInt()!!
+                            Log.v("hpvProgress", "${holder.hpvEI.progress}")
+                        }
+                        else -> { // 재생기록 없는 item
+                            holder.tvEIFinish.visibility = View.GONE
+                            holder.hpvEI.visibility = View.GONE
+                        }
+                    }
+
+                }
+
+                // repeatcount가 1 이상이고 timestamp -1 이면 한 번 본적있는 거.
+
+
+
+
             }
             // ------! play thumbnail 추천 운동 시작 !------
             is recommendViewHolder -> {

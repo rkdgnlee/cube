@@ -13,56 +13,92 @@
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout19"
+            android:id="@+id/constraintLayout11"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white">
+            android:layout_height="68dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout11"
-                android:layout_width="match_parent"
-                android:layout_height="68dp"
+            <TextView
+                android:id="@+id/textView104"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="운동"
+                android:textColor="@color/black"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView47"
+                app:layout_constraintStart_toEndOf="@+id/imageView47"
+                app:layout_constraintTop_toTopOf="@+id/imageView47" />
+
+            <ImageView
+                android:id="@+id/imageView47"
+                android:layout_width="64dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/app_logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_rectangle_20dp"
+                android:orientation="horizontal"
+                android:padding="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/textView104"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="운동"
-                    android:textColor="@color/black"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView47"
-                    app:layout_constraintStart_toEndOf="@+id/imageView47"
-                    app:layout_constraintTop_toTopOf="@+id/imageView47" />
+                app:layout_constraintTop_toBottomOf="@+id/imageView47">
 
                 <ImageView
-                    android:id="@+id/imageView47"
-                    android:layout_width="64dp"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="4dp"
+                    android:id="@+id/imageView26"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/app_logo"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:src="@drawable/icon_search" />
+
+                <TextView
+                    android:id="@+id/tvESearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="8"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="#00FFFFFF"
+                    android:gravity="center_vertical"
+                    android:hint="운동이름을 검색하세요"
+                    android:singleLine="true"
+                    android:textColorHint="@color/subColor800" />
+
+                <ImageButton
+                    android:id="@+id/ibtnEClear"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/icon_text_clear" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvEMainCategory"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout11"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
                 app:layout_constraintVertical_bias="0.0" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

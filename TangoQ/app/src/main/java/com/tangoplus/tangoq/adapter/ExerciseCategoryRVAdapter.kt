@@ -24,8 +24,6 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                                 private val fragment: Fragment,
                                 private val onCategoryClickListener: OnCategoryClickListener,
                                 private val sn : Int,
-//                                private val mainCategoryIndex: Int,
-//                                private val onCategoryScrollListener: OnCategoryScrollListener,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -83,57 +81,32 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
             // ------! 대분류 item 시작 !------
             is MainCategoryViewHolder -> {
                 val currentItemMain = mainCategorys[position]
-//                holder.mcvMC.visibility = View.GONE
-//                holder.tvMCName.text = currentItemMain.second
+
                 Glide.with(fragment)
                     .load(fragment.resources.getIdentifier("drawable_main_category_${position}", "drawable", fragment.requireActivity().packageName))
                     .diskCacheStrategy(DiskCacheStrategy.NONE) // 캐싱 무시
                     .skipMemoryCache(true) // 메모리 캐시 무시
 
                     .into(holder.ivMCThumbnail)
-                // -----! 이미지 클릭 시 서브 카테고리 시작 !------
-//                val adapter = ExerciseCategoryRVAdapter(mainCategorys, subCategorys, fragment, position ,onCategoryScrollListener,"subCategory" )
-//                holder.rvMC.adapter = adapter
-//                val linearLayoutManager = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
-//                holder.rvMC.layoutManager = linearLayoutManager
 
                 holder.ivMCThumbnail.setOnClickListener{
                     goExerciseDetail(currentItemMain)
-//                    if (holder.mcvMC.visibility == View.GONE) {
-//                        holder.mcvMC.visibility = View.VISIBLE
-//                        holder.mcvMC.alpha = 0f
-//                        holder.mcvMC.animate().apply {
-//                            duration = 100
-//                            alpha(1f)
-//                        }
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            onCategoryScrollListener.categoryScroll(holder.ivMCThumbnail)
-//                        }, 150)
-//
-//                    } else {
-//                        holder.mcvMC.animate().apply {
-//                            duration = 100
-//                            alpha(0f)
-//                            withEndAction {
-//                                holder.mcvMC.visibility = View.GONE
-//                            }
-//                        }
-//                    }
+
                 }
             }
             is SubCategoryViewHolder -> {
                 val currentItem = subCategorys[position]
                 holder.tvSCName.text = currentItem
                 val adapterPosition = holder.adapterPosition
-
+                holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_main_color_20dp)
                 if (adapterPosition == selectedPosition) {
-                    holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_main_color_20dp)
+                    holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.mainColor)
                     holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.white))
                 } else {
                     holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
-                    holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_20dp)
-                }
+                    holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor100)
 
+                }
                 holder.tvSCName.setOnClickListener {
                     onCategoryClickListener.onCategoryClick(sn, currentItem)
                     val previousPosition = selectedPosition
@@ -142,7 +115,6 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                     notifyItemChanged(selectedPosition) // 새로 선택된 아이템 갱신
                     Log.v("subCategoryIndex", "$selectedPosition")
                 }
-
             }
         }
     }
@@ -152,8 +124,8 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
         Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
 //            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-            add(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
-//            addToBackStack(null)
+            replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
+            addToBackStack(null)
             commit()
         }
     }

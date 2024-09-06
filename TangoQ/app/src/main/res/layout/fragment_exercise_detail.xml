@@ -33,14 +33,15 @@
                 android:id="@+id/linearLayout3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_rectangle_20dp"
                 android:orientation="horizontal"
                 android:padding="12dp"
-                app:layout_constraintBottom_toBottomOf="@+id/ibtnEDBack"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ibtnEDBack"
-                app:layout_constraintTop_toTopOf="@+id/ibtnEDBack">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView56">
 
                 <ImageView
                     android:id="@+id/imageView20"
@@ -51,14 +52,15 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/icon_search" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/actvEDSearch"
+                <TextView
+                    android:id="@+id/tvEDSearch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="8"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="#00FFFFFF"
+                    android:gravity="center_vertical"
                     android:hint="운동이름을 검색하세요"
                     android:singleLine="true"
                     android:textColorHint="@color/subColor800" />
@@ -76,12 +78,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ibtnEDBack" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/sflED"
@@ -147,19 +149,6 @@
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rvEDAll" />
-
-            <ImageButton
-                android:id="@+id/ibtnEDBack"
-                android:layout_width="42dp"
-                android:layout_height="46dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="28dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="8dp"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView56" />
 
             <TextView
                 android:id="@+id/tvEDMainCategoryName"

@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,10 +26,11 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.PlayFullScreenActivity
+import com.tangoplus.tangoq.PlaySkeletonActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.MuscleRVAdpater
+import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.data.ExerciseVO
@@ -39,7 +39,6 @@ import com.tangoplus.tangoq.data.UserViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.`object`.DeepLinkUtil
-import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -53,7 +52,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 //    private var playWhenReady = true
 //    private var currentWindow = 0
     private var playbackPosition = 0L
-    private lateinit var singletonInstance: Singleton_t_history
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,7 +64,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        singletonInstance = Singleton_t_history.getInstance(requireContext())
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
 
@@ -94,12 +91,13 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             ?.replace(")", "")
             ?.split(", ")
             ?.toMutableList()
-        val displayMuscleList = fullmuscleList?.chunked(2)?.map { it.first() }?.toMutableList()
 
+        val displayMuscleList = fullmuscleList?.chunked(2)
+            ?.map { it.first() }
+            ?.map { it to -1 }
+            ?.toMutableList()
 
-
-        Log.v("muscleList", "$displayMuscleList")
-        val muscleAdapter = MuscleRVAdpater(this@PlayThumbnailDialogFragment, displayMuscleList)
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle")
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
@@ -178,8 +176,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 // 전체데이터에서 현재 데이터(exerciseData)와 비교함.
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
                     exerciseData?.relatedJoint!!.split(", ")[0])}.toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, singletonInstance.viewingHistory?.toList() ?: listOf(),
-                    "recommend")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, null, "recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager
@@ -190,6 +187,21 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------! 관련 운동 횡 rv 끝 !------
 
+        // ------# ai코칭 #------
+        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
+            binding.btnPTDAIPlay.visibility = View.VISIBLE
+        } else binding.btnPTDAIPlay.visibility = View.GONE
+
+        binding.btnPTDAIPlay.setOnClickListener {
+            val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
+
+            val exerciseIds = mutableListOf(exerciseData?.exerciseId)
+            val videoUrls = mutableListOf(videoUrl)
+            intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
+            intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
+            intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
+            startActivity(intent)
+        }
     }
     // ------! 딥링크로 앱 공유 시작 !------
 

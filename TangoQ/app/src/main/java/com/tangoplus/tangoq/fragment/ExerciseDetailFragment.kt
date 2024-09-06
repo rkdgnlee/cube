@@ -18,6 +18,7 @@ import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
+import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
 import com.tangoplus.tangoq.`object`.Singleton_t_history
@@ -27,7 +28,6 @@ import kotlinx.coroutines.launch
 class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
     lateinit var binding : FragmentExerciseDetailBinding
     private var filteredDataList = mutableListOf<ExerciseVO>()
-    private lateinit var singletonInstance: Singleton_t_history
     private var categoryId : Int? = null
     private lateinit var categoryList : List<String>
     private lateinit var categoryMap : Map<String, Int>
@@ -62,10 +62,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! 뒤로가기 시작 !------
-        singletonInstance = Singleton_t_history.getInstance(requireContext())
         // ------! 선택 카테고리 & 타입 가져오기 시작 !------
-
         categoryId = arguments?.getInt(ARG_CATEGORY_ID)
         val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
         val sn = arguments?.getInt(ARG_SN)
@@ -84,13 +81,14 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
             5 -> binding.tvEDMainCategoryName.text = "기구활용 운동"
         }
         binding.tvEDMainCategoryName.textSize = 24f
-        binding.ibtnEDBack.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                //            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flMain, ExerciseFragment())
-                commit()
-            }
-        }
+//        binding.ibtnEDBack.setOnClickListener {
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                //            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//                replace(R.id.flMain, ExerciseFragment())
+//                addToBackStack(null)
+//                commit()
+//            }
+//        }
 
         // -----! 카테고리  시작 !-----
         categoryList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎", "발목")
@@ -117,49 +115,53 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
             // ------! 자동완성 시작 !------
             val exerciseNames = filteredDataList.map { it.exerciseName }.distinct()
             val adapterActv = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, exerciseNames)
-            binding.actvEDSearch.setAdapter(adapterActv)
+//            binding.actvEDSearch.setAdapter(adapterActv)
+//
+//            binding.ibtnEDACTVClear.setOnClickListener {
+//                binding.actvEDSearch.text.clear()
+//
+//                updateRecyclerView(sn, filteredDataList)
+//            }
+//            binding.actvEDSearch.setOnEditorActionListener{ _, actionId, event ->
+//                if (actionId == EditorInfo.IME_ACTION_NEXT || event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+//
+//                    // ------! enter 클릭시 동작 시작 !------
+//                    val inputText = binding.actvEDSearch.text.toString()
+//                    if (inputText.isNotEmpty()) {
+//                        val regex = Regex(".*$inputText.*", RegexOption.IGNORE_CASE) // 대소문자 구분하지 않는 정규 표현식
+//                        val filteredExercises = filteredDataList.filter {
+//                            it.exerciseName!!.matches(regex)
+//                        }.distinct().toMutableList()
+//                        updateRecyclerView(sn, filteredExercises)
+//                    }
+//                    binding.actvEDSearch.dismissDropDown()
+//                    true
+//                    // ------! enter 클릭시 동작 끝 !------
+//                } else {
+//                    false
+//                }
+//            }
+//            // 사용자가 항목을 선택했을 때 필터링된 결과를 리사이클러뷰에 표시
+//            binding.actvEDSearch.setOnItemClickListener { parent, _, position, _ ->
+//                val selectedItem = parent.getItemAtPosition(position) as String
+//                val filterList = filteredDataList.filter { item ->
+//                    item.exerciseName == selectedItem
+//                }.toMutableList()
+//                val adapter = ExerciseRVAdapter(
+//                    this@ExerciseDetailFragment,
+//                    filterList,
+//                    singletonInstance.viewingHistory?.toList() ?: listOf(),
+//                    "main")
+//                binding.rvEDAll.adapter = adapter
+//                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+//                binding.rvEDAll.layoutManager = linearLayoutManager
+//                adapter.notifyDataSetChanged()
+//            } // ------! 자동완성 끝 !------
 
-            binding.ibtnEDACTVClear.setOnClickListener {
-                binding.actvEDSearch.text.clear()
-
-                updateRecyclerView(sn, filteredDataList)
+            binding.linearLayout3.setOnClickListener{
+                val dialog = ExerciseSearchDialogFragment()
+                dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
             }
-            binding.actvEDSearch.setOnEditorActionListener{ _, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_NEXT || event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
-
-                    // ------! enter 클릭시 동작 시작 !------
-                    val inputText = binding.actvEDSearch.text.toString()
-                    if (inputText.isNotEmpty()) {
-                        val regex = Regex(".*$inputText.*", RegexOption.IGNORE_CASE) // 대소문자 구분하지 않는 정규 표현식
-                        val filteredExercises = filteredDataList.filter {
-                            it.exerciseName!!.matches(regex)
-                        }.distinct().toMutableList()
-                        updateRecyclerView(sn, filteredExercises)
-                    }
-                    binding.actvEDSearch.dismissDropDown()
-                    true
-                    // ------! enter 클릭시 동작 끝 !------
-                } else {
-                    false
-                }
-            }
-            // 사용자가 항목을 선택했을 때 필터링된 결과를 리사이클러뷰에 표시
-            binding.actvEDSearch.setOnItemClickListener { parent, _, position, _ ->
-                val selectedItem = parent.getItemAtPosition(position) as String
-                val filterList = filteredDataList.filter { item ->
-                    item.exerciseName == selectedItem
-                }.toMutableList()
-                val adapter = ExerciseRVAdapter(
-                    this@ExerciseDetailFragment,
-                    filterList,
-                    singletonInstance.viewingHistory?.toList() ?: listOf(),
-                    "main")
-                binding.rvEDAll.adapter = adapter
-                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                binding.rvEDAll.layoutManager = linearLayoutManager
-                adapter.notifyDataSetChanged()
-            } // ------! 자동완성 끝 !------
-
             // ------! 시청 기록 시작 !------
 
             // ------! 시청 기록 끝 !------
@@ -201,14 +203,14 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
     }
     private fun updateRecyclerView(sn : Int, exercises : MutableList<ExerciseVO>) {
         if (sn == -1 ) {
-            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, singletonInstance.viewingHistory?.toList() ?: listOf(), "main")
+            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, "main")
             adapter.exerciseList = exercises
             binding.rvEDAll.adapter = adapter
             val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             binding.rvEDAll.layoutManager = linearLayoutManager
             binding.btnEDFinish.visibility = View.GONE
         } else {
-            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, singletonInstance.viewingHistory?.toList() ?: listOf(), "basket")
+            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, "basket")
             adapter.exerciseList = exercises
 
 

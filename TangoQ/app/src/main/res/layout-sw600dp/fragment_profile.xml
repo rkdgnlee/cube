@@ -87,18 +87,6 @@
                     app:layout_constraintStart_toStartOf="@+id/civP"
                     app:layout_constraintTop_toBottomOf="@+id/civP" />
 
-                <!--TODO 소개는 추가 예정            <TextView-->
-                <!--                android:id="@+id/tvPfIntroduce"-->
-                <!--                android:layout_width="wrap_content"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_marginTop="16dp"-->
-                <!--                android:text="소개를 입력해주세요"-->
-                <!--                android:textColor="@color/black"-->
-                <!--                android:textSize="16sp"-->
-                <!--                app:layout_constraintEnd_toEndOf="@+id/tvPfName"-->
-                <!--                app:layout_constraintHorizontal_bias="0.478"-->
-                <!--                app:layout_constraintStart_toStartOf="@+id/tvPfName"-->
-                <!--                app:layout_constraintTop_toBottomOf="@+id/tvPfName" />-->
 
                 <TextView
                     android:id="@+id/TextView125"
