@@ -334,7 +334,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         when {
             day.date == selectedDate -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.white))
-                container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.background_oval_main, null)
+                container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.background_oval, null)
             }
             day.date == LocalDate.now() -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.black))

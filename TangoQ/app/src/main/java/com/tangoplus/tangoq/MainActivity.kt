@@ -123,6 +123,9 @@ class MainActivity : AppCompatActivity() {
             }
             eViewModel.currentProgram = program
 
+
+
+
             val mjo1 = JSONObject().apply {
                 put("front_horizontal_angle_ear", -178.315)
                 put("front_horizontal_distance_sub_ear", 0.17671)

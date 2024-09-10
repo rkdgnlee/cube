@@ -50,7 +50,7 @@
         android:id="@+id/clLSD"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_bottomsheet"
+        android:background="@drawable/background_top_16dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <TextView

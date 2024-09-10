@@ -50,7 +50,7 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.9f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.background_dialog))
+        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.background_rectangle_20dp))
         dialogFragmentResize(0.9f, 0.85f)
     }
     private fun dialogFragmentResize(width: Float, height: Float) {

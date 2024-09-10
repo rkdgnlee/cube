@@ -96,19 +96,19 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
         if (snsIntegrations.first) {
             binding.tvGoogleInteCheck.text = "연결"
-            binding.clGoogle.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.subColor200))
+            binding.clGoogle.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
         }
         if (snsIntegrations.second) {
             binding.tvKakaoIntecheck.text = "연결"
-            binding.clKakao.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.subColor200))
+            binding.clKakao.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
         }
         if (snsIntegrations.third) {
             binding.tvNaverInteCheck.text = "연동"
-            binding.clNaver.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.subColor200))
+            binding.clNaver.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
         }

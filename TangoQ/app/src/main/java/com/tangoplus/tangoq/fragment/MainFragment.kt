@@ -159,19 +159,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun stringToLocalDate(dateTimeString: String): LocalDate {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
-        return localDateTime.toLocalDate()
-    }
-
-    fun convertDateFormat(inputDate: String): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("MM.dd", Locale.getDefault())
-        val date = inputFormat.parse(inputDate)
-        return date?.let { outputFormat.format(it) } ?: ""
-    }
-
     private fun updateUI() {
         val measureScores = singletonMeasure
 

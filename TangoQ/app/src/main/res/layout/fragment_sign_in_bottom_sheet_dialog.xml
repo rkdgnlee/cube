@@ -11,7 +11,7 @@
         android:id="@+id/constraintLayout50"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_bottomsheet"
+        android:background="@drawable/background_top_16dp"
         android:padding="4dp"
         app:layout_anchorGravity="center">
 

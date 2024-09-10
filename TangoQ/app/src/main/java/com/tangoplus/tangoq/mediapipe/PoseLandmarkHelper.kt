@@ -358,7 +358,7 @@ class PoseLandmarkerHelper(
         const val MODEL_POSE_LANDMARKER_HEAVY = 2
     }
     data class ResultBundle(
-        val results: List<PoseLandmarkerResult>,
+        var results: List<PoseLandmarkerResult>,
         val inferenceTime: Long,
         val inputImageHeight: Int,
         val inputImageWidth: Int,

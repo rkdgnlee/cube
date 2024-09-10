@@ -51,6 +51,8 @@ import com.tangoplus.tangoq.data.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityMeasureSkeletonBinding
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.mediapipe.OverlayView
+import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.service.MediaProjectionService
@@ -680,11 +682,12 @@ companion object {
         runOnUiThread {
             if (_binding != null) {
                 // Pass necessary information to OverlayView for drawing on the canvas
+                val customResult = PoseLandmarkAdapter.toCustomPoseLandmarkResult(resultBundle.results.first())
                 binding.overlay.setResults(
-                    resultBundle.results.first(),
+                    customResult,
                     resultBundle.inputImageHeight,
                     resultBundle.inputImageWidth,
-                    RunningMode.LIVE_STREAM
+                    OverlayView.RunningMode.LIVE_STREAM
                 )
 
                 // 여기에 resultbundle(poselandarkerhelper.resultbundle)이 들어감.

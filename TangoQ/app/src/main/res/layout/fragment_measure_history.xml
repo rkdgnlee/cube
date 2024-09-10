@@ -25,7 +25,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:text="측정 이력"
-                android:textColor="@color/black"
+                android:textColor="@color/subColor800"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +45,7 @@
                 android:id="@+id/materialDivider21"
                 android:layout_width="wrap_content"
                 android:layout_height="2dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="25dp"
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -68,10 +68,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="25dp"
                 android:text="총 측정건: 4건"
                 android:textColor="@color/subColor800"
-                android:textSize="16dp"
+                android:textSize="22dp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider3" />
 
@@ -99,18 +100,18 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/fabtnMH"
-        style="@style/Stroke.FloatingActionButton"
-        android:layout_width="150dp"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:background="@null"
+        android:background="@drawable/background_rectangle_28dp"
         android:gravity="center|center_vertical"
         android:padding="16dp"
-        android:paddingStart="20dp"
+        android:stateListAnimator="@null"
         android:text="측정하기"
         android:textColor="@color/white"
         android:textSize="18sp"

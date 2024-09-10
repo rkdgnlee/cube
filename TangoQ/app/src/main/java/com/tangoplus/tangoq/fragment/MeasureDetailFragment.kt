@@ -64,7 +64,6 @@ class MeasureDetailFragment : Fragment() {
 
         // ------# 10각형 레이더 차트 #------
         val raderScores = mutableListOf<Float>()
-//        val scores = mutableListOf(90f,85f,86f,80f,95f, 98f,95f,80f,86f,80f)
         val scores = mutableListOf(2.245f, 3.41f, 2.54f, 3.97f, 2.34f, 5.25f, 4.12f, 3.84f, 3.12f, 4.97f)
         bodyParts = listOf("목", "우측어깨", "우측팔꿉", "우측골반", "우측무릎", "발목", "좌측무릎", "좌측골반", "좌측팔꿉", "좌측어깨")
 

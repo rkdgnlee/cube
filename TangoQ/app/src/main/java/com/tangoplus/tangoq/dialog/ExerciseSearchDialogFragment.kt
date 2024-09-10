@@ -57,7 +57,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         imm!!.hideSoftInputFromWindow(view.windowToken, 0)
         isKeyboardVisible = true
 
-        binding.ibtnESDBack.setOnClickListener{ dismiss() }
+
         binding.ibtnESDClear.setOnClickListener{
             binding.etESDSearch.setText("")
             binding.rv1.adapter = null

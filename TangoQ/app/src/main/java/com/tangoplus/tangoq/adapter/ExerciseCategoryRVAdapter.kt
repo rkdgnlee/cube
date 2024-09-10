@@ -98,7 +98,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 val currentItem = subCategorys[position]
                 holder.tvSCName.text = currentItem
                 val adapterPosition = holder.adapterPosition
-                holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_main_color_20dp)
+                holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_20dp)
                 if (adapterPosition == selectedPosition) {
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.mainColor)
                     holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.white))

@@ -39,8 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToOutline="true"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/background_button" />
+            android:scaleType="centerCrop" />
 
     </androidx.cardview.widget.CardView>
 
@@ -206,7 +205,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:background="@drawable/background_rectangle_4dp_main"
+        android:background="@drawable/background_rectangle_8dp"
+        android:backgroundTint="@color/mainColor"
         android:paddingStart="10dp"
         android:paddingTop="4dp"
         android:paddingEnd="10dp"

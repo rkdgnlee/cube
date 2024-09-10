@@ -38,6 +38,7 @@
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvMP"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="80dp"
@@ -48,37 +49,80 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
-            <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-                android:id="@+id/ssivMP"
+            <LinearLayout
+                android:id="@+id/llMAMedia"
                 android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:src="@drawable/poster_splash" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clMA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                        android:id="@+id/ssivMA"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <FrameLayout
+                    android:id="@+id/flMA"
+                    android:layout_width="match_parent"
+                    android:layout_height="230dp">
+
+                    <com.google.android.exoplayer2.ui.PlayerView
+                        android:id="@+id/pvMA"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:auto_show="true"
+                        app:controller_layout_id="@layout/exo_player_control_view"
+                        app:resize_mode="fixed_width"
+                        app:surface_type="surface_view"
+                        app:use_controller="true">
+
+                    </com.google.android.exoplayer2.ui.PlayerView>
+                </FrameLayout>
+            </LinearLayout>
+
+            <com.tangoplus.tangoq.mediapipe.OverlayView
+                android:id="@+id/ovMA"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/llMAMedia"
+                app:layout_constraintEnd_toEndOf="@id/llMAMedia"
+                app:layout_constraintStart_toStartOf="@id/llMAMedia"
+                app:layout_constraintTop_toTopOf="@id/llMAMedia" />
 
             <FrameLayout
-                android:id="@+id/flMP"
+                android:id="@+id/flMA2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ssivMP">
+                app:layout_constraintTop_toBottomOf="@+id/llMAMedia">
 
                 <com.google.android.material.button.MaterialButtonToggleGroup
                     android:id="@+id/btgMP"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/background_radius_12dp"
+                    android:background="@drawable/background_rectangle_12dp"
                     android:backgroundTint="@color/subColor100"
                     android:padding="6dp"
                     app:singleSelection="true">
 
                     <Button
-                        android:id="@+id/btnMP1"
+                        android:id="@+id/btnMA1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -91,7 +135,7 @@
                         app:cornerRadius="8dp" />
 
                     <Button
-                        android:id="@+id/btnMP2"
+                        android:id="@+id/btnMA2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -110,31 +154,31 @@
                     android:layout_height="54dp"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:background="@drawable/background_radius_12dp"
+                    android:background="@drawable/background_rectangle_12dp"
                     android:backgroundTint="@color/white" />
 
             </FrameLayout>
 
             <LinearLayout
-                android:id="@+id/llMPVertical"
+                android:id="@+id/llMAVertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/flMP"
-                app:layout_constraintEnd_toEndOf="@+id/flMP"
+                app:layout_constraintBottom_toBottomOf="@+id/flMA2"
+                app:layout_constraintEnd_toEndOf="@+id/flMA2"
                 app:layout_constraintHorizontal_bias="0.15"
-                app:layout_constraintStart_toStartOf="@+id/flMP"
-                app:layout_constraintTop_toTopOf="@+id/flMP">
+                app:layout_constraintStart_toStartOf="@+id/flMA2"
+                app:layout_constraintTop_toTopOf="@+id/flMA2">
 
                 <ImageView
-                    android:id="@+id/ivMPVertical"
+                    android:id="@+id/ivMAVertical"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:src="@drawable/icon_vertical" />
 
                 <TextView
-                    android:id="@+id/tvMPVertical"
+                    android:id="@+id/tvMAVertical"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
@@ -145,26 +189,25 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llMPHorizontal"
+                android:id="@+id/llMAHorizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/flMP"
-                app:layout_constraintEnd_toEndOf="@+id/flMP"
+                app:layout_constraintBottom_toBottomOf="@+id/flMA2"
+                app:layout_constraintEnd_toEndOf="@+id/flMA2"
                 app:layout_constraintHorizontal_bias="0.85"
-                app:layout_constraintStart_toStartOf="@+id/flMP"
-                app:layout_constraintTop_toTopOf="@+id/flMP">
+                app:layout_constraintStart_toStartOf="@+id/flMA2"
+                app:layout_constraintTop_toTopOf="@+id/flMA2">
 
                 <ImageView
-                    android:id="@+id/ivMPHorizontal"
+                    android:id="@+id/ivMAHorizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/icon_horizontal"
-                    android:tint="@color/subColor400" />
+                    android:src="@drawable/icon_horizontal" />
 
                 <TextView
-                    android:id="@+id/tvMPHorizontal"
+                    android:id="@+id/tvMAHorizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
@@ -175,6 +218,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llMARV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -183,19 +227,20 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/flMP"
+                app:layout_constraintTop_toBottomOf="@+id/flMA2"
                 app:layout_constraintVertical_bias="0.0">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMPLeft"
+                    android:id="@+id/rvMALeft"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="false" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMPRight"
+                    android:id="@+id/rvMARight"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"

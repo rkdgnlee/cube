@@ -2,17 +2,30 @@ package com.tangoplus.tangoq.fragment
 
 import android.animation.Animator
 import android.animation.ValueAnimator
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.tangoplus.tangoq.R
@@ -20,6 +33,18 @@ import com.tangoplus.tangoq.adapter.MeasureDataRVAdapter
 import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
+import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility
+import com.tangoplus.tangoq.mediapipe.OverlayView
+import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromImageCoordinates
+import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromVideoCoordinates
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
+import java.lang.Exception
+import kotlin.math.min
 
 class MeasureAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMeasureAnalysisBinding
@@ -28,6 +53,16 @@ class MeasureAnalysisFragment : Fragment() {
     private var allData = mutableListOf<Triple<String, Double, Double>>()
     private var index = -1
     private var currentSequence = -1
+    private lateinit var combinedBitmap : Bitmap
+    private var scaleFactorX =  0f
+    private var scaleFactorY = 0f
+
+    private var count = false
+
+    // 영상재생
+    private var simpleExoPlayer: SimpleExoPlayer? = null
+    private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
+
     companion object {
         private const val ARG_INDEX = "index_analysis"
         fun newInstance(indexx: Int): MeasureAnalysisFragment {
@@ -38,9 +73,6 @@ class MeasureAnalysisFragment : Fragment() {
             return fragment
         }
     }
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +90,11 @@ class MeasureAnalysisFragment : Fragment() {
         index = arguments?.getInt(ARG_INDEX)!!
         measureResult = viewModel.selectedMeasure!!.measureResult
 
+        if (index != 3) {
+            setImage()
+        } else {
+            setPlayer()
+        }
 
         // ------# 1차 필터링 (균형별) #------
         when (index) {
@@ -66,6 +103,8 @@ class MeasureAnalysisFragment : Fragment() {
                 setDynamicUI(false)
                 binding.tlMP.getTabAt(0)?.text = "정면 측정"
                 binding.tlMP.getTabAt(1)?.text = "팔꿉 측정"
+                binding.clMA.visibility = View.VISIBLE
+                binding.flMA.visibility = View.GONE
                 currentSequence = 0
                 switchScreenData(measureResult, currentSequence, true)
 
@@ -75,6 +114,8 @@ class MeasureAnalysisFragment : Fragment() {
                 setDynamicUI(false)
                 binding.tlMP.getTabAt(0)?.text = "우측 측정"
                 binding.tlMP.getTabAt(1)?.text = "좌측 측정"
+                binding.clMA.visibility = View.VISIBLE
+                binding.flMA.visibility = View.GONE
                 currentSequence = 3
                 switchScreenData(measureResult, currentSequence, true)
 
@@ -84,8 +125,11 @@ class MeasureAnalysisFragment : Fragment() {
                 setDynamicUI(false)
                 binding.tlMP.getTabAt(0)?.text = "후면 측정"
                 binding.tlMP.getTabAt(1)?.text = "앉은 후면"
+                binding.clMA.visibility = View.VISIBLE
+                binding.flMA.visibility = View.GONE
                 currentSequence = 5
                 switchScreenData(measureResult, 5, true)
+
 
             }
             3 -> { // 동적 균형
@@ -96,11 +140,15 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.tlMP.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
                 binding.tlMP.isEnabled = false
                 binding.tlMP.background = null
+                binding.clMA.visibility = View.GONE
+                binding.flMA.visibility = View.VISIBLE
+                binding.flMA2.visibility = View.GONE
                 currentSequence = 2
+
                 switchScreenData(measureResult, currentSequence, true)
 
             }
-            else -> {}
+            else -> {  }
         }
 
         // ------# 1-1차 필터링(tabLayout의 첫번째) #------
@@ -126,15 +174,15 @@ class MeasureAnalysisFragment : Fragment() {
         })
 
         // ------! 하단 버튼토글 그룹 시작 !------
-        binding.btgMP.check(R.id.btnMP1)
+        binding.btgMP.check(R.id.btnMA1)
         binding.btgMP.addOnButtonCheckedListener{ _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
-                    R.id.btnMP1 -> {
+                    R.id.btnMA1 -> {
                         animateIndicator(true)
                         switchScreenData(measureResult, currentSequence, true)
                     }
-                    R.id.btnMP2 -> {
+                    R.id.btnMA2 -> {
                         animateIndicator(false)
                         switchScreenData(measureResult, currentSequence, false)
                     }
@@ -142,8 +190,8 @@ class MeasureAnalysisFragment : Fragment() {
 
             }
         }
-        binding.btnMP1.setOnClickListener { binding.btgMP.check(R.id.btnMP1) }
-        binding.btnMP2.setOnClickListener { binding.btgMP.check(R.id.btnMP2) }
+        binding.btnMA1.setOnClickListener { binding.btgMP.check(R.id.btnMA1) }
+        binding.btnMA2.setOnClickListener { binding.btgMP.check(R.id.btnMA2) }
 
         binding.btgMP.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener{
             override fun onGlobalLayout() {
@@ -156,7 +204,7 @@ class MeasureAnalysisFragment : Fragment() {
     // 고정적으로
     // big은 자세 , small은 수직 수평 분석임
     private fun switchScreenData(measureResult: MutableList<AnalysisVO>, sequence: Int, toVerti: Boolean) {
-//        binding.ssivMP.setImage()
+//        binding.ssivMA.setImage()
         // 정면은 필터링 됨. 수직부터 필터링
         var minResultData = mutableListOf<Triple<String, String, String?>>()
         when (sequence) {
@@ -487,13 +535,13 @@ class MeasureAnalysisFragment : Fragment() {
 
     private fun setDynamicUI(isDynamic: Boolean) {
         if (isDynamic) {
-            binding.llMPVertical.visibility = View.GONE
-            binding.llMPHorizontal.visibility = View.GONE
-            binding.flMP.visibility = View.GONE
+            binding.llMAVertical.visibility = View.GONE
+            binding.llMAHorizontal.visibility = View.GONE
+            binding.flMA.visibility = View.GONE
         } else {
-            binding.llMPVertical.visibility = View.VISIBLE
-            binding.llMPHorizontal.visibility = View.VISIBLE
-            binding.flMP.visibility = View.VISIBLE
+            binding.llMAVertical.visibility = View.VISIBLE
+            binding.llMAHorizontal.visibility = View.VISIBLE
+            binding.flMA.visibility = View.VISIBLE
         }
     }
 
@@ -502,14 +550,14 @@ class MeasureAnalysisFragment : Fragment() {
 
         val leftData = allData.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
         val leftadapter = MeasureDataRVAdapter(this@MeasureAnalysisFragment, leftData)
-        binding.rvMPLeft.layoutManager = linearLayoutManager1
-        binding.rvMPLeft.adapter = leftadapter
+        binding.rvMALeft.layoutManager = linearLayoutManager1
+        binding.rvMALeft.adapter = leftadapter
 
         val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val rightData = allData.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
         val rightadapter = MeasureDataRVAdapter(this@MeasureAnalysisFragment, rightData)
-        binding.rvMPRight.layoutManager = linearLayoutManager2
-        binding.rvMPRight.adapter = rightadapter
+        binding.rvMARight.layoutManager = linearLayoutManager2
+        binding.rvMARight.adapter = rightadapter
 
 
     }
@@ -560,18 +608,19 @@ class MeasureAnalysisFragment : Fragment() {
         enabledDrawable1?.let {
             val wrappedDrawable = DrawableCompat.wrap(it).mutate()
             DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireContext(), color1))
-            binding.ivMPVertical.setImageDrawable(wrappedDrawable)
+            binding.ivMAVertical.setImageDrawable(wrappedDrawable)
 
         }
-        binding.tvMPVertical.setTextColor(ContextCompat.getColor(requireContext(), color1))
+        binding.tvMAVertical.setTextColor(ContextCompat.getColor(requireContext(), color1))
 
         val enabledDrawable2 = ContextCompat.getDrawable(requireContext(), R.drawable.icon_horizontal)
         enabledDrawable2?.let {
             val wrappedDrawable = DrawableCompat.wrap(it).mutate()
             DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireContext(), color2))
-            binding.ivMPHorizontal.setImageDrawable(wrappedDrawable)
+            binding.ivMAHorizontal.setImageDrawable(wrappedDrawable)
+
         }
-        binding.tvMPHorizontal.setTextColor(ContextCompat.getColor(requireContext(), color2))
+        binding.tvMAHorizontal.setTextColor(ContextCompat.getColor(requireContext(), color2))
     }
 
     private fun getSequence(index: Int) : Pair<Int, Int> {
@@ -581,5 +630,185 @@ class MeasureAnalysisFragment : Fragment() {
             2 -> Pair(5, 6)
             else -> Pair(2, -1)
         }
+    }
+
+    //---------------------------------------! imageOverlay !---------------------------------------
+    private fun setImage() {
+        lifecycleScope.launch {
+            val jsonData = loadJsonData()
+            val coordinates = extractImageCoordinates(jsonData)
+            val imageFile = loadFile(true)
+
+            // 이미지 로드
+            val originalBitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
+            binding.ssivMA.setImage(ImageSource.uri(imageFile.toUri().toString()))
+
+            binding.ssivMA.setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
+                override fun onReady() {
+                    // 리스너가 여러 번 호출되지 않도록 제어
+                    if (!count) {
+                        val imageViewWidth = binding.ssivMA.width
+                        val imageViewHeight = binding.ssivMA.height
+
+                        val sWidth = binding.ssivMA.sWidth
+                        val sHeight = binding.ssivMA.sHeight
+
+                        // 스케일 비율 계산
+                        val scaleFactor = min(imageViewWidth / sWidth.toFloat(), imageViewHeight / sHeight.toFloat())
+
+                        // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
+                        val offsetX = (imageViewWidth - sWidth * scaleFactor) / 2f
+                        val offsetY = (imageViewHeight - sHeight * scaleFactor) / 2f
+                        // poseLandmarkResult 변환
+                        val poseLandmarkResult = fromImageCoordinates(coordinates)
+
+                        // 이미지와 오버레이 결합
+                        val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
+                            originalBitmap,
+                            poseLandmarkResult,
+                            scaleFactor,
+                            offsetX,
+                            offsetY,
+                            requireContext()
+                        )
+                        count = true
+                        // 결합된 비트맵을 SubsamplingScaleImageView에 설정 (이미 한 번 setImage 호출한 뒤 다시 호출하지 않음)
+                        binding.ssivMA.setImage(ImageSource.bitmap(combinedBitmap))
+
+                        // count를 true로 설정하여 다시 호출되지 않도록 제어
+
+                    }
+                }
+
+                override fun onImageLoaded() {}
+                override fun onPreviewLoadError(e: Exception?) {}
+                override fun onImageLoadError(e: Exception?) {}
+                override fun onTileLoadError(e: Exception?) {}
+                override fun onPreviewReleased() {}
+            })
+        }
+    }
+
+    private fun extractImageCoordinates(jsonData: JSONObject): List<Pair<Float, Float>> {
+        val poseData = jsonData.getJSONArray("pose_landmark")
+        scaleFactorX = jsonData.optDouble("measure_overlay_scale_factor_x", 1.0).toFloat()
+        scaleFactorY = jsonData.optDouble("measure_overlay_scale_factor_y", 1.0).toFloat()
+
+        return List(poseData.length()) { i ->
+            val landmark = poseData.getJSONObject(i)
+            Pair(
+                landmark.getDouble("sx").toFloat(),
+                landmark.getDouble("sy").toFloat()
+            )
+        }
+    }
+
+    private fun extractVideoCoordinates(jsonData: JSONArray) : List<List<Pair<Float,Float>>> {
+
+        return List(jsonData.length()) { i ->
+            val landmarks = jsonData.getJSONObject(i).getJSONArray("pose_landmark")
+            List(landmarks.length()) { j ->
+                val landmark = landmarks.getJSONObject(j)
+                Pair(
+                    landmark.getDouble("sx").toFloat(),
+                    landmark.getDouble("sy").toFloat()
+                )
+            }
+        }
+
+    }
+    // ------# jsondata 가져오기 #------
+    private suspend fun loadJsonData(): JSONObject = withContext(Dispatchers.IO) {
+        val jsonString =
+            requireActivity().assets.open("MT_STATIC_BACK_6_1_20240604143755.json").bufferedReader()
+                .use { it.readText() }
+        JSONObject(jsonString)
+    }
+
+    private suspend fun loadJsonArray() : JSONArray = withContext(Dispatchers.IO) {
+        val jsonString = requireActivity().assets.open("MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_1_20240606135241.json").bufferedReader().use { it.readText() }
+        JSONArray(jsonString)
+    }
+
+    // ------# 파일 로드 #------
+
+    /* TODO 현재 File 형식으로 받아오는중 (assets폴더에서 가져오기 때문)
+    *   추후 API에서는 그냥 URL일 수 있음. 이부분이 생략되고 ,setImage(url), initPlayer(videoUrl)일 수 있음. */
+    private suspend fun loadFile(isImage: Boolean) : File = withContext(Dispatchers.IO) {
+        if (isImage) {
+            val inputStream = requireActivity().assets.open("MT_STATIC_BACK_61_20240604143755.jpg")
+            val tempFile = File.createTempFile("temp_image", ".jpg", requireContext().cacheDir)
+            tempFile.deleteOnExit()
+            tempFile.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            tempFile
+        } else { // 동영상 수정해야함.
+            val inputStream = requireActivity().assets.open("MT_DYNAMIC_OVERSQUAT_FRONT_1_1_20240606135241.mp4")
+                val tempFile = File.createTempFile("temp_video", ".mp4", requireContext().cacheDir)
+            tempFile.deleteOnExit()
+            tempFile.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            tempFile
+        }
+
+    }
+    private fun setPlayer() {
+        lifecycleScope.launch {
+
+            val jsonData = loadJsonArray()
+            val coordinates = extractVideoCoordinates(jsonData)
+            initPlayer()
+            val imageViewWidth = binding.pvMA.width
+            val imageViewHeight = binding.pvMA.height
+
+            // poseLandmarkResult 변환
+            val poseLandmarkResult = fromVideoCoordinates(coordinates)
+            binding.ovMA.setResults(
+                poseLandmarkResult,
+                imageViewWidth,
+                imageViewHeight,
+                OverlayView.RunningMode.VIDEO)
+        }
+    }
+
+    private fun initPlayer() {
+        simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
+        binding.pvMA.player = simpleExoPlayer
+        binding.pvMA.controllerShowTimeoutMs = 1100
+        lifecycleScope.launch {
+            val videoFile = loadFile(false) // false는 비디오 파일을 의미
+            videoUrl = videoFile.toURI().toString() // File을 URI로 변환
+
+            buildMediaSource().let {
+                simpleExoPlayer?.prepare(it)
+            }
+            simpleExoPlayer?.seekTo(0)
+        }
+
+    }
+
+    private fun buildMediaSource() : MediaSource {
+        val dataSourceFactory = DefaultDataSourceFactory(requireContext(), "sample")
+        return ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(videoUrl))
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        simpleExoPlayer?.stop()
+        simpleExoPlayer?.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        simpleExoPlayer?.release()
+//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+    override fun onResume() {
+        super.onResume()
+        simpleExoPlayer?.playWhenReady = true
     }
 }

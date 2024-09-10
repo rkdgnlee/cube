@@ -8,7 +8,8 @@
     android:layout_marginTop="32dp"
     android:layout_marginRight="16dp"
     android:layout_marginBottom="32dp"
-    android:background="@drawable/background_dialog"
+    android:background="@drawable/background_rectangle_20dp"
+    android:backgroundTint="@color/white"
     tools:context=".dialog.AgreementDetailDialogFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -20,7 +21,8 @@
             android:id="@+id/constraintLayout18"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_dialog">
+            android:background="@drawable/background_rectangle_20dp"
+            android:backgroundTint="@color/white">
 
             <TextView
                 android:id="@+id/tvAgreement"
