@@ -1,7 +1,5 @@
 package com.tangoplus.tangoq.data
 
-import org.json.JSONObject
-
 data class MeasureVO (
     val measureId : String, // 해당 측정 sn
     val regDate : String, // 측정 날짜

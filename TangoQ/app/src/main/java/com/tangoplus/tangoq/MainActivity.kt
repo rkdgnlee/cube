@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -26,14 +25,12 @@ import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
-import com.tangoplus.tangoq.dialog.CustomExerciseDialogFragment
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgramVOBySn
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -117,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             // TODO 여기서 기존 유저 -> 선택된 프로그램 불러오기 or 신규 유저 -> 본인이 원하는 프로그램 선택하기 전까지 빈 program
 
             if (uViewModel.User.value?.optString("current_program_id") == null) {
-                program = ProgramVO(-1, "", "", "", 0, 0, 0,mutableListOf(), mutableListOf())
+                program = ProgramVO(-1, "기초 운동 능력 프로그램", "", "", 0, 0, 0,mutableListOf(), mutableListOf())
             } else {
                 program = fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), 10.toString())
             }
@@ -278,7 +275,7 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            convertJsonToAnalysisList(mjo1)
+
             val parts1 = mutableListOf<Pair<String, Int>>()
             parts1.add(Pair("어깨", 2))
             parts1.add(Pair("목", 2))
@@ -517,7 +514,6 @@ class MainActivity : AppCompatActivity() {
                             progressTime += getTime(historyUnit[k].exerciseId.toString())
                             finishedExercise += 1
                         }
-
 
                         // ------# 전체 운동 담는 공간 #------
                         eViewModel.allHistorys.add(historyUnit[k])

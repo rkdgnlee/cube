@@ -21,7 +21,7 @@ class ExerciseWeeklyBSDialogFragment : BottomSheetDialogFragment() {
     val viewModel : ExerciseViewModel by activityViewModels()
 
     private val checkboxes by lazy {
-        listOf(binding.cbWBSD1, binding.cbWBSD2, binding.cbWBSD3, binding.cbWBSD4)
+        listOf(binding.cbEWBSD1, binding.cbEWBSD2, binding.cbEWBSD3, binding.cbEWBSD4)
     }
 
     override fun onCreateView(
@@ -35,6 +35,7 @@ class ExerciseWeeklyBSDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.tvEWBSD.setText(viewModel.currentProgram?.programName)
         setCheckboxes()
         setupButtons()
         viewModel.selectedWeek.observe(viewLifecycleOwner) { setCheckbox(it) }
@@ -52,13 +53,13 @@ class ExerciseWeeklyBSDialogFragment : BottomSheetDialogFragment() {
         Log.v("현재주차", "${viewModel.currentWeek}")
     }
     private fun setupButtons() {
-        binding.ibtnWBSDExit.setOnClickListener {
+        binding.ibtnEWBSDExit.setOnClickListener {
             viewModel.selectWeek.value = viewModel.currentWeek
             dismiss()
         }
 
 
-        binding.btnWBSD.setOnClickListener {
+        binding.btnEWBSD.setOnClickListener {
             viewModel.selectedWeek.value = viewModel.selectWeek.value
             dismiss()
 

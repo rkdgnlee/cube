@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ComponentName
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
@@ -23,6 +24,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -35,17 +37,28 @@ import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.MediaStoreOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.callback.CaptureCallback
+import com.tangoplus.tangoq.data.AnalysisVO
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityMeasureSkeletonBinding
@@ -58,6 +71,8 @@ import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.service.MediaProjectionService
 import org.json.JSONObject
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -71,7 +86,7 @@ import kotlin.math.sqrt
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 
-class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener, CaptureCallback, SensorEventListener {
+class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener, SensorEventListener {
 // ------! POSE LANDMARKER 설정 시작 !------
 companion object {
     private const val TAG = "Pose Landmarker"
@@ -106,9 +121,10 @@ companion object {
     private lateinit var imageCapture: ImageCapture
     private var isCapture = true
     private var isRecording = false
-    private var mediaProjectionService: MediaProjectionService? = null
-    private var serviceConnection: ServiceConnection? = null
-    private lateinit var mediaProjectionManager: MediaProjectionManager
+
+    // 영상 캡처
+    private lateinit var videoCapture : VideoCapture<Recorder>
+    private var recording: Recording? = null
 
     // ------! 싱글턴 패턴 객체 가져오기 !------
     private lateinit var singletonInstance: Singleton_t_measure
@@ -116,10 +132,9 @@ companion object {
     var latestResult: PoseLandmarkerHelper.ResultBundle? = null
     private val mViewModel : MeasureViewModel by viewModels()
 
-    private var repeatCount = MutableLiveData(BigDecimal("0.0"))
-    private val maxRepeats = BigDecimal("6.0")
+    private var repeatCount = MutableLiveData(0)
+    private val maxRepeats = 6
     private var progress = 12
-    private var serviceBound = false
 
     // ------# 수직 감지기 #------
     private lateinit var hideIndicatorHandler: Handler
@@ -150,41 +165,25 @@ companion object {
                     binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
 
                     setAnimation(binding.tvMeasureSkeletonCount, 1000, 500, false) {
-                        hideViews(3700)
-                        Log.v("동영상녹화", "isRecording: ${isRecording}, isCapture: ${isCapture}")
+                        hideViews(5700)
                         // 녹화 종료 시점 아님
-                        mediaProjectionService?.recordScreen {
-                            Log.v("녹화시작시점", "step: $repeatCount, latestResult: $latestResult")
+                        startVideoRecording {
+                            Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture, latestResult: $latestResult")
                             isRecording = false // 녹화 완료
-                            // 녹화완료가 되면서 종료되는 곳
+                            updateUI()
                         }
-                        // ------! 영상일 경우 바로 0.3초 단위로 값 접근 !------
-                        val runnableCode: Runnable = object : Runnable {
-                            override fun run() {
-                                if (repeatCount == BigDecimal("2.9")) {
-                                    updateUI()
-                                    return
-                                }
-                                Log.v("녹화도중시점", "step: $repeatCount, latestResult: $latestResult")
-
-                                Handler(Looper.getMainLooper()).postDelayed(this, 300)
-                                updateUI()
-                            }
-                        }
-                        Handler(Looper.getMainLooper()).post(runnableCode)
-
                     }
                 } else {
                     binding.tvMeasureSkeletonCount.text = "자세를 따라해주세요"
                     hideViews(600)
                     Log.v("사진service", "isCapture: ${isCapture}, isRecording: ${isRecording}")
                     // ------! 종료 후 다시 세팅 !------
-                    mediaProjectionService?.captureScreen{
-                        Log.v("캡쳐종료시점", "step: $repeatCount, latestResult: $latestResult")
-                        latestResult?.let { resultBundleToJson(it, repeatCount.value!!) }
-                        updateUI()
-                        isCapture = false
-                    }
+
+                    captureImage()
+                    latestResult?.let { resultBundleToJson(it, repeatCount.value!!) }
+                    Log.v("캡쳐종료시점", "step: $repeatCount, latestResult: $latestResult")
+                    updateUI()
+                    isCapture = false
 
                 }
                 binding.btnMeasureSkeletonStep.isEnabled = true
@@ -233,7 +232,7 @@ companion object {
 
             // Close the PoseLandmarkerHelper and release resources
             backgroundExecutor.execute { poseLandmarkerHelper.clearPoseLandmarker() }
-            unbindService(serviceConnection as ServiceConnection)
+//            unbindService(serviceConnection as ServiceConnection)
             if (hideIndicator) {
                 sensorManager.unregisterListener(this)
             }
@@ -248,14 +247,14 @@ companion object {
         backgroundExecutor.awaitTermination(
             Long.MAX_VALUE, TimeUnit.NANOSECONDS
         )
-        Handler(Looper.getMainLooper()).removeCallbacksAndMessages(null)
-            mCountDown.cancel()
-        if (serviceBound) {
-//            unbindService(serviceConnection as ServiceConnection)
-            serviceBound = false
-        }
-        val serviceIntent = Intent(this, MediaProjectionService::class.java)
-        stopService(serviceIntent)
+//        Handler(Looper.getMainLooper()).removeCallbacksAndMessages(null)
+//            mCountDown.cancel()
+//        if (serviceBound) {
+////            unbindService(serviceConnection as ServiceConnection)
+//            serviceBound = false
+//        }
+//        val serviceIntent = Intent(this, MediaProjectionService::class.java)
+//        stopService(serviceIntent)
 
         sensorManager.unregisterListener(this)
         hideIndicatorHandler.removeCallbacks(hideIndicatorRunnable)
@@ -271,27 +270,27 @@ companion object {
         singletonInstance = Singleton_t_measure.getInstance(this)
 
         // ------! foreground 서비스 연결 시작 !------
-
-        mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        serviceConnection = object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                val binder = service as MediaProjectionService.LocalBinder
-                mediaProjectionService = binder.getService()
-                mediaProjectionService!!.setCallback(this@MeasureSkeletonActivity)
-                serviceBound = true
-                Log.w("serviceInit1", "$mediaProjectionService")
-            }
-
-            override fun onServiceDisconnected(name: ComponentName?) {
-                mediaProjectionService = null
-                serviceBound = false
-                Log.w("serviceInit Failed", "$mediaProjectionService")
-            }
-        }
-        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE)
-        // Bind to the service
-        val intent = Intent(this, MediaProjectionService::class.java)
-        bindService(intent, serviceConnection as ServiceConnection, Context.BIND_AUTO_CREATE)
+//
+//        mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+//        serviceConnection = object : ServiceConnection {
+//            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+//                val binder = service as MediaProjectionService.LocalBinder
+//                mediaProjectionService = binder.getService()
+//                mediaProjectionService!!.setCallback(this@MeasureSkeletonActivity)
+//                serviceBound = true
+//                Log.w("serviceInit1", "$mediaProjectionService")
+//            }
+//
+//            override fun onServiceDisconnected(name: ComponentName?) {
+//                mediaProjectionService = null
+//                serviceBound = false
+//                Log.w("serviceInit Failed", "$mediaProjectionService")
+//            }
+//        }
+//        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE)
+//        // Bind to the service
+//        val intent = Intent(this, MediaProjectionService::class.java)
+//        bindService(intent, serviceConnection as ServiceConnection, Context.BIND_AUTO_CREATE)
         // ------! foreground 서비스 연결 끝 !------
 
         // ------# sensor 연결 #------
@@ -398,7 +397,7 @@ companion object {
 
         // ------! 다시 찍기 관리 시작 !------
         repeatCount.observe(this@MeasureSkeletonActivity) { count ->
-            binding.btnMeasureSkeletonStepPrevious.visibility = if (count.compareTo(BigDecimal("0.0")) == 0) {
+            binding.btnMeasureSkeletonStepPrevious.visibility = if (count.compareTo(0) == 0) {
                 View.GONE
             } else {
                 View.VISIBLE
@@ -473,17 +472,49 @@ companion object {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     // ------! 센서 끝 !------
 
-    private fun setPreviousStep() {
-        when (repeatCount) {
+
+    // ------! update UI 시작 !------
+    private fun updateUI() {
+        when (repeatCount.value!!) {
             maxRepeats -> {
-                repeatCount.value = repeatCount.value?.minus(BigDecimal("1.0"))
+                binding.pvMeasureSkeleton.progress = 100
+                binding.tvMeasureSkeletonCount.text = "측정이 완료됐습니다 !"
+                binding.btnMeasureSkeletonStep.text = "완료하기"
+                mCountDown.cancel()
+                Log.v("repeat", "Max repeats reached, stopping the loop")
+            }
+            else -> {
+                if (repeatCount.value!! == 2) {
+                    binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
+                } else {
+                    binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
+                }
+                repeatCount.value = repeatCount.value!!.plus(1)
+                progress += 14
+                binding.pvMeasureSkeleton.progress = progress
+                Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
+                binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
+                binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
+
+                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
+            }
+
+        }
+        Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount}")
+    } // ------! update UI 끝 !------
+
+    private fun setPreviousStep() {
+        when (repeatCount.value) {
+            maxRepeats -> {
+                repeatCount.value = repeatCount.value?.minus(1)
                 binding.pvMeasureSkeleton.progress -= 16  // 마지막 남은 2까지 전부 빼기
                 binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
                 binding.btnMeasureSkeletonStep.text = "측정하기"
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
                 }
             else -> {
-                repeatCount.value = repeatCount.value?.minus(BigDecimal("1.0"))
+                repeatCount.value = repeatCount.value?.minus(1)
                 progress -= 14
                 binding.pvMeasureSkeleton.progress = progress
                 Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
@@ -501,7 +532,7 @@ companion object {
         binding.clMeasureSkeletonTop.visibility = View.INVISIBLE
         binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
         binding.llMeasureSkeletonBottom.visibility = View.INVISIBLE
-        if (repeatCount != BigDecimal("2.0")) startCameraShutterAnimation()
+        if (repeatCount.value != 2) startCameraShutterAnimation()
 
         setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
         setAnimation(binding.ivMeasureSkeletonFrame, 850, delay, true) {}
@@ -515,8 +546,8 @@ companion object {
         // 시작 버튼 후 시작
         binding.btnMeasureSkeletonStep.isEnabled = false
 
-        when (repeatCount) {
-            BigDecimal("2.0") -> {
+        when (repeatCount.value) {
+            2 -> {
                 isCapture = false
                 isRecording = true
             }
@@ -530,46 +561,7 @@ companion object {
         // ------! 타이머 control 끝 !------
     }
 
-    // ------! update UI 시작 !------
-    private fun updateUI() {
-        when (repeatCount.value!!) {
-            in BigDecimal("2.0") .. BigDecimal("2.8") -> {
-                binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
-                repeatCount.value = repeatCount.value!!.plus(BigDecimal("0.1"))
-            }
-            maxRepeats -> {
-                binding.pvMeasureSkeleton.progress = 100
-                binding.tvMeasureSkeletonCount.text = "측정이 완료됐습니다 !"
-                binding.btnMeasureSkeletonStep.text = "완료하기"
-                mCountDown.cancel()
-                Log.v("repeat", "Max repeats reached, stopping the loop")
-            }
-            BigDecimal("2.9") -> {
-                repeatCount.value = repeatCount.value!!.plus(BigDecimal("0.1"))
-                progress += 14
-                binding.pvMeasureSkeleton.progress = progress
 
-                binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
-                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-            }
-            else -> {
-                repeatCount.value = repeatCount.value!!.plus(BigDecimal("1.0"))
-                progress += 14
-                binding.pvMeasureSkeleton.progress = progress
-                Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
-                binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
-                binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
-                binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
-                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-            }
-
-        }
-        Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount}")
-
-    }
-    // ------! update UI 끝 !------
 
     private fun setUpCamera() {
         val cameraProviderFuture =
@@ -620,18 +612,20 @@ companion object {
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetRotation(binding.viewFinder.display.rotation)
             .build()
-//        videoCapture = VideoCapture.withOutput(Recorder.Builder()
-//            .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
-//            .build()
-//        )
+        videoCapture = VideoCapture.withOutput(
+            Recorder.Builder()
+            .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+            .build()
+        )
         // ------! 카메라에 poselandmarker 그리기 !------
         // Must unbind the use-cases before rebinding them
         cameraProvider.unbindAll()
+
         try {
             // 여기에는 다양한 사용 사례가 전달될 수 있습니다.
             // 카메라는 CameraControl 및 CameraInfo에 대한 액세스를 제공합니다. // TODO 기능 추가할 경우 여기다가 선언한 기능 넣어야 함
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageAnalyzer, imageCapture
+                this, cameraSelector, preview, imageAnalyzer, imageCapture, videoCapture
             )
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
@@ -641,11 +635,14 @@ companion object {
     }
 
     private fun detectPose(imageProxy: ImageProxy) {
-        if(this::poseLandmarkerHelper.isInitialized) {
+        if (this::poseLandmarkerHelper.isInitialized) {
             poseLandmarkerHelper.detectLiveStream(
                 imageProxy = imageProxy,
                 isFrontCamera = cameraFacing == CameraSelector.LENS_FACING_FRONT
             )
+//            if (isRecording && latestResult != null) {
+//                resultBundleToJson(latestResult!!, repeatCount.value!!)
+//            }
         }
     }
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -683,14 +680,13 @@ companion object {
             if (_binding != null) {
                 // Pass necessary information to OverlayView for drawing on the canvas
                 val customResult = PoseLandmarkAdapter.toCustomPoseLandmarkResult(resultBundle.results.first())
+
                 binding.overlay.setResults(
                     customResult,
-                    resultBundle.inputImageHeight,
                     resultBundle.inputImageWidth,
+                    resultBundle.inputImageHeight,
                     OverlayView.RunningMode.LIVE_STREAM
                 )
-
-                // 여기에 resultbundle(poselandarkerhelper.resultbundle)이 들어감.
 
                 binding.overlay.invalidate()
                 latestResult = resultBundle
@@ -754,7 +750,7 @@ companion object {
 
 
     // override 로 resultbundle이 계속 나오는데 해당 항목을 전역변수 latest
-    fun resultBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle, step: BigDecimal) {
+    fun resultBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle, step: Int) {
         val earData = mutableListOf<Pair<Double, Double>>() // index 0 왼 index 1 오른
         val shoulderData = mutableListOf<Pair<Double, Double>>()
         val elbowData = mutableListOf<Pair<Double, Double>>()
@@ -798,8 +794,7 @@ companion object {
 
             // ------!   !------
             when (step) {
-                BigDecimal("0.0") -> {
-
+                0 -> {
 
                     val earAngle : Double = calculateSlope(earData[0].first, earData[0].second, earData[1].first, earData[1].second)
                     val shoulderAngle : Double = calculateSlope(shoulderData[0].first, shoulderData[0].second, shoulderData[1].first, shoulderData[1].second)
@@ -867,7 +862,7 @@ companion object {
                     mViewModel.jo.put("front_vertical_angle_knee_ankle_right", kneeAnkleLean.second)
                     mViewModel.jo.put("front_vertical_angle_ankle_toe_left", ankleToeLean.first)
                     mViewModel.jo.put("front_vertical_angle_ankle_toe_right", ankleToeLean.second)
-                    saveJsonToSingleton(step, mViewModel.jo)
+                    saveJsonToMeasureVO(mViewModel.jo)
 
                     val shoulderElbowWristAngle : Pair<Double, Double> = Pair(calculateAngle(shoulderData[0].first, shoulderData[0].second, elbowData[0].first, elbowData[0].second, wristData[0].first, wristData[0].second),
                         calculateAngle(shoulderData[1].first, shoulderData[1].second, elbowData[1].first, elbowData[1].second, wristData[1].first, wristData[1].second))
@@ -879,7 +874,7 @@ companion object {
                     mViewModel.jo.put("front_vertical_angle_hip_knee_ankle_right", hipKneeAnkleAngle.second)
 
                 }
-                BigDecimal("1.0") -> { // ------! 주먹 쥐고 !------
+                1 -> { // ------! 주먹 쥐고 !------
                     val wristShoulderDistance : Pair<Double, Double> = Pair(calculateDistanceByDots(wristData[0].first, wristData[0].second, shoulderData[0].first, shoulderData[0].second),
                         calculateDistanceByDots(wristData[1].first, wristData[1].second, shoulderData[1].first, shoulderData[1].second))
                     val wristsDistanceByY : Double = abs(wristData[0].second - wristData[1].second)
@@ -901,9 +896,9 @@ companion object {
                     mViewModel.jo.put("front_elbow_align_distance_center_mid_finger_right", indexDistanceByX.second)
                     mViewModel.jo.put("front_elbow_align_distance_center_wrist_left", wristDistanceByX.first)
                     mViewModel.jo.put("front_elbow_align_distance_center_wrist_right", wristDistanceByX.second)
-                    saveJsonToSingleton(step, mViewModel.jo)
+                    saveJsonToMeasureVO(mViewModel.jo)
                 }
-                in BigDecimal("2.0") .. BigDecimal("2.9") -> { // 스쿼트
+                2 -> { // 스쿼트
 
                     // ------# 각도 타임으로 넣기 #------
                     val elbowAngleDistance : Pair<Double, Double> = Pair(calculateSlope(elbowData[0].first, elbowData[0].second, elbowData[1].first, elbowData[1].second), abs(elbowData[0].second.minus(elbowData[1].second)))
@@ -947,12 +942,10 @@ companion object {
 
                     mViewModel.jo.put("$step",mViewModel.dynamicJo)
                     // step이 올라갈 때마다 넣고 총 10번이 됐을 때 save하고 나가짐.
-                    if (step == BigDecimal("2.9")) {
-                        saveJsonToSingleton(BigDecimal("$step"), mViewModel.jo)
-                    }
+
                     mViewModel.dynamicJo = null
                 }
-                BigDecimal("3.0") -> { // 왼쪽보기 (오른쪽 팔)
+                3 -> { // 왼쪽보기 (오른쪽 팔)
 
                     // ------! 측면 거리  - 왼쪽 !------
                     val sideLeftShoulderDistance : Double = abs(shoulderData[0].first.minus(ankleXAxis))
@@ -981,9 +974,9 @@ companion object {
                     mViewModel.jo.put("side_left_vertical_angle_shoulder_elbow_wrist", sideLeftShoulderElbowWristAngle  % 180)
                     mViewModel.jo.put("side_left_vertical_angle_hip_knee_ankle", sideLeftHipKneeAnkleAngle  % 180)
 
-                    saveJsonToSingleton(step, mViewModel.jo)
+                    saveJsonToMeasureVO(mViewModel.jo)
                 }
-                BigDecimal("4.0") -> { // 오른쪽보기 (왼쪽 팔)
+                4 -> { // 오른쪽보기 (왼쪽 팔)
                     // ------! 측면 거리  - 오른쪽 !------
 
                     val sideRightShoulderDistance : Double = abs(shoulderData[1].first.minus(ankleXAxis))
@@ -1011,9 +1004,9 @@ companion object {
                     mViewModel.jo.put("side_right_vertical_angle_nose_shoulder", sideRightNoseShoulderLean  % 180)
                     mViewModel.jo.put("side_right_vertical_angle_shoulder_elbow_wrist", sideRightShoulderElbowWristAngle  % 180)
                     mViewModel.jo.put("side_right_vertical_angle_hip_knee_ankle", sideRightHipKneeAnkleAngle  % 180)
-                    saveJsonToSingleton(step , mViewModel.jo)
+                    saveJsonToMeasureVO( mViewModel.jo)
                 }
-                BigDecimal("5.0") -> { // ------! 후면 서서 !-------
+                5 -> { // ------! 후면 서서 !-------
                     val backEarAngle : Double = calculateSlope(earData[0].first, earData[0].second, earData[1].first, earData[1].second)
                     val backShoulderAngle : Double = calculateSlope(shoulderData[0].first, shoulderData[0].second, shoulderData[1].first, shoulderData[1].second)
                     val backWristAngle : Double = calculateSlope(wristData[0].first, wristData[0].second, wristData[1].first, wristData[1].second)
@@ -1066,16 +1059,16 @@ companion object {
                     mViewModel.jo.put("back_vertical_angle_knee_heel_right", backKneeHeelLean.second)
                     mViewModel.jo.put("back_horizontal_distance_wrist_left", backWristDistanceByX.first)
                     mViewModel.jo.put("back_horizontal_distance_wrist_right", backWristDistanceByX.second)
-                    saveJsonToSingleton(step, mViewModel.jo)
+                    saveJsonToMeasureVO( mViewModel.jo)
 
 
                     // 필요한 밸런스 점수 담기
                     val joScore = JSONObject()
                     joScore.put("result_balance_score_angle_ankle", calculateBalanceScore(backAnkleAngle))
 
-                    saveJsonToSingleton(BigDecimal("10.0"), joScore)
+
                 }
-                BigDecimal("6.0") -> { // ------! 앉았을 때 !------
+                6 -> { // ------! 앉았을 때 !------
 
 
                     // ------! 의자 후면 거리, 양쪽 부위 높이 차이 - y값 차이 (절댓값)!------
@@ -1109,18 +1102,118 @@ companion object {
                     mViewModel.jo.put("back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip", shoulderHipTriangleAngle.third)
                     mViewModel.jo.put("back_sit_vertical_angle_shoulder_center_hip", shoulderHipRadian)
 
-                    saveJsonToSingleton(step, mViewModel.jo)
+                    saveJsonToMeasureVO( mViewModel.jo)
                     Log.v("6단계", "${mViewModel.jo}")
                 }
             }
         }
 //
     }
-    private fun saveJsonToSingleton(step: BigDecimal, jsonObj: JSONObject ) {
-//        singletonInstance.jsonObject?.put(step.toString(), jsonObj)
-//        Log.v("싱글턴", "${singletonInstance.jsonObject}")
+    private fun saveJsonToMeasureVO(jsonObj: JSONObject) {
+        for (indice in convertJsonToAnalysisList(jsonObj)) {
+            mViewModel.currentMeasureData.add(indice)
+        }
+        Log.v("saveJsonToMeasureVO", "VM Measuredata Size: ${mViewModel.currentMeasureData.size}")
     }
 
+    private fun captureImage() {
+        val imageCapture = imageCapture ?: return
+
+        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.KOREA).format(System.currentTimeMillis())
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/TangoQ")
+            }
+        }
+        val outputOptions = ImageCapture.OutputFileOptions
+            .Builder(contentResolver,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                contentValues)
+            .build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback{
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
+                }
+            }
+        )
+    }
+
+    private fun startVideoRecording(callback: () -> Unit){
+        val videoCapture = this.videoCapture?: return
+        val curRecording = recording
+        if (curRecording != null) {
+            curRecording.stop()
+            recording = null
+            return
+        }
+
+        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.KOREA).format(System.currentTimeMillis())
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/TangoQ")
+            }
+        }
+
+        val mediaStoreOutputOptions = MediaStoreOutputOptions.Builder(
+            contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        ).setContentValues(contentValues)
+            .build()
+
+        recording = videoCapture.output.prepareRecording(this, mediaStoreOutputOptions)
+            .apply {
+                if (PermissionChecker.checkSelfPermission(this@MeasureSkeletonActivity, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_GRANTED) {
+                    withAudioEnabled()
+                }
+            }
+            .start(ContextCompat.getMainExecutor(this)) { recordEvent ->
+                when (recordEvent) {
+                    is VideoRecordEvent.Start -> {
+                        startRecordingTimer()
+
+                        isRecording = true
+                    }
+                    is VideoRecordEvent.Finalize -> {
+                        if (!recordEvent.hasError()) run {
+                            callback()
+                        } else {
+                            isRecording = false
+                            recording?.close()
+                            recording = null
+                            Log.e(TAG, "Video capture ends with error: " + "${recordEvent.error}")
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun startRecordingTimer() {
+        backgroundExecutor.execute {
+            Thread.sleep(5000) // 5초 대기
+            runOnUiThread {
+                stopVideoRecording()
+            }
+        }
+    }
+
+    private fun stopVideoRecording() {
+        val curRecording = recording
+        if (curRecording != null) {
+            curRecording.stop()
+            recording = null
+        }
+    }
     // ------! 애니메이션 !------
     private fun setAnimation(tv: View, duration : Long, delay: Long, fade: Boolean, callback: () -> Unit) {
 
@@ -1138,12 +1231,7 @@ companion object {
         }, delay)
     }
 
-    override fun onCaptureComplete(filePath: String) {
-        // 싱글턴에 주소만 따로 저장.
-        val jo = JSONObject()
-        jo.put("fileName", filePath)
-        saveJsonToSingleton(repeatCount.value!!, jo)
-    }
+
     private fun startCameraShutterAnimation() {
         // 첫 번째 애니메이션: VISIBLE로 만들고 alpha를 0에서 1로
         Handler(Looper.getMainLooper()).postDelayed({
@@ -1177,5 +1265,37 @@ companion object {
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
+    }
+
+    private fun convertJsonToAnalysisList(jsonObject: JSONObject) : MutableList<AnalysisVO> {
+        val resultList = mutableListOf<AnalysisVO>()
+
+        val partMap = mapOf(
+            "ear" to 0, "shoulder" to 1, "elbow" to 2, "wrist" to 3, "hip" to 4, "knee" to 5, "ankle" to 6
+        )
+        fun mapJsonKeyToAnalysisVO(key:String, value: Double) : AnalysisVO {
+            val keyParts = key.split("_")
+            val type = (keyParts.contains("vertical"))
+
+            val part = keyParts.find { partMap.containsKey(it) }?.let { partMap[it] } ?: 0
+
+            val sequence = when {
+                key.startsWith("front_vertical") || key.startsWith("front_horizontal") -> 0
+                key.startsWith("front_elbow") -> 1
+                key.startsWith("side_left") -> 3
+                key.startsWith("side_right") -> 4
+                key.startsWith("back_vertical") || key.startsWith("back_horizontal") -> 5
+                key.startsWith("back_sit") -> 6
+                else -> 2 // 기본값
+            }
+
+            return AnalysisVO(sequence, type, key, value)
+        }
+
+        jsonObject.keys().forEach { key ->
+            val value = jsonObject.getDouble(key)
+            resultList.add(mapJsonKeyToAnalysisVO(key, value))
+        }
+        return resultList
     }
 }

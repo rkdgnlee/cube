@@ -4,15 +4,22 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
@@ -22,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -29,15 +37,16 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.MeasureDataRVAdapter
+import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
+import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
 import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility
 import com.tangoplus.tangoq.mediapipe.OverlayView
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromImageCoordinates
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromVideoCoordinates
+import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -62,13 +71,20 @@ class MeasureAnalysisFragment : Fragment() {
     // 영상재생
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
+    private lateinit var jsonArray: JSONArray
+    private var hideNotice = false
 
     companion object {
         private const val ARG_INDEX = "index_analysis"
-        fun newInstance(indexx: Int): MeasureAnalysisFragment {
+        private const val ARG_SCORE = "index_score"
+        private const val ARG_COMMENT = "index_comment"
+        fun newInstance(indexx: Int, balance: Pair<Int, String>): MeasureAnalysisFragment {
             val fragment = MeasureAnalysisFragment()
             val args = Bundle()
             args.putInt(ARG_INDEX, indexx)
+            args.putInt(ARG_SCORE, balance.first)
+            args.putString(ARG_COMMENT, balance.second)
+
             fragment.arguments = args
             return fragment
         }
@@ -90,11 +106,49 @@ class MeasureAnalysisFragment : Fragment() {
         index = arguments?.getInt(ARG_INDEX)!!
         measureResult = viewModel.selectedMeasure!!.measureResult
 
+        val noticeScore = arguments?.getInt(ARG_SCORE)
+        val noticeComment = arguments?.getString(ARG_COMMENT)
+        setColor(noticeScore!!)
+        binding.tvMAPredict.text = noticeComment.toString()
+
         if (index != 3) {
             setImage()
         } else {
             setPlayer()
         }
+
+        // ------# 상단 snackbar 형식 가져오기 #------
+
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            val slideDownAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
+            binding.clMANotice.visibility = View.VISIBLE
+            binding.clMANotice.startAnimation(slideDownAnimation)
+            hideNotice = false
+        }, 1000)
+        binding.clMANotice.setOnClickListener {
+            if (!hideNotice) {
+                // 숨기기
+                val slideUpAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up)
+                slideUpAnimation.setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationStart(animation: Animation?) {}
+                    override fun onAnimationRepeat(animation: Animation?) {}
+                    override fun onAnimationEnd(animation: Animation?) {
+                        binding.clMANotice.visibility = View.INVISIBLE
+                    }
+                })
+                binding.clMANotice.startAnimation(slideUpAnimation)
+                hideNotice = true
+            } else {
+                // 보이기
+                val slideDownAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
+                binding.clMANotice.visibility = View.VISIBLE
+                binding.clMANotice.startAnimation(slideDownAnimation)
+                hideNotice = false
+            }
+        }
+
+
 
         // ------# 1차 필터링 (균형별) #------
         when (index) {
@@ -107,6 +161,7 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.flMA.visibility = View.GONE
                 currentSequence = 0
                 switchScreenData(measureResult, currentSequence, true)
+                binding.ivMA.setImageResource(R.drawable.drawable_front)
 
             }
             1 -> { // 측면 균형
@@ -118,6 +173,7 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.flMA.visibility = View.GONE
                 currentSequence = 3
                 switchScreenData(measureResult, currentSequence, true)
+                binding.ivMA.setImageResource(R.drawable.drawable_side)
 
             }
             2 -> { // 후면 균형
@@ -129,6 +185,7 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.flMA.visibility = View.GONE
                 currentSequence = 5
                 switchScreenData(measureResult, 5, true)
+                binding.ivMA.setImageResource(R.drawable.drawable_back)
 
 
             }
@@ -144,9 +201,8 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.flMA.visibility = View.VISIBLE
                 binding.flMA2.visibility = View.GONE
                 currentSequence = 2
-
                 switchScreenData(measureResult, currentSequence, true)
-
+                binding.ivMA.setImageResource(R.drawable.drawable_dynamic)
             }
             else -> {  }
         }
@@ -201,6 +257,7 @@ class MeasureAnalysisFragment : Fragment() {
         })
         // ------! 하단 버튼토글 그룹 끝 !------
     }
+
     // 고정적으로
     // big은 자세 , small은 수직 수평 분석임
     private fun switchScreenData(measureResult: MutableList<AnalysisVO>, sequence: Int, toVerti: Boolean) {
@@ -227,7 +284,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 Triple(description, "왼쪽: ${String.format("%.1f", leftValue)}°", "오른쪽: ${String.format("%.1f", rightValue)}°")
                             } else null
                         }.toMutableList()
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -259,7 +316,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                 }
 
@@ -296,7 +353,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(descrption,"왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -326,11 +383,31 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                 }
             }
             2 -> {
+
+                lifecycleScope.launch {
+                    val connections = listOf(
+                        15, 16, 23, 24, 25, 26
+                    )
+                    val coordinates = extractVideoCoordinates(loadJsonArray())
+                    val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
+
+                    for (connection in connections) {
+                        val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
+                        for (i in 0 until coordinates.size) {
+                            filteredCoordinate.add(coordinates[i][connection])
+                        }
+                        filteredCoordinates.add(filteredCoordinate)
+                    }
+
+                    setVideoAdapter(filteredCoordinates)
+                    Log.v("coordinates0", "${filteredCoordinates[0]}")
+                    Log.v("coordinates1", "${filteredCoordinates[1]}")
+                }
 
             }
             3 -> {
@@ -352,7 +429,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                     false -> {
                         val keyPairs = mapOf(
@@ -369,7 +446,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(description, "거리: ${String.format("%.1f", angleValue)}cm", null))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                 }
             }
@@ -392,7 +469,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                     false -> {
                         val keyPairs = mapOf(
@@ -409,7 +486,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                 }
             }
@@ -438,7 +515,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -470,7 +547,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(descrption,"왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                 }
             }
@@ -493,7 +570,7 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -515,14 +592,14 @@ class MeasureAnalysisFragment : Fragment() {
                             }
                         }
 
-                        setBothAdapter(minResultData)
+                        setImageAdapter(minResultData)
                     }
                 }
             }
 
         }
 
-//        setBothAdapter()
+//        setImageAdapter()
         // 정면의 수직분석 --> 전부 angle임 그럼 높이 차라는 건 없음. 왼쪽 오른쪽 기울기만 있을 뿐
         // 정면의 수평분석 --> 수평이되야 양 어꺠 기울기, 높이 차 가능.
         // 측면의 수직분석 --> 각도들
@@ -545,21 +622,19 @@ class MeasureAnalysisFragment : Fragment() {
         }
     }
 
-    private fun setBothAdapter(allData: MutableList<Triple<String,String, String?>>) {
+    private fun setImageAdapter(allData: MutableList<Triple<String,String, String?>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         val leftData = allData.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
-        val leftadapter = MeasureDataRVAdapter(this@MeasureAnalysisFragment, leftData)
+        val leftadapter = DataStaticRVAdapter(leftData)
         binding.rvMALeft.layoutManager = linearLayoutManager1
         binding.rvMALeft.adapter = leftadapter
 
         val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val rightData = allData.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
-        val rightadapter = MeasureDataRVAdapter(this@MeasureAnalysisFragment, rightData)
+        val rightadapter = DataStaticRVAdapter(rightData)
         binding.rvMARight.layoutManager = linearLayoutManager2
         binding.rvMARight.adapter = rightadapter
-
-
     }
 
     private fun initToggleIndicator() {
@@ -660,7 +735,7 @@ class MeasureAnalysisFragment : Fragment() {
                         val offsetX = (imageViewWidth - sWidth * scaleFactor) / 2f
                         val offsetY = (imageViewHeight - sHeight * scaleFactor) / 2f
                         // poseLandmarkResult 변환
-                        val poseLandmarkResult = fromImageCoordinates(coordinates)
+                        val poseLandmarkResult = fromCoordinates(coordinates)
 
                         // 이미지와 오버레이 결합
                         val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
@@ -702,32 +777,12 @@ class MeasureAnalysisFragment : Fragment() {
             )
         }
     }
-
-    private fun extractVideoCoordinates(jsonData: JSONArray) : List<List<Pair<Float,Float>>> {
-
-        return List(jsonData.length()) { i ->
-            val landmarks = jsonData.getJSONObject(i).getJSONArray("pose_landmark")
-            List(landmarks.length()) { j ->
-                val landmark = landmarks.getJSONObject(j)
-                Pair(
-                    landmark.getDouble("sx").toFloat(),
-                    landmark.getDouble("sy").toFloat()
-                )
-            }
-        }
-
-    }
     // ------# jsondata 가져오기 #------
     private suspend fun loadJsonData(): JSONObject = withContext(Dispatchers.IO) {
         val jsonString =
             requireActivity().assets.open("MT_STATIC_BACK_6_1_20240604143755.json").bufferedReader()
                 .use { it.readText() }
         JSONObject(jsonString)
-    }
-
-    private suspend fun loadJsonArray() : JSONArray = withContext(Dispatchers.IO) {
-        val jsonString = requireActivity().assets.open("MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_1_20240606135241.json").bufferedReader().use { it.readText() }
-        JSONArray(jsonString)
     }
 
     // ------# 파일 로드 #------
@@ -754,22 +809,50 @@ class MeasureAnalysisFragment : Fragment() {
         }
 
     }
+
+    //---------------------------------------! VideoOverlay !---------------------------------------
+    private fun extractVideoCoordinates(jsonData: JSONArray) : List<List<Pair<Float,Float>>> {
+
+        return List(jsonData.length()) { i ->
+            val landmarks = jsonData.getJSONObject(i).getJSONArray("pose_landmark")
+            List(landmarks.length()) { j ->
+                val landmark = landmarks.getJSONObject(j)
+                Pair(
+                    landmark.getDouble("sx").toFloat(),
+                    landmark.getDouble("sy").toFloat()
+                )
+            }
+        }
+    }
+
+    private suspend fun loadJsonArray() : JSONArray = withContext(Dispatchers.IO) {
+        val jsonString = requireActivity().assets.open("MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_1_20240606135241.json").bufferedReader().use { it.readText() }
+        JSONArray(jsonString)
+    }
+
     private fun setPlayer() {
         lifecycleScope.launch {
 
-            val jsonData = loadJsonArray()
-            val coordinates = extractVideoCoordinates(jsonData)
+            jsonArray = loadJsonArray()
+            Log.v("jsonDataLength", "${jsonArray.length()}")
             initPlayer()
-            val imageViewWidth = binding.pvMA.width
-            val imageViewHeight = binding.pvMA.height
 
-            // poseLandmarkResult 변환
-            val poseLandmarkResult = fromVideoCoordinates(coordinates)
-            binding.ovMA.setResults(
-                poseLandmarkResult,
-                imageViewWidth,
-                imageViewHeight,
-                OverlayView.RunningMode.VIDEO)
+            simpleExoPlayer?.addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    super.onPlaybackStateChanged(playbackState)
+                    if (playbackState == Player.STATE_READY) {
+                        val videoDuration = simpleExoPlayer?.duration ?: 0L
+                        lifecycleScope.launch {
+                            while (simpleExoPlayer?.isPlaying == true) {
+                                updateFrameData(videoDuration, jsonArray.length())
+                                delay(24)
+
+                            }
+                        }
+                    }
+                }
+            })
+
         }
     }
 
@@ -785,7 +868,11 @@ class MeasureAnalysisFragment : Fragment() {
                 simpleExoPlayer?.prepare(it)
             }
             simpleExoPlayer?.seekTo(0)
+            simpleExoPlayer?.playWhenReady = true
         }
+        binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
+        binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
+        binding.pvMA.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
 
     }
 
@@ -793,6 +880,64 @@ class MeasureAnalysisFragment : Fragment() {
         val dataSourceFactory = DefaultDataSourceFactory(requireContext(), "sample")
         return ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(MediaItem.fromUri(videoUrl))
+
+    }
+    private fun updateFrameData(videoDuration: Long, totalFrames: Int) {
+        val currentPosition = simpleExoPlayer?.currentPosition ?: 0L
+
+        // 현재 재생 시간에 해당하는 프레임 인덱스 계산
+        val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
+        val coordinates = extractVideoCoordinates(jsonArray)
+
+
+        // 실제 mp4의 비디오 크기를 가져온다
+        val (videoWidth, videoHeight) = getVideoDimensions(videoUrl.toUri())
+        Log.v("widhtHeight","(${binding.tlMP.width},${binding.tlMP.height}) , (${binding.ovMA.width}, ${binding.ovMA.height})")
+        if (frameIndex in 0 until totalFrames) {
+            // 해당 인덱스의 데이터를 JSON에서 추출하여 변환
+            val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
+
+            // 변환된 데이터를 화면에 그리기
+            requireActivity().runOnUiThread {
+
+                binding.ovMA.setResults(
+                    poseLandmarkResult,
+                    videoWidth,
+                    videoHeight,
+                    OverlayView.RunningMode.VIDEO
+                )
+                binding.ovMA.invalidate()
+            }
+        }
+    }
+
+    private fun getVideoDimensions(videoUri: Uri) : Pair<Int, Int> {
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(requireContext(), videoUri)
+        val videoWidth = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt() ?: 0
+        val videoHeight = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toInt() ?: 0
+        retriever.release()
+        return Pair(videoWidth, videoHeight)
+    }
+
+    private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
+        val titles = listOf("좌측 손", "우측 손", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
+
+        val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val leftData = data.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
+        val leftTitle = titles.filterIndexed{ index, _ -> index % 2 == 0}
+        val leftadapter = DataDynamicRVAdapter(leftData, leftTitle)
+        binding.rvMALeft.layoutManager = linearLayoutManager1
+        binding.rvMALeft.adapter = leftadapter
+
+        val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val rightData = data.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
+        val rightTitle = titles.filterIndexed{ index, _ -> index % 2 == 1}
+        val rightadapter = DataDynamicRVAdapter(rightData, rightTitle)
+        binding.rvMARight.layoutManager = linearLayoutManager2
+        binding.rvMARight.adapter = rightadapter
+
+
 
     }
 
@@ -810,5 +955,23 @@ class MeasureAnalysisFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true
+    }
+
+    private fun setColor(index: Int) {
+        when (index) {
+            2 -> {
+                binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.deleteColor))
+                binding.ivMAicon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_caution))
+            }
+            1 -> {
+                binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.cautionColor))
+                binding.ivMAicon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_warning))
+            }
+            0 -> {
+                binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
+                binding.ivMAicon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_ball))
+
+            }
+        }
     }
 }

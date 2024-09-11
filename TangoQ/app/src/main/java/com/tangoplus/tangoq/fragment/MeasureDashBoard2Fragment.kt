@@ -121,6 +121,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                 val bcdata = BarData(dataSet)
                 bcdata.apply {
                     barWidth = 0.5f
+
                 }
                 barChart.data = bcdata
                 // X축 설정
@@ -137,6 +138,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                 // 왼쪽 Y축 설정
                 barChart.axisLeft.apply {
                     axisMinimum = -1f // Y축 최소값
+                    axisMaximum = 100f
                     setDrawAxisLine(false)
                     setDrawGridLines(false)
                     setLabelCount(0, false)

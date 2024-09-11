@@ -3,7 +3,6 @@ package com.tangoplus.tangoq.dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -143,7 +142,7 @@ class FilterProgramDialogFragment : DialogFragment() {
             prefsManager.storeFilter("${binding.tvMFDLocation.text}", "${binding.tvMFDSelect5.text}")
             // ------! filter pref에 넣기 끝 !------
             dismiss()
-            val dialog = CustomExerciseDialogFragment()
+            val dialog = ProgramCustomDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "CustomExerciseDialogFragment")
         }
     }

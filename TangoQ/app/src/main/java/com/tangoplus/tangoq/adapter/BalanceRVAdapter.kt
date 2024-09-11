@@ -40,19 +40,22 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
         if (holder is balanceViewHolder) {
             setItem(position, holder.ivBI, holder.tvBIName)
             setColor(degree[position].first, holder.tvBIPredict, holder.ivBIicon)
-
+            var currentComment = ""
             if (currentItem.size < 2) {
-                holder.tvBIPredict.text  = "${currentItem[0]} ${transferDegree(degree[position])}"
+                currentComment = "${currentItem[0]} ${transferDegree(degree[position])}"
+
             } else if (degree[position].second > 3 || degree[position].second < -2) {
-                holder.tvBIPredict.text =  "전체적인 균형이 잘 잡혀 있습니다."
+                currentComment = "전체적인 균형이 잘 잡혀 있습니다."
+
             } else {
-                holder.tvBIPredict.text  = "${currentItem[0]}와 ${currentItem[1]}${transferDegree(degree[position])}"
+                currentComment = "${currentItem[0]}와 ${currentItem[1]}${transferDegree(degree[position])}"
             }
+            holder.tvBIPredict.text = currentComment
 
             holder.clBI.setOnClickListener{
 
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position))
+                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position, Pair(degree[position].first, currentComment)))
                     addToBackStack(null)
                     commit()
                 }
@@ -71,6 +74,7 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
             else -> ""
         }
     }
+
     private fun setColor(index: Int, tv1: TextView, iv: ImageView) {
         when (index) {
             2 -> {

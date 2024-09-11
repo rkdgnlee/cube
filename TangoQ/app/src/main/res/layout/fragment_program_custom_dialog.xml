@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/effect_ibtn_12dp"
-    tools:context=".dialog.CustomExerciseDialogFragment">
+    tools:context=".dialog.ProgramCustomDialogFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

@@ -40,6 +40,7 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard1Binding
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import okhttp3.internal.format
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.json.JSONObject
 import java.io.File
@@ -48,6 +49,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Date
 import java.util.Locale
@@ -318,6 +320,26 @@ class MeasureDashBoard1Fragment : Fragment() {
             setScaleEnabled(false)
             invalidate()
         }
+        // ------! 날짜 기간 가져오기 시작 !------
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+        val outputFormatter = DateTimeFormatter.ofPattern("MM.dd")
+
+        val datesWithIndex = lcDataList.mapIndexedNotNull { index, pair ->
+            if (pair.first.isNotEmpty()) {
+                index to LocalDate.parse(pair.first, inputFormatter)
+            } else null
+        }
+
+        if (datesWithIndex.isNotEmpty()) {
+            val oldestDate = datesWithIndex.minByOrNull { it.second }
+            val newestDate = datesWithIndex.maxByOrNull { it.second }
+
+            if (oldestDate != null && newestDate != null) {
+                binding.tvMD1Duration.text = "${oldestDate.second.format(outputFormatter)} ~ ${newestDate.second.format(outputFormatter)}"
+            }
+        }
+        // ------! 날짜 기간 가져오기 끝 !------
+
         // ------! 값 클릭 시 벌룬 나오기 시작 !------
         lineChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {

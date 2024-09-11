@@ -20,19 +20,18 @@ import kotlin.math.roundToLong
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
-        const val LANDMARK_STROKE_WIDTH = 6F
+        const val LANDMARK_STROKE_WIDTH = 5F
     }
 
     private var results: PoseLandmarkResult? = null
 
     private var pointPaint = Paint()
     private var linePaint = Paint()
+    private var textPaint = Paint()
     private var scaleFactor: Float = 1f
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
-    private var viewWidth: Int = 1
-    private var viewHeight: Int = 1
-
+    private var currentRunningMode: RunningMode = RunningMode.IMAGE
     init {
         initPaints()
     }
@@ -47,8 +46,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     @SuppressLint("ResourceAsColor")
     private fun initPaints() {
         // -----! 연결선 색 !-----
-        linePaint.color =
-            ContextCompat.getColor(context!!, R.color.white)
+        linePaint.color = 0xFFFFFFFF.toInt()
         linePaint.strokeWidth = LANDMARK_STROKE_WIDTH
         linePaint.style = Paint.Style.STROKE
 
@@ -58,113 +56,161 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         pointPaint.style = Paint.Style.FILL
     }
 
-    override fun draw(canvas: Canvas) {
-        super.draw(canvas)
-        results?.let { poseLandmarkResult ->
-            drawLandmarks(canvas, poseLandmarkResult.landmarks)
-            poseLandmarkResult.videolandmarks.forEach { frameLandmarks ->
-                drawLandmarks(canvas, frameLandmarks)
-            }
-        }
-    }
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        viewWidth = w
-        viewHeight = h
-        updateScaleFactor()
-    }
 
-    private fun updateScaleFactor() {
-        scaleFactor = min(viewWidth.toFloat() / imageWidth, viewHeight.toFloat() / imageHeight)
-    }
 
     fun setResults(
         poseLandmarkResult: PoseLandmarkResult,
-        imageHeight: Int,
         imageWidth: Int,
+        imageHeight: Int,
         runningMode: RunningMode = RunningMode.IMAGE
     ) {
         results = poseLandmarkResult
         this.imageHeight = imageHeight
         this.imageWidth = imageWidth
+        currentRunningMode = runningMode
 
-        scaleFactor = when (runningMode) {
+        when (runningMode) {
             RunningMode.IMAGE, RunningMode.VIDEO -> {
-                min(width * 1f / imageWidth, height * 1f / imageHeight)
+                scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
             }
             RunningMode.LIVE_STREAM -> {
-                max(width * 1f / imageWidth, height * 1f / imageHeight)
+                scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
             }
         }
         invalidate()
     }
 
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+        results?.let { poseLandmarkResult ->
+            drawLandmarks(canvas, poseLandmarkResult.landmarks)
+        }
+    }
     enum class RunningMode {
         IMAGE, VIDEO, LIVE_STREAM
     }
 
     private fun drawLandmarks(canvas: Canvas, landmarks: List<PoseLandmarkResult.PoseLandmark>) {
-        if (landmarks.isEmpty()) {
 
+        if (landmarks.isEmpty()) {
             return
         }
+        val offsetX = ((width - imageWidth * scaleFactor) / 2 ) + 20
+        val offsetY = (height - imageHeight * scaleFactor) / 2
 
-        // 모든 랜드마크 그리기
-        val offsetX = (viewWidth - imageWidth * scaleFactor) / 2f
-        val offsetY = (viewHeight - imageHeight * scaleFactor) / 2f
+        if (currentRunningMode == RunningMode.LIVE_STREAM) {
 
-        landmarks.forEach { landmark ->
-            canvas.drawPoint(
-                landmark.x * imageWidth * scaleFactor,
-                landmark.y * imageHeight * scaleFactor,
-                pointPaint
-            )
-            Log.v("canvasResultLandmarks3", "$landmark")
-        }
-
-        // 안전하게 특정 랜드마크 접근
-        val nose = landmarks.getOrNull(0)
-        val leftShoulder = landmarks.getOrNull(11)
-        val rightShoulder = landmarks.getOrNull(12)
-
-        // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
-        if (nose != null && leftShoulder != null && rightShoulder != null) {
-            val noseX = nose.x * imageWidth * scaleFactor
-            val noseY = nose.y * imageHeight * scaleFactor
-            val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * imageWidth * scaleFactor
-            val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * imageHeight * scaleFactor
-
-            canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
-            Log.v("canvasResultLandmarks3", "$noseX $noseY, $midShoulderX, $midShoulderY")
-        }
-
-        // Draw lines between landmarks
-        // Note: You'll need to define which landmarks should be connected
-        // This is just an example and may need to be adjusted
-        val connections = listOf(
-            // 얼굴
-            Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),
-            // 손
-            Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(15, 17), Pair(15, 19), Pair(15, 21),
-            // 몸통 + 팔
-            Pair(11, 12), Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
-            // Legs
-            Pair(11, 23), Pair(12, 24), Pair(23, 25), Pair(23, 24), Pair(24, 26), Pair(25, 27), Pair(26, 28),
-            // 다리
-            Pair(27, 31), Pair(28, 32), Pair(27, 29), Pair(28, 30),
-        )
-
-        connections.forEach { (start, end) ->
-            if (start < landmarks.size && end < landmarks.size) {
-                canvas.drawLine(
-                    landmarks[start].x * imageWidth * scaleFactor,
-                    landmarks[start].y * imageHeight * scaleFactor,
-                    landmarks[end].x * imageWidth * scaleFactor,
-                    landmarks[end].y * imageHeight * scaleFactor,
-                    linePaint
+            landmarks.forEach { landmark ->
+                canvas.drawPoint(
+                    landmark.x * imageWidth * scaleFactor + offsetX,
+                    landmark.y * imageHeight * scaleFactor + offsetY,
+                    pointPaint
                 )
             }
+
+
+            // 안전하게 특정 랜드마크 접근
+            val nose = landmarks.getOrNull(0)
+            val leftShoulder = landmarks.getOrNull(11)
+            val rightShoulder = landmarks.getOrNull(12)
+
+            // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
+            if (nose != null && leftShoulder != null && rightShoulder != null) {
+                val noseX = nose.x * imageWidth * scaleFactor + offsetX
+                val noseY = nose.y * imageHeight * scaleFactor + offsetY
+                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * imageWidth * scaleFactor + offsetX
+                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * imageHeight * scaleFactor + offsetY
+
+                canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
+
+            }
+
+            // Draw lines between landmarks
+            // Note: You'll need to define which landmarks should be connected
+            // This is just an example and may need to be adjusted
+            val connections = listOf(
+                // 얼굴
+                Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),
+                // 손
+                Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(15, 17), Pair(15, 19), Pair(15, 21),
+                // 몸통 + 팔
+                Pair(11, 12), Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
+                // Legs
+                Pair(11, 23), Pair(12, 24), Pair(23, 25), Pair(23, 24), Pair(24, 26), Pair(25, 27), Pair(26, 28),
+                // 다리
+                Pair(27, 31), Pair(28, 32), Pair(27, 29), Pair(28, 30),
+            )
+
+            connections.forEach { (start, end) ->
+                if (start < landmarks.size && end < landmarks.size) {
+                    canvas.drawLine(
+                        landmarks[start].x * imageWidth * scaleFactor + offsetX,
+                        landmarks[start].y * imageHeight * scaleFactor + offsetY,
+                        landmarks[end].x * imageWidth * scaleFactor + offsetX,
+                        landmarks[end].y * imageHeight * scaleFactor + offsetY,
+                        linePaint
+                    )
+
+                }
+            }
+        }  else {
+
+
+
+            landmarks.forEach { landmark ->
+                canvas.drawPoint(
+                    landmark.x * scaleFactor + offsetX,
+                    landmark.y * scaleFactor + offsetY,
+                    pointPaint
+                )
+            }
+
+            // 안전하게 특정 랜드마크 접근
+            val nose = landmarks.getOrNull(0)
+            val leftShoulder = landmarks.getOrNull(11)
+            val rightShoulder = landmarks.getOrNull(12)
+
+            // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
+            if (nose != null && leftShoulder != null && rightShoulder != null) {
+                val noseX = nose.x * scaleFactor + offsetX
+                val noseY = nose.y * scaleFactor + offsetY
+                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * scaleFactor + offsetX
+                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * scaleFactor + offsetY
+
+                canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
+
+            }
+
+            // Draw lines between landmarks
+            // Note: You'll need to define which landmarks should be connected
+            // This is just an example and may need to be adjusted
+            val connections = listOf(
+                // 얼굴
+                Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),
+                // 손
+                Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(15, 17), Pair(15, 19), Pair(15, 21),
+                // 몸통 + 팔
+                Pair(11, 12), Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
+                // Legs
+                Pair(11, 23), Pair(12, 24), Pair(23, 25), Pair(23, 24), Pair(24, 26), Pair(25, 27), Pair(26, 28),
+                // 다리
+                Pair(27, 31), Pair(28, 32), Pair(27, 29), Pair(28, 30),
+            )
+
+            connections.forEach { (start, end) ->
+                if (start < landmarks.size && end < landmarks.size) {
+                    canvas.drawLine(
+                        landmarks[start].x * scaleFactor + offsetX,
+                        landmarks[start].y  * scaleFactor + offsetY,
+                        landmarks[end].x * scaleFactor + offsetX,
+                        landmarks[end].y * scaleFactor + offsetY,
+                        linePaint
+                    )
+
+                }
+            }
         }
+
 
 
     }

@@ -26,8 +26,8 @@ class ExerciseViewModel : ViewModel() {
     var selectedMeasureDate = MutableLiveData<Int>()
     var currentMeasureDate = 0
 
-    // MD2 전체 historyUnitVO를 담아놓을 공간
-    val allHistorys = mutableListOf<HistoryUnitVO>()
+
+    val allHistorys = mutableListOf<HistoryUnitVO>() // MD2 전체 historyUnitVO를 담아놓을 공간
     val classifiedByDay = mutableListOf<Triple<String, Int, Int>>() // history에 필요한것들
     var datesClassifiedByDay = mutableListOf<LocalDate>() // history의 날짜만 따로 뺀 LIST
     var weeklyHistorys = mutableListOf<Triple<String, Int, Int>>()

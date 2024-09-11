@@ -22,7 +22,7 @@ object ImageProcessingUtility {
         val canvas = Canvas(resultBitmap)
 
         val paint = Paint().apply {
-            color = ContextCompat.getColor(context, R.color.white)
+            color = 0xFFFFFFFF.toInt()
             strokeWidth = 4f
             style = Paint.Style.STROKE
         }
@@ -38,7 +38,6 @@ object ImageProcessingUtility {
             val x = landmark.x  + offsetX
             val y = landmark.y  + offsetY
             canvas.drawPoint(x, y, pointPaint)
-            Log.v("resultt2", "$landmark")
         }
 
         val connections = listOf(
@@ -63,7 +62,7 @@ object ImageProcessingUtility {
             val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2   + offsetY
 
             canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, paint)
-            Log.v("canvasResultLandmarks3", "${noseX} $noseY, $midShoulderX, $midShoulderY")
+
         }
 
         connections.forEach { (start, end) ->
@@ -76,7 +75,7 @@ object ImageProcessingUtility {
                 val endY = endLandmark.y   + offsetY
                 canvas.drawLine(startX, startY, endX, endY, paint)
             }
-            Log.v("resultt3", "startLandmark: $startLandmark endLandmark: $endLandmark")
+
         }
 
         return resultBitmap

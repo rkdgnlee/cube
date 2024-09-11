@@ -178,11 +178,27 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                         holder.ivPf.setImageResource(R.drawable.icon_profile)
                         holder.tvPfSettingsName.text = currentItem
                         when (holder.tvPfSettingsName.text) {
-                            "이름" -> holder.tvPfInfo.text = userJson.optString("user_name")
-                            "성별" -> holder.tvPfInfo.text = userJson.optString("user_gender") ?: "미설정"
-                            "몸무게" -> holder.tvPfInfo.text = userJson.optString("user_weight") + "kg"
-                            "신장" -> holder.tvPfInfo.text = userJson.optString("user_height") + "cm"
-                            "이메일" -> holder.tvPfInfo.text = userJson.optString("user_email") ?: "미설정"
+
+                            "이름" -> {
+                                holder.tvPfInfo.text = userJson.optString("user_name")
+                                holder.ivPf.setImageResource(R.drawable.icon_profile)
+                            }
+                            "성별" -> {
+                                holder.tvPfInfo.text = userJson.optString("user_gender") ?: "미설정"
+                                holder.ivPf.setImageResource(R.drawable.icon_gender)
+                            }
+                            "몸무게" -> {
+                                holder.tvPfInfo.text = userJson.optString("user_weight") + "kg"
+                                holder.ivPf.setImageResource(R.drawable.icon_weight)
+                            }
+                            "신장" -> {
+                                holder.tvPfInfo.text = userJson.optString("user_height") + "cm"
+                                holder.ivPf.setImageResource(R.drawable.icon_height)
+                            }
+                            "이메일" -> {
+                                holder.tvPfInfo.text = userJson.optString("user_email") ?: "미설정"
+                                holder.ivPf.setImageResource(R.drawable.icon_email)
+                            }
                         }
 
 

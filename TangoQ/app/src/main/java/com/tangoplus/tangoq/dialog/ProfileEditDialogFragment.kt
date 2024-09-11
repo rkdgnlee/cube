@@ -75,10 +75,10 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 // ------! 정보 목록 recyclerView 연결 시작 !------
         val profilemenulist = mutableListOf(
             "이름",
-            "성별",
             "이메일",
             "몸무게",
-            "신장"
+            "신장",
+            "성별"
 
         )
         setAdpater(profilemenulist, binding.rvPED)

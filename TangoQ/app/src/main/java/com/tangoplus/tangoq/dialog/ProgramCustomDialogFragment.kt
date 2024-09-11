@@ -25,15 +25,19 @@ import com.tangoplus.tangoq.data.EpisodeVO
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.ProgramVO
-import com.tangoplus.tangoq.databinding.FragmentCustomExerciseDialogBinding
+import com.tangoplus.tangoq.databinding.FragmentProgramCustomDialogBinding
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.fragment.isFirstRun
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_user
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
-class CustomExerciseDialogFragment : DialogFragment(), OnCustomCategoryClickListener {
-    lateinit var binding : FragmentCustomExerciseDialogBinding
+class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListener {
+    lateinit var binding : FragmentProgramCustomDialogBinding
     val viewModel : ExerciseViewModel by activityViewModels()
     private var historys =  mutableListOf<MutableList<EpisodeVO>>()
     private lateinit var  singletonHistory : Singleton_t_history
@@ -41,7 +45,7 @@ class CustomExerciseDialogFragment : DialogFragment(), OnCustomCategoryClickList
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCustomExerciseDialogBinding.inflate(inflater)
+        binding = FragmentProgramCustomDialogBinding.inflate(inflater)
         return binding.root
     }
 
@@ -73,7 +77,7 @@ class CustomExerciseDialogFragment : DialogFragment(), OnCustomCategoryClickList
 
         // ------! 요약 시작 !------
         // TODO 주차별 운동 변동해야함.
-        binding.etCEDTitle.setText("어깨 재활 프로그램")
+        binding.etCEDTitle.setText(viewModel.currentProgram?.programName)
 
         binding.tvCEDTime.text = (if (viewModel.currentProgram?.programTime!! <= 60) {
             "${viewModel.currentProgram?.programTime}초"
@@ -95,9 +99,51 @@ class CustomExerciseDialogFragment : DialogFragment(), OnCustomCategoryClickList
         singletonHistory = Singleton_t_history.getInstance(requireContext())
         historys = singletonHistory.historys!!
         Log.v("싱글턴historys2", "${singletonHistory.historys}")
-        viewModel.currentEpisode = 2
-        viewModel.currentWeek = 1
-        viewModel.selectedWeek.value = 1
+
+        /* TODO 현재 회차, 주차, 선택된 주차 까지 명시돼 있는데, 이제 주 단위로 주차가 변경된다면
+        * viewModel에 담기는 값들이 다 달라져야 함.
+        * */
+
+        val programStartDate = LocalDate.parse("2024-08-26")
+        // TODO 사용자 만의 프로그램 시작 날짜를 넣어야 함.
+        val nowDate = LocalDate.now()
+
+        val weeksPassed = ChronoUnit.WEEKS.between(programStartDate, nowDate).toInt()
+        viewModel.currentWeek = weeksPassed
+        viewModel.selectedWeek.value = weeksPassed
+
+        // ------! 회차 계산 시작 !------
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val lastRegDateStr = viewModel.allHistorys.find { it.viewCount == 0 && it.lastPosition!! > 0 }?.regDate
+
+        val lastRegDate = LocalDateTime.parse(lastRegDateStr, formatter).toLocalDate()
+
+        val weeksPassed2 = ChronoUnit.WEEKS.between(programStartDate, lastRegDate).toInt() // 마지막 운동 날짜
+        if (weeksPassed2 == weeksPassed) { // 마지막 운동기록의 날짜가 이번 주차일 경우
+            val currentWeekStartDate = programStartDate.plusWeeks(weeksPassed2.toLong())
+            val currentWeekRecords = viewModel.allHistorys.filter {
+                val regDate = LocalDateTime.parse(it.regDate, formatter).toLocalDate()
+                regDate.isAfter(currentWeekStartDate.minusDays(1)) && regDate.isBefore(currentWeekStartDate.plusWeeks(1))
+            }.sortedBy { it.regDate }
+
+            // 해당 주차의 운동 날짜 별로 가져 와서 회차가 몇인지 가져오기 ?
+            viewModel.currentEpisode = currentWeekRecords.size - 1
+        } else {
+            viewModel.currentEpisode = 0
+        }
+        // ------! 회차 계산 끝 !------
+
+        // ------# 프로그램 기간 만료 #------
+        val programEndDate = programStartDate.plusWeeks(viewModel.currentProgram!!.programWeek.toLong()).minusDays(1)
+        Log.v("programDates", "프로그램 시작날짜: ${programStartDate}, 종료날짜: ${programEndDate}")
+        if (LocalDate.now() == programEndDate) {
+            val programAlertDialogFragment = ProgramAlertDialogFragment.newInstance(this)
+            programAlertDialogFragment.show(childFragmentManager, "ProgramAlertDialogFragment")
+        }
+
+
+
+        // ------# 데이터 가져온 후 #------
         setAdapter(viewModel.currentProgram!!, historys, viewModel.selectedWeek.value!!,   viewModel.currentEpisode)
 
         // ------! 주차 변경 시작 !------
@@ -109,6 +155,9 @@ class CustomExerciseDialogFragment : DialogFragment(), OnCustomCategoryClickList
             binding.tvCEDWeekly.text = "${it+1}/4 주차"
             setAdapter(viewModel.currentProgram!!, historys, it,  viewModel.currentEpisode)
         }
+
+
+
         // ------! 주차 변경 끝 !------
 
 
@@ -201,13 +250,13 @@ class CustomExerciseDialogFragment : DialogFragment(), OnCustomCategoryClickList
 
         /* currentEpisode 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
         viewModel.selectedEpisode.value = episode
-        val adapter = CustomExerciseRVAdapter(this@CustomExerciseDialogFragment, historys[week], Pair(viewModel.currentWeek, week), Pair(viewModel.currentEpisode, viewModel.selectedEpisode.value!!), this@CustomExerciseDialogFragment)
+        val adapter = CustomExerciseRVAdapter(this@ProgramCustomDialogFragment, historys[week], Pair(viewModel.currentWeek, week), Pair(viewModel.currentEpisode, viewModel.selectedEpisode.value!!), this@ProgramCustomDialogFragment)
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvCEDHorizontal.layoutManager = layoutManager
         binding.rvCEDHorizontal.adapter = adapter
         adapter.notifyDataSetChanged()
 
-        val adapter2 = ExerciseRVAdapter(this@CustomExerciseDialogFragment, program.exercises!![week].toMutableList(), historys.get(week).get(episode), "main")
+        val adapter2 = ExerciseRVAdapter(this@ProgramCustomDialogFragment, program.exercises!![week].toMutableList(), historys.get(week).get(episode), "main")
         binding.rvCED.adapter = adapter2
         val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvCED.layoutManager = layoutManager2
@@ -222,5 +271,9 @@ class CustomExerciseDialogFragment : DialogFragment(), OnCustomCategoryClickList
 
         setAdapter(viewModel.currentProgram!!, historys, viewModel.selectedWeek.value!!,  viewModel.selectedEpisode.value!!)
 
+    }
+
+    fun dismissThisFragment() {
+        dismiss()
     }
 }
