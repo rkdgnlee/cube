@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import androidx.core.view.allViews
 import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -38,8 +40,11 @@ import com.tangoplus.tangoq.adapter.MD2RVAdpater
 import com.tangoplus.tangoq.data.EpisodeVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.HistoryUnitVO
+import com.tangoplus.tangoq.data.HistoryViewModel
+import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
 import com.tangoplus.tangoq.`object`.Singleton_t_history
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
@@ -62,9 +67,12 @@ class MeasureDashBoard2Fragment : Fragment() {
 
     private lateinit var singletonHistory : Singleton_t_history
     private lateinit var historys: MutableList<MutableList<EpisodeVO>>
-    private val viewModel: ExerciseViewModel by activityViewModels()
+    private val hvm : HistoryViewModel by activityViewModels()
+    private val uvm : UserViewModel by activityViewModels()
 
     private lateinit var  todayInWeek : List<Int>
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,11 +98,11 @@ class MeasureDashBoard2Fragment : Fragment() {
                 // ------# 일별 운동 담기 #@-
                 // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
                 val weeklySets = mutableListOf<Float>()
-                for (i in 0 until viewModel.weeklyHistorys.size) {
-                    if (viewModel.weeklyHistorys[i].third == 0) {
+                for (i in 0 until hvm.weeklyHistorys.size) {
+                    if (hvm.weeklyHistorys[i].third == 0) {
                         weeklySets.add(1f)
                     } else {
-                        weeklySets.add( (viewModel.weeklyHistorys[i].third * 100 / 7).toFloat())
+                        weeklySets.add( (hvm.weeklyHistorys[i].third * 100 / 7).toFloat())
                     }
                 }
 
@@ -114,7 +122,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                 }
                 val dataSet = BarDataSet(entries, "")
                 dataSet.apply {
-                    color =  resources.getColor(R.color.mainColor, null)
+                    color =  resources.getColor(R.color.thirdColor, null)
                     setDrawValues(false)
                 }
                 // BarData 생성 및 차트에 설정
@@ -159,13 +167,16 @@ class MeasureDashBoard2Fragment : Fragment() {
                 }
 
                 // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
-                updateDayImages()
+                sortIvInLayout()
                 Log.v("weeklySets", "${weeklySets}")
                 for ((index, value) in weeklySets.withIndex()) {
                     if (value > 1.0) {
-                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index ]}_enabled")
+                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
                     } else {
                         setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
+                    }
+                    if (index == 6) {
+                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
                     }
                 }
 
@@ -180,11 +191,12 @@ class MeasureDashBoard2Fragment : Fragment() {
                 // ---- 꺾은선 그래프 코드 끝 ----
             }
         }
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+
+        Log.v("Singleton>Profile", "${userJson}")
 
 
-
-        binding.tvMD2Goal.setOnClickListener {
-        }
+        binding.tvMD2Title.text = "${userJson?.optString("user_name")}님의 기록"
 
         // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
@@ -280,7 +292,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
 
                                 selectedDate?.let { selectedDate ->
-                                    val filteredExercises = viewModel.allHistorys.filter { history ->
+                                    val filteredExercises = hvm.allHistorys.filter { history ->
                                         history.regDate?.let { regDateString ->
                                             val historyDate = stringToLocalDate(regDateString)
                                             historyDate.isEqual(selectedDate)
@@ -318,19 +330,6 @@ class MeasureDashBoard2Fragment : Fragment() {
 
     }
 
-    private fun setWeeklyDrawable(ivId: String, drawableName: String) {
-        val resId = resources.getIdentifier(ivId, "id", requireContext().packageName)
-        val imageView = view?.findViewById<ImageView>(resId)
-        val drawableResId = resources.getIdentifier(drawableName, "drawable", requireContext().packageName)
-
-        if (imageView != null) {
-            imageView.setImageResource(drawableResId)
-        } else {
-            Log.e("MeasureDashBoard2Fragment", "ImageView with id $ivId not found")
-        }
-    }
-
-
     private fun setDateStyle(container: DayViewContainer, day: CalendarDay) {
         container.date.background = null
         when {
@@ -339,11 +338,11 @@ class MeasureDashBoard2Fragment : Fragment() {
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.background_oval, null)
             }
             day.date == LocalDate.now() -> {
-                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.black))
+                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor800))
                 // 현재 날짜에 대한 특별한 배경이 필요하다면 여기에 추가
             }
-            viewModel.datesClassifiedByDay.contains(day.date) -> {
-                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.mainColor))
+            hvm.datesClassifiedByDay.contains(day.date) -> {
+                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.thirdColor))
 
             }
             day.position == DayPosition.MonthDate -> {
@@ -384,21 +383,19 @@ class MeasureDashBoard2Fragment : Fragment() {
     }
 
     private fun getTime(id: String) : Int {
-        return viewModel.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
+        return hvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
     }
-
-
 
 
     private fun sortTodayInWeek() : List<Int> {
         val today = LocalDate.now()
-        val dayOfWeek = today.dayOfWeek.value
+        val dayOfWeek = today.dayOfWeek.value // 오늘 요일
 
-        return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it }
+        return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it } // 오늘요일을 7로 나눴을 때 0인 index가 오늘 요일임.
     }
 
 
-    private fun updateDayImages() {
+    private fun sortIvInLayout() {
         val imageViews = listOf(
             binding.llMD2Week.getChildAt(0),
             binding.llMD2Week.getChildAt(1),
@@ -408,12 +405,24 @@ class MeasureDashBoard2Fragment : Fragment() {
             binding.llMD2Week.getChildAt(5),
             binding.llMD2Week.getChildAt(6)
         )
-        binding.llMD2Week.removeAllViews()
 
-        Log.v("todayInWeek", "${todayInWeek}")
+        binding.llMD2Week.removeAllViews()
         for ( i in 0 until 7) {
             binding.llMD2Week.addView(imageViews[todayInWeek[i] - 1])
         }
+    }
+
+    private fun setWeeklyDrawable(ivId: String, drawableName: String) {
+        val resId = resources.getIdentifier(ivId, "id", requireContext().packageName)
+        val imageView = view?.findViewById<ImageView>(resId)
+        val drawableResId = resources.getIdentifier(drawableName, "drawable", requireContext().packageName)
+
+        if (imageView != null) {
+            imageView.setImageResource(drawableResId)
+        } else {
+            Log.e("MeasureDashBoard2Fragment", "ImageView with id $ivId not found")
+        }
+
     }
 
     private fun updateMonthView() {
@@ -422,7 +431,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     }
 
     private fun updateExerciseList() {
-        val filteredExercises = viewModel.allHistorys.filter { history ->
+        val filteredExercises = hvm.allHistorys.filter { history ->
             history.regDate?.let { regDateString ->
                 val historyDate = stringToLocalDate(regDateString)
                 YearMonth.from(historyDate) == currentMonth

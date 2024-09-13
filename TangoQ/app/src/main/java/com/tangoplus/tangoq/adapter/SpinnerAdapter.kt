@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.ItemSpinnerBinding
 
 
@@ -16,7 +18,10 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        binding.root.setPadding(0, binding.root.paddingTop, 0, binding.root.paddingBottom)
+        binding.root.setPadding(0, 2, 2, 0)
+        binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.secondPrimaryColor))
+        binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.secondPrimaryColor))
+        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
 
         binding.tvSpinner.text = list[position]
         return binding.root
@@ -25,6 +30,7 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.tvSpinner.text = list[position]
+        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
         return binding.root
     }
 

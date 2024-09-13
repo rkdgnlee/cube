@@ -141,7 +141,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:text="거북목, 라운드 숄더 등의 증상 완화 어깨와 가슴 근육의 긴장을 완화하여 통증 감소 운동 장소 : 거실 등 장애물이 없는 장소"
-                    android:textColor="@color/subColor900"
+                    android:textColor="@color/subColor800"
                     android:textSize="17sp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"

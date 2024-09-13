@@ -45,7 +45,7 @@ class CustomExerciseRVAdapter(private val fragment: Fragment, private val episod
                 // ------# 조건 처리 #------
                 when (currentItem.isFinish) {
                     true -> {
-                        setTextView(holder.tvSCName, R.color.mainContainerColor, R.color.mainColor)
+                        setTextView(holder.tvSCName, R.color.secondPrimaryColor, R.color.thirdColor)
                     }
                     false -> {
                         setTextView(holder.tvSCName, R.color.deleteContainerColor, R.color.deleteColor)
@@ -54,13 +54,13 @@ class CustomExerciseRVAdapter(private val fragment: Fragment, private val episod
             } else if (weekState.second == weekState.first) {
                 when (currentItem.isFinish) {
                     true -> {
-                        setTextView(holder.tvSCName, R.color.mainContainerColor, R.color.mainColor)
+                        setTextView(holder.tvSCName, R.color.secondPrimaryColor, R.color.thirdColor)
                     }
                     false -> {
                         if (position < episodeState.first) {
                             setTextView(holder.tvSCName, R.color.deleteContainerColor, R.color.deleteColor)
                         } else if (position == episodeState.first) {
-                            setTextView(holder.tvSCName, R.color.mainColor, R.color.white)
+                            setTextView(holder.tvSCName, R.color.thirdColor, R.color.white)
 
                         }
                     }

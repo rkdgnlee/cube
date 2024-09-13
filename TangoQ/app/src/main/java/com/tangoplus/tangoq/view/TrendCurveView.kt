@@ -19,7 +19,7 @@ class TrendCurveView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val paint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.mainColor)
+        color = ContextCompat.getColor(context, R.color.thirdColor)
         strokeWidth = 6f
         style = Paint.Style.STROKE
     }

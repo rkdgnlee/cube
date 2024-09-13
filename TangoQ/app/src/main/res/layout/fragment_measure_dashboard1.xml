@@ -35,6 +35,34 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView66"
                 app:layout_constraintVertical_bias="0.0">
 
+                <androidx.cardview.widget.CardView
+                    android:layout_width="28dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/lcMD1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/lcMD1">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/color_gradient_third_color_top">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="5dp"
+                            app:cardElevation="0dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
                 <ImageView
                     android:id="@+id/imageView12"
                     android:layout_width="wrap_content"
@@ -200,7 +228,7 @@
                         android:id="@+id/vMD1Middle"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="@drawable/background_rectangle_0dp"
+                        android:background="@color/thirdColor"
                         android:elevation="2dp"
                         app:layout_constraintBottom_toBottomOf="@+id/vMD1Percent"
                         app:layout_constraintEnd_toEndOf="@+id/vMD1Percent"
@@ -279,7 +307,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="21"
-                    android:textColor="@color/mainColor"
+                    android:textColor="@color/thirdColor"
                     android:textSize="36dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -357,7 +385,7 @@
                         android:background="@drawable/background_rectangle_12dp"
                         android:backgroundTint="@color/subColor100"
                         android:text="최근 측정 기록 - 2024.05.08"
-                        android:textColor="@color/subColor900"
+                        android:textColor="@color/subColor800"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -395,15 +423,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_rectangle_20dp"
+                android:backgroundTint="@color/secondPrimaryColor"
                 android:drawableLeft="@drawable/icon_plus_small"
                 android:drawablePadding="4dp"
-                android:drawableTint="@color/subColor800"
+                android:drawableTint="@color/secondaryColor"
                 android:paddingStart="10dp"
                 android:paddingTop="8dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="8dp"
                 android:text="기록 더 보기"
-                android:textColor="@color/subColor800"
+                android:textColor="@color/secondaryColor"
                 android:textSize="14dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvMD1Name"
                 app:layout_constraintEnd_toEndOf="parent"

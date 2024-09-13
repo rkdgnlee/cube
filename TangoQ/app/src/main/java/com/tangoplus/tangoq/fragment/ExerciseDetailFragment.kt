@@ -10,15 +10,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
+import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
+import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
+import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
 import com.tangoplus.tangoq.`object`.Singleton_t_history
@@ -72,6 +76,15 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
 //        binding.nsvED.isNestedScrollingEnabled = false
 //        binding.rvEDAll.isNestedScrollingEnabled = false
 //        binding.rvEDAll.overScrollMode = 0
+        binding.ibtnEDAlarm.setOnClickListener {
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+        binding.ibtnEDQRCode.setOnClickListener{
+            val dialog = LoginScanDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
+        }
+
 
         when (categoryId) {
             1 -> binding.tvEDMainCategoryName.text = "기본 밸런스"
@@ -108,6 +121,30 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
         val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvEDCategory.layoutManager = linearLayoutManager2
         // -----! 카테고리 끝 !-----
+
+        // -----! spinner 연결 시작 !-----
+        val filterList = arrayListOf<String>()
+        filterList.add("최신순")
+        filterList.add("인기순")
+        filterList.add("추천순")
+        binding.spnrED.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
+        binding.spnrED.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                when (position) {
+                    0 -> {
+
+                    }
+                    1 -> {
+                    }
+                    2 -> {
+                    }
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        // ------! spinner 연결 끝 !------
 
         lifecycleScope.launch {
             filteredDataList  = fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_exercise_description), categoryId!!, 1)
@@ -172,13 +209,9 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
                 filteredDataList = filteredDataList.toMutableList()
                 Log.v("EDsn", "$sn")
                 // ------! 즐겨찾기 추가에서 왔을 때 !------
-                updateRecyclerView(sn, filteredDataList)
+                updateRecyclerView(filteredDataList)
 
-                if (filteredDataList.isEmpty()) {
-                    binding.tvGuideNull.visibility = View.VISIBLE
-                } else {
-                    binding.tvGuideNull.visibility = View.INVISIBLE
-                }
+
 
 //                // ------! rv vertical 끝 !------
             } catch (e: Exception) {
@@ -201,28 +234,25 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
 //            scanLeDevice(true)
 //        }
     }
-    private fun updateRecyclerView(sn : Int, exercises : MutableList<ExerciseVO>) {
-        if (sn == -1 ) {
-            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, "main")
-            adapter.exerciseList = exercises
-            binding.rvEDAll.adapter = adapter
-            val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvEDAll.layoutManager = linearLayoutManager
-            binding.btnEDFinish.visibility = View.GONE
+    private fun updateRecyclerView(exercises : MutableList<ExerciseVO>) {
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, "main")
+        adapter.exerciseList = exercises
+        binding.rvEDAll.adapter = adapter
+        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.rvEDAll.layoutManager = linearLayoutManager
+
+        if (exercises.isEmpty()) {
+            binding.tvGuideNull.visibility = View.VISIBLE
         } else {
-            val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, "basket")
-            adapter.exerciseList = exercises
-
-
-            binding.rvEDAll.adapter = adapter
-            val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvEDAll.layoutManager = linearLayoutManager
-            binding.btnEDFinish.visibility = View.VISIBLE
+            binding.tvGuideNull.visibility = View.INVISIBLE
         }
+
+        binding.tvEDTotalCount.text = "전체: ${exercises.size}개"
+
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onCategoryClick(sn : Int , category: String) {
+    override fun onCategoryClick(category: String) {
         Log.v("category,search", "1categoryId: ${categoryId}, searchId: ${categoryMap[category]}")
         lifecycleScope.launch {
             try {
@@ -230,7 +260,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
                 Log.v("category,search", "2categoryId: ${categoryId}, searchId: ${searchId}")
                 filteredDataList = fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_exercise_description),
                     categoryId!!, searchId)
-                updateRecyclerView(sn, filteredDataList)
+                updateRecyclerView(filteredDataList)
             } catch (e: Exception) {
                 Log.e("Exercise>filter", "$e")
             }

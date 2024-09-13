@@ -52,18 +52,6 @@ class WithdrawalFragment : Fragment() {
         // ------! 화면 확장 및 세팅 & 싱글턴 초기화 끝 !------
 
 
-
-        // ------! 뒤로가기 !------
-        binding.ibtnW.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flMain, ProfileFragment())
-                addToBackStack(null)
-                commit()
-            }
-        }
-
-
         // ------! spinner !------
         val withDrawalList = listOf("선택해주세요" ,"앱을 너무 많이 사용해요", "원하는 서비스가 없어요", "서비스가 어려워요","개인 정보를 너무 많이 사용하는 것 같아요","단순 변심이에요", "기타(개인 사정)")
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, withDrawalList)

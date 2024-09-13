@@ -103,4 +103,10 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
     </style>
+
+<!--    tab Layout style -->
+    <style name="TabLayoutTextStyle" parent="Base.TextAppearance.AppCompat.Large">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

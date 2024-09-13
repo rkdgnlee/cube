@@ -124,14 +124,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
             viewModel.isDialogShown.value = false
 
-            // ------! 오늘의 운동 갯수에 넣기 시작 !------
-            val prefsManager = PreferencesManager(requireContext())
-            val userEmail = userJson?.optString("user_email").toString()
-            if (prefsManager.getStoredInt(userEmail) < 5) {
-                prefsManager.incrementStoredInt(userEmail)
-                uViewModel.dailyProgress.value = prefsManager.getStoredInt(userEmail)
-            } // ------! 오늘의 운동 갯수에 넣기  끝 !------
-
             if (exerciseData?.exerciseFrequency?.length!! >= 3) {
                 setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 20)
                 Log.v("notification 완료", "Success make plan to send notification Alarm")

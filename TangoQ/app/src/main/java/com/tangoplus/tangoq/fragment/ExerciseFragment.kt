@@ -13,7 +13,9 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
+import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
+import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
@@ -78,6 +80,17 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         binding.rvEMainCategory.isNestedScrollingEnabled = false
         binding.rvEMainCategory.overScrollMode = 0
         val sn = arguments?.getInt(ARG_SN) ?: -1
+
+        binding.ibtnEAlarm.setOnClickListener {
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+        binding.ibtnEQRCode.setOnClickListener{
+            val dialog = LoginScanDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
+        }
+
+
         Log.v("EDsn", "$sn")
 //        binding.ibtnEcACTVClear.setOnClickListener {
 //            binding.actvEcSearch.text.clear()
@@ -185,7 +198,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
     }
 
-    override fun onCategoryClick(sn: Int, category: String) {
+    override fun onCategoryClick(category: String) {
 
     }
 

@@ -24,7 +24,16 @@
                 android:id="@+id/constraintLayout13"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
+                <ImageButton
+                    android:id="@+id/ibtnMsQRCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:src="@drawable/icon_qr_code"
+                    app:layout_constraintBottom_toBottomOf="@+id/ibtnMsAlarm"
+                    app:layout_constraintEnd_toStartOf="@+id/ibtnMsAlarm"
+                    app:layout_constraintTop_toTopOf="@+id/ibtnMsAlarm" />
                 <ImageButton
                     android:id="@+id/ibtnMsAlarm"
                     android:layout_width="wrap_content"
@@ -40,7 +49,7 @@
 
                 <ImageView
                     android:id="@+id/imageView19"
-                    android:layout_width="64dp"
+                    android:layout_width="36dp"
                     android:layout_height="38dp"
 
                     android:layout_marginStart="16dp"
@@ -54,6 +63,7 @@
                     android:id="@+id/textView119"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
                     android:background="@color/white"
                     android:text="측정"
                     android:textColor="@color/black"
@@ -77,14 +87,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView16"
             app:tabIndicatorAnimationDuration="400"
-            app:tabIndicatorColor="@color/mainColor"
+            app:tabIndicatorColor="@color/secondaryColor"
             app:tabIndicatorFullWidth="true"
             app:tabPaddingEnd="0dp"
             app:tabPaddingStart="0dp"
             app:tabRippleColor="#20FFFFFF"
-            app:tabSelectedTextColor="@color/mainColor"
-            app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:tabTextColor="@color/subColor150">
+            app:tabSelectedTextColor="@color/secondaryColor"
+            app:tabTextAppearance="@style/TabLayoutTextStyle"
+            app:tabTextColor="@color/secondPrimaryColor">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

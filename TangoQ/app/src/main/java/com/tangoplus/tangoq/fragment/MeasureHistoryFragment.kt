@@ -58,28 +58,24 @@ class MeasureHistoryFragment : Fragment() {
         filterList.add("최신순")
         filterList.add("인기순")
         filterList.add("추천순")
-                binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
-                binding.spnrMH.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        when (position) {
-                            0 -> {
-                                singletonMeasure!!.sortedBy { it.regDate }
-                            }
-                            1 -> {
-
-                            }
-                            2 -> {
-
-                            }
-                        }
+        binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
+        binding.spnrMH.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                when (position) {
+                    0 -> {
+                        singletonMeasure!!.sortedBy { it.regDate }
                     }
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-                } // ------! spinner 연결 끝 !------
+                    1 -> {
+                    }
+                    2 -> {
+                    }
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        // ------! spinner 연결 끝 !------
 
         binding.fabtnMH.setOnClickListener{
             val intent = Intent(requireContext(), MeasureSkeletonActivity::class.java)

@@ -12,6 +12,8 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.HistoryViewModel
+import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBSDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import org.json.JSONObject
@@ -20,6 +22,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding: FragmentMeasureBSDialogBinding
     lateinit var singletonMeasure : Singleton_t_measure
     val viewModel: ExerciseViewModel by activityViewModels()
+    val mvm : MeasureViewModel by activityViewModels()
     private val checkboxes by lazy {
         listOf(binding.cbMBSD1, binding.cbMBSD2, binding.cbMBSD3, binding.cbMBSD4)
     }
@@ -57,7 +60,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
 
         setCheckboxes()
         setupButtons()
-        viewModel.selectedMeasureDate.observe(viewLifecycleOwner) { setCheckbox(it) }
+        mvm.selectedMeasureDate.observe(viewLifecycleOwner) { setCheckbox(it) }
     }
     private fun setCheckboxes() {
         checkboxes.forEachIndexed {index, checkbox ->
@@ -67,26 +70,25 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
 
         // 초기 - 현재 주차
 
-        setCheckbox(viewModel.currentMeasureDate)
-        Log.v("현재index", "currentMeasureDate: ${viewModel.currentMeasureDate} selectedMeasureDate: ${viewModel.selectedMeasureDate.value} selectMeasureDate: ${viewModel.selectMeasureDate.value}")
+        setCheckbox(mvm.currentMeasureDate)
+        Log.v("현재index", "currentMeasureDate: ${mvm.currentMeasureDate} selectedMeasureDate: ${mvm.selectedMeasureDate.value} selectMeasureDate: ${mvm.selectMeasureDate.value}")
     }
 
     private fun setupButtons() {
         binding.ibtnMBSDExit.setOnClickListener { dismiss() }
         binding.btnMBSD.setOnClickListener {
-            viewModel.selectedMeasureDate.value = viewModel.selectMeasureDate.value
-            Log.w("selectedMeasureDate", "${viewModel.selectedMeasureDate.value}")
+            mvm.selectedMeasureDate.value = mvm.selectMeasureDate.value
+            Log.w("selectedMeasureDate", "${mvm.selectedMeasureDate.value}")
             dismiss()
         }
     }
 
     private fun setCheckbox(currentNum : Int) {
-        viewModel.selectMeasureDate.value = currentNum
+        mvm.selectMeasureDate.value = currentNum
         checkboxes.forEachIndexed{ index, checkbox ->
             checkbox.isChecked = index == currentNum
             updateCheckboxTextColor(checkbox)
         }
-        Log.v("현재주차setCheckbox", "selectWeek: ${viewModel.selectWeek.value}, currentWeek : ${viewModel.currentWeek}")
     }
 
     private fun setupCheckboxTextColor(checkbox: CheckBox) {

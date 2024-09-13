@@ -41,12 +41,13 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ibtnFADBack"
-                app:tabIndicatorColor="@color/mainColor"
+                app:tabIndicatorColor="@color/thirdColor"
                 app:tabIndicatorFullWidth="true"
+                app:tabMode="fixed"
                 app:tabRippleColor="@color/subColor100"
-                app:tabSelectedTextColor="@color/black"
-                app:tabTextAppearance="@style/TextAppearance.AppCompat.Large"
-                app:tabTextColor="@color/subColor400">
+                app:tabSelectedTextColor="@color/secondaryColor"
+                app:tabTextAppearance="@style/TabLayoutTextStyle"
+                app:tabTextColor="@color/secondPrimaryColor">
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"

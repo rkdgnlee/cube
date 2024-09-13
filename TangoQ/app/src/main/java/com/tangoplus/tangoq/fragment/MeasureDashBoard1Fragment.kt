@@ -93,8 +93,8 @@ class MeasureDashBoard1Fragment : Fragment() {
             true -> {
                 // ------! 뱃지 및 종합 접수 시작 !------
                 setBadgeOnFlR()
-                binding.tvMD1TotalScore.text = "87"
-                binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${SimpleDateFormat("yyyy.MM.dd").format(Date().time)}"
+                binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall}"
+                binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${viewModel.selectedMeasure?.regDate}"
                 binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                 binding.clMD1PredictDicease.setOnClickListener{
                     val dialog = ReportDiseaseDialogFragment()
@@ -259,11 +259,11 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         val lcLineDataSet = LineDataSet(lcEntries, "")
         lcLineDataSet.apply {
-            color = resources.getColor(R.color.mainColor, null)
+            color = resources.getColor(R.color.thirdColor, null)
             circleRadius = 4F
             lineWidth = 4F
             valueTextSize = 0F
-            setCircleColors(resources.getColor(R.color.mainColor, null))
+            setCircleColors(resources.getColor(R.color.thirdColor, null))
             setDrawCircleHole(false)
             setDrawFilled(false)
             mode = LineDataSet.Mode.CUBIC_BEZIER
@@ -678,7 +678,7 @@ class MeasureDashBoard1Fragment : Fragment() {
     private fun setBadgeOnFlR() {
         // ------! 분석 뱃지 시작 !------
         val badgeDrawable = BadgeDrawable.create(requireContext()).apply {
-            backgroundColor = ContextCompat.getColor(requireContext(), R.color.mainColor)
+            backgroundColor = ContextCompat.getColor(requireContext(), R.color.thirdColor)
             badgeGravity = BadgeDrawable.TOP_START
             horizontalOffset = 12  // 원하는 가로 간격 (픽셀 단위)
             verticalOffset = 12  // 원하는 세로 간격 (픽셀 단위)

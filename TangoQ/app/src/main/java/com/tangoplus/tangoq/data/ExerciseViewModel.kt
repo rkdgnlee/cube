@@ -12,25 +12,7 @@ class ExerciseViewModel : ViewModel() {
     var allExercises : MutableList<ExerciseVO>
     var searchHistory = MutableLiveData(mutableListOf<Pair<Int, String>>()) // 운동 검색 history
 
-    // Main-Custom 현재 program의 주차 - 회차 담아놓는 곳
-    var currentProgram : ProgramVO? = null
-    var currentEpisode = 0
-    var currentWeek = 0
 
-    var selectedEpisode = MutableLiveData<Int>()
-    var selectedWeek = MutableLiveData<Int>()
-    var selectWeek = MutableLiveData<Int>()
-
-    /// MD1 측정 날짜 선택 담을 공간
-    var selectMeasureDate = MutableLiveData<Int>()
-    var selectedMeasureDate = MutableLiveData<Int>()
-    var currentMeasureDate = 0
-
-
-    val allHistorys = mutableListOf<HistoryUnitVO>() // MD2 전체 historyUnitVO를 담아놓을 공간
-    val classifiedByDay = mutableListOf<Triple<String, Int, Int>>() // history에 필요한것들
-    var datesClassifiedByDay = mutableListOf<LocalDate>() // history의 날짜만 따로 뺀 LIST
-    var weeklyHistorys = mutableListOf<Triple<String, Int, Int>>()
 
     //  PlaySkeleton에서 count하는 공간
     var normalNose  =  Pair(0.0, 0.0)
@@ -69,10 +51,5 @@ class ExerciseViewModel : ViewModel() {
         exerciseLog.value = Triple(0, "", 0)
         allExercises = mutableListOf()
 
-        currentWeek = 1
-        selectedWeek.value = 0
-        selectWeek.value = 0
-        selectedMeasureDate.value = 0
-        currentProgram = ProgramVO(-1, "", "", "", 0, 0, 0,mutableListOf(), mutableListOf())
     }
 }

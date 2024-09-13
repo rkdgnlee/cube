@@ -19,6 +19,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MeasureVPAdapter
 import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
+import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
 import com.tangoplus.tangoq.dialog.SetupDialogFragment
 
 class MeasureFragment : Fragment() {
@@ -42,6 +43,11 @@ class MeasureFragment : Fragment() {
         binding.ibtnMsAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+
+        binding.ibtnMsQRCode.setOnClickListener {
+            val dialog = LoginScanDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
 
         binding.tlMs.addOnTabSelectedListener(object : OnTabSelectedListener{

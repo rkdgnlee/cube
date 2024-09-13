@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +18,10 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.db.PreferencesManager
-import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.HistoryViewModel
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
-import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
@@ -36,8 +36,7 @@ class MainFragment : Fragment() {
     val viewModel : UserViewModel by activityViewModels()
     val eViewModel : ExerciseViewModel by activityViewModels()
     val mViewModel : MeasureViewModel by activityViewModels()
-    private lateinit var program : ProgramVO
-    private lateinit var currentExerciseItem : ExerciseVO
+    val hViewModel : HistoryViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     lateinit var prefsManager : PreferencesManager
     private var singletonMeasure : MutableList<MeasureVO>? = null
@@ -64,6 +63,7 @@ class MainFragment : Fragment() {
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
         prefsManager = PreferencesManager(requireContext())
+        binding.sflM.startShimmer()
 
         // ------# 알람 intent #------
         binding.ibtnMAlarm.setOnClickListener {
@@ -82,7 +82,7 @@ class MainFragment : Fragment() {
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-
+                isLoad(true)
                 // ------# 키오스크에서 데이터 가져왔을 때 #------
                 // TODO parts에 결과값이 들어가야함.
 
@@ -93,7 +93,13 @@ class MainFragment : Fragment() {
 
                 (requireActivity() as MainActivity).dataLoaded.observe(viewLifecycleOwner) { isLoaded ->
                     if (isLoaded) {
+                        binding.sflM.stopShimmer()
+                        isLoad(false)
                         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
+
+                        // 완료 갯수 넣기
+                        setEpisodeProgress(0)
+
                         updateUI()
                     }
                 }
@@ -117,7 +123,7 @@ class MainFragment : Fragment() {
 
         measureScores?.let { measure ->
             if (measure.size > 0) {
-                eViewModel.selectedMeasureDate.observe(viewLifecycleOwner) { selectedIndex ->
+                mViewModel.selectedMeasureDate.observe(viewLifecycleOwner) { selectedIndex ->
 
                     val firstDate = measure.get(selectedIndex).regDate
                     binding.tvMMeasureDate.text = firstDate
@@ -125,7 +131,7 @@ class MainFragment : Fragment() {
                     val selectedDate = measure.get(selectedIndex).regDate ?: ""
                     binding.tvMMeasureDate.text = selectedDate
                     binding.tvMOverall.text = measure.get(selectedIndex).overall.toString()
-                    setAdapter(eViewModel.selectedMeasureDate.value!!)
+                    setAdapter(mViewModel.selectedMeasureDate.value!!)
 
                     // eViewModel.currentProgram TODO 버튼과 연결되는 맞춤 프로그램도 달라져야 함.
                     mViewModel.selectedMeasure = singletonMeasure?.get(0)
@@ -134,6 +140,17 @@ class MainFragment : Fragment() {
             }
         }
     }
+
+    private fun isLoad(loading: Boolean) {
+        if (loading) {
+            binding.sflM.visibility  =View.VISIBLE
+            binding.clMMeasure.visibility = View.GONE
+        } else {
+            binding.sflM.visibility  =View.GONE
+            binding.clMMeasure.visibility = View.VISIBLE
+        }
+    }
+
 
     private fun setAdapter(index: Int) {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -161,5 +178,10 @@ class MainFragment : Fragment() {
         binding.rvM2.layoutManager = layoutManager2
         val balanceAdapter = BalanceRVAdapter(this@MainFragment, stages, degrees)
         binding.rvM2.adapter = balanceAdapter
+    }
+
+    private fun setEpisodeProgress(finishCount: Int) {
+        binding.tvMCustomProgress.text = "완료 ${finishCount}/${hViewModel.currentProgram?.exercises?.get(0)?.size}개"
+        binding.hpvMCustomProgress.progress = (finishCount * 100).div(hViewModel.currentProgram?.exercises?.get(0)?.size!!)
     }
 }

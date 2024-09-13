@@ -5,12 +5,17 @@ import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
 import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment.Companion.ARG_AGREEMENT_TYPE
@@ -39,10 +44,24 @@ class ProgramAlertDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.btnPAD.setOnClickListener {
+        binding.btnPAD1.setOnClickListener {
             dismiss()
             parentDialog.dismissThisFragment()
         }
+
+        binding.btnPAD2.setOnClickListener {
+            dismiss()
+            parentDialog.dismissThisFragment()
+
+            val bnb = requireActivity().findViewById<BottomNavigationView>(R.id.bnbMain)
+            bnb.selectedItemId = R.id.measure
+        }
+
+        val spannableString = SpannableString(binding.tvPAD2.text)
+        val colorSpan = ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.mainColor))
+        spannableString.setSpan(colorSpan, 0, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        binding.tvPAD2.text = spannableString
+
     }
 
 
@@ -50,19 +69,16 @@ class ProgramAlertDialogFragment : DialogFragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.6f)
+        dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.background_rectangle_20dp, null))
         dialog?.setCancelable(false)
-        val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
-        if (agreementType == "agreement1") {
-            dialogFragmentResize(0.8f, 0.7f)
-        } else {
-            dialogFragmentResize(0.8f, 0.7f)
-        }
-    }
-    private fun dialogFragmentResize(width: Float, height: Float) {
-        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        dialogFragmentResize()
 
+    }
+    private fun dialogFragmentResize() {
+        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val width = 0.8f
+        val height = 0.45f
         if (Build.VERSION.SDK_INT < 30) {
             val display = windowManager.defaultDisplay
             val size = Point()
@@ -79,7 +95,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
 
             val window = dialog?.window
 
-            val x = (rect.width() * width).toInt()
+            val x = (rect.width() *  width).toInt()
             val y = (rect.height() * height).toInt()
 
             window?.setLayout(x, y)

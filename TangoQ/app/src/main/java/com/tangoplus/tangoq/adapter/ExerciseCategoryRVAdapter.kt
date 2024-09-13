@@ -100,7 +100,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 val adapterPosition = holder.adapterPosition
                 holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_20dp)
                 if (adapterPosition == selectedPosition) {
-                    holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.mainColor)
+                    holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondaryColor)
                     holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.white))
                 } else {
                     holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
@@ -108,7 +108,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
 
                 }
                 holder.tvSCName.setOnClickListener {
-                    onCategoryClickListener.onCategoryClick(sn, currentItem)
+                    onCategoryClickListener.onCategoryClick(currentItem)
                     val previousPosition = selectedPosition
                     selectedPosition = adapterPosition
                     notifyItemChanged(previousPosition) // 이전 선택된 아이템 갱신

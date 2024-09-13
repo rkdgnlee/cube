@@ -25,7 +25,7 @@
                 android:id="@+id/textView104"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="5dp"
                 android:text="운동"
                 android:textColor="@color/black"
                 android:textSize="32sp"
@@ -36,7 +36,7 @@
 
             <ImageView
                 android:id="@+id/imageView47"
-                android:layout_width="64dp"
+                android:layout_width="36dp"
                 android:layout_height="38dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
@@ -44,6 +44,30 @@
                 android:src="@drawable/app_logo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/ibtnEAlarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/effect_ibtn_20dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:src="@drawable/icon_alarm"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/ibtnEQRCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:src="@drawable/icon_qr_code"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnEAlarm"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnEAlarm"
+                app:layout_constraintTop_toTopOf="@+id/ibtnEAlarm" />
 
             <LinearLayout
                 android:id="@+id/linearLayout7"
@@ -53,9 +77,12 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/background_rectangle_20dp"
-                android:backgroundTint="@color/subColor100"
+                android:backgroundTint="@color/secondPrimaryColor"
                 android:orientation="horizontal"
-                android:padding="12dp"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView47">
@@ -80,7 +107,8 @@
                     android:gravity="center_vertical"
                     android:hint="운동이름을 검색하세요"
                     android:singleLine="true"
-                    android:textColorHint="@color/subColor800" />
+                    android:textColorHint="@color/subColor800"
+                    android:textSize="16dp" />
 
                 <ImageButton
                     android:id="@+id/ibtnEClear"

@@ -34,18 +34,7 @@
         android:layout_marginTop="2dp"
         app:layout_constraintStart_toStartOf="@+id/ivM3"
         app:layout_constraintTop_toBottomOf="@+id/ivM3"
-        app:srcCompat="@drawable/icon_rv_summary_intensity" />
-
-    <ImageView
-
-        android:id="@+id/ivM5"
-        android:layout_width="16dp"
-
-        android:layout_height="16dp"
-        android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="@+id/ivM4"
-        app:layout_constraintTop_toBottomOf="@+id/ivM4"
-        app:srcCompat="@drawable/icon_kcal_main_color" />
+        app:srcCompat="@drawable/icon_stage_1" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView9"
@@ -106,31 +95,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/ivM4"
         app:layout_constraintStart_toEndOf="@+id/ivM4"
         app:layout_constraintTop_toTopOf="@+id/ivM4" />
-
-    <TextView
-        android:id="@+id/tvRcPKcal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="48"
-        android:textColor="@color/black"
-        android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivM5"
-        app:layout_constraintStart_toEndOf="@+id/ivM5"
-        app:layout_constraintTop_toTopOf="@+id/ivM5"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/textView105"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="Kcal"
-        android:textColor="@color/black"
-        android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvRcPKcal"
-        app:layout_constraintStart_toEndOf="@+id/tvRcPKcal"
-        app:layout_constraintTop_toTopOf="@+id/tvRcPKcal" />
 
     <View
         android:id="@+id/view2"

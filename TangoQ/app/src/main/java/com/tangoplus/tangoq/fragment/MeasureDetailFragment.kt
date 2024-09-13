@@ -81,8 +81,8 @@ class MeasureDetailFragment : Fragment() {
             entries.add(RadarEntry(raderScores[i]))
         }
         val dataSet = RadarDataSet(entries, "신체 부위").apply {
-            color = resources.getColor(R.color.mainColor, null)
-            fillColor = resources.getColor(R.color.mainColor, null)
+            color = resources.getColor(R.color.thirdColor, null)
+            fillColor = resources.getColor(R.color.thirdOpacityColor, null)
             setDrawFilled(true)
 //            fillAlpha = 80  // 투명도 조절 (0-255)
             lineWidth = 2f

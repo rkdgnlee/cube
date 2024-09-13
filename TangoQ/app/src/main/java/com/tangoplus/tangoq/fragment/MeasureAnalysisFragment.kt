@@ -52,7 +52,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.lang.Exception
 import kotlin.math.min
 
 class MeasureAnalysisFragment : Fragment() {
@@ -121,11 +120,15 @@ class MeasureAnalysisFragment : Fragment() {
 
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val slideDownAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
-            binding.clMANotice.visibility = View.VISIBLE
-            binding.clMANotice.startAnimation(slideDownAnimation)
-            hideNotice = false
-        }, 1000)
+            try {
+                val slideDownAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
+                binding.clMANotice.visibility = View.VISIBLE
+                binding.clMANotice.startAnimation(slideDownAnimation)
+                hideNotice = false
+            } catch (e: Exception) {
+                Log.e("not Attached Exception", "${e.message}")
+            }
+        }, 600)
         binding.clMANotice.setOnClickListener {
             if (!hideNotice) {
                 // 숨기기

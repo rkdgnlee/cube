@@ -95,11 +95,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         if (landmarks.isEmpty()) {
             return
         }
-        val offsetX = ((width - imageWidth * scaleFactor) / 2 ) + 20
-        val offsetY = (height - imageHeight * scaleFactor) / 2
+
 
         if (currentRunningMode == RunningMode.LIVE_STREAM) {
 
+            val offsetX = ((width - imageWidth * scaleFactor) / 2 ) + 30
+            val offsetY = (height - imageHeight * scaleFactor) / 2
             landmarks.forEach { landmark ->
                 canvas.drawPoint(
                     landmark.x * imageWidth * scaleFactor + offsetX,
@@ -154,7 +155,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 }
             }
         }  else {
-
+            val offsetX = ((width - imageWidth * scaleFactor) / 2 ) + 20
+            val offsetY = (height - imageHeight * scaleFactor) / 2
 
 
             landmarks.forEach { landmark ->

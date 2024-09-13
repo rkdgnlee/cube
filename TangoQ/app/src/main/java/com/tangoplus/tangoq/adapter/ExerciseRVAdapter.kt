@@ -56,7 +56,6 @@ class ExerciseRVAdapter (
         val tvRcPName : TextView = view.findViewById(R.id.tvRcPName)
         val tvRcPTime : TextView= view.findViewById(R.id.tvRcPTime)
         val tvRcPStage : TextView = view.findViewById(R.id.tvRcPStage)
-        val tvRcPKcal : TextView = view.findViewById(R.id.tvRcPKcal)
         val ivRcPThumbnail : ImageView = view.findViewById(R.id.ivRcPThumbnail)
         val vRPTN : View = view.findViewById(R.id.vRPTN)
     }
@@ -165,7 +164,7 @@ class ExerciseRVAdapter (
                             holder.ibtnEIMore.visibility = View.INVISIBLE
                             holder.ibtnEIMore.isEnabled = false
                             holder.vEI.visibility = View.VISIBLE
-                            holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor200)
+                            holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondPrimaryColor)
                             holder.hpvEI.visibility = View.GONE
                         }
                         1 -> { // 재생 시간 중간
@@ -193,7 +192,7 @@ class ExerciseRVAdapter (
                 holder.tvRcPName.text = currentExerciseItem.exerciseName
                 holder.tvRcPTime.text = second
                 holder.tvRcPStage.text = currentExerciseItem.exerciseStage
-                holder.tvRcPKcal.text
+
                 Glide.with(holder.itemView.context)
                     .load("${currentExerciseItem.imageFilePathReal}?width=200&height=200")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)

@@ -37,8 +37,8 @@ object NetworkProgram {
                     programTime = JSONObject(responseBody).optInt("total_video_time"),
                     programStage = "",
                     programCount = "${jsonInfo.optString("exercise_ids").split(", ").count()}",
-                    programEpisode = 4, // jsonInfo.optInt("exercises_weeks")
-                    programWeek = 4,
+                    programEpisode = 4, // jsonInfo.optInt("exercises_week")
+                    programWeek = 4, // jsonInfo.optInt("exercise_episode")
                     exercises = exercises,
                     exerciseTimes = exerciseTimes
                 )

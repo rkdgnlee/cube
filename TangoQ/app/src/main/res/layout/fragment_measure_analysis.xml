@@ -16,14 +16,14 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/background_tablayout_underline"
         app:tabIndicatorAnimationDuration="400"
-        app:tabIndicatorColor="@color/mainColor"
+        app:tabIndicatorColor="@color/secondaryColor"
         app:tabIndicatorFullWidth="true"
         app:tabPaddingEnd="0dp"
         app:tabPaddingStart="0dp"
         app:tabRippleColor="#20FFFFFF"
-        app:tabSelectedTextColor="@color/subColor800"
-        app:tabTextAppearance="@style/TextAppearance.AppCompat.Large"
-        app:tabTextColor="@color/subColor300">
+        app:tabSelectedTextColor="@color/secondaryColor"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabTextColor="@color/secondPrimaryColor">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -182,7 +182,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/background_rectangle_12dp"
-                    android:backgroundTint="@color/subColor100"
+                    android:backgroundTint="@color/secondPrimaryColor"
                     android:padding="6dp"
                     app:singleSelection="true">
 

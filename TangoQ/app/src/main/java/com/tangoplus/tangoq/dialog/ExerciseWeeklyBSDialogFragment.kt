@@ -13,12 +13,14 @@ import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.HistoryViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseWeeklyBSDialogBinding
 
 
 class ExerciseWeeklyBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentExerciseWeeklyBSDialogBinding
     val viewModel : ExerciseViewModel by activityViewModels()
+    val hViewModel: HistoryViewModel by activityViewModels()
 
     private val checkboxes by lazy {
         listOf(binding.cbEWBSD1, binding.cbEWBSD2, binding.cbEWBSD3, binding.cbEWBSD4)
@@ -35,10 +37,10 @@ class ExerciseWeeklyBSDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvEWBSD.setText(viewModel.currentProgram?.programName)
+        binding.tvEWBSD.setText(hViewModel.currentProgram?.programName)
         setCheckboxes()
         setupButtons()
-        viewModel.selectedWeek.observe(viewLifecycleOwner) { setCheckbox(it) }
+        hViewModel.selectedWeek.observe(viewLifecycleOwner) { setCheckbox(it) }
     }
 
     private fun setCheckboxes() {
@@ -49,33 +51,33 @@ class ExerciseWeeklyBSDialogFragment : BottomSheetDialogFragment() {
 
         // 초기 - 현재 주차
 
-        setCheckbox(viewModel.currentWeek)
-        Log.v("현재주차", "${viewModel.currentWeek}")
+        setCheckbox(hViewModel.currentWeek)
+        Log.v("현재주차", "${hViewModel.currentWeek}")
     }
     private fun setupButtons() {
         binding.ibtnEWBSDExit.setOnClickListener {
-            viewModel.selectWeek.value = viewModel.currentWeek
+            hViewModel.selectWeek.value = hViewModel.currentWeek
             dismiss()
         }
 
 
         binding.btnEWBSD.setOnClickListener {
-            viewModel.selectedWeek.value = viewModel.selectWeek.value
+            hViewModel.selectedWeek.value = hViewModel.selectWeek.value
             dismiss()
 
             // TODO if문의 2가 현재의 회차로 변경되야 함
-            viewModel.selectedEpisode.value = if (viewModel.selectedWeek.value == viewModel.currentWeek) 2 else 0
-            Log.v("주차및회차초기화", "selectedWeek: ${viewModel.selectedWeek.value}, currentWeek: ${viewModel.currentWeek}, selectedEpisode: ${viewModel.selectedEpisode.value}")
+            hViewModel.selectedEpisode.value = if (hViewModel.selectedWeek.value == hViewModel.currentWeek) 2 else 0
+            Log.v("주차및회차초기화", "selectedWeek: ${hViewModel.selectedWeek.value}, currentWeek: ${hViewModel.currentWeek}, selectedEpisode: ${hViewModel.selectedEpisode.value}")
         }
     }
 
     private fun setCheckbox(currentNum : Int) {
-        viewModel.selectWeek.value = currentNum
+        hViewModel.selectWeek.value = currentNum
         checkboxes.forEachIndexed{ index, checkbox ->
             checkbox.isChecked = index == currentNum
             updateCheckboxTextColor(checkbox)
         }
-        Log.v("현재주차setCheckbox", "selectWeek: ${viewModel.selectWeek.value}, currentWeek : ${viewModel.currentWeek}")
+        Log.v("현재주차setCheckbox", "selectWeek: ${hViewModel.selectWeek.value}, currentWeek : ${hViewModel.currentWeek}")
     }
 
     private fun setupCheckboxTextColor(checkbox:CheckBox) {

@@ -18,7 +18,9 @@ import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.data.EpisodeVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.HistoryUnitVO
+import com.tangoplus.tangoq.data.HistoryViewModel
 import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
@@ -43,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val eViewModel : ExerciseViewModel by viewModels()
     private val uViewModel : UserViewModel by viewModels()
+    private val hViewModel : HistoryViewModel by viewModels()
+    private val mViewModel : MeasureViewModel by viewModels()
 //    private var pendingAction: (() -> Unit)? = null
 //    lateinit var requestPermissions : ActivityResultLauncher<Set<String>>
 //    val backStack = Stack<Int>()
@@ -118,10 +122,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 program = fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), 10.toString())
             }
-            eViewModel.currentProgram = program
-
-
-
+            hViewModel.currentProgram = program
 
             val mjo1 = JSONObject().apply {
                 put("front_horizontal_angle_ear", -178.315)
@@ -306,18 +307,19 @@ class MainActivity : AppCompatActivity() {
 
 
 
-            // ------# singleton init #------
+            // ------# 싱글턴 측정 결과 init #------
             singletonMeasure = Singleton_t_measure.getInstance(this@MainActivity)
             singletonMeasure.measures = mutableListOf()
             singletonMeasure.measures?.add(measureVO1)
             singletonMeasure.measures?.add(measureVO2)
+            mViewModel.selectedMeasure = measureVO1
 
             Log.v("singletonMeasure", "${singletonMeasure.measures}")
 
             // 기존 데이터 초기화
-            for (weekIndex in 0 until (eViewModel.currentProgram?.programWeek!!)) {
+            for (weekIndex in 0 until (hViewModel.currentProgram?.programWeek!!)) {
                 val weekEpisodes = mutableListOf<EpisodeVO>()
-                for (episodeIndex in 0 until eViewModel.currentProgram!!.programEpisode) {
+                for (episodeIndex in 0 until hViewModel.currentProgram!!.programEpisode) {
                     val historys = mutableListOf<HistoryUnitVO>()
                     var isAllFinished = true
 
@@ -325,9 +327,9 @@ class MainActivity : AppCompatActivity() {
                         0 -> {
                             when (episodeIndex) { // 회차
                                 0 -> {
-                                    for (k in 0 until (eViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
+                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
                                             1,
                                             0,
                                             "2024-08-26 16:00:24" // TODO 실제 데이터는 각각의 regDate가 다름
@@ -338,9 +340,9 @@ class MainActivity : AppCompatActivity() {
                                     isAllFinished = true
                                 }
                                 1 -> {
-                                    for (k in 0 until (eViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
+                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             1,
                                             0,
                                             "2024-08-27 17:51:24"
@@ -350,9 +352,9 @@ class MainActivity : AppCompatActivity() {
                                     isAllFinished = true
                                 }
                                 2 -> {
-                                    for (k in 0 until (eViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
+                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             1,
                                             0,
                                             "2024-08-29 18:26:24"
@@ -365,7 +367,7 @@ class MainActivity : AppCompatActivity() {
                                 else -> {
                                     for (k in 0 until 4) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             1,
                                             0,
                                             "2024-08-31 20:11:57"
@@ -373,15 +375,15 @@ class MainActivity : AppCompatActivity() {
                                         historys.add(historyUnit)
                                     }
                                     val historyUnit = HistoryUnitVO(
-                                        eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.exerciseId,
+                                        hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.exerciseId,
                                         0,
-                                        Random.nextInt(0, eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.videoDuration!!.toInt()),
+                                        Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.videoDuration!!.toInt()),
                                         "2024-08-31 20:13:57"
                                     )
                                     historys.add(historyUnit)
                                     for (k in 5 until 7) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             0,
                                             0,
                                             null
@@ -396,9 +398,9 @@ class MainActivity : AppCompatActivity() {
                         1 -> { // 2주차
                             when (episodeIndex) { // 회차
                                 0 -> {
-                                    for (k in 0 until (eViewModel.currentProgram?.exercises?.get(episodeIndex)?.size!! - 1)) {
+                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size!! - 1)) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             1,
                                             0,
                                             "2024-09-02 22:54:12"
@@ -407,7 +409,7 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     isAllFinished = false
                                     val historyUnit = HistoryUnitVO(
-                                        eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(6)?.exerciseId,
+                                        hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(6)?.exerciseId,
                                         0,
                                         0,
                                         null
@@ -416,9 +418,9 @@ class MainActivity : AppCompatActivity() {
 
                                 }
                                 1 -> {
-                                    for (k in 0 until (eViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
+                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             1,
                                             0,
                                             "2024-09-03 20:39:44"
@@ -430,7 +432,7 @@ class MainActivity : AppCompatActivity() {
                                 2 -> {
                                     for (k in 0 until 3) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             1,
                                             0,
                                             "2024-09-04 17:54:24"
@@ -438,14 +440,14 @@ class MainActivity : AppCompatActivity() {
                                         historys.add(historyUnit)
                                     }
                                     val historyUnit = HistoryUnitVO(
-                                        eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.exerciseId,
+                                        hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.exerciseId,
                                         0,
-                                        Random.nextInt(0, eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.videoDuration!!.toInt()),
+                                        Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.videoDuration!!.toInt()),
                                         "2024-09-04 19:24:11")
                                     historys.add(historyUnit)
                                     for (k in 3 until 7) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             0,
                                             0,
                                             null
@@ -456,9 +458,9 @@ class MainActivity : AppCompatActivity() {
 
                                 }
                                 else -> {
-                                    for (k in 0 until (eViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
+                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
-                                            eViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
+                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             0,
                                             0,
                                             null
@@ -470,9 +472,9 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                         else -> { // 나머지 주차 들
-                            for (k in 0 until (eViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
+                            for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
                                 val historyUnit = HistoryUnitVO(
-                                    eViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
+                                    hViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
                                     0,
                                     0,
 
@@ -484,7 +486,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    val episodeVO = EpisodeVO(eViewModel.currentProgram?.programSn.toString(), isFinish = isAllFinished, historys)
+                    val episodeVO = EpisodeVO(hViewModel.currentProgram?.programSn.toString(), isFinish = isAllFinished, historys)
                     weekEpisodes.add(episodeVO)
                 }
                 historys.add(weekEpisodes)
@@ -516,23 +518,22 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         // ------# 전체 운동 담는 공간 #------
-                        eViewModel.allHistorys.add(historyUnit[k])
+                        hViewModel.allHistorys.add(historyUnit[k])
 
                     }
-                    eViewModel.classifiedByDay.add(Triple(regDate, progressTime, finishedExercise))
+                    hViewModel.classifiedByDay.add(Triple(regDate, progressTime, finishedExercise))
                 }
             }
             // 전체 반복문 빠져나옴
 
             // ------# 그래프에 들어갈 가장 최근 일주일간 데이터 가져오기 #------
-            eViewModel.weeklyHistorys = getWeeklyExerciseHistory(eViewModel.classifiedByDay)
+            hViewModel.weeklyHistorys = getWeeklyExerciseHistory(hViewModel.classifiedByDay)
 
             // ------# dates만 넣기(달력에 들어갈 것들) #------
-            val historysUntilToday = eViewModel.classifiedByDay.filter { it.first != "null" }
+            val historysUntilToday = hViewModel.classifiedByDay.filter { it.first != "null" }
             for (i in 0 until historysUntilToday.size) {
-                eViewModel.datesClassifiedByDay.add(stringToLocalDate(historysUntilToday[i].first))
+                hViewModel.datesClassifiedByDay.add(stringToLocalDate(historysUntilToday[i].first))
             }
-            Log.v("VM>datesClassifiedByDay", "${eViewModel.classifiedByDay}")
             _dataLoaded.value = true
         }
 
@@ -876,7 +877,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getTime(id: String) : Int {
-        return eViewModel.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
+        return hViewModel.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
     }
 
     private fun getWeeklyExerciseHistory(data: MutableList<Triple<String, Int, Int>>): MutableList<Triple<String, Int, Int>> {
