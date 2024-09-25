@@ -8,15 +8,6 @@
     android:layout_weight="1"
     tools:context=".MeasureSkeletonActivity">
 
-    <!--    <com.tangoplus.tangoq.view.CameraSurfaceView-->
-    <!--        android:id="@+id/csvMeasureSkeleton"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent" />-->
-
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
@@ -42,7 +33,7 @@
         android:id="@+id/ivMeasureSkeletonFrame"
         android:layout_width="300dp"
         android:layout_height="0dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="140dp"
         android:layout_marginBottom="60dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/llMeasureSkeletonBottom"
@@ -55,7 +46,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clMeasureSkeletonAngle"
         android:layout_width="40dp"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,8 +87,8 @@
 
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonInfo"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:backgroundTint="#00FFFFFF"
@@ -114,7 +105,7 @@
             android:background="#00FFFFFF"
             android:text="프레임에 맞춰 서주세요"
             android:textColor="@color/black"
-            android:textSize="27sp"
+            android:textSize="34dp"
             android:textStyle="bold"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/ibtnMeasureSkeletonBack"
@@ -124,12 +115,12 @@
 
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="#00FFFFFF"
-            android:padding="8dp"
+            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/icon_arrow_left" />
@@ -213,11 +204,11 @@
             android:layout_weight="1"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/mainColor"
-            android:padding="16dp"
+            android:padding="24dp"
             android:stateListAnimator="@null"
             android:text="측정하기"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="24dp" />
 
     </LinearLayout>
 

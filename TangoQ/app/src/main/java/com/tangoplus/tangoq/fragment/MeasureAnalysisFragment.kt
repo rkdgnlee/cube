@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.fragment
 
 import android.animation.Animator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
@@ -9,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,8 +20,6 @@ import android.view.ViewTreeObserver
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
@@ -39,7 +39,6 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
-import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility
@@ -57,7 +56,8 @@ import kotlin.math.min
 class MeasureAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMeasureAnalysisBinding
     private val viewModel : MeasureViewModel by activityViewModels()
-    private lateinit var measureResult: MutableList<AnalysisVO>
+    private lateinit var measureResult: JSONArray
+    private lateinit var mr : JSONArray
     private var allData = mutableListOf<Triple<String, Double, Double>>()
     private var index = -1
     private var currentSequence = -1
@@ -101,21 +101,15 @@ class MeasureAnalysisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // ------# 데이터 필터링을 위한 사전 세팅 #------
-
+        measureResult = JSONArray()
         index = arguments?.getInt(ARG_INDEX)!!
-        measureResult = viewModel.selectedMeasure!!.measureResult
+        mr = viewModel.selectedMeasure!!.measureResult
 
+        Log.v("현재측정", "${viewModel.selectedMeasure!!.regDate}")
         val noticeScore = arguments?.getInt(ARG_SCORE)
         val noticeComment = arguments?.getString(ARG_COMMENT)
         setColor(noticeScore!!)
         binding.tvMAPredict.text = noticeComment.toString()
-
-        if (index != 3) {
-            setImage()
-        } else {
-            setPlayer()
-        }
-
         // ------# 상단 snackbar 형식 가져오기 #------
 
 
@@ -151,63 +145,87 @@ class MeasureAnalysisFragment : Fragment() {
             }
         }
 
-
-
         // ------# 1차 필터링 (균형별) #------
+        // 0, 1, 2, 3으로 3가지.
         when (index) {
+
             0 -> { // 정면 균형
-                measureResult = measureResult.filter { it.sequence == 0 || it.sequence == 1 }.toMutableList()
+                measureResult.put(mr.optJSONObject(0))
+                measureResult.put(mr.optJSONObject(2))
                 setDynamicUI(false)
+                binding.tvMPTitle.visibility = View.GONE
                 binding.tlMP.getTabAt(0)?.text = "정면 측정"
                 binding.tlMP.getTabAt(1)?.text = "팔꿉 측정"
                 binding.clMA.visibility = View.VISIBLE
                 binding.flMA.visibility = View.GONE
                 currentSequence = 0
-                switchScreenData(measureResult, currentSequence, true)
+                setImage(currentSequence)
+                switchScreenData(measureResult, currentSequence,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_front)
-
+                binding.tvMAName.text = "정면 균형"
             }
             1 -> { // 측면 균형
-                measureResult = measureResult.filter { it.sequence == 3 || it.sequence == 4 }.toMutableList()
+                measureResult.put(mr.optJSONObject(3))
+                measureResult.put(mr.optJSONObject(4))
                 setDynamicUI(false)
-                binding.tlMP.getTabAt(0)?.text = "우측 측정"
-                binding.tlMP.getTabAt(1)?.text = "좌측 측정"
+                binding.tlMP.visibility = View.INVISIBLE
+                binding.tvMPTitle.visibility = View.VISIBLE
+                binding.tvMPTitle.text = "측면 측정"
                 binding.clMA.visibility = View.VISIBLE
                 binding.flMA.visibility = View.GONE
                 currentSequence = 3
-                switchScreenData(measureResult, currentSequence, true)
+                setImage(currentSequence)
+                switchScreenData(measureResult,  currentSequence,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_side)
-
+                binding.tvMAName.text = "측면 균형"
             }
             2 -> { // 후면 균형
-                measureResult = measureResult.filter { it.sequence == 5 || it.sequence == 6 }.toMutableList()
+                measureResult.put(mr.optJSONObject(5))
                 setDynamicUI(false)
-                binding.tlMP.getTabAt(0)?.text = "후면 측정"
-                binding.tlMP.getTabAt(1)?.text = "앉은 후면"
+                binding.tlMP.visibility = View.INVISIBLE
+                binding.tvMPTitle.visibility = View.VISIBLE
+                binding.tvMPTitle.text = "후면 측정"
                 binding.clMA.visibility = View.VISIBLE
                 binding.flMA.visibility = View.GONE
                 currentSequence = 5
-                switchScreenData(measureResult, 5, true)
+                setImage(currentSequence)
+                switchScreenData(measureResult,  currentSequence,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_back)
-
+                binding.tvMAName.text = "후면 균형"
 
             }
-            3 -> { // 동적 균형
-                measureResult = measureResult.filter { it.sequence == 2 }.toMutableList()
+            3 -> {
+                measureResult.put(mr.optJSONObject(6))
+                setDynamicUI(false)
+                binding.tlMP.visibility = View.INVISIBLE
+                binding.tvMPTitle.visibility = View.VISIBLE
+                binding.tvMPTitle.text = "앉은 후면"
+                binding.clMA.visibility = View.VISIBLE
+                binding.flMA.visibility = View.GONE
+                currentSequence = 6
+                setImage(currentSequence)
+                switchScreenData(measureResult,  currentSequence,true)
+                binding.ivMA.setImageResource(R.drawable.drawable_back)
+
+                binding.tvMAName.text = "앉은 후면 "
+            }
+            4 -> { // 동적 균형
+                measureResult.put(mr.optJSONArray(1))
                 setDynamicUI(true)
                 binding.tlMP.getTabAt(0)?.text = "동적 측정"
                 binding.tlMP.getTabAt(1)?.text = ""
                 binding.tlMP.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
-                binding.tlMP.isEnabled = false
                 binding.tlMP.background = null
                 binding.clMA.visibility = View.GONE
                 binding.flMA.visibility = View.VISIBLE
                 binding.flMA2.visibility = View.GONE
-                currentSequence = 2
-                switchScreenData(measureResult, currentSequence, true)
+                currentSequence = 1
+
+                setPlayer()
+                switchScreenData(measureResult, currentSequence,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_dynamic)
             }
-            else -> {  }
+
         }
 
         // ------# 1-1차 필터링(tabLayout의 첫번째) #------
@@ -215,19 +233,27 @@ class MeasureAnalysisFragment : Fragment() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> {
-                        // 데이터, 시퀀스(0~6단계), toVerti
-                        currentSequence = getSequence(index).first
-                        switchScreenData(measureResult, currentSequence, true)
-                        animateIndicator(true)
-                    }
-                    1 -> {
-                        currentSequence = getSequence(index).second
-                        switchScreenData(measureResult, currentSequence, true)
-                        animateIndicator(true)
+                count = false
+                if (index != 3) {
+                    when (tab?.position) {
+                        0 -> {
+                            // 데이터, 시퀀스(0~6단계), toVerti
+                            currentSequence = getSequence(index).first
+                            switchScreenData(measureResult, currentSequence,true)
+                            animateIndicator(true)
+                            setImage(currentSequence)
+                        }
+                        1 -> {
+
+                            currentSequence = getSequence(index).second
+                            switchScreenData(measureResult, currentSequence,true)
+                            animateIndicator(true)
+                            setImage(currentSequence)
+
+                        }
                     }
                 }
+
             }
 
         })
@@ -235,15 +261,16 @@ class MeasureAnalysisFragment : Fragment() {
         // ------! 하단 버튼토글 그룹 시작 !------
         binding.btgMP.check(R.id.btnMA1)
         binding.btgMP.addOnButtonCheckedListener{ _, checkedId, isChecked ->
+
             if (isChecked) {
                 when (checkedId) {
                     R.id.btnMA1 -> {
                         animateIndicator(true)
-                        switchScreenData(measureResult, currentSequence, true)
+                        switchScreenData(measureResult, currentSequence,true)
                     }
                     R.id.btnMA2 -> {
                         animateIndicator(false)
-                        switchScreenData(measureResult, currentSequence, false)
+                        switchScreenData(measureResult, currentSequence,false)
                     }
                 }
 
@@ -263,8 +290,8 @@ class MeasureAnalysisFragment : Fragment() {
 
     // 고정적으로
     // big은 자세 , small은 수직 수평 분석임
-    private fun switchScreenData(measureResult: MutableList<AnalysisVO>, sequence: Int, toVerti: Boolean) {
-//        binding.ssivMA.setImage()
+    private fun switchScreenData(measureResult: JSONArray, sequence: Int, toVerti: Boolean) {
+
         // 정면은 필터링 됨. 수직부터 필터링
         var minResultData = mutableListOf<Triple<String, String, String?>>()
         when (sequence) {
@@ -280,14 +307,15 @@ class MeasureAnalysisFragment : Fragment() {
                             "front_vertical_angle_hip_knee_ankle" to "골반-무릎-발목 기울기"
                         )
                         minResultData = keyPairs.mapNotNull {(key, description) ->
-                            val leftValue = measureResult.find { it.key == "${key}_left" }?.value
-                            val rightValue = measureResult.find { it.key == "${key}_right" }?.value
+                            val leftValue = measureResult.optJSONObject(0).optDouble("${key}_left")
+                            val rightValue = measureResult.optJSONObject(0).optDouble("${key}_right")
 
-                            if (leftValue != null && rightValue != null) {
+                            if (!leftValue.isNaN() && !rightValue.isNaN()) {
                                 Triple(description, "왼쪽: ${String.format("%.1f", leftValue)}°", "오른쪽: ${String.format("%.1f", rightValue)}°")
                             } else null
                         }.toMutableList()
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
+
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -306,25 +334,44 @@ class MeasureAnalysisFragment : Fragment() {
                         )
 
                         anglePairs.forEach { (description, angleKey, distanceKey) ->
-                            val angleValue = measureResult.find { it.key == angleKey }?.value
-                            val distanceValue = measureResult.find { it.key == distanceKey }?.value
-                            if (angleValue != null && distanceValue != null) {
+                            val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
+                            val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
+                            if (!angleValue.isNaN() && !distanceValue.isNaN()) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", "높이 차: ${String.format("%.1f", distanceValue)}cm"))
                             }
                         }
                         distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                            val leftValue = measureResult.find { it.key == leftKey }?.value
-                            val rightValue = measureResult.find { it.key == rightKey }?.value
-                            if (leftValue != null && rightValue != null) {
+                            val leftValue = measureResult.optJSONObject(0).optDouble(leftKey)
+                            val rightValue = measureResult.optJSONObject(0).optDouble(rightKey)
+                            if (!leftValue.isNaN() && !rightValue.isNaN()) {
                                 minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                 }
 
             }
             1 -> {
+                lifecycleScope.launch {
+                    val connections = listOf(
+                        15, 16, 23, 24, 25, 26
+                    )
+                    val coordinates = extractVideoCoordinates(measureResult.optJSONArray(0))
+                    val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
+
+                    for (connection in connections) {
+                        val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
+                        for (element in coordinates) {
+                            filteredCoordinate.add(element[connection])
+                        }
+                        filteredCoordinates.add(filteredCoordinate)
+                    }
+
+                    setVideoAdapter(filteredCoordinates)
+                }
+            }
+            2 -> {
                 when (toVerti) {
                     true -> {
                         val valuePairs = listOf(
@@ -336,9 +383,9 @@ class MeasureAnalysisFragment : Fragment() {
                             Triple("어깨-팔꿈치-손목 기울기", "front_elbow_align_angle_left_shoulder_elbow_wrist", "front_elbow_align_angle_right_shoulder_elbow_wrist")
                         )
                         valuePairs.forEach{ (descrption, leftKey, rightKey) ->
-                            val leftValue = measureResult.find { it.key == leftKey }?.value
-                            val rightValue = measureResult.find { it.key == rightKey }?.value
-                            if (leftValue != null && rightValue != null) {
+                            val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
+                            val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
+                            if (!leftValue.isNaN() && !rightValue.isNaN()) {
                                 minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.1f", leftValue)}°", "오른쪽: ${String.format("%.1f", rightValue)}°"))
                             }
                         }
@@ -350,13 +397,13 @@ class MeasureAnalysisFragment : Fragment() {
 
 
                         distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                            val leftValue = measureResult.find { it.key == leftKey }?.value
-                            val rightValue = measureResult.find { it.key == rightKey }?.value
-                            if (leftValue != null && rightValue != null) {
+                            val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
+                            val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
+                            if (!leftValue.isNaN() && !rightValue.isNaN()) {
                                 minResultData.add(Triple(descrption,"왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -370,47 +417,26 @@ class MeasureAnalysisFragment : Fragment() {
                         }
                         val distancePairs = listOf(
                             Triple("중심에서 양 엄지 거리", "front_horizontal_distance_thumb_left", "front_horizontal_distance_thumb_right"),
-                            )
+                        )
 
                         anglePairs.forEach { (description, angleKey, distanceKey) ->
-                            val angleValue = measureResult.find { it.key == angleKey }?.value
-                            val distanceValue = measureResult.find { it.key == distanceKey }?.value
-                            if (angleValue != null && distanceValue != null) {
+                            val angleValue = measureResult.optJSONObject(1).optDouble(angleKey)
+                            val distanceValue = measureResult.optJSONObject(1).optDouble(distanceKey)
+                            if (!angleValue.isNaN() && !distanceValue.isNaN()) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", "높이 차: ${String.format("%.1f", distanceValue)}cm"))
                             }
                         }
                         distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                            val leftValue = measureResult.find { it.key == leftKey }?.value
-                            val rightValue = measureResult.find { it.key == rightKey }?.value
-                            if (leftValue != null && rightValue != null) {
+                            val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
+                            val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
+                            if (!leftValue.isNaN() && !rightValue.isNaN()) {
                                 minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                 }
-            }
-            2 -> {
 
-                lifecycleScope.launch {
-                    val connections = listOf(
-                        15, 16, 23, 24, 25, 26
-                    )
-                    val coordinates = extractVideoCoordinates(loadJsonArray())
-                    val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
-
-                    for (connection in connections) {
-                        val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
-                        for (i in 0 until coordinates.size) {
-                            filteredCoordinate.add(coordinates[i][connection])
-                        }
-                        filteredCoordinates.add(filteredCoordinate)
-                    }
-
-                    setVideoAdapter(filteredCoordinates)
-                    Log.v("coordinates0", "${filteredCoordinates[0]}")
-                    Log.v("coordinates1", "${filteredCoordinates[1]}")
-                }
 
             }
             3 -> {
@@ -426,13 +452,13 @@ class MeasureAnalysisFragment : Fragment() {
                             "side_left_vertical_angle_hip_knee_ankle" to "엉덩이-무릎-발목 기울기"
                         )
                         keyPairs.forEach { (key, description) ->
-                            val angleValue = measureResult.find { it.key == key }?.value
+                            val angleValue = measureResult.optJSONObject(0).optDouble(key)
 
-                            if (angleValue != null ) {
+                            if (!angleValue.isNaN() ) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                     false -> {
                         val keyPairs = mapOf(
@@ -443,13 +469,13 @@ class MeasureAnalysisFragment : Fragment() {
 
                         )
                         keyPairs.forEach { (key, description) ->
-                            val angleValue = measureResult.find { it.key == key }?.value
+                            val angleValue = measureResult.optJSONObject(0).optDouble(key)
 
-                            if (angleValue != null ) {
+                            if (!angleValue.isNaN()) {
                                 minResultData.add(Triple(description, "거리: ${String.format("%.1f", angleValue)}cm", null))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                 }
             }
@@ -466,13 +492,13 @@ class MeasureAnalysisFragment : Fragment() {
                             "side_right_vertical_angle_hip_knee_ankle" to "엉덩이-무릎-발목 기울기"
                         )
                         keyPairs.forEach { (key, description) ->
-                            val angleValue = measureResult.find { it.key == key }?.value
+                            val angleValue = measureResult.optJSONObject(1).optDouble(key)
 
-                            if (angleValue != null ) {
+                            if (!angleValue.isNaN()) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                     false -> {
                         val keyPairs = mapOf(
@@ -483,13 +509,13 @@ class MeasureAnalysisFragment : Fragment() {
 
                             )
                         keyPairs.forEach { (key, description) ->
-                            val angleValue = measureResult.find { it.key == key }?.value
+                            val angleValue = measureResult.optJSONObject(1).optDouble(key)
 
-                            if (angleValue != null ) {
+                            if (!angleValue.isNaN() ) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                 }
             }
@@ -505,20 +531,20 @@ class MeasureAnalysisFragment : Fragment() {
                             Triple("중심에서 양 손목 거리", "back_vertical_angle_knee_heel_left", "back_vertical_angle_knee_heel_right"),
                         )
                         keyPairs.forEach { (key, description) ->
-                            val angleValue = measureResult.find { it.key == key }?.value
+                            val angleValue = measureResult.optJSONObject(0).optDouble(key)
 
-                            if (angleValue != null ) {
+                            if (!angleValue.isNaN() ) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
                         distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                            val leftValue = measureResult.find { it.key == leftKey }?.value
-                            val rightValue = measureResult.find { it.key == rightKey }?.value
-                            if (leftValue != null && rightValue != null) {
+                            val leftValue = measureResult.optJSONObject(0).optDouble(leftKey)
+                            val rightValue = measureResult.optJSONObject(0).optDouble(rightKey)
+                            if (!leftValue.isNaN() && !rightValue.isNaN()) {
                                 minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -537,20 +563,20 @@ class MeasureAnalysisFragment : Fragment() {
                         )
 
                         anglePairs.forEach { (description, angleKey, distanceKey) ->
-                            val angleValue = measureResult.find { it.key == angleKey }?.value
-                            val distanceValue = measureResult.find { it.key == distanceKey }?.value
-                            if (angleValue != null && distanceValue != null) {
+                            val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
+                            val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
+                            if (!angleValue.isNaN() && !distanceValue.isNaN()) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", "높이 차: ${String.format("%.1f", distanceValue)}cm"))
                             }
                         }
                         distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                            val leftValue = measureResult.find { it.key == leftKey }?.value
-                            val rightValue = measureResult.find { it.key == rightKey }?.value
-                            if (leftValue != null && rightValue != null) {
+                            val leftValue = measureResult.optJSONObject(0).optDouble(leftKey)
+                            val rightValue = measureResult.optJSONObject(0).optDouble(rightKey)
+                            if (!leftValue.isNaN() && !rightValue.isNaN() ) {
                                 minResultData.add(Triple(descrption,"왼쪽: ${String.format("%.1f", leftValue)}cm", "오른쪽: ${String.format("%.1f", rightValue)}cm"))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                 }
             }
@@ -567,13 +593,13 @@ class MeasureAnalysisFragment : Fragment() {
                             "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
                         )
                         keyPairs.forEach { (key, description) ->
-                            val angleValue = measureResult.find { it.key == key }?.value
+                            val angleValue = measureResult.optJSONObject(0).optDouble(key)
 
-                            if (angleValue != null ) {
+                            if (!angleValue.isNaN() ) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
                         }
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -588,21 +614,21 @@ class MeasureAnalysisFragment : Fragment() {
 
 
                         anglePairs.forEach { (description, angleKey, distanceKey) ->
-                            val angleValue = measureResult.find { it.key == angleKey }?.value
-                            val distanceValue = measureResult.find { it.key == distanceKey }?.value
-                            if (angleValue != null && distanceValue != null) {
+                            val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
+                            val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
+                            if (!angleValue.isNaN() && !distanceValue.isNaN()) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", "높이 차: ${String.format("%.1f", distanceValue)}cm"))
                             }
                         }
 
-                        setImageAdapter(minResultData)
+                        set012Adapter(minResultData)
                     }
                 }
             }
 
         }
 
-//        setImageAdapter()
+//        set012Adapter()
         // 정면의 수직분석 --> 전부 angle임 그럼 높이 차라는 건 없음. 왼쪽 오른쪽 기울기만 있을 뿐
         // 정면의 수평분석 --> 수평이되야 양 어꺠 기울기, 높이 차 가능.
         // 측면의 수직분석 --> 각도들
@@ -625,7 +651,7 @@ class MeasureAnalysisFragment : Fragment() {
         }
     }
 
-    private fun setImageAdapter(allData: MutableList<Triple<String,String, String?>>) {
+    private fun set012Adapter(allData: MutableList<Triple<String,String, String?>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         val leftData = allData.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
@@ -703,75 +729,16 @@ class MeasureAnalysisFragment : Fragment() {
 
     private fun getSequence(index: Int) : Pair<Int, Int> {
         return when (index) {
-            0 -> Pair(0, 1)
+            0 -> Pair(0, 2)
             1 -> Pair(3, 4)
             2 -> Pair(5, 6)
-            else -> Pair(2, -1)
+            else -> Pair(1, -1)
         }
     }
 
     //---------------------------------------! imageOverlay !---------------------------------------
-    private fun setImage() {
-        lifecycleScope.launch {
-            val jsonData = loadJsonData()
-            val coordinates = extractImageCoordinates(jsonData)
-            val imageFile = loadFile(true)
-
-            // 이미지 로드
-            val originalBitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
-            binding.ssivMA.setImage(ImageSource.uri(imageFile.toUri().toString()))
-
-            binding.ssivMA.setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
-                override fun onReady() {
-                    // 리스너가 여러 번 호출되지 않도록 제어
-                    if (!count) {
-                        val imageViewWidth = binding.ssivMA.width
-                        val imageViewHeight = binding.ssivMA.height
-
-                        val sWidth = binding.ssivMA.sWidth
-                        val sHeight = binding.ssivMA.sHeight
-
-                        // 스케일 비율 계산
-                        val scaleFactor = min(imageViewWidth / sWidth.toFloat(), imageViewHeight / sHeight.toFloat())
-
-                        // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
-                        val offsetX = (imageViewWidth - sWidth * scaleFactor) / 2f
-                        val offsetY = (imageViewHeight - sHeight * scaleFactor) / 2f
-                        // poseLandmarkResult 변환
-                        val poseLandmarkResult = fromCoordinates(coordinates)
-
-                        // 이미지와 오버레이 결합
-                        val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
-                            originalBitmap,
-                            poseLandmarkResult,
-                            scaleFactor,
-                            offsetX,
-                            offsetY,
-                            requireContext()
-                        )
-                        count = true
-                        // 결합된 비트맵을 SubsamplingScaleImageView에 설정 (이미 한 번 setImage 호출한 뒤 다시 호출하지 않음)
-                        binding.ssivMA.setImage(ImageSource.bitmap(combinedBitmap))
-
-                        // count를 true로 설정하여 다시 호출되지 않도록 제어
-
-                    }
-                }
-
-                override fun onImageLoaded() {}
-                override fun onPreviewLoadError(e: Exception?) {}
-                override fun onImageLoadError(e: Exception?) {}
-                override fun onTileLoadError(e: Exception?) {}
-                override fun onPreviewReleased() {}
-            })
-        }
-    }
-
     private fun extractImageCoordinates(jsonData: JSONObject): List<Pair<Float, Float>> {
-        val poseData = jsonData.getJSONArray("pose_landmark")
-        scaleFactorX = jsonData.optDouble("measure_overlay_scale_factor_x", 1.0).toFloat()
-        scaleFactorY = jsonData.optDouble("measure_overlay_scale_factor_y", 1.0).toFloat()
-
+        val poseData = jsonData.optJSONArray("pose_landmark")
         return List(poseData.length()) { i ->
             val landmark = poseData.getJSONObject(i)
             Pair(
@@ -780,39 +747,90 @@ class MeasureAnalysisFragment : Fragment() {
             )
         }
     }
-    // ------# jsondata 가져오기 #------
-    private suspend fun loadJsonData(): JSONObject = withContext(Dispatchers.IO) {
-        val jsonString =
-            requireActivity().assets.open("MT_STATIC_BACK_6_1_20240604143755.json").bufferedReader()
-                .use { it.readText() }
-        JSONObject(jsonString)
-    }
-
-    // ------# 파일 로드 #------
-
     /* TODO 현재 File 형식으로 받아오는중 (assets폴더에서 가져오기 때문)
     *   추후 API에서는 그냥 URL일 수 있음. 이부분이 생략되고 ,setImage(url), initPlayer(videoUrl)일 수 있음. */
-    private suspend fun loadFile(isImage: Boolean) : File = withContext(Dispatchers.IO) {
-        if (isImage) {
-            val inputStream = requireActivity().assets.open("MT_STATIC_BACK_61_20240604143755.jpg")
-            val tempFile = File.createTempFile("temp_image", ".jpg", requireContext().cacheDir)
-            tempFile.deleteOnExit()
-            tempFile.outputStream().use { outputStream ->
-                inputStream.copyTo(outputStream)
+    private fun setImage(seq: Int) {
+        lifecycleScope.launch {
+            try {
+                val jsonData = viewModel.selectedMeasure?.measureResult?.optJSONObject(seq)
+                Log.v("measureResult", "${jsonData}")
+                val coordinates = extractImageCoordinates(jsonData!!)
+                Log.v("모바일POSELANDMARK", "jsonData: ${jsonData.optJSONArray("pose_landmark")}, coordinates: ${coordinates}")
+                val imageUrls = viewModel.selectedMeasure?.fileUris?.get(seq)
+                if (imageUrls != null) {
+                    lifecycleScope.launch {
+                        try {
+                            val imageFile = imageUrls.let { File(it) }
+                            val bitmap = BitmapFactory.decodeFile(imageUrls)
+
+                            withContext(Dispatchers.Main) {
+                                binding.ssivMA.setImage(ImageSource.uri(imageFile.toUri().toString()))
+                                binding.ssivMA.setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
+                                    override fun onReady() {
+
+                                        if (!count) {
+                                            // ssiv 이미지뷰의 크기
+                                            val imageViewWidth = binding.ssivMA.width
+                                            val imageViewHeight = binding.ssivMA.height
+
+                                            // iv에 들어간 image의 크기 같음 screenWidth
+                                            val sWidth = binding.ssivMA.sWidth
+                                            val sHeight = binding.ssivMA.sHeight
+
+                                            // 스케일 비율 계산
+                                            val scaleFactor = min(imageViewWidth / sWidth.toFloat(), imageViewHeight / sHeight.toFloat())
+
+                                            // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
+                                            val offsetX = (imageViewWidth - sWidth * scaleFactor) / 2f
+                                            val offsetY = (imageViewHeight - sHeight * scaleFactor) / 2f
+
+                                            val poseLandmarkResult = fromCoordinates(coordinates)
+
+                                            val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
+                                                bitmap,
+                                                poseLandmarkResult,
+                                                scaleFactor,
+                                                offsetX,
+                                                offsetY,
+                                                requireContext(),
+                                                seq
+                                            )
+                                            count = true
+                                            binding.ssivMA.setImage(ImageSource.bitmap(combinedBitmap))
+
+                                            // count를 true로 설정하여 다시 호출되지 않도록 제어
+                                        }
+                                    }
+
+                                    override fun onImageLoaded() {}
+                                    override fun onPreviewLoadError(e: Exception?) {}
+                                    override fun onImageLoadError(e: Exception?) {}
+                                    override fun onTileLoadError(e: Exception?) {}
+                                    override fun onPreviewReleased() {}
+                                })
+                            }
+                            Log.v("ImageLoading", "Image loaded successfully. Width: ${bitmap.width}, Height: ${bitmap.height}")
+                        } catch (e: Exception) {
+                            Log.e("ImageLoading", "Error loading image: ${e.message}", e)
+                        }
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("Error", "${e}")
             }
-            tempFile
-        } else { // 동영상 수정해야함.
-            val inputStream = requireActivity().assets.open("MT_DYNAMIC_OVERSQUAT_FRONT_1_1_20240606135241.mp4")
-                val tempFile = File.createTempFile("temp_video", ".mp4", requireContext().cacheDir)
-            tempFile.deleteOnExit()
-            tempFile.outputStream().use { outputStream ->
-                inputStream.copyTo(outputStream)
-            }
-            tempFile
         }
-
     }
-
+    private fun getRealPathFromUri(context: Context, uri: Uri) : String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursur = context.contentResolver.query(uri, projection, null, null, null)
+        cursur?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                return it.getString(columnIndex)
+            }
+        }
+        return null
+    }
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun extractVideoCoordinates(jsonData: JSONArray) : List<List<Pair<Float,Float>>> {
 
@@ -828,15 +846,10 @@ class MeasureAnalysisFragment : Fragment() {
         }
     }
 
-    private suspend fun loadJsonArray() : JSONArray = withContext(Dispatchers.IO) {
-        val jsonString = requireActivity().assets.open("MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_1_20240606135241.json").bufferedReader().use { it.readText() }
-        JSONArray(jsonString)
-    }
-
     private fun setPlayer() {
         lifecycleScope.launch {
 
-            jsonArray = loadJsonArray()
+            jsonArray = viewModel.selectedMeasure?.measureResult!!.getJSONArray(1)
             Log.v("jsonDataLength", "${jsonArray.length()}")
             initPlayer()
 
@@ -864,14 +877,16 @@ class MeasureAnalysisFragment : Fragment() {
         binding.pvMA.player = simpleExoPlayer
         binding.pvMA.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
-            val videoFile = loadFile(false) // false는 비디오 파일을 의미
-            videoUrl = videoFile.toURI().toString() // File을 URI로 변환
-
-            buildMediaSource().let {
+            videoUrl = viewModel.selectedMeasure?.fileUris?.get(1).toString()
+            val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
+            val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
+                .createMediaSource(mediaItem)
+            mediaSource.let {
                 simpleExoPlayer?.prepare(it)
+                simpleExoPlayer?.seekTo(0)
+                simpleExoPlayer?.playWhenReady = true
             }
-            simpleExoPlayer?.seekTo(0)
-            simpleExoPlayer?.playWhenReady = true
+
         }
         binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
@@ -879,12 +894,6 @@ class MeasureAnalysisFragment : Fragment() {
 
     }
 
-    private fun buildMediaSource() : MediaSource {
-        val dataSourceFactory = DefaultDataSourceFactory(requireContext(), "sample")
-        return ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(MediaItem.fromUri(videoUrl))
-
-    }
     private fun updateFrameData(videoDuration: Long, totalFrames: Int) {
         val currentPosition = simpleExoPlayer?.currentPosition ?: 0L
 
@@ -895,7 +904,7 @@ class MeasureAnalysisFragment : Fragment() {
 
         // 실제 mp4의 비디오 크기를 가져온다
         val (videoWidth, videoHeight) = getVideoDimensions(videoUrl.toUri())
-        Log.v("widhtHeight","(${binding.tlMP.width},${binding.tlMP.height}) , (${binding.ovMA.width}, ${binding.ovMA.height})")
+//        Log.v("widhtHeight","(${binding.tlMP.width},${binding.tlMP.height}) , (${binding.ovMA.width}, ${binding.ovMA.height})")
         if (frameIndex in 0 until totalFrames) {
             // 해당 인덱스의 데이터를 JSON에서 추출하여 변환
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
@@ -977,4 +986,6 @@ class MeasureAnalysisFragment : Fragment() {
             }
         }
     }
+
+
 }

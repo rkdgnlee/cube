@@ -2,11 +2,6 @@ package com.tangoplus.tangoq.db
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import com.tangoplus.tangoq.data.MessageVO
-import org.json.JSONObject
-import java.util.Calendar
-import java.util.TimeZone
 
 class PreferencesManager(context: Context) {
     private val LAST_SN_KEY = "last_sn"

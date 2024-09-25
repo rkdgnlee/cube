@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.MeasureFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView16"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout13"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+
+                <ImageButton
+                    android:id="@+id/ibtnMsQRCode"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_qr_code"
+                    app:layout_constraintBottom_toBottomOf="@+id/ibtnMsAlarm"
+                    app:layout_constraintEnd_toStartOf="@+id/ibtnMsAlarm"
+                    app:layout_constraintTop_toTopOf="@+id/ibtnMsAlarm" />
+
+                <ImageButton
+                    android:id="@+id/ibtnMsAlarm"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="@color/white"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_alarm"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageView19"
+                    android:layout_width="36dp"
+                    android:layout_height="38dp"
+
+                    android:layout_marginStart="36dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/app_logo" />
+
+                <TextView
+                    android:id="@+id/textView119"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:background="@color/white"
+                    android:text="측정"
+                    android:textColor="@color/black"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView19"
+                    app:layout_constraintStart_toEndOf="@+id/imageView19"
+                    app:layout_constraintTop_toTopOf="@+id/imageView19" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tlMs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/background_tablayout_underline"
+            android:textAlignment="inherit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView16"
+            app:tabGravity="center"
+            app:tabIndicatorAnimationDuration="400"
+            app:tabIndicatorColor="@color/secondaryColor"
+            app:tabIndicatorFullWidth="true"
+            app:tabMode="auto"
+            app:tabPaddingEnd="0dp"
+            app:tabPaddingStart="0dp"
+            app:tabRippleColor="#20FFFFFF"
+            app:tabSelectedTextColor="@color/secondaryColor"
+            app:tabTextAppearance="@style/TabLayoutTextStyle"
+            app:tabTextColor="@color/secondPrimaryColor">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="측정기록" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="운동기록" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vpMs"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tlMs"
+            app:layout_constraintVertical_bias="1.0">
+
+        </androidx.viewpager2.widget.ViewPager2>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/fabtnMs"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/background_rectangle_36dp"
+        android:gravity="center|center_vertical"
+        android:padding="24dp"
+        android:stateListAnimator="@null"
+        android:text="측정하기"
+        android:textColor="#FFFFFF"
+        android:textSize="24dp"
+        app:backgroundTint="@color/mainColor" />
+</FrameLayout>

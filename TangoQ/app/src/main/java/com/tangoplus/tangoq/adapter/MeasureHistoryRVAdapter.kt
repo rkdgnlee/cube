@@ -4,8 +4,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
@@ -13,6 +15,7 @@ import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.RvMeasureItemBinding
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
+import com.tangoplus.tangoq.fragment.hideBadgeOnClick
 
 class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>, private val viewModel : MeasureViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -35,9 +38,9 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = measures[position]
         if (holder is viewHolder) {
-            holder.tvMIName.text = "${currentItem.regDate} 측정 기록"
+            holder.tvMIName.text = "${currentItem.regDate.substring(0, 10)} 측정 기록"
             holder.tvMIScore.text = currentItem.overall.toString()
-
+            val hideBadgeFunction = fragment.hideBadgeOnClick(holder.tvMIName, holder.clMI, "${holder.tvMIName.text}", ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
             holder.clMI.setOnClickListener {
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                     setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -45,9 +48,8 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                     addToBackStack(null)
                     commit()
                 }
-
+                hideBadgeFunction?.invoke()
                 viewModel.selectedMeasure = currentItem
-                Log.w("VM>selectedMeasure", "${viewModel.selectedMeasure}")
             }
         }
     }

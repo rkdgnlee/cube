@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.ExerciseDetailFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvED"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout21"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <!--            <ImageButton-->
+<!--                android:id="@+id/ibtnEDBLEConnect"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:background="@drawable/effect_ibtn_12dp"-->
+<!--                android:src="@drawable/icon_bluetooth"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/linearLayout3"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/linearLayout3" />-->
+
+            <ImageButton
+                android:id="@+id/ibtnEDAlarm"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/effect_ibtn_20dp"
+                android:backgroundTint="@color/white"
+                android:padding="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_alarm"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/ibtnEDQRCode"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_qr_code"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnEDAlarm"
+                app:layout_constraintEnd_toStartOf="@+id/ibtnEDAlarm"
+                app:layout_constraintTop_toTopOf="@+id/ibtnEDAlarm" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/background_rectangle_20dp"
+                android:backgroundTint="@color/secondPrimaryColor"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView56">
+
+                <ImageView
+                    android:id="@+id/imageView20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_search" />
+
+                <TextView
+                    android:id="@+id/tvEDSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="8"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:backgroundTint="#00FFFFFF"
+                    android:gravity="center_vertical"
+                    android:hint="운동이름을 검색하세요"
+                    android:singleLine="true"
+                    android:textColorHint="@color/subColor800"
+                    android:textSize="22dp" />
+
+                <ImageButton
+                    android:id="@+id/ibtnEDACTVClear"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="#00FFFFFF"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_text_clear" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEDCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout4"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/secondPrimaryColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvEDCategory">
+
+                <TextView
+                    android:id="@+id/tvEDTotalCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:text="전체: 00개"
+                    android:textColor="@color/secondaryColor"
+                    android:textSize="22dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Spinner
+                    android:id="@+id/spnrED"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/background_stroke_1dp_sub_color_spinner"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="40dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvEDTotalCount"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvEDTotalCount" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/sflED"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/rv_shimmer_exercise_item" />
+
+                    <include layout="@layout/rv_shimmer_exercise_item" />
+
+                    <include layout="@layout/rv_shimmer_exercise_item" />
+
+                    <include layout="@layout/rv_shimmer_exercise_item" />
+
+                    <include layout="@layout/rv_shimmer_exercise_item" />
+
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <Spinner
+                android:id="@+id/spnEDFilter"
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/background_stroke_1dp_sub_color_spinner"
+                android:paddingLeft="10dp"
+                android:popupBackground="@color/white"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEDAll"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sflED" />
+
+            <TextView
+                android:id="@+id/tvGuideNull"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="곧 더 많은 운동이 추가될 예정입니다 !"
+                android:textColor="@color/subColor300"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvEDAll" />
+
+            <TextView
+                android:id="@+id/tvEDMainCategoryName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="운동"
+                android:textColor="@color/black"
+                android:textSize="32dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView56"
+                app:layout_constraintStart_toEndOf="@+id/imageView56"
+                app:layout_constraintTop_toTopOf="@+id/imageView56" />
+
+            <ImageView
+                android:id="@+id/imageView56"
+                android:layout_width="36dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/app_logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

@@ -24,71 +24,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/cbMBSD1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:button="@null"
-            android:drawableLeft="@drawable/icon_check"
-            android:drawablePadding="10dp"
-            android:text="2024-08-30"
-            android:textColor="@color/subColor800"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvMBSDName" />
-
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/cbMBSD2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:button="@null"
-            android:drawableLeft="@drawable/icon_check"
-            android:drawablePadding="10dp"
-            android:text="2024-08-22"
-            android:textColor="@color/subColor800"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cbMBSD1" />
-
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/cbMBSD3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:button="@null"
-            android:drawableLeft="@drawable/icon_check"
-            android:drawablePadding="10dp"
-            android:text="2024-08-19"
-            android:textColor="@color/subColor800"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cbMBSD2" />
-
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/cbMBSD4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:button="@null"
-            android:drawableLeft="@drawable/icon_check"
-            android:drawablePadding="10dp"
-            android:text="2024-07-29"
-            android:textColor="@color/subColor800"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cbMBSD3" />
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnMBSD"
             android:layout_width="0dp"
@@ -103,7 +38,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cbMBSD4" />
+            app:layout_constraintTop_toBottomOf="@id/rvMBSD" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMBSD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvMBSDName" />
 
         <ImageButton
             android:id="@+id/ibtnMBSDExit"

@@ -62,10 +62,6 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         setStyle(STYLE_NO_FRAME, R.style.AppTheme_DialogFragment)
 
         viewModel.snsCount = 0
-        binding.ibtnPEDBack.setOnClickListener {
-            dismiss()
-        }
-
         // ------! 싱글턴에서 가져오기 !------
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
         viewModel.User.value = userJson
@@ -95,19 +91,22 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         val snsIntegrations = checkSNSLogin(userJson)
 
         if (snsIntegrations.first) {
-            binding.tvGoogleInteCheck.text = "연결"
+            binding.tvGoogleInteCheck.text = "계정연동"
+            binding.tvGoogleInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
             binding.clGoogle.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
         }
         if (snsIntegrations.second) {
-            binding.tvKakaoIntecheck.text = "연결"
+            binding.tvKakaoIntecheck.text = "계정연동"
+            binding.tvKakaoIntecheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
             binding.clKakao.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")
         }
         if (snsIntegrations.third) {
-            binding.tvNaverInteCheck.text = "연동"
+            binding.tvNaverInteCheck.text = "계정연동"
+            binding.tvNaverInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
             binding.clNaver.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             viewModel.snsCount += 1
             Log.v("snsCount", "${viewModel.snsCount}")

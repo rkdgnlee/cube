@@ -9,6 +9,7 @@ import org.json.JSONObject
 class Singleton_t_measure private constructor(context: Context){
     var measures : MutableList<MeasureVO>? = null
 
+
     init {
         initialize()
     }

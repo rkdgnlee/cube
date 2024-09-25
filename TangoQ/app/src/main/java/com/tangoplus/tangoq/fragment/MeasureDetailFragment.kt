@@ -16,6 +16,7 @@ import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
@@ -23,7 +24,6 @@ import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
-import com.tangoplus.tangoq.listener.OnReportClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import org.json.JSONObject
 import kotlin.random.Random
@@ -45,14 +45,7 @@ class MeasureDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.ibtnMDBack.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flMain, MeasureHistoryFragment())
-                addToBackStack(null)
-                commit()
-            }
-        }
+        
         binding.ibtnMDAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
@@ -81,9 +74,10 @@ class MeasureDetailFragment : Fragment() {
             entries.add(RadarEntry(raderScores[i]))
         }
         val dataSet = RadarDataSet(entries, "신체 부위").apply {
-            color = resources.getColor(R.color.thirdColor, null)
-            fillColor = resources.getColor(R.color.thirdOpacityColor, null)
+            color = resources.getColor(R.color.mainColor, null)
+//            fillColor = resources.getColor(R.color.thirdOpacityColor, null)
             setDrawFilled(true)
+            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_rader_main_second)
 //            fillAlpha = 80  // 투명도 조절 (0-255)
             lineWidth = 2f
             setDrawValues(false)  // 값 표시 제거
@@ -130,62 +124,6 @@ class MeasureDetailFragment : Fragment() {
             invalidate() // 차트 갱신
         }
 
-        // ------# adapter 연결 #------
-//        // TODO 다 가져와서, 부위를 넣어야함-->
-//        put("front_vertical_angle_shoulder_elbow_left")
-//        put("front_vertical_angle_shoulder_elbow_right")
-//        put("front_vertical_angle_elbow_wrist_left")
-//        put("front_vertical_angle_elbow_wrist_right")
-//        put("front_vertical_angle_hip_knee_left")
-//        put("front_vertical_angle_hip_knee_right")
-//        put("front_vertical_angle_knee_ankle_left")
-//        put("front_vertical_angle_knee_ankle_right")
-//        put("front_vertical_angle_shoulder_elbow_wrist_left")
-//        put("front_vertical_angle_shoulder_elbow_wrist_right")
-//        put("front_vertical_angle_hip_knee_ankle_left")
-//        put("front_vertical_angle_hip_knee_ankle_right")
-//
-//
-//        put("front_elbow_align_distance_left_wrist_shoulder")
-//        put("front_elbow_align_distance_right_wrist_shoulder")
-//        put("front_elbow_align_distance_wrist_height")
-//        put("front_elbow_align_angle_left_shoulder_elbow_wrist")
-//        put("front_elbow_align_angle_right_shoulder_elbow_wrist")
-//        put("front_elbow_align_distance_center_wrist_left")
-//        put("front_elbow_align_distance_center_wrist_right")
-//
-//        // 2. 측면
-//        put("side_left_vertical_angle_shoulder_elbow")
-//        put("side_left_vertical_angle_elbow_wrist")
-//        put("side_left_vertical_angle_hip_knee")
-//        put("side_left_vertical_angle_ear_shoulder")
-//        put("side_left_vertical_angle_nose_shoulder")
-//        put("side_left_vertical_angle_shoulder_elbow_wrist")
-//        put("side_left_vertical_angle_hip_knee_ankle")
-//
-//        put("side_right_vertical_angle_shoulder_elbow")
-//        put("side_right_vertical_angle_elbow_wrist")
-//        put("side_right_vertical_angle_hip_knee")
-//        put("side_right_vertical_angle_ear_shoulder")
-//        put("side_right_vertical_angle_nose_shoulder")
-//        put("side_right_vertical_angle_shoulder_elbow_wrist")
-//        put("side_right_vertical_angle_hip_knee_ankle")
-//
-//        // 3. 후면
-//        put("back_vertical_angle_nose_center_shoulder")
-//        put("back_vertical_angle_shoudler_center_hip")
-//        put("back_vertical_angle_nose_center_hip")
-//        put("back_vertical_angle_knee_heel_left")
-//        put("back_vertical_angle_knee_heel_right")
-//        put("back_horizontal_distance_wrist_left")
-//        put("back_horizontal_distance_wrist_right")
-//
-//        // 4. 스쿼트
-//        put("ohs_front_horizontal_angle_mid_finger_tip")
-//        put("ohs_front_horizontal_angle_hip")
-//        put("ohs_front_horizontal_angle_knee")
-
-
         val stages = mutableListOf<MutableList<String>>()
         val balanceParts1 = mutableListOf("어깨", "골반")
         stages.add(balanceParts1)
@@ -193,17 +131,18 @@ class MeasureDetailFragment : Fragment() {
         stages.add(balanceParts2)
         val balanceParts3 = mutableListOf("골반", "좌측 어깨", "목")
         stages.add(balanceParts3)
-        val balanceParts4 = mutableListOf("좌측 허벅지", "좌측 골반", "좌측 어깨")
+        val balanceParts4 = mutableListOf("허벅지",  "어깨")
         stages.add(balanceParts4)
+        val balanceParts5 = mutableListOf("좌측 허벅지", "좌측 골반", "좌측 어깨")
+        stages.add(balanceParts5)
 
-        val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(0 , -4))
+        val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
         setAdapter(stages, degrees)
 
 
 
         binding.fabtnMD.setOnClickListener {
-            val intent = Intent(requireContext(), MeasureSkeletonActivity::class.java)
-            startActivity(intent)
+            (activity as? MainActivity)?.launchMeasureSkeletonActivity()
         }
     }
 
@@ -230,7 +169,7 @@ class MeasureDetailFragment : Fragment() {
 
     private fun updateUI() {
         binding.tvMDScore.text = measure.overall.toString()
-        binding.tvMDDate.text = measure.regDate
+        binding.tvMDDate.text = measure.regDate.substring(0, 10)
         binding.tvMDParts.text = "우려부위: ${measure.dangerParts.map { it.first }.joinToString(", ")}"
     }
 }

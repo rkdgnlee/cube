@@ -15,11 +15,13 @@ import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
-import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
+import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseJson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -86,7 +88,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
         binding.ibtnEQRCode.setOnClickListener{
-            val dialog = LoginScanDialogFragment()
+            val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
 
@@ -155,7 +157,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 //        }
         when (isNetworkAvailable(requireContext())) {
             true -> {
-                lifecycleScope.launch {
+                CoroutineScope(Dispatchers.Main).launch {
 //                    val categoryArrayList = fetchExerciseAll(getString(R.string.IP_ADDRESS_t_exercise_description)).sortedBy { it.first }.toMutableList()
 //            val typeArrayList = fetchExerciseType(getString(R.string.IP_ADDRESS_t_Exercise_Description))
 

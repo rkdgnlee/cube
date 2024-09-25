@@ -18,7 +18,7 @@
             android:background="@color/white">
 
             <EditText
-                android:id="@+id/etCEDTitle"
+                android:id="@+id/etPCDTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -34,50 +34,37 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/ibtnCEDTop"
+                android:id="@+id/ibtnPCDTop"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_info_800"
-                app:layout_constraintBottom_toBottomOf="@+id/etCEDTitle"
-                app:layout_constraintStart_toEndOf="@+id/etCEDTitle"
-                app:layout_constraintTop_toTopOf="@+id/etCEDTitle" />
+                app:layout_constraintBottom_toBottomOf="@+id/etPCDTitle"
+                app:layout_constraintStart_toEndOf="@+id/etPCDTitle"
+                app:layout_constraintTop_toTopOf="@+id/etPCDTitle" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider11"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ibtnCEDMore" />
-
-            <ImageButton
-                android:id="@+id/ibtnCEDMore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:padding="4dp"
-                android:src="@drawable/icon_more_800"
-                app:layout_constraintBottom_toBottomOf="@+id/etCEDTitle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/etCEDTitle" />
+                tools:layout_editor_absoluteY="63dp" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider2"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ibtnCEDMore" />
+                app:layout_constraintTop_toBottomOf="@+id/etPCDTitle" />
 
             <TextView
-                android:id="@+id/tvCEDSet"
+                android:id="@+id/tvPCDSet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -93,9 +80,9 @@
                 android:layout_height="4dp"
                 app:colorBackground="@color/secondPrimaryColor"
                 app:colorProgress="@color/secondaryColor"
-                app:layout_constraintBottom_toBottomOf="@+id/tvCEDSet"
-                app:layout_constraintStart_toEndOf="@+id/tvCEDSet"
-                app:layout_constraintTop_toTopOf="@+id/tvCEDSet" />
+                app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
+                app:layout_constraintStart_toEndOf="@+id/tvPCDSet"
+                app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView12"
@@ -109,7 +96,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
 
             <TextView
-                android:id="@+id/tvCEDWeekly"
+                android:id="@+id/tvPCDWeekly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
@@ -121,19 +108,19 @@
                 android:paddingBottom="6dp"
                 android:text="1/4주차"
                 android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/tvCEDSet"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvCEDSet" />
+                app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCEDHorizontal"
+                android:id="@+id/rvPCDHorizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCEDSet" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPCDSet" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider6"
@@ -143,10 +130,10 @@
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvCEDHorizontal" />
+                app:layout_constraintTop_toBottomOf="@+id/rvPCDHorizontal" />
 
             <TextView
-                android:id="@+id/tvCEDCount"
+                android:id="@+id/tvPCDCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -164,9 +151,9 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="12dp"
                 app:dividerColor="@color/subColor150"
-                app:layout_constraintBottom_toBottomOf="@+id/tvCEDCount"
-                app:layout_constraintStart_toEndOf="@+id/tvCEDCount"
-                app:layout_constraintTop_toTopOf="@+id/tvCEDCount" />
+                app:layout_constraintBottom_toBottomOf="@+id/tvPCDCount"
+                app:layout_constraintStart_toEndOf="@+id/tvPCDCount"
+                app:layout_constraintTop_toTopOf="@+id/tvPCDCount" />
 
             <LinearLayout
                 android:id="@+id/linearLayout26"
@@ -188,7 +175,7 @@
                     android:src="@drawable/icon_time_sub_800" />
 
                 <TextView
-                    android:id="@+id/tvCEDTime"
+                    android:id="@+id/tvPCDTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -210,7 +197,7 @@
                 app:layout_constraintTop_toTopOf="@+id/linearLayout26" />
 
             <TextView
-                android:id="@+id/tvCEDStage"
+                android:id="@+id/tvPCDStage"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
@@ -225,7 +212,7 @@
                 app:layout_constraintTop_toTopOf="@+id/materialDivider10" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCED"
+                android:id="@+id/rvPCD"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -234,7 +221,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCEDCount"
+                app:layout_constraintTop_toBottomOf="@+id/tvPCDCount"
                 app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -248,7 +235,7 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCEDLeft"
+            android:id="@+id/btnPCDLeft"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
@@ -265,7 +252,7 @@
             android:textSize="18dp" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCEDRight"
+            android:id="@+id/btnPCDRight"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"

@@ -31,7 +31,7 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
     }
 
     override fun getItemCount(): Int {
-        return 4
+        return 5
     }
 
     @SuppressLint("SetTextI18n")
@@ -53,7 +53,6 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
             holder.tvBIPredict.text = currentComment
 
             holder.clBI.setOnClickListener{
-
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position, Pair(degree[position].first, currentComment)))
                     addToBackStack(null)
@@ -108,6 +107,10 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
                 tvName.text = "후면 균형"
             }
             3 -> {
+                iv.setImageResource(R.drawable.drawable_back)
+                tvName.text = "앉은 후면"
+            }
+            4 -> {
                 iv.setImageResource(R.drawable.drawable_dynamic)
                 tvName.text = "동적 균형"
             }

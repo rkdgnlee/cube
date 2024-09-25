@@ -11,8 +11,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -31,8 +29,7 @@ import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
-import com.tangoplus.tangoq.dialog.LoginDialogFragment
-import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
+import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditBSDialogFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import org.json.JSONObject
@@ -111,7 +108,7 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                                     dialogFragment.show(fragment.requireActivity().supportFragmentManager, "ProfileEditDialogFragment")
                                 }
                                 "QR코드 핀번호 로그인" -> {
-                                    val dialog = LoginScanDialogFragment()
+                                    val dialog = QRCodeDialogFragment()
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "LoginScanDialogFragment")
                                 }
                                 "푸쉬 알림 설정" -> {

@@ -6,53 +6,107 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lavSC2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.65"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <TextView
-        android:id="@+id/textView49"
+        android:id="@+id/textView93"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="64dp"
-        android:text="2."
+        android:layout_marginStart="4dp"
+        android:text="측정 전 주의사항"
+        android:textColor="@color/subColor800"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView41"
+        app:layout_constraintStart_toEndOf="@+id/textView41"
+        app:layout_constraintTop_toTopOf="@+id/textView41"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView41"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="3."
         android:textColor="@color/mainColor"
         android:textSize="24dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="0dp"
-        android:layout_height="400dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/drawable_measure_skeleton_caution_1" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView4" />
 
     <TextView
-        android:id="@+id/textView32"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="측정 환경 셋팅"
-        android:textColor="@color/black"
-        android:textSize="24dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/textView49"
-        app:layout_constraintStart_toEndOf="@+id/textView49"
-        app:layout_constraintTop_toTopOf="@+id/textView49" />
-
-    <TextView
-        android:id="@+id/textView65"
+        android:id="@+id/textView97"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
-        android:text="화면 좌측의 수직바를 통해 지면과 수직이 되게 기기를 조정해주세요"
-        android:textColor="@color/black"
+        android:text="측정을 위해 몸선이 잘 보이는 옷을 입어주세요 !"
+        android:textColor="@color/subColor800"
         android:textSize="18dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView32" />
+        app:layout_constraintTop_toBottomOf="@+id/textView41" />
+
+    <TextView
+        android:id="@+id/textView101"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="* 치마의 경우 정확한 측정이 어려울 수 있습니다."
+        android:textColor="@color/subColor400"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/textView97"
+        app:layout_constraintStart_toStartOf="@+id/textView97"
+        app:layout_constraintTop_toBottomOf="@+id/textView97" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView4"
+        app:layout_constraintEnd_toStartOf="@+id/cardView4"
+        app:layout_constraintTop_toTopOf="@+id/cardView4" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView4"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="10dp"
+        app:cardBackgroundColor="@color/mainColor"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lavSC2" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView3"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView4"
+        app:layout_constraintStart_toEndOf="@+id/cardView4"
+        app:layout_constraintTop_toTopOf="@+id/cardView4" />
+    " />
 </androidx.constraintlayout.widget.ConstraintLayout>

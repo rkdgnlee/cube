@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.mediapipe
 
-import android.util.Log
 
 data class PoseLandmarkResult(
     val landmarks : List<PoseLandmark>,
@@ -19,5 +18,4 @@ data class PoseLandmarkResult(
             return PoseLandmarkResult(landmarks)
         }
     }
-
 }

@@ -1,14 +1,17 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -39,6 +42,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MD2RVAdpater
 import com.tangoplus.tangoq.data.EpisodeVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.HistorySummaryVO
 import com.tangoplus.tangoq.data.HistoryUnitVO
 import com.tangoplus.tangoq.data.HistoryViewModel
 import com.tangoplus.tangoq.data.UserViewModel
@@ -249,6 +253,11 @@ class MeasureDashBoard2Fragment : Fragment() {
             }
         }
 
+        binding.monthText.setOnClickListener {
+            updateExerciseList()
+        }
+
+
         // ------# 운동 기록 날짜 받아오기 #------
         // TODO 운동 기록 날짜) 변경 필요
 
@@ -271,10 +280,13 @@ class MeasureDashBoard2Fragment : Fragment() {
                 container.date.apply {
                     if (day.date.month == currentMonth.month) {
                         text = day.date.dayOfMonth.toString()
-                        textSize = 20f
+                        textSize = if (isTablet(requireContext())) 24f else 20f
                         when (day.date.dayOfMonth) {
                             in 0 .. 9 -> {
-                                setPadding(34, 20, 34, 20)
+                                setPadding(32, 20, 32, 20)
+                            }
+                            in 10 .. 19 -> {
+                                setPadding(26, 24, 26, 24)
                             }
                             else -> {
                                 setPadding(24)
@@ -297,7 +309,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                                             val historyDate = stringToLocalDate(regDateString)
                                             historyDate.isEqual(selectedDate)
                                         } ?: false
-                                    }.toMutableList()
+                                    }.toHistorySummaries()
 
                                     setAdapter(filteredExercises)
                                     binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
@@ -346,7 +358,7 @@ class MeasureDashBoard2Fragment : Fragment() {
 
             }
             day.position == DayPosition.MonthDate -> {
-                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor700))
+                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor500))
             }
             else -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor150))
@@ -369,7 +381,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         return localDateTime.toLocalDate()
     }
 
-    private fun setAdapter(historys: MutableList<HistoryUnitVO>) {
+    private fun setAdapter(historys: List<HistorySummaryVO>) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMD2.layoutManager = layoutManager
         val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, historys)
@@ -425,6 +437,15 @@ class MeasureDashBoard2Fragment : Fragment() {
 
     }
 
+    private fun isTablet(context: Context): Boolean {
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val metrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(metrics)
+
+        val widthDp = metrics.widthPixels / metrics.density
+        return widthDp >= 600
+    }
+
     private fun updateMonthView() {
         binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
         binding.cvMD2Calendar.scrollToMonth(currentMonth)
@@ -437,6 +458,18 @@ class MeasureDashBoard2Fragment : Fragment() {
                 YearMonth.from(historyDate) == currentMonth
             } ?: false
         }.toMutableList()
-        setAdapter(filteredExercises)
+        val historySummaries = filteredExercises.toHistorySummaries()
+        setAdapter(historySummaries)
+    }
+
+    private fun List<HistoryUnitVO>.toHistorySummaries() : List<HistorySummaryVO> {
+        return this.groupBy {it.exerciseId}
+            .map { (exerciseId, histories) ->
+            HistorySummaryVO(
+                exerciseId = exerciseId.toString(),
+                viewCount = histories.size,
+                lastViewDate = histories.maxByOrNull { it.regDate ?: "" }?.regDate
+                    )
+            }
     }
 }

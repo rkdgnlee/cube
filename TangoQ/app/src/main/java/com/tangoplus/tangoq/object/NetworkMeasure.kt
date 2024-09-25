@@ -13,16 +13,27 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.Response
+import java.io.File
 import java.io.IOException
 
 object NetworkMeasure {
-    fun insertMeasurePartsByJson(myUrl:String, json: String, callback: () -> Unit, context: Context) {
+
+
+    fun insertMeasureData(myUrl:String, json: String, imageFile: File, videoFile: File, callback: () -> Unit, context: Context) {
         val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
+
+        val requestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("json", json)
+            .addFormDataPart("image", imageFile.name, imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull()))
+            .addFormDataPart("video", videoFile.name, videoFile.asRequestBody("video/mp4".toMediaTypeOrNull()))
+            .build()
+
         val request = Request.Builder()
             .url("${myUrl}/") // TODO URL 수정 필요
-            .post(body)
+            .post(requestBody)
             .build()
 
         client.newCall(request).enqueue(object : Callback {

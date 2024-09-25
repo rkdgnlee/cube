@@ -38,7 +38,6 @@ import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.UserViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
-import com.tangoplus.tangoq.`object`.DeepLinkUtil
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -94,24 +93,13 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         val displayMuscleList = fullmuscleList?.chunked(2)
             ?.map { it.first() }
-            ?.map { it to -1 }
             ?.toMutableList()
 
-        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle")
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle", "", viewModel)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
         // ------! 관련 관절, 근육 recyclerview 끝 !------
-
-        // ------! 공유 버튼 시작 !------
-        binding.ibtnPTDShare.setOnClickListener {
-            if (exerciseData != null) {
-                shareContent(exerciseData)
-            }
-        } // ------! 공유 버튼 끝 !------
-
-
-
 
         // -----! 하단 운동 시작 버튼 시작 !-----
         binding.btnPTDPlay.setOnClickListener {
@@ -195,27 +183,9 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             startActivity(intent)
         }
     }
-    // ------! 딥링크로 앱 공유 시작 !------
-
-    // 딥링크 생성
-    fun generateDeepLink(exercise: ExerciseVO): String {
-        val encodedData = DeepLinkUtil.encodeExercise(exercise)
-        return "tangoq://tangoq.com/content/$encodedData"
-    }
-
-    // 딥링크 공유
-    fun shareContent(content: ExerciseVO) {
-        val deepLink = generateDeepLink(content)
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.type = "text/plain"
-        shareIntent.putExtra(Intent.EXTRA_TEXT, deepLink)
-        startActivity(Intent.createChooser(shareIntent, "Share via"))
-    }
-    // ------! 딥링크로 앱 공유 끝 !------
 
     override fun onResume() {
         super.onResume()
-        // full Screen code
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -245,7 +215,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         simpleExoPlayer?.release()
-//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

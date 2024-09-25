@@ -17,32 +17,18 @@
             android:layout_height="wrap_content"
             android:background="@color/white">
 
-            <ImageButton
-                android:id="@+id/ibtnMDBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <TextView
                 android:id="@+id/textView40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:text="측정 이력"
                 android:textColor="@color/subColor800"
                 android:textSize="24dp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/ibtnMDBack"
-                app:layout_constraintStart_toEndOf="@+id/ibtnMDBack"
-                app:layout_constraintTop_toTopOf="@+id/ibtnMDBack" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/ibtnMDAlarm"
@@ -64,7 +50,7 @@
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ibtnMDBack" />
+                app:layout_constraintTop_toBottomOf="@+id/textView40" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider16"
@@ -205,7 +191,7 @@
         android:padding="16dp"
         android:stateListAnimator="@null"
         android:text="측정하기"
-        android:textColor="@color/white"
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@color/mainColor"
         app:iconTint="@color/black" />

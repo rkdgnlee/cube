@@ -151,9 +151,9 @@ class ExerciseRVAdapter (
                 if (episode?.doingExercises != null) {
                     val currentEpisodeItem = episode.doingExercises[position]
 
-                    val condition = if (currentEpisodeItem.viewCount!! > 0 && currentEpisodeItem.lastPosition!! <= 0) {
+                    val condition = if (currentEpisodeItem.regDate != null && currentEpisodeItem.lastPosition!! == 0) {
                         0
-                    } else if (currentEpisodeItem.viewCount == 0  && currentEpisodeItem.lastPosition!! > 0) {
+                    } else if (currentEpisodeItem.regDate != null && currentEpisodeItem.lastPosition!! > 0) {
                         1
                     } else {
                         2

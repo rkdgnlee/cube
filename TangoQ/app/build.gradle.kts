@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-//    id("kotlin-kapt")
 }
 
 android {
@@ -63,6 +62,7 @@ dependencies {
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
     implementation(libs.androidx.coordinatorlayout)
+    implementation(libs.androidx.runtime.android)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")

@@ -54,7 +54,6 @@ import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.service.MediaProjectionService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -512,12 +511,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val intent = Intent(this, MediaProjectionService::class.java)
-            intent.putExtra(MediaProjectionService.EXTRA_RESULT_CODE, resultCode)
-            intent.putExtra(MediaProjectionService.EXTRA_PROJECTION_DATA, data)
-            startService(intent)
-        }
+
     }
 
     override fun onResults(resultBundle: PoseLandmarkerHelper.ResultBundle) {

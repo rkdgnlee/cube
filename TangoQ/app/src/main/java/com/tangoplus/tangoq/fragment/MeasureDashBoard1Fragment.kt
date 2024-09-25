@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import androidx.annotation.OptIn
+import androidx.compose.runtime.mutableStateOf
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -83,23 +84,34 @@ class MeasureDashBoard1Fragment : Fragment() {
         // ------!  이름 + 통증 부위 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
-//        binding.tvMsUserName.text = t_userdata?.optString("user_name")
-//        binding.ibtnMsAlarm.setOnClickListener {
-//            val intent = Intent(requireContext(), AlarmActivity::class.java)
-//            startActivity(intent)
-//        }
-
         when (isNetworkAvailable(requireContext())) {
             true -> {
-                // ------! 뱃지 및 종합 접수 시작 !------
-                setBadgeOnFlR()
-                binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall}"
-                binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${viewModel.selectedMeasure?.regDate}"
-                binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
-                binding.clMD1PredictDicease.setOnClickListener{
-                    val dialog = ReportDiseaseDialogFragment()
-                    dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
+                try {
+                    if (singletonMeasure.measures?.size!! > 0) {
+                        val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
+                        binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall?: 0}"
+                        binding.tvMD1MeasureHistory.text = if (viewModel.selectedMeasure?.regDate == "") "측정기록없음" else "최근 측정 기록 - ${viewModel.selectedMeasure?.regDate?.substring(0, 10)}"
+                        binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
+                        binding.clMD1PredictDicease.setOnClickListener{
+                            hideBadgeFunction?.invoke()
+                            val dialog = ReportDiseaseDialogFragment()
+                            dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
+                        }
+                    } else {
+                        binding.tvMD1TotalScore.text = "0"
+                        binding.tvMD1MeasureHistory.text = "측정기록없음"
+                        binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
+                        binding.tvMD1Duration.text = "측정 기록 없음"
+                        val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
+                        params.horizontalBias = 0.5f
+                        binding.ivMD1Position.layoutParams = params
+                        binding.ivMD1Position.visibility = View.GONE
+                    }
+                } catch (e: NullPointerException) {
+                    Log.e("MD1Error", "$e")
                 }
+
+
             }
             false -> {
 
@@ -321,7 +333,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             invalidate()
         }
         // ------! 날짜 기간 가져오기 시작 !------
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val outputFormatter = DateTimeFormatter.ofPattern("MM.dd")
 
         val datesWithIndex = lcDataList.mapIndexedNotNull { index, pair ->
@@ -346,7 +358,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 e?.let { entry ->
                     val originalIndex = startIndex + entry.x.toInt()
                     val selectedData = lcDataList[originalIndex]
-                    val balloonText = if (selectedData.first != "") "측정날짜: ${selectedData.first}\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
+                    val balloonText = if (selectedData.first != "") "측정날짜: ${selectedData.first.substring(0, 10)}\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
                     val balloonlc1 = Balloon.Builder(requireContext())
                         .setWidthRatio(0.5f)
                         .setHeight(BalloonSizeSpec.WRAP)
@@ -370,9 +382,9 @@ class MeasureDashBoard1Fragment : Fragment() {
                     lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
                     balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
 
-                    Log.v("eeee", "e.x: ${e.x}, e.y: ${e.y}")
+
                 }
-                Log.v("eeee", "e.x: ${e?.x}, e.y: ${e?.y}")
+
             }
             override fun onNothingSelected() {}
         })
@@ -400,7 +412,7 @@ class MeasureDashBoard1Fragment : Fragment() {
 //
         // ------! balloon 시작 !------
         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-        params.horizontalBias = 0.731f
+//        params.horizontalBias = 0.731f
         binding.ivMD1Position.layoutParams = params
         val percent = (params.horizontalBias * 100).toInt()
 
@@ -672,28 +684,6 @@ class MeasureDashBoard1Fragment : Fragment() {
     fun calculatePercentile(value: Double, mean: Double, stdDev: Double): Double {
         val normalDistribution = NormalDistribution(mean, stdDev)
         return normalDistribution.cumulativeProbability(value) * 100
-    }
-
-    @OptIn(ExperimentalBadgeUtils::class)
-    private fun setBadgeOnFlR() {
-        // ------! 분석 뱃지 시작 !------
-        val badgeDrawable = BadgeDrawable.create(requireContext()).apply {
-            backgroundColor = ContextCompat.getColor(requireContext(), R.color.thirdColor)
-            badgeGravity = BadgeDrawable.TOP_START
-            horizontalOffset = 12  // 원하는 가로 간격 (픽셀 단위)
-            verticalOffset = 12  // 원하는 세로 간격 (픽셀 단위)
-
-        }
-
-        val layoutParams = binding.tvMD1Badge.layoutParams as FrameLayout.LayoutParams
-        layoutParams.marginStart = 20  // 오른쪽 마진
-        layoutParams.topMargin = 20  // 위쪽 마진
-        binding.tvMD1Badge.layoutParams = layoutParams
-
-        // 뱃지를 View에 연결
-        binding.flMD1.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            BadgeUtils.attachBadgeDrawable(badgeDrawable, binding.tvMD1Badge, binding.flMD1)
-        } // ------! 분석 뱃지 끝 !------
     }
 
     private fun getCurrentMonthInKorean(month: YearMonth): String {

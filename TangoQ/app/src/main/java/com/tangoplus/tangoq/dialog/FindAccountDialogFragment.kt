@@ -68,7 +68,6 @@ class FindAccountDialogFragment : DialogFragment() {
         binding.btnFADAuthSend.isEnabled = false
         // ------! 초기 세팅 끝 !------
 
-        binding.ibtnFADBack.setOnClickListener { dismiss() }
         // ------! 탭으로 아이디 비밀번호 레이아웃 나누기 시작 !------
         binding.tlFAB.addOnTabSelectedListener(object : OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {

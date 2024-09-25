@@ -7,35 +7,61 @@
     android:background="@color/white"
     tools:context=".fragment.MeasureAnalysisFragment">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tlMP"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/background_tablayout_underline"
-        app:tabIndicatorAnimationDuration="400"
-        app:tabIndicatorColor="@color/secondaryColor"
-        app:tabIndicatorFullWidth="true"
-        app:tabPaddingEnd="0dp"
-        app:tabPaddingStart="0dp"
-        app:tabRippleColor="#20FFFFFF"
-        app:tabSelectedTextColor="@color/secondaryColor"
-        app:tabTextAppearance="@style/TabLayoutTextStyle"
-        app:tabTextColor="@color/secondPrimaryColor">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tlMP"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="__ 측정" />
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/background_tablayout_underline"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabIndicatorAnimationDuration="400"
+            app:tabIndicatorColor="@color/secondaryColor"
+            app:tabIndicatorFullWidth="true"
+            app:tabPaddingEnd="0dp"
+            app:tabPaddingStart="0dp"
+            app:tabRippleColor="#20FFFFFF"
+            app:tabSelectedTextColor="@color/secondaryColor"
+            app:tabTextAppearance="@style/TabLayoutTextStyle"
+            app:tabTextColor="@color/secondPrimaryColor">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="__ 측정" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="__ 측정" />
 
-    </com.google.android.material.tabs.TabLayout>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="__ 측정" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <TextView
+            android:id="@+id/tvMPTitle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/background_bottom_divider"
+            android:gravity="center"
+            android:text="__측정"
+            android:textColor="@color/subColor800"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/tlMP"
+            app:layout_constraintEnd_toEndOf="@+id/tlMP"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/tlMP"
+            app:layout_constraintTop_toTopOf="@+id/tlMP"
+            app:layout_constraintWidth_percent="0.45" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvMP"

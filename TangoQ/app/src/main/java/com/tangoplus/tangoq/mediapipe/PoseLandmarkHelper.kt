@@ -16,6 +16,9 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class PoseLandmarkerHelper(
@@ -106,8 +109,12 @@ class PoseLandmarkerHelper(
                     .setErrorListener(this::returnLivestreamError)
             }
 
-            val options = optionsBuilder.build()
-            poseLandmarker = PoseLandmarker.createFromOptions(context, options)
+
+            CoroutineScope(Dispatchers.Main).launch {
+                val options = optionsBuilder.build()
+                poseLandmarker = PoseLandmarker.createFromOptions(context, options)
+            }
+
         } catch (e: IllegalStateException) {
             poseLandmarkerHelperListener?.onError(
                 "Pose Landmarker failed to initialize. See error logs for " +
@@ -314,7 +321,6 @@ class PoseLandmarkerHelper(
         return null
     }
 
-
     // poseLandmarker?.Detect()가 null을 반환하는 경우 이는 오류일 가능성이 높습니다. null 반환
     // 이를 나타냅니다.
     private fun returnLivestreamResult(
@@ -350,12 +356,9 @@ class PoseLandmarkerHelper(
         const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.5F
         const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.5F
         const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.5F
-        const val DEFAULT_NUM_POSES = 1
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
         const val MODEL_POSE_LANDMARKER_FULL = 0
-        const val MODEL_POSE_LANDMARKER_LITE = 1
-        const val MODEL_POSE_LANDMARKER_HEAVY = 2
     }
     data class ResultBundle(
         var results: List<PoseLandmarkerResult>,

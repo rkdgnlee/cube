@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -101,7 +102,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_20dp)
                 if (adapterPosition == selectedPosition) {
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondaryColor)
-                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.white))
+                    holder.tvSCName.setTextColor(Color.WHITE)
                 } else {
                     holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor100)

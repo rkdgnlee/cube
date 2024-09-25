@@ -207,7 +207,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
                         // ------# 카운트다운 후 검색 기록 담기 #------
                         val historyUnitVO = HistoryUnitVO(
                             sns!![currentWindowIndex - 1],
-                            1,
                             0,
                             getCurrentDateTimeAsString(),
                         )
@@ -270,9 +269,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
                 // ------# 시청 기록 일시 중단 항목 #------
                 val historyUnitVO = HistoryUnitVO(
-                    exerciseId = currentExerciseId,
+                    currentExerciseId,
                     elapsedSeconds,
-                    null ,
                     getCurrentDateTimeAsString()
                 )
                 Log.v("sendingHistory>VM", "${viewModel.finishHistorys}")

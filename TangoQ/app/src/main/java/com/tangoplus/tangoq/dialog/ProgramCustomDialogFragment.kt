@@ -19,7 +19,7 @@ import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignBottom
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.CustomExerciseRVAdapter
+import com.tangoplus.tangoq.adapter.ProgramCustomRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.data.EpisodeVO
 import com.tangoplus.tangoq.data.ExerciseVO
@@ -54,24 +54,20 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
-        binding.ibtnCEDMore.setOnClickListener {  }
-
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
 
         if (hViewModel.currentProgram?.programSn != -1) {
-            binding.etCEDTitle.isEnabled = false
-            binding.btnCEDRight.text = "운동 시작하기"
-            binding.btnCEDLeft.visibility = View.GONE
+            binding.etPCDTitle.isEnabled = false
+            binding.btnPCDRight.text = "운동 시작하기"
+            binding.btnPCDLeft.visibility = View.GONE
 
             // ------# select program으로 필터링 했을 때 #------
         } else if (hViewModel.currentProgram?.programSn == -1) {
-            binding.btnCEDRight.text = "프로그램 선택하기"
-            binding.ibtnCEDTop.setImageDrawable(resources.getDrawable(R.drawable.icon_edit))
-            binding.etCEDTitle.isEnabled = true
-            binding.btnCEDLeft.visibility = View.VISIBLE
+            binding.btnPCDRight.text = "프로그램 선택하기"
+            binding.ibtnPCDTop.setImageDrawable(resources.getDrawable(R.drawable.icon_edit))
+            binding.etPCDTitle.isEnabled = true
+            binding.btnPCDLeft.visibility = View.VISIBLE
         }
 
 //      program = ProgramVO(-1, "",  "", "",0,0 ,0,mutableListOf())
@@ -79,19 +75,19 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
         // ------! 요약 시작 !------
         // TODO 주차별 운동 변동해야함.
-        binding.etCEDTitle.setText(hViewModel.currentProgram?.programName)
+        binding.etPCDTitle.setText(hViewModel.currentProgram?.programName)
 
-        binding.tvCEDTime.text = (if (hViewModel.currentProgram?.programTime!! <= 60) {
+        binding.tvPCDTime.text = (if (hViewModel.currentProgram?.programTime!! <= 60) {
             "${hViewModel.currentProgram?.programTime}초"
         } else {
             "${hViewModel.currentProgram?.programTime!! / 60}분 ${hViewModel.currentProgram?.programTime!! % 60}초"
         }).toString()
         when (hViewModel.currentProgram?.programStage) {
-            "초급" -> binding.tvCEDStage.text = "초급자"
-            "중급" -> binding.tvCEDStage.text = "중급자"
-            "고급" -> binding.tvCEDStage.text = "상급자"
+            "초급" -> binding.tvPCDStage.text = "초급자"
+            "중급" -> binding.tvPCDStage.text = "중급자"
+            "고급" -> binding.tvPCDStage.text = "상급자"
         }
-        binding.tvCEDCount.text = "${hViewModel.currentProgram?.programCount} 개"
+        binding.tvPCDCount.text = "${hViewModel.currentProgram?.programCount} 개"
 
         val userSn = userJson?.optString("user_sn").toString()
         val prefsManager = PreferencesManager(requireContext())
@@ -113,11 +109,12 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         val weeksPassed = ChronoUnit.WEEKS.between(programStartDate, nowDate).toInt() // 3으로 나온다. 그러면 4주차가 나옴
         Log.v("weekPassed", "${weeksPassed}")
         hViewModel.currentWeek = weeksPassed
+        hViewModel.selectWeek.value = weeksPassed
         hViewModel.selectedWeek.value = weeksPassed
 
         // ------! 회차 계산 시작 !------
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val lastRegDateStr = hViewModel.allHistorys.find { it.viewCount == 0 && it.lastPosition!! > 0 }?.regDate
+        val lastRegDateStr = hViewModel.allHistorys.find { it.regDate != null && it.lastPosition!! > 0 }?.regDate
 
         val lastRegDate = LocalDateTime.parse(lastRegDateStr, formatter).toLocalDate()
 
@@ -139,25 +136,26 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         // ------# 프로그램 기간 만료 #------
         val programEndDate = programStartDate.plusWeeks(hViewModel.currentProgram!!.programWeek.toLong()).minusDays(1)
         Log.v("programDates", "프로그램 시작날짜: ${programStartDate}, 종료날짜: ${programEndDate}")
-        if (LocalDate.now() == programEndDate) {
+        if (LocalDate.now().isAfter(programEndDate)) {
             val programAlertDialogFragment = ProgramAlertDialogFragment.newInstance(this)
             programAlertDialogFragment.show(childFragmentManager, "ProgramAlertDialogFragment")
+
+        } else {
+            // ------# 데이터 가져온 후 #------
+            setAdapter(hViewModel.currentProgram!!, historys, hViewModel.selectedWeek.value!!,   hViewModel.currentEpisode)
+
+            hViewModel.selectedWeek.observe(viewLifecycleOwner) {
+                binding.tvPCDWeekly.text = "${it+1}/${hViewModel.currentProgram!!.programWeek} 주차"
+                setAdapter(hViewModel.currentProgram!!, historys, it,  hViewModel.currentEpisode)
+            }
         }
-
-
-
-        // ------# 데이터 가져온 후 #------
-        setAdapter(hViewModel.currentProgram!!, historys, hViewModel.selectedWeek.value!!,   hViewModel.currentEpisode)
 
         // ------! 주차 변경 시작 !------
-        binding.tvCEDWeekly.setOnClickListener {
-            val dialog = ExerciseWeeklyBSDialogFragment()
+        binding.tvPCDWeekly.setOnClickListener {
+            val dialog = ProgramWeeklyBSDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "ExerciseWeeklyBSDialogFragment")
         }
-        hViewModel.selectedWeek.observe(viewLifecycleOwner) {
-            binding.tvCEDWeekly.text = "${it+1}/${hViewModel.currentProgram!!.programWeek} 주차"
-            setAdapter(hViewModel.currentProgram!!, historys, it,  hViewModel.currentEpisode)
-        }
+
 
 
 
@@ -165,9 +163,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
 
 
-        binding.btnCEDLeft.setOnClickListener { dismiss() }
-        binding.btnCEDRight.setOnClickListener {
-            when (binding.btnCEDRight.text) {
+        binding.btnPCDLeft.setOnClickListener { dismiss() }
+        binding.btnPCDRight.setOnClickListener {
+            when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
                     val videoUrls = storeUrls(hViewModel.currentProgram?.exercises!![hViewModel.selectedWeek.value!!].toMutableList())
                     val exerciseIds = hViewModel.currentProgram?.exercises!![hViewModel.selectedWeek.value!!].filter { exercise ->
@@ -175,7 +173,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             history.exerciseId == exercise.exerciseId
                         }
 
-                        relevantHistories.any { it.viewCount == 0 } || relevantHistories.any { it.lastPosition!! > 0 }
+                        relevantHistories.any { it.regDate == null } || relevantHistories.any { it.lastPosition!! > 0 }
                     }.map { it.exerciseId }.toMutableList()
                     Log.v("안본 것들만 filter", "${exerciseIds}")
 
@@ -210,12 +208,12 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             .build()
 
         if (isFirstRun("CustomExerciseDialogFragment_isFirstRun")) {
-            binding.ibtnCEDTop.showAlignBottom(balloon2)
+            binding.ibtnPCDTop.showAlignBottom(balloon2)
             balloon2.dismissWithDelay(1800L)
         }
 
 
-        binding.ibtnCEDTop.setOnClickListener { it.showAlignBottom(balloon2) }
+        binding.ibtnPCDTop.setOnClickListener { it.showAlignBottom(balloon2) }
 
 
     }
@@ -253,16 +251,16 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
         /* currentEpisode 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
         hViewModel.selectedEpisode.value = episode
-        val adapter = CustomExerciseRVAdapter(this@ProgramCustomDialogFragment, historys[week], Pair(hViewModel.currentWeek, week), Pair(hViewModel.currentEpisode, hViewModel.selectedEpisode.value!!), this@ProgramCustomDialogFragment)
+        val adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment, historys[week], Pair(hViewModel.currentWeek, week), Pair(hViewModel.currentEpisode, hViewModel.selectedEpisode.value!!), this@ProgramCustomDialogFragment)
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.rvCEDHorizontal.layoutManager = layoutManager
-        binding.rvCEDHorizontal.adapter = adapter
+        binding.rvPCDHorizontal.layoutManager = layoutManager
+        binding.rvPCDHorizontal.adapter = adapter
         adapter.notifyDataSetChanged()
 
         val adapter2 = ExerciseRVAdapter(this@ProgramCustomDialogFragment, program.exercises!![week].toMutableList(), historys.get(week).get(episode), "main")
-        binding.rvCED.adapter = adapter2
+        binding.rvPCD.adapter = adapter2
         val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvCED.layoutManager = layoutManager2
+        binding.rvPCD.layoutManager = layoutManager2
 
         adapter2.notifyDataSetChanged()
     }

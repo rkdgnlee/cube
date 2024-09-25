@@ -102,12 +102,6 @@
             android:exported="true" />
 
         <service
-            android:name=".service.MediaProjectionService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection"
-            android:permission="android.permission.FOREGROUND_SERVICE" />
-        <service
             android:name=".service.BluetoothLeService"
             android:enabled="true"
             android:exported="false"

@@ -122,7 +122,7 @@ class SignInActivity : AppCompatActivity() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 this@SignInActivity.verificationId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId ,token: $token")
+                Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId.toString().substring(0, 5)} ,token: ${token.toString().substring(0, 5)}")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSignIn), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 binding.btnAuthConfirm.isEnabled = true
@@ -184,9 +184,19 @@ class SignInActivity : AppCompatActivity() {
                 alphaAnimation.duration = 600
                 binding.etId.startAnimation(alphaAnimation)
                 binding.llId.startAnimation(alphaAnimation)
+                binding.llPwCondition.startAnimation(alphaAnimation)
+                binding.etPw.startAnimation(alphaAnimation)
+                binding.llPwRepeat.startAnimation(alphaAnimation)
+                binding.etPwRepeat.startAnimation(alphaAnimation)
+                binding.btnSignIn.startAnimation(alphaAnimation)
+
                 binding.etId.visibility = View.VISIBLE
                 binding.llId.visibility = View.VISIBLE
-
+                binding.llPwCondition.visibility = View.VISIBLE
+                binding.etPw.visibility = View.VISIBLE
+                binding.llPwRepeat.visibility = View.VISIBLE
+                binding.etPwRepeat.visibility = View.VISIBLE
+                binding.btnSignIn.visibility = View.VISIBLE
                 val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                 objectAnimator.duration = 1000
                 objectAnimator.start()
@@ -230,17 +240,7 @@ class SignInActivity : AppCompatActivity() {
                 val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                 alphaAnimation.duration = 600
 
-                binding.llPwCondition.startAnimation(alphaAnimation)
-                binding.etPw.startAnimation(alphaAnimation)
-                binding.llPwRepeat.startAnimation(alphaAnimation)
-                binding.etPwRepeat.startAnimation(alphaAnimation)
-                binding.btnSignIn.startAnimation(alphaAnimation)
 
-                binding.llPwCondition.visibility = View.VISIBLE
-                binding.etPw.visibility = View.VISIBLE
-                binding.llPwRepeat.visibility = View.VISIBLE
-                binding.etPwRepeat.visibility = View.VISIBLE
-                binding.btnSignIn.visibility = View.VISIBLE
 
 
                 val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
@@ -297,11 +297,11 @@ class SignInActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 viewModel.idCondition.value = idPatternCheck.matcher(binding.etId.text.toString()).find()
                 if (viewModel.idCondition.value == true) {
-                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor))
+                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvIdCondition.text = "사용 가능합니다"
                     viewModel.User.value?.put("user_id", s.toString())
                 } else {
-                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor))
+                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
                     binding.tvIdCondition.text = "다시 입력해주세요"
                 }
             }
@@ -314,11 +314,11 @@ class SignInActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 viewModel.pwCondition.value = pwPatternCheck.matcher(binding.etPw.text.toString()).find()
                 if (viewModel.pwCondition.value == true) {
-                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor))
+                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwCondition.text = "사용 가능합니다"
 
                 } else {
-                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor))
+                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
 //                    binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ? .)를 모두 포함해서 8~20자리를 입력해주세요"
                     binding.tvPwCondition.text = ""
                 }
@@ -332,14 +332,14 @@ class SignInActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 viewModel.pwCompare.value = (binding.etPw.text.toString() == binding.etPwRepeat.text.toString())
                 if (viewModel.pwCompare.value == true) {
-                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor))
+                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwRepeat.text = "일치합니다"
                     binding.pvSignIn.progress = 100
                     binding.svSignIn.go(3, true)
                     binding.tvSignInGuide.text = "하단의 완료 버튼을 눌러주세요"
                     binding.btnSignIn.isEnabled = true
                 } else {
-                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor))
+                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
                     binding.tvPwRepeat.text = "다시 입력해주세요"
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----

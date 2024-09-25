@@ -78,7 +78,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
     private fun dialogFragmentResize() {
         val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val width = 0.8f
-        val height = 0.45f
+        val height = 0.5f
         if (Build.VERSION.SDK_INT < 30) {
             val display = windowManager.defaultDisplay
             val size = Point()

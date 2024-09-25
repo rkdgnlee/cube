@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.HistorySummaryVO
 import com.tangoplus.tangoq.data.HistoryUnitVO
 import com.tangoplus.tangoq.databinding.RvDashboard2ItemBinding
 import java.time.LocalDateTime
@@ -15,7 +17,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-class MD2RVAdpater(private val fragment: Fragment, val data: MutableList<HistoryUnitVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MD2RVAdpater(private val fragment: Fragment, val data: List<HistorySummaryVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvD2IDate : TextView = view.findViewById(R.id.tvD2IDate)
@@ -29,13 +31,14 @@ class MD2RVAdpater(private val fragment: Fragment, val data: MutableList<History
         return viewHolder(binding.root)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = data[position]
 
         if (holder is viewHolder) {
             holder.tvD2ICount.text = "현재까지 반복한 횟수: ${currentItem.viewCount}번"
-            holder.tvD2IDate.text = "${convertDateString(currentItem.regDate.toString())}"
-            holder.tvD2ITitle.text = "${currentItem.exerciseId}"
+            holder.tvD2IDate.text = "마지막 완료 일자: ${convertDateString(currentItem.lastViewDate.toString())}"
+//            holder.tvD2ITitle.text = "${currentItem.exerciseId}"
         }
     }
 

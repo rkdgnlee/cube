@@ -1,18 +1,24 @@
 package com.tangoplus.tangoq
 
+import android.app.Activity
 import android.app.UiModeManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.data.EpisodeVO
@@ -28,12 +34,18 @@ import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
+import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgramVOBySn
 import com.tangoplus.tangoq.`object`.Singleton_t_history
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -57,6 +69,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var program : ProgramVO
     private val _dataLoaded = MutableLiveData<Boolean>()
     val dataLoaded: LiveData<Boolean> = _dataLoaded
+    private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
 //    lateinit var  healthConnectClient : HealthConnectClient
 //    val endTime = LocalDateTime.now()
 //    val startTime = LocalDateTime.now().minusDays(1)
@@ -112,8 +125,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        measureSkeletonLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val finishedMeasure = result.data?.getBooleanExtra("finishedMeasure", false) ?: false
+                if (finishedMeasure) {
+                    mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+                    mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
+
+
+                    val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
+                    bnb.selectedItemId = R.id.measure
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flMain, MeasureDetailFragment())
+                        addToBackStack(null)
+                        commit()
+                    }
+                }
+            }
+        }
         // ------# 현재 진행 프로그램 #------
-        lifecycleScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
 
             // TODO 여기서 기존 유저 -> 선택된 프로그램 불러오기 or 신규 유저 -> 본인이 원하는 프로그램 선택하기 전까지 빈 program
 
@@ -124,159 +155,164 @@ class MainActivity : AppCompatActivity() {
             }
             hViewModel.currentProgram = program
 
-            val mjo1 = JSONObject().apply {
-                put("front_horizontal_angle_ear", -178.315)
-                put("front_horizontal_distance_sub_ear", 0.17671)
-                put("front_horizontal_angle_shoulder", -177.563)
-                put("front_horizontal_distance_sub_shoulder", 1.6494)
-                put("front_horizontal_angle_elbow", -179.518)
-                put("front_horizontal_distance_sub_elbow", 0.454279)
-                put("front_horizontal_angle_wrist", 179.518)
-                put("front_horizontal_distance_sub_wrist", -0.57936)
-                put("front_horizontal_angle_hip", -178.958)
-                put("front_horizontal_distance_sub_hip", 0.405051)
-                put("front_horizontal_angle_knee", -172.875)
-                put("front_horizontal_distance_sub_knee", 1.86277)
-                put("front_horizontal_angle_ankle", 0)
-                put("front_horizontal_distance_sub_ankle", 0)
-
-                put("front_horizontal_distance_wrist_left", 24.513)
-                put("front_horizontal_distance_wrist_right", 20.9849)
-                put("front_horizontal_distance_knee_left", 10.797)
-                put("front_horizontal_distance_knee_right", 7.42002)
-                put("front_horizontal_distance_ankle_left", 10.0549)
-                put("front_horizontal_distance_ankle_right", 10.0549)
-
-                put("front_vertical_angle_shoulder_elbow_left", 82.7757)
-                put("front_vertical_angle_shoulder_elbow_right", 77.7995)
-                put("front_vertical_angle_elbow_wrist_left", 91.9415)
-                put("front_vertical_angle_elbow_wrist_right", 88.1221)
-                put("front_vertical_angle_hip_knee_left", 93.2397)
-                put("front_vertical_angle_hip_knee_right", 90.5673)
-                put("front_vertical_angle_knee_ankle_left", 91.7899)
-                put("front_vertical_angle_knee_ankle_right", 86.4604)
-                put("front_vertical_angle_shoulder_elbow_wrist_left", 170.834)
-                put("front_vertical_angle_shoulder_elbow_wrist_right", 169.677)
-                put("front_vertical_angle_hip_knee_ankle_left", 178.55)
-                put("front_vertical_angle_hip_knee_ankle_right", 175.893)
-
-                // 팔꿉
-                put("front_horizontal_angle_thumb", 0.0)
-                put("front_horizontal_distance_sub_thumb", 0.0)
-                put("front_horizontal_distance_thumb_left", 20.8453)
-                put("front_horizontal_distance_thumb_right", 0.0)
-
-                put("front_hand_angle_thumb_cmc_tip_left", 99.4623)
-                put("front_hand_angle_thumb_cmc_tip_right", 0.0)
-                put("front_hand_distance_index_pinky_mcp_left", 2.62518)
-                put("front_hand_distance_index_pinky_mcp_right", 0.0)
-                put("front_hand_angle_elbow_wrist_mid_finger_mcp_left", 176.108)
-                put("front_hand_angle_elbow_wrist_mid_finger_mcp_right", 0.0)
-
-                put("front_elbow_align_angle_left_upper_elbow_elbow_wrist", 30.9638)
-                put("front_elbow_align_angle_right_upper_elbow_elbow_wrist", 36.6561)
-                put("front_elbow_align_distance_left_wrist_shoulder", 7.08502)
-                put("front_elbow_align_distance_right_wrist_shoulder", 5.98912)
-                put("front_elbow_align_distance_wrist_height", -1.8121)
-
-                put("front_elbow_align_distance_mid_index_height", 0.0)
-                put("front_elbow_align_distance_shoulder_mid_index_left", 0.0)
-                put("front_elbow_align_distance_shoulder_mid_index_right", 0.0)
-
-                put("front_elbow_align_angle_mid_index_wrist_elbow_left", 0)
-                put("front_elbow_align_angle_mid_index_wrist_elbow_right", 179.31)
-                put("front_elbow_align_angle_left_shoulder_elbow_wrist", 21)
-                put("front_elbow_align_angle_right_shoulder_elbow_wrist", 23.7181)
-
-                put("front_elbow_align_distance_center_mid_finger_left", 0)
-                put("front_elbow_align_distance_center_mid_finger_right", 5.31334)
-                put("front_elbow_align_distance_center_wrist_left", 12.2275)
-                put("front_elbow_align_distance_center_wrist_right", 9.36387)
-
-                // 2. 측면
-                put("side_left_horizontal_distance_shoulder", 1.48447)
-                put("side_left_horizontal_distance_hip", 1.8291)
-                put("side_left_horizontal_distance_pinky", 8.3724)
-                put("side_left_horizontal_distance_wrist", 9.15559)
-
-                put("side_left_vertical_angle_shoulder_elbow", 96.5819)
-                put("side_left_vertical_angle_elbow_wrist", 100.376)
-                put("side_left_vertical_angle_hip_knee", 91.7184)
-                put("side_left_vertical_angle_ear_shoulder", 82.5686)
-                put("side_left_vertical_angle_nose_shoulder", 55.9807)
-                put("side_left_vertical_angle_shoulder_elbow_wrist", 176.206)
-                put("side_left_vertical_angle_hip_knee_ankle", 173.925)
-
-
-                put("side_right_horizontal_distance_shoulder", 4.0316)
-                put("side_right_horizontal_distance_hip", 9.56569)
-                put("side_right_horizontal_distance_pinky", 5.03904)
-                put("side_right_horizontal_distance_wrist", 7.88262)
-
-                put("side_right_vertical_angle_shoulder_elbow", 84.7376)
-                put("side_right_vertical_angle_elbow_wrist", 104.421)
-                put("side_right_vertical_angle_hip_knee", 86.0741)
-                put("side_right_vertical_angle_ear_shoulder", 74.1975)
-                put("side_right_vertical_angle_nose_shoulder", 51.8924)
-                put("side_right_vertical_angle_shoulder_elbow_wrist", 160.317)
-                put("side_right_vertical_angle_hip_knee_ankle", 173.142)
-
-                // 3. 후면
-                put("back_horizontal_angle_ear", -1.84761)
-                put("back_horizontal_distance_sub_ear", 0.219524)
-                put("back_horizontal_angle_shoulder", -1.71836)
-                put("back_horizontal_distance_sub_shoulder", 0.329086)
-                put("back_horizontal_angle_elbow", 1.49433)
-                put("back_horizontal_distance_sub_elbow", -1.50296)
-                put("back_horizontal_angle_wrist", 0.458356)
-                put("back_horizontal_distance_sub_wrist", 0.186689)
-                put("back_horizontal_angle_hip", 1.14576)
-                put("back_horizontal_distance_sub_hip", -0.107886)
-                put("back_horizontal_angle_knee", 12.5288)
-                put("back_horizontal_distance_sub_knee", -2.45158)
-                put("back_horizontal_angle_ankle", 9.61973)
-                put("back_horizontal_distance_sub_ankle", -2.12846)
-
-                put("back_horizontal_distance_wrist_left", 19.7794)
-                put("back_horizontal_distance_wrist_right", 28.3849)
-                put("back_horizontal_distance_knee_left", 8.36942)
-                put("back_horizontal_distance_knee_right", 11.6458)
-
-                put("back_vertical_angle_shoudler_center_hip", 88.1759)
-                put("back_vertical_angle_nose_center_hip", 90)
-                put("back_vertical_angle_nose_center_shoulder", 96.0725)
-                put("back_vertical_angle_knee_heel_left", 95.2812)
-                put("back_vertical_angle_knee_heel_right", 87.594)
-
-
-                // 6. 앉아
-                put("back_sit_horizontal_angle_ear", -2.86241)
-                put("back_sit_horizontal_distance_sub_ear", 0.719041)
-                put("back_sit_horizontal_angle_shoulder", -0.902221)
-                put("back_sit_horizontal_distance_sub_shoulder", 0.627342)
-                put("back_sit_horizontal_angle_hip", -1.59114)
-                put("back_sit_horizontal_distance_sub_hip", 0.432825)
-
-                // 이거 measureSkeleton에ㅐ 추가해야 함 
-                put("back_sit_vertical_angle_nose_left_shoulder_right_shoulder", 48.6883) // 양 어깨와 코 삼각형의 왼 어깨 각도
-                put("back_sit_vertical_angle_left_shoulder_right_shoulder_nose", 49.2687) // 양 어깨와 코 삼각형의 오른 어깨 각도
-                put("back_sit_vertical_angle_right_shoulder_left_shoulder_nose", 82.043) // 양 어깨와 코 삼각형의 오른 어깨 각도
-                // 삼각형의 각각의 각도
-                put("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder", 41.1265) // 양 어깨 - 골반 중앙 삼각형의 중앙 각도
-                put("back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder", 71.1699) // 양 어깨 - 골반 중앙 삼각형의 오른 어깨 각도
-                put("back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip", 67.7036) // 양 어깨 - 골반 중앙 삼각형의 왼 어깨 각도
-                put("back_sit_vertical_angle_shoulder_center_hip", 87.1376) // 앉아서 어깨와 골반  중앙 각도
-
-
-
-                // 4. 스쿼트
-//                put("ohs_front_horizontal_angle_mid_finger_tip",)
-//                put("ohs_front_horizontal_angle_hip",)
-//                put("ohs_front_horizontal_angle_knee",)
-
+//            val mjo1 = JSONObject().apply {
+//                put("front_horizontal_angle_ear", -178.315)
+//                put("front_horizontal_distance_sub_ear", 0.17671)
+//                put("front_horizontal_angle_shoulder", -177.563)
+//                put("front_horizontal_distance_sub_shoulder", 1.6494)
+//                put("front_horizontal_angle_elbow", -179.518)
+//                put("front_horizontal_distance_sub_elbow", 0.454279)
+//                put("front_horizontal_angle_wrist", 179.518)
+//                put("front_horizontal_distance_sub_wrist", -0.57936)
+//                put("front_horizontal_angle_hip", -178.958)
+//                put("front_horizontal_distance_sub_hip", 0.405051)
+//                put("front_horizontal_angle_knee", -172.875)
+//                put("front_horizontal_distance_sub_knee", 1.86277)
+//                put("front_horizontal_angle_ankle", 0)
+//                put("front_horizontal_distance_sub_ankle", 0)
+//
+//                put("front_horizontal_distance_wrist_left", 24.513)
+//                put("front_horizontal_distance_wrist_right", 20.9849)
+//                put("front_horizontal_distance_knee_left", 10.797)
+//                put("front_horizontal_distance_knee_right", 7.42002)
+//                put("front_horizontal_distance_ankle_left", 10.0549)
+//                put("front_horizontal_distance_ankle_right", 10.0549)
+//
+//                put("front_vertical_angle_shoulder_elbow_left", 82.7757)
+//                put("front_vertical_angle_shoulder_elbow_right", 77.7995)
+//                put("front_vertical_angle_elbow_wrist_left", 91.9415)
+//                put("front_vertical_angle_elbow_wrist_right", 88.1221)
+//                put("front_vertical_angle_hip_knee_left", 93.2397)
+//                put("front_vertical_angle_hip_knee_right", 90.5673)
+//                put("front_vertical_angle_knee_ankle_left", 91.7899)
+//                put("front_vertical_angle_knee_ankle_right", 86.4604)
+//                put("front_vertical_angle_shoulder_elbow_wrist_left", 170.834)
+//                put("front_vertical_angle_shoulder_elbow_wrist_right", 169.677)
+//                put("front_vertical_angle_hip_knee_ankle_left", 178.55)
+//                put("front_vertical_angle_hip_knee_ankle_right", 175.893)
+//
+//                // 팔꿉
+//                put("front_horizontal_angle_thumb", 0.0)
+//                put("front_horizontal_distance_sub_thumb", 0.0)
+//                put("front_horizontal_distance_thumb_left", 20.8453)
+//                put("front_horizontal_distance_thumb_right", 0.0)
+//
+//                put("front_hand_angle_thumb_cmc_tip_left", 99.4623)
+//                put("front_hand_angle_thumb_cmc_tip_right", 0.0)
+//                put("front_hand_distance_index_pinky_mcp_left", 2.62518)
+//                put("front_hand_distance_index_pinky_mcp_right", 0.0)
+//                put("front_hand_angle_elbow_wrist_mid_finger_mcp_left", 176.108)
+//                put("front_hand_angle_elbow_wrist_mid_finger_mcp_right", 0.0)
+//
+//                put("front_elbow_align_angle_left_upper_elbow_elbow_wrist", 30.9638)
+//                put("front_elbow_align_angle_right_upper_elbow_elbow_wrist", 36.6561)
+//                put("front_elbow_align_distance_left_wrist_shoulder", 7.08502)
+//                put("front_elbow_align_distance_right_wrist_shoulder", 5.98912)
+//                put("front_elbow_align_distance_wrist_height", -1.8121)
+//
+//                put("front_elbow_align_distance_mid_index_height", 0.0)
+//                put("front_elbow_align_distance_shoulder_mid_index_left", 0.0)
+//                put("front_elbow_align_distance_shoulder_mid_index_right", 0.0)
+//
+//                put("front_elbow_align_angle_mid_index_wrist_elbow_left", 0)
+//                put("front_elbow_align_angle_mid_index_wrist_elbow_right", 179.31)
+//                put("front_elbow_align_angle_left_shoulder_elbow_wrist", 21)
+//                put("front_elbow_align_angle_right_shoulder_elbow_wrist", 23.7181)
+//
+//                put("front_elbow_align_distance_center_mid_finger_left", 0)
+//                put("front_elbow_align_distance_center_mid_finger_right", 5.31334)
+//                put("front_elbow_align_distance_center_wrist_left", 12.2275)
+//                put("front_elbow_align_distance_center_wrist_right", 9.36387)
+//
+//                // 2. 측면
+//                put("side_left_horizontal_distance_shoulder", 1.48447)
+//                put("side_left_horizontal_distance_hip", 1.8291)
+//                put("side_left_horizontal_distance_pinky", 8.3724)
+//                put("side_left_horizontal_distance_wrist", 9.15559)
+//
+//                put("side_left_vertical_angle_shoulder_elbow", 96.5819)
+//                put("side_left_vertical_angle_elbow_wrist", 100.376)
+//                put("side_left_vertical_angle_hip_knee", 91.7184)
+//                put("side_left_vertical_angle_ear_shoulder", 82.5686)
+//                put("side_left_vertical_angle_nose_shoulder", 55.9807)
+//                put("side_left_vertical_angle_shoulder_elbow_wrist", 176.206)
+//                put("side_left_vertical_angle_hip_knee_ankle", 173.925)
+//
+//
+//                put("side_right_horizontal_distance_shoulder", 4.0316)
+//                put("side_right_horizontal_distance_hip", 9.56569)
+//                put("side_right_horizontal_distance_pinky", 5.03904)
+//                put("side_right_horizontal_distance_wrist", 7.88262)
+//
+//                put("side_right_vertical_angle_shoulder_elbow", 84.7376)
+//                put("side_right_vertical_angle_elbow_wrist", 104.421)
+//                put("side_right_vertical_angle_hip_knee", 86.0741)
+//                put("side_right_vertical_angle_ear_shoulder", 74.1975)
+//                put("side_right_vertical_angle_nose_shoulder", 51.8924)
+//                put("side_right_vertical_angle_shoulder_elbow_wrist", 160.317)
+//                put("side_right_vertical_angle_hip_knee_ankle", 173.142)
+//
+//                // 3. 후면
+//                put("back_horizontal_angle_ear", -1.84761)
+//                put("back_horizontal_distance_sub_ear", 0.219524)
+//                put("back_horizontal_angle_shoulder", -1.71836)
+//                put("back_horizontal_distance_sub_shoulder", 0.329086)
+//                put("back_horizontal_angle_elbow", 1.49433)
+//                put("back_horizontal_distance_sub_elbow", -1.50296)
+//                put("back_horizontal_angle_wrist", 0.458356)
+//                put("back_horizontal_distance_sub_wrist", 0.186689)
+//                put("back_horizontal_angle_hip", 1.14576)
+//                put("back_horizontal_distance_sub_hip", -0.107886)
+//                put("back_horizontal_angle_knee", 12.5288)
+//                put("back_horizontal_distance_sub_knee", -2.45158)
+//                put("back_horizontal_angle_ankle", 9.61973)
+//                put("back_horizontal_distance_sub_ankle", -2.12846)
+//
+//                put("back_horizontal_distance_wrist_left", 19.7794)
+//                put("back_horizontal_distance_wrist_right", 28.3849)
+//                put("back_horizontal_distance_knee_left", 8.36942)
+//                put("back_horizontal_distance_knee_right", 11.6458)
+//
+//                put("back_vertical_angle_shoudler_center_hip", 88.1759)
+//                put("back_vertical_angle_nose_center_hip", 90)
+//                put("back_vertical_angle_nose_center_shoulder", 96.0725)
+//                put("back_vertical_angle_knee_heel_left", 95.2812)
+//                put("back_vertical_angle_knee_heel_right", 87.594)
+//
+//
+//                // 6. 앉아
+//                put("back_sit_horizontal_angle_ear", -2.86241)
+//                put("back_sit_horizontal_distance_sub_ear", 0.719041)
+//                put("back_sit_horizontal_angle_shoulder", -0.902221)
+//                put("back_sit_horizontal_distance_sub_shoulder", 0.627342)
+//                put("back_sit_horizontal_angle_hip", -1.59114)
+//                put("back_sit_horizontal_distance_sub_hip", 0.432825)
+//
+//                // 이거 measureSkeleton에ㅐ 추가해야 함
+//                put("back_sit_vertical_angle_nose_left_shoulder_right_shoulder", 48.6883) // 양 어깨와 코 삼각형의 왼 어깨 각도
+//                put("back_sit_vertical_angle_left_shoulder_right_shoulder_nose", 49.2687) // 양 어깨와 코 삼각형의 오른 어깨 각도
+//                put("back_sit_vertical_angle_right_shoulder_left_shoulder_nose", 82.043) // 양 어깨와 코 삼각형의 오른 어깨 각도
+//                // 삼각형의 각각의 각도
+//                put("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder", 41.1265) // 양 어깨 - 골반 중앙 삼각형의 중앙 각도
+//                put("back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder", 71.1699) // 양 어깨 - 골반 중앙 삼각형의 오른 어깨 각도
+//                put("back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip", 67.7036) // 양 어깨 - 골반 중앙 삼각형의 왼 어깨 각도
+//                put("back_sit_vertical_angle_shoulder_center_hip", 87.1376) // 앉아서 어깨와 골반  중앙 각도
+//
+//                // 4. 스쿼트
+////                put("ohs_front_horizontal_angle_mid_finger_tip",)
+////                put("ohs_front_horizontal_angle_hip",)
+////                put("ohs_front_horizontal_angle_knee",)
+//
+//            }
+            val mjo1 = JSONArray().apply {
+                put(loadJsonData())
+                put(loadJsonArray())
+                put(loadJsonData())
+                put(loadJsonData())
+                put(loadJsonData())
+                put(loadJsonData())
+                put(loadJsonData())
             }
-
-
             val parts1 = mutableListOf<Pair<String, Int>>()
             parts1.add(Pair("어깨", 2))
             parts1.add(Pair("목", 2))
@@ -285,24 +321,40 @@ class MainActivity : AppCompatActivity() {
 
             val measureVO1 = MeasureVO(
                 "1",
-                "2024.08.20",
+                "2024-08-20 20:12:08",
                 86,
                 parts1,
-                convertJsonToAnalysisList(mjo1)
+                mjo1,
+                // 총 7개
+                mutableListOf(
+                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
+                    getUrl("MT_DYNAMIC_OVERSQUAT_FRONT_1_1_20240606135241.mp4", false),
+                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
+                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
+                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
+                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
+                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true)
+                ),
+                false
             )
-
+            Log.v("measureVO1", "${measureVO1.fileUris}")
 
             val parts2 = mutableListOf<Pair<String, Int>>()
             parts2.add(Pair("목", 2))
             parts2.add(Pair("어깨", 1))
             parts2.add(Pair("손목", 1))
             parts2.add(Pair("골반", 1))
+
+
+
             val measureVO2 = MeasureVO(
                 "2",
-                "2024.08.01",
+                "2024-08-01 17:55:21",
                 79,
                 parts2,
-                mutableListOf()
+                JSONArray(),
+                mutableListOf(),
+                false
             )
 
 
@@ -313,10 +365,12 @@ class MainActivity : AppCompatActivity() {
             singletonMeasure.measures?.add(measureVO1)
             singletonMeasure.measures?.add(measureVO2)
             mViewModel.selectedMeasure = measureVO1
+            mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
 
-            Log.v("singletonMeasure", "${singletonMeasure.measures}")
 
             // 기존 데이터 초기화
+
+            // ------# 운동 기록 #------
             for (weekIndex in 0 until (hViewModel.currentProgram?.programWeek!!)) {
                 val weekEpisodes = mutableListOf<EpisodeVO>()
                 for (episodeIndex in 0 until hViewModel.currentProgram!!.programEpisode) {
@@ -330,7 +384,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
-                                            1,
                                             0,
                                             "2024-08-26 16:00:24" // TODO 실제 데이터는 각각의 regDate가 다름
                                         )
@@ -343,7 +396,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            1,
                                             0,
                                             "2024-08-27 17:51:24"
                                         )
@@ -355,7 +407,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            1,
                                             0,
                                             "2024-08-29 18:26:24"
                                         )
@@ -368,7 +419,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 0 until 4) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            1,
                                             0,
                                             "2024-08-31 20:11:57"
                                         )
@@ -376,7 +426,6 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     val historyUnit = HistoryUnitVO(
                                         hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.exerciseId,
-                                        0,
                                         Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.videoDuration!!.toInt()),
                                         "2024-08-31 20:13:57"
                                     )
@@ -384,7 +433,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 5 until 7) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
                                             0,
                                             null
                                         )
@@ -401,7 +449,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size!! - 1)) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            1,
                                             0,
                                             "2024-09-02 22:54:12"
                                         )
@@ -410,7 +457,6 @@ class MainActivity : AppCompatActivity() {
                                     isAllFinished = false
                                     val historyUnit = HistoryUnitVO(
                                         hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(6)?.exerciseId,
-                                        0,
                                         0,
                                         null
                                         )
@@ -421,7 +467,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            1,
                                             0,
                                             "2024-09-03 20:39:44"
                                         )
@@ -433,7 +478,6 @@ class MainActivity : AppCompatActivity() {
                                     for (k in 0 until 3) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            1,
                                             0,
                                             "2024-09-04 17:54:24"
                                         )
@@ -441,14 +485,12 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     val historyUnit = HistoryUnitVO(
                                         hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.exerciseId,
-                                        0,
                                         Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.videoDuration!!.toInt()),
                                         "2024-09-04 19:24:11")
                                     historys.add(historyUnit)
                                     for (k in 3 until 7) {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
                                             0,
                                             null
                                         )
@@ -462,7 +504,6 @@ class MainActivity : AppCompatActivity() {
                                         val historyUnit = HistoryUnitVO(
                                             hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
                                             0,
-                                            0,
                                             null
                                         )
                                         historys.add(historyUnit)
@@ -475,7 +516,6 @@ class MainActivity : AppCompatActivity() {
                             for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
                                 val historyUnit = HistoryUnitVO(
                                     hViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
-                                    0,
                                     0,
 
                                     null
@@ -512,7 +552,7 @@ class MainActivity : AppCompatActivity() {
                         if (historyUnit[k].lastPosition!! > 0) {
                             progressTime += historyUnit[k].lastPosition!!
 
-                        } else if (historyUnit[k].lastPosition == 0 && historyUnit[k].viewCount!! > 0) {
+                        } else if (historyUnit[k].lastPosition == 0 && historyUnit[k].regDate != null) {
                             progressTime += getTime(historyUnit[k].exerciseId.toString())
                             finishedExercise += 1
                         }
@@ -810,33 +850,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-//    fun formattedUpsertionChange(change: UpsertionChange) {
-//        when (change.record) {
-//            is ExerciseSessionRecord -> {
-//                val activity = change.record as ExerciseSessionRecord
-//                FormattedChangeRow(
-//                    startTime = dateTimeWithOffsetOrDefault(
-//                        activity.startTime,
-//                        activity.startZoneOffset
-//                    ),
-//                    recordType = "Exercise session",
-//                    dataSource = change.record.metadata.dataOrigin.packageName
-//                )
-//            }
-//        }
-//    }
-//    @Deprecated("Deprecated in Java")
-//    override fun onBackPressed() {
-//        if (backStack.size > 1) {
-//            backStack.pop()
-//            val itemId = backStack.peek()
-//            binding.bnbMain.selectedItemId = itemId
-//            selectedTabId = itemId
-//            setCurrentFragment(itemId)
-//        } else {
-//            super.onBackPressed()
-//        }
-//    }
+
 
     // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
     private var backPressedOnce = false
@@ -868,6 +882,26 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // 핸들러의 콜백을 제거하여 메모리 누수를 방지
         backPressHandler.removeCallbacks(backPressRunnable)
+        clearCache()
+    }
+
+    private fun clearCache() {
+        val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
+        cacheDir?.let {
+            deleteDir(it)
+        }
+    }
+    private fun deleteDir(dir: File?): Boolean {
+        if (dir != null && dir.isDirectory) {
+            val children = dir.list()
+            children?.forEach { child ->
+                val success = deleteDir(File(dir, child))
+                if (!success) {
+                    return false
+                }
+            }
+        }
+        return dir?.delete() ?: false
     }
     // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
 
@@ -922,36 +956,58 @@ class MainActivity : AppCompatActivity() {
         return localDateTime.toLocalDate()
     }
 
-    private fun convertJsonToAnalysisList(jsonObject: JSONObject) : MutableList<AnalysisVO> {
-        val resultList = mutableListOf<AnalysisVO>()
+//    private fun convertJsonToAnalysisList(jsonObject: JSONObject) : MutableList<AnalysisVO> {
+//        val resultList = mutableListOf<AnalysisVO>()
+//        fun mapJsonKeyToAnalysisVO(key:String, value: Double) : AnalysisVO {
+//            val keyParts = key.split("_")
+//            val type = (keyParts.contains("vertical"))
+//
+//            val sequence = when {
+//                key.startsWith("front_vertical") || key.startsWith("front_horizontal") -> 0
+//                key.startsWith("vertical") || key.startsWith("horizontal") -> 1
+//                key.startsWith("front_elbow") -> 2
+//                key.startsWith("side_left") -> 3
+//                key.startsWith("side_right") -> 4
+//                key.startsWith("back_vertical") || key.startsWith("back_horizontal") -> 5
+//                key.startsWith("back_sit") -> 6
+//                else -> -1 // 기본값
+//            }
+//            return AnalysisVO(sequence, type, key, value)
+//        }
+//
+//        jsonObject.keys().forEach { key ->
+//            val value = jsonObject.getDouble(key)
+//            resultList.add(mapJsonKeyToAnalysisVO(key, value))
+//        }
+//        return resultList
+//    }
 
-        val partMap = mapOf(
-            "ear" to 0, "shoulder" to 1, "elbow" to 2, "wrist" to 3, "hip" to 4, "knee" to 5, "ankle" to 6
-        )
-        fun mapJsonKeyToAnalysisVO(key:String, value: Double) : AnalysisVO {
-            val keyParts = key.split("_")
-            val type = (keyParts.contains("vertical"))
+    private suspend fun getUrl(fileName: String, isImage: Boolean) : String = withContext(Dispatchers.IO) {
+        val fileExtension = if (isImage) ".jpg" else ".mp4"
+        val tempFile = File.createTempFile(if (isImage) "temp_image" else "temp_video", fileExtension, cacheDir)
+        tempFile.deleteOnExit()
 
-            val part = keyParts.find { partMap.containsKey(it) }?.let { partMap[it] } ?: 0
-
-            val sequence = when {
-                key.startsWith("front_vertical") || key.startsWith("front_horizontal") -> 0
-                key.startsWith("front_elbow") -> 1
-                key.startsWith("side_left") -> 3
-                key.startsWith("side_right") -> 4
-                key.startsWith("back_vertical") || key.startsWith("back_horizontal") -> 5
-                key.startsWith("back_sit") -> 6
-                else -> 2 // 기본값
+        assets.open(fileName).use { input ->
+            tempFile.outputStream().use { output ->
+                input.copyTo(output)
             }
-
-            return AnalysisVO(sequence, type, key, value)
         }
+        tempFile.absolutePath
+    }
 
-        jsonObject.keys().forEach { key ->
-            val value = jsonObject.getDouble(key)
-            resultList.add(mapJsonKeyToAnalysisVO(key, value))
-        }
-        return resultList
+    // ------# 사진 영상 pose 가져오기 #------
+    private suspend fun loadJsonData(): JSONObject = withContext(Dispatchers.IO) {
+        val jsonString = assets.open("MT_STATIC_BACK_6_1_20240604143755.json").bufferedReader()
+                .use { it.readText() }
+        JSONObject(jsonString)
+    }
+    private suspend fun loadJsonArray() : JSONArray = withContext(Dispatchers.IO) {
+        val jsonString = assets.open("MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_1_20240606135241.json").bufferedReader().use { it.readText() }
+        JSONArray(jsonString)
+    }
+    fun launchMeasureSkeletonActivity() {
+        val intent = Intent(this, MeasureSkeletonActivity::class.java)
+        measureSkeletonLauncher.launch(intent)
     }
 }
 

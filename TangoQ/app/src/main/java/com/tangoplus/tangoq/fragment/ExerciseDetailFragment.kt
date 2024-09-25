@@ -4,12 +4,10 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
@@ -22,10 +20,9 @@ import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
-import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
+import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchCategoryAndSearch
-import com.tangoplus.tangoq.`object`.Singleton_t_history
 import kotlinx.coroutines.launch
 
 
@@ -81,7 +78,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
         binding.ibtnEDQRCode.setOnClickListener{
-            val dialog = LoginScanDialogFragment()
+            val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
 

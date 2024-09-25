@@ -31,11 +31,6 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             R.layout.measure_skeleton_caution1,
             R.layout.measure_skeleton_caution2,
             R.layout.measure_skeleton_caution3,
-            R.layout.measure_skeleton_caution4,
-            R.layout.measure_skeleton_caution5,
-            R.layout.measure_skeleton_caution6,
-            R.layout.measure_skeleton_caution7,
-            R.layout.measure_skeleton_caution8,
         )
         binding.vpMSD.adapter = CautionVPAdapter(layouts)
 

@@ -14,7 +14,6 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
 
     inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvDDI : TextView = view.findViewById(R.id.tvDDI)
-
         val cvDDI : TrendCurveView = view.findViewById(R.id.cvDDI)
     }
 

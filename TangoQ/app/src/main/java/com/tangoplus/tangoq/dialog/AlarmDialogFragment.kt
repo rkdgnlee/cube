@@ -1,12 +1,18 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,9 +51,6 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.ibtnAlarmBack.setOnClickListener {
-            dismiss()
-        }
 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ko", "KR"))
 
@@ -85,7 +88,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
                     MessageVO(4,"기기 연결이 완료 됐습니다.", timestamp =  longDay , route = "profile")
                 )
                 // -----! alarm touchhelper 연동 시작 !-----
-                val alarmRecyclerViewAdapter = AlarmRVAdapter(alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
+                val alarmRecyclerViewAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
                 swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
                 }
@@ -133,4 +136,10 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+    }
 }

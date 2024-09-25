@@ -21,7 +21,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         // 메시지에 데이터 페이로드가 포함 되어 있는지 확인
-        // 페이로드란 전송된 데이터를 의미한다.
+        // 페이로드란 전송된 데이터를 의미
         if (message.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${message.data}")
             sendNotification(
@@ -59,7 +59,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             this, 0, intent,
             PendingIntent.FLAG_IMMUTABLE
         )
-        // ----- 해당 알림의 화면 경로 설정 끝 -----
+        // ------! 해당 알림의 화면 경로 설정 끝 !------
         val channelId = "TangoQ"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)

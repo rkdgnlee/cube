@@ -1,11 +1,11 @@
 package com.tangoplus.tangoq
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,15 +34,12 @@ import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import com.tangoplus.tangoq.dialog.LoginDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.CommonDefines.TAG
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
-import com.tangoplus.tangoq.dialog.LoginScanDialogFragment
-import com.tangoplus.tangoq.dialog.SetupDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import kotlinx.coroutines.CoroutineScope
@@ -306,8 +303,8 @@ class IntroActivity : AppCompatActivity() {
                             jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
                             Log.v("Intro>SMS", "$jsonObj")
                             Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                            val dialog = SetupDialogFragment.newInstance("startSetup")
-                            dialog.show(supportFragmentManager, "SetupDialogFragment")
+//                            val dialog = SetupDialogFragment.newInstance("startSetup")
+//                            dialog.show(supportFragmentManager, "SetupDialogFragment")
 
                         } else {
                             // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
