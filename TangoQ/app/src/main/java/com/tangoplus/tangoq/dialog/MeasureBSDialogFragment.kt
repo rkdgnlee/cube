@@ -47,7 +47,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
 
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMBSD.layoutManager = layoutManager
-        val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), "checkbox", "measure", mvm)
+        val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), "checkbox",  mvm)
         binding.rvMBSD.adapter = adapter
 
         setupButtons()

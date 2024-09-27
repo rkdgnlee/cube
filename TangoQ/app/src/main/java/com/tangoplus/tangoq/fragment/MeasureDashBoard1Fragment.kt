@@ -87,7 +87,8 @@ class MeasureDashBoard1Fragment : Fragment() {
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 try {
-                    if (singletonMeasure.measures?.size!! > 0) {
+
+                    if (singletonMeasure.measures?.isNotEmpty() == true) {
                         val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
                         binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall?: 0}"
                         binding.tvMD1MeasureHistory.text = if (viewModel.selectedMeasure?.regDate == "") "측정기록없음" else "최근 측정 기록 - ${viewModel.selectedMeasure?.regDate?.substring(0, 10)}"

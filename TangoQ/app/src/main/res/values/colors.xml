@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#000000</color>
+    <color name="black">#121212</color>
     <color name="white">#FFFFFF</color>
+    <color name="whitebar">#FFFFFF</color>
 
     <color name="mainColor">#2EE88B</color>
-    <color name="mainPrimaryColor">#0C894C</color>
+    <color name="mainDeepColor">#0C894C</color>
     <color name="mainContainerColor">#EFFEF6</color>
 
     <color name="secondaryColor">#2C4FD0</color>
-    <color name="secondPrimaryColor">#EFF7FF</color>
-
+    <color name="secondDeepColor">#1B2450</color>
+    <color name="secondContainerColor">#EFF7FF</color>
+    <color name="secondBgContainerColor">#F0F5FE</color>
+    <color name="secondWhiteColor">#2C4FD0</color>
+    <color name="secondContainerWhiteColor">#EFF7FF</color>
     <color name="thirdColor">#36ABFF</color>
-    <color name="thirdOpacityColor">#6636ABFF</color>
+    <color name="thirdWhiteColor">#36ABFF</color>
 
     <color name="deleteColor">#FF5449</color>
     <color name="deleteContainerColor">#FFDAD6</color>
+    <color name="deleteTextColor">#FF5449</color>
     <color name="cautionColor">#FF981D</color>
     <color name="cautionContainerColor">#FFEFDC</color>
 

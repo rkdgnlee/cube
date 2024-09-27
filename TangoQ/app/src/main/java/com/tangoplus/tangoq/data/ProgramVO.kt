@@ -9,9 +9,9 @@ data class ProgramVO(
     var programStage : String? = "",
     var programCount : String? = "",
     var programTime : Int = 0,
-    var programEpisode : Int = 0,
+    var programFrequency : Int = 0,
     var programWeek : Int = 0,
-    var exercises : MutableList<MutableList<ExerciseVO>>? = mutableListOf(),
+    var exercises : MutableList<ExerciseVO>? = mutableListOf(),
     var exerciseTimes : MutableList<Pair<String, Int>>
 ): Parcelable {
     constructor(parcel: Parcel) : this(
@@ -22,7 +22,7 @@ data class ProgramVO(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
-        mutableListOf<MutableList<ExerciseVO>>().apply {
+        mutableListOf<ExerciseVO>().apply {
             parcel.readList(this, List::class.java.classLoader)
         },
         mutableListOf<Pair<String, Int>>().apply {
@@ -37,7 +37,7 @@ data class ProgramVO(
         parcel.writeString(programStage)
         parcel.writeString(programCount)
         parcel.writeInt(programTime)
-        parcel.writeInt(programEpisode)
+        parcel.writeInt(programFrequency)
         parcel.writeInt(programWeek)
     }
 

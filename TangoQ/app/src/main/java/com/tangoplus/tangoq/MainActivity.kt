@@ -14,14 +14,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.data.AnalysisVO
-import com.tangoplus.tangoq.data.EpisodeVO
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.HistoryUnitVO
 import com.tangoplus.tangoq.data.HistoryViewModel
@@ -59,30 +56,14 @@ class MainActivity : AppCompatActivity() {
     private val uViewModel : UserViewModel by viewModels()
     private val hViewModel : HistoryViewModel by viewModels()
     private val mViewModel : MeasureViewModel by viewModels()
-//    private var pendingAction: (() -> Unit)? = null
-//    lateinit var requestPermissions : ActivityResultLauncher<Set<String>>
-//    val backStack = Stack<Int>()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var singletonHistory : Singleton_t_history
-    val historys =  mutableListOf<MutableList<EpisodeVO>>()
+    var historys =  mutableListOf<HistoryVO>()
     private lateinit var program : ProgramVO
     private val _dataLoaded = MutableLiveData<Boolean>()
     val dataLoaded: LiveData<Boolean> = _dataLoaded
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
-//    lateinit var  healthConnectClient : HealthConnectClient
-//    val endTime = LocalDateTime.now()
-//    val startTime = LocalDateTime.now().minusDays(1)
-//
-//    val PERMISSIONS =
-//        setOf(
-//            HealthPermission.getReadPermission(HeartRateRecord::class),
-//            HealthPermission.getWritePermission(HeartRateRecord::class),
-//            HealthPermission.getReadPermission(StepsRecord::class),
-//            HealthPermission.getWritePermission(StepsRecord::class),
-//            HealthPermission.getWritePermission(TotalCaloriesBurnedRecord::class),
-//            HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
-//        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,15 +105,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.profile -> {}
             }
         }
-
+        // ------# 측정 완료 후 측정 디테일 화면으로 바로 가기 #------
         measureSkeletonLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val finishedMeasure = result.data?.getBooleanExtra("finishedMeasure", false) ?: false
                 if (finishedMeasure) {
                     mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
                     mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
-
-
                     val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure
                     supportFragmentManager.beginTransaction().apply {
@@ -143,167 +122,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
         // ------# 현재 진행 프로그램 #------
         CoroutineScope(Dispatchers.Main).launch {
 
             // TODO 여기서 기존 유저 -> 선택된 프로그램 불러오기 or 신규 유저 -> 본인이 원하는 프로그램 선택하기 전까지 빈 program
 
-            if (uViewModel.User.value?.optString("current_program_id") == null) {
-                program = ProgramVO(-1, "기초 운동 능력 프로그램", "", "", 0, 0, 0,mutableListOf(), mutableListOf())
-            } else {
-                program = fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), 10.toString())
-            }
-            hViewModel.currentProgram = program
-
-//            val mjo1 = JSONObject().apply {
-//                put("front_horizontal_angle_ear", -178.315)
-//                put("front_horizontal_distance_sub_ear", 0.17671)
-//                put("front_horizontal_angle_shoulder", -177.563)
-//                put("front_horizontal_distance_sub_shoulder", 1.6494)
-//                put("front_horizontal_angle_elbow", -179.518)
-//                put("front_horizontal_distance_sub_elbow", 0.454279)
-//                put("front_horizontal_angle_wrist", 179.518)
-//                put("front_horizontal_distance_sub_wrist", -0.57936)
-//                put("front_horizontal_angle_hip", -178.958)
-//                put("front_horizontal_distance_sub_hip", 0.405051)
-//                put("front_horizontal_angle_knee", -172.875)
-//                put("front_horizontal_distance_sub_knee", 1.86277)
-//                put("front_horizontal_angle_ankle", 0)
-//                put("front_horizontal_distance_sub_ankle", 0)
-//
-//                put("front_horizontal_distance_wrist_left", 24.513)
-//                put("front_horizontal_distance_wrist_right", 20.9849)
-//                put("front_horizontal_distance_knee_left", 10.797)
-//                put("front_horizontal_distance_knee_right", 7.42002)
-//                put("front_horizontal_distance_ankle_left", 10.0549)
-//                put("front_horizontal_distance_ankle_right", 10.0549)
-//
-//                put("front_vertical_angle_shoulder_elbow_left", 82.7757)
-//                put("front_vertical_angle_shoulder_elbow_right", 77.7995)
-//                put("front_vertical_angle_elbow_wrist_left", 91.9415)
-//                put("front_vertical_angle_elbow_wrist_right", 88.1221)
-//                put("front_vertical_angle_hip_knee_left", 93.2397)
-//                put("front_vertical_angle_hip_knee_right", 90.5673)
-//                put("front_vertical_angle_knee_ankle_left", 91.7899)
-//                put("front_vertical_angle_knee_ankle_right", 86.4604)
-//                put("front_vertical_angle_shoulder_elbow_wrist_left", 170.834)
-//                put("front_vertical_angle_shoulder_elbow_wrist_right", 169.677)
-//                put("front_vertical_angle_hip_knee_ankle_left", 178.55)
-//                put("front_vertical_angle_hip_knee_ankle_right", 175.893)
-//
-//                // 팔꿉
-//                put("front_horizontal_angle_thumb", 0.0)
-//                put("front_horizontal_distance_sub_thumb", 0.0)
-//                put("front_horizontal_distance_thumb_left", 20.8453)
-//                put("front_horizontal_distance_thumb_right", 0.0)
-//
-//                put("front_hand_angle_thumb_cmc_tip_left", 99.4623)
-//                put("front_hand_angle_thumb_cmc_tip_right", 0.0)
-//                put("front_hand_distance_index_pinky_mcp_left", 2.62518)
-//                put("front_hand_distance_index_pinky_mcp_right", 0.0)
-//                put("front_hand_angle_elbow_wrist_mid_finger_mcp_left", 176.108)
-//                put("front_hand_angle_elbow_wrist_mid_finger_mcp_right", 0.0)
-//
-//                put("front_elbow_align_angle_left_upper_elbow_elbow_wrist", 30.9638)
-//                put("front_elbow_align_angle_right_upper_elbow_elbow_wrist", 36.6561)
-//                put("front_elbow_align_distance_left_wrist_shoulder", 7.08502)
-//                put("front_elbow_align_distance_right_wrist_shoulder", 5.98912)
-//                put("front_elbow_align_distance_wrist_height", -1.8121)
-//
-//                put("front_elbow_align_distance_mid_index_height", 0.0)
-//                put("front_elbow_align_distance_shoulder_mid_index_left", 0.0)
-//                put("front_elbow_align_distance_shoulder_mid_index_right", 0.0)
-//
-//                put("front_elbow_align_angle_mid_index_wrist_elbow_left", 0)
-//                put("front_elbow_align_angle_mid_index_wrist_elbow_right", 179.31)
-//                put("front_elbow_align_angle_left_shoulder_elbow_wrist", 21)
-//                put("front_elbow_align_angle_right_shoulder_elbow_wrist", 23.7181)
-//
-//                put("front_elbow_align_distance_center_mid_finger_left", 0)
-//                put("front_elbow_align_distance_center_mid_finger_right", 5.31334)
-//                put("front_elbow_align_distance_center_wrist_left", 12.2275)
-//                put("front_elbow_align_distance_center_wrist_right", 9.36387)
-//
-//                // 2. 측면
-//                put("side_left_horizontal_distance_shoulder", 1.48447)
-//                put("side_left_horizontal_distance_hip", 1.8291)
-//                put("side_left_horizontal_distance_pinky", 8.3724)
-//                put("side_left_horizontal_distance_wrist", 9.15559)
-//
-//                put("side_left_vertical_angle_shoulder_elbow", 96.5819)
-//                put("side_left_vertical_angle_elbow_wrist", 100.376)
-//                put("side_left_vertical_angle_hip_knee", 91.7184)
-//                put("side_left_vertical_angle_ear_shoulder", 82.5686)
-//                put("side_left_vertical_angle_nose_shoulder", 55.9807)
-//                put("side_left_vertical_angle_shoulder_elbow_wrist", 176.206)
-//                put("side_left_vertical_angle_hip_knee_ankle", 173.925)
-//
-//
-//                put("side_right_horizontal_distance_shoulder", 4.0316)
-//                put("side_right_horizontal_distance_hip", 9.56569)
-//                put("side_right_horizontal_distance_pinky", 5.03904)
-//                put("side_right_horizontal_distance_wrist", 7.88262)
-//
-//                put("side_right_vertical_angle_shoulder_elbow", 84.7376)
-//                put("side_right_vertical_angle_elbow_wrist", 104.421)
-//                put("side_right_vertical_angle_hip_knee", 86.0741)
-//                put("side_right_vertical_angle_ear_shoulder", 74.1975)
-//                put("side_right_vertical_angle_nose_shoulder", 51.8924)
-//                put("side_right_vertical_angle_shoulder_elbow_wrist", 160.317)
-//                put("side_right_vertical_angle_hip_knee_ankle", 173.142)
-//
-//                // 3. 후면
-//                put("back_horizontal_angle_ear", -1.84761)
-//                put("back_horizontal_distance_sub_ear", 0.219524)
-//                put("back_horizontal_angle_shoulder", -1.71836)
-//                put("back_horizontal_distance_sub_shoulder", 0.329086)
-//                put("back_horizontal_angle_elbow", 1.49433)
-//                put("back_horizontal_distance_sub_elbow", -1.50296)
-//                put("back_horizontal_angle_wrist", 0.458356)
-//                put("back_horizontal_distance_sub_wrist", 0.186689)
-//                put("back_horizontal_angle_hip", 1.14576)
-//                put("back_horizontal_distance_sub_hip", -0.107886)
-//                put("back_horizontal_angle_knee", 12.5288)
-//                put("back_horizontal_distance_sub_knee", -2.45158)
-//                put("back_horizontal_angle_ankle", 9.61973)
-//                put("back_horizontal_distance_sub_ankle", -2.12846)
-//
-//                put("back_horizontal_distance_wrist_left", 19.7794)
-//                put("back_horizontal_distance_wrist_right", 28.3849)
-//                put("back_horizontal_distance_knee_left", 8.36942)
-//                put("back_horizontal_distance_knee_right", 11.6458)
-//
-//                put("back_vertical_angle_shoudler_center_hip", 88.1759)
-//                put("back_vertical_angle_nose_center_hip", 90)
-//                put("back_vertical_angle_nose_center_shoulder", 96.0725)
-//                put("back_vertical_angle_knee_heel_left", 95.2812)
-//                put("back_vertical_angle_knee_heel_right", 87.594)
-//
-//
-//                // 6. 앉아
-//                put("back_sit_horizontal_angle_ear", -2.86241)
-//                put("back_sit_horizontal_distance_sub_ear", 0.719041)
-//                put("back_sit_horizontal_angle_shoulder", -0.902221)
-//                put("back_sit_horizontal_distance_sub_shoulder", 0.627342)
-//                put("back_sit_horizontal_angle_hip", -1.59114)
-//                put("back_sit_horizontal_distance_sub_hip", 0.432825)
-//
-//                // 이거 measureSkeleton에ㅐ 추가해야 함
-//                put("back_sit_vertical_angle_nose_left_shoulder_right_shoulder", 48.6883) // 양 어깨와 코 삼각형의 왼 어깨 각도
-//                put("back_sit_vertical_angle_left_shoulder_right_shoulder_nose", 49.2687) // 양 어깨와 코 삼각형의 오른 어깨 각도
-//                put("back_sit_vertical_angle_right_shoulder_left_shoulder_nose", 82.043) // 양 어깨와 코 삼각형의 오른 어깨 각도
-//                // 삼각형의 각각의 각도
-//                put("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder", 41.1265) // 양 어깨 - 골반 중앙 삼각형의 중앙 각도
-//                put("back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder", 71.1699) // 양 어깨 - 골반 중앙 삼각형의 오른 어깨 각도
-//                put("back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip", 67.7036) // 양 어깨 - 골반 중앙 삼각형의 왼 어깨 각도
-//                put("back_sit_vertical_angle_shoulder_center_hip", 87.1376) // 앉아서 어깨와 골반  중앙 각도
-//
-//                // 4. 스쿼트
-////                put("ohs_front_horizontal_angle_mid_finger_tip",)
-////                put("ohs_front_horizontal_angle_hip",)
-////                put("ohs_front_horizontal_angle_knee",)
-//
-//            }
             val mjo1 = JSONArray().apply {
                 put(loadJsonData())
                 put(loadJsonArray())
@@ -335,7 +159,8 @@ class MainActivity : AppCompatActivity() {
                     getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
                     getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true)
                 ),
-                false
+                false,
+                mutableListOf(Pair("신체 능력 향상, 전신 강화 루틴",  10), Pair("거북목 스트레칭", 4), Pair("러닝 전 부상 방지 전신 스트레칭", 3))
             )
             Log.v("measureVO1", "${measureVO1.fileUris}")
 
@@ -345,8 +170,6 @@ class MainActivity : AppCompatActivity() {
             parts2.add(Pair("손목", 1))
             parts2.add(Pair("골반", 1))
 
-
-
             val measureVO2 = MeasureVO(
                 "2",
                 "2024-08-01 17:55:21",
@@ -354,10 +177,9 @@ class MainActivity : AppCompatActivity() {
                 parts2,
                 JSONArray(),
                 mutableListOf(),
-                false
+                false,
+                mutableListOf()
             )
-
-
 
             // ------# 싱글턴 측정 결과 init #------
             singletonMeasure = Singleton_t_measure.getInstance(this@MainActivity)
@@ -367,271 +189,8 @@ class MainActivity : AppCompatActivity() {
             mViewModel.selectedMeasure = measureVO1
             mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
 
-
-            // 기존 데이터 초기화
-
-            // ------# 운동 기록 #------
-            for (weekIndex in 0 until (hViewModel.currentProgram?.programWeek!!)) {
-                val weekEpisodes = mutableListOf<EpisodeVO>()
-                for (episodeIndex in 0 until hViewModel.currentProgram!!.programEpisode) {
-                    val historys = mutableListOf<HistoryUnitVO>()
-                    var isAllFinished = true
-
-                    when (weekIndex) { // 주차
-                        0 -> {
-                            when (episodeIndex) { // 회차
-                                0 -> {
-                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            "2024-08-26 16:00:24" // TODO 실제 데이터는 각각의 regDate가 다름
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-
-                                    isAllFinished = true
-                                }
-                                1 -> {
-                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            "2024-08-27 17:51:24"
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    isAllFinished = true
-                                }
-                                2 -> {
-                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            "2024-08-29 18:26:24"
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    isAllFinished = true
-
-                                }
-                                else -> {
-                                    for (k in 0 until 4) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            "2024-08-31 20:11:57"
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    val historyUnit = HistoryUnitVO(
-                                        hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.exerciseId,
-                                        Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(4)?.videoDuration!!.toInt()),
-                                        "2024-08-31 20:13:57"
-                                    )
-                                    historys.add(historyUnit)
-                                    for (k in 5 until 7) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            null
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    isAllFinished = false
-                                }
-                            }
-
-                        }
-                        1 -> { // 2주차
-                            when (episodeIndex) { // 회차
-                                0 -> {
-                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size!! - 1)) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            "2024-09-02 22:54:12"
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    isAllFinished = false
-                                    val historyUnit = HistoryUnitVO(
-                                        hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(6)?.exerciseId,
-                                        0,
-                                        null
-                                        )
-                                        historys.add(historyUnit)
-
-                                }
-                                1 -> {
-                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            "2024-09-03 20:39:44"
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    isAllFinished = true
-                                }
-                                2 -> {
-                                    for (k in 0 until 3) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            "2024-09-04 17:54:24"
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    val historyUnit = HistoryUnitVO(
-                                        hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.exerciseId,
-                                        Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(3)?.videoDuration!!.toInt()),
-                                        "2024-09-04 19:24:11")
-                                    historys.add(historyUnit)
-                                    for (k in 3 until 7) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            null
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    isAllFinished = false
-
-                                }
-                                else -> {
-                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.get(weekIndex)?.size ?: 0)) {
-                                        val historyUnit = HistoryUnitVO(
-                                            hViewModel.currentProgram?.exercises?.get(weekIndex)?.get(k)?.exerciseId,
-                                            0,
-                                            null
-                                        )
-                                        historys.add(historyUnit)
-                                    }
-                                    isAllFinished = false
-                                }
-                            }
-                        }
-                        else -> { // 나머지 주차 들
-                            for (k in 0 until (hViewModel.currentProgram?.exercises?.get(episodeIndex)?.size ?: 0)) {
-                                val historyUnit = HistoryUnitVO(
-                                    hViewModel.currentProgram?.exercises?.get(episodeIndex)?.get(k)?.exerciseId,
-                                    0,
-
-                                    null
-                                    )
-                                historys.add(historyUnit)
-                            }
-                            isAllFinished = false
-                        }
-                    }
-
-                    val episodeVO = EpisodeVO(hViewModel.currentProgram?.programSn.toString(), isFinish = isAllFinished, historys)
-                    weekEpisodes.add(episodeVO)
-                }
-                historys.add(weekEpisodes)
-                // episdoes는 episode가 모인 회차 1개를 모인 거임. 그럼?
-
-            }
-            singletonHistory = Singleton_t_history.getInstance(this@MainActivity)
-            singletonHistory.historys = historys
-
-
-            for (i in 0 until historys.size) {
-                for (j in 0 until historys[i].size) {
-                    // 하나의 하루간 운동량 만들고 넣고 초기화
-                    var regDate = ""
-                    var progressTime = 0
-                    var finishedExercise = 0
-
-                    for (k in 0 until historys[i][j].doingExercises.size) {
-                        val historyUnit = historys[i][j].doingExercises
-                        // 리스트가 일자별로 나눠져 있음
-                        regDate = historyUnit[0].regDate.toString()
-                        // 하루 간 진행 시간 더하기
-                        if (historyUnit[k].lastPosition!! > 0) {
-                            progressTime += historyUnit[k].lastPosition!!
-
-                        } else if (historyUnit[k].lastPosition == 0 && historyUnit[k].regDate != null) {
-                            progressTime += getTime(historyUnit[k].exerciseId.toString())
-                            finishedExercise += 1
-                        }
-
-                        // ------# 전체 운동 담는 공간 #------
-                        hViewModel.allHistorys.add(historyUnit[k])
-
-                    }
-                    hViewModel.classifiedByDay.add(Triple(regDate, progressTime, finishedExercise))
-                }
-            }
-            // 전체 반복문 빠져나옴
-
-            // ------# 그래프에 들어갈 가장 최근 일주일간 데이터 가져오기 #------
-            hViewModel.weeklyHistorys = getWeeklyExerciseHistory(hViewModel.classifiedByDay)
-
-            // ------# dates만 넣기(달력에 들어갈 것들) #------
-            val historysUntilToday = hViewModel.classifiedByDay.filter { it.first != "null" }
-            for (i in 0 until historysUntilToday.size) {
-                hViewModel.datesClassifiedByDay.add(stringToLocalDate(historysUntilToday[i].first))
-            }
             _dataLoaded.value = true
         }
-
-
-
-
-        // TODO 시청기록 singleton으로 받아오기
-//        lifecycleScope.launch {
-//            singletonTHistory.viewingHistory = fetchViewingHistory(this@MainActivity, getString(R.string.IP_ADDRESS_t_viewing_history)).toMutableList()
-//        }
-
-//        binding.ibtnAlarm.setOnClickListener {
-//            val intent = Intent(this@MainActivity, AlarmActivity::class.java)
-//            startActivity(intent)
-//        }
-
-//         ------! 헬스 커넥트 연동 데이터 가져오기 시작 !------
-//        val providerPackageName = "com.google.android.apps.healthdata"
-//        val availabilityStatus = HealthConnectClient.getSdkStatus(this, providerPackageName )
-//        if (availabilityStatus == HealthConnectClient.SDK_UNAVAILABLE) {
-//            return // 실행 가능한 통합이 없기 때문에 조기 복귀
-//        }
-//        if (availabilityStatus == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) {
-//             선택적으로 패키지 설치 프로그램으로 리디렉션하여 공급자를 찾습니다. 예:
-//            val uriString = "market://details?id=$providerPackageName&url=healthconnect%3A%2F%2Fonboarding"
-//            this@MainActivity.startActivity(
-//                Intent(Intent.ACTION_VIEW).apply {
-//                    setPackage("com.android.vending")
-//                    data = Uri.parse(uriString)
-//                    putExtra("overlay", true)
-//                    putExtra("callerId", packageName)
-//                }
-//            )
-//            return
-//        }
-//        healthConnectClient = HealthConnectClient.getOrCreate(this)
-//        Log.v("현재 시간", "endTime: $endTime, startTime: $startTime")
-//
-//        healthConnectClient = HealthConnectClient.getOrCreate(this)
-//        Log.v("현재 시간", "endTime: $endTime, startTime: $startTime")
-//
-//         Create the permissions launcher
-//        val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
-//        requestPermissions = registerForActivityResult(requestPermissionActivityContract) { granted ->
-//            lifecycleScope.launch {
-//                if (granted.containsAll(PERMISSIONS)) {
-//                    Log.v("권한o", "$healthConnectClient")
-//                    aggregateData(healthConnectClient)
-//                } else {
-//                    Log.v("권한x", "$healthConnectClient")
-//                    checkPermissionsAndRun(healthConnectClient)
-//                }
-//            }
-//        }
-//        lifecycleScope.launch {
-//            checkPermissionsAndRun(healthConnectClient)
-//        } // ------! 헬스 커넥트 연동 데이터 가져오기 끝 !------
-
     }
 
 
@@ -655,14 +214,6 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
 
-//        supportFragmentManager.executePendingTransactions()
-//        pendingAction?.invoke()
-//        pendingAction = null
-//        if (itemId == R.id.measure) {
-//            Handler(Looper.getMainLooper()).post {
-//                (supportFragmentManager.findFragmentById(R.id.flMain) as? MeasureFragment)?.selectSecondTab()
-//            }
-//        }
     }
 //    // ------! 딥링크 처리 시작 !------
 //    private fun handlePendingDeepLink() {
@@ -697,137 +248,6 @@ class MainActivity : AppCompatActivity() {
 //        }
 //    } // ------! 딥링크 처리 끝 !------
 
-//    fun setFullLayout(frame: FrameLayout, const : ConstraintLayout) {
-//        val constraintSet = ConstraintSet()
-//        constraintSet.clone(const)
-//        constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
-//        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0)
-//        constraintSet.applyTo(const)
-//        binding.cvCl.visibility = View.GONE
-//        binding.bnbMain.visibility = View.GONE
-//    }
-//
-//    fun setTopLayoutFull(frame: FrameLayout, const: ConstraintLayout) {
-//        val constraintSet = ConstraintSet()
-//        constraintSet.clone(const)
-//        constraintSet.connect(frame.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
-//        constraintSet.applyTo(const)
-//        binding.cvCl.visibility = View.GONE
-//
-//    }
-//    fun setOptiLayout(frame: FrameLayout, const: ConstraintLayout, cardView: CardView) {
-//        val constraintSet = ConstraintSet()
-//        constraintSet.clone(const)
-//        constraintSet.connect(frame.id, ConstraintSet.TOP, cardView.id, ConstraintSet.BOTTOM, 0)
-//        constraintSet.connect(frame.id, ConstraintSet.BOTTOM, binding.bnbMain.id, ConstraintSet.TOP, 0)
-//        constraintSet.applyTo(const)
-//        binding.cvCl.visibility = View.VISIBLE
-//        binding.bnbMain.visibility = View.VISIBLE
-//    }
-
-
-//    private val onBackPressedCallback = object: OnBackPressedCallback(true) {
-//        override fun handleOnBackPressed() {
-//
-//        }
-//    }
-
-//    private suspend fun checkPermissionsAndRun(healthConnectClient: HealthConnectClient) {
-//        val granted = healthConnectClient.permissionController.getGrantedPermissions()
-//        if (granted.containsAll(PERMISSIONS)) {
-//            권한이 이미 부여되었습니다. 데이터 삽입 또는 읽기를 진행합니다.
-//            aggregateData(healthConnectClient)
-//        } else {
-//            requestPermissions.launch(PERMISSIONS)
-//        }
-//    }
-//    private suspend fun aggregateData(healthConnectClient: HealthConnectClient) {
-//        val startTimeInstant = startTime.atZone(ZoneId.of("Asia/Seoul")).toInstant()
-//        val endTimeInstant = endTime.atZone(ZoneId.of("Asia/Seoul")).toInstant()
-//        val monthlyStart = startTime.minusDays(30).atZone(ZoneId.of("Asia/Seoul")).toInstant()
-//
-//        aggregateStepsInto3oMins(healthConnectClient, startTime, endTime)
-//        readStepsByTimeRange(healthConnectClient, startTimeInstant, endTimeInstant)
-//        readCaloryByTimeRange(healthConnectClient, startTimeInstant, endTimeInstant)
-//
-//    }
-//    private suspend fun aggregateStepsInto3oMins(
-//        healthConnectClient: HealthConnectClient,
-//        startTime: LocalDateTime,
-//        endTime: LocalDateTime
-//    ) { try {
-//        val response = healthConnectClient.aggregateGroupByDuration(
-//            AggregateGroupByDurationRequest(
-//                metrics = setOf(StepsRecord.COUNT_TOTAL),
-//                timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
-//                timeRangeSlicer = Duration.ofMinutes(30L)
-//            )
-//        )
-//        val stepsList = mutableListOf<Long>()
-//        var previousSteps : Long? = null
-//        for (durationResult in response) {
-//             The result may be null if no data is available in the time range
-//            val totalSteps = durationResult.result[StepsRecord.COUNT_TOTAL]
-//            if (totalSteps != null) {
-//                if (previousSteps == null) {
-//                    stepsList.add(totalSteps)
-//                } else {
-//                    stepsList.add(totalSteps - previousSteps)
-//                }
-//                previousSteps = totalSteps
-//            } else {
-//                stepsList[0]
-//            }
-//            Log.v("걸음 수 누적", "$totalSteps")
-//        }
-//        mViewModel.steps.value = stepsList
-//        Log.v("걸음 리스트", "$stepsList")
-//        Log.v("hour응답", "${response.size}")
-//    } catch (e: Exception) {
-//        Log.v("30분걸음오류", "$e")
-//    }
-//    }
-//    private suspend fun readCaloryByTimeRange(
-//        healthConnectClient: HealthConnectClient,
-//        startTime: Instant,
-//        endTime: Instant
-//    ) {
-//        try {
-//            val response = healthConnectClient.readRecords(
-//                ReadRecordsRequest(
-//                    TotalCaloriesBurnedRecord::class,
-//                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-//                )
-//            )
-//            val energy = response.records[0].energy.toString()
-//            Log.v("총칼로리", energy)
-//            mViewModel.calory.value = Math.round(energy.split(" ")[0].toDouble()).toString() + " Kcal"
-//
-//        } catch (e: Exception) {
-//            Log.v("칼로리오류", "$e")
-//        }
-//    }
-//    @SuppressLint("SetTextI18n")
-//    private suspend fun readStepsByTimeRange(
-//        healthConnectClient: HealthConnectClient,
-//        startTime: Instant,
-//        endTime: Instant
-//    ) { try {
-//        val response = healthConnectClient.readRecords(
-//            ReadRecordsRequest(
-//                StepsRecord::class,
-//                timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-//            )
-//        )
-//        mViewModel.totalSteps.value = response.records[0].count.toString()
-//        binding.tvMsSteps.text = "${mViewModel.totalSteps.value} 보"
-//        Log.v("총 걸음수", "${mViewModel.totalSteps.value}")
-//    } catch (e: Exception) {
-//        Log.v("총걸음오류", "$e")
-//        binding.tvMsSteps.text = "0 보"
-//    }
-//    }
-
     override fun onResume() {
         super.onResume()
         // ------! 0일 때만 피드백 켜지게 !------
@@ -850,7 +270,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
     private var backPressedOnce = false
@@ -910,77 +329,11 @@ class MainActivity : AppCompatActivity() {
         return currentFragment == null || currentFragment.view == null || !currentFragment.isVisible
     }
 
-    private fun getTime(id: String) : Int {
-        return hViewModel.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
-    }
-
-    private fun getWeeklyExerciseHistory(data: MutableList<Triple<String, Int, Int>>): MutableList<Triple<String, Int, Int>> {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-        val sevenDaysAgo = currentDateTime.minusDays(6).truncatedTo(ChronoUnit.DAYS)
-
-        val filteredData = data.filter {
-            it.first != "null" &&
-                    LocalDateTime.parse(it.first, formatter).isAfter(sevenDaysAgo.minusSeconds(1)) &&
-                    LocalDateTime.parse(it.first, formatter).isBefore(currentDateTime.plusDays(1).truncatedTo(
-                        ChronoUnit.DAYS))
-        }.toMutableList()
 
 
-        val completeData = mutableListOf<Triple<String, Int, Int>>()
-        for (i in 0..6) {
-            val date = sevenDaysAgo.plusDays(i.toLong())
-            val nextDate = date.plusDays(1)
 
-            val entry = filteredData.find {
-                val entryDateTime = LocalDateTime.parse(it.first, formatter)
-                entryDateTime.isAfter(date.minusSeconds(1)) && entryDateTime.isBefore(nextDate)
-            }
 
-            if (entry != null) {
-                completeData.add(entry)
-            } else {
-                // 빈 데이터의 경우 해당 날짜의 자정(00:00:00)으로 설정
-                val dateString = date.format(formatter)
-                completeData.add(Triple(dateString, 0, 0))
-            }
-        }
 
-        Log.v("completedData", "$completeData")
-        return completeData
-    }
-
-    private fun stringToLocalDate(dateTimeString: String): LocalDate {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
-        return localDateTime.toLocalDate()
-    }
-
-//    private fun convertJsonToAnalysisList(jsonObject: JSONObject) : MutableList<AnalysisVO> {
-//        val resultList = mutableListOf<AnalysisVO>()
-//        fun mapJsonKeyToAnalysisVO(key:String, value: Double) : AnalysisVO {
-//            val keyParts = key.split("_")
-//            val type = (keyParts.contains("vertical"))
-//
-//            val sequence = when {
-//                key.startsWith("front_vertical") || key.startsWith("front_horizontal") -> 0
-//                key.startsWith("vertical") || key.startsWith("horizontal") -> 1
-//                key.startsWith("front_elbow") -> 2
-//                key.startsWith("side_left") -> 3
-//                key.startsWith("side_right") -> 4
-//                key.startsWith("back_vertical") || key.startsWith("back_horizontal") -> 5
-//                key.startsWith("back_sit") -> 6
-//                else -> -1 // 기본값
-//            }
-//            return AnalysisVO(sequence, type, key, value)
-//        }
-//
-//        jsonObject.keys().forEach { key ->
-//            val value = jsonObject.getDouble(key)
-//            resultList.add(mapJsonKeyToAnalysisVO(key, value))
-//        }
-//        return resultList
-//    }
 
     private suspend fun getUrl(fileName: String, isImage: Boolean) : String = withContext(Dispatchers.IO) {
         val fileExtension = if (isImage) ".jpg" else ".mp4"

@@ -232,7 +232,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
 //        }
     }
     private fun updateRecyclerView(exercises : MutableList<ExerciseVO>) {
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, "main")
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, mutableListOf(), "main")
         adapter.exerciseList = exercises
         binding.rvEDAll.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

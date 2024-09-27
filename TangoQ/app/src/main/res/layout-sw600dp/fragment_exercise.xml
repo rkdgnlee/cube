@@ -21,55 +21,71 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/textView104"
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView29"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="운동"
-                android:textColor="@color/black"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView47"
-                app:layout_constraintStart_toEndOf="@+id/imageView47"
-                app:layout_constraintTop_toTopOf="@+id/imageView47" />
-
-            <ImageView
-                android:id="@+id/imageView47"
-                android:layout_width="36dp"
-                android:layout_height="38dp"
-                android:layout_marginStart="36dp"
-                android:layout_marginTop="8dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/app_logo"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/ibtnEAlarm"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="40dp"
-                android:background="@drawable/effect_ibtn_20dp"
-                android:backgroundTint="@color/white"
-                android:padding="8dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_alarm"
+                app:cardElevation="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/ibtnEQRCode"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_qr_code"
-                app:layout_constraintBottom_toBottomOf="@+id/ibtnEAlarm"
-                app:layout_constraintEnd_toStartOf="@+id/ibtnEAlarm"
-                app:layout_constraintTop_toTopOf="@+id/ibtnEAlarm" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout14"
+                    android:layout_width="match_parent"
+                    android:layout_height="86dp">
+
+                    <TextView
+                        android:id="@+id/textView104"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="운동"
+                        android:textColor="@color/black"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView47"
+                        app:layout_constraintStart_toEndOf="@+id/imageView47"
+                        app:layout_constraintTop_toTopOf="@+id/imageView47" />
+
+                    <ImageView
+                        android:id="@+id/imageView47"
+                        android:layout_width="36dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="36dp"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/app_logo"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageButton
+                        android:id="@+id/ibtnEAlarm"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="40dp"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:backgroundTint="@color/white"
+                        android:padding="8dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_alarm"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageButton
+                        android:id="@+id/ibtnEQRCode"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="24dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_qr_code"
+                        app:layout_constraintBottom_toBottomOf="@+id/ibtnEAlarm"
+                        app:layout_constraintEnd_toStartOf="@+id/ibtnEAlarm"
+                        app:layout_constraintTop_toTopOf="@+id/ibtnEAlarm" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/linearLayout7"
@@ -79,7 +95,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:background="@drawable/background_rectangle_20dp"
-                android:backgroundTint="@color/secondPrimaryColor"
+                android:backgroundTint="@color/secondContainerColor"
                 android:orientation="horizontal"
                 android:paddingStart="16dp"
                 android:paddingTop="8dp"
@@ -87,7 +103,7 @@
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView47">
+                app:layout_constraintTop_toBottomOf="@+id/cardView29">
 
                 <ImageView
                     android:id="@+id/imageView26"

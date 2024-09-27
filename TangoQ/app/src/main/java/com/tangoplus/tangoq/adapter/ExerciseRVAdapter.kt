@@ -20,8 +20,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.EpisodeVO
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.data.HistoryUnitVO
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.dialog.ExerciseBSDialogFragment
@@ -32,7 +33,7 @@ import java.lang.IllegalArgumentException
 class ExerciseRVAdapter (
     private val fragment: Fragment,
     var exerciseList: MutableList<ExerciseVO>,
-    private val episode : EpisodeVO?,
+    private val episode : MutableList<HistoryUnitVO>,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -148,8 +149,8 @@ class ExerciseRVAdapter (
 
                 // ------# 시청 기록 및 완료 버튼 #------
 
-                if (episode?.doingExercises != null) {
-                    val currentEpisodeItem = episode.doingExercises[position]
+                if (episode != null) {
+                    val currentEpisodeItem = episode[position]
 
                     val condition = if (currentEpisodeItem.regDate != null && currentEpisodeItem.lastPosition!! == 0) {
                         0
@@ -164,7 +165,7 @@ class ExerciseRVAdapter (
                             holder.ibtnEIMore.visibility = View.INVISIBLE
                             holder.ibtnEIMore.isEnabled = false
                             holder.vEI.visibility = View.VISIBLE
-                            holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondPrimaryColor)
+                            holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondContainerColor)
                             holder.hpvEI.visibility = View.GONE
                         }
                         1 -> { // 재생 시간 중간

@@ -8,11 +8,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.EpisodeVO
+import com.tangoplus.tangoq.data.HistoryUnitVO
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
+import org.apache.commons.math3.stat.Frequency
 
-class ProgramCustomRVAdapter(private val fragment: Fragment, private val episodes: MutableList<EpisodeVO>, private val weekState : Pair<Int, Int>, private val episodeState : Pair<Int, Int>, private val onCustomCategoryClickListener: OnCustomCategoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ProgramCustomRVAdapter(private val fragment: Fragment, private val frequency: Int,private val episodes: MutableList<HistoryUnitVO>, private val episodeState : Pair<Int, Int>, private val onCustomCategoryClickListener: OnCustomCategoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class viewHolder(view: View) : RecyclerView.ViewHolder(view){
         val tvSCName : TextView = view.findViewById(R.id.tvSCName)
@@ -25,36 +27,37 @@ class ProgramCustomRVAdapter(private val fragment: Fragment, private val episode
     }
 
     override fun getItemCount(): Int {
-        return episodes.size
+        return frequency
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = episodes[position]
 
+        // episode는 첫 번째가 선택된 회차, 두 번째가 진행되는 회차임.
         if (holder is viewHolder) {
-            holder.tvSCName.text = "${position + 1}회차"
+            holder.tvSCName.text = "$position 회차"
 
-            // 기본 상태 설정
-            // episode는 현재 진행중인 episode, week도 마찬가지 현재 진행중인 week ex) 화요일이다. 2주차 2회차
 
-            /* currentEpisode 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
-            //episode에 2가들어가있는 상태.
-
-            if (weekState.second < weekState.first) {
+            val currentItem = if (position < episodes.size) {
+                episodes[position]
+            } else {
+                // 빈 HistoryUnitVO 객체 생성
+                HistoryUnitVO(null, null, null) // 필요한 기본값으로 초기화
+            }
+            if (episodeState.second < episodeState.first) {
 
                 // ------# 조건 처리 #------
-                when (currentItem.isFinish) {
+                when (currentItem.lastPosition == 0 && currentItem.regDate != null) {
                     true -> {
-                        setTextView(holder.tvSCName, R.color.secondPrimaryColor, R.color.thirdColor)
+                        setTextView(holder.tvSCName, R.color.secondContainerColor, R.color.thirdColor)
                     }
                     false -> {
                         setTextView(holder.tvSCName, R.color.deleteContainerColor, R.color.deleteColor)
                     }
                 }
-            } else if (weekState.second == weekState.first) {
-                when (currentItem.isFinish) {
+            } else if (episodeState.second == episodeState.first) {
+                when (currentItem.lastPosition == 0 && currentItem.regDate != null) {
                     true -> {
-                        setTextView(holder.tvSCName, R.color.secondPrimaryColor, R.color.thirdColor)
+                        setTextView(holder.tvSCName, R.color.secondContainerColor, R.color.thirdColor)
                     }
                     false -> {
                         if (position < episodeState.first) {

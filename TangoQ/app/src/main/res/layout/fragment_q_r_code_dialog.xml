@@ -87,7 +87,7 @@
             app:bar_active_color="@color/secondaryColor"
             app:bar_enabled="true"
             app:bar_height="4dp"
-            app:bar_inactive_color="@color/secondPrimaryColor"
+            app:bar_inactive_color="@color/secondContainerColor"
             app:bar_margin_left="4dp"
             app:bar_margin_right="4dp"
             app:bar_margin_top="4dp"

@@ -2,8 +2,6 @@ package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.VectorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -15,20 +13,14 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.allViews
 import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -36,12 +28,10 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.yearMonth
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
-import com.kizitonwose.calendar.view.ViewContainer
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MD2RVAdpater
-import com.tangoplus.tangoq.data.EpisodeVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.data.HistorySummaryVO
 import com.tangoplus.tangoq.data.HistoryUnitVO
 import com.tangoplus.tangoq.data.HistoryViewModel
@@ -56,12 +46,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.time.temporal.ChronoUnit
 import java.util.Locale
-import kotlin.random.Random
 
 
 class MeasureDashBoard2Fragment : Fragment() {
@@ -70,7 +57,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     var selectedDate = LocalDate.now()
 
     private lateinit var singletonHistory : Singleton_t_history
-    private lateinit var historys: MutableList<MutableList<EpisodeVO>>
+    private lateinit var historys: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
     private val hvm : HistoryViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
 
@@ -92,21 +79,21 @@ class MeasureDashBoard2Fragment : Fragment() {
 
         // ------! 운동 기록 API 공간 시작 !------
         todayInWeek = sortTodayInWeek()
-
-
         // ------! 일주일 간 운동 기록 들어올 곳 시작 !------
         singletonHistory = Singleton_t_history.getInstance(requireContext())
-        historys = singletonHistory.historys!!
+//        historys = singletonHistory.historys!!
         (requireActivity() as MainActivity).dataLoaded.observe(viewLifecycleOwner) { isLoaded ->
             if (isLoaded) {
                 // ------# 일별 운동 담기 #@-
                 // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
+
+                // TODO 현재 빈 값이라 전혀 값이 없음. 그래서 그럼.
                 val weeklySets = mutableListOf<Float>()
-                for (i in 0 until hvm.weeklyHistorys.size) {
-                    if (hvm.weeklyHistorys[i].third == 0) {
+                for (i in 0 until 7) {
+                    if (hvm.weeklyHistorys?.get(i)?.third == 0 || hvm.weeklyHistorys == null) {
                         weeklySets.add(1f)
                     } else {
-                        weeklySets.add( (hvm.weeklyHistorys[i].third * 100 / 7).toFloat())
+                        weeklySets.add( (hvm.weeklyHistorys!![i].third * 100 / 7).toFloat())
                     }
                 }
 
@@ -316,9 +303,6 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 } ?: run {
                                     Log.e("DateSelection", "Selected date is null")
                                 }
-
-
-
                             }
                         }
                     } else {

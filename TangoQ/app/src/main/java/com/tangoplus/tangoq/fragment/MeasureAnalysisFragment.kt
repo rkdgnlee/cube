@@ -1,27 +1,22 @@
 package com.tangoplus.tangoq.fragment
 
-import android.animation.Animator
-import android.animation.ValueAnimator
-import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ImageButton
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -31,26 +26,25 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility
+import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import kotlin.coroutines.resume
 import kotlin.math.min
 
 class MeasureAnalysisFragment : Fragment() {
@@ -58,13 +52,9 @@ class MeasureAnalysisFragment : Fragment() {
     private val viewModel : MeasureViewModel by activityViewModels()
     private lateinit var measureResult: JSONArray
     private lateinit var mr : JSONArray
-    private var allData = mutableListOf<Triple<String, Double, Double>>()
     private var index = -1
-    private var currentSequence = -1
-    private lateinit var combinedBitmap : Bitmap
-    private var scaleFactorX =  0f
-    private var scaleFactorY = 0f
 
+    private var updateUI = false
     private var count = false
 
     // 영상재생
@@ -105,187 +95,90 @@ class MeasureAnalysisFragment : Fragment() {
         index = arguments?.getInt(ARG_INDEX)!!
         mr = viewModel.selectedMeasure!!.measureResult
 
-        Log.v("현재측정", "${viewModel.selectedMeasure!!.regDate}")
+        Log.v("현재측정", viewModel.selectedMeasure!!.regDate)
         val noticeScore = arguments?.getInt(ARG_SCORE)
         val noticeComment = arguments?.getString(ARG_COMMENT)
         setColor(noticeScore!!)
         binding.tvMAPredict.text = noticeComment.toString()
-        // ------# 상단 snackbar 형식 가져오기 #------
-
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            try {
-                val slideDownAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
-                binding.clMANotice.visibility = View.VISIBLE
-                binding.clMANotice.startAnimation(slideDownAnimation)
-                hideNotice = false
-            } catch (e: Exception) {
-                Log.e("not Attached Exception", "${e.message}")
-            }
-        }, 600)
-        binding.clMANotice.setOnClickListener {
-            if (!hideNotice) {
-                // 숨기기
-                val slideUpAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up)
-                slideUpAnimation.setAnimationListener(object : Animation.AnimationListener {
-                    override fun onAnimationStart(animation: Animation?) {}
-                    override fun onAnimationRepeat(animation: Animation?) {}
-                    override fun onAnimationEnd(animation: Animation?) {
-                        binding.clMANotice.visibility = View.INVISIBLE
-                    }
-                })
-                binding.clMANotice.startAnimation(slideUpAnimation)
-                hideNotice = true
-            } else {
-                // 보이기
-                val slideDownAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
-                binding.clMANotice.visibility = View.VISIBLE
-                binding.clMANotice.startAnimation(slideDownAnimation)
-                hideNotice = false
-            }
-        }
 
         // ------# 1차 필터링 (균형별) #------
         // 0, 1, 2, 3으로 3가지.
         when (index) {
-
             0 -> { // 정면 균형
+                binding.tvMPTitle.text = "정면 균형"
+                binding.tvMAName.text = "정면 균형"
+                binding.tvMAPart1.text = "정면 측정"
+                binding.tvMAPart2.text = "팔꿉 측정"
                 measureResult.put(mr.optJSONObject(0))
                 measureResult.put(mr.optJSONObject(2))
                 setDynamicUI(false)
-                binding.tvMPTitle.visibility = View.GONE
-                binding.tlMP.getTabAt(0)?.text = "정면 측정"
-                binding.tlMP.getTabAt(1)?.text = "팔꿉 측정"
-                binding.clMA.visibility = View.VISIBLE
+                setStaticSplitUi(true)
                 binding.flMA.visibility = View.GONE
-                currentSequence = 0
-                setImage(currentSequence)
-                switchScreenData(measureResult, currentSequence,true)
+                lifecycleScope.launch {
+                    setImage(0, binding.ssivMA1)
+                    setImage(2, binding.ssivMA2)
+                }
+                switchScreenData(measureResult, 0,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_front)
-                binding.tvMAName.text = "정면 균형"
+
             }
             1 -> { // 측면 균형
+                binding.tvMPTitle.text = "측면 균형"
+                binding.tvMAName.text = "측면 균형"
+                binding.tvMAPart1.text = "좌측 측정"
+                binding.tvMAPart2.text = "우측 측정"
                 measureResult.put(mr.optJSONObject(3))
                 measureResult.put(mr.optJSONObject(4))
                 setDynamicUI(false)
-                binding.tlMP.visibility = View.INVISIBLE
-                binding.tvMPTitle.visibility = View.VISIBLE
-                binding.tvMPTitle.text = "측면 측정"
-                binding.clMA.visibility = View.VISIBLE
-                binding.flMA.visibility = View.GONE
-                currentSequence = 3
-                setImage(currentSequence)
-                switchScreenData(measureResult,  currentSequence,true)
+                setStaticSplitUi(true)
+                lifecycleScope.launch {
+                    setImage(3, binding.ssivMA1)
+                    setImage(4, binding.ssivMA2)
+                }
+                switchScreenData(measureResult,  3,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_side)
-                binding.tvMAName.text = "측면 균형"
+
             }
             2 -> { // 후면 균형
+                binding.tvMPTitle.text = "후면 균형"
+                binding.tvMAName.text = "후면 균형"
+                binding.tvMAPart1.text = "후면 측정"
                 measureResult.put(mr.optJSONObject(5))
                 setDynamicUI(false)
-                binding.tlMP.visibility = View.INVISIBLE
-                binding.tvMPTitle.visibility = View.VISIBLE
-                binding.tvMPTitle.text = "후면 측정"
-                binding.clMA.visibility = View.VISIBLE
+                setStaticSplitUi(false)
+                lifecycleScope.launch {
+                    setImage(5, binding.ssivMA1)
+                }
                 binding.flMA.visibility = View.GONE
-                currentSequence = 5
-                setImage(currentSequence)
-                switchScreenData(measureResult,  currentSequence,true)
+                switchScreenData(measureResult,  5,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_back)
-                binding.tvMAName.text = "후면 균형"
+
 
             }
             3 -> {
+                binding.tvMPTitle.text = "앉은 후면"
+                binding.tvMAName.text = "앉은 후면"
+                binding.tvMAPart1.text = "앉은 후면"
                 measureResult.put(mr.optJSONObject(6))
                 setDynamicUI(false)
-                binding.tlMP.visibility = View.INVISIBLE
+                setStaticSplitUi(false)
                 binding.tvMPTitle.visibility = View.VISIBLE
-                binding.tvMPTitle.text = "앉은 후면"
-                binding.clMA.visibility = View.VISIBLE
                 binding.flMA.visibility = View.GONE
-                currentSequence = 6
-                setImage(currentSequence)
-                switchScreenData(measureResult,  currentSequence,true)
+                lifecycleScope.launch { setImage(6, binding.ssivMA1) }
+                binding.ssivMA2.visibility = View.GONE
+                switchScreenData(measureResult,  6,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_back)
 
-                binding.tvMAName.text = "앉은 후면 "
+
             }
             4 -> { // 동적 균형
+                binding.tvMPTitle.text = "동적 측정"
                 measureResult.put(mr.optJSONArray(1))
                 setDynamicUI(true)
-                binding.tlMP.getTabAt(0)?.text = "동적 측정"
-                binding.tlMP.getTabAt(1)?.text = ""
-                binding.tlMP.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
-                binding.tlMP.background = null
-                binding.clMA.visibility = View.GONE
-                binding.flMA.visibility = View.VISIBLE
-                binding.flMA2.visibility = View.GONE
-                currentSequence = 1
-
                 setPlayer()
-                switchScreenData(measureResult, currentSequence,true)
-                binding.ivMA.setImageResource(R.drawable.drawable_dynamic)
             }
 
         }
-
-        // ------# 1-1차 필터링(tabLayout의 첫번째) #------
-        binding.tlMP.addOnTabSelectedListener(object: OnTabSelectedListener{
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                count = false
-                if (index != 3) {
-                    when (tab?.position) {
-                        0 -> {
-                            // 데이터, 시퀀스(0~6단계), toVerti
-                            currentSequence = getSequence(index).first
-                            switchScreenData(measureResult, currentSequence,true)
-                            animateIndicator(true)
-                            setImage(currentSequence)
-                        }
-                        1 -> {
-
-                            currentSequence = getSequence(index).second
-                            switchScreenData(measureResult, currentSequence,true)
-                            animateIndicator(true)
-                            setImage(currentSequence)
-
-                        }
-                    }
-                }
-
-            }
-
-        })
-
-        // ------! 하단 버튼토글 그룹 시작 !------
-        binding.btgMP.check(R.id.btnMA1)
-        binding.btgMP.addOnButtonCheckedListener{ _, checkedId, isChecked ->
-
-            if (isChecked) {
-                when (checkedId) {
-                    R.id.btnMA1 -> {
-                        animateIndicator(true)
-                        switchScreenData(measureResult, currentSequence,true)
-                    }
-                    R.id.btnMA2 -> {
-                        animateIndicator(false)
-                        switchScreenData(measureResult, currentSequence,false)
-                    }
-                }
-
-            }
-        }
-        binding.btnMA1.setOnClickListener { binding.btgMP.check(R.id.btnMA1) }
-        binding.btnMA2.setOnClickListener { binding.btgMP.check(R.id.btnMA2) }
-
-        binding.btgMP.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener{
-            override fun onGlobalLayout() {
-                initToggleIndicator()
-                binding.btgMP.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-        // ------! 하단 버튼토글 그룹 끝 !------
     }
 
     // 고정적으로
@@ -315,7 +208,6 @@ class MeasureAnalysisFragment : Fragment() {
                             } else null
                         }.toMutableList()
                         set012Adapter(minResultData)
-
                     }
                     false -> {
                         val anglePairs = listOf(
@@ -395,7 +287,6 @@ class MeasureAnalysisFragment : Fragment() {
                             Triple("중심과 중지 거리", "front_elbow_align_distance_center_mid_finger_left", "front_elbow_align_distance_center_mid_finger_right"),
                             Triple("중심과 손목 거리", "front_elbow_align_distance_center_wrist_left", "front_elbow_align_distance_center_wrist_right"))
 
-
                         distancePairs.forEach{ (descrption, leftKey, rightKey) ->
                             val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
                             val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
@@ -436,8 +327,6 @@ class MeasureAnalysisFragment : Fragment() {
                         set012Adapter(minResultData)
                     }
                 }
-
-
             }
             3 -> {
                 when (toVerti) {
@@ -453,7 +342,6 @@ class MeasureAnalysisFragment : Fragment() {
                         )
                         keyPairs.forEach { (key, description) ->
                             val angleValue = measureResult.optJSONObject(0).optDouble(key)
-
                             if (!angleValue.isNaN() ) {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", null))
                             }
@@ -611,8 +499,6 @@ class MeasureAnalysisFragment : Fragment() {
                                 "back_sit_horizontal_distance_sub_$part"
                             )
                         }
-
-
                         anglePairs.forEach { (description, angleKey, distanceKey) ->
                             val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
                             val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
@@ -641,14 +527,35 @@ class MeasureAnalysisFragment : Fragment() {
 
     private fun setDynamicUI(isDynamic: Boolean) {
         if (isDynamic) {
-            binding.llMAVertical.visibility = View.GONE
-            binding.llMAHorizontal.visibility = View.GONE
-            binding.flMA.visibility = View.GONE
-        } else {
-            binding.llMAVertical.visibility = View.VISIBLE
-            binding.llMAHorizontal.visibility = View.VISIBLE
+            binding.ssivMA1.visibility = View.GONE
+            binding.ssivMA2.visibility = View.GONE
             binding.flMA.visibility = View.VISIBLE
+        } else {
+            binding.ssivMA1.visibility = View.VISIBLE
+            binding.ssivMA2.visibility = View.VISIBLE
+            binding.flMA.visibility = View.GONE
         }
+    }
+
+    private fun setStaticSplitUi(isSplit: Boolean) {
+        val params = binding.ssivMA1.layoutParams as LayoutParams
+
+        if (isSplit) {
+            binding.ssivMA2.visibility = View.VISIBLE
+            binding.tvMAPart2.visibility = View.VISIBLE
+            params.width = 0 // MATCH_CONSTRAINT
+            params.constrainedWidth = true
+            params.matchConstraintPercentWidth = 0.5f
+        } else {
+            binding.ssivMA2.visibility = View.GONE
+            binding.tvMAPart2.visibility = View.GONE
+            params.width = LayoutParams.MATCH_PARENT
+            params.constrainedWidth = false
+            params.matchConstraintPercentWidth = 1.0f
+        }
+
+        binding.ssivMA1.layoutParams = params
+        (binding.ssivMA1.parent as ConstraintLayout).requestLayout()
     }
 
     private fun set012Adapter(allData: MutableList<Triple<String,String, String?>>) {
@@ -665,171 +572,84 @@ class MeasureAnalysisFragment : Fragment() {
         binding.rvMARight.layoutManager = linearLayoutManager2
         binding.rvMARight.adapter = rightadapter
     }
-
-    private fun initToggleIndicator() {
-        val buttonWidth = binding.btgMP.width / 2
-        val params = binding.toggleIndicator.layoutParams
-        params.width = buttonWidth - 36
-        params.height = binding.btgMP.height - 36
-        binding.toggleIndicator.layoutParams = params
-
-        // 초기 위치 설정
-        binding.toggleIndicator.x = 24f
-    }
-
-    private fun animateIndicator(toLeft: Boolean) {
-        val animator = ValueAnimator.ofFloat(
-            binding.toggleIndicator.x,
-            if (toLeft) 24f else (binding.btgMP.width - binding.toggleIndicator.width - 24f)
-        )
-
-        animator.addUpdateListener { animation ->
-            binding.toggleIndicator.x = animation.animatedValue as Float
-        }
-
-        animator.duration = 250
-        animator.start()
-
-        animator.addListener(object: Animator.AnimatorListener{
-            override fun onAnimationStart(animation: Animator) {}
-            override fun onAnimationEnd(animation: Animator) {
-                when (toLeft) {
-                    true -> {
-                        setToggleText(R.color.subColor800, R.color.subColor400)
-                    }
-                    false -> {
-                        setToggleText(R.color.subColor400, R.color.subColor800)
-                    }
-                }
-            }
-            override fun onAnimationCancel(animation: Animator) {}
-            override fun onAnimationRepeat(animation: Animator) {}
-        })
-    }
-
-    private fun setToggleText(color1 : Int, color2: Int) {
-        val enabledDrawable1 = ContextCompat.getDrawable(requireContext(), R.drawable.icon_vertical)
-        enabledDrawable1?.let {
-            val wrappedDrawable = DrawableCompat.wrap(it).mutate()
-            DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireContext(), color1))
-            binding.ivMAVertical.setImageDrawable(wrappedDrawable)
-
-        }
-        binding.tvMAVertical.setTextColor(ContextCompat.getColor(requireContext(), color1))
-
-        val enabledDrawable2 = ContextCompat.getDrawable(requireContext(), R.drawable.icon_horizontal)
-        enabledDrawable2?.let {
-            val wrappedDrawable = DrawableCompat.wrap(it).mutate()
-            DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireContext(), color2))
-            binding.ivMAHorizontal.setImageDrawable(wrappedDrawable)
-
-        }
-        binding.tvMAHorizontal.setTextColor(ContextCompat.getColor(requireContext(), color2))
-    }
-
-    private fun getSequence(index: Int) : Pair<Int, Int> {
-        return when (index) {
-            0 -> Pair(0, 2)
-            1 -> Pair(3, 4)
-            2 -> Pair(5, 6)
-            else -> Pair(1, -1)
-        }
-    }
-
     //---------------------------------------! imageOverlay !---------------------------------------
-    private fun extractImageCoordinates(jsonData: JSONObject): List<Pair<Float, Float>> {
+    private fun extractImageCoordinates(jsonData: JSONObject): List<Pair<Float, Float>>? {
         val poseData = jsonData.optJSONArray("pose_landmark")
-        return List(poseData.length()) { i ->
-            val landmark = poseData.getJSONObject(i)
-            Pair(
-                landmark.getDouble("sx").toFloat(),
-                landmark.getDouble("sy").toFloat()
-            )
-        }
+        return if (poseData != null) {
+            List(poseData.length()) { i ->
+                val landmark = poseData.getJSONObject(i)
+                Pair(
+                    landmark.getDouble("sx").toFloat(),
+                    landmark.getDouble("sy").toFloat()
+                )
+            }
+        } else null
     }
     /* TODO 현재 File 형식으로 받아오는중 (assets폴더에서 가져오기 때문)
     *   추후 API에서는 그냥 URL일 수 있음. 이부분이 생략되고 ,setImage(url), initPlayer(videoUrl)일 수 있음. */
-    private fun setImage(seq: Int) {
-        lifecycleScope.launch {
+    private suspend fun setImage(seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
             try {
+                Log.v("시퀀스", "seq: ${seq}, ssiv: ${ssiv.width}")
                 val jsonData = viewModel.selectedMeasure?.measureResult?.optJSONObject(seq)
-                Log.v("measureResult", "${jsonData}")
                 val coordinates = extractImageCoordinates(jsonData!!)
-                Log.v("모바일POSELANDMARK", "jsonData: ${jsonData.optJSONArray("pose_landmark")}, coordinates: ${coordinates}")
                 val imageUrls = viewModel.selectedMeasure?.fileUris?.get(seq)
+
                 if (imageUrls != null) {
-                    lifecycleScope.launch {
-                        try {
-                            val imageFile = imageUrls.let { File(it) }
-                            val bitmap = BitmapFactory.decodeFile(imageUrls)
-
-                            withContext(Dispatchers.Main) {
-                                binding.ssivMA.setImage(ImageSource.uri(imageFile.toUri().toString()))
-                                binding.ssivMA.setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
-                                    override fun onReady() {
-
-                                        if (!count) {
-                                            // ssiv 이미지뷰의 크기
-                                            val imageViewWidth = binding.ssivMA.width
-                                            val imageViewHeight = binding.ssivMA.height
-
-                                            // iv에 들어간 image의 크기 같음 screenWidth
-                                            val sWidth = binding.ssivMA.sWidth
-                                            val sHeight = binding.ssivMA.sHeight
-
-                                            // 스케일 비율 계산
-                                            val scaleFactor = min(imageViewWidth / sWidth.toFloat(), imageViewHeight / sHeight.toFloat())
-
-                                            // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
-                                            val offsetX = (imageViewWidth - sWidth * scaleFactor) / 2f
-                                            val offsetY = (imageViewHeight - sHeight * scaleFactor) / 2f
-
-                                            val poseLandmarkResult = fromCoordinates(coordinates)
-
-                                            val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
-                                                bitmap,
-                                                poseLandmarkResult,
-                                                scaleFactor,
-                                                offsetX,
-                                                offsetY,
-                                                requireContext(),
-                                                seq
-                                            )
-                                            count = true
-                                            binding.ssivMA.setImage(ImageSource.bitmap(combinedBitmap))
-
-                                            // count를 true로 설정하여 다시 호출되지 않도록 제어
-                                        }
+                    val imageFile = imageUrls.let { File(it) }
+                    val bitmap = BitmapFactory.decodeFile(imageUrls)
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        ssiv.setImage(ImageSource.uri(imageFile.toUri().toString()))
+                        ssiv.setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
+                            override fun onReady() {
+                                if (!count) {
+                                    // ssiv 이미지뷰의 크기
+                                    val imageViewWidth = ssiv.width
+                                    val imageViewHeight = ssiv.height
+                                    // iv에 들어간 image의 크기 같음 screenWidth
+                                    val sWidth = ssiv.sWidth
+                                    val sHeight = ssiv.sHeight
+                                    // 스케일 비율 계산
+                                    val scaleFactor = min(imageViewWidth / sWidth.toFloat(), imageViewHeight / sHeight.toFloat())
+                                    // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
+                                    val offsetX = (imageViewWidth - sWidth * scaleFactor) / 2f
+                                    val offsetY = (imageViewHeight - sHeight * scaleFactor) / 2f
+                                    val poseLandmarkResult = fromCoordinates(coordinates!!)
+                                    val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
+                                        bitmap,
+                                        poseLandmarkResult,
+                                        scaleFactor,
+                                        offsetX,
+                                        offsetY,
+                                        requireContext(),
+                                        seq
+                                    )
+                                    count = true
+                                    when (seq) {
+                                        0, 2, 3, 4 -> ssiv.setImage(ImageSource.bitmap(cropToPortraitRatio(combinedBitmap)))
+                                        else -> ssiv.setImage(ImageSource.bitmap(combinedBitmap))
                                     }
 
-                                    override fun onImageLoaded() {}
-                                    override fun onPreviewLoadError(e: Exception?) {}
-                                    override fun onImageLoadError(e: Exception?) {}
-                                    override fun onTileLoadError(e: Exception?) {}
-                                    override fun onPreviewReleased() {}
-                                })
+                                    continuation.resume(true)
+
+                                }
                             }
-                            Log.v("ImageLoading", "Image loaded successfully. Width: ${bitmap.width}, Height: ${bitmap.height}")
-                        } catch (e: Exception) {
-                            Log.e("ImageLoading", "Error loading image: ${e.message}", e)
-                        }
+
+                            override fun onImageLoaded() {
+                                count = false
+                            }
+                            override fun onPreviewLoadError(e: Exception?) { continuation.resume(false) }
+                            override fun onImageLoadError(e: Exception?) { continuation.resume(false) }
+                            override fun onTileLoadError(e: Exception?) { continuation.resume(false) }
+                            override fun onPreviewReleased() { continuation.resume(false) }
+                        })
+                        Log.v("ImageLoading", "Image loaded successfully. Width: ${bitmap.width}, Height: ${bitmap.height}")
                     }
+                } else {
+                    continuation.resume(false)
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("Error", "${e}")
             }
-        }
-    }
-    private fun getRealPathFromUri(context: Context, uri: Uri) : String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursur = context.contentResolver.query(uri, projection, null, null, null)
-        cursur?.use {
-            if (it.moveToFirst()) {
-                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                return it.getString(columnIndex)
-            }
-        }
-        return null
     }
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun extractVideoCoordinates(jsonData: JSONArray) : List<List<Pair<Float,Float>>> {
@@ -857,18 +677,19 @@ class MeasureAnalysisFragment : Fragment() {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     super.onPlaybackStateChanged(playbackState)
                     if (playbackState == Player.STATE_READY) {
+
                         val videoDuration = simpleExoPlayer?.duration ?: 0L
                         lifecycleScope.launch {
                             while (simpleExoPlayer?.isPlaying == true) {
+                                if (!updateUI) updateVideoUI(viewModel.selectedMeasure?.isMobile!!)
                                 updateFrameData(videoDuration, jsonArray.length())
                                 delay(24)
-
+                                Handler(Looper.getMainLooper()).postDelayed( {updateUI = true},1000)
                             }
                         }
                     }
                 }
             })
-
         }
     }
 
@@ -900,18 +721,13 @@ class MeasureAnalysisFragment : Fragment() {
         // 현재 재생 시간에 해당하는 프레임 인덱스 계산
         val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
         val coordinates = extractVideoCoordinates(jsonArray)
-
-
         // 실제 mp4의 비디오 크기를 가져온다
         val (videoWidth, videoHeight) = getVideoDimensions(videoUrl.toUri())
-//        Log.v("widhtHeight","(${binding.tlMP.width},${binding.tlMP.height}) , (${binding.ovMA.width}, ${binding.ovMA.height})")
         if (frameIndex in 0 until totalFrames) {
             // 해당 인덱스의 데이터를 JSON에서 추출하여 변환
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
-
             // 변환된 데이터를 화면에 그리기
             requireActivity().runOnUiThread {
-
                 binding.ovMA.setResults(
                     poseLandmarkResult,
                     videoWidth,
@@ -923,6 +739,44 @@ class MeasureAnalysisFragment : Fragment() {
         }
     }
 
+    private fun updateVideoUI(isMobile: Boolean) {
+        Log.v("업데이트", "UI")
+
+
+        binding.tvMPTitle.text = "동적 측정"
+        binding.ssivMA1.visibility = View.GONE
+        binding.ssivMA2.visibility = View.GONE
+        val (videoWidth, videoHeight) = getVideoDimensions(videoUrl.toUri())
+        val displayMetrics = DisplayMetrics()
+        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenWidth = displayMetrics.widthPixels
+
+        // 비디오 높이를 화면 너비에 맞게 조절
+        val aspectRatio = if (isMobile) videoWidth.toFloat() / videoHeight.toFloat() else videoHeight.toFloat() / videoWidth.toFloat()
+        val adjustedHeight = (screenWidth * aspectRatio).toInt()
+
+        // clMA의 크기 조절
+        val params = binding.clMA.layoutParams
+        params.width = screenWidth
+        params.height = adjustedHeight
+        binding.clMA.layoutParams = params
+
+        // llMARV를 clMA 아래에 위치시키기
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(binding.clMA)
+        constraintSet.connect(binding.llMARV.id, ConstraintSet.TOP, binding.clMA.id, ConstraintSet.BOTTOM)
+        constraintSet.applyTo(binding.clMA)
+
+        // PlayerView 크기 조절 (필요한 경우)
+        val playerParams = binding.pvMA.layoutParams
+        playerParams.width = screenWidth
+        playerParams.height = adjustedHeight
+        binding.pvMA.layoutParams = playerParams
+
+        switchScreenData(measureResult, 1,true)
+        binding.ivMA.setImageResource(R.drawable.drawable_dynamic)
+
+    }
     private fun getVideoDimensions(videoUri: Uri) : Pair<Int, Int> {
         val retriever = MediaMetadataRetriever()
         retriever.setDataSource(requireContext(), videoUri)

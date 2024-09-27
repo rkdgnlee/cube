@@ -72,7 +72,7 @@
                 android:layout_width="400dp"
                 android:layout_height="8dp"
                 android:layout_marginStart="10dp"
-                app:colorBackground="@color/secondPrimaryColor"
+                app:colorBackground="@color/secondContainerColor"
                 app:colorProgress="@color/secondaryColor"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
                 app:layout_constraintStart_toEndOf="@+id/tvPCDSet"

@@ -9,57 +9,24 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tlMP"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/background_tablayout_underline"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tabIndicatorAnimationDuration="400"
-            app:tabIndicatorColor="@color/secondaryColor"
-            app:tabIndicatorFullWidth="true"
-            app:tabPaddingEnd="0dp"
-            app:tabPaddingStart="0dp"
-            app:tabRippleColor="#20FFFFFF"
-            app:tabSelectedTextColor="@color/secondaryColor"
-            app:tabTextAppearance="@style/TabLayoutTextStyle"
-            app:tabTextColor="@color/secondPrimaryColor">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="__ 측정" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="__ 측정" />
-
-        </com.google.android.material.tabs.TabLayout>
+        android:layout_height="wrap_content"
+        android:background="@color/whitebar">
 
         <TextView
             android:id="@+id/tvMPTitle"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/background_bottom_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center"
             android:text="__측정"
             android:textColor="@color/subColor800"
             android:textSize="22dp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tlMP"
-            app:layout_constraintEnd_toEndOf="@+id/tlMP"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/tlMP"
-            app:layout_constraintTop_toTopOf="@+id/tlMP"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.45" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -75,35 +42,78 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
-            <LinearLayout
-                android:id="@+id/llMAMedia"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clMA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clMA"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                    android:id="@+id/ssivMA1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5" />
 
-                    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-                        android:id="@+id/ssivMA"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/tvMAPart1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/background_rectangle_36dp"
+                    android:backgroundTint="#47484C"
+                    android:paddingStart="16dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="6dp"
+                    android:text="정면 측정"
+                    android:textColor="#FFFFFF"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/ssivMA1"
+                    app:layout_constraintStart_toStartOf="@id/ssivMA1" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                    android:id="@+id/ssivMA2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5" />
+
+                <TextView
+                    android:id="@+id/tvMAPart2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/background_rectangle_36dp"
+                    android:backgroundTint="#47484C"
+                    android:paddingStart="16dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="6dp"
+                    android:text="팔꿉 측정"
+                    android:textColor="#FFFFFF"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/ssivMA2"
+                    app:layout_constraintStart_toStartOf="@id/ssivMA2" />
 
                 <FrameLayout
                     android:id="@+id/flMA"
                     android:layout_width="match_parent"
-                    android:layout_height="230dp">
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.exoplayer2.ui.PlayerView
                         android:id="@+id/pvMA"
@@ -117,214 +127,98 @@
 
                     </com.google.android.exoplayer2.ui.PlayerView>
                 </FrameLayout>
-            </LinearLayout>
 
-            <com.tangoplus.tangoq.mediapipe.OverlayView
-                android:id="@+id/ovMA"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@+id/llMAMedia"
-                app:layout_constraintEnd_toEndOf="@id/llMAMedia"
-                app:layout_constraintStart_toStartOf="@id/llMAMedia"
-                app:layout_constraintTop_toTopOf="@id/llMAMedia" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clMANotice"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_stroke_1dp_sub_color"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/llMAMedia">
-
-                <ImageView
-                    android:id="@+id/ivMA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/drawable_front" />
-
-                <TextView
-                    android:id="@+id/tvMAName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="정면 균형"
-                    android:textColor="@color/subColor800"
-                    android:textSize="18dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ivMA"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/ivMAicon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/tvMAName"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/icon_caution" />
-
-                <TextView
-                    android:id="@+id/tvMAPredict"
+                <com.tangoplus.tangoq.mediapipe.OverlayView
+                    android:id="@+id/ovMA"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:maxLength="58"
-                    android:maxLines="3"
-                    android:singleLine="false"
-                    android:text="_"
-                    android:textColor="@color/subColor800"
-                    android:textSize="14dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ivMAicon"
-                    app:layout_constraintTop_toTopOf="parent" />
-
+                    app:layout_constraintBottom_toBottomOf="@id/flMA"
+                    app:layout_constraintEnd_toEndOf="@id/flMA"
+                    app:layout_constraintStart_toStartOf="@id/flMA"
+                    app:layout_constraintTop_toTopOf="@id/flMA" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <FrameLayout
-                android:id="@+id/flMA2"
-                android:layout_width="0dp"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView31"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llMAMedia">
+                app:layout_constraintTop_toBottomOf="@+id/clMA">
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/btgMP"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clMANotice"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/background_rectangle_12dp"
-                    android:backgroundTint="@color/secondPrimaryColor"
-                    android:padding="6dp"
-                    app:singleSelection="true">
+                    android:layout_height="90dp"
+                    android:visibility="visible">
 
-                    <Button
-                        android:id="@+id/btnMA1"
-                        android:layout_width="0dp"
+                    <ImageView
+                        android:id="@+id/ivMA"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/transparent"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
+                        android:layout_marginStart="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/drawable_front" />
+
+                    <TextView
+                        android:id="@+id/tvMAName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="정면 균형"
                         android:textColor="@color/subColor800"
                         android:textSize="18dp"
-                        android:visibility="visible"
-                        app:cornerRadius="8dp" />
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/ivMA"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <Button
-                        android:id="@+id/btnMA2"
-                        android:layout_width="0dp"
+                    <ImageView
+                        android:id="@+id/ivMAicon"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tvMAName"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/icon_caution" />
+
+                    <TextView
+                        android:id="@+id/tvMAPredict"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="8dp"
                         android:layout_weight="1"
-                        android:backgroundTint="@color/transparent"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
+                        android:gravity="center_vertical"
+                        android:maxLength="58"
+                        android:maxLines="3"
+                        android:singleLine="false"
+                        android:text="_"
                         android:textColor="@color/subColor800"
-                        android:textSize="18dp"
-                        app:cornerRadius="8dp" />
+                        android:textSize="14dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/ivMAicon"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                </com.google.android.material.button.MaterialButtonToggleGroup>
-
-                <View
-                    android:id="@+id/toggleIndicator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="54dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_rectangle_12dp"
-                    android:backgroundTint="@color/white" />
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:id="@+id/llMAVertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/flMA2"
-                app:layout_constraintEnd_toEndOf="@+id/flMA2"
-                app:layout_constraintHorizontal_bias="0.15"
-                app:layout_constraintStart_toStartOf="@+id/flMA2"
-                app:layout_constraintTop_toTopOf="@+id/flMA2">
-
-                <ImageView
-                    android:id="@+id/ivMAVertical"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:src="@drawable/icon_vertical" />
-
-                <TextView
-                    android:id="@+id/tvMAVertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:gravity="center"
-                    android:text="수직 분석"
-                    android:textColor="@color/subColor800"
-                    android:textSize="18dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llMAHorizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/flMA2"
-                app:layout_constraintEnd_toEndOf="@+id/flMA2"
-                app:layout_constraintHorizontal_bias="0.85"
-                app:layout_constraintStart_toStartOf="@+id/flMA2"
-                app:layout_constraintTop_toTopOf="@+id/flMA2">
-
-                <ImageView
-                    android:id="@+id/ivMAHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/icon_horizontal" />
-
-                <TextView
-                    android:id="@+id/tvMAHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:gravity="center"
-                    android:text="수평 분석"
-                    android:textColor="@color/subColor400"
-                    android:textSize="18dp" />
-            </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/llMARV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/flMA2"
-                app:layout_constraintVertical_bias="0.0">
+                app:layout_constraintTop_toBottomOf="@+id/cardView31">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMALeft"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
@@ -333,7 +227,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMARight"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"

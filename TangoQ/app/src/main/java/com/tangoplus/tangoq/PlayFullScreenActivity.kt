@@ -208,7 +208,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                         val historyUnitVO = HistoryUnitVO(
                             sns!![currentWindowIndex - 1],
                             0,
-                            getCurrentDateTimeAsString(),
+                            getCurrentDateTimeAsString()
                         )
                         // ------# 타이머 초기화, 현재 재생중인 sn 수정, 검색기록 VM추가, 카운트다운 시작
                         chronometer.base = SystemClock.elapsedRealtime()

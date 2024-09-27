@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -77,15 +78,15 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
     private fun setColor(index: Int, tv1: TextView, iv: ImageView) {
         when (index) {
             2 -> {
-                tv1.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                tv1.setTextColor(Color.parseColor("#FF5449"))
                 iv.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_caution))
             }
             1 -> {
-                tv1.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))
+                tv1.setTextColor(Color.parseColor("#FF981D"))
                 iv.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_warning))
             }
             0 -> {
-                tv1.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
+                tv1.setTextColor(Color.parseColor("#AEAEAE"))
                 iv.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_ball))
 
             }

@@ -96,15 +96,6 @@
         app:layout_constraintTop_toTopOf="@+id/imageView5"
         app:srcCompat="@drawable/icon_stage_2" />
 
-    <!--    <ImageView-->
-    <!--        android:id="@+id/imageView7"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginEnd="76dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/tvEIStage"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="@+id/tvEIStage"-->
-    <!--        app:srcCompat="@drawable/icon_kcal_main_color" />-->
 
     <TextView
         android:id="@+id/tvEITime"
@@ -130,28 +121,6 @@
         app:layout_constraintStart_toEndOf="@+id/ivEIStage"
         app:layout_constraintTop_toTopOf="@+id/ivEIStage" />
 
-    <!--    <TextView-->
-    <!--        android:id="@+id/tvMKcal"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginStart="4dp"-->
-    <!--        android:text="48"-->
-    <!--        android:textColor="@color/black"-->
-    <!--        android:textSize="16sp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/imageView7"-->
-    <!--        app:layout_constraintStart_toEndOf="@+id/imageView7"-->
-    <!--        app:layout_constraintTop_toTopOf="@+id/imageView7" />-->
-    <!--    <TextView-->
-    <!--        android:id="@+id/textView15"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginStart="2dp"-->
-    <!--        android:text="Kcal"-->
-    <!--        android:textColor="@color/black"-->
-    <!--        android:textSize="16sp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/tvMKcal"-->
-    <!--        app:layout_constraintStart_toEndOf="@+id/tvMKcal"-->
-    <!--        app:layout_constraintTop_toTopOf="@+id/tvMKcal" />-->
     <ImageButton
         android:id="@+id/ibtnEIMore"
         android:layout_width="wrap_content"
@@ -193,7 +162,7 @@
         android:layout_width="0dp"
         android:layout_height="6dp"
         android:visibility="invisible"
-        app:colorBackground="@color/secondPrimaryColor"
+        app:colorBackground="@color/secondContainerColor"
         app:colorProgress="@color/secondaryColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

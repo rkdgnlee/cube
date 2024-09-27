@@ -28,7 +28,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private var pointPaint = Paint()
     private var linePaint = Paint()
     private var textPaint = Paint()
-    private var scaleFactor: Float = 1f
+    private var scaleFactorX: Float = 1f
+    private var scaleFactorY : Float = 1f
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
     private var currentRunningMode: RunningMode = RunningMode.IMAGE
@@ -69,12 +70,20 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         this.imageWidth = imageWidth
         currentRunningMode = runningMode
 
-        when (runningMode) {
+        scaleFactorX = when (runningMode) {
             RunningMode.IMAGE, RunningMode.VIDEO -> {
-                scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
+                width * 1f / imageWidth
             }
             RunningMode.LIVE_STREAM -> {
-                scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
+                width * 1f / imageWidth
+            }
+        }
+        scaleFactorY = when (runningMode) {
+            RunningMode.IMAGE, RunningMode.VIDEO -> {
+                height * 1f / imageHeight
+            }
+            RunningMode.LIVE_STREAM -> {
+                height * 1f / imageHeight
             }
         }
         invalidate()
@@ -99,12 +108,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
         if (currentRunningMode == RunningMode.LIVE_STREAM) {
 
-            val offsetX = ((width - imageWidth * scaleFactor) / 2 ) + 30
-            val offsetY = (height - imageHeight * scaleFactor) / 2
+            val offsetX = ((width - imageWidth * scaleFactorX) / 2 ) + 30
+            val offsetY = (height - imageHeight * scaleFactorY) / 2
             landmarks.forEach { landmark ->
                 canvas.drawPoint(
-                    landmark.x * imageWidth * scaleFactor + offsetX,
-                    landmark.y * imageHeight * scaleFactor + offsetY,
+                    landmark.x * imageWidth * scaleFactorX + offsetX,
+                    landmark.y * imageHeight * scaleFactorY + offsetY,
                     pointPaint
                 )
             }
@@ -117,10 +126,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
             // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
             if (nose != null && leftShoulder != null && rightShoulder != null) {
-                val noseX = nose.x * imageWidth * scaleFactor + offsetX
-                val noseY = nose.y * imageHeight * scaleFactor + offsetY
-                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * imageWidth * scaleFactor + offsetX
-                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * imageHeight * scaleFactor + offsetY
+                val noseX = nose.x * imageWidth * scaleFactorX + offsetX
+                val noseY = nose.y * imageHeight * scaleFactorY + offsetY
+                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * imageWidth * scaleFactorX + offsetX
+                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * imageHeight * scaleFactorY + offsetY
 
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
 
@@ -145,24 +154,24 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             connections.forEach { (start, end) ->
                 if (start < landmarks.size && end < landmarks.size) {
                     canvas.drawLine(
-                        landmarks[start].x * imageWidth * scaleFactor + offsetX,
-                        landmarks[start].y * imageHeight * scaleFactor + offsetY,
-                        landmarks[end].x * imageWidth * scaleFactor + offsetX,
-                        landmarks[end].y * imageHeight * scaleFactor + offsetY,
+                        landmarks[start].x * imageWidth * scaleFactorX + offsetX,
+                        landmarks[start].y * imageHeight * scaleFactorY + offsetY,
+                        landmarks[end].x * imageWidth * scaleFactorX + offsetX,
+                        landmarks[end].y * imageHeight * scaleFactorY + offsetY,
                         linePaint
                     )
-
                 }
             }
-        }  else {
-            val offsetX = ((width - imageWidth * scaleFactor) / 2 ) + 20
-            val offsetY = (height - imageHeight * scaleFactor) / 2
+        }
 
+        else { // video 일 때
+            val offsetX = ((width - imageWidth * scaleFactorX) / 2 ) + 30
+            val offsetY = (height - imageHeight * scaleFactorY) / 2
 
             landmarks.forEach { landmark ->
                 canvas.drawPoint(
-                    landmark.x * scaleFactor + offsetX,
-                    landmark.y * scaleFactor + offsetY,
+                    landmark.x * scaleFactorX + offsetX,
+                    landmark.y * scaleFactorY + offsetY,
                     pointPaint
                 )
             }
@@ -174,10 +183,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
             // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
             if (nose != null && leftShoulder != null && rightShoulder != null) {
-                val noseX = nose.x * scaleFactor + offsetX
-                val noseY = nose.y * scaleFactor + offsetY
-                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * scaleFactor + offsetX
-                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * scaleFactor + offsetY
+                val noseX = nose.x * scaleFactorX + offsetX
+                val noseY = nose.y * scaleFactorY + offsetY
+                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * scaleFactorX + offsetX
+                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * scaleFactorY + offsetY
 
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
 
@@ -202,10 +211,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             connections.forEach { (start, end) ->
                 if (start < landmarks.size && end < landmarks.size) {
                     canvas.drawLine(
-                        landmarks[start].x * scaleFactor + offsetX,
-                        landmarks[start].y  * scaleFactor + offsetY,
-                        landmarks[end].x * scaleFactor + offsetX,
-                        landmarks[end].y * scaleFactor + offsetY,
+                        landmarks[start].x * scaleFactorX + offsetX,
+                        landmarks[start].y  * scaleFactorY + offsetY,
+                        landmarks[end].x * scaleFactorX + offsetX,
+                        landmarks[end].y * scaleFactorY + offsetY,
                         linePaint
                     )
 

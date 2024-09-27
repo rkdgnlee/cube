@@ -18,9 +18,11 @@ import com.tangoplus.tangoq.data.HistoryViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
+import com.tangoplus.tangoq.databinding.RvProgramItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
+import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 
-class StringRVAdapter(private val fragment: Fragment, private val stringList: MutableList<String>?, private val xmlName: String, private val case: String, private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class StringRVAdapter(private val fragment: Fragment, private val stringList: MutableList<String>?, private val xmlName: String, private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class muscleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val ivMI : ImageView = view.findViewById(R.id.ivMI)
@@ -195,45 +197,24 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
             }
 
             is cbViewHolder -> {
+                holder.cbWI.setText("${currentItem?.substring(0, 10)}")
+                val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
+                holder.cbWI.isChecked = isInitiallyChecked
+                updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
 
-                if (case == "program") {
-                    holder.cbWI.text = "${currentItem + 1}주차"
+                vm.selectMeasureDate.observe(fragment.viewLifecycleOwner) { selectMeasureDate ->
+                    val isChecked = currentItem == selectMeasureDate
+                    holder.cbWI.isChecked = isChecked
+                    updateCheckboxTextColor(holder.cbWI, isChecked)
+                }
 
-                    val isInitiallyChecked = position == (vm as HistoryViewModel).currentWeek
-                    holder.cbWI.isChecked = isInitiallyChecked
-                    updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
-
-                    vm.selectWeek.observe(fragment.viewLifecycleOwner) { selectWeek ->
-                        val isChecked = position == selectWeek
-                        holder.cbWI.isChecked = isChecked
-                        updateCheckboxTextColor(holder.cbWI, isChecked)
-                    }
-
-                    holder.cbWI.setOnClickListener {
-                        vm.selectWeek.value = position
-                    }
-                } else if (case == "measure") {
-                    holder.cbWI.setText("${currentItem?.substring(0, 10)}")
-
-                    val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
-                    holder.cbWI.isChecked = isInitiallyChecked
-                    updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
-
-                    vm.selectMeasureDate.observe(fragment.viewLifecycleOwner) { selectMeasureDate ->
-                        val isChecked = currentItem == selectMeasureDate
-                        holder.cbWI.isChecked = isChecked
-                        updateCheckboxTextColor(holder.cbWI, isChecked)
-                    }
-
-                    holder.cbWI.setOnClickListener {
-                        vm.selectMeasureDate.value = currentItem
-                        Log.v("selectedDate", "selectMeasureDate${vm.selectMeasureDate.value}, currentItem: ${currentItem}")
-                    }
+                holder.cbWI.setOnClickListener {
+                    vm.selectMeasureDate.value = currentItem
+                    Log.v("selectedDate", "selectMeasureDate${vm.selectMeasureDate.value}, currentItem: ${currentItem}")
                 }
             }
+
         }
-
-
     }
 
     override fun getItemCount(): Int {
@@ -255,6 +236,6 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
     private fun setPartItem(cl: ConstraintLayout, cv: CardView, tv: TextView){
         cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteContainerColor)
         cv.setCardBackgroundColor(fragment.resources.getColor(R.color.deleteColor, null))
-        tv.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+        tv.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteTextColor))
     }
 }

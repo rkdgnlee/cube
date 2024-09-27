@@ -21,9 +21,10 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         binding.root.setPadding(0, 2, 2, 0)
-        binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.secondPrimaryColor))
-        binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.secondPrimaryColor))
-        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
+        binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
+        binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
+
+        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
 
         binding.tvSpinner.text = list[position]
         binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
@@ -34,7 +35,7 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.tvSpinner.text = list[position]
-        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
+        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
         binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
         return binding.root
     }

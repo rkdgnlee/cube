@@ -36,6 +36,7 @@ import com.tangoplus.tangoq.dialog.GuideDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureBSDialogFragment
+import com.tangoplus.tangoq.dialog.ProgramSelectDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import jp.wasabeef.blurry.Blurry
@@ -89,11 +90,6 @@ class MainFragment : Fragment() {
             dialog.show(requireActivity().supportFragmentManager, "GuideDialogFragment")
         }
 
-
-//        val dialog = SetupDialogFragment.newInstance("startSetup")
-//        dialog.show(requireActivity().supportFragmentManager, "SetupDialogFragment")
-
-
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
@@ -113,21 +109,18 @@ class MainFragment : Fragment() {
                         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
                         // 완료 갯수 넣기 현재 고정 0개임 TODO 여기에 오늘 날짜 운동 기록을 가져와야함. (번호 대조 후 여기에 넣기)
-                        setEpisodeProgress(0)
-
+//                        setEpisodeProgress(0)
                         mViewModel.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
-
                         }
-
                         updateUI()
                     }
                 }
 
                 binding.btnMCustom.setOnClickListener {
-                    val dialog = ProgramCustomDialogFragment()
+                    val dialog = ProgramSelectDialogFragment()
                     dialog.show(
                         requireActivity().supportFragmentManager,
-                        "CustomExerciseDialogFragment"
+                        "ProgramSelectDialogFragment"
                     )
                 }
 
@@ -158,7 +151,7 @@ class MainFragment : Fragment() {
     private fun setAdapter(index: Int) {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvM1.layoutManager = layoutManager1
-        val muscleAdapter = StringRVAdapter(this@MainFragment, singletonMeasure?.get(index)?.dangerParts?.map { it.first }?.toMutableList(), "part", "", mViewModel)
+        val muscleAdapter = StringRVAdapter(this@MainFragment, singletonMeasure?.get(index)?.dangerParts?.map { it.first }?.toMutableList(), "part", mViewModel)
         binding.rvM1.adapter = muscleAdapter
         binding.rvM1.isNestedScrollingEnabled = false
 
@@ -192,16 +185,15 @@ class MainFragment : Fragment() {
         measureScores?.let { measure ->
             if (measure.size > 0) {
                 binding.tvMTitle.text = "연동 측정 운동"
-                binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secondPrimaryColor))
+                binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secondBgContainerColor))
                 binding.tvMMeasureDate.visibility = View.VISIBLE
                 binding.rvM2.visibility = View.VISIBLE
                 binding.tvMCustom.visibility = View.VISIBLE
                 binding.tvMBlur.visibility = View.GONE
                 binding.ivMBlur.visibility = View.GONE
                 binding.clMMeasure.visibility = View.VISIBLE
-                // TODO 여기 갱신돼야 함. 방금 측정한 값이 최신화 되게.
 
-
+                // ------# 바텀시트에서 변한 selectedMeasureDate 에 맞게 변함.
                 mViewModel.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
                     val dateIndex = singletonMeasure?.indexOf(singletonMeasure?.find { it.regDate == selectedDate }!!)
 
@@ -222,8 +214,7 @@ class MainFragment : Fragment() {
                     binding.tvMMeasureResult2.text = "${singletonMeasure?.get(dateIndex)?.dangerParts?.get(1)?.first}부위가 부상 위험이 있습니다."
 
                     // eViewModel.currentProgram TODO 버튼과 연결되는 맞춤 프로그램도 달라져야 함.
-
-                                  }
+                }
             } else {
                 binding.tvMTitle.text = "${Singleton_t_user.getInstance(requireContext()).jsonObject?.getString("user_name")}님"
                 binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
@@ -237,22 +228,22 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setEpisodeProgress(finishCount: Int) {
-        binding.tvMCustomProgress.text = "완료 ${finishCount}/${hViewModel.currentProgram?.exercises?.get(0)?.size}개"
-        binding.hpvMCustomProgress.progress = (finishCount * 100).div(hViewModel.currentProgram?.exercises?.get(0)?.size!!)
-    }
+//    private fun setEpisodeProgress(finishCount: Int) {
+//        binding.tvMCustomProgress.text = "완료 ${finishCount}/${hViewModel.currentProgram?.exercises?.get(0)?.size}개"
+//        binding.hpvMCustomProgress.progress = (finishCount * 100).div(hViewModel.currentProgram?.exercises?.get(0)?.size!!)
+//    }
 
     private fun setProgramButton(isEnabled: Boolean) {
         if (isEnabled) {
             binding.btnMCustom.isEnabled = true
             binding.btnMCustom.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.mainColor)
             binding.btnMCustom.text = "맞춤 프로그램 시작하기"
-            setEpisodeProgress(0)
+//            setEpisodeProgress(0)
         } else {
             binding.btnMCustom.isEnabled = false
             binding.btnMCustom.text = "프로그램 완료, 재측정을 진행해 주세요"
             binding.btnMCustom.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.subColor150)
-            setEpisodeProgress(hViewModel.currentProgram?.exercises?.get(0)?.size!!)
+//            setEpisodeProgress(hViewModel.currentProgram?.exercises?.get(0)?.size!!)
 
         }
     }

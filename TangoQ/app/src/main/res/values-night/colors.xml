@@ -2,16 +2,24 @@
 <resources>
     <color name="black">#FFFFFF</color>
     <color name="white">#121212</color>
-    <color name="mainColor">#2EE88B</color>
-    <color name="mainPrimaryColor">#EFFEF6</color>
-    <color name="mainContainerColor">#02311B</color>
-    <color name="secondaryColor">#EFF7FF</color>
-    <color name="secondPrimaryColor">#1B2450</color>
-    <color name="thirdColor">#2C4FD0</color>
-    <color name="thirdOpacityColor">#6636ABFF</color>
+    <color name="whitebar">#1D1D1D</color>
 
-    <color name="deleteColor">#FF5449</color>
-    <color name="deleteContainerColor">#FFDAD6</color>
+    <color name="mainColor">#2EE88B</color>
+    <color name="mainDeepColor">#EFFEF6</color>
+    <color name="mainContainerColor">#0C894C</color>
+
+    <color name="secondaryColor">#2C4FD0</color>
+    <color name="secondDeepColor">#EFF7FF</color>
+    <color name="secondContainerColor">#1B2450</color>
+    <color name="secondBgContainerColor">#14171E</color>
+    <color name="secondWhiteColor">#EFF7FF</color>
+    <color name="secondContainerWhiteColor">#C8C8C8</color>
+    <color name="thirdColor">#2C4FD0</color>
+    <color name="thirdWhiteColor">#FFFFFF</color>
+
+    <color name="deleteColor">#4556AA</color>
+    <color name="deleteContainerColor">#12181E</color>
+    <color name="deleteTextColor">#AEAEAE</color>
     <color name="cautionColor">#FF981D</color>
     <color name="cautionContainerColor">#FFEFDC</color>
 

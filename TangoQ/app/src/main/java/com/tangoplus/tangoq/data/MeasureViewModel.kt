@@ -31,15 +31,13 @@ class MeasureViewModel : ViewModel() {
 
     // 서버에서 받은 측졍 결과 받는 곳
     var measures = mutableListOf<MeasureVO>()
-
-
-
     // MeasureDetail 담을 공간
     var selectedMeasure : MeasureVO? = null
 
+
     init {
         selectedMeasureDate.value = ""
-        selectedMeasure = MeasureVO("", "", null, mutableListOf(Pair("", -1), Pair("", -1)), JSONArray(), mutableListOf(), true)
+        selectedMeasure = MeasureVO("", "", null, mutableListOf(Pair("", -1), Pair("", -1)), JSONArray(), mutableListOf(), true, null)
     }
 
     fun convertJsonToMeasureVO(ja: JSONArray) : MeasureVO {
@@ -52,13 +50,12 @@ class MeasureViewModel : ViewModel() {
                 uris.add(file.absolutePath)
             } else {
                 val jo = ja.optJSONArray(1)
-                val fileName = jo.optJSONObject(0).optString("measure_photo_file_name")
+                val fileName = jo.optJSONObject(jo.length() - 1).optString("measure_photo_file_name")
                 val file = File(context.cacheDir, "$fileName.mp4")
                 uris.add(file.absolutePath)
             }
         }
         Log.v("VMUris", "${uris}")
-        Log.v("MeasureVO변환과정", "${ja.optJSONObject(6)}")
         return MeasureVO(
             measureId = "-1", // 아이디도 더미
             regDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
@@ -66,7 +63,8 @@ class MeasureViewModel : ViewModel() {
             dangerParts = mutableListOf(Pair("골반", -1), Pair("어깨", -1)), // 아픈 부위 더미
             measureResult = ja,
             fileUris = uris,
-            isMobile = true
+            isMobile = true,
+            matchPrograms = null
         )
     }
 }

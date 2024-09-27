@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.media.ExifInterface
@@ -28,12 +29,10 @@ object ImageProcessingUtility {
     ): Bitmap {
 
 
-
-        // 원본 비트맵을 복사하고, 그 위에 오버레이(랜드마크)를 그린다
         val resultBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(resultBitmap)
         val axisPaint = Paint().apply {
-            color = ContextCompat.getColor(context, R.color.deleteColor)
+            color = Color.parseColor("#FF5449")
             strokeWidth = 4f
             style = Paint.Style.STROKE
         }
@@ -219,6 +218,37 @@ object ImageProcessingUtility {
         val matrix = Matrix()
         matrix.postRotate(degree)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+
+    fun cropToPortraitRatio(original: Bitmap): Bitmap {
+        val width = original.width
+        val height = original.height
+
+        // 9:16 비율 계산
+        val targetRatio = 9f / 16f
+        val currentRatio = width.toFloat() / height.toFloat()
+
+        val cropWidth: Int
+        val cropHeight: Int
+        val x: Int
+        val y: Int
+
+        if (currentRatio > targetRatio) {
+            // 너비를 기준으로 자르기
+            cropWidth = (height * targetRatio).toInt()
+            cropHeight = height
+            x = (width - cropWidth) / 2
+            y = 0
+        } else {
+            // 높이를 기준으로 자르기
+            cropWidth = width
+            cropHeight = (width / targetRatio).toInt()
+            x = 0
+            y = (height - cropHeight) / 2
+        }
+
+        return Bitmap.createBitmap(original, x, y, cropWidth, cropHeight)
     }
 
 }

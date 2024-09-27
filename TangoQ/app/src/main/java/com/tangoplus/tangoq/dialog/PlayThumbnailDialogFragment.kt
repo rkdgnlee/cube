@@ -95,7 +95,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             ?.map { it.first() }
             ?.toMutableList()
 
-        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle", "", viewModel)
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle", viewModel)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
@@ -156,7 +156,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 // 전체데이터에서 현재 데이터(exerciseData)와 비교함.
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
                     exerciseData?.relatedJoint!!.split(", ")[0])}.toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, null, "recommend")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, mutableListOf(), "recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager

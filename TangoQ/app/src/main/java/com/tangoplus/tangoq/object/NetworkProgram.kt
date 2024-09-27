@@ -24,10 +24,10 @@ object NetworkProgram {
 
                 val jsonInfo = responseBody?.let { JSONObject(it) }?.optJSONObject("exercise_program_info")
                 val jsonExerciseArr = responseBody?.let { JSONObject(it) }?.getJSONArray("program_detail_data")
-
-                val exercises = jsonExerciseArr?.let { distributeExercises(it) } ?: mutableListOf()
+                val exercises = mutableListOf<ExerciseVO>()
                 val exerciseTimes = mutableListOf<Pair<String,Int>>()
                 for (i in 0 until jsonExerciseArr?.length()!!) {
+                    exercises.add(jsonToExerciseVO(jsonExerciseArr.optJSONObject(i)))
                     val exerciseTime = Pair((jsonExerciseArr[i] as JSONObject).optString("exercise_id"), (jsonExerciseArr[i] as JSONObject).optString("video_duration").toInt())
                     exerciseTimes.add(exerciseTime)
                 }
@@ -37,7 +37,7 @@ object NetworkProgram {
                     programTime = JSONObject(responseBody).optInt("total_video_time"),
                     programStage = "",
                     programCount = "${jsonInfo.optString("exercise_ids").split(", ").count()}",
-                    programEpisode = 4, // jsonInfo.optInt("exercises_week")
+                    programFrequency = 4, // jsonInfo.optInt("exercises_week")
                     programWeek = 4, // jsonInfo.optInt("exercise_episode")
                     exercises = exercises,
                     exerciseTimes = exerciseTimes
@@ -47,38 +47,4 @@ object NetworkProgram {
             }
         }
     }
-
-    private fun distributeExercises(jsonExerciseArr: JSONArray): MutableList<MutableList<ExerciseVO>> {
-        val totalExercises = jsonExerciseArr.length()
-        val exercises = mutableListOf<MutableList<ExerciseVO>>()
-
-        val weeksCount = when {
-            totalExercises >= 56 -> 8
-            totalExercises >= 42 -> 6
-            else -> 4
-        }
-
-        val baseExercisesPerWeek = totalExercises / weeksCount
-        var remainingExercises = totalExercises % weeksCount
-
-        for (week in 0 until weeksCount) {
-            val weekExercises = mutableListOf<ExerciseVO>()
-            val exercisesThisWeek = if (week == weeksCount - 1) {
-                baseExercisesPerWeek + remainingExercises
-            } else {
-                baseExercisesPerWeek + if (remainingExercises > 0) 1 else 0
-            }
-
-            val startIndex = week * baseExercisesPerWeek + minOf(week, remainingExercises)
-            for (i in startIndex until (startIndex + exercisesThisWeek)) {
-                weekExercises.add(jsonToExerciseVO(jsonExerciseArr.getJSONObject(i)))
-            }
-
-            exercises.add(weekExercises)
-            if (week != weeksCount - 1 && remainingExercises > 0) remainingExercises--
-        }
-
-        return exercises
-    }
-
 }

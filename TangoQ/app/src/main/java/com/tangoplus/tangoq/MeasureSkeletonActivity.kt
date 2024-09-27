@@ -40,6 +40,9 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.MediaStoreOutputOptions
 import androidx.camera.video.Quality
@@ -137,6 +140,7 @@ companion object {
     private var recordingJob: Job? = null
     private lateinit var videoCapture : VideoCapture<Recorder>
     private var recording: Recording? = null
+    private var videoFileName = ""
 
     // ------! 싱글턴 패턴 객체 가져오기 !------
     private lateinit var singletonInstance: Singleton_t_measure
@@ -185,7 +189,7 @@ companion object {
                 if (latestResult != null) {
                     if (isRecording) { // 동영상 촬영
                         binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
-                        startRecording = true
+
                         setAnimation(binding.tvMeasureSkeletonCount, 1000, 500, false) {
                             hideViews(5700)
                             // 녹화 종료 시점 아님
@@ -194,7 +198,6 @@ companion object {
                                 isRecording = false // 녹화 완료
                                 startRecording = false
                                 updateUI()
-                                Log.v("videoFrame", "videoFrame Count: ${mViewModel.dynamicJa.length()}")
                                 mViewModel.measurejo.put(mViewModel.dynamicJa) // 종료됐을 때 약 220개 size의 dynamicJa를 meausrejo에 넣는다.
                                 Log.v("jsonCastErrorVideo", "measureJo길이: ${mViewModel.measurejo.length()}")
 
@@ -619,11 +622,13 @@ companion object {
             .setTargetResolution(Size(720, 1280))
             .setTargetRotation(android.view.Surface.ROTATION_0)
             .build()
+
         videoCapture = VideoCapture.withOutput(
             Recorder.Builder()
-            .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+            .setQualitySelector(QualitySelector.from(Quality.HD))
             .build()
         )
+
         // ------! 카메라에 poselandmarker 그리기 !------
         // Must unbind the use-cases before rebinding them
         cameraProvider.unbindAll()
@@ -648,7 +653,6 @@ companion object {
             )
             if (startRecording && isRecording && latestResult != null) {
                 resultBundleToJson(latestResult!!, repeatCount.value!!)
-                Log.v("detectLiveStream", "videoCount: ${repeatCount.value}")
             }
         }
         imageProxy.close()
@@ -770,14 +774,20 @@ companion object {
 
             Log.v("scales", "latestResult!!.inputImage: (${latestResult!!.inputImageWidth}, ${latestResult!!.inputImageHeight})")
             plr.forEachIndexed { index, poseLandmark ->
-                val jo = JSONObject()
-                jo.put("index", index)
-                jo.put("isActive", true)
-                jo.put("sx", calculateScreenX(poseLandmark.x() ))
-                jo.put("sy", calculateScreenY(poseLandmark.y()  ))
-                jo.put("wx", poseLandmark.x())
-                jo.put("wy", poseLandmark.y())
-                jo.put("wz", poseLandmark.z())
+                val jo = JSONObject().apply {
+                    put("index", index)
+                    put("isActive", true)
+                    if (step == 1) {
+                        put("sx", calculateScreenX(poseLandmark.x(), false ))
+                        put("sy", calculateScreenY(poseLandmark.y(), false ))
+                    } else {
+                        put("sx", calculateScreenX(poseLandmark.x(), true ))
+                        put("sy", calculateScreenY(poseLandmark.y(), true ))
+                    }
+                    put("wx", poseLandmark.x())
+                    put("wy", poseLandmark.y())
+                    put("wz", poseLandmark.z())
+                }
                 poseLandmarks.put(jo)
             }
 
@@ -930,7 +940,7 @@ companion object {
                     val indexDistanceByCenter : Pair<Double, Double> = Pair(abs(indexData[0].first.minus(ankleXAxis)), abs(indexData[1].first.minus(ankleXAxis)))
                     val indexAngle : Double = calculateSlope(indexData[0].first, indexData[0].second, indexData[1].first, indexData[1].second)
                     val indexDistance : Double = abs(indexData[0].second - indexData[1].second)
-
+                    videoFileName = "MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_3_${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))}"
                     mViewModel.dynamicJoUnit.apply {
                         put("horizontal_angle_wrist", wristAngle)
                         put("horizontal_distance_wrist", wristDistance)
@@ -975,9 +985,10 @@ companion object {
                         put("measure_seq", 2)
                         put("measure_type", 7)
                         put("measure_start_time", "${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}")
-                        put("measure_photo_file_name", "MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_3_${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))}")
+                        put("measure_photo_file_name", videoFileName)
                     }
                     // 1프레임당 dynamic 측정 모두 들어감
+
                     mViewModel.dynamicJa.put(mViewModel.dynamicJoUnit)
                     mViewModel.dynamicJoUnit = JSONObject()
 
@@ -1256,7 +1267,7 @@ companion object {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     val savedUri = outputFileResults.savedUri
                     if (savedUri != null) {
-                        saveMediaToCache(this@MeasureSkeletonActivity, savedUri, name.toString(), true)
+                        saveMediaToCache(this@MeasureSkeletonActivity, savedUri, name, true)
                     } else {
                         Log.e("SavedUri", "Saved URI is null")
                     }
@@ -1270,6 +1281,8 @@ companion object {
     }
 
     private fun startVideoRecording(callback: () -> Unit){
+
+
         recordingJob = CoroutineScope(Dispatchers.IO).launch {
             val videoCapture = this@MeasureSkeletonActivity.videoCapture ?: return@launch
             val curRecording = recording
@@ -1280,9 +1293,9 @@ companion object {
             }
 
             // Create file name and content values
-            val name = "MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_3_${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))}"
+
             val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+                put(MediaStore.MediaColumns.DISPLAY_NAME, videoFileName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                     put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/TangoQ")
@@ -1306,13 +1319,14 @@ companion object {
                 when (recordEvent) {
                     is VideoRecordEvent.Start -> {
                         CoroutineScope(Dispatchers.Main).launch {
+                            startRecording = true
                             startRecordingTimer()
                         }
                     }
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
                             val savedUri = recordEvent.outputResults.outputUri
-                            saveMediaToCache(this@MeasureSkeletonActivity, savedUri, name.toString(), false)
+                            saveMediaToCache(this@MeasureSkeletonActivity, savedUri, videoFileName, false)
                             callback()
                         } else {
                             CoroutineScope(Dispatchers.Main).launch  {
@@ -1396,20 +1410,32 @@ companion object {
         setOnClickListener(OnSingleClickListener(listener))
     }
 
-    private fun calculateScreenX(xx: Float): Int {
-
-        val scaleFactor = max(binding.overlay.width * 1f / 720, binding.overlay.height * 1f / 1280)
-        val offsetX = ((binding.overlay.width - 720 * scaleFactor) / 2) + 62
-
-        val x = xx * binding.overlay.width / scaleFactor + offsetX
-        return x.roundToInt()
+    private fun calculateScreenX(xx: Float, isImage: Boolean): Int {
+        return if (isImage) {
+            val scaleFactor = binding.overlay.width * 1f / 720
+            val offsetX = (binding.overlay.width - 720 * scaleFactor) / 2
+            val x = xx * binding.overlay.width / scaleFactor + offsetX
+            x.roundToInt()
+        } else {
+            val scaleFactor = binding.overlay.width * 1f / 1280
+            val offsetX = ((binding.overlay.width - 1280 * scaleFactor) / 2 ) - 30
+            val x = xx * binding.overlay.width / scaleFactor + offsetX
+            x.roundToInt()
+        }
     }
 
-    private fun calculateScreenY(yy: Float): Int {
-        val scaleFactor = max(binding.overlay.width * 1f / 720, binding.overlay.height * 1f / 1280)
-        val offsetY = (binding.overlay.height - 1280 * scaleFactor) / 2
-        val y = yy * binding.overlay.height / scaleFactor + offsetY
-        return  y.roundToInt()
+    private fun calculateScreenY(yy: Float, isImage: Boolean): Int {
+        return if (isImage) {
+            val scaleFactor = binding.overlay.height * 1f / 1280
+            val offsetY = (binding.overlay.height - 1280 * scaleFactor) / 2
+            val y = yy * binding.overlay.height / scaleFactor + offsetY
+            y.roundToInt()
+        } else {
+            val scaleFactor = binding.overlay.height * 1f / 720
+            val offsetY = (binding.overlay.height - 720 * scaleFactor) / 2
+            val y = yy * binding.overlay.height / scaleFactor + offsetY
+            y.roundToInt()
+        }
     }
 
     fun saveMediaToCache(context: Context, uri: Uri, fileName: String, isImage: Boolean) {

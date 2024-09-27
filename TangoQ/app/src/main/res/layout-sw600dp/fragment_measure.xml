@@ -24,7 +24,7 @@
                 android:id="@+id/constraintLayout13"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white">
+                android:background="@color/whitebar">
 
                 <ImageButton
                     android:id="@+id/ibtnMsQRCode"
@@ -87,22 +87,22 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:background="@drawable/background_tablayout_underline"
+            android:background="@drawable/background_tablayout_underline_second"
             android:textAlignment="inherit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView16"
             app:tabGravity="center"
             app:tabIndicatorAnimationDuration="400"
-            app:tabIndicatorColor="@color/secondaryColor"
+            app:tabIndicatorColor="@color/secondWhiteColor"
             app:tabIndicatorFullWidth="true"
             app:tabMode="auto"
             app:tabPaddingEnd="0dp"
             app:tabPaddingStart="0dp"
             app:tabRippleColor="#20FFFFFF"
-            app:tabSelectedTextColor="@color/secondaryColor"
+            app:tabSelectedTextColor="@color/secondWhiteColor"
             app:tabTextAppearance="@style/TabLayoutTextStyle"
-            app:tabTextColor="@color/secondPrimaryColor">
+            app:tabTextColor="@color/secondContainerWhiteColor">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

@@ -9,5 +9,6 @@ data class MeasureVO (
     val dangerParts : MutableList<Pair<String, Int>>, // 취약한 부위, 위험도
     val measureResult : JSONArray, // index로 seq하고, jo, ja, jo, jo, jo, jo, jo
     val fileUris : MutableList<String>,
-    val isMobile : Boolean
+    val isMobile : Boolean,
+    val matchPrograms : MutableList<Pair<String, Int>>?
 )
