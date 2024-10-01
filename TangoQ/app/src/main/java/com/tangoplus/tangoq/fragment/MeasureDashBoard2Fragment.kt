@@ -31,13 +31,12 @@ import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MD2RVAdpater
-import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.data.HistorySummaryVO
-import com.tangoplus.tangoq.data.HistoryUnitVO
-import com.tangoplus.tangoq.data.HistoryViewModel
+import com.tangoplus.tangoq.data.ProgressUnitVO
+import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
-import com.tangoplus.tangoq.`object`.Singleton_t_history
+import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
@@ -56,9 +55,9 @@ class MeasureDashBoard2Fragment : Fragment() {
     var currentMonth = YearMonth.now()
     var selectedDate = LocalDate.now()
 
-    private lateinit var singletonHistory : Singleton_t_history
+    private lateinit var singletonHistory : Singleton_t_progress
     private lateinit var historys: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
-    private val hvm : HistoryViewModel by activityViewModels()
+    private val hvm : ProgressViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
 
     private lateinit var  todayInWeek : List<Int>
@@ -80,108 +79,104 @@ class MeasureDashBoard2Fragment : Fragment() {
         // ------! 운동 기록 API 공간 시작 !------
         todayInWeek = sortTodayInWeek()
         // ------! 일주일 간 운동 기록 들어올 곳 시작 !------
-        singletonHistory = Singleton_t_history.getInstance(requireContext())
+        singletonHistory = Singleton_t_progress.getInstance(requireContext())
 //        historys = singletonHistory.historys!!
-        (requireActivity() as MainActivity).dataLoaded.observe(viewLifecycleOwner) { isLoaded ->
-            if (isLoaded) {
-                // ------# 일별 운동 담기 #@-
-                // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
+        // ------# 일별 운동 담기 #------
+        // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
 
-                // TODO 현재 빈 값이라 전혀 값이 없음. 그래서 그럼.
-                val weeklySets = mutableListOf<Float>()
-                for (i in 0 until 7) {
-                    if (hvm.weeklyHistorys?.get(i)?.third == 0 || hvm.weeklyHistorys == null) {
-                        weeklySets.add(1f)
-                    } else {
-                        weeklySets.add( (hvm.weeklyHistorys!![i].third * 100 / 7).toFloat())
-                    }
-                }
-
-                var finishSets = 0
-                for (indices in weeklySets) {
-                    if (indices > 0f) finishSets += 1
-                }
-
-                // ------! bar chart 시작 !------
-                val barChart: BarChart = binding.bcMD2
-                barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
-                val entries = ArrayList<BarEntry>()
-
-                for (i in weeklySets.indices) {
-                    val entry = BarEntry(i.toFloat(), weeklySets[i])
-                    entries.add(entry)
-                }
-                val dataSet = BarDataSet(entries, "")
-                dataSet.apply {
-                    color =  resources.getColor(R.color.thirdColor, null)
-                    setDrawValues(false)
-                }
-                // BarData 생성 및 차트에 설정
-                val bcdata = BarData(dataSet)
-                bcdata.apply {
-                    barWidth = 0.5f
-
-                }
-                barChart.data = bcdata
-                // X축 설정
-                barChart.xAxis.apply {
-                    position = XAxis.XAxisPosition.BOTTOM
-                    setDrawGridLines(false)
-                    setDrawAxisLine(false)
-                    labelRotationAngle = 2f
-                    setDrawLabels(false)
-                }
-                barChart.legend.apply {
-                    formSize = 0f
-                }
-                // 왼쪽 Y축 설정
-                barChart.axisLeft.apply {
-                    axisMinimum = -1f // Y축 최소값
-                    axisMaximum = 100f
-                    setDrawAxisLine(false)
-                    setDrawGridLines(false)
-                    setLabelCount(0, false)
-                    setDrawLabels(false)
-                }
-                // 차트 스타일링 및 설정
-                barChart.apply {
-                    axisRight.isEnabled = false
-                    description.isEnabled = false
-                    legend.isEnabled = false
-                    setDrawValueAboveBar(false)
-                    setDrawGridBackground(false)
-                    setFitBars(false)
-                    animateY(500)
-                    setScaleEnabled(false)
-                    setTouchEnabled(false)
-                    invalidate()
-                }
-
-                // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
-                sortIvInLayout()
-                Log.v("weeklySets", "${weeklySets}")
-                for ((index, value) in weeklySets.withIndex()) {
-                    if (value > 1.0) {
-                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
-                    } else {
-                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
-                    }
-                    if (index == 6) {
-                        setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
-                    }
-                }
-
-                // ------# progrees #------
-                var progressCount = 0
-                for (i in weeklySets.indices) {
-                    if (weeklySets[i] > 1f) {
-                        progressCount++
-                    }
-                }
-                binding.tvMD2Progress.text = "완료 $progressCount/${weeklySets.size}"
-                // ---- 꺾은선 그래프 코드 끝 ----
+        // TODO 현재 빈 값이라 전혀 값이 없음. 그래서 그럼.
+        val weeklySets = mutableListOf<Float>()
+        for (i in 0 until 7) {
+            if (hvm.weeklyHistorys?.get(i)?.third == 0 || hvm.weeklyHistorys == null) {
+                weeklySets.add(1f)
+            } else {
+                weeklySets.add( (hvm.weeklyHistorys!![i].third * 100 / 7).toFloat())
             }
         }
+
+        var finishSets = 0
+        for (indices in weeklySets) {
+            if (indices > 0f) finishSets += 1
+        }
+
+        // ------! bar chart 시작 !------
+        val barChart: BarChart = binding.bcMD2
+        barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
+        val entries = ArrayList<BarEntry>()
+
+        for (i in weeklySets.indices) {
+            val entry = BarEntry(i.toFloat(), weeklySets[i])
+            entries.add(entry)
+        }
+        val dataSet = BarDataSet(entries, "")
+        dataSet.apply {
+            color =  resources.getColor(R.color.thirdColor, null)
+            setDrawValues(false)
+        }
+        // BarData 생성 및 차트에 설정
+        val bcdata = BarData(dataSet)
+        bcdata.apply {
+            barWidth = 0.5f
+
+        }
+        barChart.data = bcdata
+        // X축 설정
+        barChart.xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+            labelRotationAngle = 2f
+            setDrawLabels(false)
+        }
+        barChart.legend.apply {
+            formSize = 0f
+        }
+        // 왼쪽 Y축 설정
+        barChart.axisLeft.apply {
+            axisMinimum = -1f // Y축 최소값
+            axisMaximum = 100f
+            setDrawAxisLine(false)
+            setDrawGridLines(false)
+            setLabelCount(0, false)
+            setDrawLabels(false)
+        }
+        // 차트 스타일링 및 설정
+        barChart.apply {
+            axisRight.isEnabled = false
+            description.isEnabled = false
+            legend.isEnabled = false
+            setDrawValueAboveBar(false)
+            setDrawGridBackground(false)
+            setFitBars(false)
+            animateY(500)
+            setScaleEnabled(false)
+            setTouchEnabled(false)
+            invalidate()
+        }
+
+        // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
+        sortIvInLayout()
+        Log.v("weeklySets", "${weeklySets}")
+        for ((index, value) in weeklySets.withIndex()) {
+            if (value > 1.0) {
+                setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
+            } else {
+                setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
+            }
+            if (index == 6) {
+                setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
+            }
+        }
+
+        // ------# progrees #------
+        var progressCount = 0
+        for (i in weeklySets.indices) {
+            if (weeklySets[i] > 1f) {
+                progressCount++
+            }
+        }
+        binding.tvMD2Progress.text = "완료 $progressCount/${weeklySets.size}"
+        // ---- 꺾은선 그래프 코드 끝 ----
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         Log.v("Singleton>Profile", "${userJson}")
@@ -290,19 +285,19 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
                                 selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
 
-                                selectedDate?.let { selectedDate ->
-                                    val filteredExercises = hvm.allHistorys.filter { history ->
-                                        history.regDate?.let { regDateString ->
-                                            val historyDate = stringToLocalDate(regDateString)
-                                            historyDate.isEqual(selectedDate)
-                                        } ?: false
-                                    }.toHistorySummaries()
-
-                                    setAdapter(filteredExercises)
-                                    binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
-                                } ?: run {
-                                    Log.e("DateSelection", "Selected date is null")
-                                }
+//                                selectedDate?.let { selectedDate ->
+//                                    val filteredExercises = hvm.allHistorys.filter { history ->
+//                                        history.regDate?.let { regDateString ->
+//                                            val historyDate = stringToLocalDate(regDateString)
+//                                            historyDate.isEqual(selectedDate)
+//                                        } ?: false
+//                                    }.toHistorySummaries()
+//
+//                                    setAdapter(filteredExercises)
+//                                    binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
+//                                } ?: run {
+//                                    Log.e("DateSelection", "Selected date is null")
+//                                }
                             }
                         }
                     } else {
@@ -436,24 +431,24 @@ class MeasureDashBoard2Fragment : Fragment() {
     }
 
     private fun updateExerciseList() {
-        val filteredExercises = hvm.allHistorys.filter { history ->
-            history.regDate?.let { regDateString ->
-                val historyDate = stringToLocalDate(regDateString)
-                YearMonth.from(historyDate) == currentMonth
-            } ?: false
-        }.toMutableList()
-        val historySummaries = filteredExercises.toHistorySummaries()
-        setAdapter(historySummaries)
+//        val filteredExercises = hvm.allHistorys.filter { history ->
+//            history.regDate?.let { regDateString ->
+//                val historyDate = stringToLocalDate(regDateString)
+//                YearMonth.from(historyDate) == currentMonth
+//            } ?: false
+//        }.toMutableList()
+//        val historySummaries = filteredExercises.toHistorySummaries()
+//        setAdapter(historySummaries)
     }
 
-    private fun List<HistoryUnitVO>.toHistorySummaries() : List<HistorySummaryVO> {
-        return this.groupBy {it.exerciseId}
-            .map { (exerciseId, histories) ->
-            HistorySummaryVO(
-                exerciseId = exerciseId.toString(),
-                viewCount = histories.size,
-                lastViewDate = histories.maxByOrNull { it.regDate ?: "" }?.regDate
-                    )
-            }
-    }
+//    private fun List<ProgressUnitVO>.toHistorySummaries() : List<HistorySummaryVO> {
+//        return this.groupBy {it.exerciseId}
+//            .map { (exerciseId, histories) ->
+//            HistorySummaryVO(
+//                exerciseId = exerciseId.toString(),
+//                viewCount = histories.size,
+//                lastViewDate = histories.maxByOrNull { it.regDate ?: "" }?.regDate
+//                    )
+//            }
+//    }
 }

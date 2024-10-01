@@ -506,23 +506,11 @@ class MeasureAnalysisFragment : Fragment() {
                                 minResultData.add(Triple(description, "기울기: ${String.format("%.1f", angleValue)}°", "높이 차: ${String.format("%.1f", distanceValue)}cm"))
                             }
                         }
-
                         set012Adapter(minResultData)
                     }
                 }
             }
-
         }
-
-//        set012Adapter()
-        // 정면의 수직분석 --> 전부 angle임 그럼 높이 차라는 건 없음. 왼쪽 오른쪽 기울기만 있을 뿐
-        // 정면의 수평분석 --> 수평이되야 양 어꺠 기울기, 높이 차 가능.
-        // 측면의 수직분석 --> 각도들
-        // 측면의 수평분석 -> x축부터 거리
-        // 후면의 수평분석 -> 기울기, 높이차 있음
-        // 후면의
-        // 앉아 후면의 수평 -> 각도, 거리
-        // 앉아 후면의 수직 -> 각도가
     }
 
     private fun setDynamicUI(isDynamic: Boolean) {
@@ -589,6 +577,7 @@ class MeasureAnalysisFragment : Fragment() {
     *   추후 API에서는 그냥 URL일 수 있음. 이부분이 생략되고 ,setImage(url), initPlayer(videoUrl)일 수 있음. */
     private suspend fun setImage(seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
             try {
+
                 Log.v("시퀀스", "seq: ${seq}, ssiv: ${ssiv.width}")
                 val jsonData = viewModel.selectedMeasure?.measureResult?.optJSONObject(seq)
                 val coordinates = extractImageCoordinates(jsonData!!)
@@ -802,9 +791,6 @@ class MeasureAnalysisFragment : Fragment() {
         val rightadapter = DataDynamicRVAdapter(rightData, rightTitle)
         binding.rvMARight.layoutManager = linearLayoutManager2
         binding.rvMARight.adapter = rightadapter
-
-
-
     }
 
     override fun onStop() {
@@ -816,8 +802,8 @@ class MeasureAnalysisFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         simpleExoPlayer?.release()
-//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
+
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true

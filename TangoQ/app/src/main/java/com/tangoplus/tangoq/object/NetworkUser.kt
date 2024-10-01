@@ -42,7 +42,7 @@ object NetworkUser {
             .addInterceptor(authInterceptor)
             .build()
         val request = Request.Builder()
-            .url("${myUrl}oauth_create.php")
+            .url("${myUrl}oauth.php")
             .post(body)
             .build()
 
@@ -59,7 +59,7 @@ object NetworkUser {
                 // ------! 토큰 저장 !------
                 val token = jo?.optString("jwt")
                 if (token != null) {
-                    Log.v("token" , token.substring(0, 10))
+                    Log.v("token" , token)
                     saveEncryptedJwtToken(context, token)
                 }
                 callback(jo)
@@ -67,44 +67,37 @@ object NetworkUser {
         })
     }
 
-    // 여기서도 토큰이 생김
-    fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
+    // 자체 로그인ㅅ
+    suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, idPw.toString())
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
-
+        val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}login.php/")
+            .url("${myUrl}login.php")
             .post(body)
             .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
-            }
 
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.v("${ContentValues.TAG}, 응답성공", "$responseBody")
-                val jo = responseBody?.let { JSONObject(it) }
-
-                // ------! 토큰 저장 !------
-                val token = jo?.optString("jwt")
-                if (token != null) {
-                    Log.v("token" , token.substring(0, 10))
-                    saveEncryptedJwtToken(context, token)
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
                 }
-                callback(jo)
-            }
-        })
+
+                override fun onResponse(call: Call, response: Response) {
+                    val responseBody = response.body?.string()
+                    Log.v("응답성공", "$responseBody")
+                    val jo = responseBody?.let { JSONObject(it) }
+
+                    // ------! 토큰 저장 !------
+                    val jsonObj = JSONObject()
+                    jsonObj.put("jwt", jo?.optString("jwt"))
+                    jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
+                    saveEncryptedJwtToken(context, jsonObj.toString())
+
+                    callback(jo)
+                }
+            })
+        }
     }
     // ------! 마케팅 수신 동의 관련 insert문 !------  ###  ### ---> 여기서도 토큰이 생김
     fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
@@ -118,12 +111,12 @@ object NetworkUser {
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+                Log.e("응답실패", "Failed to execute request!")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.e("${ContentValues.TAG}, 응답성공", "$responseBody")
+                Log.e("응답성공", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
                 callback(jo)
             }
@@ -155,7 +148,7 @@ object NetworkUser {
         val client = OkHttpClient()
         val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json )
         val request = Request.Builder()
-            .url("${myUrl}update.php?user_sn=$sn")
+            .url("${myUrl}user/$sn")
             .patch(body)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -174,7 +167,7 @@ object NetworkUser {
     fun fetchUserDeleteJson(myUrl : String, sn:String, callback: () -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}delete.php?user_sn=$sn")
+            .url("${myUrl}user/$sn")
             .delete()
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -225,5 +218,6 @@ object NetworkUser {
 
     fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
+
     }
 }

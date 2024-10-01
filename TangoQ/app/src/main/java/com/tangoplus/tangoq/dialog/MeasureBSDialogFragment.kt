@@ -2,23 +2,17 @@ package com.tangoplus.tangoq.dialog
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.HistoryViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBSDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import org.json.JSONObject
 
 class MeasureBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding: FragmentMeasureBSDialogBinding
@@ -51,15 +45,17 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
         binding.rvMBSD.adapter = adapter
 
         setupButtons()
+        binding.btnMBSD.setOnClickListener {
+            mvm.selectedMeasureDate.value = mvm.selectMeasureDate.value
+            mvm.selectedMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectMeasureDate.value }
+            Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
+            Log.w("selectedMeasure", "${mvm.selectedMeasure}")
+            dismiss()
+        }
     }
 
     private fun setupButtons() {
         binding.ibtnMBSDExit.setOnClickListener { dismiss() }
-        binding.btnMBSD.setOnClickListener {
-            mvm.selectedMeasureDate.value = mvm.selectMeasureDate.value
-            mvm.selectedMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectMeasureDate.value }
-            Log.w("selectedMeasureDate", "${mvm.selectedMeasureDate.value}")
-            dismiss()
-        }
+
     }
 }

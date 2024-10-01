@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.security.crypto.MasterKeys
@@ -60,8 +61,13 @@ object SecurePreferencesManager {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-        val token = sharedPreferences.getString("jwt_token", null)
-        return token
+        val jsonString  = sharedPreferences.getString("jwt_token", null)
+        return try {
+            val jsonObject = JSONObject(jsonString)
+            jsonObject.getString("jwt")
+        } catch (e: Exception) {
+            null // JSON 파싱 실패 시 null 반환
+        }
     }
 
     // ------! 자체 로그인 암호화 저장 !------

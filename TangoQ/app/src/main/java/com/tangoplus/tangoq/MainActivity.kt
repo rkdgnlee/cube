@@ -18,10 +18,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.data.HistoryVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.HistoryUnitVO
-import com.tangoplus.tangoq.data.HistoryViewModel
+import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.ProgramVO
@@ -33,8 +31,7 @@ import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
-import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgramVOBySn
-import com.tangoplus.tangoq.`object`.Singleton_t_history
+import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,33 +40,24 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val eViewModel : ExerciseViewModel by viewModels()
     private val uViewModel : UserViewModel by viewModels()
-    private val hViewModel : HistoryViewModel by viewModels()
+    private val hViewModel : ProgressViewModel by viewModels()
     private val mViewModel : MeasureViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
-    private lateinit var singletonHistory : Singleton_t_history
-    var historys =  mutableListOf<HistoryVO>()
     private lateinit var program : ProgramVO
-    private val _dataLoaded = MutableLiveData<Boolean>()
-    val dataLoaded: LiveData<Boolean> = _dataLoaded
+
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         // ------! 다크모드 메뉴 이름 설정 시작 !------
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
@@ -80,14 +68,20 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         AlarmReceiver()
 
-        // -----! 초기 화면 설정 !-----
+        // -----# 초기 화면 설정 #-----
 //        handlePendingDeepLink()
-
+        singletonMeasure = Singleton_t_measure.getInstance(this)
         setCurrentFragment(selectedTabId)
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
-        // -----! 초기 화면 설정 끝 !-----
 
+
+
+        mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)!!
+        mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+
+
+        // -------! 버튼 시작 !------
         binding.bnbMain.setOnItemSelectedListener {
             if (selectedTabId != it.itemId) {
                 selectedTabId = it.itemId
@@ -105,6 +99,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.profile -> {}
             }
         }
+        // -------! 버튼 끝 !------
+
         // ------# 측정 완료 후 측정 디테일 화면으로 바로 가기 #------
         measureSkeletonLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -114,8 +110,13 @@ class MainActivity : AppCompatActivity() {
                     mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
                     val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure
+                    val bundle = Bundle()
+                    bundle.putBoolean("showMeasure", true)
+                    val measureDetailFragment = MeasureDetailFragment().apply {
+                        arguments = bundle
+                    }
                     supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flMain, MeasureDetailFragment())
+                        replace(R.id.flMain, measureDetailFragment)
                         addToBackStack(null)
                         commit()
                     }
@@ -123,74 +124,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ------# 현재 진행 프로그램 #------
-        CoroutineScope(Dispatchers.Main).launch {
 
-            // TODO 여기서 기존 유저 -> 선택된 프로그램 불러오기 or 신규 유저 -> 본인이 원하는 프로그램 선택하기 전까지 빈 program
-
-            val mjo1 = JSONArray().apply {
-                put(loadJsonData())
-                put(loadJsonArray())
-                put(loadJsonData())
-                put(loadJsonData())
-                put(loadJsonData())
-                put(loadJsonData())
-                put(loadJsonData())
-            }
-            val parts1 = mutableListOf<Pair<String, Int>>()
-            parts1.add(Pair("어깨", 2))
-            parts1.add(Pair("목", 2))
-            parts1.add(Pair("손목", 1))
-            parts1.add(Pair("무릎", 1))
-
-            val measureVO1 = MeasureVO(
-                "1",
-                "2024-08-20 20:12:08",
-                86,
-                parts1,
-                mjo1,
-                // 총 7개
-                mutableListOf(
-                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
-                    getUrl("MT_DYNAMIC_OVERSQUAT_FRONT_1_1_20240606135241.mp4", false),
-                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
-                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
-                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
-                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true),
-                    getUrl("MT_STATIC_BACK_61_20240604143755.jpg", true)
-                ),
-                false,
-                mutableListOf(Pair("신체 능력 향상, 전신 강화 루틴",  10), Pair("거북목 스트레칭", 4), Pair("러닝 전 부상 방지 전신 스트레칭", 3))
-            )
-            Log.v("measureVO1", "${measureVO1.fileUris}")
-
-            val parts2 = mutableListOf<Pair<String, Int>>()
-            parts2.add(Pair("목", 2))
-            parts2.add(Pair("어깨", 1))
-            parts2.add(Pair("손목", 1))
-            parts2.add(Pair("골반", 1))
-
-            val measureVO2 = MeasureVO(
-                "2",
-                "2024-08-01 17:55:21",
-                79,
-                parts2,
-                JSONArray(),
-                mutableListOf(),
-                false,
-                mutableListOf()
-            )
-
-            // ------# 싱글턴 측정 결과 init #------
-            singletonMeasure = Singleton_t_measure.getInstance(this@MainActivity)
-            singletonMeasure.measures = mutableListOf()
-            singletonMeasure.measures?.add(measureVO1)
-            singletonMeasure.measures?.add(measureVO2)
-            mViewModel.selectedMeasure = measureVO1
-            mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
-
-            _dataLoaded.value = true
-        }
     }
 
 
@@ -215,38 +149,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-//    // ------! 딥링크 처리 시작 !------
-//    private fun handlePendingDeepLink() {
-//        val prefs = getSharedPreferences("DeepLinkPrefs", Context.MODE_PRIVATE)
-//        val pendingDeepLink = prefs.getString("pending_deep_link", null)
-//        if (pendingDeepLink != null) {
-//            // 딥링크 처리
-//            handleDeepLink(Uri.parse(pendingDeepLink))
-//            // 처리 후 임시 저장된 딥링크 정보 삭제
-//            prefs.edit().remove("pending_deep_link").apply()
-//        }
-//    }
-//
-//    fun handleDeepLink(uri: Uri) {
-//        val path = uri.path
-//        if (path?.startsWith("/content/") == true) {
-//            val encodedData = path.substringAfterLast("/")
-//            val exercise = DeepLinkUtil.decodeExercise(encodedData)
-//            if (exercise != null) {
-//                // exercise를 사용하여 필요한 작업 수행
-//                val dialogFragment = PlayThumbnailDialogFragment().apply {
-//                    arguments = Bundle().apply {
-//                        putParcelable("ExerciseUnit", exercise)
-//                    }
-//                }
-//                dialogFragment.show(supportFragmentManager, "PlayThumbnailDialogFragment")
-//
-//            } else {
-//                // 디코딩 실패 시 처리
-//                Log.e("ErrorDeepLink", "Failed to access deepLink")
-//            }
-//        }
-//    } // ------! 딥링크 처리 끝 !------
 
     override fun onResume() {
         super.onResume()
@@ -329,35 +231,6 @@ class MainActivity : AppCompatActivity() {
         return currentFragment == null || currentFragment.view == null || !currentFragment.isVisible
     }
 
-
-
-
-
-
-
-    private suspend fun getUrl(fileName: String, isImage: Boolean) : String = withContext(Dispatchers.IO) {
-        val fileExtension = if (isImage) ".jpg" else ".mp4"
-        val tempFile = File.createTempFile(if (isImage) "temp_image" else "temp_video", fileExtension, cacheDir)
-        tempFile.deleteOnExit()
-
-        assets.open(fileName).use { input ->
-            tempFile.outputStream().use { output ->
-                input.copyTo(output)
-            }
-        }
-        tempFile.absolutePath
-    }
-
-    // ------# 사진 영상 pose 가져오기 #------
-    private suspend fun loadJsonData(): JSONObject = withContext(Dispatchers.IO) {
-        val jsonString = assets.open("MT_STATIC_BACK_6_1_20240604143755.json").bufferedReader()
-                .use { it.readText() }
-        JSONObject(jsonString)
-    }
-    private suspend fun loadJsonArray() : JSONArray = withContext(Dispatchers.IO) {
-        val jsonString = assets.open("MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_1_20240606135241.json").bufferedReader().use { it.readText() }
-        JSONArray(jsonString)
-    }
     fun launchMeasureSkeletonActivity() {
         val intent = Intent(this, MeasureSkeletonActivity::class.java)
         measureSkeletonLauncher.launch(intent)

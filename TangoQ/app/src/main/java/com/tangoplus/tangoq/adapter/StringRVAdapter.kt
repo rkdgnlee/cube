@@ -14,13 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.HistoryViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
-import com.tangoplus.tangoq.databinding.RvProgramItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
-import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 
 class StringRVAdapter(private val fragment: Fragment, private val stringList: MutableList<String>?, private val xmlName: String, private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -210,7 +207,7 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
 
                 holder.cbWI.setOnClickListener {
                     vm.selectMeasureDate.value = currentItem
-                    Log.v("selectedDate", "selectMeasureDate${vm.selectMeasureDate.value}, currentItem: ${currentItem}")
+                    Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
                 }
             }
 

@@ -89,24 +89,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
 
-            <TextView
-                android:id="@+id/tvPCDWeekly"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_rectangle_20dp"
-                android:backgroundTint="@color/secondaryColor"
-                android:paddingStart="12dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="6dp"
-                android:text="1/4주차"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvPCDHorizontal"
                 android:layout_width="0dp"

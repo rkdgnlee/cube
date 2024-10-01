@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
@@ -21,44 +22,53 @@ import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProgramCustomRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.data.HistoryVO
+import com.tangoplus.tangoq.data.ProgressVO
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.HistoryUnitVO
-import com.tangoplus.tangoq.data.HistoryViewModel
+import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.data.ProgressUnitVO
+import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.databinding.FragmentProgramCustomDialogBinding
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.fragment.isFirstRun
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
-import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgramVOBySn
-import com.tangoplus.tangoq.`object`.Singleton_t_history
+import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
+import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import kotlin.random.Random
 
 class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListener {
     lateinit var binding : FragmentProgramCustomDialogBinding
     val viewModel : ExerciseViewModel by activityViewModels()
-    val hViewModel : HistoryViewModel by activityViewModels()
-    private var historys =  HistoryVO("-1", false, mutableListOf())
-    private lateinit var  singletonHistory : Singleton_t_history
-
+    val pvm : ProgressViewModel by activityViewModels()
+    val mvm : MeasureViewModel by activityViewModels()
+    private lateinit var ssm : SaveSingletonManager
     var programSn = 0
+    var recommendationSn = 0
+    var programIndex = 0
     private lateinit var program : ProgramVO
+
     companion object {
         private const val ARG_PROGRAM_SN = "program_sn"
-        fun newInstance(programSn: Int) : ProgramCustomDialogFragment {
+        private const val ARG_PROGRAM_INDEX = "program_index"
+        private const val ARG_RECOMMENDATION_SN = "recommendation_sn"
+
+        fun newInstance(programSn: Int, recommendationSn: Int, programIndex: Int) : ProgramCustomDialogFragment {
             val fragment = ProgramCustomDialogFragment()
             val args = Bundle()
             args.putInt(ARG_PROGRAM_SN, programSn)
+            args.putInt(ARG_RECOMMENDATION_SN, recommendationSn)
+            args.putInt(ARG_PROGRAM_INDEX, programIndex)
             fragment.arguments = args
             return fragment
         }
@@ -77,254 +87,114 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         // -------# 기본 셋팅 #-------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         programSn = arguments?.getInt(ARG_PROGRAM_SN)!!
+        recommendationSn = arguments?.getInt(ARG_RECOMMENDATION_SN)!!
+        programIndex = arguments?.getInt(ARG_PROGRAM_INDEX)!!
+        ssm = SaveSingletonManager(requireContext())
 
-        CoroutineScope(Dispatchers.IO).launch {
-            program = fetchProgramVOBySn(getString(R.string.IP_ADDRESS_t_exercise_programs), programSn.toString())
-            hViewModel.currentProgram = program
+        lifecycleScope.launch {
+            // 프로그램에 들어가는 운동
+            program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
+            pvm.currentProgram = program
 
-            if (hViewModel.currentProgram?.programSn != -1) {
+            val jo = JSONObject()
+            jo.put("user_sn", userJson?.optString("user_sn"))
+            jo.put("recommendation_sn", recommendationSn)
+            jo.put("exercise_program_sn", programSn)
+            jo.put("measure_sn", mvm.selectedMeasure?.measureId?.toInt())
+            Log.v("json프로그레스", "${jo}")
+
+            withContext(Dispatchers.IO) {
+                ssm.getOrInsertProgress(jo)
+                pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).progresses?.get(programIndex)!! // mutableListOf<MutableList<ProgressUnitVO>> 에서 program index에 맞게 가져오기.
+                Log.v("현재진행기록", "pvm.currentProgresses.size: ${pvm.currentProgresses.size}" ) // week * seq 12개의 list인 mutableLIst<ProgressUnitVO>임.  seq는 맞음. 그러면 각각 21개의 seq가 들어가있음 12 * 21 근데 여기서
+
+                // ------# 가장 최근 sequence 찾기 #------
+                val currentProgresses = pvm.currentProgresses // MutableList<MutableList<ProgressUnitVO>>
+                var currentWeek = 0
+                var currentSequence = 0
+                for (weekIndex in currentProgresses.indices) { // 12개의 리스트 (week)
+                    val weekProgress = currentProgresses[weekIndex]
+                    // week에서 가장 큰 sequence 값 찾기
+                    val maxSequenceInWeek = weekProgress.maxOf { it.currentSequence }
+
+                    if (maxSequenceInWeek == 3) {
+                        // 해당 주의 모든 운동이 완료되어 다음 주로 넘어감
+                        continue
+                    } else {
+                        // 가장 큰 sequence 값이 3이 아니면, 그 주차가 현재 주차임
+                        currentWeek = weekIndex + 1 // 주차는 1부터 시작하므로 +1
+                        currentSequence = maxSequenceInWeek
+                        break
+                    }
+                }
+
+                val currentRound = (currentWeek - 1) * 3 + currentSequence
+                pvm.currentSequence = currentRound
+                Log.v("currentSeq", "currentSequence: ${pvm.currentSequence}")
+            }
+            withContext(Dispatchers.Main) {
+                setAdapter(pvm.currentProgram!!, pvm.currentProgresses[pvm.currentSequence],  Pair(pvm.currentSequence, pvm.currentSequence))
+
+                    // ------! 요약 시작 !------
                 binding.etPCDTitle.isEnabled = false
                 binding.btnPCDRight.text = "운동 시작하기"
                 binding.btnPCDLeft.visibility = View.GONE
-                // ------# select program으로 필터링 했을 때 #------
-            } else if (hViewModel.currentProgram?.programSn == -1) {
-                binding.btnPCDRight.text = "프로그램 선택하기"
-                binding.ibtnPCDTop.setImageDrawable(resources.getDrawable(R.drawable.icon_edit))
-                binding.etPCDTitle.isEnabled = true
-                binding.btnPCDLeft.visibility = View.VISIBLE
-            }
-        }
-
-        // ------! 요약 시작 !------
-        binding.etPCDTitle.setText(hViewModel.currentProgram?.programName)
-
-        binding.tvPCDTime.text = (if (hViewModel.currentProgram?.programTime!! <= 60) {
-            "${hViewModel.currentProgram?.programTime}초"
-        } else {
-            "${hViewModel.currentProgram?.programTime!! / 60 }분 ${hViewModel.currentProgram?.programTime!! % 60}초"
-        }).toString()
-        when (hViewModel.currentProgram?.programStage) {
-            "초급" -> binding.tvPCDStage.text = "초급자"
-            "중급" -> binding.tvPCDStage.text = "중급자"
-            "고급" -> binding.tvPCDStage.text = "상급자"
-        }
-        binding.tvPCDCount.text = "${hViewModel.currentProgram?.programCount} 개"
-
-        val userSn = userJson?.optString("user_sn").toString()
-        val prefsManager = PreferencesManager(requireContext())
-        // ------! 요약 끝 !------
-
-        // ------# 회차 데이터 넣는 곳 #------
-        singletonHistory = Singleton_t_history.getInstance(requireContext())
-        historys = singletonHistory.historys?.find { it.programId == programSn.toString() }!!
-        Log.v("싱글턴historys2", "${singletonHistory.historys}")
-
-        // 하나 밖에 없음 10번이고, 그걸 가져온 상태임. 현재 10번 타고 들어왔어. 들어왔으니 program도 가져오고
-        // ------! 현재 시점을 가져와야기 떄문에 날짜 계산은 필요 없음 !-------
-        setAdapter(hViewModel.currentProgram!!, historys.doingExercises[hViewModel.currentEpisode], hViewModel.currentEpisode) // 마지막 episode 자리에 기록이 들어가야 함.
-        hViewModel.currentEpisode = historys.doingExercises.size - 1
-
-// ------# history 더미 데이터 #------
-        // 기존 데이터 초기화
-        val weekEpisodes = mutableListOf<MutableList<HistoryUnitVO>>()
-        // ------# 운동 기록 #------
-        for (weekIndex in 0 until (hViewModel.currentProgram?.programWeek!!)) {
-            for (episodeIndex in 0 until hViewModel.currentProgram!!.programFrequency) {
-                val historyUnits = mutableListOf<HistoryUnitVO>()
-                when (weekIndex) { // 주차
-                    0 -> {
-                        when (episodeIndex) { // 회차
-                            0 -> { // 회차 하나에 들어가는 ExerciseUnit
-                                for (k in 0 until (hViewModel.currentProgram?.exercises?.size ?: 0)) {
-                                    val historyUnit = HistoryUnitVO(
-                                        hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-                                        0,
-                                        "2024-08-26 16:00:24" // TODO 실제 데이터는 각각의 regDate가 다름
-                                    )
-                                    historyUnits.add(historyUnit)
-                                }
-                            }
-                            1 -> {
-                                for (k in 0 until (hViewModel.currentProgram?.exercises?.size ?: 0)) {
-                                    val historyUnit = HistoryUnitVO(
-                                        hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-                                        0,
-                                        "2024-08-27 17:51:24"
-                                    )
-                                    historyUnits.add(historyUnit)
-                                }
-                            }
-                            2 -> {
-                                for (k in 0 until (hViewModel.currentProgram?.exercises?.size ?: 0)) {
-                                    val historyUnit = HistoryUnitVO(
-                                        hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-                                        0,
-                                        "2024-08-29 18:26:24"
-                                    )
-                                    historyUnits.add(historyUnit)
-                                }
-                            }
-                            else -> {
-                                for (k in 0 until 1) {
-                                    val historyUnit = HistoryUnitVO(
-                                        hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-                                        0,
-                                        "2024-08-31 20:11:57"
-                                    )
-                                    historyUnits.add(historyUnit)
-                                }
-                                val historyUnit = HistoryUnitVO(
-                                    hViewModel.currentProgram?.exercises?.get(4)?.exerciseId,
-                                    Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(4)?.videoDuration!!.toInt()),
-                                    "2024-08-31 20:13:57"
-                                )
-                                historyUnits.add(historyUnit)
-                            }
-                        }
-
-                    }
-//                        1 -> { // 2주차
-//                            when (episodeIndex) { // 회차
-//                                0 -> {
-//                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.size!! - 1)) {
-//                                        val historyUnit = HistoryUnitVO(
-//                                            hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-//                                            0,
-//                                            "2024-09-02 22:54:12"
-//                                        )
-//                                        historyUnits.add(historyUnit)
-//                                    }
-//                                    val historyUnit = HistoryUnitVO(
-//                                        hViewModel.currentProgram?.exercises?.get(6)?.exerciseId,
-//                                        0,
-//                                        null
-//                                        )
-//                                    historyUnits.add(historyUnit)
-//
-//                                }
-//                                1 -> {
-//                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.size ?: 0)) {
-//                                        val historyUnit = HistoryUnitVO(
-//                                            hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-//                                            0,
-//                                            "2024-09-03 20:39:44"
-//                                        )
-//                                        historyUnits.add(historyUnit)
-//                                    }
-//                                }
-//                                2 -> {
-//                                    for (k in 0 until 3) {
-//                                        val historyUnit = HistoryUnitVO(
-//                                            hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-//                                            0,
-//                                            "2024-09-04 17:54:24"
-//                                        )
-//                                        historyUnits.add(historyUnit)
-//                                    }
-//                                    val historyUnit = HistoryUnitVO(
-//                                        hViewModel.currentProgram?.exercises?.get(3)?.exerciseId,
-//                                        Random.nextInt(0, hViewModel.currentProgram?.exercises?.get(3)?.videoDuration!!.toInt()),
-//                                        "2024-09-04 19:24:11"
-//                                    )
-//                                    historyUnits.add(historyUnit)
-//                                    for (k in 3 until 7) {
-//                                        val historyUnit = HistoryUnitVO(
-//                                            hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-//                                            0,
-//                                            null
-//                                        )
-//                                        historyUnits.add(historyUnit)
-//                                    }
-//                                }
-//                                else -> {
-//                                    for (k in 0 until (hViewModel.currentProgram?.exercises?.size ?: 0)) {
-//                                        val historyUnit = HistoryUnitVO(
-//                                            hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-//                                            0,
-//                                            null
-//                                        )
-//                                        historyUnits.add(historyUnit)
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        else -> { // 나머지 주차 들
-//                            for (k in 0 until (hViewModel.currentProgram?.exercises?.size ?: 0)) {
-//                                val historyUnit = HistoryUnitVO(
-//                                    hViewModel.currentProgram?.exercises?.get(k)?.exerciseId,
-//                                    0,
-//                                    null
-//                                    )
-//                                historyUnits.add(historyUnit)
-//                            }
-//                        }
+                binding.etPCDTitle.setText(pvm.currentProgram?.programName)
+                binding.tvPCDTime.text = (if (pvm.currentProgram?.programTime!! <= 60) {
+                    "${pvm.currentProgram?.programTime}초"
+                } else {
+                    "${pvm.currentProgram?.programTime!! / 60 }분 ${pvm.currentProgram?.programTime!! % 60}초"
+                }).toString()
+                when (pvm.currentProgram?.programStage) {
+                    "초급" -> binding.tvPCDStage.text = "초급자"
+                    "중급" -> binding.tvPCDStage.text = "중급자"
+                    "고급" -> binding.tvPCDStage.text = "상급자"
                 }
-                weekEpisodes.add(historyUnits)
+                binding.tvPCDCount.text = "${pvm.currentProgram?.programCount} 개"
+            // ------! 요약 끝 !------
             }
         }
-        val historyVO = HistoryVO(
-            "10",
-            false,
-            weekEpisodes
-        )
-        singletonHistory = Singleton_t_history.getInstance(requireContext())
-        singletonHistory.historys?.add(historyVO)
-
-        //
-        for (i in 0 until historys.doingExercises.size) {
-            val historyUnit = historys.doingExercises[i]
-            for (j in 0 until historyUnit.size) {
-                // 하나의 하루간 운동량 만들고 넣고 초기화
-                var regDate = ""
-                var progressTime = 0
-                var finishedExercise = 0
-
-                regDate = historyUnit[j].regDate.toString()
-                if (historyUnit[j].lastPosition!! > 0) {
-                    progressTime += historyUnit[j].lastPosition!!
-
-                } else if (historyUnit[j].lastPosition == 0 && historyUnit[j].regDate != null) {
-                    progressTime += getTime(historyUnit[j].exerciseId.toString())
-                    finishedExercise += 1
-                }
-
-                hViewModel.classifiedByDay?.add(Triple(regDate, progressTime, finishedExercise))
-            }
-        }
-        // 전체 반복문 빠져나옴
-
-        // ------# 그래프에 들어갈 가장 최근 일주일간 데이터 가져오기 #------
-        hViewModel.weeklyHistorys = getWeeklyExerciseHistory(hViewModel.classifiedByDay)
-
-        // ------# dates만 넣기(달력에 들어갈 것들) #------
-        val historysUntilToday = hViewModel.classifiedByDay?.filter { it.first != "null" }
-        for (i in 0 until historysUntilToday?.size!!) {
-            hViewModel.datesClassifiedByDay.add(stringToLocalDate(historysUntilToday[i].first))
-        }
-
-
 
         binding.btnPCDLeft.setOnClickListener { dismiss() }
         binding.btnPCDRight.setOnClickListener {
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
-                    val videoUrls = storeUrls(hViewModel.currentProgram?.exercises!!)
-                    val exerciseIds = hViewModel.currentProgram?.exercises!!.filter { exercise ->
-                        val relevantHistories = historys.doingExercises[hViewModel.selectedEpisode.value!!].filter { history ->
-                            history.exerciseId == exercise.exerciseId
-                        }
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    val currentSequenceProgresses = pvm.currentProgresses[pvm.currentSequence]
+                    val mostRecentProgress = currentSequenceProgresses.maxByOrNull {
+                        LocalDateTime.parse(it.updateDate, formatter)
+                    }
 
-                        relevantHistories.any { it.regDate == null } || relevantHistories.any { it.lastPosition!! > 0 }
-                    }.map { it.exerciseId }.toMutableList()
-                    Log.v("안본 것들만 filter", "${exerciseIds}")
+                    mostRecentProgress?.let { recentProgress ->
+                        // 가장 최근 업데이트된 ProgressUnitVO의 인덱스를 찾습니다.
+                        val startIndex = currentSequenceProgresses.indexOf(recentProgress)
 
-                    val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-                    intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-                    intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-                    intent.putExtra("total_time", hViewModel.currentProgram?.programTime)
+                        val filteredExercises = pvm.currentProgram?.exercises?.dropWhile {
+                            it.exerciseId != recentProgress.exerciseId.toString()
+                        } ?: emptyList()
 
-                    requireContext().startActivity(intent)
-                    startActivityForResult(intent, 8080)
+                        val videoUrls = storeUrls(filteredExercises.toMutableList())
+
+                        val exerciseIds = currentSequenceProgresses.subList(startIndex, currentSequenceProgresses.size)
+                            .filter { it.lastProgress > 0 }
+                            .map { it.exerciseId.toString() }
+                            .toMutableList()
+
+                        val uvpIds = currentSequenceProgresses.subList(startIndex, currentSequenceProgresses.size)
+                            .map { it.uvpSn.toString() }
+                            .distinct()
+
+                        Log.v("안본것들만filter", "exerciseIds: ${exerciseIds}, videoUrls: $videoUrls, uvpIds: $uvpIds")
+
+                        val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
+                        intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
+                        intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
+                        intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
+                        intent.putExtra("total_time", pvm.currentProgram?.programTime)
+
+                        requireContext().startActivity(intent)
+                        startActivityForResult(intent, 8080)
+                    }
                 }
                 else -> {
                     // TODO 사용자의 선택된 프로그램 저장 후 보여주기. programVO
@@ -352,13 +222,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             binding.ibtnPCDTop.showAlignBottom(balloon2)
             balloon2.dismissWithDelay(1800L)
         }
-
-
         binding.ibtnPCDTop.setOnClickListener { it.showAlignBottom(balloon2) }
-
-
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -379,8 +244,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     }
 
     private fun getTime(id: String) : Int {
-        return hViewModel.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
+        return pvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
     }
+
     private fun storeSns(currentItem: MutableList<ExerciseVO>) : MutableList<String> {
         val sns = mutableListOf<String>()
         for (i in currentItem.indices) {
@@ -390,38 +256,39 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         Log.v("sns", "$sns")
         return sns
     }
-    private fun getWeeklyExerciseHistory(data: MutableList<Triple<String, Int, Int>>?): MutableList<Triple<String, Int, Int>>? {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-        val sevenDaysAgo = currentDateTime.minusDays(6).truncatedTo(ChronoUnit.DAYS)
 
-        val filteredData = data?.filter {
-            it.first != "null" &&
-                    LocalDateTime.parse(it.first, formatter).isAfter(sevenDaysAgo.minusSeconds(1)) &&
-                    LocalDateTime.parse(it.first, formatter).isBefore(currentDateTime.plusDays(1).truncatedTo(
-                        ChronoUnit.DAYS))
-        }?.toMutableList()
-
-        val completeData = mutableListOf<Triple<String, Int, Int>>()
-        for (i in 0..6) {
-            val date = sevenDaysAgo.plusDays(i.toLong())
-            val nextDate = date.plusDays(1)
-
-            val entry = filteredData?.find {
-                val entryDateTime = LocalDateTime.parse(it.first, formatter)
-                entryDateTime.isAfter(date.minusSeconds(1)) && entryDateTime.isBefore(nextDate)
-            }
-            if (entry != null) {
-                completeData.add(entry)
-            } else {
-                // 빈 데이터의 경우 해당 날짜의 자정(00:00:00)으로 설정
-                val dateString = date.format(formatter)
-                completeData.add(Triple(dateString, 0, 0))
-            }
-        }
-        Log.v("completedData", "$completeData")
-        return completeData
-    }
+//    private fun getWeeklyExerciseHistory(data: MutableList<Triple<String, Int, Int>>?): MutableList<Triple<String, Int, Int>>? {
+//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+//        val currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
+//        val sevenDaysAgo = currentDateTime.minusDays(6).truncatedTo(ChronoUnit.DAYS)
+//
+//        val filteredData = data?.filter {
+//            it.first != "null" &&
+//                    LocalDateTime.parse(it.first, formatter).isAfter(sevenDaysAgo.minusSeconds(1)) &&
+//                    LocalDateTime.parse(it.first, formatter).isBefore(currentDateTime.plusDays(1).truncatedTo(
+//                        ChronoUnit.DAYS))
+//        }?.toMutableList()
+//
+//        val completeData = mutableListOf<Triple<String, Int, Int>>()
+//        for (i in 0..6) {
+//            val date = sevenDaysAgo.plusDays(i.toLong())
+//            val nextDate = date.plusDays(1)
+//
+//            val entry = filteredData?.find {
+//                val entryDateTime = LocalDateTime.parse(it.first, formatter)
+//                entryDateTime.isAfter(date.minusSeconds(1)) && entryDateTime.isBefore(nextDate)
+//            }
+//            if (entry != null) {
+//                completeData.add(entry)
+//            } else {
+//                // 빈 데이터의 경우 해당 날짜의 자정(00:00:00)으로 설정
+//                val dateString = date.format(formatter)
+//                completeData.add(Triple(dateString, 0, 0))
+//            }
+//        }
+//        Log.v("completedData", "$completeData")
+//        return completeData
+//    }
 
     private fun stringToLocalDate(dateTimeString: String): LocalDate {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -429,17 +296,21 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         return localDateTime.toLocalDate()
     }
 
-    private fun setAdapter(program: ProgramVO, historys : MutableList<HistoryUnitVO>, episode: Int) {
+    private fun setAdapter(program: ProgramVO, progresses : MutableList<ProgressUnitVO>?, sequence: Pair<Int, Int>) {
 
-        /* currentEpisode 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
-        hViewModel.selectedEpisode.value = episode
-        val adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment, program.programWeek * program.programFrequency, historys,  Pair(hViewModel.currentEpisode, hViewModel.selectedEpisode.value!!), this@ProgramCustomDialogFragment)
+        /* currentSequence 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
+        pvm.selectedSequence.value = sequence.second
+        val adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
+            program.programWeek * program.programFrequency,
+            Pair(pvm.currentSequence, pvm.selectedSequence.value!!),
+            this@ProgramCustomDialogFragment)
+
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvPCDHorizontal.layoutManager = layoutManager
         binding.rvPCDHorizontal.adapter = adapter
         adapter.notifyDataSetChanged()
 
-        val adapter2 = ExerciseRVAdapter(this@ProgramCustomDialogFragment, program.exercises!!, historys, "main")
+        val adapter2 = ExerciseRVAdapter(this@ProgramCustomDialogFragment, program.exercises!!, progresses, sequence,"main")
         binding.rvPCD.adapter = adapter2
         val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvPCD.layoutManager = layoutManager2
@@ -447,11 +318,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         adapter2.notifyDataSetChanged()
     }
 
-    override fun customCategoryClick(episode: Int) {
+    override fun customCategoryClick(sequence: Int) {
         // TODO viewModel에 담은 program에서 필터링해서 보여주기
-        hViewModel.selectedEpisode.value = episode
-        Log.v("historys", "selectEpisode :${hViewModel.selectedEpisode.value}, currentEpisode: ${hViewModel.currentEpisode} position : $episode")
-        setAdapter(hViewModel.currentProgram!!, historys.doingExercises[episode], hViewModel.selectedEpisode.value!!)
+        pvm.selectedSequence.value = sequence
+        Log.v("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence} sequence : $sequence")
+        setAdapter(pvm.currentProgram!!, pvm.currentProgresses[sequence], Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
     }
 
     fun dismissThisFragment() {

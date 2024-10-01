@@ -61,6 +61,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.data.RecommendationVO
 import com.tangoplus.tangoq.data.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityMeasureSkeletonBinding
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
@@ -69,7 +70,10 @@ import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility.decodeSampledBitmap
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
+import com.tangoplus.tangoq.`object`.NetworkMeasure.insertMeasureData
+import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -376,14 +380,27 @@ companion object {
         // ------# 버튼 촬영 #------
         binding.btnMeasureSkeletonStep.setOnClickListener {
             if (binding.btnMeasureSkeletonStep.text == "완료하기") {
-                // TODO 통신 시간에 따라 alertDialog 띄우던가 해야 함 ( 전송 로딩 )
                 Log.v("측정완료VM", "${mViewModel.measurejo.length()}, ${mViewModel.measurejo}")
-                singletonInstance.measures?.add(0, mViewModel.convertJsonToMeasureVO(mViewModel.measurejo))
+//                insertMeasureData(getString(R.string.IP_ADDRESS_t_measure), mViewModel.measurejo.toString(), mViewModel.measureFiles.toList(), this@MeasureSkeletonActivity) {}
+                CoroutineScope(Dispatchers.IO).launch {
+                    // TODO user_sn, exercise_type_id, exercise_stage다 넣어아 함 + 점수 산출하는 로직 여기다가 넣어야 함
+                    // 통신 시간에 따라 alertDialog 띄우던가 해야 함 ( 전송 로딩 )
+                    val jo = JSONObject()
+                    jo.put("user_sn", Singleton_t_user.getInstance(this@MeasureSkeletonActivity).jsonObject?.optString("user_sn"))
+                    jo.put("exercise_type_id", 1)
+                    jo.put("exercise_stage", 1)
+                    createRecommendProgram(getString(R.string.API_recommendation), jo.toString(), this@MeasureSkeletonActivity) { recommendations ->
 
-                val intent = Intent()
-                intent.putExtra("finishedMeasure", true)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
+
+                        val newMeasure = mViewModel.convertJsonToMeasureVO(mViewModel.measurejo)
+                        newMeasure.recommendations = recommendations
+                        singletonInstance.measures?.add(0, newMeasure)
+                        val intent = Intent()
+                        intent.putExtra("finishedMeasure", true)
+                        setResult(Activity.RESULT_OK, intent)
+                        finish()
+                    }
+                }
 
             } else {
                 startTimer()

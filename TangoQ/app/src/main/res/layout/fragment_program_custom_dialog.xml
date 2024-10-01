@@ -46,14 +46,6 @@
                 app:layout_constraintTop_toTopOf="@+id/etPCDTitle" />
 
             <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider11"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="63dp" />
-
-            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider2"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
@@ -76,11 +68,15 @@
                 app:layout_constraintTop_toTopOf="@+id/cardView12" />
 
             <com.tomlecollegue.progressbars.HorizontalProgressView
-                android:layout_width="200dp"
-                android:layout_height="4dp"
+                android:id="@+id/hpvPCD"
+                android:layout_width="0dp"
+                android:layout_height="6dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 app:colorBackground="@color/secondContainerColor"
                 app:colorProgress="@color/secondaryColor"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/tvPCDSet"
                 app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
 
@@ -94,23 +90,6 @@
                 app:cardElevation="0dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
-
-            <TextView
-                android:id="@+id/tvPCDWeekly"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/background_rectangle_20dp"
-                android:backgroundTint="@color/secondaryColor"
-                android:paddingStart="12dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="6dp"
-                android:text="1/4주차"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvPCDHorizontal"

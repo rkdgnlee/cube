@@ -12,10 +12,15 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.skydoves.balloon.ArrowPositionRules
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.BalloonSizeSpec
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
@@ -45,7 +50,30 @@ class MeasureDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
+        val showMeasure = arguments?.getBoolean("showMeasure", false) ?: false
+        if (showMeasure) {
+
+            val balloonText = "측정 결과를 확인해보세요\n실제 자세도 함께 볼 수 있습니다."
+            val balloonlc1 = Balloon.Builder(requireContext())
+                .setWidthRatio(0.5f)
+                .setHeight(BalloonSizeSpec.WRAP)
+                .setText(balloonText)
+                .setTextColorResource(R.color.subColor800)
+                .setTextSize(15f)
+                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                .setArrowSize(0)
+                .setMargin(10)
+                .setPadding(12)
+                .setCornerRadius(8f)
+                .setBackgroundColorResource(R.color.white)
+                .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+                .setLifecycleOwner(viewLifecycleOwner)
+                .build()
+            balloonlc1.showAlignBottom(binding.view8)
+            arguments?.putBoolean("showMeasure", false)
+        }
+
         binding.ibtnMDAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
@@ -56,6 +84,8 @@ class MeasureDetailFragment : Fragment() {
         updateUI()
 
         // ------# 10각형 레이더 차트 #------
+        // TODO 레이더 차트에도 값이 들어가야 함.
+
         val raderScores = mutableListOf<Float>()
         val scores = mutableListOf(2.245f, 3.41f, 2.54f, 3.97f, 2.34f, 5.25f, 4.12f, 3.84f, 3.12f, 4.97f)
         bodyParts = listOf("목", "우측어깨", "우측팔꿉", "우측골반", "우측무릎", "발목", "좌측무릎", "좌측골반", "좌측팔꿉", "좌측어깨")
@@ -75,10 +105,8 @@ class MeasureDetailFragment : Fragment() {
         }
         val dataSet = RadarDataSet(entries, "신체 부위").apply {
             color = resources.getColor(R.color.mainColor, null)
-//            fillColor = resources.getColor(R.color.thirdOpacityColor, null)
             setDrawFilled(true)
             fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_rader_main_second)
-//            fillAlpha = 80  // 투명도 조절 (0-255)
             lineWidth = 2f
             setDrawValues(false)  // 값 표시 제거
         }
@@ -93,9 +121,6 @@ class MeasureDetailFragment : Fragment() {
             webColor = resources.getColor(R.color.white, null)
             webAlpha = 100
             webLineWidthInner = 1f
-//            webColorInner = resources.getColor(R.color.subColor400, null)
-
-
             xAxis.apply {
                 setDrawGridLines(true)
                 valueFormatter = IndexAxisValueFormatter(bodyParts)

@@ -10,5 +10,5 @@ data class MeasureVO (
     val measureResult : JSONArray, // index로 seq하고, jo, ja, jo, jo, jo, jo, jo
     val fileUris : MutableList<String>,
     val isMobile : Boolean,
-    val matchPrograms : MutableList<Pair<String, Int>>?
+    var recommendations : List<RecommendationVO>?
 )

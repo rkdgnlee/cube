@@ -31,9 +31,10 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.data.ExerciseViewModel
 
-import com.tangoplus.tangoq.data.HistoryUnitVO
+import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
+import com.tangoplus.tangoq.`object`.NetworkProgress.patchProgress1Item
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -52,6 +53,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private lateinit var mediaSourceList: List<MediaSource>
     private var currentMediaSourceIndex = 0
     private var sns: MutableList<String>? = null
+    private var uvpSns : MutableList<String>? = null
     var totalTime = 0
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
@@ -88,8 +90,9 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val videoUrl = intent.getStringExtra("video_url")
         val urls = intent.getStringArrayListExtra("video_urls")
         val exerciseIds = intent.getStringArrayListExtra("exercise_ids")
+        uvpSns = intent.getStringArrayListExtra("uvp_ids")
         totalTime = intent.getIntExtra("total_time", 0)
-        Log.v("url들", "videoUrl: $videoUrl, urls: $urls")
+        Log.v("url들", "videoUrl: $exerciseIds, urls: $urls")
 
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
         val url_list = ArrayList<String>()
@@ -116,7 +119,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         // -----! 받아온 즐겨찾기 재생 목록 끝 !-----
         val exitButton = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
-
             showExitDialog()
         }
 
@@ -205,14 +207,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     if (currentWindowIndex < mediaSourceList.size - 1) {
 
                         // ------# 카운트다운 후 검색 기록 담기 #------
-                        val historyUnitVO = HistoryUnitVO(
-                            sns!![currentWindowIndex - 1],
-                            0,
-                            getCurrentDateTimeAsString()
-                        )
+                        patchProgress1Item(getString(R.string.API_progress), uvpSns!![currentWindowIndex].toInt(), simpleExoPlayer!!.currentPosition.toInt(),this@PlayFullScreenActivity)
+                        Log.v("progress완료업데이트", "${uvpSns!![currentWindowIndex].toInt()}, currentPosition: ${simpleExoPlayer!!.currentPosition.toInt()}")
+
                         // ------# 타이머 초기화, 현재 재생중인 sn 수정, 검색기록 VM추가, 카운트다운 시작
                         chronometer.base = SystemClock.elapsedRealtime()
-                        viewModel.finishHistorys.add(historyUnitVO)
+//                        viewModel.finishHistorys.add(historyUnitVO)
                         currentExerciseId = sns!![currentWindowIndex]
                         startNextVideoCountdown()
                     }
@@ -268,18 +268,10 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 chronometer.base = SystemClock.elapsedRealtime()
 
                 // ------# 시청 기록 일시 중단 항목 #------
-                val historyUnitVO = HistoryUnitVO(
-                    currentExerciseId,
-                    elapsedSeconds,
-                    getCurrentDateTimeAsString()
-                )
-                Log.v("sendingHistory>VM", "${viewModel.finishHistorys}")
-                Log.v("sendingHistory", "$historyUnitVO")
-                // TODO historyVO를 이제 보내주기.
+                val currentWindowIndex = simpleExoPlayer!!.currentWindowIndex
 
-
-
-
+                patchProgress1Item(getString(R.string.API_progress), uvpSns!![currentWindowIndex].toInt(), simpleExoPlayer!!.currentPosition.toInt(),this@PlayFullScreenActivity)
+                Log.v("progress업데이트", "uvpSns: ${uvpSns!![currentWindowIndex]}, currentPosition: ${simpleExoPlayer!!.currentPosition}")
                 val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 startActivity(intent)
@@ -313,16 +305,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }, delay)
     }
 
-    private fun historyToJson(exerciseHistorys: MutableList<HistoryUnitVO>) : JSONObject {
-        val jo = JSONObject()
-        for (i in exerciseHistorys.indices) {
-            // TODO 보내는 형식 정해야함 jsonArray > jsonObject 여러개 해서 보낼건지
-        }
-
-
-        return jo
-
-    }
 
     // 특정 동작이 완료되었을 때 호출되는 함수
     private fun getCurrentDateTimeAsString(): String {

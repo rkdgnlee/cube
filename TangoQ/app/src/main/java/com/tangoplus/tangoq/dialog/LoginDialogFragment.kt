@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.`object`.NetworkUser
@@ -27,13 +28,22 @@ import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptData
 import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedData
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
+import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 import java.util.regex.Pattern
 
 class LoginDialogFragment : DialogFragment() {
     lateinit var binding: FragmentLoginDialogBinding
     val viewModel : SignInViewModel by activityViewModels()
+    private lateinit var ssm : SaveSingletonManager
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,6 +55,7 @@ class LoginDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        ssm = SaveSingletonManager(requireContext())
         binding.etLDId.requestFocus()
         binding.etLDId.postDelayed({
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -86,37 +97,45 @@ class LoginDialogFragment : DialogFragment() {
                 jsonObject.put("user_id", viewModel.id.value)
                 jsonObject.put("user_password", viewModel.pw.value)
 
-                getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObject, requireContext()) { jo ->
-                    if (jo?.getInt("status") == 200) { // 기존에 정보가 있을 경우 - 로그인 성공
-                        requireActivity().runOnUiThread {
-                            binding.btnLDLogin.isEnabled = false
-                            viewModel.User.value = null
+                lifecycleScope.launch {
+                    getUserIdentifyJson(getString(R.string.API_user), jsonObject, requireContext()) { jo ->
+                        if (jo?.getString("message") == "invalid auth") { // 기존에 정보가 있을 경우 - 로그인 성공
+                            requireActivity().runOnUiThread {
+                                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                    setTitle("⚠️ 알림")
+                                    setMessage("아이디 또는 비밀번호가 올바르지 않습니다.")
+                                    setPositiveButton("확인") { _, _ ->
+                                        binding.etLDPw.text.clear()
+                                    }
+                                    create()
+                                }.show()
+                            }
+                        } else {
+                            requireActivity().runOnUiThread {
+                                binding.btnLDLogin.isEnabled = false
+                                viewModel.User.value = null
 
-                            // ------! 싱글턴 + 암호화 저장 시작 !------
-                            NetworkUser.storeUserInSingleton(requireContext(), jo)
-                            createKey(getString(R.string.SECURE_KEY_ALIAS))
+                                // ------! 싱글턴 + 암호화 저장 시작 !------
+                                if (jo != null) {
+                                    NetworkUser.storeUserInSingleton(requireContext(), jo)
+                                    createKey(getString(R.string.SECURE_KEY_ALIAS))
+                                    saveEncryptedData(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptData(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
+                                    ssm.getMeasures(Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                        Log.v("login>자체로그인", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+                                        val intent = Intent(requireContext(), MainActivity::class.java)
+                                        startActivity(intent)
+                                        requireActivity().finishAffinity()
+                                    }
 
-                            saveEncryptedData(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptData(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
 
-                            // ------! 싱글턴 + 암호화 저장 끝 !------
-
-
-
-                            Log.v("login>", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
-                            val intent = Intent(requireContext(), MainActivity::class.java)
-                            startActivity(intent)
-                            requireActivity().finishAffinity()
-                        }
-                    } else {
-                        requireActivity().runOnUiThread {
-                            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                setTitle("⚠️ 알림")
-                                setMessage("아이디 또는 비밀번호가 올바르지 않습니다.")
-                                setPositiveButton("확인") { _, _ ->
-                                    binding.etLDPw.text.clear()
                                 }
-                                create()
-                            }.show()
+
+
+                                // ------! 싱글턴 + 암호화 저장 끝 !------
+
+
+                            }
+
                         }
                     }
                 }
@@ -138,4 +157,5 @@ class LoginDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
+
 }

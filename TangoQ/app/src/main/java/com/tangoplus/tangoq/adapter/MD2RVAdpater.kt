@@ -9,13 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.HistorySummaryVO
-import com.tangoplus.tangoq.data.HistoryUnitVO
 import com.tangoplus.tangoq.databinding.RvDashboard2ItemBinding
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
 
 class MD2RVAdpater(private val fragment: Fragment, val data: List<HistorySummaryVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

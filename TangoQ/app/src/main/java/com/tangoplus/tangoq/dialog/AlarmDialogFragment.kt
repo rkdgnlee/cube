@@ -87,7 +87,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
                     MessageVO(3,"운동 마무리 루틴", timestamp =  longHour ,route = "report_goal"),
                     MessageVO(4,"기기 연결이 완료 됐습니다.", timestamp =  longDay , route = "profile")
                 )
-                // -----! alarm touchhelper 연동 시작 !-----
+                // ------! alarm touchhelper 연동 시작 !------
                 val alarmRecyclerViewAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
                 swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
@@ -125,15 +125,6 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         }
 
         // ------! 삭제 후 스와이프 초기화 끝 !------
-
-        CoroutineScope(Dispatchers.IO).launch {
-//            messageDao.deleteMessage(messageId)
-//            withContext(Dispatchers.Main) {
-//                val dm = messages.find { it.id == messageId }
-//                messages.removeAt(messages.indexOf(dm))
-//                alarmRecyclerViewAdapter.notifyDataSetChanged()
-//            }
-        }
     }
 
     override fun onResume() {

@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -32,6 +33,7 @@ import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.dialog.LoginDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
@@ -39,13 +41,22 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager
+import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
+import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptData
+import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedData
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 import java.lang.Exception
 
 
@@ -55,10 +66,8 @@ class IntroActivity : AppCompatActivity() {
     val sViewModel  : SignInViewModel by viewModels()
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var launcher: ActivityResultLauncher<Intent>
-//    private var bannerPosition = Int.MAX_VALUE/2
-//    private var bannerHandler = HomeBannerHandler()
-    private val intervalTime = 2200.toLong()
     private lateinit var securePref : EncryptedSharedPreferences
+    private lateinit var ssm : SaveSingletonManager
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +77,7 @@ class IntroActivity : AppCompatActivity() {
 
         // ------! token 저장할  securedPref init !------
         securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
+        ssm = SaveSingletonManager(this@IntroActivity)
 //        val dialog = LoginScanDialogFragment()
 //        dialog.show(supportFragmentManager, "LoginScanDialogFragment")
         when (isNetworkAvailable(this)) {
@@ -113,7 +123,7 @@ class IntroActivity : AppCompatActivity() {
                                             jsonObj.put("social_account", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                             Log.v("jsonObj", "$jsonObj")
-                                            getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@IntroActivity) { jo ->
+                                            getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
                                                 if (jo != null) {
                                                     when (jo.optString("status")) {
                                                         "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
@@ -186,7 +196,7 @@ class IntroActivity : AppCompatActivity() {
                         Log.v("jsonObj", "$jsonObj")
 //                        Log.v("네이버이메일", jsonObj.getString("user_email"))
 //                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                        getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@IntroActivity) { jo ->
+                        getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
                             if (jo != null) {
                                 when (jo.optString("status")) {
                                     "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
@@ -240,7 +250,7 @@ class IntroActivity : AppCompatActivity() {
                                 Log.v("jsonObj", "$jsonObj")
 //                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
 //                                Log.w("카카오가입>메일", encodedUserEmail)
-                                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@IntroActivity) { jo ->
+                                getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
                                     if (jo != null) {
                                         when (jo.optString("status")) {
                                             "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
@@ -287,7 +297,13 @@ class IntroActivity : AppCompatActivity() {
             200 -> {
                 storeUserInSingleton(this@IntroActivity, jo)
                 Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                mainInit()
+                ssm.getMeasures(Singleton_t_user.getInstance(this).jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                    mainInit()
+                }
+
+
+                createKey(getString(R.string.SECURE_KEY_ALIAS))
+
             }
             // ------# 최초 회원가입 #------
             201 -> {

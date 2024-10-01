@@ -32,6 +32,9 @@ import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditBSDialogFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.`object`.Singleton_t_progress
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import org.json.JSONObject
 
 import java.lang.IllegalArgumentException
@@ -165,6 +168,11 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                                     val intent = Intent(holder.itemView.context, IntroActivity::class.java)
                                     holder.itemView.context.startActivity(intent)
                                     fragment.requireActivity().finishAffinity()
+                                    // 싱글턴에 들어갔던거 전부 비우기
+                                    Singleton_t_user.getInstance(fragment.requireContext()).jsonObject = null
+                                    Singleton_t_measure.getInstance(fragment.requireContext()).measures = null
+                                    Singleton_t_progress.getInstance(fragment.requireContext()).progresses = null
+
                                 }
                             }
                         }

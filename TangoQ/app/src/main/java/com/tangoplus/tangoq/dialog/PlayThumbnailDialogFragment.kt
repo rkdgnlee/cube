@@ -48,8 +48,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     val viewModel: ExerciseViewModel by activityViewModels()
     val uViewModel : UserViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
-//    private var playWhenReady = true
-//    private var currentWindow = 0
     private var playbackPosition = 0L
 
     override fun onCreateView(
@@ -150,13 +148,11 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
-            val responseArrayList =
-                NetworkExercise.fetchExerciseJson(getString(R.string.IP_ADDRESS_t_exercise_description))
+            val responseArrayList = viewModel.allExercises
             try {
-                // 전체데이터에서 현재 데이터(exerciseData)와 비교함.
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
                     exerciseData?.relatedJoint!!.split(", ")[0])}.toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, mutableListOf(), "recommend")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, mutableListOf(), Pair(0,0) ,"recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager
@@ -167,21 +163,24 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------! 관련 운동 횡 rv 끝 !------
 
-        // ------# ai코칭 #------
-        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
-            binding.btnPTDAIPlay.visibility = View.VISIBLE
-        } else binding.btnPTDAIPlay.visibility = View.GONE
+        // ------! ai코칭 시작 !------
+//        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
+//            binding.btnPTDAIPlay.visibility = View.VISIBLE
+//        } else {
+            binding.btnPTDAIPlay.visibility = View.GONE
+//        }
 
-        binding.btnPTDAIPlay.setOnClickListener {
-            val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
-
-            val exerciseIds = mutableListOf(exerciseData?.exerciseId)
-            val videoUrls = mutableListOf(videoUrl)
-            intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-            intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-            intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
-            startActivity(intent)
-        }
+//        binding.btnPTDAIPlay.setOnClickListener {
+//            val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
+//
+//            val exerciseIds = mutableListOf(exerciseData?.exerciseId)
+//            val videoUrls = mutableListOf(videoUrl)
+//            intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
+//            intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
+//            intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
+//            startActivity(intent)
+//        }
+        // ------! ai코칭 끝 !------
     }
 
     override fun onResume() {

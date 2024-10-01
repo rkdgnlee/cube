@@ -8,9 +8,7 @@ import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -21,8 +19,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -30,33 +29,46 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
-import com.tangoplus.tangoq.`object`.NetworkUser
+import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptData
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.db.SecurePreferencesManager.loadEncryptedData
+import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
+import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 import java.io.IOException
+import java.util.Calendar
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private val PERMISSION_REQUEST_CODE = 5000
+    private lateinit var singletonMeasure : Singleton_t_measure
+    private lateinit var ssm : SaveSingletonManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +84,7 @@ class SplashActivity : AppCompatActivity() {
 
         val googleUserExist = firebaseAuth.currentUser
         val naverTokenExist = NaverIdLoginSDK.getState()
+        ssm = SaveSingletonManager(this@SplashActivity)
         // ----- API 초기화 끝 ------
 
         // ------! 인터넷 연결 확인 !------
@@ -84,40 +97,39 @@ class SplashActivity : AppCompatActivity() {
                         Log.w("TAG", "FETCHING FCM registration token failed", task.exception)
                         return@OnCompleteListener
                     }
-//                    val token = task.result.toString()
-//                    Log.e("메시지토큰", "fcm token :: $token")
+                    val token = task.result.toString()
+                    Log.e("메시지토큰", "fcm token :: $token")
                 })
                 createNotificationChannel()
 
                 // ------! 푸쉬 알림 끝 !-----
 
                 // ----- 인 앱 알림 시작 -----
-//                AlarmReceiver()
-//                val intent = Intent(this, AlarmReceiver::class.java)
-//                val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-//                val calander: Calendar = Calendar.getInstance().apply {
-//                    timeInMillis = System.currentTimeMillis()
-//                    set(Calendar.HOUR_OF_DAY, 17)
-//                }
-//                val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
-//                alarmManager.setInexactRepeating(
-//                    AlarmManager.RTC_WAKEUP,
-//                    calander.timeInMillis,
-//                    AlarmManager.INTERVAL_DAY,
-//                    pendingIntent
-//                )
+                AlarmReceiver()
+                val intent = Intent(this, AlarmReceiver::class.java)
+                val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+                val calander: Calendar = Calendar.getInstance().apply {
+                    timeInMillis = System.currentTimeMillis()
+                    set(Calendar.HOUR_OF_DAY, 17)
+                }
+                val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
+                alarmManager.setInexactRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    calander.timeInMillis,
+                    AlarmManager.INTERVAL_DAY,
+                    pendingIntent
+                )
                 // ----- 인 앱 알림 끝 -----
 
                 // -------! 딥링크 처리 시작 !------
-                val deepLink = intent?.data
-                if (deepLink != null) {
-                    // 딥링크 정보를 임시 저장
-                    saveDeepLinkTemp(deepLink)
-                }
-
+//                val deepLink = intent?.data
+//                if (deepLink != null) {
+//                    // 딥링크 정보를 임시 저장
+//                    saveDeepLinkTemp(deepLink)
+//                }
                 // -------! 딥링크 처리 끝 !------
 
-                val t_userData = Singleton_t_user.getInstance(this)
+                val userSingleton = Singleton_t_user.getInstance(this)
 
                 // -----! 다크모드 및 설정 불러오기 시작 !-----
                 val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
@@ -161,12 +173,15 @@ class SplashActivity : AppCompatActivity() {
                                     jsonObj.put("naver_login_id", jsonBody?.optString("id"))
                                     jsonObj.put("social_account", "naver")
 
-                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
+                                    getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
                                             storeUserInSingleton(this@SplashActivity, jo)
-                                            Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+                                            Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
-                                        MainInit()
+                                        ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                            MainInit()
+                                        }
+
                                     }
                                 }
                             }
@@ -186,12 +201,14 @@ class SplashActivity : AppCompatActivity() {
                                     jsonObj.put("google_login_id", user.uid)
                                     jsonObj.put("user_mobile", user.phoneNumber)
                                     jsonObj.put("social_account", "google")
-                                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
+                                    getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
-                                            NetworkUser.storeUserInSingleton(this, jo)
+                                            storeUserInSingleton(this, jo)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
-                                        MainInit()
+                                        ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                            MainInit()
+                                        }
                                     }
                                 }
                             }
@@ -215,12 +232,14 @@ class SplashActivity : AppCompatActivity() {
                                 jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 jsonObj.put("kakao_login_id" , user.id.toString())
                                 jsonObj.put("social_account", "kakao")
-                                getUserBySdk(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
+                                getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                     if (jo != null) {
-                                        NetworkUser.storeUserInSingleton(this, jo)
+                                        storeUserInSingleton(this, jo)
                                         Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                     }
-                                    MainInit()
+                                    ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                        MainInit()
+                                    }
                                 }
                             }
                         }
@@ -231,11 +250,15 @@ class SplashActivity : AppCompatActivity() {
                         val jsonObj = decryptData(getString(R.string.SECURE_KEY_ALIAS),
                             loadEncryptedData(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)).toString()
                         )
-                        getUserIdentifyJson(getString(R.string.IP_ADDRESS_t_user), jsonObj, this@SplashActivity) { jo ->
-                            if (jo != null) {
-                                storeUserInSingleton(this@SplashActivity, jo)
-                                Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                                MainInit()
+                        lifecycleScope.launch {
+                            getUserIdentifyJson(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
+                                if (jo != null) {
+                                    storeUserInSingleton(this@SplashActivity, jo)
+                                    Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+                                    ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                        MainInit()
+                                    }
+                                }
                             }
                         }
                     }
@@ -285,8 +308,8 @@ class SplashActivity : AppCompatActivity() {
         // 채널을 등록해야 알림을 받을 수 있음
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
-
     }
+
     private fun MainInit() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
@@ -299,31 +322,11 @@ class SplashActivity : AppCompatActivity() {
     }
 
 
-//    // 토큰 갱신
-//    private fun refreshJwtToken(context: Context): String? {
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//            .url("https://yourserver.com/api/token/refresh")
-//            .header("Authorization", "Bearer " + getEncryptedJwtToken(context)) // 만료된 토큰을 보내 새 토큰을 요청
-//            .build()
-//
-//        client.newCall(request).execute().use { response ->
-//            return if (response.isSuccessful) {
-//                val newToken = response.body?.string()
-//                val newExpirationTime = System.currentTimeMillis() + 24 * 60 * 60 * 3 // 24시간 * 3 유효기간
-//                if (newToken != null) {
-//                    saveEncryptedJwtToken(context, newToken, newExpirationTime)
-//                }
-//                newToken
-//            } else {
-//                null
-//            }
-//        }
-//    }
 
-    private fun saveDeepLinkTemp(deepLink: Uri) {
-        // SharedPreferences나 ViewModel 등을 사용하여 딥링크 정보 임시 저장
-        val prefs = getSharedPreferences("DeepLinkPrefs", Context.MODE_PRIVATE)
-        prefs.edit().putString("pending_deep_link", deepLink.toString()).apply()
-    }
+
+//    private fun saveDeepLinkTemp(deepLink: Uri) {
+//        // SharedPreferences나 ViewModel 등을 사용하여 딥링크 정보 임시 저장
+//        val prefs = getSharedPreferences("DeepLinkPrefs", Context.MODE_PRIVATE)
+//        prefs.edit().putString("pending_deep_link", deepLink.toString()).apply()
+//    }
 }

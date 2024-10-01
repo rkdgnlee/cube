@@ -186,7 +186,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
             Log.v("userJson>receive", "$userJson")
 //            val userEditEmail = userJson.optString("user_email")
 //            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
-            fetchUserUPDATEJson(getString(R.string.IP_ADDRESS_t_user), userJson.toString(), userSn) {
+            fetchUserUPDATEJson(getString(R.string.API_user), userJson.toString(), userSn) {
                 Log.w(" 싱글톤객체추가", "$userSn, $userJson")
                 Singleton_t_user.getInstance(requireContext()).jsonObject = userJson
 //                requireActivity().runOnUiThread{

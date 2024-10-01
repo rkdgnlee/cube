@@ -92,7 +92,7 @@ class WithdrawalFragment : Fragment() {
         }
     }
     private fun deleteAccount() {
-        fetchUserDeleteJson(getString(R.string.IP_ADDRESS_t_user),
+        fetchUserDeleteJson(getString(R.string.API_user),
             singletonUserInstance.jsonObject?.optJSONObject("data")?.optString("user_email").toString()
         ) {
             requireActivity().runOnUiThread {

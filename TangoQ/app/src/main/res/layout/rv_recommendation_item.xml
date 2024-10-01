@@ -4,19 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clPI"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@drawable/effect_ibtn">
+    android:layout_height="64dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/background_stroke_1dp_sub_color">
 
     <TextView
         android:id="@+id/tvPI"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:text="__"
         android:textColor="@color/subColor800"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivPIThumbnail"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -28,4 +30,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_arrow_right" />
+
+    <ImageView
+        android:id="@+id/ivPIThumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/drawable_joint_1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

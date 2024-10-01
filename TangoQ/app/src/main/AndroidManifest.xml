@@ -101,11 +101,7 @@
             android:name=".IntroActivity"
             android:exported="true" />
 
-        <service
-            android:name=".service.BluetoothLeService"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="TODO" />
+
         <service
             android:name=".service.MyFirebaseMessagingService"
             android:exported="false" >

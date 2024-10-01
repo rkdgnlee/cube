@@ -144,7 +144,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
         // ------! spinner 연결 끝 !------
 
         lifecycleScope.launch {
-            filteredDataList  = fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_exercise_description), categoryId!!, 1)
+            filteredDataList  = fetchCategoryAndSearch(getString(R.string.API_exercise), categoryId!!, 1)
 
             // ------! 자동완성 시작 !------
             val exerciseNames = filteredDataList.map { it.exerciseName }.distinct()
@@ -232,7 +232,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
 //        }
     }
     private fun updateRecyclerView(exercises : MutableList<ExerciseVO>) {
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, mutableListOf(), "main")
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, Pair(0,0) ,"main")
         adapter.exerciseList = exercises
         binding.rvEDAll.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -255,7 +255,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
             try {
                 val searchId = categoryMap[category] ?: return@launch
                 Log.v("category,search", "2categoryId: ${categoryId}, searchId: ${searchId}")
-                filteredDataList = fetchCategoryAndSearch(getString(R.string.IP_ADDRESS_t_exercise_description),
+                filteredDataList = fetchCategoryAndSearch(getString(R.string.API_exercise),
                     categoryId!!, searchId)
                 updateRecyclerView(filteredDataList)
             } catch (e: Exception) {
