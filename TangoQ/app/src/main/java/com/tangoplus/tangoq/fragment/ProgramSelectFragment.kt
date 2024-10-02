@@ -48,11 +48,26 @@ class ProgramSelectFragment : Fragment() {
             dialog.show(requireActivity().supportFragmentManager, "MeasureBSDialogFragment")
         }
     }
+    private val categoryMap = mapOf(
+        "목관절" to 1,
+        "어깨" to 2,
+        "팔꿉" to 3,
+        "손목" to 4,
+        "척추" to 5,
+        "복부" to 6,
+        "엉덩" to 7,
+        "무릎" to 8,
+        "발목" to 9
+    )
+
 
     private fun setAdapter(dateIndex: Int) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvPSD.layoutManager = layoutManager
-        val adapter = RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations!!)
+        Log.v("dangerPartInt", "${singletonMeasure?.get(dateIndex)!!.dangerParts.map { categoryMap.get(it.first) }}")
+        val adapter = RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations!!,
+            singletonMeasure?.get(dateIndex)!!.dangerParts.map { categoryMap.get(it.first) }
+        )
         Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations!!}")
         binding.rvPSD.adapter = adapter
     }

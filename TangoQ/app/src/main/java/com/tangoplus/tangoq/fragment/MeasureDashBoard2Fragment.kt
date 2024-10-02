@@ -55,7 +55,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     var currentMonth = YearMonth.now()
     var selectedDate = LocalDate.now()
 
-    private lateinit var singletonHistory : Singleton_t_progress
+    private lateinit var progresses : Singleton_t_progress
     private lateinit var historys: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
     private val hvm : ProgressViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
@@ -79,8 +79,8 @@ class MeasureDashBoard2Fragment : Fragment() {
         // ------! 운동 기록 API 공간 시작 !------
         todayInWeek = sortTodayInWeek()
         // ------! 일주일 간 운동 기록 들어올 곳 시작 !------
-        singletonHistory = Singleton_t_progress.getInstance(requireContext())
-//        historys = singletonHistory.historys!!
+        progresses = Singleton_t_progress.getInstance(requireContext())
+//        historys = progresses.historys!!
         // ------# 일별 운동 담기 #------
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
 

@@ -13,7 +13,7 @@ import com.tangoplus.tangoq.data.RecommendationVO
 import com.tangoplus.tangoq.databinding.RvRecommendationItemBinding
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 
-class RecommendationRVAdapter(private val fragment: Fragment, private val data : List<RecommendationVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecommendationRVAdapter(private val fragment: Fragment, private val data: List<RecommendationVO>, private val exerciseTypeIds: List<Int?>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class programViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvPI : TextView = view.findViewById(R.id.tvPI)
@@ -33,13 +33,17 @@ class RecommendationRVAdapter(private val fragment: Fragment, private val data :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = data[position]
+        val typeItem = exerciseTypeIds[position]
         if (holder is programViewHolder) {
             holder.tvPI.text = currentItem.title
             holder.clPI.setOnClickListener {
-                val dialog = ProgramCustomDialogFragment.newInstance(currentItem.programSn, currentItem.recommendationSn, position)
+                val dialog = ProgramCustomDialogFragment.newInstance(currentItem.programSn, currentItem.recommendationSn)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             }
-            val drawableResId = fragment.resources.getIdentifier("drawable_joint_${position + 1}", "drawable", fragment.requireContext().packageName)
+
+            // drawable 가져오기
+
+            val drawableResId = fragment.resources.getIdentifier("drawable_joint_$typeItem", "drawable", fragment.requireContext().packageName)
             holder.ivPIThumbnail.setImageResource(drawableResId)
 
         }

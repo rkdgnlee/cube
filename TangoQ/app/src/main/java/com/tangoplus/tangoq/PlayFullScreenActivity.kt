@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -27,6 +28,7 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelector
+import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.data.ExerciseViewModel
@@ -35,6 +37,7 @@ import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
 import com.tangoplus.tangoq.`object`.NetworkProgress.patchProgress1Item
+import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -52,9 +55,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private var isExitDialogVisible = false
     private lateinit var mediaSourceList: List<MediaSource>
     private var currentMediaSourceIndex = 0
+    private var currentVideoDuration = 0L
+
     private var sns: MutableList<String>? = null
     private var uvpSns : MutableList<String>? = null
-    var totalTime = 0
+
+    private val playbackPositions = mutableMapOf<Int, Long>()
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
         object : CountDownTimer(2500, 1000) {
@@ -90,9 +96,9 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val videoUrl = intent.getStringExtra("video_url")
         val urls = intent.getStringArrayListExtra("video_urls")
         val exerciseIds = intent.getStringArrayListExtra("exercise_ids")
-        uvpSns = intent.getStringArrayListExtra("uvp_ids")
-        totalTime = intent.getIntExtra("total_time", 0)
-        Log.v("url들", "videoUrl: $exerciseIds, urls: $urls")
+        uvpSns = intent.getStringArrayListExtra("uvp_sns")
+
+        Log.v("url들", "videoUrl: $exerciseIds, urls: $urls, uvpSns: $uvpSns")
 
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
         val url_list = ArrayList<String>()
@@ -107,12 +113,10 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
         if (url_list.isNotEmpty()) {
             playbackPosition = intent.getLongExtra("current_position", 0L)
-            if (pViewModel.currentPlaybackPosition.value != null && pViewModel.currentWindowIndex.value != null) {
-                playbackPosition = pViewModel.currentPlaybackPosition.value!!
-                val windowIndex = pViewModel.currentWindowIndex.value!!
-                initPlayer(url_list, windowIndex, playbackPosition)
+            if (playbackPosition != 0L) {
+                initPlayer(url_list, currentMediaSourceIndex, playbackPosition)
             } else {
-                initPlayer(url_list)
+                initPlayer(url_list, 0, 0)
             }
         }
 
@@ -159,14 +163,13 @@ class PlayFullScreenActivity : AppCompatActivity() {
             .setTrackSelector(trackSelector)
             .build()
         binding.pvFullScreen.player = simpleExoPlayer
-
         mediaSourceList = buildMediaSource(resourceList)
         currentMediaSourceIndex = windowIndex
 
         simpleExoPlayer?.setMediaSources(mediaSourceList)
         simpleExoPlayer?.prepare()
-        simpleExoPlayer?.seekTo(windowIndex, playbackPosition)
-
+        val savedPosition = playbackPositions[windowIndex] ?: playbackPosition
+        simpleExoPlayer?.seekTo(windowIndex, savedPosition)
 
         simpleExoPlayer?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -175,14 +178,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 when (playbackState) {
                     Player.STATE_IDLE -> Log.v("PlaybackState", "Player.STATE_IDLE")
                     Player.STATE_BUFFERING -> Log.v("PlaybackState", "Player.STATE_BUFFERING")
-                    Player.STATE_READY -> Log.v("PlaybackState", "Player.STATE_READY")
+                    Player.STATE_READY -> {
+                        Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: $currentMediaSourceIndex")
+                        currentVideoDuration = simpleExoPlayer!!.duration
+                        Log.e("currentVideoDuration임", "$currentVideoDuration")
+
+                    }
                     Player.STATE_ENDED -> {
                         Log.v("PlaybackState", "Player.STATE_ENDED")
-                        // 모든 영상이 끝났을 때의 처리
 
-
-                        val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
-                        viewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${mediaSourceList.size}", totalTime)
                         val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                         intent.putExtra("feedback_finish", viewModel.exerciseLog.value)
                         Log.v("feedback_finish", "VM_exercise_log: ${viewModel.exerciseLog.value}")
@@ -196,9 +200,9 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
                 Log.v("PositionDiscontinuity", "Reason: $reason")
                 if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
-
+                    sendData(true)
                     val currentWindowIndex = simpleExoPlayer!!.currentWindowIndex
-                    Log.v("currentWindowIndex", "currentWindowIndex2: $currentWindowIndex") // 이미 재생목록이 변하고 나서 말하는 거임.
+
                     val currentPlaybackPosition = simpleExoPlayer!!.currentPosition
                     pViewModel.currentWindowIndex.value = currentWindowIndex
                     pViewModel.currentPlaybackPosition.value = currentPlaybackPosition
@@ -206,21 +210,38 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     // ------# 다음 동영상으로 넘어갈 때 구간 #------
                     if (currentWindowIndex < mediaSourceList.size - 1) {
 
-                        // ------# 카운트다운 후 검색 기록 담기 #------
-                        patchProgress1Item(getString(R.string.API_progress), uvpSns!![currentWindowIndex].toInt(), simpleExoPlayer!!.currentPosition.toInt(),this@PlayFullScreenActivity)
-                        Log.v("progress완료업데이트", "${uvpSns!![currentWindowIndex].toInt()}, currentPosition: ${simpleExoPlayer!!.currentPosition.toInt()}")
-
+                        currentMediaSourceIndex++
                         // ------# 타이머 초기화, 현재 재생중인 sn 수정, 검색기록 VM추가, 카운트다운 시작
                         chronometer.base = SystemClock.elapsedRealtime()
 //                        viewModel.finishHistorys.add(historyUnitVO)
                         currentExerciseId = sns!![currentWindowIndex]
                         startNextVideoCountdown()
+                        currentVideoDuration = simpleExoPlayer!!.duration
+                        Log.e("currentVideoDuration임", "$currentVideoDuration")
                     }
                 }
             }
         })
     }
+    private fun sendData(isFinish: Boolean) {
+        val player = simpleExoPlayer ?: return
+        val currentPositionMs = player.currentPosition - 1
+        // 현재 윈도우의 재생 위치 저장
 
+        val currentPositionSeconds = (currentPositionMs / 1000.0).toInt()
+        val totalDurationMs = (currentVideoDuration / 1000.0 ).toInt()
+        val jo = JSONObject()
+        if (isFinish && currentPositionSeconds >= 0) {
+            jo.put("progress", totalDurationMs)
+        } else {
+            jo.put("progress", currentPositionSeconds)
+        }
+        Log.v("미디어소스인덱스", "$currentMediaSourceIndex, jo: $jo")
+        patchProgress1Item(getString(R.string.API_progress), uvpSns!![currentMediaSourceIndex].toInt(), jo, this@PlayFullScreenActivity) { progressUnitVO ->
+            // 콜백 처리
+        }
+        Log.v("progress완료업데이트", "${uvpSns!![currentMediaSourceIndex].toInt()}, currentPosition: $currentPositionMs")
+    }
     private fun fullScreen(fullScreenOption : Int) {
         window.decorView.systemUiVisibility = (
                 fullScreenOption
@@ -237,11 +258,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
     // -----! 동영상 재생목록에 넣기 !-----
     private fun buildMediaSource(resourceList: ArrayList<String>) : List<MediaSource> {
-        val dataSourceFactory = DefaultDataSourceFactory(this, "TangoQ")
-        return resourceList.map { url ->
-            ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(url))
+        val mediaSources = mutableListOf<MediaSource>()
+        val dataSourceFactory = DefaultDataSource.Factory(this)
+        resourceList.forEach { url ->
+            val mediaItem = MediaItem.fromUri(Uri.parse(url))
+            val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(mediaItem)
+            mediaSources.add(mediaSource)
         }
+        return mediaSources
     }
 
     private fun startNextVideoCountdown() {
@@ -259,19 +284,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
 
-                // 타이머가 경과한 시간
-                val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
-
-                // 경과 시간을 초로 변환
-                val elapsedSeconds = (elapsedMillis / 1000).toInt()
-                Log.v("elapsedSeconds", "$elapsedSeconds")
-                chronometer.base = SystemClock.elapsedRealtime()
-
-                // ------# 시청 기록 일시 중단 항목 #------
-                val currentWindowIndex = simpleExoPlayer!!.currentWindowIndex
-
-                patchProgress1Item(getString(R.string.API_progress), uvpSns!![currentWindowIndex].toInt(), simpleExoPlayer!!.currentPosition.toInt(),this@PlayFullScreenActivity)
-                Log.v("progress업데이트", "uvpSns: ${uvpSns!![currentWindowIndex]}, currentPosition: ${simpleExoPlayer!!.currentPosition}")
+                sendData(false)
                 val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 startActivity(intent)

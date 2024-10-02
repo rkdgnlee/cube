@@ -20,8 +20,8 @@ object NetworkProgram {
             .build()
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()?.substringAfter("db conn ok")
-
+                val responseBody = response.body?.string()
+                Log.v("responseBody", "$responseBody")
                 val jsonInfo = responseBody?.let { JSONObject(it) }?.optJSONObject("exercise_program_info")
                 val jsonExerciseArr = responseBody?.let { JSONObject(it) }?.getJSONArray("program_detail_data")
                 val exercises = mutableListOf<ExerciseVO>()

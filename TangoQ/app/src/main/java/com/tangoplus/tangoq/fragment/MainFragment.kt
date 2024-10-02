@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -31,6 +32,7 @@ import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
@@ -41,12 +43,16 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureBSDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
+import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
+import com.tangoplus.tangoq.`object`.NetworkProgress.getLatestProgress
+import com.tangoplus.tangoq.`object`.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -56,7 +62,9 @@ class MainFragment : Fragment() {
     lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
     private var singletonMeasure : MutableList<MeasureVO>? = null
-//    private  var sp : MutableList<MutableList<ProgressUnitVO>>? = null
+    var latestRecSn = -1
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -78,9 +86,11 @@ class MainFragment : Fragment() {
 
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
-        prefsManager = PreferencesManager(requireContext())
+        prefsManager = PreferencesManager(requireContext(), Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!)
+        latestRecSn = prefsManager.getLatestRecommendation()
+        Log.v("latestRecSn", "${latestRecSn}")
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
-//        sp = Singleton_t_progress.getInstance(requireContext()).progresses?.get(0) // 0번 인덱스의 사용기록을 가져옴 -> 0번 인덱스가 가장 최근 추천 프로그램이 맞는지?
+
         // ------# 알람 intent #------
         binding.ibtnMAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
@@ -99,33 +109,15 @@ class MainFragment : Fragment() {
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-
-                // 측정결과를 가져올 때, 매칭이 이미 만들어진건지, 안만들어진건지에 대한 판단을 할 수 있는 기준이 있어야 함. 그게 여기 들어가야 함. 측정 데이터를 가져왔을 때.
-
-
-                // ------# 키오스크에서 데이터 가져왔을 때 #------
+                measures = Singleton_t_measure.getInstance(requireContext()).measures
+                binding.llM.visibility = View.VISIBLE
+                binding.sflM.startShimmer()
+                updateUI()
 
 
                 binding.tvMMeasureDate.setOnClickListener {
                     val dialog = MeasureBSDialogFragment()
                     dialog.show(requireActivity().supportFragmentManager, "MeasureBSDialogFragment")
-                }
-
-                measures = Singleton_t_measure.getInstance(requireContext()).measures
-
-
-
-                updateUI()
-                // 완료 갯수 넣기 현재 고정 0개임 TODO 여기에 오늘 날짜 운동 기록을 가져와야함. (번호 대조 후 여기에 넣기)
-                binding.tvMProgram.setOnClickListener {  // 이력의 가장 마지막 프로그램을 가져와야 함
-//                    val dateIndex = singletonMeasure?.indexOf(singletonMeasure?.find { it.regDate == mViewModel.selectedMeasureDate.value }!!) // 측정값의 인덱스임.
-//                    // 마지막으로 recommendation
-//                    val recommendations = singletonMeasure?.find { it.regDate == mViewModel.selectedMeasureDate.value }!!.recommendations // 측정의 제안프로그램들 가져옴.
-//                    val lastRecommendation = sp.find { it.indexOf() }
-//                    recommendations.find {   } // 여기서
-
-                    val dialog = ProgramCustomDialogFragment.newInstance(10, 0, 0)
-                    dialog.show(requireActivity().supportFragmentManager, "PorgramCustomDialogFragment")
                 }
 
                 binding.btnMProgram.setOnClickListener {
@@ -217,21 +209,38 @@ class MainFragment : Fragment() {
                     // ------# 측정 결과에 맞는 진행 프로그램 2번째 가져오기 #------
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        val dummyExercise = listOf(
-                            fetchExerciseById(getString(R.string.API_exercise), 1.toString()),
-                            fetchExerciseById(getString(R.string.API_exercise), 2.toString()),
-                            fetchExerciseById(getString(R.string.API_exercise), 3.toString()),
-                            fetchExerciseById(getString(R.string.API_exercise), 4.toString()),
-                        )
-                        val adapter = ExerciseRVAdapter(this@MainFragment, dummyExercise.toMutableList(), null, Pair(0,0) ,"history")
+                        val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
+                        val programSn = latestProgress.optInt("exercise_program_sn")
+                        Log.v("프로그램sn", "$programSn") //8 이 나옴
+                        val adapter : ExerciseRVAdapter
+                        val program : ProgramVO
+                        var currentPage = 0
+                        if (programSn != 0) {
+                            val week = latestProgress.optInt("week_number")
+                            program  = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
+                            val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
+                            currentPage = findCurrentIndex(progresses)
+                            adapter = ExerciseRVAdapter(this@MainFragment, program.exercises!!, progresses, Pair(0,0) ,"history")
+                        } else {
+                            program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
+                            adapter = ExerciseRVAdapter(this@MainFragment, program.exercises!!, null, Pair(0,0) ,"history")
+                        }
+
                         CoroutineScope(Dispatchers.Main).launch {
+
+                            binding.tvMProgram.setOnClickListener {
+                                val dialog = ProgramCustomDialogFragment.newInstance(program.programSn, prefsManager.getLatestRecommendation())
+                                Log.v("프로그램direct", "$programSn, ${prefsManager.getLatestRecommendation()}")
+                                dialog.show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                            }
+
                             binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
                             binding.vpM.apply {
                                 clipToPadding = false
                                 clipChildren = false
                                 offscreenPageLimit = 3
                                 setAdapter(adapter)
-                                currentItem = 1
+                                currentItem = currentPage
 
                                 (getChildAt(0) as RecyclerView).apply {
                                     setPadding(dpToPx(5), 0, dpToPx(5), 0)
@@ -262,6 +271,8 @@ class MainFragment : Fragment() {
                                 }
                             }
                             binding.vpM.addItemDecoration(itemDecoration)
+                            binding.llM.visibility = View.GONE
+                            binding.sflM.stopShimmer()
                         }
                     }
                 }
@@ -281,10 +292,25 @@ class MainFragment : Fragment() {
     private fun dpToPx(dp: Int) : Int {
         return (dp * resources.displayMetrics.density).toInt()
     }
-//    private fun setEpisodeProgress(finishCount: Int) {
-//        binding.tvMCustomProgress.text = "완료 ${finishCount}/${hViewModel.currentProgram?.exercises?.get(0)?.size}개"
-//        binding.hpvMCustomProgress.progress = (finishCount * 100).div(hViewModel.currentProgram?.exercises?.get(0)?.size!!)
-//    }
+    private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
+        val progressIndex = progresses.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
+        if (progressIndex != -1) {
+            Log.v("progressIndex", "${progressIndex}")
+            return progressIndex
+        }
+
+        for (i in 1 until progresses.size) {
+            val prev = progresses[i - 1].currentSequence
+            val current = progresses[i].currentSequence
+            if ((prev == 3 && current == 2) ||
+                (prev == 2 && current == 1) ||
+                (prev == 1 && current == 0)) {
+                return i
+            }
+        }
+        Log.v("progressIndex", "${progressIndex}")
+        return 0
+    }
 
     private fun setProgramButton(isEnabled: Boolean) {
         if (isEnabled) {

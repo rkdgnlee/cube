@@ -7,6 +7,7 @@ import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.`object`.NetworkProgress.getProgressInCurrentProgram
 import com.tangoplus.tangoq.`object`.NetworkProgress.postProgressInCurrentProgram
+import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendProgram
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +43,7 @@ class SaveSingletonManager(private val context: Context) {
                 }
                 val parts1 = mutableListOf<Pair<String, Int>>()
                 parts1.add(Pair("어깨", 2))
-                parts1.add(Pair("목", 2))
+                parts1.add(Pair("목관절", 2))
                 parts1.add(Pair("손목", 1))
                 parts1.add(Pair("무릎", 1))
 
@@ -68,7 +69,7 @@ class SaveSingletonManager(private val context: Context) {
                 Log.v("measureVO1", "${measureVO1.fileUris}")
 
                 val parts2 = mutableListOf<Pair<String, Int>>()
-                parts2.add(Pair("목", 2))
+                parts2.add(Pair("목관절", 2))
                 parts2.add(Pair("어깨", 1))
                 parts2.add(Pair("손목", 1))
                 parts2.add(Pair("골반", 1))
@@ -98,28 +99,52 @@ class SaveSingletonManager(private val context: Context) {
                 singletonMeasure.measures = mutableListOf()
                 singletonMeasure.measures?.add(measureVO1)
                 singletonMeasure.measures?.add(measureVO2)
-                singletonMeasure.measures?.add(measureVO3)
-
-                val recommendJson = JSONObject()
-                val ja1 = JSONArray()
-                ja1.put(4)
-                val ja2 = JSONArray()
-                ja2.put(0)
-
-                recommendJson.put("user_sn", userSn.toInt())
-                recommendJson.put("exercise_type_id", ja1)
-                recommendJson.put("exercise_stage", ja2)
-                recommendJson.put("measure_sn", 2)
+//                singletonMeasure.measures?.add(measureVO3)
 
                 // ------# 측정 1개 -> 추천 여러개 가져오기 #------
-                val recommendations = getRecommendProgram(context.getString(R.string.API_recommendation), context)
-                val measure = singletonMeasure.measures?.get(0)
-                measure?.recommendations = recommendations
-                if (measure != null) {
-                    singletonMeasure.measures!![0] = measure
+
+                val recommendations = getRecommendProgram(context.getString(R.string.API_recommendation), measureVO1.measureId.toInt(), context)
+                if (recommendations.isEmpty()) {
+                    val recommendJson = JSONObject()
+
+                    // TODO 더미임. 이곳에는 recommendation을 하기 위한 종합 점수 산출이 필요함.
+                    val ja1 = JSONArray()
+                    ja1.apply {
+                        put(3)
+                        put(1)
+                        put(2)
+                    }
+                    val ja2 = JSONArray()
+                    ja2.apply {
+                        put(0)
+                        put(1)
+                        put(2)
+                    }
+                    recommendJson.put("user_sn", userSn.toInt())
+                    recommendJson.put("exercise_type_id", ja1)
+                    recommendJson.put("exercise_stage", ja2)
+                    recommendJson.put("measure_sn", measureVO1.measureId)
+
+                    createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { recommendations ->
+                        val measure = singletonMeasure.measures?.get(0)
+                        measure?.recommendations = recommendations
+                        if (measure != null) {
+                            singletonMeasure.measures!![0] = measure
+                        }
+                        Log.v("recommendations", "${singletonMeasure.measures?.get(0)?.recommendations}")
+                        callbacks()
+
+                    }
+                } else {
+                    val measure = singletonMeasure.measures?.get(0)
+                    measure?.recommendations = recommendations
+                    if (measure != null) {
+                        singletonMeasure.measures!![0] = measure
+                    }
+                    Log.v("recommendations", "${singletonMeasure.measures?.get(0)?.recommendations}")
+                    callbacks()
                 }
-                Log.v("recommendations", "${singletonMeasure.measures?.get(0)?.recommendations}")
-                callbacks()
+
 
 
             }
@@ -128,8 +153,9 @@ class SaveSingletonManager(private val context: Context) {
     }
 
     suspend fun getOrInsertProgress(jo: JSONObject) : Unit = suspendCoroutine  { continuation ->
-        postProgressInCurrentProgram(context.getString(R.string.API_progress), jo,context) { progressUnits -> // MutableList<ProgressUnitVO>
+        postProgressInCurrentProgram(context.getString(R.string.API_progress), jo, context) { progressUnits -> // MutableList<ProgressUnitVO>
             if (progressUnits.isNotEmpty()) {
+                Log.v("프로그레스유닛들", "${progressUnits}")
                 val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
                 val requiredSequences = 1..progressUnits[0].requiredSequence // 3
                 val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
@@ -137,18 +163,28 @@ class SaveSingletonManager(private val context: Context) {
                 for (week in weeks) { // 1, 2, 3, 4
                     val weekUnits = progressUnits.filter { it.currentWeek == week }
                     val groupedByUvpSn = weekUnits.groupBy { it.uvpSn } // 21개임
+                    val maxCurrentSequence = weekUnits.maxOfOrNull { it.currentSequence } ?: 0
                     for (seq in requiredSequences) { // 1, 2, 3
                         val orgUnit = mutableListOf<ProgressUnitVO>() // 시퀀스별로 새로운 리스트 생성
                         for ((_, units) in groupedByUvpSn) {
                             val unit = units.firstOrNull() ?: continue
-                            orgUnit.add(unit.copy(currentSequence = seq - 1))
+                            val currentProgress = when {
+                                seq - 1 < maxCurrentSequence -> unit.lastProgress
+
+                                else -> 0  // 미래 시퀀스
+                            }
+
+                            orgUnit.add(unit.copy(
+                                currentSequence = (seq - 1),
+                                lastProgress = currentProgress
+                            ))
                         }
                         organizedUnits.add(orgUnit) // 각 시퀀스마다 리스트 추가
                     }
                 }
 
-                singletonProgress.progresses?.add(organizedUnits)
-                Log.v("singletonProgress", "${singletonProgress.progresses}")
+                singletonProgress.progresses = organizedUnits
+                Log.v("singletonProgress", "${singletonProgress.progresses!![0].map { it.lastProgress }}, ${singletonProgress.progresses!![1].map { it.lastProgress }}, ${singletonProgress.progresses!![2].map { it.lastProgress }}, ${singletonProgress.progresses!![3].map { it.lastProgress }}, ")
                 continuation.resume(Unit)
             } else {
                 singletonProgress.progresses?.add(mutableListOf())

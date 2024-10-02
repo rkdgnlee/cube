@@ -22,7 +22,6 @@ import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProgramCustomRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.data.ProgressVO
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
@@ -35,10 +34,8 @@ import com.tangoplus.tangoq.fragment.isFirstRun
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
 import com.tangoplus.tangoq.`object`.SaveSingletonManager
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,20 +52,18 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     private lateinit var ssm : SaveSingletonManager
     var programSn = 0
     var recommendationSn = 0
-    var programIndex = 0
-    private lateinit var program : ProgramVO
 
+    private lateinit var program : ProgramVO
+    private lateinit var userJson : JSONObject
     companion object {
         private const val ARG_PROGRAM_SN = "program_sn"
-        private const val ARG_PROGRAM_INDEX = "program_index"
         private const val ARG_RECOMMENDATION_SN = "recommendation_sn"
 
-        fun newInstance(programSn: Int, recommendationSn: Int, programIndex: Int) : ProgramCustomDialogFragment {
+        fun newInstance(programSn: Int, recommendationSn: Int) : ProgramCustomDialogFragment {
             val fragment = ProgramCustomDialogFragment()
             val args = Bundle()
             args.putInt(ARG_PROGRAM_SN, programSn)
             args.putInt(ARG_RECOMMENDATION_SN, recommendationSn)
-            args.putInt(ARG_PROGRAM_INDEX, programIndex)
             fragment.arguments = args
             return fragment
         }
@@ -81,119 +76,73 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         binding = FragmentProgramCustomDialogBinding.inflate(inflater)
         return binding.root
     }
+
+    override fun onResume() {
+        super.onResume()
+        // full Screen code
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        updateUI()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // -------# 기본 셋팅 #-------
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
         programSn = arguments?.getInt(ARG_PROGRAM_SN)!!
         recommendationSn = arguments?.getInt(ARG_RECOMMENDATION_SN)!!
-        programIndex = arguments?.getInt(ARG_PROGRAM_INDEX)!!
         ssm = SaveSingletonManager(requireContext())
 
         lifecycleScope.launch {
             // 프로그램에 들어가는 운동
-            program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
-            pvm.currentProgram = program
+            binding.sflPCD.startShimmer()
+            binding.sflPCD.visibility = View.VISIBLE
+            updateUI()
 
-            val jo = JSONObject()
-            jo.put("user_sn", userJson?.optString("user_sn"))
-            jo.put("recommendation_sn", recommendationSn)
-            jo.put("exercise_program_sn", programSn)
-            jo.put("measure_sn", mvm.selectedMeasure?.measureId?.toInt())
-            Log.v("json프로그레스", "${jo}")
-
-            withContext(Dispatchers.IO) {
-                ssm.getOrInsertProgress(jo)
-                pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).progresses?.get(programIndex)!! // mutableListOf<MutableList<ProgressUnitVO>> 에서 program index에 맞게 가져오기.
-                Log.v("현재진행기록", "pvm.currentProgresses.size: ${pvm.currentProgresses.size}" ) // week * seq 12개의 list인 mutableLIst<ProgressUnitVO>임.  seq는 맞음. 그러면 각각 21개의 seq가 들어가있음 12 * 21 근데 여기서
-
-                // ------# 가장 최근 sequence 찾기 #------
-                val currentProgresses = pvm.currentProgresses // MutableList<MutableList<ProgressUnitVO>>
-                var currentWeek = 0
-                var currentSequence = 0
-                for (weekIndex in currentProgresses.indices) { // 12개의 리스트 (week)
-                    val weekProgress = currentProgresses[weekIndex]
-                    // week에서 가장 큰 sequence 값 찾기
-                    val maxSequenceInWeek = weekProgress.maxOf { it.currentSequence }
-
-                    if (maxSequenceInWeek == 3) {
-                        // 해당 주의 모든 운동이 완료되어 다음 주로 넘어감
-                        continue
-                    } else {
-                        // 가장 큰 sequence 값이 3이 아니면, 그 주차가 현재 주차임
-                        currentWeek = weekIndex + 1 // 주차는 1부터 시작하므로 +1
-                        currentSequence = maxSequenceInWeek
-                        break
-                    }
-                }
-
-                val currentRound = (currentWeek - 1) * 3 + currentSequence
-                pvm.currentSequence = currentRound
-                Log.v("currentSeq", "currentSequence: ${pvm.currentSequence}")
-            }
-            withContext(Dispatchers.Main) {
-                setAdapter(pvm.currentProgram!!, pvm.currentProgresses[pvm.currentSequence],  Pair(pvm.currentSequence, pvm.currentSequence))
-
-                    // ------! 요약 시작 !------
-                binding.etPCDTitle.isEnabled = false
-                binding.btnPCDRight.text = "운동 시작하기"
-                binding.btnPCDLeft.visibility = View.GONE
-                binding.etPCDTitle.setText(pvm.currentProgram?.programName)
-                binding.tvPCDTime.text = (if (pvm.currentProgram?.programTime!! <= 60) {
-                    "${pvm.currentProgram?.programTime}초"
-                } else {
-                    "${pvm.currentProgram?.programTime!! / 60 }분 ${pvm.currentProgram?.programTime!! % 60}초"
-                }).toString()
-                when (pvm.currentProgram?.programStage) {
-                    "초급" -> binding.tvPCDStage.text = "초급자"
-                    "중급" -> binding.tvPCDStage.text = "중급자"
-                    "고급" -> binding.tvPCDStage.text = "상급자"
-                }
-                binding.tvPCDCount.text = "${pvm.currentProgram?.programCount} 개"
-            // ------! 요약 끝 !------
-            }
         }
 
-        binding.btnPCDLeft.setOnClickListener { dismiss() }
+
         binding.btnPCDRight.setOnClickListener {
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
-                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    // PreferencesManager 초기화 및 추천 저장
+                    val prefManager = PreferencesManager(requireContext(), userJson.getString("user_sn").toInt())
+                    prefManager.saveLatestRecommendation(recommendationSn)
+
+                    // 현재 시퀀스의 ProgressUnitVO 리스트 가져오기
                     val currentSequenceProgresses = pvm.currentProgresses[pvm.currentSequence]
-                    val mostRecentProgress = currentSequenceProgresses.maxByOrNull {
-                        LocalDateTime.parse(it.updateDate, formatter)
-                    }
 
-                    mostRecentProgress?.let { recentProgress ->
-                        // 가장 최근 업데이트된 ProgressUnitVO의 인덱스를 찾습니다.
-                        val startIndex = currentSequenceProgresses.indexOf(recentProgress)
+                    // 가장 최근에 시작한 운동의 인덱스 찾기
+                    val startIndex = findCurrentIndex(currentSequenceProgresses)
 
-                        val filteredExercises = pvm.currentProgram?.exercises?.dropWhile {
-                            it.exerciseId != recentProgress.exerciseId.toString()
-                        } ?: emptyList()
+                    // startIndex가 유효한지 확인
+                    if (startIndex >= 0 && startIndex < currentSequenceProgresses.size) {
+                        val remainingProgresses = currentSequenceProgresses.subList(startIndex, currentSequenceProgresses.size)
+                        val currentExercises = pvm.currentProgram?.exercises ?: emptyList()
+                        val filteredExercises = currentExercises.drop(startIndex)
 
-                        val videoUrls = storeUrls(filteredExercises.toMutableList())
+                        val videoUrls = mutableListOf<String>()
+                        val exerciseIds = mutableListOf<String>()
+                        val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
 
-                        val exerciseIds = currentSequenceProgresses.subList(startIndex, currentSequenceProgresses.size)
-                            .filter { it.lastProgress > 0 }
-                            .map { it.exerciseId.toString() }
-                            .toMutableList()
-
-                        val uvpIds = currentSequenceProgresses.subList(startIndex, currentSequenceProgresses.size)
-                            .map { it.uvpSn.toString() }
-                            .distinct()
-
-                        Log.v("안본것들만filter", "exerciseIds: ${exerciseIds}, videoUrls: $videoUrls, uvpIds: $uvpIds")
-
+                        for (i in startIndex until currentSequenceProgresses.size) {
+                            val progress = currentSequenceProgresses[i]
+                            exerciseIds.add(progress.exerciseId.toString())
+                            uvpIds.add(progress.uvpSn.toString())
+                            videoUrls.add(program.exercises?.get(i)?.videoFilepath!!)
+                        }
                         val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
                         intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
                         intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
                         intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
-                        intent.putExtra("total_time", pvm.currentProgram?.programTime)
-
+                        intent.putExtra("current_position",currentSequenceProgresses[startIndex].lastProgress.toLong())
                         requireContext().startActivity(intent)
                         startActivityForResult(intent, 8080)
+                        Log.v("인텐트담은것들", "${videoUrls}, $exerciseIds, $uvpIds")
+                    } else {
+                        Log.e("ExerciseProgress", "Invalid startIndex: $startIndex")
                     }
                 }
                 else -> {
@@ -225,75 +174,87 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         binding.ibtnPCDTop.setOnClickListener { it.showAlignBottom(balloon2) }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // full Screen code
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-    }
+    private fun updateUI() {
+        lifecycleScope.launch {
+            try {
 
-    private fun storeUrls(currentItem : MutableList<ExerciseVO>) : MutableList<String> {
-        val urls = mutableListOf<String>()
-        for (i in currentItem.indices) {
-            val exercise = currentItem[i]
-            urls.add(exercise.videoFilepath.toString())
+                val result = withContext(Dispatchers.IO) {
+                    program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
+                    pvm.currentProgram = program
+
+                    val jo = JSONObject()
+                    jo.put("user_sn", userJson.optString("user_sn"))
+                    jo.put("recommendation_sn", recommendationSn)
+                    jo.put("exercise_program_sn", programSn)
+                    jo.put("measure_sn", mvm.selectedMeasure?.measureId?.toInt())
+                    Log.v("json프로그레스", "${jo}")
+
+                    ssm.getOrInsertProgress(jo)
+                    pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).progresses!!
+                    Log.v("현재진행기록", "pvm.currentProgresses.size: ${pvm.currentProgresses.size}")
+
+                    // 현재 시퀀스 찾기
+                    val currentProgresses = pvm.currentProgresses
+                    var currentWeek = 0
+                    var currentSequence = 0
+                    for (weekIndex in currentProgresses.indices) {
+                        val weekProgress = currentProgresses[weekIndex]
+                        val maxSequenceInWeek = weekProgress.maxOfOrNull { it.currentSequence } ?: 0
+
+                        if (maxSequenceInWeek == 3) {
+                            continue
+                        } else {
+                            currentWeek = weekIndex + 1
+                            currentSequence = maxSequenceInWeek
+                            break
+                        }
+                    }
+                    val currentRound = (currentWeek - 1) * 3 + currentSequence
+                    pvm.currentSequence = currentRound
+                    Log.v("currentSeq", "currentSequence: ${pvm.currentSequence}")
+
+                    // 모든 IO 작업이 완료되면 결과를 반환
+                    Triple(currentRound, pvm.currentProgram, pvm.currentProgresses)
+                }
+
+
+                withContext(Dispatchers.Main) {
+                    val (currentRound, currentProgram, currentProgresses) = result
+
+                    // null 체크 추가
+                    if (currentProgram != null && currentProgresses.isNotEmpty() && currentRound < currentProgresses.size) {
+                        setAdapter(currentProgram, currentProgresses[currentRound], Pair(currentRound, currentRound))
+
+                        // UI 업데이트 로직
+                        binding.etPCDTitle.isEnabled = false
+                        binding.btnPCDRight.text = "운동 시작하기"
+
+                        binding.etPCDTitle.setText(currentProgram.programName)
+                        binding.tvPCDTime.text = if (currentProgram.programTime <= 60) {
+                            "${currentProgram.programTime}초"
+                        } else {
+                            "${currentProgram.programTime / 60}분 ${currentProgram.programTime % 60}초"
+                        }
+                        binding.tvPCDStage.text = when (currentProgram.programStage) {
+                            "초급" -> "초급자"
+                            "중급" -> "중급자"
+                            "고급" -> "상급자"
+                            else -> ""
+                        }
+                        binding.tvPCDCount.text = "${currentProgram.programCount} 개"
+                    } else {
+                        Log.e("Error", "Some required data is null or empty")
+                        // 에러 처리 로직 추가
+                    }
+                    binding.sflPCD.stopShimmer()
+                    binding.sflPCD.visibility = View.GONE
+                }
+            } catch (e: Exception) {
+                Log.e("Error", "An error occurred: ${e.message}", e)
+                // 에러 처리 로직 추가
+            }
         }
-        Log.v("urls", "${urls}")
-        return urls
-    }
 
-    private fun getTime(id: String) : Int {
-        return pvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
-    }
-
-    private fun storeSns(currentItem: MutableList<ExerciseVO>) : MutableList<String> {
-        val sns = mutableListOf<String>()
-        for (i in currentItem.indices) {
-            val exercises = currentItem[i]
-            sns.add(exercises.exerciseId.toString())
-        }
-        Log.v("sns", "$sns")
-        return sns
-    }
-
-//    private fun getWeeklyExerciseHistory(data: MutableList<Triple<String, Int, Int>>?): MutableList<Triple<String, Int, Int>>? {
-//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-//        val currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-//        val sevenDaysAgo = currentDateTime.minusDays(6).truncatedTo(ChronoUnit.DAYS)
-//
-//        val filteredData = data?.filter {
-//            it.first != "null" &&
-//                    LocalDateTime.parse(it.first, formatter).isAfter(sevenDaysAgo.minusSeconds(1)) &&
-//                    LocalDateTime.parse(it.first, formatter).isBefore(currentDateTime.plusDays(1).truncatedTo(
-//                        ChronoUnit.DAYS))
-//        }?.toMutableList()
-//
-//        val completeData = mutableListOf<Triple<String, Int, Int>>()
-//        for (i in 0..6) {
-//            val date = sevenDaysAgo.plusDays(i.toLong())
-//            val nextDate = date.plusDays(1)
-//
-//            val entry = filteredData?.find {
-//                val entryDateTime = LocalDateTime.parse(it.first, formatter)
-//                entryDateTime.isAfter(date.minusSeconds(1)) && entryDateTime.isBefore(nextDate)
-//            }
-//            if (entry != null) {
-//                completeData.add(entry)
-//            } else {
-//                // 빈 데이터의 경우 해당 날짜의 자정(00:00:00)으로 설정
-//                val dateString = date.format(formatter)
-//                completeData.add(Triple(dateString, 0, 0))
-//            }
-//        }
-//        Log.v("completedData", "$completeData")
-//        return completeData
-//    }
-
-    private fun stringToLocalDate(dateTimeString: String): LocalDate {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
-        return localDateTime.toLocalDate()
     }
 
     private fun setAdapter(program: ProgramVO, progresses : MutableList<ProgressUnitVO>?, sequence: Pair<Int, Int>) {
@@ -327,5 +288,29 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     fun dismissThisFragment() {
         dismiss()
+    }
+
+
+    // 해당 회차에서 가장
+    private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
+        // Case 1 초기상태
+        if (progresses.all { it.lastProgress == 0 }) {
+            Log.v("progressIndex", "0")
+            return 0
+        }
+        val progressIndex1 = progresses.indexOfLast { it.lastProgress in 1 until it.videoDuration }
+        if (progressIndex1 != -1) {
+            return progressIndex1
+        }
+
+        val progressIndex = progresses.indexOfLast { it.lastProgress == it.videoDuration }
+        if (progressIndex != progresses.size) {
+            Log.v("progressIndex", "${progressIndex +  1}")
+            return progressIndex + 1
+        } else {
+            return -1
+        }
+
+
     }
 }

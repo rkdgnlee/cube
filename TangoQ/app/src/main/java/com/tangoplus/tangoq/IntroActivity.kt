@@ -296,14 +296,11 @@ class IntroActivity : AppCompatActivity() {
             // ------# 기존 로그인 #------
             200 -> {
                 storeUserInSingleton(this@IntroActivity, jo)
+                createKey(getString(R.string.SECURE_KEY_ALIAS))
                 Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
                 ssm.getMeasures(Singleton_t_user.getInstance(this).jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
                     mainInit()
                 }
-
-
-                createKey(getString(R.string.SECURE_KEY_ALIAS))
-
             }
             // ------# 최초 회원가입 #------
             201 -> {

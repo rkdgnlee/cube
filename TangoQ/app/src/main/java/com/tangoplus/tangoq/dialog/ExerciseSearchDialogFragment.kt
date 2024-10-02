@@ -25,6 +25,7 @@ import com.tangoplus.tangoq.databinding.FragmentExerciseSearchDialogBinding
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import java.util.Locale
 
 class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, OnHistoryClickListener {
@@ -43,7 +44,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        prefsManager = PreferencesManager(requireContext())
+        prefsManager = PreferencesManager(requireContext(), Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!)
         binding.clESDEmpty.visibility = View.GONE
         viewModel.searchHistory.value?.clear()
 

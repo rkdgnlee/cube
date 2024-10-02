@@ -69,6 +69,7 @@ class ExerciseRVAdapter (
         val tvEHITime : TextView = view.findViewById(R.id.tvEHITime)
         val tvEHIStage : TextView = view.findViewById(R.id.tvEHIStage)
         val ivEHIStage : ImageView = view.findViewById(R.id.ivEHIStage)
+        val hpvEHI : HorizontalProgressView  = view.findViewById(R.id.hpvEHI)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -220,7 +221,7 @@ class ExerciseRVAdapter (
                         1 -> { // 재생 시간 중간
                             holder.tvEIFinish.visibility = View.GONE
                             holder.hpvEI.visibility = View.VISIBLE
-                            holder.hpvEI.progress = currentItem.lastProgress
+                            holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toInt()!!
                             Log.v("hpvProgress", "${holder.hpvEI.progress}")
                         }
                         else -> { // 재생기록 없는 item
@@ -258,6 +259,7 @@ class ExerciseRVAdapter (
             }
 
             is historyViewHolder -> {
+                val currentItem = progress?.get(position)
                 holder.tvEHIName.text = currentExerciseItem.exerciseName
                 holder.tvEHITime.text = second
                 when (currentExerciseItem.exerciseStage) {
@@ -279,7 +281,9 @@ class ExerciseRVAdapter (
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEHIThumbnail)
-
+                if (currentItem != null) {
+                    holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toInt()!!
+                }
                 holder.tvEHISeq.text = "${position+1}/${exerciseList.size}"
             }
         }

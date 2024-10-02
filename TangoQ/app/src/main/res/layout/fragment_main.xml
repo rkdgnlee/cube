@@ -309,6 +309,24 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textView" />
 
+                    <LinearLayout
+                        android:id="@+id/llM"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@+id/vpM"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/vpM">
+                            <com.facebook.shimmer.ShimmerFrameLayout
+                                android:id="@+id/sflM"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <include layout="@layout/rv_shimmer_exercise_horizon_item" />
+
+                            </com.facebook.shimmer.ShimmerFrameLayout>
+                        </LinearLayout>
+
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMProgram"
                         android:layout_width="0dp"

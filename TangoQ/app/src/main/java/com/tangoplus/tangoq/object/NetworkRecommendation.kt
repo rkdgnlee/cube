@@ -21,7 +21,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 object NetworkRecommendation {
-     suspend fun createRecommendProgram(myUrl: String, jo: String, context: Context, callback: (MutableList<RecommendationVO>) -> Unit) {
+    suspend fun createRecommendProgram(myUrl: String, jo: String, context: Context, callback: (MutableList<RecommendationVO>) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, jo)
         val authInterceptor = Interceptor { chain ->
@@ -38,40 +38,45 @@ object NetworkRecommendation {
             .url(myUrl)
             .post(body)
             .build()
-         return withContext(Dispatchers.IO) {
-             client.newCall(request).execute().use { response ->
-                 val responseBody = response.body?.string()
-                 Log.e("Server>Recommendation", "$responseBody")
-                 try {
 
-                     val dataJson = JSONObject(responseBody.toString())
-                     val ja = dataJson.optJSONObject("data")?.optJSONArray("data")
-                     if (ja != null) {
-                         val recommendations = mutableListOf<RecommendationVO>()
-                         for (i in 0 until ja.length()) {
-                             val recommendationVO = RecommendationVO(
-                                 recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                 userSn = ja.optJSONObject(i).optInt("user_sn"),
-                                 programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
-                                 title = ja.optJSONObject(i).optString("recommendation_title"),
-                                 regDate = ja.optJSONObject(i).optString("created_at")
-                             )
-                             recommendations.add(recommendationVO)
-                         }
-                         callback(recommendations)
-                     } else {
+        withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.e("Create>Recommendation", "$responseBody")
 
-                     }
+                    val recommendations = mutableListOf<RecommendationVO>()
+                    responseBody?.let {
+                        val dataJson = JSONObject(it)
+                        val ja = dataJson.optJSONObject("data")?.optJSONArray("data")
+                        if (ja != null) {
+                            for (i in 0 until ja.length()) {
+                                val recommendationVO = RecommendationVO(
+                                    recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                                    userSn = ja.optJSONObject(i).optInt("user_sn"),
+                                    programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
+                                    title = ja.optJSONObject(i).optString("recommendation_title"),
+                                    regDate = ja.optJSONObject(i).optString("created_at")
+                                )
+                                recommendations.add(recommendationVO)
+                            }
+                        }
+                    }
 
-                 } catch (e: Exception) {
-                     Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
-                 }
-             } as MutableList<RecommendationVO>
-         }
-
+                    withContext(Dispatchers.Main) {
+                        callback(recommendations)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    callback(mutableListOf())
+                }
+            }
+        }
     }
 
-    suspend fun getRecommendProgram(myUrl: String, context: Context) : MutableList<RecommendationVO> {
+    suspend fun getRecommendProgram(myUrl: String, sn: Int,context: Context) : MutableList<RecommendationVO> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
@@ -83,13 +88,15 @@ object NetworkRecommendation {
             .addInterceptor(authInterceptor)
             .build()
         val request = Request.Builder()
-            .url(myUrl)
+            .url("$myUrl?meausre_sn={$sn}")
             .get()
             .build()
+
+
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                Log.v("Server>Recommendation", "$responseBody")
+                Log.v("Get>Recommendation", "$responseBody")
 
                 try {
                     val dataJson = JSONObject(responseBody.toString())
@@ -118,7 +125,7 @@ object NetworkRecommendation {
                 }
             } as MutableList<RecommendationVO>
         }
-
     }
+
 
 }

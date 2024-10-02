@@ -50,7 +50,7 @@ object NetworkExercise {
             }
         }
     }
-    //TODO SearchId것도 바껴야함.
+
     suspend fun fetchCategoryAndSearch(myUrl: String, categoryId: Int, search: Int) : MutableList<ExerciseVO> {
         val client = OkHttpClient()
         val request = Request.Builder()

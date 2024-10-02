@@ -7,7 +7,7 @@ import com.tangoplus.tangoq.data.ProgressVO
 import org.json.JSONObject
 
 class Singleton_t_progress private constructor(context: Context){
-    var progresses: MutableList<MutableList<MutableList<ProgressUnitVO>>>? = null
+    var progresses: MutableList<MutableList<ProgressUnitVO>>? = null
     // 1개 측정안 프로그램 단위 > 프로그램 안의 회차 단위 > 회차 안에 프로그램 갯수들.
     init {
         initialize()

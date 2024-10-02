@@ -6,6 +6,8 @@ import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.ProgressVO
 import com.tangoplus.tangoq.data.RecommendationVO
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Interceptor
@@ -44,7 +46,7 @@ object NetworkProgress {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("Server>Progress", "${responseBody?.substring(0, 255)}")
+                Log.v("Server>Progress", "${responseBody}")
                 try {
                     val ja = JSONObject(responseBody.toString()).optJSONArray("data")
                     val progresses = mutableListOf<ProgressUnitVO>()
@@ -127,57 +129,11 @@ object NetworkProgress {
             }
         })
     }
-//    // 시청기록 1개 얻기
-//    suspend fun getProgress1Item(myUrl: String, uvpSn: Int, progress: Int,context: Context,) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = RequestBody.create(mediaType, progress.toString())
-//        val authInterceptor = Interceptor { chain ->
-//            val originalRequest = chain.request()
-//            val newRequest = originalRequest.newBuilder()
-//                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
-//                .build()
-//            chain.proceed(newRequest)
-//        }
-//        val client = OkHttpClient.Builder()
-//            .addInterceptor(authInterceptor)
-//            .build()
-//        val request = Request.Builder()
-//            .url("$myUrl/$uvpSn")
-//            .patch(body)
-//            .build()
-//
-//        client.newCall(request).enqueue(object : Callback {
-//            override fun onFailure(call: Call, e: IOException) {
-//                Log.e("Token응답실패", "Failed to execute request")
-//            }
-//
-//            override fun onResponse(call: Call, response: Response) {
-//                val responseBody = response.body?.string()?.substringAfter("response: ")
-//                Log.e("Server>Progress", "$responseBody")
-//
-//                try {
-//                    val jsonObjects = responseBody?.split("}{")
-//
-//                    val dataJson = "{${jsonObjects?.get(1)}}"
-//                    val jo = JSONObject(dataJson)
-//
-//                    val uvpSn = jo.getInt("uvp_sn")
-//                    val userSn = jo.getInt("user_sn")
-//                    val recommendSn = jo.getInt("recommend_sn")
-//                    val videoDuration = jo.getInt("video_duration")
-//
-//                } catch (e: Exception) {
-//                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
-//                }
-//            }
-//        })
-//    }
-
 
     // 시청기록 1개 보내기 (서버에 저장)
-    fun patchProgress1Item(myUrl: String, uvpSn: Int, progress: Int, context: Context) {
+    fun patchProgress1Item(myUrl: String, uvpSn: Int, body: JSONObject, context: Context, callback: (ProgressUnitVO) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = RequestBody.create(mediaType, progress.toString())
+        val body = RequestBody.create(mediaType, body.toString())
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
@@ -199,19 +155,150 @@ object NetworkProgress {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()?.substringAfter("response: ")
+                val responseBody = response.body?.string()
+                Log.v("Server>Progress", "$responseBody")
+                val jo = JSONObject(responseBody.toString()).optJSONObject("update_video_progress")
+                if (jo != null) {
+                    val progressUnitVO = ProgressUnitVO(
+                        uvpSn = jo.optInt("uvp_sn"),
+                        exerciseId = jo.optInt("content_sn"),
+                        recommendationSn = jo.optInt("recommendation_sn"),
+                        currentWeek = jo.optInt("week_number"),
+                        currentSequence = jo.optInt("count_set"),
+                        requiredSequence = jo.optInt("required_set"),
+                        videoDuration = jo.optInt("video_duration"),
+                        lastProgress = jo.optInt("progress"),
+                        isCompleted = jo.optInt("completed"),
+                        updateDate = jo.optString("updated_at")
+                    )
+                    callback(progressUnitVO)
+                }
+            }
+        })
+    }
+
+    fun getProgressAtTime(myUrl: String, date: String, context: Context, callback: () -> Unit) {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("$myUrl?date={$date}")
+            .get()
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("Token응답실패", "Failed to execute request")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
                 Log.v("Server>Progress", "$responseBody")
             }
         })
     }
 
+    // 가장 최신 정보를 가져오는게 좋다.
+    suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : JSONObject {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("$myUrl?recommendation_sn=$recSn&latest_progress")
+            .get()
+            .build()
 
-    /* 자 그러면 나는 그냥 second만 넣어서 보내는데? body에 관련된 sn을 3개 넣어서 보냄.
-    *  1. history에 관한 data array가 나왔을 떄, 이걸 어디다가 저장헤서 사용할지? singleton?
-    *  2. measure는 singleton에 담김. 기록들을 받아와서 바로 singletonMeasure에 담김.
-    *  3. 그럼 여기서  history도? singleton에 담는게 좋을 것 같은데? VM에 담았을 경우 -> 보고 나오면 시청기록 사라져있음 -> 다시 api 사용 -> 다시 저장
-    *
-    *
-    *
-    * */
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.v("Get>Recommend+Progress", "$responseBody")
+
+                try {
+                    val dataJson = JSONObject(responseBody.toString())
+                    val progressJo = dataJson.optJSONObject("progress_data")
+                    val programJo = dataJson.optJSONObject("program_data")
+                    val jo = JSONObject()
+                    if (programJo != null && progressJo != null) {
+                        jo.put("uvp_sn", progressJo.optInt("uvp_sn"))
+                        jo.put("recommendation_sn", progressJo.optInt("recommendation_sn"))
+                        jo.put("count_set", progressJo.optInt("count_set"))
+                        jo.put("progress", progressJo.optInt("progress"))
+                        jo.put("week_number", progressJo.optInt("week_number"))
+                        jo.put("measure_sn", progressJo.optInt("measure_sn"))
+                        jo.put("exercise_program_sn", programJo.optInt("exercise_program_sn"))
+                    } else {
+                        JSONObject()
+                    }
+                } catch (e: Exception) {
+                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                }
+            } as JSONObject
+        }
+    }
+
+    suspend fun getWeekProgress(myUrl: String, recSn: Int, week: Int,context: Context) : MutableList<ProgressUnitVO> {
+
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("$myUrl?recommendation_sn=$recSn&weeks=$week")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.v("Server>week>Progress", "${responseBody}")
+                try {
+                    val ja = JSONObject(responseBody.toString()).optJSONArray("data")
+                    val progresses = mutableListOf<ProgressUnitVO>()
+                    if (ja != null) {
+                        for (i in 0 until ja.length()) {
+                            val progressUnitVO = ProgressUnitVO(
+                                uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
+                                exerciseId = ja.optJSONObject(i).optInt("content_sn"),
+                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                                currentWeek = ja.optJSONObject(i).optInt("week_number"),
+                                currentSequence = ja.optJSONObject(i).optInt("count_set"),
+                                requiredSequence = ja.optJSONObject(i).optInt("required_set"),
+                                videoDuration = ja.optJSONObject(i).optInt("video_duration"),
+                                lastProgress = ja.optJSONObject(i).optInt("progress"),
+                                isCompleted = ja.optJSONObject(i).optInt("completed"),
+                                updateDate = ja.optJSONObject(i).optString("updated_at")
+
+                            )
+                            progresses.add(progressUnitVO)
+                        }
+                        Log.v("진행길이", "${progresses.size}")
+                        return@use progresses
+                    } else {
+                        return@use progresses
+                    }
+                } catch (e: Exception) {
+                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                }
+            } as MutableList<ProgressUnitVO>
+        }
+    }
 }

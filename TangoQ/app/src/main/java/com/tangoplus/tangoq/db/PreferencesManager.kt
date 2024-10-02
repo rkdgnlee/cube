@@ -3,10 +3,20 @@ package com.tangoplus.tangoq.db
 import android.content.Context
 import android.content.SharedPreferences
 
-class PreferencesManager(context: Context) {
+class PreferencesManager(context: Context, userSn: Int) {
     private val LAST_SN_KEY = "last_sn"
-    private val prefs2 : SharedPreferences = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
+    private val prefs2 : SharedPreferences = context.getSharedPreferences("search_history_${userSn}", Context.MODE_PRIVATE)
+    private val prefs : SharedPreferences = context.getSharedPreferences("lastest_recommendation", Context.MODE_PRIVATE)
 
+    fun saveLatestRecommendation(sn: Int) {
+        prefs.edit().apply {
+            putInt("latest_sn", sn)
+            apply()
+        }
+    }
+    fun getLatestRecommendation(): Int {
+        return prefs.getInt("latest_sn", -1)
+    }
 
     fun getLastSn(): Int {
         return prefs2.getInt(LAST_SN_KEY, 0)

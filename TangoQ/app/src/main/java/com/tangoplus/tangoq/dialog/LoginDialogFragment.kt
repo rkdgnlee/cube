@@ -120,6 +120,7 @@ class LoginDialogFragment : DialogFragment() {
                                     NetworkUser.storeUserInSingleton(requireContext(), jo)
                                     createKey(getString(R.string.SECURE_KEY_ALIAS))
                                     saveEncryptedData(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptData(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
+
                                     ssm.getMeasures(Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
                                         Log.v("login>자체로그인", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                         val intent = Intent(requireContext(), MainActivity::class.java)
