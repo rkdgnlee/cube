@@ -20,7 +20,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -41,7 +40,6 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.MediaStoreOutputOptions
 import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
@@ -53,9 +51,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
-import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.mediapipe.tasks.vision.core.RunningMode
@@ -64,8 +60,6 @@ import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityMeasureSkeletonBinding
 import com.tangoplus.tangoq.db.FileStorageUtil
-import com.tangoplus.tangoq.db.FileStorageUtil.getDirectory
-import com.tangoplus.tangoq.db.FileStorageUtil.getFile
 import com.tangoplus.tangoq.db.FileStorageUtil.saveJa
 import com.tangoplus.tangoq.db.FileStorageUtil.saveJo
 import com.tangoplus.tangoq.db.MeasureDao
@@ -217,6 +211,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                                 // ------# 약 200프레임에서 db에 넣을 값을 찾는 곳 #------
                                 CoroutineScope(Dispatchers.IO).launch {
+                                    saveJa(this@MeasureSkeletonActivity, "${videoFileName}.json", mViewModel.dynamicJa, FileStorageUtil.FileType.JSON)
                                     val noseDynamic = mViewModel.extractVideoCoordinates(mViewModel.dynamicJa).map { it[0] } // x, y좌표를 가져와서, nose(0)만 추출함.
                                     Log.v("noseDynamic", "${noseDynamic}")
                                     val decreasingFrameIndex = findLowestYFrame(noseDynamic) // 전체 코의 y궤적에서 감소되는 구간의 index 추출
@@ -413,79 +408,85 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             if (binding.btnMeasureSkeletonStep.text == "완료하기") {
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    
-
-
-//                    saveJa(this@MeasureSkeletonActivity, "${videoFileName}.json", mViewModel.dynamicJa, FileStorageUtil.FileType.JSON)
-//
-//                    val userJson = singletonUser.jsonObject
-//                    val userUUID = userJson?.getString("user_uuid")!!
-//
-//                    val inputFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
-//                    val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-//                    val date: Date = inputFormat.parse(timestamp)!!
-//                    val measureDate = outputFormat.format(date)
-//
-//                    // ------# info 넣기 #------
-//                    val measureInfo = MeasureInfo(
-//                        user_uuid = userUUID,
-//                        user_sn = userJson.optString("user_sn").toInt(),
-//                        user_name = userJson.optString("user_name"),
-//                        measure_date = measureDate,
-//                        elapsed_time = "",
-//                        t_score = 90.toString(),
-//                        measure_seq = 7,
-//                        risk_neck = "1",
-//                        risk_elbow_left = "2",
-//                        risk_hip_left = "1"
-//                    )
-//                    mDao.insertInfo(measureInfo)
-//                    Log.v("measureInfo넣기", "방금넣은info: ${measureInfo}, allInfo: ${mDao.getAllInfo(userJson.optString("user_sn").toInt())}")
-//
-//                    // ------# static 넣기 #------
-//                    for (i in 0 until mViewModel.statics.size) {
-//                        mDao.insertWithAutoIncrementStatic(mViewModel.statics[i], userUUID, measureInfoSn)
-//                    }
-//
-//                    // ------# dynamic 넣기 #------
-//                    Log.v("다이나믹널찾기", "dynamic: ${mViewModel.dynamic}, userUUID: ${userUUID}, dynamicJa: ${mViewModel.dynamicJa.length()}, measureSn: ${measureInfoSn}")
-//                    mDao.insertWithAutoIncrementDynamic(mViewModel.dynamic!!, userUUID, mViewModel.dynamicJa.length(), measureInfoSn)
-//
-//                    val convertedMeasureVO = mViewModel.convertJsonToMeasureVO(measureInfo, mViewModel.statics, mViewModel.dynamic!!)
-//                    Log.v("변환된measureVO", "${convertedMeasureVO}")
-//                    // 1. static 넣기 2. dynamic 넣기 3. 파일 매칭 되게 수정
-//                    withContext(Dispatchers.Main) {
-//                        val ja1 = JSONArray()
-//                        ja1.apply {
-//                            put(2)
-//                            put(10)
-//                            put(6)
-//                        }
-//                        val ja2 = JSONArray()
-//                        ja2.apply {
-//                            put(1)
-//                            put(2)
-//                            put(1)
-//                        }
-//                        val recJo = JSONObject().apply {
-//                            put("user_sn", userJson.getString("user_sn").toInt())
-//                            put("exercise_type_id", ja1)
-//                            put("exercise_stage", ja2)
-//                            put("measure_sn", measureInfoSn)
-//                        }
-//
-//                        createRecommendProgram(getString(R.string.API_recommendation), recJo.toString(), this@MeasureSkeletonActivity) { recommendation ->
-//                            singletonMeasure = Singleton_t_measure.getInstance(this@MeasureSkeletonActivity)
-//                            convertedMeasureVO.recommendations = recommendation
-//                            singletonMeasure.measures?.add(0, convertedMeasureVO)
-//                            Log.v("측정싱글턴크기", "${singletonMeasure.measures?.size}")
-//                            val intent = Intent()
-//                            intent.putExtra("finishedMeasure", true)
-//                            setResult(Activity.RESULT_OK, intent)
-//                            finish()
-//                        }
+//                    val motherJo = JSONObject()
+//                    val measureInfo = JSONObject() //
+//                    val measureStatics = JSONArray() // toMeasureDynamic후 다시 JsonObject로 변환
+//                    val measureDynamic = JSONObject() // toMeasureDynamic을 통해 변환해서 넣으면 됨
+//                    motherJo.apply {
 //
 //                    }
+
+
+
+
+                    val userJson = singletonUser.jsonObject
+                    val userUUID = userJson?.getString("user_uuid")!!
+
+                    val inputFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    val date: Date = inputFormat.parse(timestamp)!!
+                    val measureDate = outputFormat.format(date)
+
+                    // ------# info 넣기 #------
+                    val measureInfo = MeasureInfo(
+                        user_uuid = userUUID,
+                        user_sn = userJson.optString("user_sn").toInt(),
+                        user_name = userJson.optString("user_name"),
+                        measure_date = measureDate,
+                        elapsed_time = "",
+                        t_score = 90.toString(),
+                        measure_seq = 7,
+                        risk_neck = "1",
+                        risk_elbow_left = "2",
+                        risk_hip_left = "1"
+                    )
+                    mDao.insertInfo(measureInfo)
+                    Log.v("measureInfo넣기", "방금넣은info: ${measureInfo}, allInfo: ${mDao.getAllInfo(userJson.optString("user_sn").toInt())}")
+
+                    // ------# static 넣기 #------
+                    for (i in 0 until mViewModel.statics.size) {
+                        mDao.insertWithAutoIncrementStatic(mViewModel.statics[i], userUUID, measureInfoSn)
+                    }
+
+                    // ------# dynamic 넣기 #------
+                    Log.v("다이나믹널찾기", "dynamic: ${mViewModel.dynamic}, userUUID: ${userUUID}, dynamicJa: ${mViewModel.dynamicJa.length()}, measureSn: ${measureInfoSn}")
+                    mDao.insertWithAutoIncrementDynamic(mViewModel.dynamic!!, userUUID, mViewModel.dynamicJa.length(), measureInfoSn)
+
+                    val convertedMeasureVO = mViewModel.convertJsonToMeasureVO(measureInfo, mViewModel.statics, mViewModel.dynamic!!)
+                    Log.v("변환된measureVO", "${convertedMeasureVO}")
+                    // 1. static 넣기 2. dynamic 넣기 3. 파일 매칭 되게 수정
+                    withContext(Dispatchers.Main) {
+                        val ja1 = JSONArray()
+                        ja1.apply {
+                            put(2)
+                            put(10)
+                            put(6)
+                        }
+                        val ja2 = JSONArray()
+                        ja2.apply {
+                            put(1)
+                            put(2)
+                            put(1)
+                        }
+                        val recJo = JSONObject().apply {
+                            put("user_sn", userJson.getString("user_sn").toInt())
+                            put("exercise_type_id", ja1)
+                            put("exercise_stage", ja2)
+                            put("measure_sn", measureInfoSn)
+                        }
+
+                        createRecommendProgram(getString(R.string.API_recommendation), recJo.toString(), this@MeasureSkeletonActivity) { recommendation ->
+                            singletonMeasure = Singleton_t_measure.getInstance(this@MeasureSkeletonActivity)
+                            convertedMeasureVO.recommendations = recommendation
+                            singletonMeasure.measures?.add(0, convertedMeasureVO)
+                            Log.v("측정싱글턴크기", "${singletonMeasure.measures?.size}")
+                            val intent = Intent()
+                            intent.putExtra("finishedMeasure", true)
+                            setResult(Activity.RESULT_OK, intent)
+                            finish()
+                        }
+
+                    }
                     val intent = Intent()
                     intent.putExtra("finishedMeasure", true)
                     setResult(Activity.RESULT_OK, intent)
@@ -1533,11 +1534,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         return if (isImage) {
             val scaleFactor = binding.overlay.width * 1f / 720
             val offsetX = (binding.overlay.width - 720 * scaleFactor) / 2
-            val x = xx * binding.overlay.width / scaleFactor + offsetX
+            val x = (1 - xx) * binding.overlay.width / scaleFactor + offsetX
             x.roundToInt()
         } else {
             val scaleFactor = binding.overlay.width * 1f / 1280
-            val offsetX = ((binding.overlay.width - 1280 * scaleFactor) / 2 ) - 30
+            val offsetX = ((binding.overlay.width - 1280 * scaleFactor) / 2 ) - 20
             val x = xx * binding.overlay.width / scaleFactor + offsetX
             x.roundToInt()
         }

@@ -45,7 +45,7 @@ object FileStorageUtil {
     }
 
     fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, fileType: FileType): Boolean {
-        val dir = getDirectory(context, fileType)
+        val dir = context.cacheDir
         val file = File(dir, fileName)
 
         return try {
@@ -58,17 +58,24 @@ object FileStorageUtil {
         }
     }
     fun saveJa(context: Context, fileName: String, jsonArray: JSONArray, fileType: FileType): Boolean {
-        val dir = getDirectory(context, fileType)
+        val dir = context.cacheDir
         val file = File(dir, fileName)
 
         return try {
             val fileContent = jsonArray.toString().toByteArray() // JSONObject를 String으로 변환 후 ByteArray로 변환
             file.outputStream().use { it.write(fileContent) }
+            Log.v("mp4파일주소", file.absolutePath)
             true
         } catch (e: IOException) {
             Log.e("SaveFile", "Error saving file: ${e.message}")
             false
         }
+    }
+    fun getCacheFile(context: Context, fileName: String): File? {
+        val dir = context.cacheDir
+        val file = File(dir, fileName)
+        Log.v("file가져오기", "파라미터이름: ${fileName}, 주소: ${file.absolutePath}")
+        return if (file.exists()) file else null
     }
 
     fun getFile(context: Context, fileName: String): File? {

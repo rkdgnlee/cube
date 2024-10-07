@@ -49,7 +49,7 @@ object ImageProcessingUtility {
         }
 
         val pointPaint = Paint().apply {
-            color = ContextCompat.getColor(context, R.color.subColor400)
+            color = Color.TRANSPARENT
             strokeWidth = 3f
             style = Paint.Style.FILL
         }
@@ -122,7 +122,7 @@ object ImageProcessingUtility {
 
                     // 골반 다이아 부터 머리 다이아까지
                     val midFootY = ((leftFoot.y + rightFoot.y) / 2  )
-                    canvas.drawLine(midHipX, rightFoot.y, noseX, midFootY, axisPaint)
+                    canvas.drawLine(midHipX, midFootY, noseX, midFootY, axisPaint)
                 }
                 val connections = listOf(Pair(7, 8), Pair(11, 12), Pair(23, 24))
                 connections.forEach { (start, end) ->

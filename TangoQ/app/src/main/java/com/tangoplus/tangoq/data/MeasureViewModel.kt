@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.gun0912.tedpermission.provider.TedPermissionProvider.context
+import com.tangoplus.tangoq.db.FileStorageUtil.getCacheFile
 import com.tangoplus.tangoq.db.FileStorageUtil.getFile
 import com.tangoplus.tangoq.db.FileStorageUtil.readJsonArrayFile
 import com.tangoplus.tangoq.db.FileStorageUtil.readJsonFile
@@ -101,47 +102,47 @@ class MeasureViewModel : ViewModel() {
         return gson.fromJson(modifiedJsonObject.toString(), MeasureDynamic::class.java)
     }
 
-//    fun convertJsonToMeasureVO(info: MeasureInfo, statics: MutableList<MeasureStatic>, dynamic: MeasureDynamic) : MeasureVO {
-//        val ja = JSONArray()
-//        val uris = mutableListOf<String>()
-//        val baseUrl = "https://gym.tangostar.co.kr/data/Results/"
-//
-//        for (i in 0 until 6) { // 총 7개인거임
-//            if (i == 1) {
-//                val jsonFile = getFile(context, dynamic.measure_server_json_name?.replace(baseUrl, "")!!)
-//                val mediaFile = getFile(context, dynamic.measure_server_file_name?.replace(baseUrl, "")!!)
-//                Log.e("측정후dynamic", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-//                if (jsonFile != null && mediaFile != null) {
-//                    ja.put(readJsonArrayFile(jsonFile))
-//                    uris.add(mediaFile.absolutePath)
-//                } else {
-//                    Log.e("측정후dynamicError", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-//                }
-//            }
-//
-//            // ------# static 6개 #-------
-//            val jsonFile = getFile(context, statics[i].measure_server_json_name.replace(baseUrl, ""))
-//            val mediaFile = getFile(context, statics[i].measure_server_file_name.replace(baseUrl, ""))
-//            if (jsonFile != null && mediaFile != null) {
-//                ja.put(readJsonFile(jsonFile))
-//                uris.add(mediaFile.absolutePath)
-//                Log.e("측정후Static$i", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-//            } else {
-//                Log.e("측정후Static$i Error", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-//            }
-//        }
-//
-//        Log.v("VMUris", "${uris}")
-//        return MeasureVO(
-//            deviceSn = 0,
-//            measureSn = info.measure_sn, // 아이디도 더미
-//            regDate = info.measure_date,
-//            overall = info.t_score, // 종합 점수 더미
-//            dangerParts = mutableListOf(Pair("골반", 1), Pair("어깨", 3)), // 아픈 부위 더미
-//            measureResult = ja,
-//            fileUris = uris,
-//            isMobile = true,
-//            recommendations = null
-//        )
-//    }
+    fun convertJsonToMeasureVO(info: MeasureInfo, statics: MutableList<MeasureStatic>, dynamic: MeasureDynamic) : MeasureVO {
+        val ja = JSONArray()
+        val uris = mutableListOf<String>()
+        val baseUrl = "https://gym.tangostar.co.kr/data/Results/"
+
+        for (i in 0 until 6) { // 총 7개인거임
+            if (i == 1) {
+                val jsonFile = getCacheFile(context, dynamic.measure_server_json_name?.replace(baseUrl, "")!!)
+                val mediaFile = getCacheFile(context, dynamic.measure_server_file_name?.replace(baseUrl, "")!!)
+                Log.e("측정후dynamic", "jsonFile: $jsonFile, mediaFile: $mediaFile")
+                if (jsonFile != null && mediaFile != null) {
+                    ja.put(readJsonArrayFile(jsonFile))
+                    uris.add(mediaFile.absolutePath)
+                } else {
+                    Log.e("측정후dynamicError", "jsonFile: $jsonFile, mediaFile: $mediaFile")
+                }
+            }
+
+            // ------# static 6개 #-------
+            val jsonFile = getCacheFile(context, statics[i].measure_server_json_name.replace(baseUrl, ""))
+            val mediaFile = getCacheFile(context, statics[i].measure_server_file_name.replace(baseUrl, ""))
+            if (jsonFile != null && mediaFile != null) {
+                ja.put(readJsonFile(jsonFile))
+                uris.add(mediaFile.absolutePath)
+                Log.e("측정후Static$i", "jsonFile: $jsonFile, mediaFile: $mediaFile")
+            } else {
+                Log.e("측정후Static$i Error", "jsonFile: $jsonFile, mediaFile: $mediaFile")
+            }
+        }
+
+        Log.v("VMUris", "${uris}")
+        return MeasureVO(
+            deviceSn = 0,
+            measureSn = info.measure_sn, // 아이디도 더미
+            regDate = info.measure_date,
+            overall = info.t_score, // 종합 점수 더미
+            dangerParts = mutableListOf(Pair("골반", 1), Pair("어깨", 3)), // 아픈 부위 더미
+            measureResult = ja,
+            fileUris = uris,
+            isMobile = true,
+            recommendations = null
+        )
+    }
 }

@@ -1,10 +1,7 @@
 package com.tangoplus.tangoq.`object`
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
