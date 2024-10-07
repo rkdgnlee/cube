@@ -13,26 +13,36 @@ import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 
-class MyFirebaseMessagingService : FirebaseMessagingService() {
-    override fun onCreate() {
-        super.onCreate()
-    }
+class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림 채널.
+//    private val userSn: Int = Singleton_t_user.getInstance(applicationContext).jsonObject?.optString("user_sn")?.toInt()!! // 예시로 사용자 SN 값을 설정
+    private lateinit var preferencesManager: PreferencesManager
+
+//    override fun onCreate() {
+//        super.onCreate()
+//        // PreferencesManager 초기화
+//        preferencesManager = PreferencesManager(applicationContext, userSn)
+//    }
+
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         // 메시지에 데이터 페이로드가 포함 되어 있는지 확인
         // 페이로드란 전송된 데이터를 의미
+        val messageToStore: MessageVO
         if (message.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${message.data}")
             sendNotification(
                 message.data["title"].toString(),
                 message.data["message"].toString()
             )
-            val messageToStore = MessageVO(
+            messageToStore = MessageVO(
                 message = message.data["message"].toString(),
-                timestamp = System.currentTimeMillis(),
+                timeStamp = System.currentTimeMillis(),
                 route = "AlarmActivity"
             )
+            preferencesManager.storeAlarm(messageToStore)
         } else {
             // 메시지에 알림 페이로드가 포함되어 있는지 확인
             message.notification?.let {
@@ -40,11 +50,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     message.notification!!.title.toString(),
                     message.notification!!.body.toString()
                 )
-                val messageToStore = MessageVO(
+                messageToStore = MessageVO(
                     message = message.notification!!.body.toString(),
-                    timestamp = System.currentTimeMillis(),
+                    timeStamp = System.currentTimeMillis(),
                     route = "AlarmActivity"
                 )
+                preferencesManager.storeAlarm(messageToStore)
             }
         }
     }

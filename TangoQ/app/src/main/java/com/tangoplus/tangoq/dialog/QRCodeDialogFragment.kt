@@ -24,6 +24,9 @@ import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignEnd
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentQRCodeDialogBinding
+import com.tangoplus.tangoq.`object`.NetworkUser.loginWithPin
+import com.tangoplus.tangoq.`object`.NetworkUser.loginWithQRCode
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import `in`.aabhasjindal.otptextview.OTPListener
 import org.json.JSONObject
 
@@ -31,7 +34,7 @@ import org.json.JSONObject
 class QRCodeDialogFragment : DialogFragment() {
     lateinit var binding : FragmentQRCodeDialogBinding
     private lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
-
+    private var userJson = JSONObject()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,6 +50,9 @@ class QRCodeDialogFragment : DialogFragment() {
         binding.ibtnLSDInfo.alpha = 0f
         binding.ibtnLSDInfo.visibility = View.GONE
         binding.ibtnLSDBack2.visibility = View.GONE
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
+
+
 
         // ------! behavior + 바텀시트 조작 시작 !------
         val isTablet = resources.configuration.screenWidthDp >= 600
@@ -92,11 +98,18 @@ class QRCodeDialogFragment : DialogFragment() {
             @RequiresApi(Build.VERSION_CODES.P)
             override fun onOTPComplete(otp: String) {
                 // -----! 완료 했을 경우 !------
-//                Snackbar.make(binding.root, "데이터를 전송했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
-                Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
+//                Snackbar.make(binding.clLSD, "데이터를 전송했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 val jo = JSONObject()
                 jo.put("pin", binding.otvLSD.otp)
-                // TODO jo로 담아서 보내기
+                // TODO json으로 변환해서 보내기
+
+                loginWithPin(getString(R.string.API_kiosk), otp.toInt(), userJson.optString("user_uuid")) {
+                    Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
+                    Handler(Looper.getMainLooper()).postDelayed({dismiss()}, 500)
+                }
+
+
+
 
 
             }
@@ -129,13 +142,14 @@ class QRCodeDialogFragment : DialogFragment() {
 
     private fun initScanner() {
         binding.bvLSD.decodeContinuous{ result ->
-
-            // TODO barcodeResult라는 데이터에서
             Log.v("barcode", "text: ${result.result.text}, timestamp: ${result.result.timestamp}, rawBytes: ${result.result.rawBytes}, metaData: ${result.result.resultMetadata}")
-            binding.bvLSD.pause()
-            Handler(Looper.getMainLooper()).postDelayed({binding.bvLSD.resume()}, 500)
-//            dismiss()
-            Snackbar.make(binding.clLSD, "인증에 성공하였습니다 ! 기기를 확인해주세요", Snackbar.LENGTH_LONG).show()
+            Handler(Looper.getMainLooper()).postDelayed({binding.bvLSD.pause()}, 500)
+            dismiss()
+
+            loginWithQRCode(getString(R.string.API_kiosk), result.result.text.toInt(), userJson.optString("user_uuid")) {
+                Toast.makeText(requireContext(), "인증에 성공하였습니다 ! 기기를 확인해주세요", Toast.LENGTH_LONG).show()
+                Handler(Looper.getMainLooper()).postDelayed({dismiss()}, 500)
+            }
         }
     }
 

@@ -165,7 +165,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
 
         else { // video 일 때
-            val offsetX = ((width - imageWidth * scaleFactorX) / 2 ) + 30
+            val offsetX = ((width - imageWidth * scaleFactorX) / 2 )
             val offsetY = (height - imageHeight * scaleFactorY) / 2
 
             landmarks.forEach { landmark ->

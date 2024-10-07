@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id ("kotlin-kapt")
 }
 
 android {
@@ -18,7 +19,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+        }
         release {
+            isDebuggable = false
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -97,20 +102,20 @@ dependencies {
     implementation("com.android.volley:volley:1.2.1")
 
     // room
-//    implementation("androidx.room:room-ktx:2.6.1")
-//    implementation("androidx.room:room-runtime:2.6.1")
-//    implementation("androidx.room:room-rxjava3:2.6.1")
-//    implementation("androidx.room:room-rxjava2:2.6.1")
-//    implementation("androidx.room:room-guava:2.6.1")
-//    implementation("androidx.room:room-testing:2.6.1")
-//    implementation("androidx.legacy:legacy-support-v4:1.0.0")
-//    implementation("com.google.android.gms:play-services-fitness:21.2.0")
-//    annotationProcessor("androidx.room:room-compiler:2.6.1")
-//    annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
-//    //noinspection KaptUsageInsteadOfKsp
-//    kapt("androidx.room:room-compiler:2.6.1")
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-ktx:$roomVersion")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-rxjava3:$roomVersion")
+    implementation("androidx.room:room-rxjava2:$roomVersion")
+    implementation("androidx.room:room-guava:$roomVersion")
+    implementation("androidx.room:room-testing:$roomVersion")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
+    //noinspection KaptUsageInsteadOfKsp
+    kapt("androidx.room:room-compiler:2.6.1")
 
-
+    implementation("com.google.android.gms:play-services-fitness:21.2.0")
 
     // 미디어
     val camera_version = "1.3.4"

@@ -15,7 +15,7 @@
                         android:endColor="@color/mainColor"
                         android:centerX="0.5"
                         android:centerY="0.5"
-                        android:gradientRadius="0.8"/>
+                        android:gradientRadius="1.0"/>
                 </shape>
             </item>
             <!-- Inner shape with solid color -->

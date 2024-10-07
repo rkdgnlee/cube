@@ -74,12 +74,8 @@ class MainActivity : AppCompatActivity() {
         setCurrentFragment(selectedTabId)
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
-
-
-
         mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)!!
         mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
-
 
         // -------! 버튼 시작 !------
         binding.bnbMain.setOnItemSelectedListener {
@@ -147,7 +143,6 @@ class MainActivity : AppCompatActivity() {
             addToBackStack(null)
             commit()
         }
-
     }
 
     override fun onResume() {

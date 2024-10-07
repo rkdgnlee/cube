@@ -20,12 +20,12 @@
             </item>
             <item>
                 <shape android:shape="rectangle">
-                    <corners android:radius="20dp"/>
+                    <corners android:radius="16dp"/>
                     <gradient
                         android:type="linear"
                         android:angle="225"
                         android:startColor="@color/mainColor"
-                        android:centerColor="@color/thirdColor"
+                        android:centerColor="@color/thirdWhiteColor"
                         android:endColor="@color/mainColor"
                         android:centerX="0.5"
                         android:centerY="0.5"

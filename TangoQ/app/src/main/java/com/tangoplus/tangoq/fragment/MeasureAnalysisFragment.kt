@@ -28,6 +28,8 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
@@ -135,7 +137,7 @@ class MeasureAnalysisFragment : Fragment() {
                     setImage(3, binding.ssivMA1)
                     setImage(4, binding.ssivMA2)
                 }
-                switchScreenData(measureResult,  3,true)
+                switchScreenData(measureResult,  4,true)
                 binding.ivMA.setImageResource(R.drawable.drawable_side)
 
             }
@@ -249,7 +251,7 @@ class MeasureAnalysisFragment : Fragment() {
                     val connections = listOf(
                         15, 16, 23, 24, 25, 26
                     )
-                    val coordinates = extractVideoCoordinates(measureResult.optJSONArray(0))
+                    val coordinates = viewModel.extractVideoCoordinates(measureResult.optJSONArray(0))
                     val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
 
                     for (connection in connections) {
@@ -578,11 +580,12 @@ class MeasureAnalysisFragment : Fragment() {
     private suspend fun setImage(seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
             try {
 
-                Log.v("시퀀스", "seq: ${seq}, ssiv: ${ssiv.width}")
+
                 val jsonData = viewModel.selectedMeasure?.measureResult?.optJSONObject(seq)
                 val coordinates = extractImageCoordinates(jsonData!!)
                 val imageUrls = viewModel.selectedMeasure?.fileUris?.get(seq)
 
+                Log.v("시퀀스", "seq: ${seq}, view: (${ssiv.width}, ${ssiv.height}), imageSize: (${ssiv.sWidth}, ${ssiv.sHeight})")
                 if (imageUrls != null) {
                     val imageFile = imageUrls.let { File(it) }
                     val bitmap = BitmapFactory.decodeFile(imageUrls)
@@ -592,21 +595,28 @@ class MeasureAnalysisFragment : Fragment() {
                             override fun onReady() {
                                 if (!count) {
                                     // ssiv 이미지뷰의 크기
+//                                    val jsonObject = Gson().fromJson(jsonData.toString(), JsonObject::class.java)
+//                                    val scaleFactorX = jsonObject.get("measure_overlay_scale_factor_x").asDouble
+//                                    val scaleFactorY = jsonObject.get("measure_overlay_scale_factor_y").asDouble
+
+
                                     val imageViewWidth = ssiv.width
                                     val imageViewHeight = ssiv.height
                                     // iv에 들어간 image의 크기 같음 screenWidth
                                     val sWidth = ssiv.sWidth
                                     val sHeight = ssiv.sHeight
                                     // 스케일 비율 계산
-                                    val scaleFactor = min(imageViewWidth / sWidth.toFloat(), imageViewHeight / sHeight.toFloat())
+                                    val scaleFactorX = imageViewHeight / sHeight.toFloat()
+                                    val scaleFactorY =  imageViewHeight / sHeight.toFloat()
                                     // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
-                                    val offsetX = (imageViewWidth - sWidth * scaleFactor) / 2f
-                                    val offsetY = (imageViewHeight - sHeight * scaleFactor) / 2f
+                                    val offsetX = (imageViewWidth - sWidth * scaleFactorX) / 2f
+                                    val offsetY = (imageViewHeight - sHeight * scaleFactorY) / 2f
                                     val poseLandmarkResult = fromCoordinates(coordinates!!)
                                     val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
                                         bitmap,
                                         poseLandmarkResult,
-                                        scaleFactor,
+                                        scaleFactorX,
+                                        scaleFactorY,
                                         offsetX,
                                         offsetY,
                                         requireContext(),
@@ -640,24 +650,11 @@ class MeasureAnalysisFragment : Fragment() {
                 Log.e("Error", "${e}")
             }
     }
+
     //---------------------------------------! VideoOverlay !---------------------------------------
-    private fun extractVideoCoordinates(jsonData: JSONArray) : List<List<Pair<Float,Float>>> {
-
-        return List(jsonData.length()) { i ->
-            val landmarks = jsonData.getJSONObject(i).getJSONArray("pose_landmark")
-            List(landmarks.length()) { j ->
-                val landmark = landmarks.getJSONObject(j)
-                Pair(
-                    landmark.getDouble("sx").toFloat(),
-                    landmark.getDouble("sy").toFloat()
-                )
-            }
-        }
-    }
-
     private fun setPlayer() {
         lifecycleScope.launch {
-
+            Log.v("동적측정json", "${viewModel.selectedMeasure?.measureResult!!.getJSONArray(1)}")
             jsonArray = viewModel.selectedMeasure?.measureResult!!.getJSONArray(1)
             Log.v("jsonDataLength", "${jsonArray.length()}")
             initPlayer()
@@ -709,7 +706,7 @@ class MeasureAnalysisFragment : Fragment() {
 
         // 현재 재생 시간에 해당하는 프레임 인덱스 계산
         val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
-        val coordinates = extractVideoCoordinates(jsonArray)
+        val coordinates = viewModel.extractVideoCoordinates(jsonArray)
         // 실제 mp4의 비디오 크기를 가져온다
         val (videoWidth, videoHeight) = getVideoDimensions(videoUrl.toUri())
         if (frameIndex in 0 until totalFrames) {
@@ -822,10 +819,7 @@ class MeasureAnalysisFragment : Fragment() {
             0 -> {
                 binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
                 binding.ivMAicon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_ball))
-
             }
         }
     }
-
-
 }

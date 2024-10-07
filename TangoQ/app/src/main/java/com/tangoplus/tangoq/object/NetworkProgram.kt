@@ -12,7 +12,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 object NetworkProgram {
-    suspend fun fetchProgram(myUrl: String, sn: String): ProgramVO {
+    suspend fun fetchProgram(myUrl: String, sn: String): ProgramVO? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}?exercise_program_sn=$sn")
@@ -22,28 +22,33 @@ object NetworkProgram {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
                 Log.v("responseBody", "$responseBody")
-                val jsonInfo = responseBody?.let { JSONObject(it) }?.optJSONObject("exercise_program_info")
-                val jsonExerciseArr = responseBody?.let { JSONObject(it) }?.getJSONArray("program_detail_data")
-                val exercises = mutableListOf<ExerciseVO>()
-                val exerciseTimes = mutableListOf<Pair<String,Int>>()
-                for (i in 0 until jsonExerciseArr?.length()!!) {
-                    exercises.add(jsonToExerciseVO(jsonExerciseArr.optJSONObject(i)))
-                    val exerciseTime = Pair((jsonExerciseArr[i] as JSONObject).optString("exercise_id"), (jsonExerciseArr[i] as JSONObject).optString("video_duration").toInt())
-                    exerciseTimes.add(exerciseTime)
-                }
-                val programVO = ProgramVO(
-                    programSn = jsonInfo?.optString("exercise_program_sn")!!.toInt(),
-                    programName = jsonInfo.optString("exercise_program_title"),
-                    programTime = JSONObject(responseBody).optInt("total_video_time"),
-                    programStage = "",
-                    programCount = "${jsonInfo.optString("exercise_ids").split(", ").count()}",
-                    programFrequency = jsonInfo.optInt("required_week"),
-                    programWeek = jsonInfo.optInt("exercise_frequency"),
-                    exercises = exercises,
-                    exerciseTimes = exerciseTimes
-                )
+                try {
+                    val jsonInfo = responseBody?.let { JSONObject(it) }?.optJSONObject("exercise_program_info")
+                    val jsonExerciseArr = responseBody?.let { JSONObject(it) }?.getJSONArray("program_detail_data")
+                    val exercises = mutableListOf<ExerciseVO>()
+                    val exerciseTimes = mutableListOf<Pair<String,Int>>()
+                    for (i in 0 until jsonExerciseArr?.length()!!) {
+                        exercises.add(jsonToExerciseVO(jsonExerciseArr.optJSONObject(i)))
+                        val exerciseTime = Pair((jsonExerciseArr[i] as JSONObject).optString("exercise_id"), (jsonExerciseArr[i] as JSONObject).optString("video_duration").toInt())
+                        exerciseTimes.add(exerciseTime)
+                    }
+                    val programVO = ProgramVO(
+                        programSn = jsonInfo?.optString("exercise_program_sn")!!.toInt(),
+                        programName = jsonInfo.optString("exercise_program_title"),
+                        programTime = JSONObject(responseBody).optInt("total_video_time"),
+                        programStage = "",
+                        programCount = "${jsonInfo.optString("exercise_ids").split(", ").count()}",
+                        programFrequency = jsonInfo.optInt("required_week"),
+                        programWeek = jsonInfo.optInt("exercise_frequency"),
+                        exercises = exercises,
+                        exerciseTimes = exerciseTimes
+                    )
 
-                return@use programVO
+                    return@use programVO
+                } catch (e: Exception) {
+                    return@use null
+                }
+
             }
         }
     }

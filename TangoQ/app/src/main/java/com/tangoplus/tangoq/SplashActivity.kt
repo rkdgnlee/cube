@@ -36,6 +36,8 @@ import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
+import com.tangoplus.tangoq.db.MeasureDatabase
+import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptData
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.db.SecurePreferencesManager.loadEncryptedData
@@ -60,6 +62,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @SuppressLint("CustomSplashScreen")
@@ -76,7 +80,19 @@ class SplashActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 //        Log.v("keyhash", Utility.getKeyHash(this))
-
+//        val md = MeasureDatabase.getDatabase(this@SplashActivity)
+//        val dao = md.measureDao()
+//        val info = MeasureInfo(
+//            user_uuid = "",
+//            user_sn =  321,
+//            user_name =  "123",
+//            measure_date =  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
+//            elapsed_time = "",
+//            measure_seq =  0
+//        )
+//        CoroutineScope(Dispatchers.IO).launch {
+//            dao.insertInfo(info)
+//        }
         // ----- API 초기화 시작 -----
         NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "TangoQ")
         KakaoSdk.init(this, getString(R.string.kakao_client_id))
@@ -178,7 +194,10 @@ class SplashActivity : AppCompatActivity() {
                                             storeUserInSingleton(this@SplashActivity, jo)
                                             Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
-                                        ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
+                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                                        val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+                                        ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                             MainInit()
                                         }
 
@@ -206,7 +225,10 @@ class SplashActivity : AppCompatActivity() {
                                             storeUserInSingleton(this, jo)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
-                                        ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
+                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                                        val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+                                        ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                             MainInit()
                                         }
                                     }
@@ -237,7 +259,10 @@ class SplashActivity : AppCompatActivity() {
                                         storeUserInSingleton(this, jo)
                                         Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                     }
-                                    ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                    val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
+                                    val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                                    val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+                                    ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                         MainInit()
                                     }
                                 }
@@ -255,7 +280,10 @@ class SplashActivity : AppCompatActivity() {
                                 if (jo != null) {
                                     storeUserInSingleton(this@SplashActivity, jo)
                                     Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                    ssm.getMeasures(userSingleton.jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                                    val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
+                                    val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                                    val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+                                    ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                         MainInit()
                                     }
                                 }

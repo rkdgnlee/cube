@@ -165,10 +165,10 @@ class ExerciseRVAdapter (
 
                 // ------# 시청 기록 및 완료 버튼 #------
 
-                if (progress != null) {
-
+                if (!progress.isNullOrEmpty()) {
                     // 회차를 기준으로 나눠진거임. progress[position] == 16개의 운동이 담긴 1회차 선택한 회차를 가져옴.
                     // selectSeq.first 는 current // selectSeq.second 는 선택 회차
+                    Log.v("progress[position]", "progress[position]: ${progress[position]}")
 
                     val currentItem = progress[position] // 16개의 운동이 담긴 1회차 내에 접근함.
                     // currentItem의 currentWeek와 currentSequence로 현재 운동의 회차를 계산

@@ -22,8 +22,10 @@ import com.tangoplus.tangoq.adapter.AlarmRVAdapter
 import com.tangoplus.tangoq.callback.SwipeHelperCallback
 import com.tangoplus.tangoq.data.MessageVO
 import com.tangoplus.tangoq.databinding.FragmentAlarmDialogBinding
+import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +40,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     private lateinit var swipeHelperCallback: SwipeHelperCallback
     private lateinit var alarmRecyclerViewAdapter : AlarmRVAdapter
     private lateinit var alarmList : MutableList<MessageVO>
+    private lateinit var pm: PreferencesManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,43 +54,50 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        pm = PreferencesManager(requireContext(), Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!)
 
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ko", "KR"))
-
-        val now: Long = System.currentTimeMillis()
-        val date = Date(now)
-        // 30분 전
-        val calendar = Calendar.getInstance()
-        calendar.setTime(date)
-        calendar.add(Calendar.MINUTE, -37)
-        val minute = calendar.time
-        val stringMinute = dateFormat.format(minute)
-        val longMinute = dateFormat.parse(stringMinute)?.time
-
-        calendar.add(Calendar.HOUR, -6)
-        val hour = calendar.time
-        val stringHour = dateFormat.format(hour)
-        val longHour = dateFormat.parse(stringHour)?.time
-
-        calendar.add(Calendar.DATE, -2)
-        val day = calendar.time
-        val stringDay = dateFormat.format(day)
-        val longDay = dateFormat.parse(stringDay)?.time
-
-        // 현재
-        val stringMinuteTime = date
-        val stringTime = dateFormat.format(date)
-        val longTime = dateFormat.parse(stringTime)?.time
+//        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ko", "KR"))
+//
+//        val now: Long = System.currentTimeMillis()
+//        val date = Date(now)
+//        // 30분 전
+//        val calendar = Calendar.getInstance()
+//        calendar.setTime(date)
+//        calendar.add(Calendar.MINUTE, -37)
+//        val minute = calendar.time
+//        val stringMinute = dateFormat.format(minute)
+//        val longMinute = dateFormat.parse(stringMinute)?.time
+//
+//        calendar.add(Calendar.HOUR, -6)
+//        val hour = calendar.time
+//        val stringHour = dateFormat.format(hour)
+//        val longHour = dateFormat.parse(stringHour)?.time
+//
+//        calendar.add(Calendar.DATE, -2)
+//        val day = calendar.time
+//        val stringDay = dateFormat.format(day)
+//        val longDay = dateFormat.parse(stringDay)?.time
+//
+//        // 현재
+//        val stringMinuteTime = date
+//        val stringTime = dateFormat.format(date)
+//        val longTime = dateFormat.parse(stringTime)?.time
 
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
-                alarmList = mutableListOf(
-                    MessageVO(1, "즉시 시작할 것", timestamp =  longTime ,route = "home_intermediate" ),
-                    MessageVO(2, "미션이 부여됐습니다", timestamp =  longMinute , route = "pick"),
-                    MessageVO(3,"운동 마무리 루틴", timestamp =  longHour ,route = "report_goal"),
-                    MessageVO(4,"기기 연결이 완료 됐습니다.", timestamp =  longDay , route = "profile")
-                )
+                alarmList = pm.getAlarms()
+//                alarmList = mutableListOf(
+//                    MessageVO(1, "즉시 시작할 것", timestamp =  longTime ,route = "home_intermediate" ),
+//                    MessageVO(2, "미션이 부여됐습니다", timestamp =  longMinute , route = "pick"),
+//                    MessageVO(3,"운동 마무리 루틴", timestamp =  longHour ,route = "report_goal"),
+//                    MessageVO(4,"기기 연결이 완료 됐습니다.", timestamp =  longDay , route = "profile")
+//                )
                 // ------! alarm touchhelper 연동 시작 !------
+                if (alarmList.isEmpty()) {
+                    binding.tvAlarm.visibility = View.VISIBLE
+                } else {
+                    binding.tvAlarm.visibility = View.GONE
+                }
                 val alarmRecyclerViewAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
                 swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
@@ -103,6 +113,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
                         false
                     }
                 } // -----! alarm touchhelper 연동 끝 !-----
+
             }
         }
     }
@@ -115,14 +126,18 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onAlarmDelete(sn: Long) {
+    override fun onAlarmDelete(timeStamp: Long?) {
         // ------! 삭제 후 스와이프 초기화 시작 !------
-        alarmList.remove(alarmList.find { it.sn == sn })
         swipeHelperCallback.removePreviousClamp(binding.rvAlarm)
         binding.rvAlarm.adapter?.notifyDataSetChanged()
         binding.rvAlarm.post {
             binding.rvAlarm.invalidateItemDecorations()
         }
+        if (timeStamp != null) {
+            alarmList.remove(alarmList.find { it.timeStamp == timeStamp })
+            pm.deleteAlarm(timeStamp)
+        }
+
 
         // ------! 삭제 후 스와이프 초기화 끝 !------
     }

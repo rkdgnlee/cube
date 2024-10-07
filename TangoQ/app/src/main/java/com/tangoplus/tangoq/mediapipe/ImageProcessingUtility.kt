@@ -18,18 +18,24 @@ import java.io.IOException
 
 object ImageProcessingUtility {
 
+
     fun combineImageAndOverlay(
         originalBitmap: Bitmap,
         poseLandmarkResult: PoseLandmarkResult,
-        scaleFactor: Float,
-        offsetX: Float,
-        offsetY: Float,
+        scaleFactorX: Float,
+        scaleFactorY: Float,
+        offSetX: Float,
+        offSetY: Float,
         context: android.content.Context,
         sequence: Int,
     ): Bitmap {
+        Log.v("스케일과오프셋", "scaleFactor: (${scaleFactorX}, ${scaleFactorY}), offset: ($offSetX, $offSetY)")
 
-
-        val resultBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val matrix = Matrix().apply {
+            preScale(-1f, 1f)
+        }
+        val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
+        val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(resultBitmap)
         val axisPaint = Paint().apply {
             color = Color.parseColor("#FF5449")
@@ -47,46 +53,50 @@ object ImageProcessingUtility {
             strokeWidth = 3f
             style = Paint.Style.FILL
         }
-
         // 랜드마크 및 연결선을 그리기
         poseLandmarkResult.landmarks.forEach { landmark ->
-            val x = landmark.x  + offsetX
-            val y = landmark.y  + offsetY
+            val x = resultBitmap.width - (landmark.x)
+            val y = landmark.y
             canvas.drawPoint(x, y, pointPaint)
         }
+
+
         val nose = poseLandmarkResult.landmarks.getOrNull(0)
 
-        if (sequence == 0 || sequence == 5 || sequence == 6) {
-            val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
-            val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
-            if (leftFoot != null && rightFoot != null && nose != null) {
-                val midFootX = (leftFoot.x + rightFoot.x) / 2 + offsetX
-//                val canvasHeight = canvas.height.toFloat()
-                canvas.drawLine(midFootX, leftFoot.y, midFootX, nose.y, axisPaint)
-            }
-        }
+        // ------# 축 넣기 #------
         when (sequence) {
+            0 -> {
+                val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
+                val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
+                if (leftFoot != null && rightFoot != null && nose != null) {
+                    val midFootX = (leftFoot.x + rightFoot.x) / 2
+                    canvas.drawLine(midFootX, leftFoot.y, midFootX, nose.y, axisPaint)
+                }
+            }
             2 -> {
 
             }
             3 -> {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
                 if (leftFoot != null && nose != null) {
-                    val leftFootX = leftFoot.x + offsetX
-                    val canvasHeight = canvas.height.toFloat()
+                    val leftFootX = leftFoot.x
                     canvas.drawLine(leftFootX, leftFoot.y, leftFootX, nose.y, axisPaint)
                 }
             }
             4 -> {
-                val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 왼발 좌표
+                val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
                 if (rightFoot != null && nose != null) {
-                    val rightFootX = rightFoot.x + offsetX
-                    val canvasHeight = canvas.height.toFloat()
+                    val rightFootX = rightFoot.x
                     canvas.drawLine(rightFootX, rightFoot.y, rightFootX, nose.y, axisPaint)
                 }
             }
             5 -> {
-
+                val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
+                val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
+                if (leftFoot != null && rightFoot != null && nose != null) {
+                    val midFootX = (leftFoot.x + rightFoot.x) / 2
+                    canvas.drawLine(midFootX, leftFoot.y, midFootX, nose.y, axisPaint)
+                }
             }
             6 -> {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
@@ -96,25 +106,37 @@ object ImageProcessingUtility {
                 val leftHip = poseLandmarkResult.landmarks.getOrNull(23)
                 val rightHip = poseLandmarkResult.landmarks.getOrNull(24)
                 if (nose != null && leftShoulder != null && rightShoulder != null && leftHip != null && rightHip != null && leftFoot != null && rightFoot != null) {
-                    val noseX = nose.x + offsetX
-                    val noseY = nose.y + offsetY
-                    val leftShoulderX = leftShoulder.x + offsetX
-                    val leftShoulderY = leftShoulder.y + offsetY
-                    val rightShoulderX = rightShoulder.x + offsetX
-                    val rightShoulderY = rightShoulder.y +offsetY
+                    val noseX = nose.x
+                    val noseY = nose.y
+                    val leftShoulderX = (leftShoulder.x )
+                    val leftShoulderY = (leftShoulder.y)
+                    val rightShoulderX = (rightShoulder.x  )
+                    val rightShoulderY = (rightShoulder.y)
                     canvas.drawLine(noseX, noseY, leftShoulderX, leftShoulderY, paint)
                     canvas.drawLine(noseX, noseY, rightShoulderX, rightShoulderY, paint)
 
-                    val midHipX = (leftHip.x + rightHip.x) / 2   + offsetX
-                    val midHipY = (leftHip.y + rightHip.y) / 2   + offsetY
+                    val midHipX = ((leftHip.x + rightHip.x) / 2 )
+                    val midHipY = ((leftHip.y + rightHip.y) / 2  )
                     canvas.drawLine(midHipX, midHipY, leftShoulderX, leftShoulderY, paint)
                     canvas.drawLine(midHipX, midHipY, rightShoulderX, rightShoulderY, paint)
 
-
                     // 골반 다이아 부터 머리 다이아까지
-                    val midFootY = (leftFoot.y + rightFoot.y) / 2 + offsetX
+                    val midFootY = ((leftFoot.y + rightFoot.y) / 2  )
                     canvas.drawLine(midHipX, rightFoot.y, noseX, midFootY, axisPaint)
                 }
+                val connections = listOf(Pair(7, 8), Pair(11, 12), Pair(23, 24))
+                connections.forEach { (start, end) ->
+                    val startLandmark = poseLandmarkResult.landmarks.getOrNull(start)
+                    val endLandmark = poseLandmarkResult.landmarks.getOrNull(end)
+                    if (startLandmark != null && endLandmark != null) {
+                        val startX = (startLandmark.x  )
+                        val startY = (startLandmark.y )
+                        val endX = (endLandmark.x )
+                        val endY = (endLandmark.y )
+                        canvas.drawLine(startX, startY, endX, endY, paint)
+                    }
+                }
+
             }
         }
         val connections = when (sequence) {
@@ -152,9 +174,6 @@ object ImageProcessingUtility {
                 Pair(12, 24), Pair(24, 26), Pair(26, 28),  // 오른쪽 다리
                 Pair(27, 31), Pair(28, 32), Pair(27, 31), Pair(28, 32)
             )
-            6 -> listOf(Pair(7, 8), Pair(11, 12), // 귀
-                Pair(23, 24),
-            )
             else -> listOf()
         }
 
@@ -162,10 +181,10 @@ object ImageProcessingUtility {
             val startLandmark = poseLandmarkResult.landmarks.getOrNull(start)
             val endLandmark = poseLandmarkResult.landmarks.getOrNull(end)
             if (startLandmark != null && endLandmark != null) {
-                val startX = startLandmark.x  + offsetX
-                val startY = startLandmark.y + offsetY
-                val endX = endLandmark.x  + offsetX
-                val endY = endLandmark.y   + offsetY
+                val startX = startLandmark.x
+                val startY = startLandmark.y
+                val endX = endLandmark.x
+                val endY = endLandmark.y
                 canvas.drawLine(startX, startY, endX, endY, paint)
             }
         }

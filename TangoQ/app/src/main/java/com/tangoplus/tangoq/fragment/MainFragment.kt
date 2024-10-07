@@ -84,11 +84,14 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
         prefsManager = PreferencesManager(requireContext(), Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!)
         latestRecSn = prefsManager.getLatestRecommendation()
         Log.v("latestRecSn", "${latestRecSn}")
+
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
         // ------# 알람 intent #------
@@ -184,7 +187,9 @@ class MainFragment : Fragment() {
                 binding.clMMeasure.visibility = View.VISIBLE
                 // ------# 바텀시트에서 변한 selectedMeasureDate 에 맞게 변함.
 
+
                 mViewModel.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
+                    Log.v("현재 선택된 날짜", "$selectedDate")
                     val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate }!!)
                     // ------# 매칭 프로그램이 있는지 없는지 확인하기 #------
                     // measureVo에 매칭 프로그램스가 있는데 이걸 연결해줘야함 그럼 어떻게? -> MeasureVO에 일단 다 빈값인데 내가 만약 값들을 넣었을 때, 그냥
@@ -202,78 +207,91 @@ class MainFragment : Fragment() {
                     binding.tvMOverall.text = measure.get(dateIndex).overall.toString()
                     setAdapter(dateIndex)
 
-                    Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure ${measures?.get(dateIndex)?.fileUris}")
-                    binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}부위가 부상 위험이 있습니다."
-                    binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}부위가 부상 위험이 있습니다."
+                    Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure: ${measures!![dateIndex].dangerParts}, ${measures!![dateIndex].recommendations}")
+                    if (measures?.get(dateIndex)?.dangerParts?.size!! > 1) {
+                        binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}부위가 부상 위험이 있습니다."
+                        binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}부위가 부상 위험이 있습니다."
+                    } else {
+                        binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}부위가 부상 위험이 있습니다."
+                    }
+
+
 
                     // ------# 측정 결과에 맞는 진행 프로그램 2번째 가져오기 #------
 
                     CoroutineScope(Dispatchers.IO).launch {
                         val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
-                        val programSn = latestProgress.optInt("exercise_program_sn")
+                        val programSn = latestProgress.optInt("programSn")
                         Log.v("프로그램sn", "$programSn") //8 이 나옴
                         val adapter : ExerciseRVAdapter
-                        val program : ProgramVO
+                        val program : ProgramVO?
                         var currentPage = 0
-                        if (programSn != 0) {
-                            val week = latestProgress.optInt("week_number")
-                            program  = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
-                            val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
-                            currentPage = findCurrentIndex(progresses)
-                            adapter = ExerciseRVAdapter(this@MainFragment, program.exercises!!, progresses, Pair(0,0) ,"history")
-                        } else {
-                            program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
-                            adapter = ExerciseRVAdapter(this@MainFragment, program.exercises!!, null, Pair(0,0) ,"history")
-                        }
+                        try {
 
-                        CoroutineScope(Dispatchers.Main).launch {
-
-                            binding.tvMProgram.setOnClickListener {
-                                val dialog = ProgramCustomDialogFragment.newInstance(program.programSn, prefsManager.getLatestRecommendation())
-                                Log.v("프로그램direct", "$programSn, ${prefsManager.getLatestRecommendation()}")
-                                dialog.show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                            if (programSn != 0) {
+                                val week = latestProgress.optInt("week_number")
+                                program  = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
+                                val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
+                                currentPage = findCurrentIndex(progresses)
+                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, progresses, Pair(0,0) ,"history")
+                            } else { // 기록이 없을 때를 말하는거임. 그렇다고 recommend가 없는 건아니니 dummy가 불완전한 상태.
+                                Log.v("뷰모델현재측정추천0번쨰", "${mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString()}, ${mViewModel.selectedMeasure?.recommendations}")
+                                program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
+                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, null, Pair(0,0) ,"history")
                             }
+                            CoroutineScope(Dispatchers.Main).launch {
 
-                            binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-                            binding.vpM.apply {
-                                clipToPadding = false
-                                clipChildren = false
-                                offscreenPageLimit = 3
-                                setAdapter(adapter)
-                                currentItem = currentPage
+                                binding.tvMProgram.setOnClickListener {
+                                    val dialog = ProgramCustomDialogFragment.newInstance(program.programSn, prefsManager.getLatestRecommendation())
+                                    Log.v("프로그램direct", "$programSn, ${prefsManager.getLatestRecommendation()}")
+                                    dialog.show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                                }
 
-                                (getChildAt(0) as RecyclerView).apply {
-                                    setPadding(dpToPx(5), 0, dpToPx(5), 0)
+                                binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+                                binding.vpM.apply {
                                     clipToPadding = false
-                                }
-                            }
-                            val itemDecoration = object : RecyclerView.ItemDecoration() {
-                                override fun getItemOffsets(
-                                    outRect: Rect,
-                                    view: View,
-                                    parent: RecyclerView,
-                                    state: RecyclerView.State
-                                ) {
-                                    val position = parent.getChildAdapterPosition(view)
-                                    val itemCount = state.itemCount
+                                    clipChildren = false
+                                    offscreenPageLimit = 3
+                                    setAdapter(adapter)
+                                    currentItem = currentPage
 
-                                    if (position == 0) {
-                                        outRect.left = 0
-                                    } else {
-                                        outRect.left = dpToPx(5)
-                                    }
-
-                                    if (position == itemCount - 1) {
-                                        outRect.right = 0
-                                    } else {
-                                        outRect.right = dpToPx(5)
+                                    (getChildAt(0) as RecyclerView).apply {
+                                        setPadding(dpToPx(5), 0, dpToPx(5), 0)
+                                        clipToPadding = false
                                     }
                                 }
+                                val itemDecoration = object : RecyclerView.ItemDecoration() {
+                                    override fun getItemOffsets(
+                                        outRect: Rect,
+                                        view: View,
+                                        parent: RecyclerView,
+                                        state: RecyclerView.State
+                                    ) {
+                                        val position = parent.getChildAdapterPosition(view)
+                                        val itemCount = state.itemCount
+
+                                        if (position == 0) {
+                                            outRect.left = 0
+                                        } else {
+                                            outRect.left = dpToPx(5)
+                                        }
+
+                                        if (position == itemCount - 1) {
+                                            outRect.right = 0
+                                        } else {
+                                            outRect.right = dpToPx(5)
+                                        }
+                                    }
+                                }
+                                binding.vpM.addItemDecoration(itemDecoration)
+                                binding.llM.visibility = View.GONE
+                                binding.sflM.stopShimmer()
                             }
-                            binding.vpM.addItemDecoration(itemDecoration)
-                            binding.llM.visibility = View.GONE
-                            binding.sflM.stopShimmer()
+                        } catch (e: Exception) {
+                            Log.e("Error>Program", "${e.message}")
                         }
+
+
                     }
                 }
             } else {
@@ -292,6 +310,7 @@ class MainFragment : Fragment() {
     private fun dpToPx(dp: Int) : Int {
         return (dp * resources.displayMetrics.density).toInt()
     }
+
     private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
         val progressIndex = progresses.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
         if (progressIndex != -1) {
@@ -314,15 +333,11 @@ class MainFragment : Fragment() {
 
     private fun setProgramButton(isEnabled: Boolean) {
         if (isEnabled) {
-            binding.btnMProgram.isEnabled = true
             binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.mainColor)
             binding.btnMProgram.text = "프로그램 선택하기"
-//            setEpisodeProgress(0)
         } else {
-            binding.btnMProgram.isEnabled = false
             binding.btnMProgram.text = "프로그램 완료, 재측정을 진행해 주세요"
             binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.subColor150)
-//            setEpisodeProgress(hViewModel.currentProgram?.exercises?.get(0)?.size!!)
 
         }
     }

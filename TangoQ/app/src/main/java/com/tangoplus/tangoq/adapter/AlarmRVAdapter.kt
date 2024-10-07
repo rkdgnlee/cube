@@ -32,13 +32,13 @@ class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList
 
             binding.tvAlarmMessage.text = alarm.message
             binding.tvAlarmRemove.setOnClickListener {
-                deleteListener.onAlarmDelete(alarm.sn)
+                deleteListener.onAlarmDelete(alarm.timeStamp)
             }
             binding.tvAlarmMessage.setOnClickListener {
                 clickListener.onAlarmClick(alarm.route)
                 hideBadgeFunction?.invoke()
             }
-            val timeStampMillis = Duration.between(Instant.now(), Instant.ofEpochMilli(alarm.timestamp!!)).abs().toMillis()
+            val timeStampMillis = Duration.between(Instant.now(), Instant.ofEpochMilli(alarm.timeStamp!!)).abs().toMillis()
 
             binding.tvAlarmTime.text = when {
                 TimeUnit.MILLISECONDS.toSeconds(timeStampMillis) < 60 -> "1분 전"

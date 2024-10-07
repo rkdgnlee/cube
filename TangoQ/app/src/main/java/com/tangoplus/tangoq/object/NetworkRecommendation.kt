@@ -53,6 +53,7 @@ object NetworkRecommendation {
                             for (i in 0 until ja.length()) {
                                 val recommendationVO = RecommendationVO(
                                     recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                                    measureSn = ja.optJSONObject(i).optInt("measure_sn"),
                                     userSn = ja.optJSONObject(i).optInt("user_sn"),
                                     programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                     title = ja.optJSONObject(i).optString("recommendation_title"),
@@ -76,7 +77,7 @@ object NetworkRecommendation {
         }
     }
 
-    suspend fun getRecommendProgram(myUrl: String, sn: Int,context: Context) : MutableList<RecommendationVO> {
+    suspend fun getRecommendProgram(myUrl: String, context: Context) : MutableList<RecommendationVO> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
@@ -88,7 +89,7 @@ object NetworkRecommendation {
             .addInterceptor(authInterceptor)
             .build()
         val request = Request.Builder()
-            .url("$myUrl?meausre_sn={$sn}")
+            .url(myUrl)
             .get()
             .build()
 
@@ -107,6 +108,7 @@ object NetworkRecommendation {
                         for (i in 0 until ja.length()) {
                             val recommendationVO = RecommendationVO(
                                 recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                                measureSn = ja.optJSONObject(i).optInt("measure_sn"),
                                 userSn = ja.optJSONObject(i).optInt("user_sn"),
                                 programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                 title = ja.optJSONObject(i).optString("recommendation_title"),

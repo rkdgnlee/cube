@@ -179,14 +179,14 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             try {
 
                 val result = withContext(Dispatchers.IO) {
-                    program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
+                    program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())!!
                     pvm.currentProgram = program
 
                     val jo = JSONObject()
                     jo.put("user_sn", userJson.optString("user_sn"))
                     jo.put("recommendation_sn", recommendationSn)
                     jo.put("exercise_program_sn", programSn)
-                    jo.put("measure_sn", mvm.selectedMeasure?.measureId?.toInt())
+                    jo.put("measure_sn", mvm.selectedMeasure?.measureSn?.toInt())
                     Log.v("json프로그레스", "${jo}")
 
                     ssm.getOrInsertProgress(jo)
@@ -220,7 +220,10 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                 withContext(Dispatchers.Main) {
                     val (currentRound, currentProgram, currentProgresses) = result
-
+                    val hpvProgress = (pvm.currentSequence * 100) / pvm.currentProgresses.size
+                    Log.v("프로그레스바", "$hpvProgress")
+                    Log.v("프로그레스들", "currentProgress.size: ${currentProgresses.size}, 현재회차[currentRound]: ${currentProgresses[currentRound]}")
+                    binding.hpvPCD.progress = hpvProgress
                     // null 체크 추가
                     if (currentProgram != null && currentProgresses.isNotEmpty() && currentRound < currentProgresses.size) {
                         setAdapter(currentProgram, currentProgresses[currentRound], Pair(currentRound, currentRound))

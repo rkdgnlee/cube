@@ -59,7 +59,7 @@ object NetworkProgress {
                                 currentWeek = ja.optJSONObject(i).optInt("week_number"),
                                 currentSequence = ja.optJSONObject(i).optInt("count_set"),
                                 requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-                                videoDuration = ja.optJSONObject(i).optInt("video_duration"),
+                                videoDuration = ja.optJSONObject(i).optInt("duration"),
                                 lastProgress = ja.optJSONObject(i).optInt("progress"),
                                 isCompleted = ja.optJSONObject(i).optInt("completed"),
                                 updateDate = ja.optJSONObject(i).optString("updated_at")
@@ -112,7 +112,7 @@ object NetworkProgress {
                                 currentWeek = ja.optJSONObject(i).optInt("week_number"),
                                 currentSequence = ja.optJSONObject(i).optInt("count_set"),
                                 requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-                                videoDuration = ja.optJSONObject(i).optInt("video_duration"),
+                                videoDuration = ja.optJSONObject(i).optInt("duration"),
                                 lastProgress = ja.optJSONObject(i).optInt("progress"),
                                 isCompleted = ja.optJSONObject(i).optInt("completed"),
                                 updateDate = ja.optJSONObject(i).optString("updated_at")
@@ -166,7 +166,7 @@ object NetworkProgress {
                         currentWeek = jo.optInt("week_number"),
                         currentSequence = jo.optInt("count_set"),
                         requiredSequence = jo.optInt("required_set"),
-                        videoDuration = jo.optInt("video_duration"),
+                        videoDuration = jo.optInt("duration"),
                         lastProgress = jo.optInt("progress"),
                         isCompleted = jo.optInt("completed"),
                         updateDate = jo.optString("updated_at")
@@ -282,7 +282,7 @@ object NetworkProgress {
                                 currentWeek = ja.optJSONObject(i).optInt("week_number"),
                                 currentSequence = ja.optJSONObject(i).optInt("count_set"),
                                 requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-                                videoDuration = ja.optJSONObject(i).optInt("video_duration"),
+                                videoDuration = ja.optJSONObject(i).optInt("duration"),
                                 lastProgress = ja.optJSONObject(i).optInt("progress"),
                                 isCompleted = ja.optJSONObject(i).optInt("completed"),
                                 updateDate = ja.optJSONObject(i).optString("updated_at")

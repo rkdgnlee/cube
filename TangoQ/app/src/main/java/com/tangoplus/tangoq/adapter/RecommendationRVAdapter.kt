@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +33,7 @@ class RecommendationRVAdapter(private val fragment: Fragment, private val data: 
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        Log.v("adapter내부정보", "${data.size}, ${exerciseTypeIds.size}")
         val currentItem = data[position]
         val typeItem = exerciseTypeIds[position]
         if (holder is programViewHolder) {

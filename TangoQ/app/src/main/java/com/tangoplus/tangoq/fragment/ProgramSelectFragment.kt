@@ -54,10 +54,9 @@ class ProgramSelectFragment : Fragment() {
         "팔꿉" to 3,
         "손목" to 4,
         "척추" to 5,
-        "복부" to 6,
-        "엉덩" to 7,
-        "무릎" to 8,
-        "발목" to 9
+        "골반" to 6,
+        "무릎" to 7,
+        "발목" to 8,
     )
 
 

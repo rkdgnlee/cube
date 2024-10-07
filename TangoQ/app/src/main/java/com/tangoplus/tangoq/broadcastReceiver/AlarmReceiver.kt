@@ -11,7 +11,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.tangoplus.tangoq.R
 
-class AlarmReceiver: BroadcastReceiver() {
+class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
     override fun onReceive(context: Context?, intent: Intent?) {
         val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "0629731260"

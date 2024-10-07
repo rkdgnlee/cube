@@ -256,7 +256,7 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         for (i in measures.size - 1 downTo 0) {
             val measure = measures[i]
-            lcDataList.add(Pair(measure.regDate, measure.overall!!))
+            lcDataList.add(Pair(measure.regDate, measure.overall?.toInt()!!))
         }
         Log.v("lcDataList", "${lcDataList}")
         for (i in lcDataList.indices) {

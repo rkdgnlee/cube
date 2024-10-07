@@ -298,7 +298,10 @@ class IntroActivity : AppCompatActivity() {
                 storeUserInSingleton(this@IntroActivity, jo)
                 createKey(getString(R.string.SECURE_KEY_ALIAS))
                 Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                ssm.getMeasures(Singleton_t_user.getInstance(this).jsonObject?.optString("user_sn")!!, CoroutineScope(Dispatchers.IO)) {
+                val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid")!!
+                val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt()!!
+                val userSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("user_sn")?.toInt()!!
+                ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                     mainInit()
                 }
             }

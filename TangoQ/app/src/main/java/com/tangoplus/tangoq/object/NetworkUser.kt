@@ -67,7 +67,7 @@ object NetworkUser {
         })
     }
 
-    // 자체 로그인ㅅ
+    // 자체 로그인
     suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, idPw.toString())
@@ -123,26 +123,6 @@ object NetworkUser {
         })
     }
 
-    /* ------------------------------------------CRUD---------------------------------------------*/
-//    fun fetchUserINSERTJson(myUrl : String, json: String, callback: () -> Unit){
-//        val client = OkHttpClient()
-//        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json)
-//        val request = Request.Builder()
-//            .url("${myUrl}create.php")
-//            .post(body) // post방식으로 insert 들어감
-//            .build()
-//
-//        client.newCall(request).enqueue(object : Callback {
-//            override fun onFailure(call: Call, e: IOException) {
-//                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
-//            }
-//            override fun onResponse(call: Call, response: Response)  {
-//                val responseBody = response.body?.string()
-//                Log.v("${ContentValues.TAG}, 응답성공", "$responseBody")
-//                callback()
-//            }
-//        })
-//    }
 
     fun fetchUserUPDATEJson(myUrl : String, json: String, sn: String, callback: () -> Unit) {
         val client = OkHttpClient()
@@ -218,6 +198,47 @@ object NetworkUser {
 
     fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
+    }
 
+
+    fun loginWithPin(myUrl: String,  pinNum: Int, userUUID: String, callback: () -> Unit) {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}?user_uuid:$userUUID&pin_number:$pinNum")
+            .get()
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("응답실패", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.e("응답성공", "$responseBody")
+                val jo = responseBody?.let { JSONObject(it) }
+                callback()
+            }
+        })
+    }
+    fun loginWithQRCode(myUrl: String,  serialNum: Int, userUUID: String, callback: () -> Unit) {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}?user_uuid:$userUUID&device_serial_number:$serialNum")
+            .get()
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("응답실패", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.e("응답성공", "$responseBody")
+                val jo = responseBody?.let { JSONObject(it) }
+                callback()
+            }
+        })
     }
 }
