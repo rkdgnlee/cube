@@ -100,7 +100,7 @@ class SplashActivity : AppCompatActivity() {
 
         val googleUserExist = firebaseAuth.currentUser
         val naverTokenExist = NaverIdLoginSDK.getState()
-        ssm = SaveSingletonManager(this@SplashActivity)
+        ssm = SaveSingletonManager(this@SplashActivity, this)
         // ----- API 초기화 끝 ------
 
         // ------! 인터넷 연결 확인 !------
@@ -108,6 +108,7 @@ class SplashActivity : AppCompatActivity() {
             true -> {
                 // ------! 푸쉬 알림 시작 !-----
                 permissionCheck()
+
                 FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
                         Log.w("TAG", "FETCHING FCM registration token failed", task.exception)
@@ -117,7 +118,6 @@ class SplashActivity : AppCompatActivity() {
                     Log.e("메시지토큰", "fcm token :: $token")
                 })
                 createNotificationChannel()
-
                 // ------! 푸쉬 알림 끝 !-----
 
                 // ----- 인 앱 알림 시작 -----
@@ -126,8 +126,9 @@ class SplashActivity : AppCompatActivity() {
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
                 val calander: Calendar = Calendar.getInstance().apply {
                     timeInMillis = System.currentTimeMillis()
-                    set(Calendar.HOUR_OF_DAY, 17)
-                }
+                    set(Calendar.HOUR_OF_DAY, 13)
+                } // 오후 1시에 알림이 오게끔 돼 있음.
+
                 val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
                 alarmManager.setInexactRepeating(
                     AlarmManager.RTC_WAKEUP,
@@ -191,12 +192,16 @@ class SplashActivity : AppCompatActivity() {
 
                                     getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
+
                                             storeUserInSingleton(this@SplashActivity, jo)
                                             Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
                                         val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                         val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
                                         val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+
+
+
                                         ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                             MainInit()
                                         }
@@ -228,6 +233,7 @@ class SplashActivity : AppCompatActivity() {
                                         val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                         val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
                                         val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+
                                         ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                             MainInit()
                                         }
@@ -262,6 +268,8 @@ class SplashActivity : AppCompatActivity() {
                                     val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                     val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
                                     val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+
+
                                     ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                         MainInit()
                                     }
@@ -283,6 +291,7 @@ class SplashActivity : AppCompatActivity() {
                                     val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                     val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
                                     val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
+
                                     ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                         MainInit()
                                     }
@@ -349,6 +358,22 @@ class SplashActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun createAlarmChannel() {
+        AlarmReceiver()
+        val intent = Intent(this, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val calander: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 17)
+        }
+        val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.setInexactRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calander.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+    }
 
 
 

@@ -12,10 +12,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -73,7 +76,11 @@ import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility.decodeSampledBitmap
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
+import com.tangoplus.tangoq.`object`.NetworkMeasure.getMeasureResult
+import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
+import com.tangoplus.tangoq.`object`.NetworkMeasure.toMeasureInfo
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
+import com.tangoplus.tangoq.`object`.SaveSingletonManager
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
@@ -82,12 +89,16 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -130,7 +141,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private var cameraFacing = CameraSelector.LENS_FACING_BACK
+    private var cameraFacing = CameraSelector.LENS_FACING_FRONT
     private lateinit var backgroundExecutor: ExecutorService
     private var scaleFactorX : Float? = null
     private var scaleFactorY : Float? = null
@@ -164,8 +175,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private val maxRepeats = 6
     private var progress = 12
     private var timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
-
-
+    private val startTime = LocalDateTime.now()
+    private var endTime : LocalDateTime? = null
     // ------# 수직 감지기 #------
     private lateinit var hideIndicatorHandler: Handler
     private lateinit var hideIndicatorRunnable: Runnable
@@ -211,7 +222,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                                 // ------# 약 200프레임에서 db에 넣을 값을 찾는 곳 #------
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    saveJa(this@MeasureSkeletonActivity, "${videoFileName}.json", mViewModel.dynamicJa, FileStorageUtil.FileType.JSON)
+                                    saveJa(this@MeasureSkeletonActivity, "${videoFileName}.json", mViewModel.dynamicJa, mViewModel)
                                     val noseDynamic = mViewModel.extractVideoCoordinates(mViewModel.dynamicJa).map { it[0] } // x, y좌표를 가져와서, nose(0)만 추출함.
                                     Log.v("noseDynamic", "${noseDynamic}")
                                     val decreasingFrameIndex = findLowestYFrame(noseDynamic) // 전체 코의 y궤적에서 감소되는 구간의 index 추출
@@ -406,18 +417,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // ------# 버튼 촬영 #------
         binding.btnMeasureSkeletonStep.setOnClickListener {
             if (binding.btnMeasureSkeletonStep.text == "완료하기") {
-
+                endTime = LocalDateTime.now()
                 CoroutineScope(Dispatchers.IO).launch {
-//                    val motherJo = JSONObject()
-//                    val measureInfo = JSONObject() //
-//                    val measureStatics = JSONArray() // toMeasureDynamic후 다시 JsonObject로 변환
-//                    val measureDynamic = JSONObject() // toMeasureDynamic을 통해 변환해서 넣으면 됨
-//                    motherJo.apply {
-//
-//                    }
-
-
-
+                    val motherJo = JSONObject()
 
                     val userJson = singletonUser.jsonObject
                     val userUUID = userJson?.getString("user_uuid")!!
@@ -426,20 +428,129 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                     val date: Date = inputFormat.parse(timestamp)!!
                     val measureDate = outputFormat.format(date)
-
+                    val seconds = Duration.between(startTime, endTime).toMillis() / 1000.0
+                    val elapsedTime = "%.3f".format(seconds)
                     // ------# info 넣기 #------
                     val measureInfo = MeasureInfo(
                         user_uuid = userUUID,
                         user_sn = userJson.optString("user_sn").toInt(),
                         user_name = userJson.optString("user_name"),
                         measure_date = measureDate,
-                        elapsed_time = "",
+                        elapsed_time = elapsedTime,
                         t_score = 90.toString(),
                         measure_seq = 7,
                         risk_neck = "1",
                         risk_elbow_left = "2",
                         risk_hip_left = "1"
                     )
+                    Log.v("measure빈칼럼여부", "${measureInfo}")
+                    val infoJson = JSONObject(measureInfo.toJson())
+                    motherJo.put("measure_info", infoJson)
+
+                    Log.v("뷰모델스태틱", "${mViewModel.statics.size}")
+
+                    for (i in 0 until mViewModel.statics.size) {
+                        val staticUnit = mViewModel.statics[i].toJson()
+                        val joStaticUnit = JSONObject(staticUnit)
+                        Log.v("스태틱변환", "$joStaticUnit")
+                        motherJo.put("static_${i+1}", joStaticUnit)
+                        Log.v("motherJo2", "${motherJo.getJSONObject("static_${i+1}")}")
+                    }
+                    val dynamicJo = JSONObject(mViewModel.dynamic!!.toJson())
+                    motherJo.put("dynamic", dynamicJo)
+                    Log.v("motherJo1", "${motherJo.optJSONObject("measure_info")}")
+                    Log.v("motherJo3", "${motherJo.optJSONObject("dynamic")}")
+                    // 일단 json 값들.
+
+                    val requestBodyBuilder = MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("json", motherJo.toString())
+
+                    // static jpg파일들
+                    for (i in mViewModel.staticFiles.indices) {
+                        val file = mViewModel.staticFiles[i]
+                        Log.v("파일정보", "Static File: 이름=${file.name}, 크기=${file.length()} bytes")
+                        requestBodyBuilder.addFormDataPart(
+                            "static_file_${i+1}",
+                            file.name,
+                            file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                        )
+
+                    }
+                    // static json파일
+                    for (i in mViewModel.staticJsonFiles.indices) {
+                        val file = mViewModel.staticJsonFiles[i]
+                        Log.v("파일정보", "Static JSON: 이름=${file.name}, 크기=${file.length()} bytes")
+                        requestBodyBuilder.addFormDataPart(
+                            "static_json_${i+1}",
+                            file.name,
+                            file.asRequestBody("application/json".toMediaTypeOrNull())
+                        )
+                    }
+                    // Dynamic json파일
+                    mViewModel.dynamicJsonFile?.let { file ->
+                        Log.v("파일정보", "Dynamic JSON: 이름=${file.name}, 크기=${file.length()} bytes")
+                        requestBodyBuilder.addFormDataPart(
+                            "dynamic_json",
+                            file.name,
+                            file.asRequestBody("application/json".toMediaTypeOrNull())
+                        )
+                    }
+
+                    // Dynamic mp4 파일
+                    mViewModel.dynamicFile?.let { file ->
+                        Log.v("파일정보", "Dynamic MP4: 이름=${file.name}, 크기=${file.length()} bytes")
+                        requestBodyBuilder.addFormDataPart(
+                            "dynamic_file",
+                            file.name,
+                            file.asRequestBody("video/mp4".toMediaTypeOrNull())
+                        )
+                    }
+
+                    val requestBody = requestBodyBuilder.build()
+                    val partCount = requestBodyBuilder.build().parts.size
+                    Log.v("파트개수", "총 파트 개수: $partCount")
+//                    sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_results), requestBody)
+
+
+
+                    // TODO 측정 후 값을 임시로 보고 싶을 때.
+                    // ------# userJSonBody로 보내기 #------
+//                    sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_measure), requestBody) // getMeasureResult처럼 다 넣게됨.
+//
+//                    val infoSn = Singleton_t_user.getInstance(this@MeasureSkeletonActivity).jsonObject?.optString("sn")?.toInt()!!
+//                    val userSn = Singleton_t_user.getInstance(this@MeasureSkeletonActivity).jsonObject?.optString("user_sn")?.toInt()!!
+//                    getMeasureResult(this@MeasureSkeletonActivity, getString(R.string.API_measure), infoSn, userSn , userUUID)
+//                    SaveSingletonManager(this@MeasureSkeletonActivity, this@MeasureSkeletonActivity).fetchAndFilterMeasureInfo(userSn)
+//
+//                    SaveSingletonManager(this@MeasureSkeletonActivity, this@MeasureSkeletonActivity).addRecommendations(infoSn)
+//                    withContext(Dispatchers.Main) {
+//                        val intent = Intent()
+//                        intent.putExtra("finishedMeasure", true)
+//                        setResult(Activity.RESULT_OK, intent)
+//                        finish()
+//                    }
+//                    val userJson = singletonUser.jsonObject
+//                    val userUUID = userJson?.getString("user_uuid")!!
+//
+//                    val inputFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
+//                    val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+//                    val date: Date = inputFormat.parse(timestamp)!!
+//                    val measureDate = outputFormat.format(date)
+//
+//                    // ------# info 넣기 #------
+//                    val measureInfo = MeasureInfo(
+//                        user_uuid = userUUID,
+//                        user_sn = userJson.optString("user_sn").toInt(),
+//                        user_name = userJson.optString("user_name"),
+//                        measure_date = measureDate,
+//                        elapsed_time = "",
+//                        t_score = 90.toString(),
+//                        measure_seq = 7,
+//                        risk_neck = "1",
+//                        risk_elbow_left = "2",
+//                        risk_hip_left = "1"
+//                    )
                     mDao.insertInfo(measureInfo)
                     Log.v("measureInfo넣기", "방금넣은info: ${measureInfo}, allInfo: ${mDao.getAllInfo(userJson.optString("user_sn").toInt())}")
 
@@ -773,6 +884,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         imageAnalyzer?.targetRotation =
             binding.viewFinder.display.rotation
     }
+
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
@@ -805,8 +918,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 )
                 latestResult = resultBundle
                 binding.overlay.invalidate()
-
-
                 if (scaleFactorX != null && scaleFactorY != null) {
                     scaleFactorX = binding.overlay.width * 1f / latestResult!!.inputImageWidth
                     scaleFactorY = binding.overlay.height * 1f / latestResult!!.inputImageHeight
@@ -1332,9 +1443,10 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             put("pose_landmark", poseLandmarks)
         }
         Log.v("${step}번JSON>Static변환", "${jsonObj.getString("measure_server_json_name")}, ${jsonObj.getString("measure_server_file_name")}")
-        saveJo(this@MeasureSkeletonActivity, "${getFileName(step)}.json", jsonObj, FileStorageUtil.FileType.JSON)
+        saveJo(this@MeasureSkeletonActivity, "${getFileName(step)}.json", jsonObj, mViewModel)
         val measureStaticUnit = mViewModel.staticjo.toMeasureStatic()
         mViewModel.statics.add(measureStaticUnit)
+        Log.v("뷰모델스태틱", "${mViewModel.statics}")
         mViewModel.staticjo = JSONObject()
     }
 
@@ -1377,7 +1489,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 contentValues
-
             )
             .build()
 
@@ -1413,8 +1524,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 recording = null
                 return@launch
             }
-
-            // Create file name and content values
 
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, videoFileName)
@@ -1480,6 +1589,157 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             recording = null
         }
     }
+
+//    fun saveMediaToCache(context: Context, uri: Uri, fileName: String, isImage: Boolean) {
+//        try {
+//            val extension = if (isImage) ".jpg" else ".mp4"
+//            val file = File(context.cacheDir, "$fileName$extension")
+//            if (isImage) {
+//                // 이미지일 경우 720x1280 크기로 리스케일
+//
+////                val inputStream = context.contentResolver.openInputStream(uri)
+////                inputStream?.use { input ->
+////                    file.outputStream().use { output ->
+////                        input.copyTo(output)
+////                    }
+////                }
+//                val inputStream = context.contentResolver.openInputStream(uri)
+//                val tempFile = File.createTempFile("tempImage", null, context.cacheDir)
+//                inputStream?.use { input ->
+//                    tempFile.outputStream().use { output ->
+//                        input.copyTo(output)
+//                    }
+//                }
+//
+//                // 이미지를 720x1280으로 리스케일
+//                val scaledBitmap = decodeSampledBitmapFromFile(tempFile.absolutePath, 720, 1280)
+//
+//                // 리스케일된 이미지를 캐시에 저장
+//                val outputStream = FileOutputStream(file)
+//                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+//                outputStream.flush()
+//                outputStream.close()
+//
+//                // 임시 파일 삭제
+//                tempFile.delete()
+//                mViewModel.staticFiles.add(file)
+//            } else {
+//                // 비디오일 경우 그대로 캐시에 저장
+//                context.contentResolver.openInputStream(uri)?.use { input ->
+//                    file.outputStream().use { output ->
+//                        input.copyTo(output)
+//                        mViewModel.dynamicFile = file
+//                    }
+//
+//                }
+//            }
+//
+//        } catch (e: IOException) {
+//            Log.e("MeasureViewModel", "Error saving image to cache: ${e.message}")
+//        }
+//    }
+
+    fun saveMediaToCache(context: Context, uri: Uri, fileName: String, isImage: Boolean) {
+        try {
+            val extension = if (isImage) ".jpg" else ".mp4"
+            val file = File(context.cacheDir, "$fileName$extension")
+
+            if (isImage) {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val tempFile = File.createTempFile("tempImage", null, context.cacheDir)
+                inputStream?.use { input ->
+                    tempFile.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                // EXIF 데이터 읽기
+                val exif = ExifInterface(tempFile.absolutePath)
+                val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+                // 비트맵 디코딩
+                val options = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+                BitmapFactory.decodeFile(tempFile.absolutePath, options)
+
+                val sourceWidth = options.outWidth
+                val sourceHeight = options.outHeight
+
+                val targetWidth = 720
+                val targetHeight = 1280
+
+                // 이미지 스케일 계산
+                val widthRatio = sourceWidth.toFloat() / targetWidth
+                val heightRatio = sourceHeight.toFloat() / targetHeight
+                val scale = maxOf(widthRatio, heightRatio)
+
+                options.inJustDecodeBounds = false
+                options.inSampleSize = scale.toInt()
+
+                var bitmap = BitmapFactory.decodeFile(tempFile.absolutePath, options)
+                val matrix = Matrix().apply {
+                    postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
+                }
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                // 필요한 경우 이미지 회전
+
+                when (orientation) {
+                    ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                    ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                    ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                }
+
+                if (matrix.isIdentity.not()) {
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                }
+
+                // 정확한 크기로 리사이즈
+                bitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
+
+                // 리사이즈된 이미지를 캐시에 저장
+                val outputStream = FileOutputStream(file)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                // 임시 파일과 비트맵 정리
+                tempFile.delete()
+                bitmap.recycle()
+
+                mViewModel.staticFiles.add(file)
+            } else {
+                // 비디오일 경우 그대로 캐시에 저장
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    file.outputStream().use { output ->
+                        input.copyTo(output)
+                        mViewModel.dynamicFile = file
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            Log.e("MeasureViewModel", "Error saving media to cache: ${e.message}")
+        }
+    }
+//    fun rotateImageIfRequired(context: Context, uri: Uri, bitmap: Bitmap): Bitmap {
+//        val inputStream = context.contentResolver.openInputStream(uri)
+//        val exif = inputStream?.let { ExifInterface(it) }
+//        val orientation = exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+//
+//        return when (orientation) {
+//            ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+//            ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+//            ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+//            else -> bitmap
+//        }
+//    }
+//
+//    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+//        val matrix = Matrix()
+//        matrix.postRotate(degrees)
+//        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+//    }
+
     // ------! 애니메이션 !------
     private fun setAnimation(tv: View, duration : Long, delay: Long, fade: Boolean, callback: () -> Unit) {
         val animator = ObjectAnimator.ofFloat(tv, "alpha", if (fade) 0f else 1f, if (fade) 1f else 0f)
@@ -1534,11 +1794,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         return if (isImage) {
             val scaleFactor = binding.overlay.width * 1f / 720
             val offsetX = (binding.overlay.width - 720 * scaleFactor) / 2
-            val x = (1 - xx) * binding.overlay.width / scaleFactor + offsetX
+            val x = xx * binding.overlay.width / scaleFactor + offsetX // TODO 후면 카메라 기준임 전면일 경우  1 - 제거
             x.roundToInt()
         } else {
             val scaleFactor = binding.overlay.width * 1f / 1280
-            val offsetX = ((binding.overlay.width - 1280 * scaleFactor) / 2 ) - 20
+            val offsetX = ((binding.overlay.width - 1280 * scaleFactor) / 2 )  // TODO 영상의 liveStream에는 이상하게 offset이 필요함
             val x = xx * binding.overlay.width / scaleFactor + offsetX
             x.roundToInt()
         }
@@ -1558,43 +1818,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
-    fun saveMediaToCache(context: Context, uri: Uri, fileName: String, isImage: Boolean) {
-        try {
-            val extension = if (isImage) ".jpg" else ".mp4"
-            val file = File(context.cacheDir, "$fileName$extension")
-            if (isImage) {
-                // 이미지일 경우 720x1280 크기로 리스케일
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val tempFile = File.createTempFile("tempImage", null, context.cacheDir)
-                inputStream?.use { input ->
-                    tempFile.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                }
 
-                // 이미지를 720x1280으로 리스케일
-                val scaledBitmap = decodeSampledBitmapFromFile(tempFile.absolutePath, 720, 1280)
-
-                // 리스케일된 이미지를 캐시에 저장
-                val outputStream = FileOutputStream(file)
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
-                outputStream.flush()
-                outputStream.close()
-
-                // 임시 파일 삭제
-                tempFile.delete()
-            } else {
-                // 비디오일 경우 그대로 캐시에 저장
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    file.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            Log.e("MeasureViewModel", "Error saving image to cache: ${e.message}")
-        }
-    }
 
     suspend fun findLowestYFrame(coordinates: List<Pair<Float, Float>>): Int = withContext(Dispatchers.Default) {
         val yValues = coordinates.map { it.second }
@@ -1609,5 +1833,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     private fun JSONObject.toMeasureDynamic(): MeasureDynamic {
         return Gson().fromJson(this.toString(), MeasureDynamic::class.java)
+    }
+
+    fun MeasureStatic.toJson(): String {
+        return Gson().toJson(this)
+    }
+    fun MeasureDynamic.toJson(): String {
+        return Gson().toJson(this)
+    }
+    fun MeasureInfo.toJson(): String {
+        return Gson().toJson(this)
     }
 }

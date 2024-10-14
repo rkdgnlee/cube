@@ -77,7 +77,7 @@ class IntroActivity : AppCompatActivity() {
 
         // ------! token 저장할  securedPref init !------
         securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
-        ssm = SaveSingletonManager(this@IntroActivity)
+        ssm = SaveSingletonManager(this@IntroActivity, this)
 //        val dialog = LoginScanDialogFragment()
 //        dialog.show(supportFragmentManager, "LoginScanDialogFragment")
         when (isNetworkAvailable(this)) {

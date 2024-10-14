@@ -18,16 +18,25 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
-            <com.journeyapps.barcodescanner.DecoratedBarcodeView
-                android:id="@+id/bvLSD"
+            <com.budiyev.android.codescanner.CodeScannerView
+                android:id="@+id/csvLSD"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-            </com.journeyapps.barcodescanner.DecoratedBarcodeView>
+<!--            <com.journeyapps.barcodescanner.DecoratedBarcodeView-->
+<!--                android:id="@+id/bvLSD"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent">-->
+
+<!--            </com.journeyapps.barcodescanner.DecoratedBarcodeView>-->
 
             <ImageButton
                 android:id="@+id/ibtnLSDBack1"

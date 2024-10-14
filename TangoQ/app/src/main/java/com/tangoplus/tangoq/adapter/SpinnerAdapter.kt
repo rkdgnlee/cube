@@ -36,6 +36,8 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.tvSpinner.text = list[position]
         binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
+        binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+
         binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
         return binding.root
     }

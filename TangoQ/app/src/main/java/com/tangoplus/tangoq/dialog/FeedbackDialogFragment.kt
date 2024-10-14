@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
@@ -26,8 +27,8 @@ import org.json.JSONObject
 
 class FeedbackDialogFragment : DialogFragment() {
     lateinit var binding: FragmentFeedbackDialogBinding
-    val eViewModel: ExerciseViewModel by activityViewModels()
-    val mViewModel : MeasureViewModel by activityViewModels()
+    private val eViewModel: ExerciseViewModel by activityViewModels()
+    private val mViewModel : MeasureViewModel by activityViewModels()
 
     private lateinit var fatigues: TextViewGroup
     private lateinit var intensitys: TextViewGroup
@@ -42,50 +43,39 @@ class FeedbackDialogFragment : DialogFragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
-        val progressTime = eViewModel.exerciseLog.value?.first
-        val totalTime = eViewModel.exerciseLog.value?.third
-        binding.tvFbTime.text = "${progressTime.toString()} 초" ?: "0초"
-        binding.tvFbCount.text = "${eViewModel.exerciseLog.value?.second} 개" ?: "0개"
-        val percent = ((progressTime?.times(100))?.div(totalTime!!))?.toFloat()
-        Log.v("feedback>percent", "$percent")
-        binding.cpbFb.apply {
-            progressMax = 100f
-            progressDirection = CircularProgressBar.ProgressDirection.TO_LEFT
-            progressBarWidth = 12f
-            if (percent != null) {
-                progress = percent
-            }
-        }
-        binding.tvFbPercent?.text = "${percent?.toInt()}%"
+        // ------# 가져온 시간 + 운동 갯수 뿌려주기 #------
+        binding.tvFDTime1.text = "${eViewModel.exerciseLog.first / 60}:${eViewModel.exerciseLog.first % 60}"
+        binding.tvFDTime2.text = "${eViewModel.exerciseLog.second / 60}:${eViewModel.exerciseLog.second % 60}"
+        binding.tvFDCount.text = "${eViewModel.exerciseLog.third} 개"
 
         // ------! 각 점수표 조작 시작 !------
-        fatigues = TextViewGroup(listOf(binding.tvFbFatigue1, binding.tvFbFatigue2, binding.tvFbFatigue3, binding.tvFbFatigue4, binding.tvFbFatigue5),
+        fatigues = TextViewGroup(listOf(binding.tvFDFatigue1, binding.tvFDFatigue2, binding.tvFDFatigue3, binding.tvFDFatigue4, binding.tvFDFatigue5),
             ContextCompat.getColor(requireContext(), R.color.white),
             ContextCompat.getColor(requireContext(), R.color.mainColor))
 
-        intensitys = TextViewGroup(listOf(binding.tvFbIntensity1, binding.tvFbIntensity2, binding.tvFbIntensity3, binding.tvFbIntensity4, binding.tvFbIntensity5),
+        intensitys = TextViewGroup(listOf(binding.tvFDIntensity1, binding.tvFDIntensity2, binding.tvFDIntensity3, binding.tvFDIntensity4, binding.tvFDIntensity5),
             ContextCompat.getColor(requireContext(), R.color.white),
             ContextCompat.getColor(requireContext(), R.color.mainColor))
 
-        satisfactions= TextViewGroup(listOf(binding.tvFbSatisfaction1, binding.tvFbSatisfaction2, binding.tvFbSatisfaction3, binding.tvFbSatisfaction4, binding.tvFbSatisfaction5),
+        satisfactions= TextViewGroup(listOf(binding.tvFDSatisfaction1, binding.tvFDSatisfaction2, binding.tvFDSatisfaction3, binding.tvFDSatisfaction4, binding.tvFDSatisfaction5),
             ContextCompat.getColor(requireContext(), R.color.white),
             ContextCompat.getColor(requireContext(), R.color.mainColor))
-
         // ------! 각 점수표 조작 끝 !------
 
-        binding.tvFbSkip.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-        binding.tvFbSkip.setOnClickListener {
-            eViewModel.exerciseLog.value = null
+        binding.tvFDSkip.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+        binding.tvFDSkip.setOnClickListener {
+//            eViewModel.exerciseLog.value = null
             eViewModel.isDialogShown.value = true
             dismiss()
         }
 
-        binding.btnFbSubmit.setOnClickListener{
+        binding.btnFDSubmit.setOnClickListener{
             Log.v("score", "${intensitys.getIndex()}")
             Log.v("score", "${fatigues.getIndex()}")
             Log.v("score", "${satisfactions.getIndex()}")
@@ -106,11 +96,11 @@ class FeedbackDialogFragment : DialogFragment() {
 //            startActivity(intent)
 //            requireActivity().finishAffinity()
             dismiss()
-            eViewModel.exerciseLog.value = null
+//            eViewModel.exerciseLog.value = null
             eViewModel.isDialogShown.value = true
         }
 
-        binding.btnFbPainPartSelect.setOnClickListener {
+        binding.btnFDPainPartSelect.setOnClickListener {
             val dialog = FeedbackPartDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "FeedbackPartDialogFragment")
         }

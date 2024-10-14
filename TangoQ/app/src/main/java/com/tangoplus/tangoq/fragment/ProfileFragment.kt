@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.net.toFile
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +34,13 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
+import com.tangoplus.tangoq.`object`.NetworkUser.sendProfileImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -176,6 +184,21 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             2000 -> {
                 val selectedImageUri : Uri? = data?.data
                 if (selectedImageUri != null) {
+
+                    // ------# 멀티파트로 담아 프로필 사진 저장하기 #------
+                    val imageFile = selectedImageUri.toFile()
+                    val requestBodyBuilder = MultipartBody.Builder()
+                    requestBodyBuilder.addFormDataPart(
+                        "profile_image",
+                        imageFile.name,
+                        imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    )
+                    val requestBody = requestBodyBuilder.build()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        sendProfileImage(requireContext(), getString(R.string.API_user), requestBody)
+                    }
+
+
                     val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
                     editor.putString("imageUri", selectedImageUri.toString())

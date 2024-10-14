@@ -65,12 +65,12 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
 
     private fun transferDegree(degree: Pair<Int, Int>): String {
         return when (degree.second) {
-            3 -> "이(가) 과도하게 치우쳐 있습니다."
-            2 -> "에서 이상을 감지했습니다."
+            3 ->  "는(은) 올바른 균형입니다."
+            2 -> "에 미세한 불균형이 있습니다."
             1 -> "에 치우침이 있습니다."
             0 -> "에 약간의 불균형이 있습니다."
-            -1 -> "에 미세한 불균형이 있습니다."
-            -2 -> "는(은) 올바른 균형입니다."
+            -1 -> "에 치우침이 있습니다."
+            -2 -> "이(가) 과도하게 치우쳐 있습니다."
             else -> ""
         }
     }

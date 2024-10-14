@@ -93,7 +93,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
         programSn = arguments?.getInt(ARG_PROGRAM_SN)!!
         recommendationSn = arguments?.getInt(ARG_RECOMMENDATION_SN)!!
-        ssm = SaveSingletonManager(requireContext())
+        ssm = SaveSingletonManager(requireContext(), requireActivity())
 
         lifecycleScope.launch {
             // 프로그램에 들어가는 운동
@@ -108,7 +108,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
                     // PreferencesManager 초기화 및 추천 저장
-                    val prefManager = PreferencesManager(requireContext(), userJson.getString("user_sn").toInt())
+                    val prefManager = PreferencesManager(requireContext())
                     prefManager.saveLatestRecommendation(recommendationSn)
 
                     // 현재 시퀀스의 ProgressUnitVO 리스트 가져오기
@@ -126,18 +126,20 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         val videoUrls = mutableListOf<String>()
                         val exerciseIds = mutableListOf<String>()
                         val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
-
+                        var totalDuration = 0
                         for (i in startIndex until currentSequenceProgresses.size) {
                             val progress = currentSequenceProgresses[i]
                             exerciseIds.add(progress.exerciseId.toString())
                             uvpIds.add(progress.uvpSn.toString())
                             videoUrls.add(program.exercises?.get(i)?.videoFilepath!!)
+                            totalDuration += program.exercises?.get(i)?.videoDuration?.toInt()!!
                         }
                         val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
                         intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
                         intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
                         intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
                         intent.putExtra("current_position",currentSequenceProgresses[startIndex].lastProgress.toLong())
+                        intent.putExtra("total_duration", totalDuration)
                         requireContext().startActivity(intent)
                         startActivityForResult(intent, 8080)
                         Log.v("인텐트담은것들", "${videoUrls}, $exerciseIds, $uvpIds")
@@ -190,7 +192,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     Log.v("json프로그레스", "${jo}")
 
                     ssm.getOrInsertProgress(jo)
-                    pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).progresses!!
+                    pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses!!
                     Log.v("현재진행기록", "pvm.currentProgresses.size: ${pvm.currentProgresses.size}")
 
                     // 현재 시퀀스 찾기
@@ -265,7 +267,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         /* currentSequence 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
         pvm.selectedSequence.value = sequence.second
         val adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
-            program.programWeek * program.programFrequency,
+            Pair(program.programWeek, program.programFrequency),
             Pair(pvm.currentSequence, pvm.selectedSequence.value!!),
             this@ProgramCustomDialogFragment)
 
@@ -283,10 +285,16 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     }
 
     override fun customCategoryClick(sequence: Int) {
-        // TODO viewModel에 담은 program에서 필터링해서 보여주기
         pvm.selectedSequence.value = sequence
         Log.v("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence} sequence : $sequence")
-        setAdapter(pvm.currentProgram!!, pvm.currentProgresses[sequence], Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
+        if (sequence % program.programFrequency == 0) {
+            binding.rvPCD.visibility = View.GONE
+            binding.tvPCDHealing.visibility = View.VISIBLE
+        } else {
+            binding.rvPCD.visibility = View.VISIBLE
+            binding.tvPCDHealing.visibility = View.GONE
+            setAdapter(pvm.currentProgram!!, pvm.currentProgresses[sequence], Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
+        }
     }
 
     fun dismissThisFragment() {

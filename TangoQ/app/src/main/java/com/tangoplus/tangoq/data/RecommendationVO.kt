@@ -2,7 +2,7 @@ package com.tangoplus.tangoq.data
 
 data class RecommendationVO(
     val recommendationSn : Int,
-    val measureSn : Int,
+    val infoSn : Int,
     val userSn : Int,
     val programSn : Int,
     val title: String,

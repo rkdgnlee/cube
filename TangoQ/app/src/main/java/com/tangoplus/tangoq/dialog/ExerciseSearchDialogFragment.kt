@@ -44,7 +44,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        prefsManager = PreferencesManager(requireContext(), Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!)
+        prefsManager = PreferencesManager(requireContext())
         binding.clESDEmpty.visibility = View.GONE
         viewModel.searchHistory.value?.clear()
 

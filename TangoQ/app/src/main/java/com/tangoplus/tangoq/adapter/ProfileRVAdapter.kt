@@ -171,8 +171,8 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                                     // 싱글턴에 들어갔던거 전부 비우기
                                     Singleton_t_user.getInstance(fragment.requireContext()).jsonObject = null
                                     Singleton_t_measure.getInstance(fragment.requireContext()).measures = null
-                                    Singleton_t_progress.getInstance(fragment.requireContext()).progresses = null
-
+                                    Singleton_t_progress.getInstance(fragment.requireContext()).programProgresses = null
+                                    Singleton_t_progress.getInstance(fragment.requireContext()).graphProgresses = null
                                 }
                             }
                         }

@@ -49,11 +49,15 @@ class MeasureViewModel : ViewModel() {
     // room에 저장할 dynamic이 담기는 곳 (1개임)
     var dynamic : MeasureDynamic? = null
 
-    val files = mutableListOf<File>()
+    val staticFiles = mutableListOf<File>()
+    var dynamicFile : File? = null
+
+    val staticJsonFiles = mutableListOf<File>()
+    var dynamicJsonFile : File? = null
 
     init {
         selectedMeasureDate.value = ""
-        selectedMeasure = MeasureVO(-1,-1, "", null, mutableListOf(Pair("", -1), Pair("", -1)), JSONArray(), mutableListOf(), true, null)
+        selectedMeasure = MeasureVO(-1,-1, "", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
     }
 
     // -------# 측정 결과 MeasureVO로 변환 #------
@@ -88,6 +92,7 @@ class MeasureViewModel : ViewModel() {
         "ols_front_right_vertical_angle_hip_knee_opposite", "ols_front_right_vertical_angle_knee_toe_opposite",
         "ols_front_right_vertical_angle_hip_knee_toe_opposite", "ols_front_right_vertical_distance_toe_opposite_toe",
     )
+
     fun convertToMeasureDynamic(jsonObject: JSONObject): MeasureDynamic {
         val gson = Gson()
 
@@ -138,7 +143,7 @@ class MeasureViewModel : ViewModel() {
             measureSn = info.measure_sn, // 아이디도 더미
             regDate = info.measure_date,
             overall = info.t_score, // 종합 점수 더미
-            dangerParts = mutableListOf(Pair("골반", 1), Pair("어깨", 3)), // 아픈 부위 더미
+            dangerParts = mutableListOf(Pair("골반", 1f), Pair("어깨", 3f)), // 아픈 부위 더미
             measureResult = ja,
             fileUris = uris,
             isMobile = true,

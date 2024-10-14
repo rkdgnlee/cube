@@ -8,6 +8,7 @@ import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -39,7 +41,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     lateinit var binding : FragmentAlarmDialogBinding
     private lateinit var swipeHelperCallback: SwipeHelperCallback
     private lateinit var alarmRecyclerViewAdapter : AlarmRVAdapter
-    private lateinit var alarmList : MutableList<MessageVO>
+    private var alarmList = mutableListOf<MessageVO>()
     private lateinit var pm: PreferencesManager
 
     override fun onCreateView(
@@ -54,7 +56,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        pm = PreferencesManager(requireContext(), Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!)
+        pm = PreferencesManager(requireContext())
 
 //        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ko", "KR"))
 //
@@ -86,6 +88,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
                 alarmList = pm.getAlarms()
+                alarmList.reverse()
 //                alarmList = mutableListOf(
 //                    MessageVO(1, "즉시 시작할 것", timestamp =  longTime ,route = "home_intermediate" ),
 //                    MessageVO(2, "미션이 부여됐습니다", timestamp =  longMinute , route = "pick"),
@@ -98,6 +101,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
                 } else {
                     binding.tvAlarm.visibility = View.GONE
                 }
+
                 val alarmRecyclerViewAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
                 swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
@@ -133,10 +137,8 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         binding.rvAlarm.post {
             binding.rvAlarm.invalidateItemDecorations()
         }
-        if (timeStamp != null) {
-            alarmList.remove(alarmList.find { it.timeStamp == timeStamp })
-            pm.deleteAlarm(timeStamp)
-        }
+        alarmList.remove(alarmList.find { it.timeStamp == timeStamp })
+        pm.deleteAlarm(timeStamp!!)
 
 
         // ------! 삭제 후 스와이프 초기화 끝 !------

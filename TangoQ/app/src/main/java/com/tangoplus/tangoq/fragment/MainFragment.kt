@@ -27,6 +27,7 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.StringRVAdapter
+import com.tangoplus.tangoq.broadcastReceiver.AlarmController
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.ProgressViewModel
@@ -53,6 +54,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -88,9 +90,11 @@ class MainFragment : Fragment() {
 
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
-        prefsManager = PreferencesManager(requireContext(), Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!)
+        prefsManager = PreferencesManager(requireContext())
         latestRecSn = prefsManager.getLatestRecommendation()
         Log.v("latestRecSn", "${latestRecSn}")
+        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "점심공복에는 운동효과가 더 좋답니다.", 14, 2)
+//        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "식곤증을 위해 스트레칭을 추천드려요.", 13, 36)
 
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
@@ -153,6 +157,25 @@ class MainFragment : Fragment() {
 
         // ------# balance check #------
         /* 이미 순위가 매겨진 부위들을 넣어서 index별로 각 밸런스 체크에 들어간다 */
+        // TODO 고정으로 일단 위험부위와 점수는 넣어놓기.
+//        val dangerParts = measures?.get(index)?.dangerParts?.map { it.first }?.toMutableList()
+//        val stages = mutableListOf<MutableList<String>>()
+//        stages.add( dangerParts?.subList(0, 2)!!)
+//        stages.add( dangerParts.subList(0, 2))
+//        stages.add( dangerParts.subList(0, 2))
+//        stages.add( dangerParts.subList(2, 3))
+//        stages.add( dangerParts.subList(2, 3))
+//
+//        val dangerDegree = measures?.get(index)?.dangerParts?.map { it.second }?.toMutableList()
+//        val degrees = mutableListOf<Pair<Int,Int>>()
+//        for (i in 0 until 5) {
+//            val degree = dangerDegree?.getOrNull(i) ?: -1  // null이면 기본값으로 -1 사용
+//            when (degree) {
+//                1 -> degrees.add(Pair(1, Random.nextInt(2, 4)))
+//                2 -> degrees.add(Pair(2, Random.nextInt(-1, 2)))
+//                else -> degrees.add(Pair(3, Random.nextInt(-2, -1)))  // 여기서 else는 null 또는 다른 값에 대한 처리
+//            }
+//        }
         val stages = mutableListOf<MutableList<String>>()
         val balanceParts1 = mutableListOf("어깨", "골반")
         stages.add(balanceParts1)
@@ -166,6 +189,10 @@ class MainFragment : Fragment() {
         stages.add(balanceParts5)
 
         val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
+
+
+
+//        val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
         // 부위에 대한 설명 타입 - 근육 긴장, 이상 감지, 불균형 등
 
         val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -228,12 +255,15 @@ class MainFragment : Fragment() {
                         var currentPage = 0
                         try {
 
+                            // -------# 최근 진행 프로그램 가져오기 #------
                             if (programSn != 0) {
                                 val week = latestProgress.optInt("week_number")
                                 program  = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
+
                                 val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
                                 currentPage = findCurrentIndex(progresses)
                                 adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, progresses, Pair(0,0) ,"history")
+
                             } else { // 기록이 없을 때를 말하는거임. 그렇다고 recommend가 없는 건아니니 dummy가 불완전한 상태.
                                 Log.v("뷰모델현재측정추천0번쨰", "${mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString()}, ${mViewModel.selectedMeasure?.recommendations}")
                                 program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
@@ -241,12 +271,14 @@ class MainFragment : Fragment() {
                             }
                             CoroutineScope(Dispatchers.Main).launch {
 
+                                // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
                                 binding.tvMProgram.setOnClickListener {
                                     val dialog = ProgramCustomDialogFragment.newInstance(program.programSn, prefsManager.getLatestRecommendation())
                                     Log.v("프로그램direct", "$programSn, ${prefsManager.getLatestRecommendation()}")
                                     dialog.show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
                                 }
 
+                                // -------# 최근 진행 프로그램 뷰페이저 #------
                                 binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
                                 binding.vpM.apply {
                                     clipToPadding = false

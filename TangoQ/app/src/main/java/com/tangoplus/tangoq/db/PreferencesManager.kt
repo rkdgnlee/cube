@@ -2,94 +2,127 @@ package com.tangoplus.tangoq.db
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.google.gson.Gson
 import com.tangoplus.tangoq.data.MessageVO
+import java.time.LocalDate
+import java.time.LocalDateTime
 
-class PreferencesManager(context: Context, userSn: Int) {
+class PreferencesManager(private val context: Context) {
     private val LAST_SN_KEY = "last_sn"
-    private val prefs2 : SharedPreferences = context.getSharedPreferences("search_history_${userSn}", Context.MODE_PRIVATE)
-    private val prefs : SharedPreferences = context.getSharedPreferences("lastest_recommendation", Context.MODE_PRIVATE)
-    private val prefs3 : SharedPreferences = context.getSharedPreferences("alarm_${userSn}", Context.MODE_PRIVATE)
+    private val USER_SN_KEY = "user_sn"
+    private val globalPrefs: SharedPreferences = context.getSharedPreferences("global_prefs", Context.MODE_PRIVATE)
+
+    private fun getPrefs(name: String): SharedPreferences {
+        val userSn = getUserSn()
+        return context.getSharedPreferences("${name}_${userSn}", Context.MODE_PRIVATE)
+    }
+
+    fun getUserSn(): Int = globalPrefs.getInt(USER_SN_KEY, -1)
+
+    fun setUserSn(userSn: Int) {
+        globalPrefs.edit().putInt(USER_SN_KEY, userSn).apply()
+    }
+
+    // Latest Recommendation
+
+    private val latestRecommendationPrefs: SharedPreferences
+        get() = getPrefs("latest_recommendation")
 
     fun saveLatestRecommendation(sn: Int) {
-        prefs.edit().apply {
-            putInt("latest_sn", sn)
-            apply()
-        }
-    }
-    fun getLatestRecommendation(): Int {
-        return prefs.getInt("latest_sn", -1)
+        latestRecommendationPrefs.edit().putInt("latest_sn", sn).apply()
     }
 
+    fun getLatestRecommendation(): Int = latestRecommendationPrefs.getInt("latest_sn", -1)
 
+    // Search History
+    private val searchHistoryPrefs: SharedPreferences
+        get() = getPrefs("search_history")
 
-    fun getLastSn(): Int {
-        return prefs2.getInt(LAST_SN_KEY, 0)
-    }
+    fun getLastSn(): Int = searchHistoryPrefs.getInt(LAST_SN_KEY, 0)
 
     fun incrementAndGetSn(): Int {
         val lastSn = getLastSn()
         val newSn = lastSn + 1
-        prefs2.edit().putInt(LAST_SN_KEY, newSn).apply()
+        searchHistoryPrefs.edit().putInt(LAST_SN_KEY, newSn).apply()
         return newSn
     }
 
     fun setStoredHistory(search: String) {
-        prefs2.edit().putString("${incrementAndGetSn()}_stored_history", search).apply()
+        searchHistoryPrefs.edit().putString("${incrementAndGetSn()}_stored_history", search).apply()
     }
 
-    fun getStoredHistory(sn: Int) : String {
-        return prefs2.getString("${sn}_stored_history", "").toString()
-    }
+    fun getStoredHistory(sn: Int): String = searchHistoryPrefs.getString("${sn}_stored_history", "").orEmpty()
 
     fun deleteAllHistory() {
-        prefs2.edit().clear().apply()
+        searchHistoryPrefs.edit().clear().apply()
     }
 
     fun deleteStoredHistory(sn: Int) {
-        prefs2.edit().remove("${sn}_stored_history").apply()
+        searchHistoryPrefs.edit().remove("${sn}_stored_history").apply()
     }
+
+    // Alarms
+    private val alarmPrefs: SharedPreferences
+        get() = getPrefs("alarm")
 
     fun storeAlarm(messageVO: MessageVO) {
         val alarm = Gson().toJson(messageVO)
-
-        prefs3.edit().putString("alarmMessage_${messageVO.timeStamp}", alarm).apply()
+        alarmPrefs.edit().putString("alarmMessage_${messageVO.timeStamp}", alarm).apply()
     }
 
     fun getAlarms(): MutableList<MessageVO> {
-        val allEntries = prefs3.all // Get all entries in SharedPreferences
+        val allEntries = alarmPrefs.all
         val alarmsList = mutableListOf<MessageVO>()
         val gson = Gson()
-
+        Log.v("올엔트리알람", "$allEntries")
         for ((key, value) in allEntries) {
-            // Filter keys that start with "alarmMessage_"
             if (key.startsWith("alarmMessage_")) {
-                // Convert the JSON string back to a MessageVO object
                 val alarmJson = value as? String ?: continue
                 val messageVO = gson.fromJson(alarmJson, MessageVO::class.java)
                 alarmsList.add(messageVO)
             }
         }
-
         return alarmsList
     }
 
     fun deleteAlarm(timeStamp: Long) {
-        prefs3.edit().remove("alarmMessage_$timeStamp").apply()
+        alarmPrefs.edit().remove("alarmMessage_$timeStamp").apply()
     }
 
     fun deleteAllAlarms() {
-        val editor = prefs3.edit()
-        val allEntries = prefs3.all
+        val editor = alarmPrefs.edit()
+        val allEntries = alarmPrefs.all
 
         for ((key, _) in allEntries) {
-            // Filter and remove keys that start with "alarmMessage_"
             if (key.startsWith("alarmMessage_")) {
                 editor.remove(key)
             }
         }
 
-        editor.apply() // Apply changes after looping through all keys
+        editor.apply()
     }
 
+    // likes
+    private val likePrefs : SharedPreferences
+        get() = getPrefs("like")
+
+    fun storeLike(exerciseId : String) {
+        likePrefs.edit().putString("likes_$exerciseId", exerciseId).apply()
+    }
+
+    fun getLikes(): MutableList<String> {
+        val allEntries = likePrefs.all
+        val likeList = mutableListOf<String>()
+        for ((key, value) in allEntries) {
+            if (key.startsWith("likes_")) {
+                likeList.add(value.toString())
+            }
+        }
+        return likeList
+    }
+
+    fun deleteLike(exerciseId: String) {
+        likePrefs.edit().remove("likes_$exerciseId").apply()
+    }
 }

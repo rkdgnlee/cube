@@ -9,6 +9,7 @@ class ExerciseViewModel : ViewModel() {
 
     // 모든 운동 exerciseFragment에서 받아서 VM에 넣는 곳
     var allExercises : MutableList<ExerciseVO>
+    // 운동 검색 기록 임시로 담아두는 곳.
     var searchHistory = MutableLiveData(mutableListOf<Pair<Int, String>>()) // 운동 검색 history
 
 
@@ -41,13 +42,13 @@ class ExerciseViewModel : ViewModel() {
 
 
     // 재생목록 재생 후 피드백 담기
-    var exerciseLog = MutableLiveData(Triple(0, "", 0)) // 진행시간, 갯수, 총 진행시간
+    var totalProgressDuration = 0
+    var exerciseLog = Triple(0, 0, 0) // 진행시간, 갯수, 총 시간
     var isDialogShown = MutableLiveData(false)
-    var finishHistorys = mutableListOf<ProgressUnitVO>()
 
 
     init {
-        exerciseLog.value = Triple(0, "", 0)
+        exerciseLog = Triple(0, 0, 0)
         allExercises = mutableListOf()
 
     }

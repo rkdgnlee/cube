@@ -23,8 +23,14 @@ class ProgressViewModel : ViewModel() {
     /* Triple<String, Int, Int>
     * regDate, 마지막시청일자, 완료한 횟수.
     * */
-    var datesClassifiedByDay =
-        mutableListOf<LocalDate>() // history의 날짜만 따로 뺀 LIST -> MD2 달력에다가 동그라미 용도임
-    var weeklyHistorys : MutableList<Triple<String, Int, Int>>? = null // MD2 막대그래프에 들어갈수치 -> 가장 최근 운동들임 7개가 훨씬 많을수도 있고
-
+    var datesClassifiedByDay = mutableListOf<LocalDate>() // history의 날짜만 따로 뺀 LIST -> MD2 달력에다가 동그라미 용도임
+//    var weeklyHistorys : MutableList<Triple<String, Int, Int>>? = null // MD2 막대그래프에 들어갈수치 -> 가장 최근 운동들임 7개가 훨씬 많을수도 있고
+//
+//    init {
+//        weeklyHistorys = mutableListOf()
+//    }
+    var currentProgressItem : ProgressUnitVO? = null
+    init {
+        currentProgressItem = ProgressUnitVO(0,0,0,0,0,0,0,0,0, "")
+    }
 }

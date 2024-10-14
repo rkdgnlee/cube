@@ -178,7 +178,7 @@
                     android:focusableInTouchMode="false"
                     android:inputType="none"
                     android:padding="16dp"
-                    android:text="AutoCompleteTextView" />
+                    android:text="_" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

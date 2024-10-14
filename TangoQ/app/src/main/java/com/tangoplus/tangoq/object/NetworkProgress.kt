@@ -3,8 +3,6 @@ package com.tangoplus.tangoq.`object`
 import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.data.ProgressUnitVO
-import com.tangoplus.tangoq.data.ProgressVO
-import com.tangoplus.tangoq.data.RecommendationVO
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -263,6 +261,58 @@ object NetworkProgress {
             .build()
         val request = Request.Builder()
             .url("$myUrl?recommendation_sn=$recSn&weeks=$week")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.v("Server>week>Progress", "${responseBody}")
+                try {
+                    val ja = JSONObject(responseBody.toString()).optJSONArray("data")
+                    val progresses = mutableListOf<ProgressUnitVO>()
+                    if (ja != null) {
+                        for (i in 0 until ja.length()) {
+                            val progressUnitVO = ProgressUnitVO(
+                                uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
+                                exerciseId = ja.optJSONObject(i).optInt("content_sn"),
+                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                                currentWeek = ja.optJSONObject(i).optInt("week_number"),
+                                currentSequence = ja.optJSONObject(i).optInt("count_set"),
+                                requiredSequence = ja.optJSONObject(i).optInt("required_set"),
+                                videoDuration = ja.optJSONObject(i).optInt("duration"),
+                                lastProgress = ja.optJSONObject(i).optInt("progress"),
+                                isCompleted = ja.optJSONObject(i).optInt("completed"),
+                                updateDate = ja.optJSONObject(i).optString("updated_at")
+
+                            )
+                            progresses.add(progressUnitVO)
+                        }
+                        Log.v("진행길이", "${progresses.size}")
+                        return@use progresses
+                    } else {
+                        return@use progresses
+                    }
+                } catch (e: Exception) {
+                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                }
+            } as MutableList<ProgressUnitVO>
+        }
+    }
+
+    suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressUnitVO> {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("$myUrl?date=$date")
             .get()
             .build()
 

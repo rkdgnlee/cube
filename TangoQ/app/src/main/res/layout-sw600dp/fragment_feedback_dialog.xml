@@ -32,53 +32,24 @@
                 android:layout_marginTop="48dp"
                 android:text="운동 평가"
                 android:textColor="#FFFFFF"
-                android:textSize="30dp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvFbPercent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="100%"
-                android:textColor="#FFFFFF"
-                android:textSize="34dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/cpbFb"
-                app:layout_constraintEnd_toEndOf="@+id/cpbFb"
-                app:layout_constraintStart_toStartOf="@+id/cpbFb"
-                app:layout_constraintTop_toTopOf="@+id/cpbFb" />
-
-            <com.mikhaellopez.circularprogressbar.CircularProgressBar
-                android:id="@+id/cpbFb"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginStart="40dp"
-                app:cpb_background_progressbar_color_end="#3B3B3B"
-                app:cpb_background_progressbar_color_start="#3B3B3B"
-                app:cpb_background_progressbar_width="12dp"
-                app:cpb_progressbar_color="#FFFFFF"
-                app:cpb_progressbar_color_end="#FFFFFF"
-                app:cpb_progressbar_color_start="#FFFFFF"
-                app:cpb_round_border="true"
-                app:layout_constraintBottom_toBottomOf="@+id/cardView5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/cardView5" />
-
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView5"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="40dp"
+                android:layout_height="128dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="20dp"
                 app:cardBackgroundColor="#00FFFFFF"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cpbFb"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView58">
 
 
@@ -89,65 +60,63 @@
                     android:background="#33000000">
 
                     <TextView
-                        android:id="@+id/tvFbCount"
+                        android:id="@+id/tvFDCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="4"
                         android:textColor="#FFFFFF"
-                        android:textSize="28dp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/imageView41"
                         app:layout_constraintStart_toStartOf="@+id/imageView41"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.75" />
+                        app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
                     <ImageView
                         android:id="@+id/imageView41"
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginTop="20dp"
                         android:src="@drawable/icon_autocomplete_button_hollow"
                         android:tint="#FFFFFF"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.75"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0.65"
+                        app:layout_constraintStart_toEndOf="@+id/imageView7"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/ivM6"
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginTop="20dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/icon_time_sub_800"
                         android:tint="#FFFFFF"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.25"
+                        app:layout_constraintEnd_toStartOf="@+id/imageView7"
+                        app:layout_constraintHorizontal_bias="0.35"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/tvFbTime"
+                        android:id="@+id/tvFDTime1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="11:12"
                         android:textColor="#FFFFFF"
-                        android:textSize="28dp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/ivM6"
                         app:layout_constraintStart_toStartOf="@+id/ivM6"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.75" />
+                        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
                     <TextView
                         android:id="@+id/textView9"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Time"
+                        android:text="Exercise Time"
                         android:textColor="#FFFFFF"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         app:layout_constraintEnd_toEndOf="@+id/ivM6"
                         app:layout_constraintStart_toStartOf="@+id/ivM6"
                         app:layout_constraintTop_toBottomOf="@+id/ivM6" />
@@ -158,10 +127,44 @@
                         android:layout_height="wrap_content"
                         android:text="Exercise"
                         android:textColor="#FFFFFF"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         app:layout_constraintEnd_toEndOf="@+id/imageView41"
                         app:layout_constraintStart_toStartOf="@+id/imageView41"
                         app:layout_constraintTop_toBottomOf="@+id/imageView41" />
+
+                    <ImageView
+                        android:id="@+id/imageView7"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/icon_time_sub_800"
+                        android:tint="#FFFFFF"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Time"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16dp"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView7"
+                        app:layout_constraintStart_toStartOf="@+id/imageView7"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+
+                    <TextView
+                        android:id="@+id/tvFDTime2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="16:34"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView7"
+                        app:layout_constraintStart_toStartOf="@+id/imageView7"
+                        app:layout_constraintTop_toBottomOf="@+id/textView8" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -170,8 +173,8 @@
                 android:id="@+id/textView61"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:text="운동 강도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -183,9 +186,9 @@
                 android:id="@+id/cardView24"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
                 app:cardBackgroundColor="#00FFFFFF"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
@@ -200,14 +203,14 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvFbIntensity1"
+                        android:id="@+id/tvFDIntensity1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="매우\n낮다"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view16"
@@ -218,14 +221,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity2"
+                        android:id="@+id/tvFDIntensity2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="저강도"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view17"
@@ -236,14 +239,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity3"
+                        android:id="@+id/tvFDIntensity3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="보통"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view18"
@@ -254,14 +257,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity4"
+                        android:id="@+id/tvFDIntensity4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="고강도"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view19"
@@ -272,14 +275,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity5"
+                        android:id="@+id/tvFDIntensity5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="매우\n고강도"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -288,8 +291,8 @@
                 android:id="@+id/textView62"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:text="운동 피로도"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -301,9 +304,9 @@
                 android:id="@+id/cardView25"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
                 app:cardBackgroundColor="#00FFFFFF"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
@@ -318,14 +321,14 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvFbFatigue1"
+                        android:id="@+id/tvFDFatigue1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="매우\n낮다"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view12"
@@ -336,14 +339,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue2"
+                        android:id="@+id/tvFDFatigue2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="저강도"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view13"
@@ -354,14 +357,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue3"
+                        android:id="@+id/tvFDFatigue3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="보통"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view14"
@@ -372,14 +375,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue4"
+                        android:id="@+id/tvFDFatigue4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="높다"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view15"
@@ -390,14 +393,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue5"
+                        android:id="@+id/tvFDFatigue5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="매우\n높다"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -405,8 +408,8 @@
                 android:id="@+id/textView63"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="운동 만족도"
                 android:textColor="#FFFFFF"
@@ -419,9 +422,9 @@
                 android:id="@+id/cardView26"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
                 app:cardBackgroundColor="#00FFFFFF"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
@@ -436,14 +439,14 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction1"
+                        android:id="@+id/tvFDSatisfaction1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="많이\n아쉽다"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view20"
@@ -454,14 +457,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction2"
+                        android:id="@+id/tvFDSatisfaction2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="아쉽다"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view21"
@@ -472,14 +475,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction3"
+                        android:id="@+id/tvFDSatisfaction3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="보통"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view22"
@@ -490,14 +493,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction4"
+                        android:id="@+id/tvFDSatisfaction4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="만족"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
 
                     <View
                         android:id="@+id/view23"
@@ -508,14 +511,14 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction5"
+                        android:id="@+id/tvFDSatisfaction5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="매우\n만족"
                         android:textColor="#FFFFFF"
-                        android:textSize="22dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -532,11 +535,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingTop="12dp">
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/btnFbPainPartSelect"
+                        android:id="@+id/btnFDPainPartSelect"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="6dp"
@@ -546,15 +549,14 @@
                         android:drawableTint="@color/mainDeepColor"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:padding="20dp"
                         android:text="통증체크"
-                        android:textColor="@color/opacityColor"
-                        android:textSize="22dp"
-                        android:textStyle="bold"
+                        android:textColor="@color/mainDeepColor"
+                        android:textSize="18sp"
+                        android:visibility="gone"
                         app:cornerRadius="12dp" />
 
                     <Button
-                        android:id="@+id/btnFbSubmit"
+                        android:id="@+id/btnFDSubmit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="6dp"
@@ -564,8 +566,7 @@
                         android:insetBottom="0dp"
                         android:text="제출하기"
                         android:textColor="@color/white"
-                        android:textSize="22dp"
-                        android:textStyle="bold"
+                        android:textSize="18dp"
                         app:cornerRadius="12dp" />
                 </LinearLayout>
 
@@ -575,23 +576,23 @@
                 android:id="@+id/view11"
                 android:layout_width="0dp"
                 android:layout_height="2dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
                 android:background="@drawable/color_gradient_white_middle_verti"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView5" />
 
             <TextView
-                android:id="@+id/tvFbSkip"
+                android:id="@+id/tvFDSkip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:text="건너뛰기"
                 android:textColor="#99FFFFFF"
-                android:textSize="24dp"
+                android:textSize="20dp"
                 app:layout_constraintBottom_toTopOf="@+id/frameLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

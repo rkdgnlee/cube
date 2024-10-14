@@ -10,6 +10,10 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.db.PreferencesManager
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -19,8 +23,8 @@ class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
         val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
         notificationManager.createNotificationChannel(channel)
 
-        val title = intent?.getStringExtra("title") ?: "제목"
-        val text = intent?.getStringExtra("text") ?: "본문"
+        val title = intent?.getStringExtra("title") ?: "TangoQ"
+        val text = intent?.getStringExtra("text") ?: "당신의 건강 걱정없는 삶으로 한발짝 다가가기 위해 연구하고 노력합니다."
 
         val notification: Notification = NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
@@ -30,7 +34,15 @@ class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
             .setAutoCancel(true)  // 알림 클릭 시 자동으로 삭제
             .build()
 
-        Log.d("AlarmReceiver", "알람 수신: $title - $text")
+        val prefs = PreferencesManager(context)
+        val message = MessageVO(
+            message = text,
+            timeStamp = System.currentTimeMillis(),
+        )
+        Log.v("AlarmReceiver", "알람 수신: $title - $text, message: $message")
+        prefs.storeAlarm(message)
+
+
         notificationManager.notify(0, notification)
 
 

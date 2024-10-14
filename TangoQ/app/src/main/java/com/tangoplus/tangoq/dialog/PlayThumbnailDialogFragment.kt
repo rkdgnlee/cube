@@ -102,9 +102,9 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         // -----! 하단 운동 시작 버튼 시작 !-----
         binding.btnPTDPlay.setOnClickListener {
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
-            intent.putExtra("exercise_id", exerciseData?.exerciseId)
             intent.putExtra("video_url", videoUrl)
-            intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
+            intent.putExtra("exercise_id", exerciseData?.exerciseId)
+            intent.putExtra("total_duration", exerciseData?.videoDuration?.toInt())
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
@@ -116,12 +116,28 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             }
         } // ------! 하단 운동 시작 버튼 끝 !------
 
-//        // ------! 전체화면 구현 로직 시작 !------
+//        // ------# 전체화면 구현 로직 시작 #------
         val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
             dismiss()
         }
 
+        val exoPlay = binding.pvPTD.findViewById<ImageButton>(R.id.btnPlay)
+        val exoPause = binding.pvPTD.findViewById<ImageButton>(R.id.btnPause)
+        exoPause?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == true) {
+                simpleExoPlayer?.pause()
+                exoPause.visibility = View.GONE
+                exoPlay.visibility = View.VISIBLE
+            }
+        }
+        exoPlay?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == false) {
+                simpleExoPlayer?.play()
+                exoPause.visibility = View.VISIBLE
+                exoPlay.visibility = View.GONE
+            }
+        }
         // ------! 앞으로 감기 뒤로 감기 시작 !------
         val replay5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_replay_5)
         val forward5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_forward_5)
@@ -141,10 +157,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 }
             }
         } // ------! 앞으로 감기 뒤로 감기 끝 !------
-
-
-
-
 
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
@@ -167,9 +179,9 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 //        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
 //            binding.btnPTDAIPlay.visibility = View.VISIBLE
 //        } else {
-            binding.btnPTDAIPlay.visibility = View.GONE
-//        }
 
+//        }
+        binding.btnPTDAIPlay.visibility = View.GONE
 //        binding.btnPTDAIPlay.setOnClickListener {
 //            val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
 //
@@ -190,6 +202,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         simpleExoPlayer?.playWhenReady = true
     }
+
     private fun initPlayer(){
         simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
         binding.pvPTD.player = simpleExoPlayer
@@ -197,6 +210,8 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             simpleExoPlayer?.prepare(it)
         }
         simpleExoPlayer?.seekTo(playbackPosition)
+
+
     }
     private fun buildMediaSource() : MediaSource {
         val dataSourceFactory = DefaultDataSourceFactory(requireContext(), "sample")
@@ -204,7 +219,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             .createMediaSource(MediaItem.fromUri(videoUrl))
 
     }
-    // 일시중지
+    // ------# 일시중지 #------
     override fun onStop() {
         super.onStop()
         simpleExoPlayer?.stop()

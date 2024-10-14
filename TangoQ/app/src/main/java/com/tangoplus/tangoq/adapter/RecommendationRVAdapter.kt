@@ -33,7 +33,7 @@ class RecommendationRVAdapter(private val fragment: Fragment, private val data: 
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Log.v("adapter내부정보", "${data.size}, ${exerciseTypeIds.size}")
+        Log.v("adapter내부정보", "${data}, ${exerciseTypeIds}")
         val currentItem = data[position]
         val typeItem = exerciseTypeIds[position]
         if (holder is programViewHolder) {

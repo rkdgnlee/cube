@@ -25,7 +25,7 @@ import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.databinding.RvExerciseHistoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
-import com.tangoplus.tangoq.dialog.ExerciseBSDialogFragment
+import com.tangoplus.tangoq.db.PreferencesManager
 import com.tomlecollegue.progressbars.HorizontalProgressView
 import java.lang.IllegalArgumentException
 
@@ -37,8 +37,8 @@ class ExerciseRVAdapter (
     private val selectSeq : Pair<Int, Int> ,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-
+    val prefs =  PreferencesManager(fragment.requireContext())
+    val likes = prefs.getLikes()
     // -----! main !-----
     inner class mainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
@@ -47,8 +47,7 @@ class ExerciseRVAdapter (
         val tvEITime : TextView= view.findViewById(R.id.tvEITime)
         val ivEIStage : ImageView = view.findViewById(R.id.ivEIStage)
         val tvEIStage : TextView = view.findViewById(R.id.tvEIStage)
-        val tvEIRepeat : TextView = view.findViewById(R.id.tvEIRepeat)
-        val ibtnEIMore : ImageButton= view.findViewById(R.id.ibtnEIMore)
+        val ibtnEILike : ImageButton= view.findViewById(R.id.ibtnEILike)
         val vEI : View = view.findViewById(R.id.vEI)
         val hpvEI : HorizontalProgressView = view.findViewById(R.id.hpvEI)
         val tvEIFinish : TextView = view.findViewById(R.id.tvEIFinish)
@@ -139,19 +138,31 @@ class ExerciseRVAdapter (
                     .override(180)
                     .into(holder.ivEIThumbnail)
 
-                // ------! 시청 기록 시작 !------\
+
+
+
+                // ------# 시청 기록 #------\
 //                if (currentExerciseItem.exerciseId == currentHistoryItem.exerciseId) {
 //                    holder.hpvEIHistory.progress = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt()!!))!! * 100
 //                }
 
-                // ------! 점점점 버튼 시작 !------
-                holder.ibtnEIMore.setOnClickListener {
-                    val bsFragment = ExerciseBSDialogFragment()
-                    val bundle = Bundle()
-                    bundle.putParcelable("exerciseUnit", currentExerciseItem)
-                    bsFragment.arguments = bundle
-                    val fragmentManager = fragment.requireActivity().supportFragmentManager
-                    bsFragment.show(fragmentManager, bsFragment.tag)
+                // ------# 하트 버튼 #------
+                var isLike = false
+                if (currentExerciseItem.exerciseId in likes) {
+                    holder.ibtnEILike.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_like_enabled))
+                    isLike = true
+                }
+
+                holder.ibtnEILike.setOnClickListener {
+                    if (isLike) {
+                        prefs.deleteLike(currentExerciseItem.exerciseId.toString())
+                        holder.ibtnEILike.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_like_disabled))
+                        isLike = false
+                    } else {
+                        prefs.storeLike(currentExerciseItem.exerciseId.toString())
+                        holder.ibtnEILike.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_like_enabled))
+                        isLike = true
+                    }
                 }
                 // ------ ! thumbnail 시작 !------
                 holder.vEI.setOnClickListener {
@@ -212,8 +223,8 @@ class ExerciseRVAdapter (
                     when (condition) {
                         0 -> { // 재생 및 완료
                             holder.tvEIFinish.visibility = View.VISIBLE
-                            holder.ibtnEIMore.visibility = View.INVISIBLE
-                            holder.ibtnEIMore.isEnabled = false
+                            holder.ibtnEILike.visibility = View.INVISIBLE
+                            holder.ibtnEILike.isEnabled = false
                             holder.vEI.visibility = View.VISIBLE
                             holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondContainerColor)
                             holder.hpvEI.visibility = View.GONE

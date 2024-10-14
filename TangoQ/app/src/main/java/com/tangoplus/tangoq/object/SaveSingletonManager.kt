@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.`object`
 
 import android.content.Context
 import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
@@ -10,6 +11,7 @@ import com.tangoplus.tangoq.db.FileStorageUtil.readJsonArrayFile
 import com.tangoplus.tangoq.db.FileStorageUtil.readJsonFile
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureInfo
+import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.`object`.NetworkMeasure.saveAllMeasureInfo
 import com.tangoplus.tangoq.`object`.NetworkProgress.postProgressInCurrentProgram
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
@@ -24,80 +26,104 @@ import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class SaveSingletonManager(private val context: Context) {
+class SaveSingletonManager(private val context: Context, private val activity: FragmentActivity) {
     private val singletonMeasure = Singleton_t_measure.getInstance(context)
     private val singletonProgress = Singleton_t_progress.getInstance(context)
 
-    fun getMeasures(userUUID: String, userInfoSn: Int ,userSn : Int, scope: CoroutineScope, callbacks: () -> Unit) {
-        val md = MeasureDatabase.getDatabase(context)
-        val mDao = md.measureDao()
-
+    fun getMeasures(userUUID: String, userInfoSn: Int, userSn: Int, scope: CoroutineScope, callbacks: () -> Unit) {
         scope.launch {
-            CoroutineScope(Dispatchers.IO).launch {
+            // 1. saveAllMeasureInfo 부분 실행
 
-                saveAllMeasureInfo(context, context.getString(R.string.API_measure), userUUID, userSn)
+            // 측정기록이 있는 user이다? 그러면 true문 없으면 바로 mainactivity로 감.
+            saveMeasureInfo(userUUID, userSn) { existed2 ->
+                if (existed2) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        fetchAndFilterMeasureInfo(userSn)
+                        // 2. Measure 정보 필터링 및 저장
+                        Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
+                        // 3. 추천 프로그램 추가
+                        addRecommendations(userInfoSn)
+                        callbacks()
+                    }
+                } else {
+                    callbacks()
+                }
+            }
+        }
+    }
+
+    private suspend fun saveMeasureInfo(userUUID: String, userSn: Int, callbacks: (Boolean) -> Unit) {
+        withContext(Dispatchers.Main) {
+            val dialog = LoadingDialogFragment.newInstance("측정이력")
+            dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
+
+            withContext(Dispatchers.IO) {
+                saveAllMeasureInfo(context, context.getString(R.string.API_measure), userUUID, userSn) { existed ->
+                    callbacks(existed)
+                }
+                withContext(Dispatchers.Main) {
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchAndFilterMeasureInfo(userSn: Int) {
+        withContext(Dispatchers.Main) {
+            val dialog = LoadingDialogFragment.newInstance("측정파일")
+            dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
+
+            withContext(Dispatchers.IO) {
+
+                val md = MeasureDatabase.getDatabase(context)
+                val mDao = md.measureDao()
 
                 val allInfos = mDao.getAllInfo(userSn)
                 val allStatics = mDao.getAllStatic(userSn)
                 val allDynamics = mDao.getAllDynamic(userSn)
-                Log.d("InsertDynamic", "allInfos: $allInfos, allStatics: $allStatics, allDynamics: $allDynamics")
 
-                //  userSn에 맞는 모든 값들을 가져옴.
+
                 val groupedInfos = allInfos.groupBy { entity -> entity.sn }
                 val groupedStatics = allStatics.groupBy { entity -> entity.server_sn }
                 val groupedDynamics = allDynamics.groupBy { entity -> entity.server_sn }
-                val measures = mutableListOf<MeasureVO>()
-                // ------# 모든 측정 기록을 전부 필터링하는 곳 #------
 
-                for ((key, infoList) in groupedInfos) { // key가 sn, infoList가 각 infoList
+                val measures = mutableListOf<MeasureVO>()
+
+                for ((key, infoList) in groupedInfos) {
                     val statics = groupedStatics[key]?.sortedBy { it.measure_seq } ?: emptyList()
                     val dynamic = groupedDynamics[key] ?: emptyList()
 
-                    Log.v("스태틱다이나믹길이", "statics: ${statics.size}, dynamic: ${dynamic.size}")
                     val ja = JSONArray()
                     val uris = mutableListOf<String>()
                     val baseUrl = "https://gym.tangostar.co.kr/data/Results/"
+
                     for (i in 0 until 7) {
+                        val jsonFile: File?
+                        val mediaFile: File?
+
                         if (i == 0) {
-                            val jsonFile = getFile(context, statics[0].measure_server_json_name.replace(baseUrl, ""))
-                            val mediaFile = getFile(context, statics[0].measure_server_file_name.replace(baseUrl, ""))
-                            Log.e("Files0", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                            if (jsonFile != null && mediaFile != null) {
-                                ja.put(readJsonFile(jsonFile))
-                                uris.add(mediaFile.absolutePath)
-                            } else {
-                                Log.e("Files", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                            }
+                            jsonFile = getFile(context, statics[0].measure_server_json_name.replace(baseUrl, ""))
+                            mediaFile = getFile(context, statics[0].measure_server_file_name.replace(baseUrl, ""))
                         } else if (i == 1) {
-                            val jsonFile = getFile(context, dynamic[0].measure_server_json_name?.replace(baseUrl, "")!!)
-                            val mediaFile = getFile(context, dynamic[0].measure_server_file_name?.replace(baseUrl, "")!!)
-                            Log.e("File1", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                            if (jsonFile != null && mediaFile != null) {
-                                ja.put(readJsonArrayFile(jsonFile))
-                                uris.add(mediaFile.absolutePath)
-                            } else {
-                                Log.e("FileError", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                            }
+                            jsonFile = getFile(context, dynamic[0].measure_server_json_name?.replace(baseUrl, "")!!)
+                            mediaFile = getFile(context, dynamic[0].measure_server_file_name?.replace(baseUrl, "")!!)
                         } else {
-                            val jsonFile = getFile(context, statics[i - 1].measure_server_json_name.replace(baseUrl, "")) // 0 1 2(static의 1) 3 4 5 6
-                            val mediaFile = getFile(context, statics[i - 1].measure_server_file_name.replace(baseUrl, ""))
-                            Log.e("File2+", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                            if (jsonFile != null && mediaFile != null) {
-                                ja.put(readJsonFile(jsonFile))
-                                uris.add(mediaFile.absolutePath)
-                            } else {
-                                Log.e("FileError", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                            }
+                            jsonFile = getFile(context, statics[i - 1].measure_server_json_name.replace(baseUrl, ""))
+                            mediaFile = getFile(context, statics[i - 1].measure_server_file_name.replace(baseUrl, ""))
+                        }
+
+                        if (jsonFile != null && mediaFile != null) {
+                            if (i == 1) ja.put(readJsonArrayFile(jsonFile)) else ja.put(readJsonFile(jsonFile))
+                            uris.add(mediaFile.absolutePath)
                         }
                     }
-                    Log.v("infoList", "${infoList}")
+
                     val dangerParts = if (infoList.isNotEmpty()) getDangerParts(infoList[0]) else emptyList()
-                    Log.v("위험부위", "dangerParts: ${dangerParts} ,infoList:  ${infoList},infoList[0]:  ${infoList[0]}")
                     val measureVO = MeasureVO(
                         deviceSn = 0,
                         measureSn = infoList.firstOrNull()?.measure_sn!!,
                         regDate = infoList.firstOrNull()?.measure_date!!,
-                        overall = infoList.firstOrNull()?.t_score ,
+                        overall = infoList.firstOrNull()?.t_score,
                         dangerParts = dangerParts.toMutableList(),
                         measureResult = ja,
                         fileUris = uris,
@@ -105,36 +131,37 @@ class SaveSingletonManager(private val context: Context) {
                         recommendations = null
                     )
                     measures.add(measureVO)
-                    Log.v("measureVO", "measureVO: $measureVO")
                 }
                 measures.reverse()
-                singletonMeasure.measures = measures
+                withContext(Dispatchers.Main) {
+                    dialog.dismiss()
+                }
+                singletonMeasure.measures = measures.toMutableList()
 
-                // ---------------------------# recommendation을 조회하는 함수 #-----------------------------
+            }
+        }
 
+    }
+
+    suspend fun addRecommendations(userInfoSn: Int) {
+        withContext(Dispatchers.Main) {
+            val dialog = LoadingDialogFragment.newInstance("추천")
+            dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
+            withContext(Dispatchers.IO) {
                 val recommendations = getRecommendProgram(context.getString(R.string.API_recommendation), context)
-                // 측정 별 추천 프로그램 받아오기
-                val groupedRecs = recommendations.groupBy { it.measureSn }
+                val groupedRecs = recommendations.groupBy { it.infoSn }
 
                 singletonMeasure.measures?.forEachIndexed { index, measure ->
+
+                    // eachIndexed로 각각의 measureSn에 접근. 현재 근데 여기서 measureSn이라는게 좀 애매함. info에 있는 sn을 활용해야하는 것 같기도.
                     val measureSn = measure.measureSn
                     if (measureSn in groupedRecs) {
-                        // 이미 존재하는 추천 프로그램 사용
                         measure.recommendations = groupedRecs[measureSn] ?: emptyList()
                     } else {
-                        // 새로운 추천 프로그램 생성
                         val recommendJson = JSONObject().apply {
                             put("user_sn", userInfoSn)
-                            put("exercise_type_id", JSONArray().apply {
-                                put(3)
-                                put(1)
-                                put(2)
-                            })
-                            put("exercise_stage", JSONArray().apply {
-                                put(1)
-                                put(2)
-                                put(3)
-                            })
+                            put("exercise_type_id", JSONArray().apply { put(3); put(1); put(2) })
+                            put("exercise_stage", JSONArray().apply { put(1); put(2); put(3) })
                             put("measure_sn", measureSn)
                         }
 
@@ -145,18 +172,23 @@ class SaveSingletonManager(private val context: Context) {
                         }
                     }
                     Log.v("recommendUpdate", "MeasureSn: $measureSn, Recommendations: ${measure.recommendations}")
+                    withContext(Dispatchers.Main) {
+                        dialog.dismiss()
+                    }
                 }
-
-                callbacks()
             }
+
         }
+
     }
 
-
     suspend fun getOrInsertProgress(jo: JSONObject) : Unit = suspendCoroutine  { continuation ->
+
         postProgressInCurrentProgram(context.getString(R.string.API_progress), jo, context) { progressUnits -> // MutableList<ProgressUnitVO>
+            // (자동) 있으면 가져오고 없으면 추가되서 가져오고
+
             if (progressUnits.isNotEmpty()) {
-                Log.v("프로그레스유닛들", "${progressUnits}")
+                Log.v("프로그레스유닛들", "$progressUnits")
                 val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
                 val requiredSequences = 1..progressUnits[0].requiredSequence // 3
                 val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
@@ -184,11 +216,12 @@ class SaveSingletonManager(private val context: Context) {
                     }
                 }
 
-                singletonProgress.progresses = organizedUnits
-                Log.v("singletonProgress", "${singletonProgress.progresses!![0].map { it.lastProgress }}, ${singletonProgress.progresses!![1].map { it.lastProgress }}, ${singletonProgress.progresses!![2].map { it.lastProgress }}, ${singletonProgress.progresses!![3].map { it.lastProgress }}, ")
+                singletonProgress.programProgresses = organizedUnits
+                Log.v("singletonProgress", "${singletonProgress.programProgresses!![0].map { it.lastProgress }}, ${singletonProgress.programProgresses!![1].map { it.lastProgress }}, ${singletonProgress.programProgresses!![2].map { it.lastProgress }}, ${singletonProgress.programProgresses!![3].map { it.lastProgress }}, ")
                 continuation.resume(Unit)
             } else {
-                singletonProgress.progresses?.add(mutableListOf())
+                // ------# 측정 기록이 없음 #------
+                singletonProgress.programProgresses?.add(mutableListOf())
                 continuation.resume(Unit)
             }
         }
@@ -222,42 +255,67 @@ class SaveSingletonManager(private val context: Context) {
 
 
 
-    fun getDangerParts(measureInfo: MeasureInfo) : MutableList<Pair<String, Int>> {
-        val dangerParts = mutableListOf<Pair<String, Int>>()
+    fun getDangerParts(measureInfo: MeasureInfo) : MutableList<Pair<String, Float>> {
+        val dangerParts = mutableListOf<Pair<String, Float>>()
 
-        val neckRisk = measureInfo.risk_neck.toInt()
+        val neckRisk = measureInfo.risk_neck.toFloat()
         if (neckRisk > 0) {
             dangerParts.add(Pair("목관절", neckRisk))
         }
 
-        val shoulderRisk = maxOf(measureInfo.risk_shoulder_left.toInt(), measureInfo.risk_shoulder_right.toInt())
-        if (shoulderRisk > 0) {
-            dangerParts.add(Pair("어깨", shoulderRisk))
+        val shoulderLeftRisk = measureInfo.risk_shoulder_left.toFloat()
+        if (shoulderLeftRisk > 0) {
+            dangerParts.add(Pair("우측 어깨", shoulderLeftRisk))
         }
 
-        val elbowRisk = maxOf(measureInfo.risk_elbow_left.toInt(), measureInfo.risk_elbow_right.toInt())
-        if (elbowRisk > 0) {
-            dangerParts.add(Pair("팔꿉", elbowRisk))
+        val shoulderRightRisk = measureInfo.risk_shoulder_right.toFloat()
+        if (shoulderRightRisk > 0) {
+            dangerParts.add(Pair("좌측 어깨", shoulderRightRisk))
         }
 
-        val wristRisk = maxOf(measureInfo.risk_wrist_left.toInt(), measureInfo.risk_wrist_right.toInt())
-        if (wristRisk > 0) {
-            dangerParts.add(Pair("손목", wristRisk))
+        val elbowLeftRisk = measureInfo.risk_elbow_left.toFloat()
+        if (elbowLeftRisk > 0) {
+            dangerParts.add(Pair("좌측 팔꿉", elbowLeftRisk))
+        }
+        val elbowRightRisk =  measureInfo.risk_elbow_right.toFloat()
+        if (elbowRightRisk > 0) {
+            dangerParts.add(Pair("우측 팔꿉", elbowRightRisk))
         }
 
-        val hipRisk = maxOf(measureInfo.risk_hip_left.toInt(), measureInfo.risk_hip_right.toInt())
-        if (hipRisk > 0) {
-            dangerParts.add(Pair("골반", hipRisk))
+        val wristLeftRisk = measureInfo.risk_wrist_left.toFloat()
+        if (wristLeftRisk > 0) {
+            dangerParts.add(Pair("좌측 손목", wristLeftRisk))
+        }
+        val wristRightRisk = measureInfo.risk_wrist_right.toFloat()
+        if (wristRightRisk > 0) {
+            dangerParts.add(Pair("우측 손목", wristRightRisk))
         }
 
-        val kneeRisk = maxOf(measureInfo.risk_knee_left.toInt(), measureInfo.risk_knee_right.toInt())
-        if (kneeRisk > 0) {
-            dangerParts.add(Pair("무릎", kneeRisk))
+        val hipLeftRisk = measureInfo.risk_hip_left.toFloat()
+        if (hipLeftRisk > 0) {
+            dangerParts.add(Pair("좌측 골반", hipLeftRisk))
+        }
+        val hipRightRisk = measureInfo.risk_hip_right.toFloat()
+        if (hipRightRisk > 0) {
+            dangerParts.add(Pair("우측 골반", hipRightRisk))
         }
 
-        val ankleRisk = maxOf(measureInfo.risk_ankle_left.toInt(), measureInfo.risk_ankle_right.toInt())
-        if (ankleRisk > 0) {
-            dangerParts.add(Pair("발목", ankleRisk))
+        val kneeLeftRisk = measureInfo.risk_knee_left.toFloat()
+        if (kneeLeftRisk > 0) {
+            dangerParts.add(Pair("좌측 무릎", kneeLeftRisk))
+        }
+        val kneeRightRisk = measureInfo.risk_knee_right.toFloat()
+        if (kneeRightRisk > 0) {
+            dangerParts.add(Pair("우측 무릎", kneeRightRisk))
+        }
+
+        val ankleLeftRisk = measureInfo.risk_ankle_left.toFloat()
+        if (ankleLeftRisk > 0) {
+            dangerParts.add(Pair("좌측 발목", ankleLeftRisk))
+        }
+        val ankleRightRisk = measureInfo.risk_ankle_right.toFloat()
+        if (ankleRightRisk > 0) {
+            dangerParts.add(Pair("우측 발목", ankleRightRisk))
         }
 
         return dangerParts

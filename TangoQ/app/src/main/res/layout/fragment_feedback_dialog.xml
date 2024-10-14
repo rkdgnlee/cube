@@ -38,39 +38,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvFbPercent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="100%"
-                android:textColor="#FFFFFF"
-                android:textSize="28dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/cpbFb"
-                app:layout_constraintEnd_toEndOf="@+id/cpbFb"
-                app:layout_constraintStart_toStartOf="@+id/cpbFb"
-                app:layout_constraintTop_toTopOf="@+id/cpbFb" />
-
-            <com.mikhaellopez.circularprogressbar.CircularProgressBar
-                android:id="@+id/cpbFb"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginStart="20dp"
-                app:cpb_background_progressbar_color_end="#3B3B3B"
-                app:cpb_background_progressbar_color_start="#3B3B3B"
-                app:cpb_background_progressbar_width="12dp"
-                app:cpb_progressbar_color="#FFFFFF"
-                app:cpb_progressbar_color_end="#FFFFFF"
-                app:cpb_progressbar_color_start="#FFFFFF"
-                app:cpb_round_border="true"
-                app:layout_constraintBottom_toBottomOf="@+id/cardView5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/cardView5" />
-
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView5"
                 android:layout_width="0dp"
-                android:layout_height="128dp"
+                android:layout_height="120dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="20dp"
@@ -78,7 +49,7 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cpbFb"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView58">
 
 
@@ -89,7 +60,7 @@
                     android:background="#33000000">
 
                     <TextView
-                        android:id="@+id/tvFbCount"
+                        android:id="@+id/tvFDCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="4"
@@ -99,8 +70,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/imageView41"
                         app:layout_constraintStart_toStartOf="@+id/imageView41"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.75" />
+                        app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
                     <ImageView
                         android:id="@+id/imageView41"
@@ -110,7 +80,7 @@
                         android:src="@drawable/icon_autocomplete_button_hollow"
                         android:tint="#FFFFFF"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.75"
+                        app:layout_constraintHorizontal_bias="0.85"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -123,12 +93,11 @@
                         android:src="@drawable/icon_time_sub_800"
                         android:tint="#FFFFFF"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.25"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/tvFbTime"
+                        android:id="@+id/tvFDTime1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="11:12"
@@ -138,8 +107,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/ivM6"
                         app:layout_constraintStart_toStartOf="@+id/ivM6"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.75" />
+                        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
                     <TextView
                         android:id="@+id/textView9"
@@ -147,6 +115,7 @@
                         android:layout_height="wrap_content"
                         android:text="Time"
                         android:textColor="#FFFFFF"
+                        android:textSize="14dp"
                         app:layout_constraintEnd_toEndOf="@+id/ivM6"
                         app:layout_constraintStart_toStartOf="@+id/ivM6"
                         app:layout_constraintTop_toBottomOf="@+id/ivM6" />
@@ -157,9 +126,69 @@
                         android:layout_height="wrap_content"
                         android:text="Exercise"
                         android:textColor="#FFFFFF"
+                        android:textSize="14dp"
                         app:layout_constraintEnd_toEndOf="@+id/imageView41"
                         app:layout_constraintStart_toStartOf="@+id/imageView41"
                         app:layout_constraintTop_toBottomOf="@+id/imageView41" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/background_rectangle_12dp"
+                        android:backgroundTint="#EFFEF6"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent="0.33">
+
+                        <TextView
+                            android:id="@+id/textView8"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Time"
+                            android:textColor="#47484C"
+                            android:textSize="14dp"
+                            app:layout_constraintEnd_toEndOf="@+id/imageView7"
+                            app:layout_constraintStart_toStartOf="@+id/imageView7"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+
+                        <TextView
+                            android:id="@+id/tvFDTime2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="16:34"
+                            android:textColor="#47484C"
+                            android:textSize="20sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/imageView7"
+                            app:layout_constraintStart_toStartOf="@+id/imageView7"
+                            app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+                        <ImageView
+                            android:id="@+id/imageView7"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="20dp"
+                            android:src="@drawable/icon_time_sub_800"
+                            android:tint="#47484C"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="2dp"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginBottom="30dp"
+                        android:background="@drawable/color_gradient_white_middle_horizon"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/imageView41"
+                        app:layout_constraintStart_toEndOf="@+id/ivM6"
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -198,7 +227,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvFbIntensity1"
+                        android:id="@+id/tvFDIntensity1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -216,7 +245,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity2"
+                        android:id="@+id/tvFDIntensity2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -234,7 +263,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity3"
+                        android:id="@+id/tvFDIntensity3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -252,7 +281,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity4"
+                        android:id="@+id/tvFDIntensity4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -270,7 +299,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbIntensity5"
+                        android:id="@+id/tvFDIntensity5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -316,7 +345,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvFbFatigue1"
+                        android:id="@+id/tvFDFatigue1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -334,7 +363,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue2"
+                        android:id="@+id/tvFDFatigue2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -352,7 +381,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue3"
+                        android:id="@+id/tvFDFatigue3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -370,7 +399,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue4"
+                        android:id="@+id/tvFDFatigue4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -388,7 +417,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbFatigue5"
+                        android:id="@+id/tvFDFatigue5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -434,7 +463,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction1"
+                        android:id="@+id/tvFDSatisfaction1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -452,7 +481,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction2"
+                        android:id="@+id/tvFDSatisfaction2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -470,7 +499,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction3"
+                        android:id="@+id/tvFDSatisfaction3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -488,7 +517,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction4"
+                        android:id="@+id/tvFDSatisfaction4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -506,7 +535,7 @@
                         android:background="@drawable/color_gradient_white_middle_horizon" />
 
                     <TextView
-                        android:id="@+id/tvFbSatisfaction5"
+                        android:id="@+id/tvFDSatisfaction5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -534,7 +563,7 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/btnFbPainPartSelect"
+                        android:id="@+id/btnFDPainPartSelect"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="6dp"
@@ -547,10 +576,11 @@
                         android:text="통증체크"
                         android:textColor="@color/mainDeepColor"
                         android:textSize="18sp"
+                        android:visibility="gone"
                         app:cornerRadius="12dp" />
 
                     <Button
-                        android:id="@+id/btnFbSubmit"
+                        android:id="@+id/btnFDSubmit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="6dp"
@@ -579,7 +609,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardView5" />
 
             <TextView
-                android:id="@+id/tvFbSkip"
+                android:id="@+id/tvFDSkip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"

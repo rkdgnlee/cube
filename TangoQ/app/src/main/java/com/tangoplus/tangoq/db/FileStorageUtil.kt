@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.db
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import com.tangoplus.tangoq.data.MeasureViewModel
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -44,27 +45,29 @@ object FileStorageUtil {
         }
     }
 
-    fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, fileType: FileType): Boolean {
+    fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
         val file = File(dir, fileName)
 
         return try {
             val fileContent = jsonObject.toString().toByteArray() // JSONObject를 String으로 변환 후 ByteArray로 변환
             file.outputStream().use { it.write(fileContent) }
+            mViewModel.staticJsonFiles.add(file)
             true
         } catch (e: IOException) {
             Log.e("SaveFile", "Error saving file: ${e.message}")
             false
         }
     }
-    fun saveJa(context: Context, fileName: String, jsonArray: JSONArray, fileType: FileType): Boolean {
+    fun saveJa(context: Context, fileName: String, jsonArray: JSONArray,  mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
         val file = File(dir, fileName)
 
         return try {
             val fileContent = jsonArray.toString().toByteArray() // JSONObject를 String으로 변환 후 ByteArray로 변환
             file.outputStream().use { it.write(fileContent) }
-            Log.v("mp4파일주소", file.absolutePath)
+            Log.v("영상JSON주소", file.absolutePath)
+            mViewModel.dynamicJsonFile = file
             true
         } catch (e: IOException) {
             Log.e("SaveFile", "Error saving file: ${e.message}")

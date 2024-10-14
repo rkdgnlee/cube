@@ -55,20 +55,22 @@ class MeasureHistoryFragment : Fragment() {
 
         // -----! spinner 연결 시작 !-----
         val filterList = arrayListOf<String>()
-        filterList.add("최신순")
-        filterList.add("인기순")
-        filterList.add("추천순")
+        filterList.add("새로운 날짜순")
+        filterList.add("오래된 날짜순")
+        filterList.add("점수 높은순")
         binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
         binding.spnrMH.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 when (position) {
                     0 -> {
-                        singletonMeasure!!.sortedBy { it.regDate }
+                        singletonMeasure!!.sortedByDescending { it.regDate }
                     }
                     1 -> {
+                        singletonMeasure!!.sortedBy { it.regDate }
                     }
                     2 -> {
+                        singletonMeasure!!.sortedByDescending { it.overall?.toInt() }
                     }
                 }
             }

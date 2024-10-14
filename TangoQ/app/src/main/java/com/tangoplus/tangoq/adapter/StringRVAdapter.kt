@@ -183,12 +183,12 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
                     setPartItem(holder.clPI, holder.cvPI, holder.tvPI)
                     when (currentItem) {
                         "목" -> holder.ivPI.setImageResource(R.drawable.icon_part1)
-                        "어깨" -> holder.ivPI.setImageResource(R.drawable.icon_part2)
-                        "팔꿉" -> holder.ivPI.setImageResource(R.drawable.icon_part3)
-                        "손목" -> holder.ivPI.setImageResource(R.drawable.icon_part4)
-                        "골반" -> holder.ivPI.setImageResource(R.drawable.icon_part5)
-                        "무릎" -> holder.ivPI.setImageResource(R.drawable.icon_part6)
-                        "발목" -> holder.ivPI.setImageResource(R.drawable.icon_part7)
+                        "우측 어깨", "좌측 어깨" -> holder.ivPI.setImageResource(R.drawable.icon_part2)
+                        "우측 팔꿉", "좌측 팔꿉" -> holder.ivPI.setImageResource(R.drawable.icon_part3)
+                        "우측 손목", "좌측 손목" -> holder.ivPI.setImageResource(R.drawable.icon_part4)
+                        "우측 골반", "좌측 골반" -> holder.ivPI.setImageResource(R.drawable.icon_part5)
+                        "우측 무릎", "좌측 무릎" -> holder.ivPI.setImageResource(R.drawable.icon_part6)
+                        "우측 발목", "좌측 발목" -> holder.ivPI.setImageResource(R.drawable.icon_part7)
                     }
                 }
             }

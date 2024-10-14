@@ -28,6 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
@@ -46,7 +47,8 @@ import java.util.regex.Pattern
 class SignInActivity : AppCompatActivity() {
     lateinit var binding : ActivitySignInBinding
     val viewModel : SignInViewModel by viewModels()
-    private val auth = Firebase.auth
+    private lateinit var auth : FirebaseAuth
+
     var verificationId = ""
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +57,8 @@ class SignInActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-
+        auth = FirebaseAuth.getInstance()
+        auth.setLanguageCode("ko")
         // -----! 초기 버튼 숨기기 및 세팅 시작 !-----
         binding.llPwCondition.visibility = View.GONE
         binding.etPw.visibility = View.GONE
@@ -135,7 +138,7 @@ class SignInActivity : AppCompatActivity() {
                 .setTitle("📩 문자 인증 ")
                 .setMessage("$transformMobile 로 인증 하시겠습니까?")
                 .setPositiveButton("예") { _, _ ->
-//                    transformMobile = transformMobile.replace("-", "")
+                    transformMobile = transformMobile.replace("-", "").replace(" ", "")
                     Log.w("전화번호", transformMobile)
                     val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(transformMobile)
@@ -143,8 +146,9 @@ class SignInActivity : AppCompatActivity() {
                         .setActivity(this@SignInActivity)
                         .setCallbacks(callbacks)
                         .build()
+
                     PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
-                    auth.setLanguageCode("kr")
+                    Log.d("PhoneAuth", "verifyPhoneNumber called")
 
                     val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                     alphaAnimation.duration = 600

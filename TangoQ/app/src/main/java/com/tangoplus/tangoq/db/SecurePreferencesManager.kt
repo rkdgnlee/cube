@@ -80,6 +80,7 @@ object SecurePreferencesManager {
         keyGenerator.init(keyGenParameterSpec)
         keyGenerator.generateKey()
     }
+
     fun encryptData(alias: String, jsonObj : JSONObject) : String {
         val keyStore = KeyStore.getInstance("AndroidKeyStore")
         keyStore.load(null)
@@ -90,6 +91,7 @@ object SecurePreferencesManager {
         val encryption = cipher.doFinal(jsonObj.toString().toByteArray(Charsets.UTF_8))
         return Base64.encodeToString(iv + encryption, Base64.DEFAULT)
     }
+
     fun saveEncryptedData(context: Context, key: String, encryptedData: String) {
         val sharedPreferences = context.getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         sharedPreferences.edit().putString(key, encryptedData).apply()

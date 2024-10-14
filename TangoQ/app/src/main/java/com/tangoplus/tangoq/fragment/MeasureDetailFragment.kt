@@ -2,14 +2,18 @@ package com.tangoplus.tangoq.fragment
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.YAxis
@@ -31,6 +35,8 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.random.Random
 
 
@@ -59,14 +65,14 @@ class MeasureDetailFragment : Fragment() {
                 .setWidthRatio(0.5f)
                 .setHeight(BalloonSizeSpec.WRAP)
                 .setText(balloonText)
-                .setTextColorResource(R.color.subColor800)
+                .setTextColorResource(R.color.white)
                 .setTextSize(15f)
                 .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
                 .setArrowSize(0)
                 .setMargin(10)
                 .setPadding(12)
                 .setCornerRadius(8f)
-                .setBackgroundColorResource(R.color.white)
+                .setBackgroundColorResource(R.color.mainColor)
                 .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
                 .setLifecycleOwner(viewLifecycleOwner)
                 .build()
@@ -86,23 +92,36 @@ class MeasureDetailFragment : Fragment() {
         // ------# 10각형 레이더 차트 #------
         // TODO 레이더 차트에도 값이 들어가야 함.
 
-        val raderScores = mutableListOf<Float>()
-        val scores = mutableListOf(2.245f, 3.41f, 2.54f, 3.97f, 2.34f, 5.25f, 4.12f, 3.84f, 3.12f, 4.97f)
-        bodyParts = listOf("목", "우측어깨", "우측팔꿉", "우측골반", "우측무릎", "발목", "좌측무릎", "좌측골반", "좌측팔꿉", "좌측어깨")
+        val bodyParts = listOf("목관절", "우측 어깨", "좌측 어깨", "우측 팔꿉", "좌측 팔꿉","우측 손목","좌측 손목", "우측 골반","좌측 골반", "우측 무릎","좌측 무릎","우측 발목", "좌측 발목")
+        val indices = listOf(0, 1, 3, 5, 7, 9, 11, 12, 10, 8, 6, 4, 2)
 
-        // ------# 순서대로 나오는 데이터 리스트에서 raderChart에 맞게 순서 변경하기 #------
-        val indices = listOf(0, 1, 3, 5, 7, 9, 8, 6, 4, 2)
-        for (i in indices) {
-            val convertScores = calculateShoulderBalanceScore(scores[i], bodyParts[i])
-            raderScores.add(convertScores.toFloat())
+        // 먼저 모든 점수를 95로 초기화
+        val scores = MutableList(bodyParts.size) { 95f }
+        Log.v("raderScores", "${ measure.dangerParts}")
+        // measure.dangerParts에 있는 부위들의 점수만 업데이트
+        measure.dangerParts.forEach { (part, danger) ->
+            val index = bodyParts.indexOf(part)
+            if (index != -1) {
+                scores[index] = when (danger) {
+                    1.0f -> 80f
+                    2.0f -> 70f
+                    3.0f -> 60f
+                    else -> 95f
+                }
+            }
         }
 
-        Log.v("raderScores", "$raderScores")
+        // indices를 사용하여 올바른 순서로 raderScores 생성
+        val raderScores = indices.map { scores[it] }
+        val raderXParts = indices.map { bodyParts[it] }
+        Log.v("raderScores", raderScores.toString())
 
         val entries = mutableListOf<RadarEntry>()
         for (i in 0 until bodyParts.size) {
             entries.add(RadarEntry(raderScores[i]))
+
         }
+        Log.v("재조정x축", "$raderXParts")
         val dataSet = RadarDataSet(entries, "신체 부위").apply {
             color = resources.getColor(R.color.mainColor, null)
             setDrawFilled(true)
@@ -123,7 +142,7 @@ class MeasureDetailFragment : Fragment() {
             webLineWidthInner = 1f
             xAxis.apply {
                 setDrawGridLines(true)
-                valueFormatter = IndexAxisValueFormatter(bodyParts)
+                valueFormatter = IndexAxisValueFormatter(raderXParts)
                 textColor = resources.getColor(R.color.subColor400, null)
                 textSize = 13f  // 텍스트 크기 증가
                 yOffset = 0f  // 텍스트를 차트에서 조금 더 멀리 배치
@@ -149,6 +168,7 @@ class MeasureDetailFragment : Fragment() {
             invalidate() // 차트 갱신
         }
 
+        val dangerParts = measure.dangerParts.map { it.first }.toMutableList()
         val stages = mutableListOf<MutableList<String>>()
         val balanceParts1 = mutableListOf("어깨", "골반")
         stages.add(balanceParts1)
@@ -163,11 +183,51 @@ class MeasureDetailFragment : Fragment() {
 
         val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
         setAdapter(stages, degrees)
-
+//        val dangerParts = measure.dangerParts.map { it.first }.toMutableList()
+//        val stages = mutableListOf<MutableList<String>>()
+//        stages.add( dangerParts.subList(0, 2))
+//        stages.add( dangerParts.subList(0, 2))
+//        stages.add( dangerParts.subList(0, 2))
+//        stages.add( dangerParts.subList(2, 3))
+//        stages.add( dangerParts.subList(2, 3))
+//
+//        val dangerDegree = measure.dangerParts.map { it.second }.toMutableList()
+//        val degrees = mutableListOf<Pair<Int,Int>>()
+//        Log.v("degreesss", "$dangerDegree")
+//        for (i in 0 until 5) {
+//            val degree = dangerDegree?.getOrNull(i) ?: -1  // null이면 기본값으로 -1 사용
+//            when (degree) {
+//                1 -> degrees.add(Pair(1, Random.nextInt(2, 4)))
+//                2 -> degrees.add(Pair(2, Random.nextInt(-1, 2)))
+//                else -> degrees.add(Pair(3, Random.nextInt(-2, -1)))  // 여기서 else는 null 또는 다른 값에 대한 처리
+//            }
+//        }
 
 
         binding.fabtnMD.setOnClickListener {
             (activity as? MainActivity)?.launchMeasureSkeletonActivity()
+        }
+
+        binding.btnMDShare.setOnClickListener {
+            // ------! 그래프 캡처 시작 !------
+            val bitmap = Bitmap.createBitmap(binding.rcMD.width, binding.rcMD.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            binding.rcMD.draw(canvas)
+
+            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
+            val fileOutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+
+            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
+            // ------! 그래프 캡처 끝 !------
+
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "image/png" // 이곳에서 공유 데이터 변경
+            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
+            startActivity(Intent.createChooser(intent, "밸런스 그래프"))
         }
     }
 
@@ -178,7 +238,7 @@ class MeasureDetailFragment : Fragment() {
         binding.rvMD.adapter = balanceAdapter
     }
 
-    private fun calculateShoulderBalanceScore(angle: Float, case: String): Int {
+    private fun calculateBalanceScore(angle: Float, case: String): Int {
         val normalRange = when (case) {
             "목" -> 0.5
             "우측어깨", "좌측어깨","우측무릎", "좌측무릎" -> 1.0

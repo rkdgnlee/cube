@@ -57,7 +57,7 @@ class LoginDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ssm = SaveSingletonManager(requireContext())
+        ssm = SaveSingletonManager(requireContext(), requireActivity())
         binding.etLDId.requestFocus()
         binding.etLDId.postDelayed({
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -94,15 +94,19 @@ class LoginDialogFragment : DialogFragment() {
 ////            Log.v("idpwcondition", "${viewModel.currentidCon.value}, pw: ${viewModel.currentPwCon.value}, both: ${viewModel.idPwCondition.value}")
 //        }
         binding.btnLDLogin.setOnClickListener {
+            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
             if (viewModel.idPwCondition.value == true) {
                 val jsonObject = JSONObject()
                 jsonObject.put("user_id", viewModel.id.value)
                 jsonObject.put("password", viewModel.pw.value)
-
+                val dialog = LoadingDialogFragment.newInstance("로그인")
+                dialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
                 lifecycleScope.launch {
                     getUserIdentifyJson(getString(R.string.API_user), jsonObject, requireContext()) { jo ->
                         if (jo?.getString("message") == "invalid auth") { // 기존에 정보가 있을 경우 - 로그인 성공
                             requireActivity().runOnUiThread {
+                                dialog.dismiss()
                                 MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                                     setTitle("⚠️ 알림")
                                     setMessage("아이디 또는 비밀번호가 올바르지 않습니다.")
@@ -114,19 +118,20 @@ class LoginDialogFragment : DialogFragment() {
                             }
                         } else {
                             requireActivity().runOnUiThread {
+
                                 binding.btnLDLogin.isEnabled = false
                                 viewModel.User.value = null
-
                                 // ------! 싱글턴 + 암호화 저장 시작 !------
                                 if (jo != null) {
                                     NetworkUser.storeUserInSingleton(requireContext(), jo)
                                     createKey(getString(R.string.SECURE_KEY_ALIAS))
                                     saveEncryptedData(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptData(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
-
                                     lifecycleScope.launch {
                                         val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")!!
                                         val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()!!
                                         val userSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!
+
+                                        dialog.dismiss()
                                         ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
                                             Log.v("자체로그인완료", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                             Handler(Looper.getMainLooper()).postDelayed({

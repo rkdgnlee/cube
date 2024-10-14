@@ -16,6 +16,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.ExerciseViewModel
@@ -74,8 +75,12 @@ class MainActivity : AppCompatActivity() {
         setCurrentFragment(selectedTabId)
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
-        mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)!!
-        mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+
+        if (singletonMeasure.measures != null) { // 값이 하나라도 있을 때만 가져오기.
+            mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
+            mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+        }
+
 
         // -------! 버튼 시작 !------
         binding.bnbMain.setOnItemSelectedListener {
@@ -147,12 +152,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
         // ------! 0일 때만 피드백 켜지게 !------
-        val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, String, Int>
-        Log.v("intent>serializable", "$feedbackData")
+        val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
+        Log.v("intent>feedback", "$feedbackData")
         if (feedbackData != null) {
             if (eViewModel.isDialogShown.value == false) {
-                eViewModel.exerciseLog.value = feedbackData
+                eViewModel.exerciseLog = feedbackData
 
                 // 이미 DialogFragment가 표시되어 있는지 확인
                 val fragmentManager = supportFragmentManager
@@ -207,6 +213,7 @@ class MainActivity : AppCompatActivity() {
             deleteDir(it)
         }
     }
+
     private fun deleteDir(dir: File?): Boolean {
         if (dir != null && dir.isDirectory) {
             val children = dir.list()
@@ -219,6 +226,7 @@ class MainActivity : AppCompatActivity() {
         }
         return dir?.delete() ?: false
     }
+
     // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
 
     private fun isCurrentFragmentEmpty(): Boolean {

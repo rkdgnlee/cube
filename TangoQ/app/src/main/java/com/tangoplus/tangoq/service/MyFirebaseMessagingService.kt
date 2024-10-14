@@ -11,12 +11,14 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MessageVO
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.`object`.Singleton_t_user
+import java.time.LocalDateTime
 
-class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림 채널.
+class MyFirebaseMessagingService() : FirebaseMessagingService() { // 푸시 알림 채널.
 //    private val userSn: Int = Singleton_t_user.getInstance(applicationContext).jsonObject?.optString("user_sn")?.toInt()!! // 예시로 사용자 SN 값을 설정
     private lateinit var preferencesManager: PreferencesManager
 
@@ -25,12 +27,21 @@ class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림
 //        // PreferencesManager 초기화
 //        preferencesManager = PreferencesManager(applicationContext, userSn)
 //    }
-
+    override fun onCreate() {
+        super.onCreate()
+        preferencesManager = (application as MyApplication).preferencesManager
+    }
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         // 메시지에 데이터 페이로드가 포함 되어 있는지 확인
         // 페이로드란 전송된 데이터를 의미
         val messageToStore: MessageVO
+
+        val userSn = preferencesManager.getUserSn()
+        if (userSn == -1) {
+            Log.e("FirebaseMessaging", "User SN not set")
+            return
+        }
         if (message.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${message.data}")
             sendNotification(

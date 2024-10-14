@@ -58,15 +58,20 @@ class ProgramSelectFragment : Fragment() {
         "무릎" to 7,
         "발목" to 8,
     )
-
+    // category의 id값들을 따로 adapter에서 매개변수로 넣어서, drawable id값 매칭.
 
     private fun setAdapter(dateIndex: Int) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvPSD.layoutManager = layoutManager
-        Log.v("dangerPartInt", "${singletonMeasure?.get(dateIndex)!!.dangerParts.map { categoryMap.get(it.first) }}")
-        val adapter = RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations!!,
-            singletonMeasure?.get(dateIndex)!!.dangerParts.map { categoryMap.get(it.first) }
-        )
+
+        val categoryNums = singletonMeasure?.get(dateIndex)?.recommendations!!.map { categoryMap.entries.find { entry -> it.title.contains(entry.key) }?.value }
+
+        singletonMeasure?.get(dateIndex)?.recommendations!!
+            .mapNotNull { rec ->
+                categoryMap.entries.find { entry -> rec.title.contains(entry.key) }?.value
+            }
+        Log.v("categoryNums", "categoryNums: $categoryNums")
+        val adapter = RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations!!, categoryNums)
         Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations!!}")
         binding.rvPSD.adapter = adapter
     }

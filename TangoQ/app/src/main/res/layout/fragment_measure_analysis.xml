@@ -209,11 +209,10 @@
                 android:id="@+id/llMARV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView31">
+                app:layout_constraintTop_toBottomOf="@+id/tvMANotice1">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMALeft"
@@ -233,6 +232,58 @@
                     android:layout_weight="1"
                     android:nestedScrollingEnabled="false" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="253dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMANotice2">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMALeft2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="false" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMARight2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvMANotice1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="주요 부위"
+                android:textColor="@color/subColor800"
+                android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView31" />
+
+            <TextView
+                android:id="@+id/tvMANotice2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="부위 DATA"
+                android:textColor="@color/subColor800"
+                android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llMARV" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -99,7 +99,8 @@ object NetworkUser {
             })
         }
     }
-    // ------! 마케팅 수신 동의 관련 insert문 !------  ###  ### ---> 여기서도 토큰이 생김
+
+    // ------# 마케팅 수신 동의 관련 insert문 #------
     fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, idPw.toString())
@@ -164,32 +165,28 @@ object NetworkUser {
     }
 
     // ------! 프로필 사진 시작 !------
-    suspend fun uploadProfileImage(url: String, iv: ImageView) {
-        withContext(Dispatchers.IO) {
-            try {
-                val bitmap = (iv.drawable as BitmapDrawable).bitmap
+    suspend fun sendProfileImage(context: Context, myUrl: String, requestBody: RequestBody) {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url(myUrl)
+            .post(requestBody)
+            .build()
 
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                val imageBytes = byteArrayOutputStream.toByteArray()
-                val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
 
-                val requestBody = FormBody.Builder()
-                    .add("image", encodedImage)
-                    .build()
-                val request = Request.Builder()
-                    .url(url)
-                    .post(requestBody)
-                    .build()
-
-                val response = OkHttpClient().newCall(request).execute()
-                if (response.isSuccessful) {
-                    Log.v("upload", "Upload is Successful")
-                } else {
-                    Log.v("upload", "Upload is failed")
-                }
-            } catch (e: Exception) {
-                Log.e("error", "${e.message}")
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                val motherJo = responseBody.let { JSONObject(it.toString()) }
+                Log.w("getAllMeasures", "Success to execute request: $responseBody")
             }
         }
     }
@@ -200,45 +197,40 @@ object NetworkUser {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
     }
 
-
-    fun loginWithPin(myUrl: String,  pinNum: Int, userUUID: String, callback: () -> Unit) {
+    // ------# 핀번호 로그인 #------
+    suspend fun loginWithPin(myUrl: String,  pinNum: Int, userUUID: String) : Int {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}?user_uuid:$userUUID&pin_number:$pinNum")
+            .url("${myUrl}?category=24&login_pin_number=$pinNum&device_serial_number=SERIALNUMBERTANGOPLUS&user_uuid=$userUUID")
             .get()
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("응답실패", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val code = response.code
                 val responseBody = response.body?.string()
-                Log.e("응답성공", "$responseBody")
-                val jo = responseBody?.let { JSONObject(it) }
-                callback()
+                Log.v("PIN>ResponseBody", "$responseBody")
+                code
             }
-        })
+        }
     }
-    fun loginWithQRCode(myUrl: String,  serialNum: Int, userUUID: String, callback: () -> Unit) {
+
+
+    // ------# QRCode 로그인 #------
+    suspend fun loginWithQRCode(myUrl: String, userUUID: String) : Int {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}?user_uuid:$userUUID&device_serial_number:$serialNum")
+            .url("${myUrl}?category=26&device_serial_number=SERIALNUMBERTANGOPLUS&user_uuid:$userUUID")
             .get()
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("응답실패", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val statusCode = response.code
                 val responseBody = response.body?.string()
-                Log.e("응답성공", "$responseBody")
-                val jo = responseBody?.let { JSONObject(it) }
-                callback()
+                Log.v("QRcode>ResponseBody", "$responseBody")
+                statusCode
             }
-        })
+        }
     }
 }

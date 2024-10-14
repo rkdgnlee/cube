@@ -14,6 +14,8 @@ import com.tangoplus.tangoq.databinding.RvAlarmItemBinding
 import com.tangoplus.tangoq.fragment.hideBadgeOnClick
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList<MessageVO>, private val clicklistener: OnAlarmClickListener, private val deleteListener: OnAlarmDeleteListener) : RecyclerView.Adapter<AlarmRVAdapter.MyViewHolder>() {
@@ -38,13 +40,20 @@ class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList
                 clickListener.onAlarmClick(alarm.route)
                 hideBadgeFunction?.invoke()
             }
-            val timeStampMillis = Duration.between(Instant.now(), Instant.ofEpochMilli(alarm.timeStamp!!)).abs().toMillis()
 
+            val now = System.currentTimeMillis()
+            val timeStamp  = alarm.timeStamp
+            val duration = Duration.between(Instant.ofEpochMilli(timeStamp), Instant.ofEpochMilli(now))
+
+            val seconds = duration.seconds
+            val minutes = duration.toMinutes()
+            val hours = duration.toHours()
+            val days = duration.toDays()
             binding.tvAlarmTime.text = when {
-                TimeUnit.MILLISECONDS.toSeconds(timeStampMillis) < 60 -> "1분 전"
-                TimeUnit.MILLISECONDS.toMinutes(timeStampMillis) < 60 -> "${TimeUnit.MILLISECONDS.toMinutes(timeStampMillis)}분 전"
-                TimeUnit.MILLISECONDS.toHours(timeStampMillis) < 24 -> "${TimeUnit.MILLISECONDS.toHours(timeStampMillis)}시간 전"
-                else -> "${TimeUnit.MILLISECONDS.toDays(timeStampMillis)}일 전"
+                seconds < 60 -> "1분 전"
+                minutes < 60 -> "${minutes}분 전"
+                hours < 24 -> "${hours}시간 전"
+                else -> "${days}일 전"
             }
 
         }

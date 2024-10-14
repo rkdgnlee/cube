@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.mediapipe
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -9,12 +8,6 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.media.ExifInterface
 import android.util.Log
-import androidx.core.content.ContextCompat
-import com.bumptech.glide.load.resource.bitmap.TransformationUtils.rotateImage
-import com.tangoplus.tangoq.R
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 
 object ImageProcessingUtility {
 
@@ -26,14 +19,17 @@ object ImageProcessingUtility {
         scaleFactorY: Float,
         offSetX: Float,
         offSetY: Float,
-        context: android.content.Context,
+
         sequence: Int,
     ): Bitmap {
         Log.v("스케일과오프셋", "scaleFactor: (${scaleFactorX}, ${scaleFactorY}), offset: ($offSetX, $offSetY)")
 
+//        val resultBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
+//        val canvas = Canvas(resultBitmap)
+
         val matrix = Matrix().apply {
             preScale(-1f, 1f)
-        }
+        } // 전면카메라로 찍었을 경우 걍 원래대로 돌려야 함.
         val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
         val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(resultBitmap)
@@ -42,6 +38,12 @@ object ImageProcessingUtility {
             strokeWidth = 4f
             style = Paint.Style.STROKE
         }
+        val axisSubPaint = Paint().apply {
+            color = Color.parseColor("#2EE88B")
+            strokeWidth = 4f
+            style = Paint.Style.STROKE
+        }
+
         val paint = Paint().apply {
             color = 0xFFFFFFFF.toInt()
             strokeWidth = 4f
@@ -63,14 +65,34 @@ object ImageProcessingUtility {
 
         val nose = poseLandmarkResult.landmarks.getOrNull(0)
 
-        // ------# 축 넣기 #------
+        // ------# 수칙  & 수평 축 넣기 #------
         when (sequence) {
             0 -> {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
                 val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
-                if (leftFoot != null && rightFoot != null && nose != null) {
+                val leftShoulder = poseLandmarkResult.landmarks.getOrNull(11)
+                val rightShoulder = poseLandmarkResult.landmarks.getOrNull(12)
+                val leftElbow = poseLandmarkResult.landmarks.getOrNull(13)
+                val rightElbow = poseLandmarkResult.landmarks.getOrNull(14)
+                val leftWrist = poseLandmarkResult.landmarks.getOrNull(15)
+                val rightWrist = poseLandmarkResult.landmarks.getOrNull(16)
+                val leftKnee = poseLandmarkResult.landmarks.getOrNull(25)
+                val rightKnee = poseLandmarkResult.landmarks.getOrNull(26)
+                val leftAnkle = poseLandmarkResult.landmarks.getOrNull(27)
+                val rightAnkle = poseLandmarkResult.landmarks.getOrNull(28)
+
+                if ( nose != null
+                    && leftFoot != null && rightFoot != null  && leftShoulder != null && rightShoulder != null
+                    && leftElbow != null && rightElbow != null && leftWrist != null && rightWrist != null
+                    && leftKnee != null && rightKnee != null && leftAnkle != null && rightAnkle != null ) {
                     val midFootX = (leftFoot.x + rightFoot.x) / 2
-                    canvas.drawLine(midFootX, leftFoot.y, midFootX, nose.y, axisPaint)
+                    canvas.drawLine(midFootX, leftFoot.y + 100, midFootX, nose.y - 100, axisPaint)
+
+                    canvas.drawLine(leftShoulder.x ,leftShoulder.y, rightShoulder.x, rightShoulder.y, axisSubPaint)
+                    canvas.drawLine(leftElbow.x ,leftElbow.y, rightElbow.x, rightElbow.y, axisSubPaint)
+                    canvas.drawLine(leftWrist.x ,leftWrist.y, rightWrist.x, rightWrist.y, axisSubPaint)
+                    canvas.drawLine(leftKnee.x ,leftKnee.y, rightKnee.x, rightKnee.y, axisSubPaint)
+                    canvas.drawLine(leftAnkle.x ,leftAnkle.y, rightAnkle.x, rightAnkle.y, axisSubPaint)
                 }
             }
             2 -> {
@@ -78,24 +100,44 @@ object ImageProcessingUtility {
             }
             3 -> {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
-                if (leftFoot != null && nose != null) {
-                    val leftFootX = leftFoot.x
-                    canvas.drawLine(leftFootX, leftFoot.y, leftFootX, nose.y, axisPaint)
+                val leftShoulder = poseLandmarkResult.landmarks.getOrNull(11)
+                val leftWrist = poseLandmarkResult.landmarks.getOrNull(15)
+
+                if (leftFoot != null && nose != null  && leftShoulder != null && leftWrist != null) {
+                    canvas.drawLine(leftFoot.x, leftFoot.y, leftFoot.x, nose.y, axisPaint)
+
+                    canvas.drawLine(nose.x - 100, nose.y, nose.x + 100, nose.y , axisPaint)
+                    canvas.drawLine(leftShoulder.x - 100, leftShoulder.y , leftShoulder.x + 100, leftShoulder.y , axisPaint)
+
+                    canvas.drawLine(leftWrist.x, leftWrist.y, leftFoot.x, leftWrist.y, axisSubPaint)
                 }
+
+
             }
             4 -> {
                 val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
-                if (rightFoot != null && nose != null) {
-                    val rightFootX = rightFoot.x
-                    canvas.drawLine(rightFootX, rightFoot.y, rightFootX, nose.y, axisPaint)
+                val rightShoulder = poseLandmarkResult.landmarks.getOrNull(12)
+                val rightWrist = poseLandmarkResult.landmarks.getOrNull(16)
+
+                if (rightFoot != null && nose != null && rightShoulder != null && rightWrist != null) {
+                    canvas.drawLine(rightFoot.x, rightFoot.y, rightFoot.x, nose.y, axisPaint)
+
+                    canvas.drawLine(nose.x - 100, nose.y, nose.x + 100, nose.y , axisPaint)
+                    canvas.drawLine(rightShoulder.x - 100, rightShoulder.y , rightShoulder.x + 100, rightShoulder.y , axisPaint)
+
+                    canvas.drawLine(rightWrist.x, rightWrist.y, rightFoot.x, rightWrist.y, axisSubPaint)
                 }
             }
             5 -> {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
                 val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
-                if (leftFoot != null && rightFoot != null && nose != null) {
+                val leftKnee = poseLandmarkResult.landmarks.getOrNull(25) // 오른발 좌표
+                val rightKnee = poseLandmarkResult.landmarks.getOrNull(26)
+                if (leftFoot != null && rightFoot != null && nose != null && leftKnee != null && rightKnee != null) {
                     val midFootX = (leftFoot.x + rightFoot.x) / 2
-                    canvas.drawLine(midFootX, leftFoot.y, midFootX, nose.y, axisPaint)
+                    canvas.drawLine(midFootX, leftFoot.y + 100, midFootX, nose.y - 100, axisPaint)
+
+                    canvas.drawLine(leftKnee.x - 100, leftKnee.y, rightKnee.x + 100, rightKnee.y , axisPaint)
                 }
             }
             6 -> {
@@ -105,6 +147,7 @@ object ImageProcessingUtility {
                 val rightShoulder = poseLandmarkResult.landmarks.getOrNull(12)
                 val leftHip = poseLandmarkResult.landmarks.getOrNull(23)
                 val rightHip = poseLandmarkResult.landmarks.getOrNull(24)
+
                 if (nose != null && leftShoulder != null && rightShoulder != null && leftHip != null && rightHip != null && leftFoot != null && rightFoot != null) {
                     val noseX = nose.x
                     val noseY = nose.y
@@ -122,7 +165,7 @@ object ImageProcessingUtility {
 
                     // 골반 다이아 부터 머리 다이아까지
                     val midFootY = ((leftFoot.y + rightFoot.y) / 2  )
-                    canvas.drawLine(midHipX, midFootY, noseX, midFootY, axisPaint)
+                    canvas.drawLine(midHipX, midFootY + 100, noseX, noseY - 100, axisPaint)
                 }
                 val connections = listOf(Pair(7, 8), Pair(11, 12), Pair(23, 24))
                 connections.forEach { (start, end) ->
@@ -141,13 +184,13 @@ object ImageProcessingUtility {
         }
         val connections = when (sequence) {
             0 -> listOf(
-                Pair(7, 8), Pair(11, 12), // 귀
+                Pair(7, 8), // Pair(11, 12), // 귀
                 Pair(15, 17), Pair(15, 19), Pair(15, 21), // 왼팔
                 Pair(16, 18), Pair(16, 20), Pair(16, 22), // 오른팔
                 Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
                 Pair(23, 24), Pair(11, 23), Pair(23, 25), Pair(25, 27), // 왼쪽 다리
-                Pair(12, 24), Pair(24, 26), Pair(26, 28),  // 오른쪽 다리
-                Pair(27, 31), Pair(28, 32), Pair(27, 31), Pair(28, 32)
+                Pair(12, 24), Pair(24, 26), Pair(26, 28),
+//                Pair(27, 31), Pair(28, 32)
             )
             2 -> listOf(
                 Pair(7, 8), Pair(11, 12), // 귀
@@ -155,7 +198,7 @@ object ImageProcessingUtility {
                 Pair(16, 18), Pair(16, 20), Pair(16, 22), // 오른팔
                 Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
             )
-            3 ->  listOf(
+            3 -> listOf(
                 Pair(15, 17), Pair(15, 19), Pair(15, 21), Pair(11, 13), Pair(13, 15),
                 Pair(11, 23), Pair(23, 25), Pair(25, 27),
                 Pair(27, 31), Pair(27, 29)
@@ -164,7 +207,8 @@ object ImageProcessingUtility {
                 Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(12, 14), Pair(14, 16),
                 Pair(12, 24), Pair(24, 26), Pair(26, 28),
                 Pair(28, 32), Pair(28, 30)
-                )
+            )
+
             5 -> listOf(
                 Pair(7, 8), Pair(11, 12), // 귀
                 Pair(15, 17), Pair(15, 19), Pair(15, 21), // 왼팔

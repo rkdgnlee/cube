@@ -43,7 +43,7 @@ object NetworkExercise {
                         exerciseCaution = jo.getString("exercise_caution"),
                         videoActualName = jo.getString("video_actual_name"),
                         videoFilepath = jo.getString("video_filepath"),
-                        videoDuration = (jo.optString("video_duration").toIntOrNull() ?: 0).toString(),
+                        videoDuration = (jo.optString("duration").toIntOrNull() ?: 0).toString(),
                         imageFilePathReal = jo.getString("image_filepath_real")
                     )
                 exerciseInstance
@@ -86,7 +86,7 @@ object NetworkExercise {
                             exerciseCaution = jsonObject.getString("exercise_caution"),
                             videoActualName = jsonObject.getString("video_actual_name"),
                             videoFilepath = jsonObject.getString("video_filepath"),
-                            videoDuration = (jsonObject.optString("video_duration").toIntOrNull() ?: 0).toString(),
+                            videoDuration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
                             imageFilePathReal = jsonObject.getString("image_filepath_real"),
                             )
                         exerciseDataList.add(exerciseData)
@@ -132,7 +132,7 @@ object NetworkExercise {
                             exerciseCaution = jsonObject.getString("exercise_caution"),
                             videoActualName = jsonObject.getString("video_actual_name"),
                             videoFilepath = jsonObject.getString("video_filepath"),
-                            videoDuration = (jsonObject.optString("video_duration").toIntOrNull() ?: 0).toString(),
+                            videoDuration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
                             imageFilePathReal = jsonObject.getString("image_filepath_real"),
                         )
                         exerciseDataList.add(exerciseData)
@@ -163,7 +163,7 @@ object NetworkExercise {
             exerciseCaution = json.getString("exercise_caution"),
             videoActualName = json.getString("video_actual_name"),
             videoFilepath = json.getString("video_filepath"),
-            videoDuration = (json.optString("video_duration").toIntOrNull() ?: 0).toString(),
+            videoDuration = (json.optString("duration").toIntOrNull() ?: 0).toString(),
             imageFilePathReal = json.getString("image_filepath_real"),
 
         )

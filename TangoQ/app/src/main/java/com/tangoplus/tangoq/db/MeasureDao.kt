@@ -22,9 +22,8 @@ interface MeasureDao {
     @Query("SELECT * FROM t_measure_info WHERE user_sn = :userSn")
     fun getAllInfo(userSn: Int): List<MeasureInfo>
 
-    @Query("SELECT mobile_info_sn FROM t_measure_info WHERE user_sn = :userSn")
+    @Query("SELECT mobile_info_sn FROM t_measure_info WHERE user_sn = :userSn") // mobile_info_sn이란 실제 db의 sn이 아님. room의 sn
     fun getMaxMobileInfoSn(userSn: Int) : Int
-
 
     // -------------------------------# MeasureStatic sn 증가 #-------------------------------
     @Transaction

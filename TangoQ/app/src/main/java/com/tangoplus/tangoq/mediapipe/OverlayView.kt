@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.mediapipe
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
@@ -27,7 +28,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private var pointPaint = Paint()
     private var linePaint = Paint()
-    private var textPaint = Paint()
+    private var axisPaint = Paint()
     private var scaleFactorX: Float = 1f
     private var scaleFactorY : Float = 1f
     private var imageWidth: Int = 1
@@ -47,14 +48,23 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     @SuppressLint("ResourceAsColor")
     private fun initPaints() {
         // -----! 연결선 색 !-----
-        linePaint.color = 0xFFFFFFFF.toInt()
-        linePaint.strokeWidth = LANDMARK_STROKE_WIDTH
-        linePaint.style = Paint.Style.STROKE
+        linePaint.apply {
+            color = 0xFFFFFFFF.toInt()
+            strokeWidth = LANDMARK_STROKE_WIDTH
+            style = Paint.Style.STROKE
+        }
 
         // -----! 꼭짓점 색 !-----
-        pointPaint.color = R.color.mainColor
-        pointPaint.strokeWidth = LANDMARK_STROKE_WIDTH
-        pointPaint.style = Paint.Style.FILL
+        pointPaint.apply {
+            color = R.color.mainColor
+            strokeWidth = LANDMARK_STROKE_WIDTH
+            style = Paint.Style.FILL
+        }
+        axisPaint.apply {
+            color = Color.parseColor("#FF5449")
+            strokeWidth = 4f
+            style = Paint.Style.STROKE
+        }
     }
 
 
@@ -180,21 +190,47 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             val nose = landmarks.getOrNull(0)
             val leftShoulder = landmarks.getOrNull(11)
             val rightShoulder = landmarks.getOrNull(12)
+            val leftIndex = landmarks.getOrNull(19)
+            val rightIndex = landmarks.getOrNull(20)
 
+            val leftHip = landmarks.getOrNull(23)
+            val rightHip = landmarks.getOrNull(24)
+
+            val leftKnee = landmarks.getOrNull(25)
+            val rightKnee = landmarks.getOrNull(26)
             // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
-            if (nose != null && leftShoulder != null && rightShoulder != null) {
+            if (nose != null && leftShoulder != null && rightShoulder != null && leftIndex != null && rightIndex != null && leftHip != null && rightHip != null && leftKnee != null && rightKnee != null) {
                 val noseX = nose.x * scaleFactorX + offsetX
                 val noseY = nose.y * scaleFactorY + offsetY
                 val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * scaleFactorX + offsetX
                 val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * scaleFactorY + offsetY
 
+                val leftIndexX = leftIndex.x * scaleFactorX + offsetX
+                val leftIndexY = leftIndex.y * scaleFactorY + offsetY
+                val rightIndexX = rightIndex.x * scaleFactorX + offsetX
+                val rightIndexY = rightIndex.y * scaleFactorY + offsetY
+
+                val leftHipX = leftHip.x * scaleFactorX + offsetX
+                val leftHipY = leftHip.y * scaleFactorY + offsetY
+                val rightHipX = rightHip.x * scaleFactorX + offsetX
+                val rightHipY = rightHip.y * scaleFactorY + offsetY
+
+                val leftKneeX = leftKnee.x * scaleFactorX + offsetX
+                val leftKneeY = leftKnee.y * scaleFactorY + offsetY
+                val rightKneeX = rightKnee.x * scaleFactorX + offsetX
+                val rightKneeY = rightKnee.y * scaleFactorY + offsetY
+
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
+                canvas.drawLine(leftIndexX + 100, leftIndexY, rightIndexX - 100, rightIndexY, axisPaint)
+                canvas.drawLine(leftHipX + 100, leftHipY, rightHipX - 100, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX + 100, leftKneeY, rightKneeX - 100, rightKneeY, axisPaint)
 
             }
 
-            // Draw lines between landmarks
-            // Note: You'll need to define which landmarks should be connected
-            // This is just an example and may need to be adjusted
+
+
+
+
             val connections = listOf(
                 // 얼굴
                 Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),

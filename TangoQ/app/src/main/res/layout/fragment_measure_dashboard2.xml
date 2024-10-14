@@ -31,12 +31,12 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="30dp"
                     android:layout_height="0dp"
-                    android:layout_marginEnd="9dp"
                     android:layout_marginBottom="8dp"
                     app:cardCornerRadius="6dp"
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/llMD2Week"
+                    app:layout_constraintEnd_toEndOf="@+id/bcMD2"
+                    app:layout_constraintStart_toStartOf="@+id/bcMD2"
                     app:layout_constraintTop_toBottomOf="@+id/tvMD2Progress">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -197,6 +197,7 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardView10"
                 android:layout_width="0dp"
@@ -204,7 +205,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="@drawable/background_stroke_1dp_sub_150_12dp"
+                android:background="@drawable/background_stroke_1dp_sub_color"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"

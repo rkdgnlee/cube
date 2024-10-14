@@ -36,17 +36,23 @@ import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
+import com.tangoplus.tangoq.`object`.NetworkProgress.getDailyProgress
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 
@@ -55,9 +61,9 @@ class MeasureDashBoard2Fragment : Fragment() {
     var currentMonth = YearMonth.now()
     var selectedDate = LocalDate.now()
 
-    private lateinit var progresses : Singleton_t_progress
-    private lateinit var historys: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
-    private val hvm : ProgressViewModel by activityViewModels()
+    private lateinit var graphProgresses : MutableList<MutableList<ProgressUnitVO>>
+    private lateinit var progresses: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
+    private val pvm : ProgressViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
 
     private lateinit var  todayInWeek : List<Int>
@@ -76,21 +82,24 @@ class MeasureDashBoard2Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! 운동 기록 API 공간 시작 !------
+        // ------# 운동 기록 API 공간 #------
         todayInWeek = sortTodayInWeek()
-        // ------! 일주일 간 운동 기록 들어올 곳 시작 !------
-        progresses = Singleton_t_progress.getInstance(requireContext())
-//        historys = progresses.historys!!
-        // ------# 일별 운동 담기 #------
-        // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
 
-        // TODO 현재 빈 값이라 전혀 값이 없음. 그래서 그럼.
+
+
+
+        // ------# 일별 운동 담기 #------
+        graphProgresses = Singleton_t_progress.getInstance(requireContext()).graphProgresses!!
+        // TODO 여기서 이틀했을 수도 있고, 삼일 했을 수도 있고, 전혀 없을 수도 있음.
+
+        // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
         val weeklySets = mutableListOf<Float>()
+
         for (i in 0 until 7) {
-            if (hvm.weeklyHistorys?.get(i)?.third == 0 || hvm.weeklyHistorys == null) {
-                weeklySets.add(1f)
+            if (i < graphProgresses.size && graphProgresses[i].count() > 0) {
+                weeklySets.add(graphProgresses[i].count() * 100 / 7.toFloat())
             } else {
-                weeklySets.add( (hvm.weeklyHistorys!![i].third * 100 / 7).toFloat())
+                weeklySets.add(1f)
             }
         }
 
@@ -163,24 +172,24 @@ class MeasureDashBoard2Fragment : Fragment() {
             } else {
                 setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
             }
-            if (index == 6) {
+            if (index == 3) {
                 setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
             }
         }
 
-        // ------# progrees #------
+        // ------# progress #------
         var progressCount = 0
         for (i in weeklySets.indices) {
             if (weeklySets[i] > 1f) {
                 progressCount++
             }
         }
+
         binding.tvMD2Progress.text = "완료 $progressCount/${weeklySets.size}"
         // ---- 꺾은선 그래프 코드 끝 ----
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         Log.v("Singleton>Profile", "${userJson}")
-
 
         binding.tvMD2Title.text = "${userJson?.optString("user_name")}님의 기록"
 
@@ -275,7 +284,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                             }
                         }
                         setDateStyle(container, day)
-
+                        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
                         container.date.setOnClickListener {
                             // 선택된 날짜를 업데이트 + UI 갱신
                             if (day.date <= LocalDate.now() ) {
@@ -284,9 +293,15 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 selectedDate = day.date
                                 oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
                                 selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
-
-//                                selectedDate?.let { selectedDate ->
-//                                    val filteredExercises = hvm.allHistorys.filter { history ->
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    selectedDate?.let { selectedDate ->
+                                        val date = selectedDate.format(formatter)
+                                        val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
+                                        withContext(Dispatchers.Main) {
+                                            setAdapter(currentProgresses)
+                                        }
+//                                    pvm.currentProgressItem =
+//                                    val filteredExercises = pvm.allHistorys.filter { history ->
 //                                        history.regDate?.let { regDateString ->
 //                                            val historyDate = stringToLocalDate(regDateString)
 //                                            historyDate.isEqual(selectedDate)
@@ -295,9 +310,10 @@ class MeasureDashBoard2Fragment : Fragment() {
 //
 //                                    setAdapter(filteredExercises)
 //                                    binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
-//                                } ?: run {
-//                                    Log.e("DateSelection", "Selected date is null")
-//                                }
+                                    } ?: run {
+                                        Log.e("DateSelection", "Selected date is null")
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -332,7 +348,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor800))
                 // 현재 날짜에 대한 특별한 배경이 필요하다면 여기에 추가
             }
-            hvm.datesClassifiedByDay.contains(day.date) -> {
+            pvm.datesClassifiedByDay.contains(day.date) -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.thirdColor))
 
             }
@@ -360,13 +376,13 @@ class MeasureDashBoard2Fragment : Fragment() {
         return localDateTime.toLocalDate()
     }
 
-    private fun setAdapter(historys: List<HistorySummaryVO>) {
+    private fun setAdapter(progresses: List<ProgressUnitVO>) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMD2.layoutManager = layoutManager
-        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, historys)
+        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, progresses)
         binding.rvMD2.adapter = adapter
 
-        if (historys.isEmpty()) {
+        if (progresses.isEmpty()) {
             binding.clMD2Empty.visibility = View.VISIBLE
         } else {
             binding.clMD2Empty.visibility = View.GONE
@@ -374,15 +390,24 @@ class MeasureDashBoard2Fragment : Fragment() {
     }
 
     private fun getTime(id: String) : Int {
-        return hvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
+        return pvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
     }
 
 
     private fun sortTodayInWeek() : List<Int> {
         val today = LocalDate.now()
-        val dayOfWeek = today.dayOfWeek.value // 오늘 요일
+        val dayOfWeek = today.dayOfWeek.value // 오늘 요일 (2, 3, 4, 5, 6, 7, 1)
+        Log.v("오늘요일", "dayOfWeek: $dayOfWeek")
+        val days = (1..7).toList()
+        val dayIndex = days.indexOf(dayOfWeek)
 
-        return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it } // 오늘요일을 7로 나눴을 때 0인 index가 오늘 요일임.
+        val sortedIndex = (1..7).map {
+            val offset = (it - 4 + dayIndex) % 7
+            days[if (offset < 0) offset + 7 else offset]
+        }
+        Log.v("정렬된 요일", "sortedIndex: $sortedIndex")
+        return sortedIndex
+//        return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it } // 오늘요일을 7로 나눴을 때 0인 index가 오늘 요일임.
     }
 
 
@@ -431,7 +456,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     }
 
     private fun updateExerciseList() {
-//        val filteredExercises = hvm.allHistorys.filter { history ->
+//        val filteredExercises = pvm.allHistorys.filter { history ->
 //            history.regDate?.let { regDateString ->
 //                val historyDate = stringToLocalDate(regDateString)
 //                YearMonth.from(historyDate) == currentMonth

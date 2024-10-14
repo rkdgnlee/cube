@@ -24,16 +24,21 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@id/exo_play"
+            android:id="@+id/btnPlay"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/media_play_button" />
+            android:backgroundTint="#00FFFFFF"
+            android:visibility="gone"
+            app:srcCompat="@drawable/media_play_button" />
 
         <ImageButton
-            android:id="@id/exo_pause"
+            android:id="@+id/btnPause"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/media_pause_button" />
+            android:backgroundTint="#00FFFFFF"
+            android:contentDescription="TODO"
+            app:srcCompat="@drawable/media_pause_button" />
+
 
 
     </LinearLayout>

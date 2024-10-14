@@ -53,7 +53,7 @@ object NetworkRecommendation {
                             for (i in 0 until ja.length()) {
                                 val recommendationVO = RecommendationVO(
                                     recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                    measureSn = ja.optJSONObject(i).optInt("measure_sn"),
+                                    infoSn = ja.optJSONObject(i).optInt("measure_sn"),
                                     userSn = ja.optJSONObject(i).optInt("user_sn"),
                                     programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                     title = ja.optJSONObject(i).optString("recommendation_title"),
@@ -108,7 +108,7 @@ object NetworkRecommendation {
                         for (i in 0 until ja.length()) {
                             val recommendationVO = RecommendationVO(
                                 recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                measureSn = ja.optJSONObject(i).optInt("measure_sn"),
+                                infoSn = ja.optJSONObject(i).optInt("measure_sn"),
                                 userSn = ja.optJSONObject(i).optInt("user_sn"),
                                 programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                 title = ja.optJSONObject(i).optString("recommendation_title"),

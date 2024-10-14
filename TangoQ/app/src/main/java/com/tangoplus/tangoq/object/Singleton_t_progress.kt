@@ -3,11 +3,10 @@ package com.tangoplus.tangoq.`object`
 import android.annotation.SuppressLint
 import android.content.Context
 import com.tangoplus.tangoq.data.ProgressUnitVO
-import com.tangoplus.tangoq.data.ProgressVO
-import org.json.JSONObject
 
 class Singleton_t_progress private constructor(context: Context){
-    var progresses: MutableList<MutableList<ProgressUnitVO>>? = null
+    var graphProgresses : MutableList<MutableList<ProgressUnitVO>>? = null
+    var programProgresses: MutableList<MutableList<ProgressUnitVO>>? = null
     // 1개 측정안 프로그램 단위 > 프로그램 안의 회차 단위 > 회차 안에 프로그램 갯수들.
     init {
         initialize()
@@ -27,6 +26,7 @@ class Singleton_t_progress private constructor(context: Context){
     }
 
     private fun initialize() {
-        progresses = mutableListOf()
+        graphProgresses = mutableListOf()
+        programProgresses = mutableListOf()
     }
 }
