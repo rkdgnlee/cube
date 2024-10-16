@@ -188,19 +188,21 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     jo.put("user_sn", userJson.optString("user_sn"))
                     jo.put("recommendation_sn", recommendationSn)
                     jo.put("exercise_program_sn", programSn)
-                    jo.put("measure_sn", mvm.selectedMeasure?.measureSn?.toInt())
+                    jo.put("measure_sn", mvm.selectedMeasure?.measureSn)
                     Log.v("json프로그레스", "${jo}")
 
                     ssm.getOrInsertProgress(jo)
-                    pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses!!
+                    pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses!! // 이곳에 프로그램하나에 해당되는 모든 upv들이 가져와짐.
                     Log.v("현재진행기록", "pvm.currentProgresses.size: ${pvm.currentProgresses.size}")
 
                     // 현재 시퀀스 찾기
-                    val currentProgresses = pvm.currentProgresses
+                    val currentProgresses = pvm.currentProgresses // 현재 프로그램의 시퀀스 가져오기 <전체>
                     var currentWeek = 0
                     var currentSequence = 0
+
                     for (weekIndex in currentProgresses.indices) {
                         val weekProgress = currentProgresses[weekIndex]
+
                         val maxSequenceInWeek = weekProgress.maxOfOrNull { it.currentSequence } ?: 0
 
                         if (maxSequenceInWeek == 3) {
@@ -211,6 +213,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             break
                         }
                     }
+                    // ------# 기존에 12회차를 계산하는 방법인듯? #------
+                    // 이제 이럴 필요 없이 그냥 seq쓰면됨.
                     val currentRound = (currentWeek - 1) * 3 + currentSequence
                     pvm.currentSequence = currentRound
                     Log.v("currentSeq", "currentSequence: ${pvm.currentSequence}")
@@ -228,6 +232,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     binding.hpvPCD.progress = hpvProgress
                     // null 체크 추가
                     if (currentProgram != null && currentProgresses.isNotEmpty() && currentRound < currentProgresses.size) {
+
                         setAdapter(currentProgram, currentProgresses[currentRound], Pair(currentRound, currentRound))
 
                         // UI 업데이트 로직
@@ -267,8 +272,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         /* currentSequence 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
         pvm.selectedSequence.value = sequence.second
         val adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
-            Pair(program.programWeek, program.programFrequency),
-            Pair(pvm.currentSequence, pvm.selectedSequence.value!!),
+            Triple(program.programFrequency, pvm.currentSequence, pvm.selectedSequence.value!!),
             this@ProgramCustomDialogFragment)
 
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)

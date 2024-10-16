@@ -142,6 +142,10 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         }
 
     }
+    /* 1. measure -> 있는지 확인 안함. 가져오기만
+    *  2. recommendation -> 있는지 확인 후 없으면 추가하고 있으면 넣기.
+    *  3. progress -> 있는지 없는지 확인 여기서 안하고, 자동으로 반환 (없으면 생성 후 반환, 있으면 반환)
+    * */
 
     suspend fun addRecommendations(userInfoSn: Int) {
         withContext(Dispatchers.Main) {
@@ -164,7 +168,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             put("exercise_stage", JSONArray().apply { put(1); put(2); put(3) })
                             put("measure_sn", measureSn)
                         }
-
                         createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
                             measure.recommendations = newRecommendations
                             singletonMeasure.measures!![index] = measure
@@ -177,9 +180,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     }
                 }
             }
-
         }
-
     }
 
     suspend fun getOrInsertProgress(jo: JSONObject) : Unit = suspendCoroutine  { continuation ->
@@ -194,16 +195,19 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
 
                 for (week in weeks) { // 1, 2, 3, 4
-                    val weekUnits = progressUnits.filter { it.currentWeek == week }
+
+                    val weekUnits = progressUnits.filter { it.currentWeek == week } // 일단 주차별로 나눔. 1주차 2주차 3주차 4주차
+
                     val groupedByUvpSn = weekUnits.groupBy { it.uvpSn } // 21개임
+
                     val maxCurrentSequence = weekUnits.maxOfOrNull { it.currentSequence } ?: 0
                     for (seq in requiredSequences) { // 1, 2, 3
                         val orgUnit = mutableListOf<ProgressUnitVO>() // 시퀀스별로 새로운 리스트 생성
                         for ((_, units) in groupedByUvpSn) {
                             val unit = units.firstOrNull() ?: continue
                             val currentProgress = when {
-                                seq - 1 < maxCurrentSequence -> unit.lastProgress
 
+                                seq - 1 < maxCurrentSequence -> unit.lastProgress
                                 else -> 0  // 미래 시퀀스
                             }
 
@@ -218,7 +222,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                 singletonProgress.programProgresses = organizedUnits
                 Log.v("singletonProgress", "${singletonProgress.programProgresses!![0].map { it.lastProgress }}, ${singletonProgress.programProgresses!![1].map { it.lastProgress }}, ${singletonProgress.programProgresses!![2].map { it.lastProgress }}, ${singletonProgress.programProgresses!![3].map { it.lastProgress }}, ")
-                continuation.resume(Unit)
+                continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
             } else {
                 // ------# 측정 기록이 없음 #------
                 singletonProgress.programProgresses?.add(mutableListOf())
@@ -226,6 +230,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
         }
     }
+
     fun getDangerParts(measureInfo: MeasureInfo) : MutableList<Pair<String, Float>> {
         val dangerParts = mutableListOf<Pair<String, Float>>()
 

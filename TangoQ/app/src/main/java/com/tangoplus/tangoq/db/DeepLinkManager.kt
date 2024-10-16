@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.db
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import com.tangoplus.tangoq.MainActivity
 
 object DeepLinkManager {
@@ -18,7 +19,7 @@ object DeepLinkManager {
         }
         val deepLinkPath = when (uri.path) {
             "/1" -> {
-                val exerciseId = uri.getQueryParameter("exerciseId")
+                val exerciseId = uri.getQueryParameter("exercise")
                 if (exerciseId != null) "PT" else ""
             }
             "/2" -> "MD1"
@@ -26,13 +27,13 @@ object DeepLinkManager {
             "/4" -> "RD"
             else -> "DEFAULT"
         }
-        // MainActivity로 딥링크 정보 전달
         val intent = Intent(context, MainActivity::class.java).apply {
             putExtra(DEEP_LINK_PATH_KEY, deepLinkPath)
             if (deepLinkPath == "PT") {
-                val exerciseId = uri.getQueryParameter("exerciseId")
+                val exerciseId = uri.getQueryParameter("exercise")
                 putExtra(EXERCISE_ID_KEY, exerciseId)
             }
+            Log.v("dlm>handle", "uri: $uri, deepLinkPath: $deepLinkPath")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         context.startActivity(intent)
@@ -44,7 +45,4 @@ object DeepLinkManager {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
     }
-
-
-
 }

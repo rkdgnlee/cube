@@ -216,7 +216,7 @@ class MeasureDetailFragment : Fragment() {
 
             val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
             // ------! 그래프 캡처 끝 !------
-            val url = Uri.parse("tangoplus://tangoq/3")
+            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/3")
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "image/png" // 이곳에서 공유 데이터 변경
             intent.putExtra(Intent.EXTRA_STREAM, fileUri)

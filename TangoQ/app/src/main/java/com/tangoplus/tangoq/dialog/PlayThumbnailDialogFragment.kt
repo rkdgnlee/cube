@@ -197,7 +197,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------# share #------
         binding.ibtnPTDShare.setOnClickListener {
-            val url = Uri.parse("tangoplus://tangoq/1?exerciseId=${exerciseData?.exerciseId!!}")
+            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/1?exercise=${exerciseData?.exerciseId!!}")
             val intent = Intent(Intent.ACTION_SEND)
             intent.putExtra(Intent.EXTRA_TEXT, url.toString())
             intent.type = "text/plain" // 공유할 데이터의 타입을 설정 (텍스트)

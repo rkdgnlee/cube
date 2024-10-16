@@ -355,6 +355,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun navigateDeepLink() {
         val data: Uri? = intent?.data
+        Log.v("splash>deeplink", "data: ${data}")
         if (data != null) {
             // 딥링크 처리
             DeepLinkManager.handleDeepLink(this, data)

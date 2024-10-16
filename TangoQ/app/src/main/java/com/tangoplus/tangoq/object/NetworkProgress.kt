@@ -73,7 +73,8 @@ object NetworkProgress {
         })
     }
 
-    fun getProgressInCurrentProgram(myUrl: String, context: Context, callback: (MutableList<ProgressUnitVO>) -> Unit) {
+    // ------# 현재 프로그램 프로그레스만 가져오기 #------
+    fun getAllProgresses(myUrl: String, context: Context, callback: (MutableList<ProgressUnitVO>) -> Unit) {
 
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
@@ -97,7 +98,7 @@ object NetworkProgress {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("Server>Progress", "${responseBody?.substring(0, 20)}")
+                Log.v("Server>Progress", "$responseBody")
                 try {
                     val ja = JSONObject(responseBody.toString()).optJSONArray("data")
                     val progresses = mutableListOf<ProgressUnitVO>()
@@ -174,34 +175,6 @@ object NetworkProgress {
             }
         })
     }
-
-    fun getProgressAtTime(myUrl: String, date: String, context: Context, callback: () -> Unit) {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
-        val request = Request.Builder()
-            .url("$myUrl?date={$date}")
-            .get()
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("Token응답실패", "Failed to execute request")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.v("Server>Progress", "$responseBody")
-            }
-        })
-    }
-
     // 가장 최신 정보를 가져오는게 좋다.
     suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : JSONObject {
         val authInterceptor = Interceptor { chain ->

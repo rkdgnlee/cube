@@ -29,7 +29,7 @@
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/sflPCD"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -189,12 +189,34 @@
                         android:layout_width="0dp"
                         android:layout_height="6dp"
                         android:layout_marginStart="10dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginEnd="10dp"
                         app:colorBackground="@color/secondContainerColor"
                         app:colorProgress="@color/secondaryColor"
                         app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tvPCDWeek"
                         app:layout_constraintStart_toEndOf="@+id/tvPCDSet"
+                        app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
+
+                    <TextView
+                        android:id="@+id/tvPCDWeek"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:background="@drawable/bckgnd_rectangle_20"
+                        android:backgroundTint="@color/secondaryColor"
+                        android:drawableEnd="@drawable/icon_arrow_right_small"
+                        android:drawableTint="@color/white"
+                        android:gravity="center|center_vertical"
+                        android:paddingStart="20dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="4dp"
+                        android:text="1/4 주차"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
 
                     <androidx.cardview.widget.CardView

@@ -13,8 +13,7 @@ import com.tangoplus.tangoq.databinding.RvProgramSeqItemBinding
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 
 class ProgramCustomRVAdapter(private val fragment: Fragment,
-                             private val weekSeq: Pair<Int, Int>,
-                             private val seqState: Pair<Int, Int> ,
+                             private val seq: Triple<Int, Int, Int>,
                              private val onCustomCategoryClickListener: OnCustomCategoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // frequency 는 총 들어가는 회차, progresses는 같이 들어가는 시청 기록, sequencdState는 현재 회차와 선택한회차
     inner class viewHolder(view: View) : RecyclerView.ViewHolder(view){
@@ -28,27 +27,24 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
     }
 
     override fun getItemCount(): Int {
-        return weekSeq.first * weekSeq.second + (weekSeq.first - 1) // 4주차이기 때문에 3개가 더해진 상황임.
+        return seq.first
     }
-
+    /* seq.first == 총 회차
+    *  seq.second == 현재 회차
+    *  seq.third == 선택한 회차
+    * */
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         // episode는 첫 번째가 선택된 회차, 두 번째가 진행되는 회차임.
         if (holder is viewHolder) {
-            // 회차 끝나면.
-            val seq = weekSeq.second
-            // -----# 주차가 끝나고 휴식 #-----
-            if (position % seq == 0) { // 인덱스가 4, 7 , 10에 이게 들어감.
-                holder.tvPSIName.text = "휴식"
-            } else {
-                holder.tvPSIName.text = "Day ${position+1}"
-            }
 
+            // -----# 주차가 끝나고 휴식 #-----
+            holder.tvPSIName.text = "Day ${position+1}"
 
             // seqState.first == 현재 회차 seqState.second == 선택한 회차
-            if (position == seqState.first) {
+            if (position == seq.second) {
                 setTextView(holder.tvPSIName, R.color.thirdColor, R.color.white)
-            } else if (position < seqState.first) {
+            } else if (position < seq.second) {
                 setTextView(holder.tvPSIName, R.color.secondContainerColor, R.color.thirdColor)
             } else {
                 setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)

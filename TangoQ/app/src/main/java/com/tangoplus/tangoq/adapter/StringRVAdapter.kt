@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
@@ -60,7 +61,8 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
         return when (xmlName) {
             "muscle" -> 0
             "part" -> 1
-            "checkbox" -> 2
+            "measure" -> 2
+            "week" -> 2
             else -> throw IllegalArgumentException("Invalid View Type")
         }
     }
@@ -194,21 +196,39 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
             }
 
             is cbViewHolder -> {
-                holder.cbWI.setText("${currentItem?.substring(0, 10)}")
-                val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
-                holder.cbWI.isChecked = isInitiallyChecked
-                updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
+                if (xmlName == "measure") {
+                    holder.cbWI.setText("${currentItem?.substring(0, 10)}")
+                    val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
+                    holder.cbWI.isChecked = isInitiallyChecked
+                    updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
 
-                vm.selectMeasureDate.observe(fragment.viewLifecycleOwner) { selectMeasureDate ->
-                    val isChecked = currentItem == selectMeasureDate
-                    holder.cbWI.isChecked = isChecked
-                    updateCheckboxTextColor(holder.cbWI, isChecked)
+                    vm.selectMeasureDate.observe(fragment.viewLifecycleOwner) { selectMeasureDate ->
+                        val isChecked = currentItem == selectMeasureDate
+                        holder.cbWI.isChecked = isChecked
+                        updateCheckboxTextColor(holder.cbWI, isChecked)
+                    }
+
+                    holder.cbWI.setOnClickListener {
+                        vm.selectMeasureDate.value = currentItem
+                        Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
+                    }
+                } else {
+                    holder.cbWI.setText(currentItem)
+                    val isInitiallyChecked = position == (vm as ProgressViewModel).selectedWeek.value
+                    holder.cbWI.isChecked = isInitiallyChecked
+                    updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
+
+                    vm.selectWeek.observe(fragment.viewLifecycleOwner) { selectWeek ->
+                        val isChecked = currentItem?.substring(0,0)?.toInt()  == selectWeek
+                        holder.cbWI.isChecked = isChecked
+                        updateCheckboxTextColor(holder.cbWI, isChecked)
+                    }
+                    holder.cbWI.setOnClickListener {
+                        vm.selectWeek.value = currentItem?.substring(0,0)?.toInt()
+                        Log.v("selectedDate", "selectWeek: ${vm.selectWeek.value}")
+                    }
                 }
 
-                holder.cbWI.setOnClickListener {
-                    vm.selectMeasureDate.value = currentItem
-                    Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
-                }
             }
 
         }

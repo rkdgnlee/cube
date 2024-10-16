@@ -166,7 +166,7 @@ object NetworkUser {
     }
 
     // ------! 프로필 사진 시작 !------
-    suspend fun sendProfileImage(context: Context, myUrl: String, requestBody: RequestBody) {
+    suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody) {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
@@ -177,17 +177,17 @@ object NetworkUser {
         val client = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .build()
+        Log.d("sendProfileImage", "myUrl: $myUrl, sn: $sn")
         val request = Request.Builder()
-            .url(myUrl)
+            .url("${myUrl}users/$sn")
             .post(requestBody)
             .build()
-
 
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
                 val motherJo = responseBody.let { JSONObject(it.toString()) }
-                Log.w("getAllMeasures", "Success to execute request: $responseBody")
+                Log.w("profileImage", "Success to execute request: $responseBody")
             }
         }
     }

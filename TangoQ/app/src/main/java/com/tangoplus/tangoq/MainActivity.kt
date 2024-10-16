@@ -255,6 +255,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun navigateToFragment(path: String, exerciseId : String?) {
+        Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: ${exerciseId}")
         when (path) {
             "PT" -> {
                 if (exerciseId != null) {

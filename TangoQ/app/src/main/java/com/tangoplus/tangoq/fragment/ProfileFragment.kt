@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -41,6 +42,9 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -49,6 +53,7 @@ import java.util.TimeZone
 class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener {
     lateinit var binding : FragmentProfileBinding
     val viewModel : SignInViewModel by activityViewModels()
+    lateinit var userJson : JSONObject
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,7 +67,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         super.onViewCreated(view, savedInstanceState)
 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
 
         Log.v("Singleton>Profile", "${userJson}")
         updateUserData()
@@ -167,6 +172,8 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             }
         }
     }
+
+    // ------# code 2000 으로 갤러리 프로필 사진 바꾸기 #------
     private fun navigateGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -181,37 +188,45 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             return
         when (requestCode) {
             2000 -> {
-                val selectedImageUri : Uri? = data?.data
-                if (selectedImageUri != null) {
+                val selectedImageUri: Uri? = data?.data
+                selectedImageUri?.let { uri ->
+                    val contentResolver = requireContext().contentResolver
+                    // 실제 파일 이름 가져오기
+                    val cursor = contentResolver.query(uri, null, null, null, null)
+                    val nameIndex = cursor?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    cursor?.moveToFirst()
+                    val fileName = cursor?.getString(nameIndex ?: 0) ?: "unknown_file"
+                    cursor?.close()
 
-                    // ------# 멀티파트로 담아 프로필 사진 저장하기 #------
-                    val imageFile = selectedImageUri.toFile()
-                    val requestBodyBuilder = MultipartBody.Builder()
-                    requestBodyBuilder.addFormDataPart(
-                        "profile_image",
-                        imageFile.name,
-                        imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
-                    )
-                    val requestBody = requestBodyBuilder.build()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        sendProfileImage(requireContext(), getString(R.string.API_user), requestBody)
+                    // MIME 타입 가져오기
+//                    val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+                    val mimeType = "image/jpeg"
+                    val imageFile = requireContext().uriToFile(uri, fileName)
+                    imageFile?.let {
+                        val requestBody = MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart(
+                                "profile_image",
+                                fileName,
+                                it.asRequestBody(mimeType.toMediaTypeOrNull())
+                            )
+                            .build()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            sendProfileImage(requireContext(), getString(R.string.API_user), userJson.optString("sn"), requestBody)
+                        }
+
+
+                        Log.v("파일 정보", "imageFile: $imageFile, fileName: $fileName, mimeType: $mimeType")
+                        val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putString("imageUri", selectedImageUri.toString())
+                        editor.apply()
+                        Glide.with(this)
+                            .load(selectedImageUri)
+                            .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                            .into(binding.civP)
                     }
-
-
-                    val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.putString("imageUri", selectedImageUri.toString())
-                    editor.apply()
-                    Glide.with(this)
-                        .load(selectedImageUri)
-                        .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                        .into(binding.civP)
-                } else {
-                    Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
-            }
-            else -> {
-                Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -275,4 +290,14 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         updateUserData()
     }
 
+    fun Context.uriToFile(uri: Uri, fileName: String): File? {
+        val inputStream = contentResolver.openInputStream(uri) ?: return null
+        val file = File(cacheDir, fileName)
+        inputStream.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        return file
+    }
 }

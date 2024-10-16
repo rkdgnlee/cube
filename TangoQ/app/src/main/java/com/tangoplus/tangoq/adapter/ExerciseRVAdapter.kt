@@ -34,7 +34,7 @@ class ExerciseRVAdapter (
     private val fragment: Fragment,
     var exerciseList: MutableList<ExerciseVO>,
     private val progress : MutableList<ProgressUnitVO>?,
-    private val selectSeq : Pair<Int, Int> ,
+    private val selectSeq : Pair<Int, Int>,
     var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     val prefs =  PreferencesManager(fragment.requireContext())
@@ -174,10 +174,12 @@ class ExerciseRVAdapter (
                 }
 
                 // ------# 시청 기록 및 완료 버튼 #------
+                // 현재 progress와 exercise가 크기가 같음.
 
                 if (!progress.isNullOrEmpty()) {
                     // 회차를 기준으로 나눠진거임. progress[position] == 16개의 운동이 담긴 1회차 선택한 회차를 가져옴.
                     // selectSeq.first 는 current // selectSeq.second 는 선택 회차
+                    // 잘못
                     Log.v("progress[position]", "progress[position]: ${progress[position]}")
 
                     val currentItem = progress[position] // 16개의 운동이 담긴 1회차 내에 접근함.

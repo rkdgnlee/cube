@@ -10,7 +10,7 @@ import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 
-object NetworkExercise {
+object  NetworkExercise {
 
     // ------! exercise1개 가져오기 !------
     suspend fun fetchExerciseById(myUrl: String, exerciseId : String) : ExerciseVO {
