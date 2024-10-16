@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -29,9 +30,13 @@ import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
+import com.tangoplus.tangoq.db.DeepLinkManager
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
+import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +59,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        // 새로운 인텐트가 들어왔을 때 딥링크 처리
+        if (intent != null) {
+            handleIntent(intent)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +92,8 @@ class MainActivity : AppCompatActivity() {
             mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
             mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
         }
+
+        handleIntent(intent)
 
 
         // -------! 버튼 시작 !------
@@ -225,6 +239,60 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return dir?.delete() ?: false
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val deepLinkPath = intent.getStringExtra(DeepLinkManager.DEEP_LINK_PATH_KEY)
+        val exerciseId = intent.getStringExtra(DeepLinkManager.EXERCISE_ID_KEY)
+        if (deepLinkPath != null) {
+            if (exerciseId != null) {
+                navigateToFragment(deepLinkPath, exerciseId)
+            }
+            navigateToFragment(deepLinkPath, exerciseId)
+        } else {
+            // 딥링크가 아닌 경우 기본 Fragment로 이동
+
+        }
+    }
+    private fun navigateToFragment(path: String, exerciseId : String?) {
+        when (path) {
+            "PT" -> {
+                if (exerciseId != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val exerciseUnit = fetchExerciseById(getString(R.string.API_exercise), exerciseId)
+
+
+                        withContext(Dispatchers.Main) {
+                            val dialog = PlayThumbnailDialogFragment().apply {
+                                arguments = Bundle().apply {
+                                    putParcelable("ExerciseUnit", exerciseUnit)
+                                }
+                            }
+                            dialog.show(supportFragmentManager, "PlayThumbnailDialogFragment")
+                        }
+                    }
+                }
+            }
+            "MD1" -> {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flMain, MeasureFragment())
+                    addToBackStack(null)
+                    commit()
+                }
+            }
+            "MD" -> {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flMain, MeasureDetailFragment())
+                    addToBackStack(null)
+                    commit()
+                }
+            } // measure에 대한 값들을 control해야함
+            "RD" -> {
+                val dialog = ReportDiseaseDialogFragment()
+                dialog.show(supportFragmentManager, "ReportDiseaseDialogFragment")
+            }
+            else -> MainFragment()
+        }
     }
 
     // ------! 한 번 더 누르시면 앱이 종료됩니다. !------

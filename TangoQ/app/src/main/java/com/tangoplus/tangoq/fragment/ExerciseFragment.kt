@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 
 class ExerciseFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseBinding
-//    var verticalDataList = mutableListOf<ExerciseVO>()
     private val viewModel : ExerciseViewModel by activityViewModels()
 
     // ------! 블루투스 변수 !------
@@ -48,13 +47,11 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentExerciseBinding.inflate(inflater)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        binding.sflEc.startShimmer()
         binding.nsvE.isNestedScrollingEnabled = false
         binding.rvEMainCategory.isNestedScrollingEnabled = false
         binding.rvEMainCategory.overScrollMode = 0
@@ -69,8 +66,6 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
 
-
-        Log.v("EDsn", "$sn")
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 CoroutineScope(Dispatchers.Main).launch {
@@ -84,7 +79,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                     val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
 
                     try { // ------! rv vertical 시작 !------
-//                        Log.v("cateSize", "mainCategoryList: ${categoryArrayList}, subCategoryList: $typeArrayList")
+
                         val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, sn, "mainCategory" )
                         binding.rvEMainCategory.adapter = adapter
                         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -111,7 +106,6 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
             }
         }
-
     }
 
     override fun onCategoryClick(category: String) {

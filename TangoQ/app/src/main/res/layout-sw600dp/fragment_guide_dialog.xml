@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="9"
-            android:background="@drawable/background_shadow_top_stroke">
+            android:background="@drawable/bckgnd_shadow_top_0">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnGD"

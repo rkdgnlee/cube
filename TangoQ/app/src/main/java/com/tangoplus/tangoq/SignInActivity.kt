@@ -20,6 +20,7 @@ import android.view.animation.AlphaAnimation
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -396,6 +397,7 @@ class SignInActivity : AppCompatActivity() {
                         snackbar.show()
                     }
                 } else {
+                    Toast.makeText(this@SignInActivity, "인증에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     Log.w(ContentValues.TAG, "mobile auth failed.")
                 }
             }

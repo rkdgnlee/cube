@@ -67,7 +67,6 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         Log.v("Singleton>Profile", "${userJson}")
         updateUserData()
 
-
         binding.ibtnPAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")

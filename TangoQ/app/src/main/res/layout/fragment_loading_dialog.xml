@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@drawable/background_stroke_1dp_sub_color">
+        android:background="@drawable/bckgnd_2_main_20">
 
         <TextView
             android:id="@+id/tvLD"

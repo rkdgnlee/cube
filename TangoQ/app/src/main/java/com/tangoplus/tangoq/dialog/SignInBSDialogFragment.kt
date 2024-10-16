@@ -55,8 +55,6 @@ class SignInBSDialogFragment: BottomSheetDialogFragment() {
             listener?.onTelecomSelected("LG U+ 알뜰폰")
             dismiss()
         }
-
-
     }
 
 

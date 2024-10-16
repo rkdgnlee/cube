@@ -47,7 +47,7 @@
         android:id="@+id/view9"
         android:layout_width="wrap_content"
         android:layout_height="8dp"
-        android:background="@drawable/color_gradient_top_shadow"
+        android:background="@drawable/gradient_top_90"
         app:layout_constraintBottom_toTopOf="@+id/bnbMain"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
-import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment.Companion.ARG_AGREEMENT_TYPE
 
 
 class ProgramAlertDialogFragment : DialogFragment() {
@@ -70,7 +68,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.7f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.background_rectangle_20dp, null))
+        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
         dialogFragmentResize()
 

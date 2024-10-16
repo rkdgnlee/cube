@@ -226,35 +226,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
         }
     }
-
-    // measureVO 따로빼논 api에서 한 번 더 쓰면 됨.
-    // ------# 사진 영상 pose 가져오기 #------
-    private suspend fun loadJsonData(): JSONObject = withContext(Dispatchers.IO) {
-        val jsonString = context.assets.open("MT_STATIC_BACK_6_1_20240604143755.json").bufferedReader()
-            .use { it.readText() }
-        JSONObject(jsonString)
-    }
-
-    private suspend fun loadJsonArray() : JSONArray = withContext(Dispatchers.IO) {
-        val jsonString = context.assets.open("MT_DYNAMIC_OVERHEADSQUAT_FRONT_1_1_20240606135241.json").bufferedReader().use { it.readText() }
-        JSONArray(jsonString)
-    }
-    private suspend fun getUrl(fileName: String, isImage: Boolean) : String = withContext(
-        Dispatchers.IO) {
-        val fileExtension = if (isImage) ".jpg" else ".mp4"
-        val tempFile = File.createTempFile(if (isImage) "temp_image" else "temp_video", fileExtension, context.cacheDir)
-        tempFile.deleteOnExit()
-
-        context.assets.open(fileName).use { input ->
-            tempFile.outputStream().use { output ->
-                input.copyTo(output)
-            }
-        }
-        tempFile.absolutePath
-    }
-
-
-
     fun getDangerParts(measureInfo: MeasureInfo) : MutableList<Pair<String, Float>> {
         val dangerParts = mutableListOf<Pair<String, Float>>()
 

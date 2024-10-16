@@ -78,7 +78,7 @@
                 android:layout_height="70dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/background_stroke_1dp_sub_color_150_20dp"
+                android:background="@drawable/bckgnd_1_sub150_20"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider15">
 

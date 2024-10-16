@@ -106,7 +106,6 @@ class ExerciseRVAdapter (
     @SuppressLint("ClickableViewAccessibility", "MissingInflatedId", "InflateParams", "SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentExerciseItem = exerciseList[position]
-//        val currentHistoryItem = viewingHistory[position]
 
         val second = "${currentExerciseItem.videoDuration?.toInt()?.div(60)}분 ${currentExerciseItem.videoDuration?.toInt()?.rem(60)}초"
 

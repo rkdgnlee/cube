@@ -9,6 +9,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -36,6 +37,7 @@ import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
+import com.tangoplus.tangoq.db.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptData
@@ -138,14 +140,6 @@ class SplashActivity : AppCompatActivity() {
                 )
                 // ----- 인 앱 알림 끝 -----
 
-                // -------! 딥링크 처리 시작 !------
-//                val deepLink = intent?.data
-//                if (deepLink != null) {
-//                    // 딥링크 정보를 임시 저장
-//                    saveDeepLinkTemp(deepLink)
-//                }
-                // -------! 딥링크 처리 끝 !------
-
                 val userSingleton = Singleton_t_user.getInstance(this)
 
                 // -----! 다크모드 및 설정 불러오기 시작 !-----
@@ -203,7 +197,7 @@ class SplashActivity : AppCompatActivity() {
 
 
                                         ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
-                                            MainInit()
+                                            navigateDeepLink()
                                         }
 
                                     }
@@ -235,7 +229,7 @@ class SplashActivity : AppCompatActivity() {
                                         val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
 
                                         ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
-                                            MainInit()
+                                            navigateDeepLink()
                                         }
                                     }
                                 }
@@ -271,7 +265,7 @@ class SplashActivity : AppCompatActivity() {
 
 
                                     ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
-                                        MainInit()
+                                        navigateDeepLink()
                                     }
                                 }
                             }
@@ -293,7 +287,8 @@ class SplashActivity : AppCompatActivity() {
                                     val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
 
                                     ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
-                                        MainInit()
+
+                                        navigateDeepLink()
                                     }
                                 }
                             }
@@ -358,28 +353,13 @@ class SplashActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun createAlarmChannel() {
-        AlarmReceiver()
-        val intent = Intent(this, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        val calander: Calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 17)
+    private fun navigateDeepLink() {
+        val data: Uri? = intent?.data
+        if (data != null) {
+            // 딥링크 처리
+            DeepLinkManager.handleDeepLink(this, data)
+        } else {
+            MainInit()
         }
-        val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calander.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-        )
     }
-
-
-
-//    private fun saveDeepLinkTemp(deepLink: Uri) {
-//        // SharedPreferences나 ViewModel 등을 사용하여 딥링크 정보 임시 저장
-//        val prefs = getSharedPreferences("DeepLinkPrefs", Context.MODE_PRIVATE)
-//        prefs.edit().putString("pending_deep_link", deepLink.toString()).apply()
-//    }
 }

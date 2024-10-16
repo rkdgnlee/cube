@@ -105,7 +105,7 @@
             android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:background="@drawable/background_rectangle_20dp"
+            android:background="@drawable/bckgnd_rectangle_20"
             android:backgroundTint="@color/secondaryColor"
             android:drawableEnd="@drawable/icon_arrow_right_small"
             android:drawableTint="@color/white"

@@ -62,7 +62,6 @@ import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityMeasureSkeletonBinding
-import com.tangoplus.tangoq.db.FileStorageUtil
 import com.tangoplus.tangoq.db.FileStorageUtil.saveJa
 import com.tangoplus.tangoq.db.FileStorageUtil.saveJo
 import com.tangoplus.tangoq.db.MeasureDao
@@ -72,20 +71,16 @@ import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility.decodeSampledBitmapFromFile
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
-import com.tangoplus.tangoq.`object`.NetworkMeasure.getMeasureResult
-import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
-import com.tangoplus.tangoq.`object`.NetworkMeasure.toMeasureInfo
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
-import com.tangoplus.tangoq.`object`.SaveSingletonManager
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -211,13 +206,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
 
                         setAnimation(binding.tvMeasureSkeletonCount, 1000, 500, false) {
-                            hideViews(5700)
+                            hideDynamicViews(5700)
+                            setDrawableSequence()
                             // 녹화 종료 시점 아님
                             startVideoRecording {
                                 Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
                                 isRecording = false // 녹화 완료
                                 startRecording = false
                                 updateUI()
+                                binding.ivMeasureSkeletonFrame.visibility = View.VISIBLE
                                 binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
 
                                 // ------# 약 200프레임에서 db에 넣을 값을 찾는 곳 #------
@@ -237,6 +234,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                     }
 
                                 }
+
                             }
                         }
                     } else {
@@ -707,7 +705,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.v("repeat", "Max repeats reached, stopping the loop")
             }
             else -> {
-
                 if (repeatCount.value!! == 1) {
                     binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
                 } else {
@@ -720,14 +717,34 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.v("몇단계?", "repeatCount: ${repeatCount.value}, progress: $progress")
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
-
                 val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
                 binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
+
             }
 
         }
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")
     } // ------! update UI 끝 !------
+
+
+    fun setDrawableSequence(index: Int = 0) {
+        val ids = listOf("1", "1_1", "1_2", "1_1", "1")
+        if (index >= ids.size) {
+            Log.v("DynamicDrawable", "Finished setDrawable in Frame.")
+            binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
+            return
+        }
+
+        val drawableId = resources.getIdentifier("drawable_measure_${ids[index]}", "drawable", packageName)
+        val drawable = ContextCompat.getDrawable(this@MeasureSkeletonActivity, drawableId)
+        binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
+
+        val delay = if (ids[index] == "1_2") 1400L else 1000L
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            setDrawableSequence(index + 1)
+        }, delay)
+    }
 
     @SuppressLint("SetTextI18n")
     private fun setPreviousStep() {
@@ -770,6 +787,17 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         binding.btnMeasureSkeletonStep.visibility = View.VISIBLE
         binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
     }
+
+    private fun hideDynamicViews(delay: Long) {
+        binding.clMeasureSkeletonTop.visibility = View.INVISIBLE
+        binding.llMeasureSkeletonBottom.visibility = View.INVISIBLE
+        setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
+        setAnimation(binding.llMeasureSkeletonBottom, 850, delay, true) {}
+        setAnimation(binding.tvMeasureSkeletonCount, 850, delay ,true) {}
+        binding.btnMeasureSkeletonStep.visibility = View.VISIBLE
+        binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
+    }
+
 
     // ------! 타이머 control 시작 !------
     private fun startTimer() {
@@ -1219,10 +1247,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     Log.v("dynamicJa에들어감", "${mViewModel.dynamicJa.length()}")
                     mViewModel.dynamicJa.put(mViewModel.dynamicJoUnit)
                     mViewModel.dynamicJoUnit = JSONObject()
-
-                    // ------# 일단 poselandmark를 dynamicJa를 다 넣는데
-
-
                 }
                 2 -> { // ------! 주먹 쥐고 !------
 

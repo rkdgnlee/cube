@@ -300,6 +300,7 @@ object NetworkProgress {
         }
     }
 
+    // TODO ------# 달력 함수에 맞게 수정 해야함 #------
     suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressUnitVO> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()

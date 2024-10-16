@@ -12,7 +12,9 @@ import com.tangoplus.tangoq.adapter.RecommendationRVAdapter
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramSelectBinding
+import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureBSDialogFragment
+import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 
 class ProgramSelectFragment : Fragment() {
@@ -46,6 +48,16 @@ class ProgramSelectFragment : Fragment() {
         binding.tvPSMeasureDate.setOnClickListener {
             val dialog = MeasureBSDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "MeasureBSDialogFragment")
+        }
+
+        binding.ibtnPSAlarm.setOnClickListener {
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+
+        binding.ibtnPSQRCode.setOnClickListener {
+            val dialog = QRCodeDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
     }
     private val categoryMap = mapOf(

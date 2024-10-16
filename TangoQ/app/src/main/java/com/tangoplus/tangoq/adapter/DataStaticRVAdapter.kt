@@ -1,13 +1,14 @@
 package com.tangoplus.tangoq.adapter
 
 import android.content.Context
-import android.util.Log
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvDataStaticItemBinding
@@ -59,7 +60,8 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
         }
     }
     private fun setBackgroundDrawable(cl : ConstraintLayout) {
-        cl.setBackgroundResource(R.drawable.background_stroke_1dp_main_color_12dp)
+        cl.setBackgroundResource(R.drawable.bckgnd_rectangle_12)
+        cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.subColor100))
     }
 
 

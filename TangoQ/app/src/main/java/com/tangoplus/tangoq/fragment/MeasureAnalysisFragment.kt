@@ -28,8 +28,6 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
@@ -47,7 +45,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import kotlin.coroutines.resume
-import kotlin.math.min
 
 class MeasureAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMeasureAnalysisBinding
@@ -63,7 +60,6 @@ class MeasureAnalysisFragment : Fragment() {
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
     private lateinit var jsonArray: JSONArray
-    private var hideNotice = false
 
     companion object {
         private const val ARG_INDEX = "index_analysis"
@@ -148,9 +144,7 @@ class MeasureAnalysisFragment : Fragment() {
                 measureResult.put(mr.optJSONObject(5))
                 setDynamicUI(false)
                 setStaticSplitUi(false)
-                lifecycleScope.launch {
-                    setImage(5, binding.ssivMA1)
-                }
+                lifecycleScope.launch { setImage(5, binding.ssivMA1) }
                 binding.flMA.visibility = View.GONE
                 setScreenRawData(measureResult,  5)
                 binding.ivMA.setImageResource(R.drawable.drawable_back)
@@ -186,7 +180,6 @@ class MeasureAnalysisFragment : Fragment() {
     // 고정적으로
     // big은 자세 , small은 수직 수평 분석임
     private fun setScreenRawData(measureResult: JSONArray, sequence: Int) {
-
         // 정면은 필터링 됨. 수직부터 필터링
         var minResultData = mutableListOf<Triple<String, String, String?>>()
         when (sequence) {
@@ -604,15 +597,11 @@ class MeasureAnalysisFragment : Fragment() {
                                         0, 2, 3, 4 -> ssiv.setImage(ImageSource.bitmap(cropToPortraitRatio(combinedBitmap)))
                                         else -> ssiv.setImage(ImageSource.bitmap(combinedBitmap))
                                     }
-
                                     continuation.resume(true)
-
                                 }
                             }
+                            override fun onImageLoaded() { count = false }
 
-                            override fun onImageLoaded() {
-                                count = false
-                            }
                             override fun onPreviewLoadError(e: Exception?) { continuation.resume(false) }
                             override fun onImageLoadError(e: Exception?) { continuation.resume(false) }
                             override fun onTileLoadError(e: Exception?) { continuation.resume(false) }
@@ -620,9 +609,7 @@ class MeasureAnalysisFragment : Fragment() {
                         })
                         Log.v("ImageLoading", "Image loaded successfully. Width: ${bitmap.width}, Height: ${bitmap.height}")
                     }
-                } else {
-                    continuation.resume(false)
-                }
+                } else { continuation.resume(false) }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("Error", "${e}")
             }
@@ -670,7 +657,6 @@ class MeasureAnalysisFragment : Fragment() {
                 simpleExoPlayer?.seekTo(0)
                 simpleExoPlayer?.playWhenReady = true
             }
-
         }
         binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE

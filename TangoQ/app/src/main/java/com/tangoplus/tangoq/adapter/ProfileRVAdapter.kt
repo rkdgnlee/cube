@@ -255,17 +255,4 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
         return profilemenulist.size
 
     }
-
-//    private fun showSettingsFragment() {
-//        val DeviceSettingsFragment = SettingsFragment()
-//        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-//            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-//            replace(R.id.flMain, DeviceSettingsFragment)
-//            addToBackStack(null)
-//            commit()
-//        }
-//    }
-
-
-
 }

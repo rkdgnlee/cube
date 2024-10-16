@@ -174,7 +174,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:background="@drawable/background_rectangle_8dp"
+        android:background="@drawable/bckgnd_rectangle_8"
         android:backgroundTint="@color/thirdColor"
         android:paddingStart="10dp"
         android:paddingTop="4dp"

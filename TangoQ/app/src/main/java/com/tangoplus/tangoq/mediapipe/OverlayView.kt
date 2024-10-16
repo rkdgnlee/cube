@@ -6,18 +6,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import androidx.core.content.ContextCompat
-import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import com.tangoplus.tangoq.R
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.round
-import kotlin.math.roundToLong
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {

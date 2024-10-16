@@ -86,7 +86,7 @@ class AgreementDetailDialogFragment : DialogFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.6f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.background_rectangle_20dp, null))
+        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
 
         val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
         if (agreementType == "agreement1") {

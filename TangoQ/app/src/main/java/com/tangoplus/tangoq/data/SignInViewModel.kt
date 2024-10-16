@@ -21,12 +21,8 @@ class SignInViewModel: ViewModel() {
     val agreementMk2 = MutableLiveData(false)
     val marketingAgree = MutableLiveData(false)
 
-
-
-
     val ivProfile = MutableLiveData<Uri>()
     var snsCount = 0
-
 
     init {
         User.value = JSONObject()
@@ -41,11 +37,9 @@ class SignInViewModel: ViewModel() {
     }
 
     val idCondition = MutableLiveData(false)
-//    val nameCondition = MutableLiveData(false)
     val mobileCondition = MutableLiveData(false)
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
-//    val emailCondition = MutableLiveData(false)
     val mobileAuthCondition = MutableLiveData(false)
 
     override fun onCleared() {

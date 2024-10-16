@@ -25,7 +25,6 @@ class UserViewModel: ViewModel() {
         addSource(step31) { updateStep3() }
         addSource(step32) { updateStep3() }
     }
-    val dailyProgress = MutableLiveData<Int>()
 
     init {
         User.value = JSONObject()

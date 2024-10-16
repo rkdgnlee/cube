@@ -79,7 +79,7 @@
         android:id="@+id/clMeasureSkeletonTop"
         android:layout_width="match_parent"
         android:layout_height="128dp"
-        android:background="@drawable/background_8dp_top"
+        android:background="@drawable/bckgnd_top_4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -172,7 +172,7 @@
         android:id="@+id/llMeasureSkeletonBottom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_top_16dp"
+        android:background="@drawable/bckgnd_top_16"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

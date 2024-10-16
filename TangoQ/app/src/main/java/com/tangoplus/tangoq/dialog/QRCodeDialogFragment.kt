@@ -120,8 +120,6 @@ class QRCodeDialogFragment : DialogFragment() {
                 when (newState) {
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         hideBarcodeView()
-                        binding.ibtnLSDInfo.showAlignStart(balloon)
-                        balloon.dismissWithDelay(1500L)
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> showBarcodeView()
                 }
@@ -178,8 +176,6 @@ class QRCodeDialogFragment : DialogFragment() {
         }
         binding.ibtnLSDBack1.setOnClickListener { dismiss() }
         binding.ibtnLSDBack2.setOnClickListener { dismiss() }
-
-
     }
 
     private fun initScanner() {
@@ -249,11 +245,15 @@ class QRCodeDialogFragment : DialogFragment() {
     private fun hideBarcodeView() {
         binding.csvLSD.visibility = View.GONE
         codeScanner.releaseResources()
-        binding.otvLSD.requestFocus()
-        binding.otvLSD.postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.otvLSD.requestFocus()
+            binding.otvLSD.isFocusableInTouchMode = true
+
+            // 소프트 키보드를 강제로 띄우기
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
         }, 350)
+
 //        val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
 //        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
 

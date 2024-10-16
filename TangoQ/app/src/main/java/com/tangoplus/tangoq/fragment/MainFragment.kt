@@ -86,11 +86,11 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
         prefsManager = PreferencesManager(requireContext())
+        prefsManager.setUserSn(Singleton_t_user.getInstance(requireContext()).jsonObject?.optInt("sn")!!)
+        Log.v("현재pref저장SN", "${prefsManager.getUserSn()}")
         latestRecSn = prefsManager.getLatestRecommendation()
         Log.v("latestRecSn", "${latestRecSn}")
         AlarmController(requireContext()).setNotificationAlarm("TangoQ", "점심공복에는 운동효과가 더 좋답니다.", 14, 2)
@@ -103,6 +103,7 @@ class MainFragment : Fragment() {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
+
         binding.ibtnMQRCode.setOnClickListener{
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
@@ -115,12 +116,10 @@ class MainFragment : Fragment() {
 
         when (isNetworkAvailable(requireContext())) {
             true -> {
-                val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
                 measures = Singleton_t_measure.getInstance(requireContext()).measures
                 binding.llM.visibility = View.VISIBLE
                 binding.sflM.startShimmer()
                 updateUI()
-
 
                 binding.tvMMeasureDate.setOnClickListener {
                     val dialog = MeasureBSDialogFragment()
@@ -129,7 +128,6 @@ class MainFragment : Fragment() {
 
                 binding.btnMProgram.setOnClickListener {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
-//                        setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                         replace(R.id.flMain, ProgramSelectFragment())
                         addToBackStack(null)
                         commit()
@@ -374,7 +372,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    fun applyBlurToConstraintLayout(constraintLayout: ConstraintLayout, imageView: ImageView) {
+    private fun applyBlurToConstraintLayout(constraintLayout: ConstraintLayout, imageView: ImageView) {
         constraintLayout.post {
             Blurry.with(constraintLayout.context)
                 .radius(10)

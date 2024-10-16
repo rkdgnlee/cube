@@ -58,43 +58,10 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
 
         pm = PreferencesManager(requireContext())
 
-//        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ko", "KR"))
-//
-//        val now: Long = System.currentTimeMillis()
-//        val date = Date(now)
-//        // 30분 전
-//        val calendar = Calendar.getInstance()
-//        calendar.setTime(date)
-//        calendar.add(Calendar.MINUTE, -37)
-//        val minute = calendar.time
-//        val stringMinute = dateFormat.format(minute)
-//        val longMinute = dateFormat.parse(stringMinute)?.time
-//
-//        calendar.add(Calendar.HOUR, -6)
-//        val hour = calendar.time
-//        val stringHour = dateFormat.format(hour)
-//        val longHour = dateFormat.parse(stringHour)?.time
-//
-//        calendar.add(Calendar.DATE, -2)
-//        val day = calendar.time
-//        val stringDay = dateFormat.format(day)
-//        val longDay = dateFormat.parse(stringDay)?.time
-//
-//        // 현재
-//        val stringMinuteTime = date
-//        val stringTime = dateFormat.format(date)
-//        val longTime = dateFormat.parse(stringTime)?.time
-
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
                 alarmList = pm.getAlarms()
                 alarmList.reverse()
-//                alarmList = mutableListOf(
-//                    MessageVO(1, "즉시 시작할 것", timestamp =  longTime ,route = "home_intermediate" ),
-//                    MessageVO(2, "미션이 부여됐습니다", timestamp =  longMinute , route = "pick"),
-//                    MessageVO(3,"운동 마무리 루틴", timestamp =  longHour ,route = "report_goal"),
-//                    MessageVO(4,"기기 연결이 완료 됐습니다.", timestamp =  longDay , route = "profile")
-//                )
                 // ------! alarm touchhelper 연동 시작 !------
                 if (alarmList.isEmpty()) {
                     binding.tvAlarm.visibility = View.VISIBLE

@@ -13,7 +13,7 @@
         android:id="@+id/ConstraintLayout17"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_top_16dp"
+        android:background="@drawable/bckgnd_top_16"
         app:layout_anchor="@+id/ConstraintLayout17"
         app:layout_anchorGravity="center">
 

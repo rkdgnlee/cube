@@ -7,7 +7,7 @@
     android:layout_height="100dp"
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp"
-    android:background="@drawable/background_stroke_1dp_sub_color">
+    android:background="@drawable/bckgnd_2_main_20">
 
     <TextView
         android:id="@+id/tvDSITitle"

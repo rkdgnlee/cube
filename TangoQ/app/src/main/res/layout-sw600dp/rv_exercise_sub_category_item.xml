@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:layout_marginEnd="6dp"
-        android:background="@drawable/background_stroke_1dp_sub_color_28dp"
+        android:background="@drawable/bckgnd_1_sub200_28"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingRight="20dp"

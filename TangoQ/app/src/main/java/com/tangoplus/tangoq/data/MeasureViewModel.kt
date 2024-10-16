@@ -137,7 +137,7 @@ class MeasureViewModel : ViewModel() {
             }
         }
 
-        Log.v("VMUris", "${uris}")
+//        Log.v("VMUris", "${uris}")
         return MeasureVO(
             deviceSn = 0,
             measureSn = info.measure_sn, // 아이디도 더미

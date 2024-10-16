@@ -1,10 +1,9 @@
 package com.tangoplus.tangoq.fragment
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -16,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
@@ -26,18 +24,14 @@ import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.tangoplus.tangoq.MainActivity
-import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.random.Random
 
 
 class MeasureDetailFragment : Fragment() {
@@ -96,7 +90,7 @@ class MeasureDetailFragment : Fragment() {
         val indices = listOf(0, 1, 3, 5, 7, 9, 11, 12, 10, 8, 6, 4, 2)
 
         // 먼저 모든 점수를 95로 초기화
-        val scores = MutableList(bodyParts.size) { 95f }
+        val scores = MutableList(bodyParts.size) { 97f }
         Log.v("raderScores", "${ measure.dangerParts}")
         // measure.dangerParts에 있는 부위들의 점수만 업데이트
         measure.dangerParts.forEach { (part, danger) ->
@@ -106,7 +100,7 @@ class MeasureDetailFragment : Fragment() {
                     1.0f -> 80f
                     2.0f -> 70f
                     3.0f -> 60f
-                    else -> 95f
+                    else -> 97f
                 }
             }
         }
@@ -125,7 +119,7 @@ class MeasureDetailFragment : Fragment() {
         val dataSet = RadarDataSet(entries, "신체 부위").apply {
             color = resources.getColor(R.color.mainColor, null)
             setDrawFilled(true)
-            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_rader_main_second)
+            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_rader_main_second_90)
             lineWidth = 2f
             setDrawValues(false)  // 값 표시 제거
         }
@@ -151,7 +145,7 @@ class MeasureDetailFragment : Fragment() {
             }
             yAxis.apply {
                 setLabelCount(4, true)
-                setDrawGridLines(true)
+                setDrawGridLines(false)
                 setDrawLabels(false)
                 setDrawTopYLabelEntry(false)
                 setTouchEnabled(false)
@@ -222,11 +216,11 @@ class MeasureDetailFragment : Fragment() {
 
             val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
             // ------! 그래프 캡처 끝 !------
-
+            val url = Uri.parse("tangoplus://tangoq/3")
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "image/png" // 이곳에서 공유 데이터 변경
             intent.putExtra(Intent.EXTRA_STREAM, fileUri)
-            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
+            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !\n$url")
             startActivity(Intent.createChooser(intent, "밸런스 그래프"))
         }
     }

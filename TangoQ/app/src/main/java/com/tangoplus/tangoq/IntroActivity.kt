@@ -78,15 +78,11 @@ class IntroActivity : AppCompatActivity() {
         // ------! token 저장할  securedPref init !------
         securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
         ssm = SaveSingletonManager(this@IntroActivity, this)
-//        val dialog = LoginScanDialogFragment()
-//        dialog.show(supportFragmentManager, "LoginScanDialogFragment")
         when (isNetworkAvailable(this)) {
             true -> {
 
             }
             false -> {
-                binding.btnIntroLogin.isEnabled = false
-                binding.btnIntroSignIn.isEnabled = false
                 Toast.makeText(this, "인터넷 연결 후 앱을 다시 실행해주세요", Toast.LENGTH_LONG).show()
             }
         }

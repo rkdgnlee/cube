@@ -133,13 +133,4 @@ class WithdrawalFragment : Fragment() {
         binding.btnWd.backgroundTintList = colorStateList
         binding.btnWd.isEnabled = isChecked
     }
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
 }

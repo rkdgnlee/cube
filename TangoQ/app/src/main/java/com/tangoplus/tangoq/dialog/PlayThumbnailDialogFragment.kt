@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -193,6 +194,16 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 //            startActivity(intent)
 //        }
         // ------! ai코칭 끝 !------
+
+        // ------# share #------
+        binding.ibtnPTDShare.setOnClickListener {
+            val url = Uri.parse("tangoplus://tangoq/1?exerciseId=${exerciseData?.exerciseId!!}")
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.putExtra(Intent.EXTRA_TEXT, url.toString())
+            intent.type = "text/plain" // 공유할 데이터의 타입을 설정 (텍스트)
+            startActivity(Intent.createChooser(intent, "공유하기")) // 공유할 앱을 선택할 수 있도록 Chooser 추가
+        }
+
     }
 
     override fun onResume() {

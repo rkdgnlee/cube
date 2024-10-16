@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -59,11 +60,6 @@ import java.util.Locale
 class MeasureDashBoard1Fragment : Fragment() {
     lateinit var binding : FragmentMeasureDashboard1Binding
     val viewModel : MeasureViewModel by activityViewModels()
-    val endTime = LocalDateTime.now()
-//    val startTime = LocalDateTime.now().minusDays(1)
-    private var popupWindow : PopupWindow?= null
-    private var currentMonth = YearMonth.now()
-    private var selectedDate = LocalDate.now()
     private var balloon : Balloon? = null
     // ------! 싱글턴 패턴 객체 가져오기 !------
     private lateinit var singletonMeasure: Singleton_t_measure
@@ -87,7 +83,6 @@ class MeasureDashBoard1Fragment : Fragment() {
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 try {
-
                     if (singletonMeasure.measures?.isNotEmpty() == true) {
                         val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
                         binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall?: 0}"
@@ -135,12 +130,12 @@ class MeasureDashBoard1Fragment : Fragment() {
 
             val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
             // ------! 그래프 캡처 끝 !------
-
+            val url = Uri.parse("tangoplus://tangoq/2")
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "image/png" // 이곳에서 공유 데이터 변경
             intent.putExtra(Intent.EXTRA_STREAM, fileUri)
-            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !")
-            startActivity(Intent.createChooser(intent, "밸런스 그래프"))
+            intent.putExtra(Intent.EXTRA_TEXT, "제 측정 결과들을 공유하고 싶어요 !\n$url")
+            startActivity(Intent.createChooser(intent, "측정 결과"))
         }
 
         // ------# 자세히 보기 #------
@@ -162,79 +157,6 @@ class MeasureDashBoard1Fragment : Fragment() {
             }
         } // ------ ! 자세히 보기 끝 !------
 
-
-//        // ------! 통증 부위 관리 시작 !------
-//        binding.tvMsAddPart.setOnClickListener {
-//            val dialog = MeasurePartDialogFragment()
-//            dialog.show(requireActivity().supportFragmentManager, "MeasurePartDialogFragment")
-//        }
-//        binding.clMsAddPart.setOnClickListener {
-//            val dialog = MeasurePartDialogFragment()
-//            dialog.show(requireActivity().supportFragmentManager, "MeasurePartDialogFragment")
-//        } // ------! 통증 부위 관리 끝 !------
-
-
-//        // TODO 1. t_measure등에서 가져오는 결과값이 있다 --> 밸런스 점수, 뭐 측정일자 같은거 업데이트
-//        // TODO 2. 일단 통증 부위를 일단 넣을 수 있게.
-//        viewModel.parts.observe(viewLifecycleOwner) { parts ->
-//            if (parts.isEmpty()) {
-//                binding.llMsEmpty.visibility = View.VISIBLE
-//                setPainPartRV(parts)
-//
-//            } else if (parts.size == 1) {
-//                binding.llMsEmpty.visibility = View.GONE
-//                binding.rvMsRight.visibility = View.GONE
-//                (binding.rvMsLeft.layoutParams as ViewGroup.MarginLayoutParams).rightMargin = 0
-//                setPainPartRV(parts)
-//            } else {
-//                binding.llMsEmpty.visibility = View.GONE
-//                binding.rvMsRight.visibility = View.VISIBLE
-//                (binding.rvMsLeft.layoutParams as ViewGroup.MarginLayoutParams).rightMargin = 8
-//
-//                // ------! 왼쪽 painpart !------
-//                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//                val leftData = parts.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
-//                val leftadapter = PainPartRVAdpater(this@MeasureHistory1Fragment, leftData, "Pp", this@MeasureHistory1Fragment)
-//                binding.rvMsLeft.adapter = leftadapter
-//                if (leftData.isNotEmpty()) {
-//                    binding.rvMsLeft.layoutManager = linearLayoutManager
-//                }
-//
-//                // ------! 오른쪽 painpart !------
-//                val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//                val rightData = parts.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
-//                val rightAdapter = PainPartRVAdpater(this@MeasureHistory1Fragment, rightData, "Pp", this@MeasureHistory1Fragment)
-//                binding.rvMsRight.adapter = rightAdapter
-//                if (rightData.isNotEmpty()) {
-//                    binding.rvMsRight.layoutManager = linearLayoutManager2
-//                }
-//            }
-//        } // ------!  이름 + 통증 부위 끝 !------
-
-        // ------! 리포트 버튼 시작 !------
-//        startBounceAnimation(binding.btnMsGetReport)
-//        binding.btnMsGetReport.setOnClickListener {
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-//                replace(R.id.flMain, ReportFragment())
-//                commit()
-//            }
-//            requireContext()
-//        }
-//        // ------! 리포트 버튼 끝 !------
-//
-//        binding.btnMsGetRecommend.setOnClickListener {
-//            // TODO partName에 대해서 가장 높은 점수인것만 가져오는 거지
-//            /* 근데 말이 안되는게, ExerciseDetailFragment는 대분류로 움직이는 건데, 특정 dialogFragment안에서 추가적으로 어떤 것들만 볼 수 있게. 추천 운동 (전체화면 느낌)
-//            * r*/
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flMain, ExerciseDetailFragment.newInstance(Pair(2, "기본 스트레칭 운동"), -1))
-//                addToBackStack(null)
-//                commit()
-//            }
-//
-//        }
-
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMD1
         val lcXAxis = lineChart.xAxis
@@ -242,8 +164,6 @@ class MeasureDashBoard1Fragment : Fragment() {
         val lcYAxisRight = lineChart.axisRight
         val lcLegend = lineChart.legend
         var startIndex = 0
-
-
 
         val lcDataList: MutableList<Pair<String, Int>> = mutableListOf()
 
@@ -297,12 +217,8 @@ class MeasureDashBoard1Fragment : Fragment() {
         lcYAxisLeft.apply {
             setDrawGridLines(false)
             setDrawAxisLine(false)
-//            setDrawGridLinesBehindData(true)
-//            setDrawZeroLine(false)
             setLabelCount(3, false)
             setDrawLabels(false)
-//            textColor = resources.getColor(R.color.subColor500)
-//            axisLineWidth = 1.5f
         }
         lcYAxisRight.apply {
             setDrawGridLines(false)
@@ -391,26 +307,6 @@ class MeasureDashBoard1Fragment : Fragment() {
         })
         // ------! 꺾은선 그래프 코드 끝 !------
 
-
-//        val lineChartND = binding.lcMD1NS
-//        val mean = 0.0
-//        val stdDev = 1.0
-//        val ndText = "70"
-//        val zScore : Double
-////        when (ndText) {
-////            "60%" -> zScore = 0.842
-////            "70%" -> zScore = 1.04
-////            "80%" -> zScore = 1.28
-////            "90%" -> zScore = 1.645
-////        }
-//        zScore = 1.04
-//        val entries = ArrayList<Entry>()
-//        val entriesHighlighted = ArrayList<Entry>()
-//
-//        // -------! 사용자 밸런스 점수의 백분위 값 !------
-//        val userValue = 0.625
-//
-//
         // ------! balloon 시작 !------
         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
 //        params.horizontalBias = 0.731f
@@ -613,81 +509,5 @@ class MeasureDashBoard1Fragment : Fragment() {
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
-    }
-
-
-//    @SuppressLint("MissingInflatedId", "InflateParams")
-//    override fun onPartCheck(part: MeasureVO) {
-//        if (popupWindow?.isShowing == true) {
-//            popupWindow?.dismiss()
-//            popupWindow = null
-//        } else {
-//            val inflater = LayoutInflater.from(view?.context)
-//            val popupView = inflater.inflate(R.layout.pw_main_item, null)
-//            val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186f, view?.context?.resources?.displayMetrics).toInt()
-//            val height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 162f, view?.context?.resources?.displayMetrics).toInt()
-//
-//            popupWindow = PopupWindow(popupView, width, height)
-//            popupWindow!!.showAsDropDown(view)
-//
-//            popupView.findViewById<TextView>(R.id.tvPPP1).setOnClickListener{
-//                requireActivity().supportFragmentManager.beginTransaction().apply {
-//                    add(R.id.flMain, ReportDiseaseFragment())
-//                    addToBackStack(null)
-//                    commit()
-//                }
-//                popupWindow?.dismiss()
-//            }
-//            popupView.findViewById<TextView>(R.id.tvPPP2).setOnClickListener{
-//                val dialog = PoseViewDialogFragment.newInstance(part.drawableName) // TODO drawableName이 아니라 실제 파일 String에 대한 값을 MeasureVO에 추가해야함
-//                dialog.show(requireActivity().supportFragmentManager, "PoseViewDialogFragment")
-//                popupWindow?.dismiss()
-//            }
-//            popupView.findViewById<TextView>(R.id.tvPPP3).setOnClickListener{
-//                requireActivity().supportFragmentManager.beginTransaction().apply {
-//                    add(R.id.flMain, MeasureHistoryFragment())
-//                    addToBackStack(null)
-//                    commit()
-//                }
-//                popupWindow?.dismiss()
-//            }
-//        }
-//    }
-//
-//    private fun setPainPartRV(parts:  MutableList<MeasureVO>) {
-//        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//        val leftAdapter = PainPartRVAdpater(this@MeasureDashBoard1Fragment, parts, "Pp", this@MeasureDashBoard1Fragment)
-////        binding.rvMsLeft.adapter = leftAdapter
-////        binding.rvMsLeft.layoutManager = linearLayoutManager
-//    }
-
-//    private fun startBounceAnimation(view: View) {
-//        val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.1f, 1f).apply {
-//            duration = 800
-//            repeatCount = ObjectAnimator.INFINITE
-//            repeatMode = ObjectAnimator.REVERSE
-//        }
-//        val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.1f, 1f).apply {
-//            duration = 800
-//            repeatCount = ObjectAnimator.INFINITE
-//            repeatMode = ObjectAnimator.REVERSE
-//        }
-//
-//        val animatorSet = AnimatorSet()
-//        animatorSet.playTogether(scaleX, scaleY)
-//        animatorSet.interpolator = AccelerateDecelerateInterpolator()
-//        animatorSet.start()
-//    }
-
-//    override fun onPartCheck(part: Triple<String, String, Boolean>) {
-//
-//    }
-    fun calculatePercentile(value: Double, mean: Double, stdDev: Double): Double {
-        val normalDistribution = NormalDistribution(mean, stdDev)
-        return normalDistribution.cumulativeProbability(value) * 100
-    }
-
-    private fun getCurrentMonthInKorean(month: YearMonth): String {
-        return month.month.getDisplayName(TextStyle.FULL, Locale("ko"))
     }
 }

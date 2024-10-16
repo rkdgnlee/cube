@@ -9,7 +9,7 @@
     android:layout_marginTop="6dp"
     android:layout_marginEnd="20dp"
     android:layout_marginBottom="5dp"
-    android:background="@drawable/background_stroke_1dp_sub_color">
+    android:background="@drawable/bckgnd_2_main_20">
 
     <ImageView
         android:id="@+id/ivBI"

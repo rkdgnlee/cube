@@ -122,6 +122,8 @@
                             <include layout="@layout/rv_shimmer_exercise_item" />
 
                             <include layout="@layout/rv_shimmer_exercise_item" />
+
+                            <include layout="@layout/rv_shimmer_exercise_item" />
                         </LinearLayout>
 
 
@@ -341,7 +343,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:background="@drawable/background_top_16dp"
+        android:background="@drawable/bckgnd_top_16"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton

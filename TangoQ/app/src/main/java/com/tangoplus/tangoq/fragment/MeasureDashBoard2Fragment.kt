@@ -28,14 +28,15 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.yearMonth
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.MD2RVAdpater
 import com.tangoplus.tangoq.data.HistorySummaryVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
+import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.`object`.NetworkProgress.getDailyProgress
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -52,7 +53,6 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 
@@ -199,6 +199,12 @@ class MeasureDashBoard2Fragment : Fragment() {
         // ------# 날짜와 운동 기록 보여주기 #------
         binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
 
+        pvm.selectedDailyTime.observe(viewLifecycleOwner) {
+            binding.tvMD2DailyTime.text = "${it}초"
+        }
+        pvm.selectedDailyCount.observe(viewLifecycleOwner) {
+            binding.tvMD2DailyCount.text = "${it}개"
+        }
         binding.cvMD2Calendar.apply {
             setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
             scrollToMonth(currentMonth)
@@ -207,7 +213,6 @@ class MeasureDashBoard2Fragment : Fragment() {
                 currentMonth = month.yearMonth
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
             }
-
             // ------# 월별로 운동 기록 필터링 #------
 //            val filteredExercises = viewModel.allHistorys.filter { history ->
 //                val historyDate = stringToLocalDate(history.regDate!!)
@@ -247,7 +252,6 @@ class MeasureDashBoard2Fragment : Fragment() {
         binding.monthText.setOnClickListener {
             updateExerciseList()
         }
-
 
         // ------# 운동 기록 날짜 받아오기 #------
         // TODO 운동 기록 날짜) 변경 필요
@@ -342,7 +346,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         when {
             day.date == selectedDate -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.white))
-                container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.background_oval, null)
+                container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }
             day.date == LocalDate.now() -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor800))
@@ -379,8 +383,17 @@ class MeasureDashBoard2Fragment : Fragment() {
     private fun setAdapter(progresses: List<ProgressUnitVO>) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMD2.layoutManager = layoutManager
-        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, progresses)
+
+        // ------# 운동시청기록 + 운동 #------
+        // 같이 들어와야 하는게 좋을 듯 함. 그래서 그걸 exerciseUnit으로 만들기.
+
+        pvm.selectedDailyCount.value = progresses.size
+        pvm.selectedDailyTime.value = progresses.sumOf { it.videoDuration }
+        Log.v("프로그레스", "${progresses}")
+        val adapter = ExerciseRVAdapter(this@MeasureDashBoard2Fragment, mutableListOf(), progresses.toMutableList(), Pair(0,0), "main")
+//        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, progresses)
         binding.rvMD2.adapter = adapter
+
 
         if (progresses.isEmpty()) {
             binding.clMD2Empty.visibility = View.VISIBLE

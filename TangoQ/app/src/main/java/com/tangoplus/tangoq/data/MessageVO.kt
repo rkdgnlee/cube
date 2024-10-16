@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.data
 
-import java.time.LocalDateTime
 
 data class MessageVO(
     val sn: Long = 0L,

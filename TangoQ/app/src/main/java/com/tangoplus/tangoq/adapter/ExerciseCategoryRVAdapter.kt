@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.adapter
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
@@ -30,11 +28,9 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
 
     private var selectedPosition = 0
     inner class MainCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
-//        val tvMCName : TextView = view.findViewById(R.id.tvMCName)
         val ivMCThumbnail : ImageView = view.findViewById(R.id.ivMCThumbnail)
-//        val rvMC : RecyclerView = view.findViewById(R.id.rvMC)
-//        val mcvMC : MaterialCardView = view.findViewById(R.id.mcvMC)
     }
+
     inner class SubCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
         val tvSCName : TextView = view.findViewById(R.id.tvSCName)
 
@@ -99,7 +95,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 val currentItem = subCategorys[position]
                 holder.tvSCName.text = currentItem
                 val adapterPosition = holder.adapterPosition
-                holder.tvSCName.setBackgroundResource(R.drawable.background_rectangle_20dp)
+                holder.tvSCName.setBackgroundResource(R.drawable.bckgnd_rectangle_20)
                 if (adapterPosition == selectedPosition) {
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondaryColor)
                     holder.tvSCName.setTextColor(Color.WHITE)

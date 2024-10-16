@@ -20,6 +20,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -127,7 +128,7 @@ object NetworkUser {
 
     fun fetchUserUPDATEJson(myUrl : String, json: String, sn: String, callback: () -> Unit) {
         val client = OkHttpClient()
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json )
+        val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
             .url("${myUrl}user/$sn")
             .patch(body)

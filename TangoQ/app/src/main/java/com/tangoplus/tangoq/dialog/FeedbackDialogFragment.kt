@@ -99,11 +99,6 @@ class FeedbackDialogFragment : DialogFragment() {
 //            eViewModel.exerciseLog.value = null
             eViewModel.isDialogShown.value = true
         }
-
-        binding.btnFDPainPartSelect.setOnClickListener {
-            val dialog = FeedbackPartDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "FeedbackPartDialogFragment")
-        }
     }
 
     override fun onResume() {

@@ -224,9 +224,6 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
     }
 
     private fun setIV(name: String, imageView: ImageView) {
-//        Glide.with(fragment)
-//            .load(fragment.resources.getIdentifier("drawable_muscle_${name}", "drawable", fragment.requireActivity().packageName))
-//            .into(imageView)
         imageView.setImageResource(fragment.resources.getIdentifier("drawable_muscle_${name}", "drawable", fragment.requireActivity().packageName))
     }
 

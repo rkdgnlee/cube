@@ -7,5 +7,4 @@ data class RecommendationVO(
     val programSn : Int,
     val title: String,
     val regDate : String
-
 )

@@ -92,7 +92,7 @@
 
 <!--    popupMenu-->
     <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">
-        <item name="android:popupBackground">@drawable/background_stroke_1dp_sub_color</item>
+        <item name="android:popupBackground">@drawable/bckgnd_2_main_20</item>
     </style>
 
     <style name="AppTheme.DialogFragment" parent="Theme.MaterialComponents.Dialog">
