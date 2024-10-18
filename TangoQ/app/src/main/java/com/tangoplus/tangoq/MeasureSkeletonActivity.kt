@@ -549,7 +549,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 //                        risk_elbow_left = "2",
 //                        risk_hip_left = "1"
 //                    )
-                    mDao.insertInfo(measureInfo)
+//                    mDao.insertInfo(measureInfo)
+                    // TODO ------# 현재 값을 서버에 넣고 sn 받아서 저장해야함. #------
+
                     Log.v("measureInfo넣기", "방금넣은info: ${measureInfo}, allInfo: ${mDao.getAllInfo(userJson.optString("user_sn").toInt())}")
 
                     // ------# static 넣기 #------
@@ -1614,55 +1616,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
-//    fun saveMediaToCache(context: Context, uri: Uri, fileName: String, isImage: Boolean) {
-//        try {
-//            val extension = if (isImage) ".jpg" else ".mp4"
-//            val file = File(context.cacheDir, "$fileName$extension")
-//            if (isImage) {
-//                // 이미지일 경우 720x1280 크기로 리스케일
-//
-////                val inputStream = context.contentResolver.openInputStream(uri)
-////                inputStream?.use { input ->
-////                    file.outputStream().use { output ->
-////                        input.copyTo(output)
-////                    }
-////                }
-//                val inputStream = context.contentResolver.openInputStream(uri)
-//                val tempFile = File.createTempFile("tempImage", null, context.cacheDir)
-//                inputStream?.use { input ->
-//                    tempFile.outputStream().use { output ->
-//                        input.copyTo(output)
-//                    }
-//                }
-//
-//                // 이미지를 720x1280으로 리스케일
-//                val scaledBitmap = decodeSampledBitmapFromFile(tempFile.absolutePath, 720, 1280)
-//
-//                // 리스케일된 이미지를 캐시에 저장
-//                val outputStream = FileOutputStream(file)
-//                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
-//                outputStream.flush()
-//                outputStream.close()
-//
-//                // 임시 파일 삭제
-//                tempFile.delete()
-//                mViewModel.staticFiles.add(file)
-//            } else {
-//                // 비디오일 경우 그대로 캐시에 저장
-//                context.contentResolver.openInputStream(uri)?.use { input ->
-//                    file.outputStream().use { output ->
-//                        input.copyTo(output)
-//                        mViewModel.dynamicFile = file
-//                    }
-//
-//                }
-//            }
-//
-//        } catch (e: IOException) {
-//            Log.e("MeasureViewModel", "Error saving image to cache: ${e.message}")
-//        }
-//    }
-
     fun saveMediaToCache(context: Context, uri: Uri, fileName: String, isImage: Boolean) {
         try {
             val extension = if (isImage) ".jpg" else ".mp4"
@@ -1823,7 +1776,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         } else {
             val scaleFactor = binding.overlay.width * 1f / 1280
             val offsetX = ((binding.overlay.width - 1280 * scaleFactor) / 2 )  // TODO 영상의 liveStream에는 이상하게 offset이 필요함
-            val x = xx * binding.overlay.width / scaleFactor + offsetX
+            val x = (1 - xx) * binding.overlay.width / scaleFactor + offsetX
             x.roundToInt()
         }
     }

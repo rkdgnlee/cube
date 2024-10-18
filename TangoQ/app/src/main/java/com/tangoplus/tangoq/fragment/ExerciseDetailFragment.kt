@@ -20,14 +20,17 @@ import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
+import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
+import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import kotlinx.coroutines.launch
+import java.util.prefs.Preferences
 
 
-class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
+class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClosedListener{
     lateinit var binding : FragmentExerciseDetailBinding
     private var filteredDataList = mutableListOf<ExerciseVO>()
     private var currentCateExercises = mutableListOf<ExerciseVO>()
@@ -36,6 +39,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
 
     private lateinit var categoryList : List<String>
     private lateinit var categoryMap : Map<String, Int>
+    private lateinit var prefs : PreferencesManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,11 +72,13 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! 선택 카테고리 & 타입 가져오기 시작 !------
+
+        // ------# 선택 카테고리 & 타입 가져오기 시작 #------
         categoryId = arguments?.getInt(ARG_CATEGORY_ID)
         val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
         val sn = arguments?.getInt(ARG_SN)
-        // ------! 선택 카테고리 & 타입 가져오기  !------
+        prefs = PreferencesManager(requireContext())
+        // ------# 선택 카테고리 & 타입 가져오기  #------
 
         binding.sflED.startShimmer()
         binding.ibtnEDAlarm.setOnClickListener {
@@ -126,15 +132,11 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
             try {
                 binding.sflED.stopShimmer()
                 binding.sflED.visibility= View.GONE
-                currentCateExercises = filteredDataList.filter {  it.exerciseTypeId == categoryMap.get("목관절").toString() }.toMutableList()
+                currentCateExercises = filteredDataList.filter {  it.exerciseTypeId == categoryMap.get("목관절").toString() }.sortedBy { it.exerciseId }.toMutableList()
                 filteredDataList = filteredDataList.toMutableList()
-                Log.v("EDsn", "$sn")
 
-                // ------# 즐겨찾기 추가에서 왔을 때 #------
                 updateRecyclerView(currentCateExercises.toMutableList())
-
-
-//                // ------! rv vertical 끝 !------
+            // ------! rv vertical 끝 !------
             } catch (e: Exception) {
                 Log.e(ContentValues.TAG, "Error storing exercises", e)
             } // ------! rv all rv 끝 !------
@@ -145,7 +147,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
         filterList.add("최신순")
         filterList.add("인기순")
         filterList.add("추천순")
-        binding.spnrED.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList)
+        binding.spnrED.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, false)
         binding.spnrED.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
@@ -162,6 +164,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
 
     private fun updateRecyclerView(exercises : MutableList<ExerciseVO>) {
         val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, Pair(0,0) ,"main")
+        adapter.dialogClosedListener = this@ExerciseDetailFragment
         adapter.exerciseList = exercises
         binding.rvEDAll.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -172,7 +175,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
         } else {
             binding.tvGuideNull.visibility = View.INVISIBLE
         }
-
         binding.tvEDTotalCount.text = "전체: ${exercises.size}개"
         adapter.notifyDataSetChanged()
     }
@@ -181,12 +183,14 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener{
     override fun onCategoryClick(category: String) {
         Log.v("category,search", "1categoryId: ${categoryId}, searchId: ${categoryMap[category]}")
         try {
-            currentCateExercises = filteredDataList.filter { it.exerciseTypeId == categoryMap.get(category).toString() }.toMutableList()
-            Log.v("필터한길이", "${currentCateExercises.size}")
+            currentCateExercises = filteredDataList.filter { it.exerciseTypeId == categoryMap.get(category).toString() }.sortedBy { it.exerciseId }.toMutableList()
             updateRecyclerView(currentCateExercises)
         } catch (e: Exception) {
             Log.e("Exercise>filter", "$e")
         }
     }
 
+    override fun onDialogClosed() {
+        updateRecyclerView(currentCateExercises)
+    }
 }

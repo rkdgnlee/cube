@@ -6,6 +6,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -17,6 +18,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageButton
+import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.PreferencesMapCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +42,7 @@ import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.UserViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
+import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -50,6 +54,14 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     val uViewModel : UserViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
+    private lateinit var prefs :  PreferencesManager
+
+    interface DialogCloseListener {
+        fun onDialogClose()
+    }
+
+    private var dialogCloseListener: DialogCloseListener? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,27 +77,47 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
 
-        // -----! 각 설명들 textView에 넣기 !-----
-        videoUrl = exerciseData?.videoFilepath.toString()
-        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData?.exerciseName}")
-        binding.tvPTDName.text = exerciseData?.exerciseName.toString()
-        binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
+        // ------# like 있는지 판단 #------
+        prefs = PreferencesManager(requireContext())
+        var isLike = false
+        if (prefs.existLike(exerciseData?.exerciseId!!)) {
+            isLike = true
+            binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
+        }
 
-        binding.tvPTDTime.text = "${exerciseData?.videoDuration} 초"
-        binding.tvPTDStage.text = exerciseData?.exerciseStage
-        binding.tvPTDFrequency.text = exerciseData?.exerciseFrequency.toString()
-        binding.tvPTRelatedSymptom.text = exerciseData?.relatedSymptom
+        binding.ibtnPTDLike.setOnClickListener {
+            if (isLike) {
+                prefs.deleteLike(exerciseData.exerciseId!!)
+                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_disabled))
+                isLike = false
+            } else {
+                prefs.storeLike(exerciseData.exerciseId!!)
+                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
+                isLike = true
+            }
+        }
+
+        // -----! 각 설명들 textView에 넣기 !-----
+        videoUrl = exerciseData.videoFilepath.toString()
+        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData.exerciseName}")
+        binding.tvPTDName.text = exerciseData.exerciseName.toString()
+        binding.tvPTDRelatedJoint.text = exerciseData.relatedJoint.toString()
+
+        binding.tvPTDTime.text = "${exerciseData.videoDuration} 초"
+        binding.tvPTDStage.text = exerciseData.exerciseStage
+        binding.tvPTDFrequency.text = exerciseData.exerciseFrequency.toString()
+        binding.tvPTRelatedSymptom.text = exerciseData.relatedSymptom
 //        binding.tvPTDInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
-        binding.tvPTDMethod.text = exerciseData?.exerciseMethod.toString()
-        binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
-        binding.tvPTDRelatedMuscle.text = exerciseData?.relatedMuscle.toString()
+        binding.tvPTDMethod.text = exerciseData.exerciseMethod.toString()
+        binding.tvPTDCaution.text = exerciseData.exerciseCaution.toString()
+        binding.tvPTDRelatedMuscle.text = exerciseData.relatedMuscle.toString()
 //        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
 
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
 
         // ------! 관련 관절, 근육 recyclerview 시작 !------
-        val fullmuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
+        val fullmuscleList = exerciseData.relatedMuscle?.replace("(", ", ")
             ?.replace(")", "")
             ?.split(", ")
             ?.toMutableList()
@@ -104,14 +136,14 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         binding.btnPTDPlay.setOnClickListener {
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putExtra("video_url", videoUrl)
-            intent.putExtra("exercise_id", exerciseData?.exerciseId)
-            intent.putExtra("total_duration", exerciseData?.videoDuration?.toInt())
+            intent.putExtra("exercise_id", exerciseData.exerciseId)
+            intent.putExtra("total_duration", exerciseData.videoDuration?.toInt())
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
             viewModel.isDialogShown.value = false
 
-            if (exerciseData?.exerciseFrequency?.length!! >= 3) {
+            if (exerciseData.exerciseFrequency?.length!! >= 3) {
                 setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 20)
                 Log.v("notification 완료", "Success make plan to send notification Alarm")
             }
@@ -121,6 +153,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
             dismiss()
+
         }
 
         val exoPlay = binding.pvPTD.findViewById<ImageButton>(R.id.btnPlay)
@@ -164,7 +197,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             val responseArrayList = viewModel.allExercises
             try {
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
-                    exerciseData?.relatedJoint!!.split(", ")[0])}.toMutableList()
+                    exerciseData.relatedJoint!!.split(", ")[0])}.toMutableList()
                 val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, mutableListOf(), Pair(0,0) ,"recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -203,7 +236,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             intent.type = "text/plain" // 공유할 데이터의 타입을 설정 (텍스트)
             startActivity(Intent.createChooser(intent, "공유하기")) // 공유할 앱을 선택할 수 있도록 Chooser 추가
         }
-
     }
 
     override fun onResume() {
@@ -221,9 +253,8 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             simpleExoPlayer?.prepare(it)
         }
         simpleExoPlayer?.seekTo(playbackPosition)
-
-
     }
+
     private fun buildMediaSource() : MediaSource {
         val dataSourceFactory = DefaultDataSourceFactory(requireContext(), "sample")
         return ProgressiveMediaSource.Factory(dataSourceFactory)
@@ -282,5 +313,14 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
 
     Log.v("현재 시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
+    }
+
+    fun setDialogCloseListener(listener: DialogCloseListener) {
+        this.dialogCloseListener = listener
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        dialogCloseListener?.onDialogClose()  // Dialog가 닫힐 때 콜백 호출
     }
 }

@@ -24,12 +24,14 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
     val viewModel : SignInViewModel by activityViewModels()
 
     companion object {
-        private const val ARG_PEBSD = "ProfileEdit"
-        fun newInstance(title: String) : ProfileEditBSDialogFragment {
+        private const val ARG_EDIT_BS_TITLE = "profileEditTitle"
+        private const val ARG_EDIT_BS_VALUE = "profileEditValue"
+        fun newInstance(title: String, value: String) : ProfileEditBSDialogFragment {
 
             val fragment = ProfileEditBSDialogFragment()
             val args = Bundle()
-            args.putString(ARG_PEBSD, title)
+            args.putString(ARG_EDIT_BS_TITLE, title)
+            args.putString(ARG_EDIT_BS_VALUE, value)
             fragment.arguments = args
             return fragment
         }
@@ -50,8 +52,10 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
 
         binding.ibtnPEBSDExit.setOnClickListener { dismiss() }
 
-        arg = arguments?.getString(ARG_PEBSD).toString()
-        Log.v("arg", arg)
+        arg = arguments?.getString(ARG_EDIT_BS_TITLE).toString()
+
+        val value = arguments?.getString(ARG_EDIT_BS_VALUE).toString()
+        Log.v("arg", "$arg, $value")
 
 
 
@@ -61,7 +65,7 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
                 binding.tvPEBSDTitle.text = "몸무게 재설정"
                 binding.etPEBSD.apply {
                     inputType = InputType.TYPE_CLASS_NUMBER
-                    setText(viewModel.User.value?.optString("user_weight"))
+                    setText(value)
                     filters = arrayOf(InputFilter.LengthFilter(3))
                 }
             }
@@ -69,7 +73,7 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
                 binding.tvPEBSDTitle.text = "신장 재설정"
                 binding.etPEBSD.apply {
                     inputType = InputType.TYPE_CLASS_NUMBER
-                    setText(viewModel.User.value?.optString("user_height"))
+                    setText(value)
                     filters = arrayOf(InputFilter.LengthFilter(3))
                 }
             }
@@ -77,7 +81,7 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
                 binding.tvPEBSDTitle.text = "이메일 재설정"
                 binding.etPEBSD.apply {
                     inputType = InputType.TYPE_CLASS_TEXT
-                    setText(viewModel.User.value?.optString("user_email"))
+                    setText(value)
                     filters = arrayOf(InputFilter.LengthFilter(25))
                 }
 
@@ -96,16 +100,11 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
 
         binding.btnPEBSDFinish.setOnClickListener {
             when (arg) {
-                "몸무게" -> {
-                    viewModel.User.value?.put("user_weight", binding.etPEBSD.text.toString())
-                }
-                "신장" -> {
-                    viewModel.User.value?.put("user_height", binding.etPEBSD.text.toString())
-                }
-                "이메일" -> {
-                    viewModel.User.value?.put("user_email", binding.etPEBSD.text.toString())
-                }
+                "몸무게" -> viewModel.setWeight.value = binding.etPEBSD.text.toString().toInt()
+                "신장" -> viewModel.setHeight.value = binding.etPEBSD.text.toString().toInt()
+                "이메일" -> viewModel.setEmail.value = binding.etPEBSD.text.toString()
             }
+            Log.v("뷰모델에 잘담겼는지", "${viewModel.User.value}")
             dismiss()
         }
 

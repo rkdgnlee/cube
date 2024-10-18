@@ -17,9 +17,9 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.app.ActivityCompat.requireViewById
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
@@ -33,20 +33,18 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 
 class FindAccountDialogFragment : DialogFragment() {
     lateinit var binding : FragmentFindAccountDialogBinding
-    private lateinit var firebaseAuth : FirebaseAuth
+    private lateinit var auth : FirebaseAuth
     val viewModel : SignInViewModel by viewModels()
-    var verificationId = ""
+    var verifId = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +54,7 @@ class FindAccountDialogFragment : DialogFragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,34 +63,41 @@ class FindAccountDialogFragment : DialogFragment() {
         binding.clFADId.visibility = View.GONE
         binding.clFADIdResult.visibility = View.GONE
         binding.clFADResetPassword.visibility = View.GONE
-        firebaseAuth = Firebase.auth
+        auth = FirebaseAuth.getInstance()
+        auth.setLanguageCode("kr")
         binding.btnFADAuthSend.isEnabled = false
         // ------! 초기 세팅 끝 !------
 
         // ------! 탭으로 아이디 비밀번호 레이아웃 나누기 시작 !------
-        binding.tlFAB.addOnTabSelectedListener(object : OnTabSelectedListener{
+        binding.tlFAD.addOnTabSelectedListener(object : OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
                 imm!!.hideSoftInputFromWindow(view.windowToken, 0)
+                viewModel.mobileCondition.value = false
+                viewModel.mobileAuthCondition.value = false
+                binding.etFADMobile.isEnabled = true
+                binding.etFADAuthNumber.isEnabled = false
+                binding.btnFADAuthSend.isEnabled = true
+                binding.btnFADConfirm.text = "인증 하기"
+
                 when(tab?.position) {
                     0 -> {
                         binding.clFADMobile.visibility = View.VISIBLE
                         binding.clFADId.visibility = View.GONE
                         binding.clFADIdResult.visibility = View.GONE
                         binding.clFADResetPassword.visibility = View.GONE
-                        binding.btnFADConfirm.text = "인증 하기"
                         binding.btnFADConfirm.isEnabled = false
+                        viewModel.isFindId = true
                     }
                     1 -> {
                         binding.clFADMobile.visibility = View.VISIBLE
                         binding.clFADId.visibility = View.VISIBLE
                         binding.clFADIdResult.visibility = View.GONE
                         binding.clFADResetPassword.visibility = View.GONE
-                        binding.btnFADConfirm.text = "비밀번호 찾기"
                         binding.btnFADConfirm.isEnabled = true
                         binding.etFADAuthNumber.text = null
                         binding.etFADMobile.text = null
-
+                        viewModel.isFindId = false
                     }
                 }
             }
@@ -99,6 +105,26 @@ class FindAccountDialogFragment : DialogFragment() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
         // ------! 비밀번호 재설정 시작 !------
+
+        // ------! 인증 문자 확인 시작 !------
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(p0: PhoneAuthCredential) {
+                Log.v("verifyComplete", "PhoneAuthCredential: $p0")
+            }
+            override fun onVerificationFailed(p0: FirebaseException) {
+                Log.e("failedAuth", "$p0")
+            }
+            @RequiresApi(Build.VERSION_CODES.P)
+            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                super.onCodeSent(verificationId, token)
+                verifId = verificationId
+                Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
+                // -----! 메시지 발송에 성공하면 스낵바 호출 !------
+                Snackbar.make(requireView(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
+                binding.btnFADConfirm.isEnabled = true
+            }
+        }
+        // ------! 인증 문자 확인 끝 !------
 
         // ------! 핸드폰 번호 - 시작 !------
         val mobilePattern = "^010-\\d{4}-\\d{4}\$"
@@ -127,55 +153,49 @@ class FindAccountDialogFragment : DialogFragment() {
             }
         }) // ------! 핸드폰 번호 - 시작 !------
 
-        // ------! 인증 문자 확인 시작 !------
-        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(p0: PhoneAuthCredential) {}
-            override fun onVerificationFailed(p0: FirebaseException) {
-                Log.e("failedAuth", "$p0")
-            }
-            @RequiresApi(Build.VERSION_CODES.P)
-            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                super.onCodeSent(verificationId, token)
-                this@FindAccountDialogFragment.verificationId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공")
-                // -----! 메시지 발송에 성공하면 스낵바 호출 !------
-                Snackbar.make(requireActivity().requireViewById(R.id.clIntro), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
-                binding.btnFADConfirm.isEnabled = true
-            }
-        } // ------! 인증 문자 확인 끝 !------
+        binding.btnFADAuthSend.setOnClickListener {
+            var transformMobile = phoneNumber82(binding.etFADMobile.text.toString())
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("📩 문자 인증 ")
+                .setMessage("$transformMobile 로 인증 하시겠습니까?")
+                .setPositiveButton("예") { _, _ ->
+                    transformMobile = transformMobile.replace("-", "")
+                    Log.w("전화번호", transformMobile)
+
+                    val optionsCompat = PhoneAuthOptions.newBuilder(auth)
+                        .setPhoneNumber(transformMobile)
+                        .setTimeout(60L, TimeUnit.SECONDS)
+                        .setActivity(requireActivity())
+                        .setCallbacks(callbacks)
+                        .build()
+                    PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
+                    auth.setLanguageCode("kr")
+
+                    val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
+                    alphaAnimation.duration = 600
+                    binding.etFADAuthNumber.isEnabled = true
+                    binding.etFADAuthNumber.requestFocus()
+                }
+                .setNegativeButton("아니오", null)
+                .show()
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
+        }
 
         binding.btnFADConfirm.setOnClickListener{
             when (binding.btnFADConfirm.text) {
                 "인증 하기" -> {
-                    var transformMobile = phoneNumber82(binding.etFADMobile.text.toString())
-                    val dialog = AlertDialog.Builder(requireContext())
-                        .setTitle("📩 문자 인증 ")
-                        .setMessage("$transformMobile 로 인증 하시겠습니까?")
-                        .setPositiveButton("예") { _, _ ->
-                            transformMobile = transformMobile.replace("-", "")
-                            Log.w("전화번호", transformMobile)
-                            val optionsCompat = PhoneAuthOptions.newBuilder(firebaseAuth)
-                                .setPhoneNumber(transformMobile)
-                                .setTimeout(60L, TimeUnit.SECONDS)
-                                .setActivity(requireActivity())
-                                .setCallbacks(callbacks)
-                                .build()
-                            PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
-                            firebaseAuth.setLanguageCode("kr")
-
-                            val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
-                            alphaAnimation.duration = 600
-                            binding.etFADAuthNumber.isEnabled = true
-                            binding.etFADAuthNumber.requestFocus()
-                        }
-                        .setNegativeButton("아니오", null)
-                        .show()
-
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
+                    val credential = PhoneAuthProvider.getCredential(verifId, binding.etFADAuthNumber.text.toString())
+                    signInWithPhoneAuthCredential(credential)
                 }
                 "아이디 찾기" -> {
                     binding.clFADMobile.visibility = View.GONE
+                    val jo = JSONObject().apply {
+                        put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
+                    }
+                    Log.v("찾기>핸드폰번호", "$jo")
+
                     // ------! 핸드폰 번호를 보내면 아이디를 알려주는 api 필요 !------
 //                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), , requireContext()) { jo ->
 //                        if (jo?.getInt("status") == 404) {
@@ -195,9 +215,19 @@ class FindAccountDialogFragment : DialogFragment() {
 //                            }
 //                        }
 //                    }
-                    binding.btnFADAuthSend.text= "초기 화면으로"
+                    binding.btnFADConfirm.text= "초기 화면으로"
                 }
-                "비밀번호 찾기" -> {
+                "인증 하기" -> {
+                    val credential = PhoneAuthProvider.getCredential(verifId, binding.etFADAuthNumber.text.toString())
+                    signInWithPhoneAuthCredential(credential)
+                }
+                "비밀번호 재설정" -> {
+                    val jo = JSONObject().apply {
+                        put("user_id", binding.etFADId.text)
+                        put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
+                    }
+
+
                     // ------! 비밀번호를 찾기를 하면 아이디와 핸드폰 번호를 맞혀서 일치한다는 번호만 있으면 재설정하는 update하기.
 //                    val email = when (binding.FADSpinner.selectedItemPosition) {
 //                        0, 1, 2 -> {
@@ -254,7 +284,7 @@ class FindAccountDialogFragment : DialogFragment() {
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        firebaseAuth.signInWithCredential(credential)
+        auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     requireActivity().runOnUiThread {
@@ -263,11 +293,12 @@ class FindAccountDialogFragment : DialogFragment() {
                         binding.etFADMobile.isEnabled = false
 
                         // ------! 번호 인증 완료 !------
-                        val snackbar = Snackbar.make(requireActivity().requireViewById(R.id.clIntro), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
+
+                        val snackbar = Snackbar.make(requireView(), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
                         snackbar.setAction("확인") { snackbar.dismiss() }
                         snackbar.setActionTextColor(Color.WHITE)
                         snackbar.show()
-                        binding.btnFADConfirm.text = "아이디 찾기"
+                        binding.btnFADConfirm.text = if (viewModel.isFindId) "아이디 찾기" else "비밀번호 재설정"
                     }
                 } else {
                     Log.w(ContentValues.TAG, "mobile auth failed.")
@@ -288,14 +319,6 @@ class FindAccountDialogFragment : DialogFragment() {
             "106" -> phoneEdit = "+82106$phoneEdit"
         }
         return phoneEdit
-    }
-
-    private fun maskString(input: String): String {
-        return if (input.length > 3) {
-            input.replaceRange(3, input.length, "*".repeat(input.length - 3))
-        } else {
-            input
-        }
     }
 
     override fun onResume() {

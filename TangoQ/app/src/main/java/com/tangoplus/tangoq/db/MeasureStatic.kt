@@ -10,9 +10,8 @@ data class MeasureStatic(
     @PrimaryKey(autoGenerate = true) var mobile_sn: Int = 0 ,
     val server_sn: Int? = null, // info의 sn을 말함.
     val device_sn: Int = 0,
-    val local_sn: Int = 1, // 이거는
-    val measure_sn: Int = 1,
-
+    val local_sn: Int = 0, // 이거는
+    val measure_sn: Int = 0,
 
     val user_uuid: String = "",
     val user_sn: Int = 0,

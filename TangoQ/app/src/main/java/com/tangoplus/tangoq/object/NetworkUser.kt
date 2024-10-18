@@ -101,10 +101,48 @@ object NetworkUser {
         }
     }
 
+    //
+    suspend fun insertUser(myUrl: String,  idPw: JSONObject, context: Context, callback: (Int) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = RequestBody.create(mediaType, idPw.toString())
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}register.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e("insertUser, 응답실패", "Failed to execute request!")
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    val responseBody = response.body?.string()
+                    Log.v("응답성공", "$responseBody")
+                    val jo = responseBody?.let { JSONObject(it) }
+                    // 409 201
+                    callback(response.code)
+
+
+//                    // ------! 토큰 저장 !------
+//                    val jsonObj = JSONObject()
+//                    jsonObj.put("jwt", jo?.optString("jwt"))
+//                    jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
+//                    saveEncryptedJwtToken(context, jsonObj.toString())
+//
+//                    callback(jo)
+                }
+            })
+        }
+    }
+
+
     // ------# 마케팅 수신 동의 관련 insert문 #------
     fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, idPw.toString())
+
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}read.php")
@@ -126,13 +164,23 @@ object NetworkUser {
     }
 
 
-    fun fetchUserUPDATEJson(myUrl : String, json: String, sn: String, callback: () -> Unit) {
-        val client = OkHttpClient()
+    fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String, callback: () -> Unit) {
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
         val request = Request.Builder()
-            .url("${myUrl}user/$sn")
+            .url("${myUrl}users/$sn")
             .patch(body)
             .build()
+
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("UPDATE 응답실패", "Failed to execute request!")
@@ -141,6 +189,8 @@ object NetworkUser {
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 Log.v("UPDATE 응답성공", "$responseBody")
+
+                Log.v("UPDATE 응답성공", "${response.code}")
                 callback()
             }
         })
@@ -154,12 +204,12 @@ object NetworkUser {
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+                Log.e("회원탈퇴 응답실패", "Failed to execute request!")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("${ContentValues.TAG}, 응답성공", "$responseBody")
+                Log.v("회원탈퇴 응답성공", "$responseBody")
                 callback()
             }
         })
@@ -193,9 +243,9 @@ object NetworkUser {
     }
 
     // ------! 프로필 사진 끝 !------
-
     fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
+        Singleton_t_user.getInstance(context).jsonObject?.put("profile_file_path", jsonObj.optJSONObject("profile_file_path")?.optString("file_path"))
     }
 
     // ------# 핀번호 로그인 #------

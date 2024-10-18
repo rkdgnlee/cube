@@ -45,6 +45,7 @@ import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptData
 import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedData
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
+import com.tangoplus.tangoq.dialog.SetupDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
@@ -78,15 +79,9 @@ class IntroActivity : AppCompatActivity() {
         // ------! token 저장할  securedPref init !------
         securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
         ssm = SaveSingletonManager(this@IntroActivity, this)
-        when (isNetworkAvailable(this)) {
-            true -> {
-
-            }
-            false -> {
-                Toast.makeText(this, "인터넷 연결 후 앱을 다시 실행해주세요", Toast.LENGTH_LONG).show()
-            }
+        if (!isNetworkAvailable(this)) {
+            Toast.makeText(this, "인터넷 연결 후 앱을 다시 실행해주세요", Toast.LENGTH_LONG).show()
         }
-
 
         val currentUser = Firebase.auth.currentUser
         if (currentUser == null) {
@@ -181,14 +176,13 @@ class IntroActivity : AppCompatActivity() {
                         val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
                         val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
                         jsonObj.put("user_name", result.profile?.name.toString())
-                        jsonObj.put("user_gender", naverGender)
-                        jsonObj.put("user_mobile", naverMobile)
-                        jsonObj.put("user_email", result.profile?.email.toString())
-                        jsonObj.put("user_birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
+                        jsonObj.put("gender", naverGender)
+                        jsonObj.put("mobile", naverMobile)
+                        jsonObj.put("email", result.profile?.email.toString())
+                        jsonObj.put("birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
                         jsonObj.put("naver_login_id" , result.profile?.id.toString())
-                        jsonObj.put("user_age" , result.profile?.age)
-
                         jsonObj.put("social_account", "naver")
+                        jsonObj.put("device_sn", 0)
                         Log.v("jsonObj", "$jsonObj")
 //                        Log.v("네이버이메일", jsonObj.getString("user_email"))
 //                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
@@ -315,8 +309,8 @@ class IntroActivity : AppCompatActivity() {
                             jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
                             Log.v("Intro>SMS", "$jsonObj")
                             Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-//                            val dialog = SetupDialogFragment.newInstance("startSetup")
-//                            dialog.show(supportFragmentManager, "SetupDialogFragment")
+                            val dialog = SetupDialogFragment()
+                            dialog.show(supportFragmentManager, "SetupDialogFragment")
 
                         } else {
                             // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
@@ -339,6 +333,16 @@ class IntroActivity : AppCompatActivity() {
                     }
                 })
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        // 새로운 인텐트가 들어왔을 때 딥링크 처리
+        val code = intent?.getIntExtra("SignInFinished", 0)
+        if (code == 201) {
+            val dialog = LoginDialogFragment()
+            dialog.show(supportFragmentManager, "LoginDialogFragment")
         }
     }
 

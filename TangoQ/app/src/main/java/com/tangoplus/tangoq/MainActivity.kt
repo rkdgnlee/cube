@@ -50,12 +50,12 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val eViewModel : ExerciseViewModel by viewModels()
-    private val uViewModel : UserViewModel by viewModels()
-    private val hViewModel : ProgressViewModel by viewModels()
+//    private val uViewModel : UserViewModel by viewModels()
+//    private val hViewModel : ProgressViewModel by viewModels()
     private val mViewModel : MeasureViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
-    private lateinit var program : ProgramVO
+//    private lateinit var program : ProgramVO
 
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
 
@@ -72,17 +72,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ------! 다크모드 메뉴 이름 설정 시작 !------
+        // ------# 다크모드 메뉴 이름 설정 시작 #------
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         val isNightMode = uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
-        // ------! 다크모드 메뉴 이름 설정 끝 !------
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         AlarmReceiver()
 
         // -----# 초기 화면 설정 #-----
 //        handlePendingDeepLink()
+
         singletonMeasure = Singleton_t_measure.getInstance(this)
         setCurrentFragment(selectedTabId)
         binding.bnbMain.itemIconTintList = null
@@ -261,8 +261,6 @@ class MainActivity : AppCompatActivity() {
                 if (exerciseId != null) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val exerciseUnit = fetchExerciseById(getString(R.string.API_exercise), exerciseId)
-
-
                         withContext(Dispatchers.Main) {
                             val dialog = PlayThumbnailDialogFragment().apply {
                                 arguments = Bundle().apply {

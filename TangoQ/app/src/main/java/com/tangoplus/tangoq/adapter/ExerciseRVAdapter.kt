@@ -26,6 +26,7 @@ import com.tangoplus.tangoq.databinding.RvExerciseHistoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import com.tomlecollegue.progressbars.HorizontalProgressView
 import java.lang.IllegalArgumentException
 
@@ -35,10 +36,12 @@ class ExerciseRVAdapter (
     var exerciseList: MutableList<ExerciseVO>,
     private val progress : MutableList<ProgressUnitVO>?,
     private val selectSeq : Pair<Int, Int>,
-    var xmlname: String
+    var xmlname: String,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    var dialogClosedListener: OnDialogClosedListener? = null
     val prefs =  PreferencesManager(fragment.requireContext())
-    val likes = prefs.getLikes()
+
     // -----! main !-----
     inner class mainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
@@ -146,29 +149,30 @@ class ExerciseRVAdapter (
 //                }
 
                 // ------# 하트 버튼 #------
-                var isLike = false
-                if (currentExerciseItem.exerciseId in likes) {
-                    holder.ibtnEILike.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_like_enabled))
-                    isLike = true
-                }
-
+                updateLikeButtonState(currentExerciseItem.exerciseId.toString(), holder.ibtnEILike)
                 holder.ibtnEILike.setOnClickListener {
-                    if (isLike) {
+                    val currentLikeState = prefs.existLike(currentExerciseItem.exerciseId.toString())
+                    if (currentLikeState) {
                         prefs.deleteLike(currentExerciseItem.exerciseId.toString())
-                        holder.ibtnEILike.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_like_disabled))
-                        isLike = false
                     } else {
                         prefs.storeLike(currentExerciseItem.exerciseId.toString())
-                        holder.ibtnEILike.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_like_enabled))
-                        isLike = true
                     }
+                    // 상태 변경 후 즉시 UI 업데이트
+                    updateLikeButtonState(currentExerciseItem.exerciseId.toString(), holder.ibtnEILike)
                 }
+
+
                 // ------ ! thumbnail 시작 !------
                 holder.vEI.setOnClickListener {
                     val dialogFragment = PlayThumbnailDialogFragment().apply {
                         arguments = Bundle().apply {
                             putParcelable("ExerciseUnit", currentExerciseItem)
                         }
+                        setDialogCloseListener(object : PlayThumbnailDialogFragment.DialogCloseListener {
+                            override fun onDialogClose() {
+                                dialogClosedListener?.onDialogClosed()
+                            }
+                        })
                     }
                     dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                 }
@@ -329,5 +333,18 @@ class ExerciseRVAdapter (
                 else -> 2
             }
         }
+    }
+
+    private fun updateLikeButtonState(exerciseId: String, ibtn : ImageButton) {
+        val isLike = prefs.existLike(exerciseId)
+        ibtn.setImageDrawable(
+            ContextCompat.getDrawable(
+                fragment.requireContext(),
+                if (isLike) R.drawable.icon_like_enabled else R.drawable.icon_like_disabled
+            )
+        )
+    }
+    fun setOnDialogClosedListener(listener: OnDialogClosedListener) {
+        dialogClosedListener = listener
     }
 }

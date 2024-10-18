@@ -3,6 +3,8 @@ package com.tangoplus.tangoq.db
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.tangoplus.tangoq.data.MessageVO
 import java.time.LocalDate
@@ -35,7 +37,7 @@ class PreferencesManager(private val context: Context) {
 
     fun getLatestRecommendation(): Int = latestRecommendationPrefs.getInt("latest_sn", -1)
 
-    // Search History
+    // ------# Search History #------
     private val searchHistoryPrefs: SharedPreferences
         get() = getPrefs("search_history")
 
@@ -108,7 +110,14 @@ class PreferencesManager(private val context: Context) {
         get() = getPrefs("like")
 
     fun storeLike(exerciseId : String) {
+        Log.d("PrefsManager", "Storing like for: $exerciseId")
         likePrefs.edit().putString("likes_$exerciseId", exerciseId).apply()
+
+    }
+
+    fun existLike(exerciseId: String) : Boolean  {
+        val exist = likePrefs.getString("likes_$exerciseId", "")
+        return if (exist != "") true else false
     }
 
     fun getLikes(): MutableList<String> {
@@ -123,6 +132,7 @@ class PreferencesManager(private val context: Context) {
     }
 
     fun deleteLike(exerciseId: String) {
+        Log.d("PrefsManager", "Deleting like for: $exerciseId")
         likePrefs.edit().remove("likes_$exerciseId").apply()
     }
 }

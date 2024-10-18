@@ -4,6 +4,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -170,8 +172,10 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             .build()
 
         if (isFirstRun("CustomExerciseDialogFragment_isFirstRun")) {
-            binding.ibtnPCDTop.showAlignBottom(balloon2)
-            balloon2.dismissWithDelay(1800L)
+            Handler(Looper.getMainLooper()).postDelayed({
+                binding.ibtnPCDTop.showAlignBottom(balloon2)
+                balloon2.dismissWithDelay(1800L)
+            }, 700)
         }
         binding.ibtnPCDTop.setOnClickListener { it.showAlignBottom(balloon2) }
     }
@@ -195,13 +199,15 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses!! // 이곳에 프로그램하나에 해당되는 모든 upv들이 가져와짐.
                     Log.v("현재진행기록", "pvm.currentProgresses.size: ${pvm.currentProgresses.size}")
 
-                    // 현재 시퀀스 찾기
+                    // ------! 현재 시퀀스 찾기 시작 !------
                     val currentProgresses = pvm.currentProgresses // 현재 프로그램의 시퀀스 가져오기 <전체>
+
                     var currentWeek = 0
                     var currentSequence = 0
+                    for (weekIndex in currentProgresses.indices) { // 1주차 2주차로 접근
+                        val weekProgress = currentProgresses[weekIndex] // 1주차에 해당되는 mutableListOf<ProgressUnitVO>
+                        // TODO 여기서 일단 sequence를 체크하는 방식이 수정될 수 있음. 여기서 부터 수정.
 
-                    for (weekIndex in currentProgresses.indices) {
-                        val weekProgress = currentProgresses[weekIndex]
 
                         val maxSequenceInWeek = weekProgress.maxOfOrNull { it.currentSequence } ?: 0
 
@@ -265,6 +271,14 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             }
         }
 
+        // ------# 프로그램 기간 만료 #------
+//        val programEndDate = programStartDate.plusWeeks(viewModel.currentProgram!!.programWeek.toLong()).minusDays(1)
+//        Log.v("programDates", "프로그램 시작날짜: ${programStartDate}, 종료날짜: ${programEndDate}")
+//        if (LocalDate.now() == programEndDate) {
+//            val programAlertDialogFragment = ProgramAlertDialogFragment.newInstance(this)
+//            programAlertDialogFragment.show(childFragmentManager, "ProgramAlertDialogFragment")
+//        }
+
     }
 
     private fun setAdapter(program: ProgramVO, progresses : MutableList<ProgressUnitVO>?, sequence: Pair<Int, Int>) {
@@ -305,7 +319,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         dismiss()
     }
 
-
     // 해당 회차에서 가장
     private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
         // Case 1 초기상태
@@ -325,7 +338,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         } else {
             return -1
         }
-
-
     }
+
 }

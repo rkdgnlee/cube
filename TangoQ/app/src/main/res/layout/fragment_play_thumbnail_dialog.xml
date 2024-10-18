@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/effect_ibtn_12dp"
     tools:context=".dialog.PlayThumbnailDialogFragment">
 
     <LinearLayout
@@ -52,7 +52,7 @@
                     android:textColor="@color/black"
                     android:textSize="22dp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/ibtnPTDShare"
+                    app:layout_constraintEnd_toStartOf="@+id/ibtnPTDLike"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -222,6 +222,7 @@
                     android:id="@+id/rvPTn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView99" />
@@ -353,7 +354,7 @@
                     android:id="@+id/linearLayout8"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="5dp"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -399,6 +400,17 @@
                         android:textStyle="bold"
                         app:cornerRadius="16dp" />
                 </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/ibtnPTDLike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:padding="6dp"
+                    android:src="@drawable/icon_like_disabled"
+                    app:layout_constraintBottom_toBottomOf="@+id/ibtnPTDShare"
+                    app:layout_constraintEnd_toStartOf="@+id/ibtnPTDShare"
+                    app:layout_constraintTop_toTopOf="@+id/ibtnPTDShare" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

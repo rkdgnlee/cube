@@ -41,7 +41,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.btnPAD1.setOnClickListener {
             dismiss()
             parentDialog.dismissThisFragment()
@@ -50,7 +49,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
         binding.btnPAD2.setOnClickListener {
             dismiss()
             parentDialog.dismissThisFragment()
-
             val bnb = requireActivity().findViewById<BottomNavigationView>(R.id.bnbMain)
             bnb.selectedItemId = R.id.measure
         }
@@ -59,9 +57,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
         val colorSpan = ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.mainColor))
         spannableString.setSpan(colorSpan, 0, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.tvPAD2.text = spannableString
-
     }
-
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Deprecated("Deprecated in Java")
@@ -71,8 +67,8 @@ class ProgramAlertDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
         dialogFragmentResize()
-
     }
+
     private fun dialogFragmentResize() {
         val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val width = 0.8f

@@ -308,8 +308,14 @@ class MeasureDashBoard1Fragment : Fragment() {
         // ------! 꺾은선 그래프 코드 끝 !------
 
         // ------! balloon 시작 !------
+        var percentage = 0.5f
+        if (measures.size >= 1) {
+            val userPercentile = measures[0].overall
+            percentage = calculatePercentage(userPercentile?.toInt()!!)
+        }
+
         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-//        params.horizontalBias = 0.731f
+        params.horizontalBias = percentage
         binding.ivMD1Position.layoutParams = params
         val percent = (params.horizontalBias * 100).toInt()
 
@@ -332,161 +338,12 @@ class MeasureDashBoard1Fragment : Fragment() {
                 binding.vMD1Low.visibility = View.GONE
             }
         }
-
-        binding.ivMD1Position.setOnClickListener{
-            binding.ivMD1Position.showAlignTop(balloon!!)
+        binding.clMD1Percent.setOnClickListener {
             balloon!!.dismissWithDelay(2500L)
         }
-//
-//        // -------! 500개의 범위 !------
-//        for (x in -250..250) {
-//            val xValue = x / 100.0
-//            val yValue = (1 / (stdDev * sqrt(2 * Math.PI))) * exp(-0.5 * ((xValue - mean) / stdDev).pow(2))
-//            entries.add(Entry(xValue.toFloat(), yValue.toFloat()))
-//
-//            // 설정된 구간에 따라 색상 변경 zScore로 표준편차 적용 (60%, 70%, 80%, 90%)
-//            if (xValue > -zScore && xValue < zScore) {
-//                entriesHighlighted.add(Entry(xValue.toFloat(), yValue.toFloat()))
-//            }
-//        }
-//        val dataSet = LineDataSet(entries, "").apply {
-//            setCircleColors(resources.getColor(R.color.secondaryColor, null))
-//            circleSize = 1.5f
-//            highlightLineWidth = 0f
-//            highLightColor = Color.TRANSPARENT
-//        }
-//        val dataSetHighlighted = LineDataSet(entriesHighlighted, "80% Range").apply {
-//            setCircleColors(resources.getColor(R.color.mainColor, null))
-//            circleSize = 1.5f
-//            setDrawFilled(true)
-//            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_sub_color_300)
-////            fillColor = resources.getColor(R.color.mainColor)
-//            highlightLineWidth = 0f
-//            highLightColor = Color.TRANSPARENT
-//
-//
-//        }
-//
-//        val userEntry = Entry(userValue.toFloat(), ((1 / (stdDev * sqrt(2 * Math.PI))) * exp(-0.5 * ((userValue - mean) / stdDev).pow(2))).toFloat())
-//        val userDataSet = LineDataSet(listOf(userEntry), "User Value")
-//        userDataSet.apply {
-//            setDrawCircles(true)
-//            circleRadius = 8f
-//            setCircleColors(resources.getColor(R.color.mainColor, null))
-//            circleHoleRadius = 4f
-//            setDrawCircleHole(true)
-//            setDrawFilled(false)
-////            fillColor = resources.getColor(R.color.mainColor)
-//            highlightLineWidth = 0f
-//            highLightColor = Color.TRANSPARENT
-////            fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.color_gradient_main)
-////            setDrawValues(true)
-////            valueTextSize = 12f
-////            valueTextColor = resources.getColor(R.color.subColor800, null)
-//
-//        }
-//
-//        val lineData = LineData()
-//        lineData.addDataSet(dataSet)
-//        lineData.addDataSet(dataSetHighlighted)
-//        lineData.addDataSet(userDataSet)
-//
-//
-//
-//        lineChartND.apply {
-//            setTouchEnabled(true)
-//            isDoubleTapToZoomEnabled = false
-//            data = lineData
-//            description.isEnabled = false
-//            legend.isEnabled = false
-//            setOnChartValueSelectedListener(object : OnChartValueSelectedListener{
-//                override fun onValueSelected(e: Entry?, h: Highlight?) {
-//                    // ------! info popup 창 시작 !------
-//                    val ballonText = if (userValue.absoluteValue <= zScore.absoluteValue) {
-//                        "정상범위로 판단됩니다."
-//                    } else if (userValue > zScore) {
-//                        "평균보다 밸런스 점수가 좋습니다. 계속 유지하세요"
-//                    } else {
-//                        "밸런스 점수가 평균보다 낮습니다. 꾸준한 운동이 필요합니다"
-//                    }
-//                     val balloon2 = Balloon.Builder(requireContext())
-//                        .setWidthRatio(0.5f)
-//                        .setHeight(BalloonSizeSpec.WRAP)
-//                        .setText("결과값 ${userValue}로\n$ballonText")
-//                        .setTextColorResource(R.color.subColor800)
-//                        .setTextSize(15f)
-//                        .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-//                        .setArrowSize(0)
-//                        .setMargin(10)
-//                        .setPadding(12)
-//                        .setCornerRadius(8f)
-//                        .setBackgroundColorResource(R.color.white)
-//                        .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-//                        .setLifecycleOwner(viewLifecycleOwner)
-//                        .build()
-//                    // ------! info popup 창 끝 !------
-//
-//                    Log.v("showBalloon", "true")
-//                    lineChartND.showAlignEnd(balloon2)
-//                    balloon2.dismissWithDelay(3000L)
-//                }
-//                override fun onNothingSelected() {}
-//            })
-//
-//            xAxis.apply {
-//                position = XAxis.XAxisPosition.BOTTOM
-//                setDrawAxisLine(false)
-//                setDrawGridLines(false)
-//                setDrawLabels(false)  // X축 레이블 숨김
-//                axisMinimum = -2f
-//                axisMaximum = 2f
-//                labelCount = 10
-//            }
-//            axisLeft.apply {
-//                setDrawGridLines(false)
-//                setDrawAxisLine(false)
-////                setLabelCount(5, false)
-//                setDrawLabels(false)  // Y축 레이블 숨김
-//                axisMinimum = 0f
-//                axisMaximum = 0.5f
-//            }
-//            axisRight.apply {
-//                setDrawGridLines(false)
-//                setDrawAxisLine(false)
-//                setDrawLabels(false)
-//            }
-//            invalidate()
-//        }
-//    }
-
-    // ------! 추천 운동 받기 시작 !------
-//    private fun goExerciseDetailFragment(parts: MeasureVO?) {
-//        /** 1. 관절의 데이터 점수를 가져와서
-//         *  2. 추천 운동은 그 데이터 점수에서 가장 낮은 걸 가져와서 해당 값에 맞게 가야하는거지.
-//         *  3. 내가 팔꿉에 대한 뭐 통증이 그렇게 나오면, exercise_search= 3
-//         * */
-//        val category = Pair(0, "전체")
-//        val search = Pair(transformJointNum(parts!!), parts.partName)
-//        requireActivity().supportFragmentManager.beginTransaction().apply {
-//            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-//            add(R.id.flMain, ExerciseDetailFragment.newInstance(search, -1))
-////            addToBackStack(null)
-//            commit()
-//        }
-//    }
-
-//    private fun transformJointNum(part: MeasureVO) : Int {
-//        return when (part.partName) {
-//            "손목" -> 1
-//            "척추" -> 2
-//            "팔꿉" -> 3
-//            "목" -> 4
-//            "발목" -> 5
-//            "어깨" -> 6
-//            "무릎" -> 7
-//            "복부" -> 8
-//            else -> 0
-//        }
+        binding.ivMD1Position.setOnClickListener{
+            binding.ivMD1Position.showAlignTop(balloon!!)
+        }
     }
     // ------! 추천 운동 받기 끝!------
     private fun createBalloon(userJson: JSONObject?, percent: Int) {
@@ -509,5 +366,14 @@ class MeasureDashBoard1Fragment : Fragment() {
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
+    }
+    fun calculatePercentage(value: Int): Float {
+        // 70~100의 범위를 0~100%로 매핑
+        val minInput = 70
+        val maxInput = 100
+        val percentage = (value - minInput).toDouble() / (maxInput - minInput)
+
+        // 소수점 두 자리까지 반올림
+        return String.format("%.3f", percentage).toFloat()
     }
 }

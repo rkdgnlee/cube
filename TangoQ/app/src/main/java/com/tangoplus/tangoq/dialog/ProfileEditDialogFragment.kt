@@ -33,11 +33,12 @@ import org.json.JSONObject
 class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     lateinit var binding : FragmentProfileEditDialogBinding
     val viewModel : SignInViewModel by activityViewModels()
-    private lateinit var userJson : JSONObject
+
     private val agreement3 = MutableLiveData(false)
     private val agreementMk1 = MutableLiveData(false)
     private val agreementMk2 = MutableLiveData(false)
     lateinit var userSn : String
+    private var profilemenulist = mutableListOf<String>()
     private var profileUpdateListener: ProfileUpdateListener? = null
 
     fun setProfileUpdateListener(listener: ProfileUpdateListener) {
@@ -63,21 +64,25 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
         viewModel.snsCount = 0
         // ------! 싱글턴에서 가져오기 !------
-        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
-        viewModel.User.value = userJson
-        userSn = userJson.optString("user_sn")
-        Log.v("userSn", userSn)
-        // ------! 개인정보수정 rv 연결 시작 !------
-// ------! 정보 목록 recyclerView 연결 시작 !------
-        val profilemenulist = mutableListOf(
+        viewModel.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject!!
+
+        viewModel.setHeight.value = viewModel.User.value!!.optInt("height")
+        viewModel.setWeight.value = viewModel.User.value!!.optInt("weight")
+        viewModel.setEmail.value = viewModel.User.value!!.optString("email")
+
+
+        userSn = viewModel.User.value!!.optString("sn")
+        Log.v("개인정보편집", "${viewModel.User.value}")
+
+        // ------! 정보 목록 recyclerView 연결 시작 !------
+        profilemenulist = mutableListOf(
             "이름",
             "이메일",
             "몸무게",
             "신장",
             "성별"
-
         )
-        setAdpater(profilemenulist, binding.rvPED)
+        setAdapter(profilemenulist)
 
         // ------! 정보 목록 recyclerView 연결 끝 !------
         // ------! 개인정보수정 rv 연결 끝 !------
@@ -88,7 +93,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
 
 //        // ------! 소셜 계정 로그인 연동 시작 !------
-        val snsIntegrations = checkSNSLogin(userJson)
+        val snsIntegrations = checkSNSLogin(viewModel.User.value)
 
         if (snsIntegrations.first) {
             binding.tvGoogleInteCheck.text = "계정연동"
@@ -113,18 +118,18 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         }
 
         // ------! id, pw, EmailId VM에 값 보존 시작 !------
-        viewModel.id.value = userJson.optString("user_id")
+        viewModel.id.value = viewModel.User.value!!.optString("user_id")
 
-        when (userJson.optInt("sms_receive")) {
+        when (viewModel.User.value!!.optInt("sms_receive")) {
             1 -> agreementMk1.value = true
             else -> agreementMk1.value = false
         }
-        Log.v("userJson", userJson.optInt("sms_receive").toString())
-        when (userJson.optInt("email_receive")) {
+        Log.v("userJson", viewModel.User.value!!.optInt("sms_receive").toString())
+        when (viewModel.User.value!!.optInt("email_receive")) {
             1 -> agreementMk2.value = true
             else -> agreementMk2.value = false
         }
-        Log.v("userJson", userJson.optInt("email_receive").toString())
+        Log.v("userJson", viewModel.User.value!!.optInt("email_receive").toString())
         // ------! 광고성 수신 동의 시작 !------
         binding.clPEDAgreement3.setOnClickListener{
             val newValue = agreement3.value?.not() ?: false
@@ -177,18 +182,19 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         }
 
         binding.btnPEDFinish.setOnClickListener {
-            userJson.put("user_id", viewModel.id.value.toString())
-            userJson.put("user_password", viewModel.pw.value.toString())
-            userJson.put("sms_receive", if (agreementMk1.value!!) 1 else 0)
-            userJson.put("email_receive", if (agreementMk2.value!!) 1 else 0)
-            userJson.put("user_height", viewModel.User.value?.optString("user_height"))
-            userJson.put("user_weight", viewModel.User.value?.optString("user_weight"))
-            Log.v("userJson>receive", "$userJson")
+//            viewModel.User.value!!.put("user_id", viewModel.id.value.toString())
+//            viewModel.User.value!!.put("password", viewModel.pw.value.toString())
+            viewModel.User.value!!.put("sms_receive", if (agreementMk1.value!!) 1 else 0)
+            viewModel.User.value!!.put("email_receive", if (agreementMk2.value!!) 1 else 0)
+            viewModel.User.value!!.put("height", viewModel.setHeight.value)
+            viewModel.User.value!!.put("weight", viewModel.setWeight.value)
+            viewModel.User.value!!.put("email", viewModel.setEmail.value)
+            Log.v("userJson>receive", "${viewModel.User.value!!}")
 //            val userEditEmail = userJson.optString("user_email")
 //            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
-            fetchUserUPDATEJson(getString(R.string.API_user), userJson.toString(), userSn) {
-                Log.w(" 싱글톤객체추가", "$userSn, $userJson")
-                Singleton_t_user.getInstance(requireContext()).jsonObject = userJson
+            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), viewModel.User.value!!.toString(), userSn) {
+                Log.w(" 싱글톤객체추가", "$userSn, ${viewModel.User.value!!}")
+                Singleton_t_user.getInstance(requireContext()).jsonObject = viewModel.User.value!!
 //                requireActivity().runOnUiThread{
 //                    uViewModel.setupProgress = 34
 //                    uViewModel.setupStep = 0
@@ -208,13 +214,15 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 //        b
     }
 
-    private fun setAdpater(list: MutableList<String>, rv: RecyclerView ) {
-        val adapter = ProfileRVAdapter(ProfileFragment(), this@ProfileEditDialogFragment, false, "profileEdit",requireActivity().supportFragmentManager)
+    private fun setAdapter(list: MutableList<String>) {
+        binding.rvPED.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val adapter = ProfileRVAdapter(this@ProfileEditDialogFragment, this@ProfileEditDialogFragment, false, "profileEdit", viewModel)
+        adapter.userJson = viewModel.User.value!!
         adapter.profilemenulist = list
-        adapter.userJson = userJson
-        rv.adapter = adapter
-        rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.rvPED.adapter = adapter
+
         adapter.notifyDataSetChanged()
+
     }
 
     override fun onResume() {
@@ -223,6 +231,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+//        setAdapter(profilemenulist, binding.rvPED)
     }
 
     private fun checkSNSLogin(jsonObject: JSONObject?) : Triple<Boolean, Boolean, Boolean> {

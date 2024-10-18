@@ -193,33 +193,35 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
                 val requiredSequences = 1..progressUnits[0].requiredSequence // 3
                 val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
-
+                // 여기다가 4 * 3 * 21 에 맞게 넣으려면 mutableList가 하나 더 있어야 함 하지만?
+                // 넣지 않고,
                 for (week in weeks) { // 1, 2, 3, 4
 
-                    val weekUnits = progressUnits.filter { it.currentWeek == week } // 일단 주차별로 나눔. 1주차 2주차 3주차 4주차
+                    val weekUnits = progressUnits.filter { it.currentWeek == week }.sortedBy { it.uvpSn }// 일단 주차별로 나눔. 1주차 2주차 3주차 4주차
+                    // week가 4개 그럼 84개가 들어옴
+//                    val groupedByUvpSn = weekUnits.groupBy { it.uvpSn } // 21개임
+//                    val maxCurrentSequence = weekUnits.maxOfOrNull { it.currentSequence } ?: 0 // 주차에서 가장 높은 seq를 저장.
 
-                    val groupedByUvpSn = weekUnits.groupBy { it.uvpSn } // 21개임
-
-                    val maxCurrentSequence = weekUnits.maxOfOrNull { it.currentSequence } ?: 0
-                    for (seq in requiredSequences) { // 1, 2, 3
-                        val orgUnit = mutableListOf<ProgressUnitVO>() // 시퀀스별로 새로운 리스트 생성
-                        for ((_, units) in groupedByUvpSn) {
-                            val unit = units.firstOrNull() ?: continue
-                            val currentProgress = when {
-
-                                seq - 1 < maxCurrentSequence -> unit.lastProgress
-                                else -> 0  // 미래 시퀀스
-                            }
-
-                            orgUnit.add(unit.copy(
-                                currentSequence = (seq - 1),
-                                lastProgress = currentProgress
-                            ))
-                        }
-                        organizedUnits.add(orgUnit) // 각 시퀀스마다 리스트 추가
-                    }
+                    organizedUnits.add(weekUnits.toMutableList())
+//                    for (seq in requiredSequences) { // 1, 2, 3
+//                        val orgUnit = mutableListOf<ProgressUnitVO>() // 시퀀스별로 새로운 리스트 생성
+//                        for ((_, units) in groupedByUvpSn) {
+//                            val unit = units.firstOrNull() ?: continue
+//                            val currentProgress = when {
+//
+//                                seq - 1 < maxCurrentSequence -> unit.lastProgress
+//                                else -> 0  // 미래 시퀀스
+//                            }
+//
+//                            orgUnit.add(unit.copy(
+//                                currentSequence = (seq - 1),
+//                                lastProgress = currentProgress
+//                            ))
+//                        }
+//                        organizedUnits.add(orgUnit) // 각 시퀀스마다 리스트 추가
+//                    }
                 }
-
+                // 결론적으로 4 * 21의 값만 들어와짐.
                 singletonProgress.programProgresses = organizedUnits
                 Log.v("singletonProgress", "${singletonProgress.programProgresses!![0].map { it.lastProgress }}, ${singletonProgress.programProgresses!![1].map { it.lastProgress }}, ${singletonProgress.programProgresses!![2].map { it.lastProgress }}, ${singletonProgress.programProgresses!![3].map { it.lastProgress }}, ")
                 continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기

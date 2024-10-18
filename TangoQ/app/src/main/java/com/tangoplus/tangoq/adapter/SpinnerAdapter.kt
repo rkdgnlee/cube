@@ -14,20 +14,30 @@ import com.tangoplus.tangoq.databinding.ItemSpinnerBinding
 
 
 @Suppress("UNREACHABLE_CODE")
-class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>) : ArrayAdapter<String>(context, resId, list) {
+class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>, private val isSignIn: Boolean) : ArrayAdapter<String>(context, resId, list) {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        binding.root.setPadding(0, 2, 2, 0)
-        binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
-        binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
+        if (isSignIn) {
+            binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
 
-        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
+            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
 
-        binding.tvSpinner.text = list[position]
-        binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+            binding.tvSpinner.text = list[position]
+            binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+        } else {
+            binding.root.setPadding(0, 2, 2, 0)
+            binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
+            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
+
+            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
+
+            binding.tvSpinner.text = list[position]
+            binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+        }
 
         return binding.root
     }
@@ -35,8 +45,13 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.tvSpinner.text = list[position]
-        binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
-        binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+        if (isSignIn) {
+            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
+            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+        } else {
+            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
+            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+        }
 
         binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
         return binding.root

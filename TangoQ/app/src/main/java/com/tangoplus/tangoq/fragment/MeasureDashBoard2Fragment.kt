@@ -61,7 +61,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     var currentMonth = YearMonth.now()
     var selectedDate = LocalDate.now()
 
-    private lateinit var graphProgresses : MutableList<MutableList<ProgressUnitVO>>
+    private var graphProgresses : MutableList<MutableList<ProgressUnitVO>>? = null
     private lateinit var progresses: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
     private val pvm : ProgressViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
@@ -86,20 +86,19 @@ class MeasureDashBoard2Fragment : Fragment() {
         todayInWeek = sortTodayInWeek()
 
 
-
-
         // ------# 일별 운동 담기 #------
-        graphProgresses = Singleton_t_progress.getInstance(requireContext()).graphProgresses!!
+        graphProgresses = Singleton_t_progress.getInstance(requireContext()).graphProgresses
         // TODO 여기서 이틀했을 수도 있고, 삼일 했을 수도 있고, 전혀 없을 수도 있음.
 
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
         val weeklySets = mutableListOf<Float>()
-
-        for (i in 0 until 7) {
-            if (i < graphProgresses.size && graphProgresses[i].count() > 0) {
-                weeklySets.add(graphProgresses[i].count() * 100 / 7.toFloat())
-            } else {
-                weeklySets.add(1f)
+        if (graphProgresses != null) {
+            for (i in 0 until 7) {
+                if (i < graphProgresses!!.size && graphProgresses!![i].count() > 0) {
+                    weeklySets.add(graphProgresses!![i].count() * 100 / 7.toFloat())
+                } else {
+                    weeklySets.add(1f)
+                }
             }
         }
 

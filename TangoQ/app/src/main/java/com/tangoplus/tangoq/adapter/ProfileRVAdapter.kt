@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.ktx.auth
@@ -25,6 +27,7 @@ import com.tangoplus.tangoq.dialog.ProfileEditDialogFragment
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
@@ -39,12 +42,12 @@ import org.json.JSONObject
 
 import java.lang.IllegalArgumentException
 
-class ProfileRVAdapter(private val fragment: ProfileFragment, private val booleanClickListener: BooleanClickListener, val first: Boolean, val case: String, val fragmentManager: FragmentManager) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
+class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean, val case: String, val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
     var profilemenulist = mutableListOf<String>()
-    var userJson = JSONObject()
+
     private val VIEW_TYPE_NORMAL = 0
     private val VIEW_TYPE_SPECIAL_ITEM = 1
-
+    var userJson = JSONObject()
     inner class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val tvPfSettingsName : TextView = view.findViewById(R.id.tvPfSettingsName)
         val tvPfInfo: TextView = view.findViewById(R.id.tvPfInfo)
@@ -107,7 +110,7 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                             when (currentItem) {
                                 "내정보" -> {
                                     val dialogFragment = ProfileEditDialogFragment()
-                                    dialogFragment.setProfileUpdateListener(fragment)
+                                    dialogFragment.setProfileUpdateListener(fragment as ProfileFragment)
                                     dialogFragment.show(fragment.requireActivity().supportFragmentManager, "ProfileEditDialogFragment")
                                 }
                                 "QR코드 핀번호 로그인" -> {
@@ -171,8 +174,8 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                                     // 싱글턴에 들어갔던거 전부 비우기
                                     Singleton_t_user.getInstance(fragment.requireContext()).jsonObject = null
                                     Singleton_t_measure.getInstance(fragment.requireContext()).measures = null
-                                    Singleton_t_progress.getInstance(fragment.requireContext()).programProgresses = null
-                                    Singleton_t_progress.getInstance(fragment.requireContext()).graphProgresses = null
+                                    Singleton_t_progress.getInstance(fragment.requireContext()).programProgresses = mutableListOf()
+                                    Singleton_t_progress.getInstance(fragment.requireContext()).graphProgresses = mutableListOf()
                                 }
                             }
                         }
@@ -180,6 +183,7 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                     // ------! 각 item 클릭 동작 끝 !------
 
                     "profileEdit" -> {
+
                         holder.ivPf.setImageResource(R.drawable.icon_profile)
                         holder.tvPfSettingsName.text = currentItem
                         when (holder.tvPfSettingsName.text) {
@@ -189,19 +193,26 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                                 holder.ivPf.setImageResource(R.drawable.icon_profile)
                             }
                             "성별" -> {
-                                holder.tvPfInfo.text = userJson.optString("user_gender") ?: "미설정"
+                                holder.tvPfInfo.text = if (userJson.optString("gender")== "0") "여자" else "남자"
+
                                 holder.ivPf.setImageResource(R.drawable.icon_gender)
                             }
                             "몸무게" -> {
-                                holder.tvPfInfo.text = userJson.optString("user_weight") + "kg"
+                                (vm as SignInViewModel).setWeight.observe(fragment.viewLifecycleOwner) { weight ->
+                                    holder.tvPfInfo.text = "$weight kg"
+                                }
                                 holder.ivPf.setImageResource(R.drawable.icon_weight)
                             }
                             "신장" -> {
-                                holder.tvPfInfo.text = userJson.optString("user_height") + "cm"
+                                (vm as SignInViewModel).setHeight.observe(fragment.viewLifecycleOwner) { height ->
+                                    holder.tvPfInfo.text = "$height cm"
+                                }
                                 holder.ivPf.setImageResource(R.drawable.icon_height)
                             }
                             "이메일" -> {
-                                holder.tvPfInfo.text = userJson.optString("user_email") ?: "미설정"
+                                (vm as SignInViewModel).setEmail.observe(fragment.viewLifecycleOwner) { email ->
+                                    holder.tvPfInfo.text = "$email"
+                                }
                                 holder.ivPf.setImageResource(R.drawable.icon_email)
                             }
                         }
@@ -210,13 +221,16 @@ class ProfileRVAdapter(private val fragment: ProfileFragment, private val boolea
                         holder.cltvPfSettings.setOnClickListener {
                             when (holder.tvPfSettingsName.text) {
                                 "몸무게" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("몸무게")
-                                    dialog.show(fragmentManager, "ProfileEditBSDialogFragment")
-
+                                    val dialog = ProfileEditBSDialogFragment.newInstance("몸무게", (vm as SignInViewModel).setWeight.value.toString())
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "신장" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("신장")
-                                    dialog.show(fragmentManager, "ProfileEditBSDialogFragment")
+                                    val dialog = ProfileEditBSDialogFragment.newInstance("신장", (vm as SignInViewModel).setHeight.value.toString())
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                }
+                                "이메일" -> {
+                                    val dialog = ProfileEditBSDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
 
                             }

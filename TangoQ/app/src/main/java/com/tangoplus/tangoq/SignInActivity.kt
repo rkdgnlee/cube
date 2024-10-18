@@ -9,12 +9,13 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.View
-import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.EditorInfo
@@ -25,15 +26,12 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.auth.auth
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
@@ -41,7 +39,11 @@ import com.tangoplus.tangoq.databinding.ActivitySignInBinding
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.`object`.NetworkUser.insertUser
 import com.tangoplus.tangoq.transition.SignInTransition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -59,7 +61,7 @@ class SignInActivity : AppCompatActivity() {
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         auth = FirebaseAuth.getInstance()
-        auth.setLanguageCode("ko")
+        auth.setLanguageCode("kr")
         // -----! 초기 버튼 숨기기 및 세팅 시작 !-----
         binding.llPwCondition.visibility = View.GONE
         binding.etPw.visibility = View.GONE
@@ -113,8 +115,6 @@ class SignInActivity : AppCompatActivity() {
         TransitionManager.beginDelayedTransition(binding.llSignIn, SignInTransition())
 
         // -----! 휴대폰 인증 시작 !-----
-
-        // -----! 인증 문자 확인 시작 !-----
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
                 Log.v("verifyComplete", "PhoneAuthCredential: $p0")
@@ -126,7 +126,7 @@ class SignInActivity : AppCompatActivity() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 this@SignInActivity.verificationId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId.toString().substring(0, 5)} ,token: ${token.toString().substring(0, 5)}")
+                Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSignIn), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 binding.btnAuthConfirm.isEnabled = true
@@ -137,10 +137,11 @@ class SignInActivity : AppCompatActivity() {
             var transformMobile = phoneNumber82(binding.etMobile.text.toString())
             val dialog = AlertDialog.Builder(this)
                 .setTitle("📩 문자 인증 ")
-                .setMessage("$transformMobile 로 인증 하시겠습니까?")
+                .setMessage("${transformMobile}로 인증 하시겠습니까?")
                 .setPositiveButton("예") { _, _ ->
                     transformMobile = transformMobile.replace("-", "").replace(" ", "")
                     Log.w("전화번호", transformMobile)
+
                     val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(transformMobile)
                         .setTimeout(60L, TimeUnit.SECONDS)
@@ -205,12 +206,17 @@ class SignInActivity : AppCompatActivity() {
                 val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                 objectAnimator.duration = 1000
                 objectAnimator.start()
+
+                Handler(Looper.getMainLooper()).postDelayed({ binding.etId.requestFocus() }, 750)
+
                 return@setOnEditorActionListener true
             }
             false
         }
+
+
         val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-        binding.spinner.adapter = SpinnerAdapter(this, com.tangoplus.tangoq.R.layout.item_spinner, domainList)
+        binding.spinner.adapter = SpinnerAdapter(this, com.tangoplus.tangoq.R.layout.item_spinner, domainList, true)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             @SuppressLint("SetTextI18n")
             override fun onItemSelected(
@@ -234,19 +240,13 @@ class SignInActivity : AppCompatActivity() {
                     binding.spinner.visibility = View.VISIBLE
                 }
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-//        binding.psvSIEmail.setSpinnerAdapter(actAdapter)
-//        binding.psvSIEmail.setText(domain_list.firstOrNull(), false)
 
         binding.etId.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                 alphaAnimation.duration = 600
-
-
-
 
                 val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                 objectAnimator.duration = 1000
@@ -288,7 +288,7 @@ class SignInActivity : AppCompatActivity() {
                 Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()}")
                 viewModel.mobileCondition.value = mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()
                 if (viewModel.mobileCondition.value == true) {
-                    viewModel.User.value?.put("user_mobile", s.toString() )
+                    viewModel.User.value?.put("mobile", s.toString() )
                     binding.btnAuthSend.isEnabled = true
                 }
 
@@ -349,7 +349,7 @@ class SignInActivity : AppCompatActivity() {
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----
 
-                viewModel.User.value?.put("user_password", s.toString())
+                viewModel.User.value?.put("password", s.toString())
 
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -436,53 +436,40 @@ class SignInActivity : AppCompatActivity() {
                     viewModel.User.value?.put("user_name", binding.etName.text)
                     when (binding.spinner.selectedItemPosition) {
                         0, 1, 2 -> {
-                            viewModel.User.value?.put("user_email", "${binding.etEmailId.text}@${binding.spinner.selectedItem as String}")
+                            viewModel.User.value?.put("email", "${binding.etEmailId.text}@${binding.spinner.selectedItem as String}")
                         }
                         else -> {
-                            viewModel.User.value?.put("user_email", "${binding.etEmailId.text}@${binding.etEmail.text}")
+                            viewModel.User.value?.put("email", "${binding.etEmailId.text}@${binding.etEmail.text}")
                         }
                     }
+
                     // ------! 광고성 넣기 시작 !------
                     val jsonObj = viewModel.User.value
                     jsonObj?.put("sms_receive", if (viewModel.agreementMk1.value == true) 1 else 0)
                     jsonObj?.put("email_receive", if (viewModel.agreementMk2.value == true) 1 else 0)
                     // ------! 광고성 넣기 끝 !------
-
-//                    if (jsonObj != null) {
-//                        getTokenByUserJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj) { jo ->
-//                            when (jo?.optString("response_code")) {
-//                                "200" -> {
-//                                    saveServerToken(this@SignInActivity, jo.optString("user_token"))
-//                                    getUserIdentifyJson(getString(com.tangoplus.tangoq.R.string.IP_ADDRESS_t_user), jsonObj, getServerToken(this@SignInActivity).toString()) { jo2 ->
-//                                        if (jo2 != null) {
-//                                            storeUserInSingleton(this@SignInActivity, jo2)
-//                                            Log.v("구글>싱글톤", "${Singleton_t_user.getInstance(this@SignInActivity).jsonObject}")
-//                                            val intent = Intent(this@SignInActivity, IntroActivity::class.java)
-//                                            startActivity(intent)
-//                                            finish()
-//                                        }
-//                                    }
-//                                }
-//                                "201" -> { // ------! 기존 정보가 있다 !------
-//                                    MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-//                                        setTitle("알림")
-//                                        setMessage("기존에 가입된 정보가 있습니다.")
-//                                        setPositiveButton("돌아가기") { dialog, _ ->
-//                                            val intent = Intent(this@SignInActivity, IntroActivity::class.java)
-//                                            startActivity(intent)
-//                                            finish()
-//                                        }
-//                                        create()
-//                                    }.show()
-//                                }
-//                                "404" -> {
-//                                    Log.v("responseCode404", "response: $jo")
-//                                }
-//                            }
-//                        }
-//                    }
+                    Log.v("회원가입JSon", "$jsonObj")
+                    if (jsonObj != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj, this@SignInActivity) { responseCode ->
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    val intent = Intent(this@SignInActivity, IntroActivity::class.java)
+                                    when (responseCode) {
+                                        409 -> {
+                                            Toast.makeText(this@SignInActivity, "이미 가입된 계정입니다. 아이디와 비밀번호 찾기를 실행해주세요", Toast.LENGTH_SHORT).show()
+                                        }
+                                        else -> {
+                                            Toast.makeText(this@SignInActivity, "회원가입을 축하합니다 ! 로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
+                                            intent.putExtra("SignInFinished", 201)
+                                        }
+                                    }
+                                    startActivity(intent)
+                                    finish()
+                                }
+                            }
+                        }
+                    }
                 }
-
             }
         })
         val fragmentManager = context.supportFragmentManager

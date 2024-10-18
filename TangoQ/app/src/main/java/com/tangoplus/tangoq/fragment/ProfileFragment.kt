@@ -144,12 +144,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
     private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", requireActivity().supportFragmentManager)
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", viewModel)
             adapter.profilemenulist = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         } else {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", requireActivity().supportFragmentManager)
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", viewModel)
             adapter.profilemenulist = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -217,10 +217,10 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
 
                         Log.v("파일 정보", "imageFile: $imageFile, fileName: $fileName, mimeType: $mimeType")
-                        val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                        val editor = sharedPreferences.edit()
-                        editor.putString("imageUri", selectedImageUri.toString())
-                        editor.apply()
+//                        val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+//                        val editor = sharedPreferences.edit()
+//                        editor.putString("imageUri", selectedImageUri.toString())
+//                        editor.apply()
                         Glide.with(this)
                             .load(selectedImageUri)
                             .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
@@ -238,37 +238,32 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             if (userJson != null) {
                 binding.tvPfName.text = userJson.optString("user_name")
 
-                val height = when (userJson.optDouble("user_height")) {
-                    in 0.0 .. 250.0 -> { userJson.optDouble("user_height").toInt().toString() + "cm" }
+                val height = when (userJson.optDouble("height")) {
+                    in 0.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
                     else -> { "미설정" }
                 }
                 binding.tvPHeight.text = height
 
-                val weight = when(userJson.optDouble("user_weight")) {
-                    in 0.0 .. 150.0 -> { userJson.optDouble("user_weight").toInt().toString() + "kg" }
+                val weight = when(userJson.optDouble("weight")) {
+                    in 0.0 .. 150.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
                     else -> { "미설정" }
                 }
                 binding.tvPWeight.text = weight
 
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = try {
-                    (c.get(Calendar.YEAR) - userJson.optString("user_birthday").substring(0, 4).toInt()).toString() + "세"
+                    (c.get(Calendar.YEAR) - userJson.optString("birthday").substring(0, 4).toInt()).toString() + "세"
                 } catch (e: Exception) {
                     "미설정"
                 }
 
 
                 // ----- 이미지 로드 시작 -----
-                val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                val imageUri = sharedPreferences.getString("imageUri", null)
-                if (imageUri != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        Glide.with(this)
-                            .load(imageUri)
-                            .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                            .into(binding.civP)
-                    }
-                }
+                val imageUri = userJson.optString("profile_file_path")
+                Glide.with(this)
+                    .load(imageUri)
+                    .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                    .into(binding.civP)
             }
         }
     }
