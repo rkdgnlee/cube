@@ -163,7 +163,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     }
 
     private fun updateRecyclerView(exercises : MutableList<ExerciseVO>) {
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, Pair(0,0) ,"main")
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, null, null,"main")
         adapter.dialogClosedListener = this@ExerciseDetailFragment
         adapter.exerciseList = exercises
         binding.rvEDAll.adapter = adapter

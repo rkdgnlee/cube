@@ -31,6 +31,7 @@ import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.MD2RVAdpater
+import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.HistorySummaryVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.ProgressViewModel
@@ -54,6 +55,7 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlin.random.Random
 
 
 class MeasureDashBoard2Fragment : Fragment() {
@@ -65,6 +67,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     private lateinit var progresses: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
     private val pvm : ProgressViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
+    private val evm : ExerciseViewModel by activityViewModels()
 
     private lateinit var  todayInWeek : List<Int>
 
@@ -389,7 +392,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         pvm.selectedDailyCount.value = progresses.size
         pvm.selectedDailyTime.value = progresses.sumOf { it.videoDuration }
         Log.v("프로그레스", "${progresses}")
-        val adapter = ExerciseRVAdapter(this@MeasureDashBoard2Fragment, mutableListOf(), progresses.toMutableList(), Pair(0,0), "main")
+        val adapter = ExerciseRVAdapter(this@MeasureDashBoard2Fragment, mutableListOf(), null, null, null, "main")
 //        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, progresses)
         binding.rvMD2.adapter = adapter
 
@@ -401,9 +404,9 @@ class MeasureDashBoard2Fragment : Fragment() {
         }
     }
 
-    private fun getTime(id: String) : Int {
-        return pvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
-    }
+//    private fun getTime(id: String) : Int {
+//        return pvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
+//    }
 
 
     private fun sortTodayInWeek() : List<Int> {

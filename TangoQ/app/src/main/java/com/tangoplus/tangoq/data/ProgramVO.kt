@@ -11,23 +11,25 @@ data class ProgramVO(
     var programTime : Int = 0,
     var programFrequency : Int = 0,
     var programWeek : Int = 0,
-    var exercises : MutableList<ExerciseVO>? = mutableListOf(),
-    var exerciseTimes : MutableList<Pair<String, Int>>
+    var exerciseTime : Int = 0,
+    var exercises : MutableList<ExerciseVO>? = mutableListOf()
 ): Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readInt(),
-        parcel.readInt(),
-        parcel.readInt(),
-        mutableListOf<ExerciseVO>().apply {
-            parcel.readList(this, List::class.java.classLoader)
-        },
-        mutableListOf<Pair<String, Int>>().apply {
-            parcel.readList(this, List::class.java.classLoader)
+        programSn = parcel.readInt(),
+        programName = parcel.readString(),
+        programStage = parcel.readString(),
+        programCount = parcel.readString(),
+        programTime = parcel.readInt(),
+        programFrequency = parcel.readInt(),
+        programWeek = parcel.readInt(),
+        exerciseTime = parcel.readInt(),
+        exercises = mutableListOf<ExerciseVO>().apply {
+            parcel.readList(this, ExerciseVO::class.java.classLoader)
         }
+
+//        mutableListOf<Pair<String, Int>>().apply {
+//            parcel.readList(this, List::class.java.classLoader)
+//        }
 
     )
 
@@ -39,6 +41,8 @@ data class ProgramVO(
         parcel.writeInt(programTime)
         parcel.writeInt(programFrequency)
         parcel.writeInt(programWeek)
+        parcel.writeInt(exerciseTime)
+        parcel.writeList(exercises)
     }
 
     override fun describeContents(): Int {

@@ -14,9 +14,10 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentReportDiseaseDialogBinding
-import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
+import com.tangoplus.tangoq.fragment.ExerciseFragment
 import java.io.File
 import java.io.FileOutputStream
 
@@ -54,16 +55,14 @@ class ReportDiseaseDialogFragment : DialogFragment() {
             intent.type = "image/png" // 이곳에서 공유 데이터 변경
             intent.putExtra(Intent.EXTRA_STREAM, fileUri)
             intent.putExtra(Intent.EXTRA_TEXT, "제 질병 예측 결과를 공유하고 싶어요 !\n$url")
-            startActivity(Intent.createChooser(intent, "질병 예측 결과ㅅ"))
+            startActivity(Intent.createChooser(intent, "질병 예측 결과"))
         }
 
         // TODO ------# 관계에 맞는 값들을 넣어야함. #------
         binding.btnRDRecommend.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flMain, ExerciseDetailFragment.newInstance(Pair(1, ""), 0))
-                addToBackStack(null)
-                commit()
-            }
+            val bnb : BottomNavigationView = requireActivity().findViewById(R.id.bnbMain)
+            bnb.selectedItemId = R.id.exercise
+            dismiss()
         }
     }
 

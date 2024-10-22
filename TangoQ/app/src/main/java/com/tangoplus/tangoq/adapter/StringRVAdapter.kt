@@ -213,19 +213,24 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
                         Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
                     }
                 } else {
-                    holder.cbWI.setText(currentItem)
                     val isInitiallyChecked = position == (vm as ProgressViewModel).selectedWeek.value
-                    holder.cbWI.isChecked = isInitiallyChecked
-                    updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
-
+                    holder.cbWI.apply {
+                        isChecked = isInitiallyChecked
+                        text = currentItem
+                        updateCheckboxTextColor(this, isInitiallyChecked)
+                        setOnCheckedChangeListener { _, isChecked ->
+                            updateCheckboxTextColor(this, isChecked)
+                        }
+                    }
                     vm.selectWeek.observe(fragment.viewLifecycleOwner) { selectWeek ->
-                        val isChecked = currentItem?.substring(0,0)?.toInt()  == selectWeek
+
+                        val isChecked = position  == selectWeek
                         holder.cbWI.isChecked = isChecked
                         updateCheckboxTextColor(holder.cbWI, isChecked)
                     }
                     holder.cbWI.setOnClickListener {
-                        vm.selectWeek.value = currentItem?.substring(0,0)?.toInt()
-                        Log.v("selectedDate", "selectWeek: ${vm.selectWeek.value}")
+                        vm.selectWeek.value = position
+                        Log.v("selectDate", "selectWeek: ${vm.selectWeek.value}")
                     }
                 }
 
@@ -239,7 +244,9 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
     }
 
     private fun updateCheckboxTextColor(checkbox: CheckBox, isChecked: Boolean = checkbox.isChecked) {
+
         val colorResId = if (isChecked) R.color.mainColor else R.color.subColor800
+
         checkbox.setTextColor(ContextCompat.getColor(fragment.requireContext(), colorResId))
     }
 

@@ -136,17 +136,18 @@
 
                     <EditText
                         android:id="@+id/etPCDTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="20dp"
+                        android:layout_marginEnd="60dp"
                         android:background="@color/white"
-                        android:maxLength="15"
-                        android:singleLine="true"
                         android:text="_"
                         android:textColor="@color/subColor800"
-                        android:textSize="20dp"
+                        android:textSize="18dp"
                         android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -235,7 +236,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/cardView12" />
@@ -244,7 +245,7 @@
                         android:id="@+id/materialDivider6"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         app:dividerColor="@color/subColor150"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -256,12 +257,12 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
                         android:text="총 5개"
                         android:textColor="@color/subColor800"
                         android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/linearLayout26"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/materialDivider6" />
+                        app:layout_constraintTop_toTopOf="@+id/linearLayout26" />
 
                     <com.google.android.material.divider.MaterialDivider
                         android:id="@+id/materialDivider9"
@@ -295,10 +296,11 @@
                         <TextView
                             android:id="@+id/tvPCDTime"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
+                            android:gravity="center"
                             android:text="25분"
                             android:textColor="@color/subColor800"
                             android:textSize="16dp" />
@@ -320,19 +322,20 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:text="초급자"
                         android:textColor="@color/subColor800"
                         android:textSize="16dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/linearLayout26"
                         app:layout_constraintStart_toEndOf="@+id/linearLayout26"
-                        app:layout_constraintTop_toBottomOf="@+id/materialDivider6" />
+                        app:layout_constraintTop_toTopOf="@+id/linearLayout26" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvPCD"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="80dp"
                         android:nestedScrollingEnabled="false"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -341,20 +344,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvPCDCount"
                         app:layout_constraintVertical_bias="0.0" />
 
-                    <TextView
-                        android:id="@+id/tvPCDHealing"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="현재 주차의 운동을 완료했습니다\n다음 주까지 휴식해주세요!"
-                        android:textColor="@color/subColor800"
-                        android:textSize="16dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHeight_percent="0.2"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/rvPCD"
-                        app:layout_constraintVertical_bias="0.0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
@@ -372,6 +361,7 @@
             android:id="@+id/btnPCDRight"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="16dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"

@@ -28,22 +28,23 @@ import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import com.tomlecollegue.progressbars.HorizontalProgressView
+import kotlinx.coroutines.selects.select
 import java.lang.IllegalArgumentException
 
 
 class ExerciseRVAdapter (
     private val fragment: Fragment,
     var exerciseList: MutableList<ExerciseVO>,
-    private val progress : MutableList<ProgressUnitVO>?,
-    private val selectSeq : Pair<Int, Int>,
+    private val progresses : MutableList<ProgressUnitVO>?,
+    private val sequence : Pair<Int, Int>?,
+    private val history : MutableList<String>?,
     var xmlname: String,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var dialogClosedListener: OnDialogClosedListener? = null
     val prefs =  PreferencesManager(fragment.requireContext())
 
-    // -----! main !-----
-    inner class mainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
         val tvEIName : TextView = view.findViewById(R.id.tvEIName)
         val tvEISymptom : TextView= view.findViewById(R.id.tvEISymptom)
@@ -56,7 +57,7 @@ class ExerciseRVAdapter (
         val tvEIFinish : TextView = view.findViewById(R.id.tvEIFinish)
     }
 
-    inner class recommendViewHolder(view:View) : RecyclerView.ViewHolder(view) {
+    inner class RecommendViewHolder(view:View) : RecyclerView.ViewHolder(view) {
         val tvRcPName : TextView = view.findViewById(R.id.tvRcPName)
         val tvRcPTime : TextView= view.findViewById(R.id.tvRcPTime)
         val tvRcPStage : TextView = view.findViewById(R.id.tvRcPStage)
@@ -64,7 +65,7 @@ class ExerciseRVAdapter (
         val vRPTN : View = view.findViewById(R.id.vRPTN)
     }
 
-    inner class historyViewHolder(view:View): RecyclerView.ViewHolder(view) {
+    inner class HistoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
         val tvEHIName : TextView = view.findViewById(R.id.tvEHIName)
         val ivEHIThumbnail : ImageView = view.findViewById(R.id.ivEHIThumbnail)
         val tvEHISeq : TextView = view.findViewById(R.id.tvEHISeq)
@@ -88,15 +89,15 @@ class ExerciseRVAdapter (
         return when (viewType) {
             0 -> {
                 val binding = RvExerciseItemBinding.inflate(inflater, parent, false)
-                mainViewHolder(binding.root)
+                MainViewHolder(binding.root)
             }
             1 -> {
                 val binding = RvRecommendPTnItemBinding.inflate(inflater, parent, false)
-                recommendViewHolder(binding.root)
+                RecommendViewHolder(binding.root)
             }
             2 -> {
                 val binding = RvExerciseHistoryItemBinding.inflate(inflater, parent, false)
-                historyViewHolder(binding.root)
+                HistoryViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("invalid view type binding")
         }
@@ -113,7 +114,7 @@ class ExerciseRVAdapter (
         val second = "${currentExerciseItem.videoDuration?.toInt()?.div(60)}분 ${currentExerciseItem.videoDuration?.toInt()?.rem(60)}초"
 
         when (holder) {
-            is mainViewHolder -> {
+            is MainViewHolder -> {
                 // -----! recyclerview에서 운동군 보여주기 !------
                 holder.tvEISymptom.text = currentExerciseItem.relatedSymptom.toString()
                 holder.tvEIName.text = currentExerciseItem.exerciseName
@@ -145,7 +146,7 @@ class ExerciseRVAdapter (
 
                 // ------# 시청 기록 #------\
 //                if (currentExerciseItem.exerciseId == currentHistoryItem.exerciseId) {
-//                    holder.hpvEIHistory.progress = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt()!!))!! * 100
+//                    holder.hpvEIHistory.progresses = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt()!!))!! * 100
 //                }
 
                 // ------# 하트 버튼 #------
@@ -161,70 +162,49 @@ class ExerciseRVAdapter (
                     updateLikeButtonState(currentExerciseItem.exerciseId.toString(), holder.ibtnEILike)
                 }
 
+                // TODO MD2에 맞게 수정해야함
+                if (!progresses.isNullOrEmpty() && sequence != null ) {
 
-                // ------ ! thumbnail 시작 !------
-                holder.vEI.setOnClickListener {
-                    val dialogFragment = PlayThumbnailDialogFragment().apply {
-                        arguments = Bundle().apply {
-                            putParcelable("ExerciseUnit", currentExerciseItem)
-                        }
-                        setDialogCloseListener(object : PlayThumbnailDialogFragment.DialogCloseListener {
-                            override fun onDialogClose() {
-                                dialogClosedListener?.onDialogClosed()
-                            }
-                        })
-                    }
-                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-                }
+                    /* Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
+                    * 회차를 기준으로 나눠진거임. progresses[position] == 16개의 운동이 담긴 1회차 선택한 회차를 가져옴.
+                    * selectSeq.first == currentSeq
+                    * selectSeq.second == selectedSeq
+                    *
+                    * 현재 progresses와 exercise가 크기가 같음.
+                    * repeatcount가 1 이상이고 timestamp -1 이면 한 번 본적있는 거.
+                    *
+                    * */
 
-                // ------# 시청 기록 및 완료 버튼 #------
-                // 현재 progress와 exercise가 크기가 같음.
+                    // TODO ------# 시청 기록 및 완료 버튼 #------
+                    Log.v("progresses[position]", "progresses[position]: ${progresses[position]}")
 
-                if (!progress.isNullOrEmpty()) {
-                    // 회차를 기준으로 나눠진거임. progress[position] == 16개의 운동이 담긴 1회차 선택한 회차를 가져옴.
-                    // selectSeq.first 는 current // selectSeq.second 는 선택 회차
-                    // 잘못
-                    Log.v("progress[position]", "progress[position]: ${progress[position]}")
-
-                    val currentItem = progress[position] // 16개의 운동이 담긴 1회차 내에 접근함.
+                    val currentItem = progresses[position] // 프로그램 갯수만큼의 progresses의 1개에 접근
                     // currentItem의 currentWeek와 currentSequence로 현재 운동의 회차를 계산
-                    val currentUnitsSeq = (currentItem.currentWeek - 1) * 3 + currentItem.currentSequence
-                    val selectedSeq = selectSeq.second
-                    val currentProgressSeq = selectSeq.first
 
+                    val currentSeq = sequence.first // 안변함
+                    val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
+                    val currentUnitsSeq = currentItem.currentSequence // 0,0 으로 나왔다고 쳤을 떄,
 
                     val condition = when {
-                        currentProgressSeq < selectedSeq -> 2
-                        currentUnitsSeq < selectedSeq -> {
-                            when {
-                                // 현재 진행된 회차가 해당 운동의 회차보다 크다면 완료된 것으로 0 처리
-                                currentProgressSeq > currentUnitsSeq -> 0
+                        selectedSeq < currentSeq -> 0
+                        selectedSeq > currentSeq -> 2
 
-                                // 현재 진행된 회차와 해당 운동의 회차가 같다면
-                                currentProgressSeq == currentUnitsSeq -> {
-                                    if (currentItem.lastProgress > 0) 0 // 진행한 경우 완료로 0
-                                    else {
-                                        // 이전 항목들이 모두 완료되었는지 확인
-                                        val allPreviousWatched = progress.take(position).all { it.lastProgress > 0 }
-                                        if (allPreviousWatched) 0 else 2 // 완료되지 않은 항목이 있으면 2
-                                    }
-                                }
-
-                                // 그 외에는 2로 설정
-                                else -> 2
+                        currentUnitsSeq > currentSeq -> { // (1,1) (1,1) (1,1) (1,1) (1,1)
+                            // 이미 지난 회차는 모두 완료 처리
+                            0
+                        }
+                        currentUnitsSeq == currentSeq -> { // 운동 아이템 하나가 required Seq가 2인데 전부 currentSeq도 2이면,
+                            if (currentItem.lastProgress > 0) {
+                                1
+                            } else {
+                                2
                             }
                         }
-
-                        // 현재 운동의 회차와 선택된 회차가 같다면
-                        currentUnitsSeq == selectedSeq -> if (currentItem.lastProgress > 0) 1 else 2
-
-                        // 현재 운동의 회차가 선택된 회차보다 크다면 완료로 0
-                        currentUnitsSeq > selectedSeq -> 0
-
-                        // 기본값은 2
+                        // 현재 아이템의 회차가 선택된 회차보다 큰 경우
                         else -> 2
                     }
 
+                    Log.v("시퀀스관리", "condition: $condition, currentUnitSeq: $currentUnitsSeq, currentSeq: $currentSeq, selectedSeq: $selectedSeq")
                     when (condition) {
                         0 -> { // 재생 및 완료
                             holder.tvEIFinish.visibility = View.VISIBLE
@@ -238,23 +218,45 @@ class ExerciseRVAdapter (
                             holder.tvEIFinish.visibility = View.GONE
                             holder.hpvEI.visibility = View.VISIBLE
                             holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toInt()!!
-                            Log.v("hpvProgress", "${holder.hpvEI.progress}")
+                            Log.v("hpvprogresses", "${holder.hpvEI.progress}")
                         }
                         else -> { // 재생기록 없는 item
                             holder.tvEIFinish.visibility = View.GONE
                             holder.hpvEI.visibility = View.GONE
                         }
                     }
+                } else {
+                    // ------ # PlayThumbnail #------
+                    holder.vEI.setOnClickListener {
+                        val dialogFragment = PlayThumbnailDialogFragment().apply {
+                            arguments = Bundle().apply {
+                                putParcelable("ExerciseUnit", currentExerciseItem)
+                            }
+                            setDialogCloseListener(object : PlayThumbnailDialogFragment.DialogCloseListener {
+                                override fun onDialogClose() {
+                                    dialogClosedListener?.onDialogClosed()
+                                }
+                            })
+                        }
+                        dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                    }
                 }
 
-                // repeatcount가 1 이상이고 timestamp -1 이면 한 번 본적있는 거.
-
-
-
-
+                // ------# MD2 #------
+                if (history != null) {
+                    // ------# 완료된 항목만 들어오니, 테이블에 contentId, user식별자, 만 있고, 그렇게 해도 될 것 같은데?
+//                    val currentHistory = history[position]
+                    holder.tvEIFinish.visibility = View.VISIBLE
+                    holder.ibtnEILike.visibility = View.INVISIBLE
+                    holder.ibtnEILike.isEnabled = false
+                    holder.vEI.visibility = View.VISIBLE
+                    holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondContainerColor)
+                    holder.hpvEI.visibility = View.GONE
+                    holder.vEI.isEnabled = false
+                }
             }
             // ------! play thumbnail 추천 운동 시작 !------
-            is recommendViewHolder -> {
+            is RecommendViewHolder -> {
                 holder.tvRcPName.text = currentExerciseItem.exerciseName
                 holder.tvRcPTime.text = second
                 holder.tvRcPStage.text = currentExerciseItem.exerciseStage
@@ -274,8 +276,8 @@ class ExerciseRVAdapter (
                 }
             }
 
-            is historyViewHolder -> {
-                val currentItem = progress?.get(position)
+            is HistoryViewHolder -> {
+                val currentItem = progresses?.get(position)
                 holder.tvEHIName.text = currentExerciseItem.exerciseName
                 holder.tvEHITime.text = second
                 when (currentExerciseItem.exerciseStage) {

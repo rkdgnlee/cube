@@ -198,7 +198,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             try {
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
                     exerciseData.relatedJoint!!.split(", ")[0])}.toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, mutableListOf(), Pair(0,0) ,"recommend")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, null, null, null,"recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager

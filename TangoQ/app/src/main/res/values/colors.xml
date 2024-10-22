@@ -10,6 +10,7 @@
 
     <color name="secondaryColor">#2C4FD0</color>
     <color name="secondDeepColor">#1B2450</color>
+    <color name="secondHalfColor">#9BC1F5</color>
     <color name="secondContainerColor">#EFF7FF</color>
     <color name="secondBgContainerColor">#F0F5FE</color>
     <color name="secondWhiteColor">#2C4FD0</color>

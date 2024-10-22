@@ -98,7 +98,7 @@ object NetworkProgress {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("Server>Progress", "$responseBody")
+//                Log.v("Server>Progress", "$responseBody")
                 try {
                     val ja = JSONObject(responseBody.toString()).optJSONArray("data")
                     val progresses = mutableListOf<ProgressUnitVO>()
@@ -155,7 +155,7 @@ object NetworkProgress {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("Server>Progress", "$responseBody")
+                Log.v("patch>Progress1Item", "$responseBody")
                 val jo = JSONObject(responseBody.toString()).optJSONObject("update_video_progress")
                 if (jo != null) {
                     val progressUnitVO = ProgressUnitVO(

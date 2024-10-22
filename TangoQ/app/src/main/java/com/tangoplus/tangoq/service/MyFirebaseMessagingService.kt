@@ -18,7 +18,7 @@ import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import java.time.LocalDateTime
 
-class MyFirebaseMessagingService() : FirebaseMessagingService() { // 푸시 알림 채널.
+class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림 채널.
 //    private val userSn: Int = Singleton_t_user.getInstance(applicationContext).jsonObject?.optString("user_sn")?.toInt()!! // 예시로 사용자 SN 값을 설정
     private lateinit var preferencesManager: PreferencesManager
 

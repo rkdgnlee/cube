@@ -119,6 +119,13 @@ class MainFragment : Fragment() {
                 measures = Singleton_t_measure.getInstance(requireContext()).measures
                 binding.llM.visibility = View.VISIBLE
                 binding.sflM.startShimmer()
+
+                // ------# 초기 measure 설정 #------
+                if (!measures.isNullOrEmpty()) {
+                    mViewModel.selectedMeasureDate.value = measures!!.get(0).regDate
+                    mViewModel.selectMeasureDate.value = measures!!.get(0).regDate
+                }
+                Log.v("선택된measureDate", "${mViewModel.selectedMeasureDate.value}")
                 updateUI()
 
                 binding.tvMMeasureDate.setOnClickListener {
@@ -256,17 +263,18 @@ class MainFragment : Fragment() {
                             // -------# 최근 진행 프로그램 가져오기 #------
                             if (programSn != 0) {
                                 val week = latestProgress.optInt("week_number")
-                                program  = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", programSn.toString())
+                                program  = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", requireContext(), programSn.toString())
 
                                 val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
                                 currentPage = findCurrentIndex(progresses)
-                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, progresses, Pair(0,0) ,"history")
+                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, progresses, Pair(currentPage, currentPage) , null,"history")
 
-                            } else { // 기록이 없을 때를 말하는거임. 그렇다고 recommend가 없는 건아니니 dummy가 불완전한 상태.
+                            } else {
                                 Log.v("뷰모델현재측정추천0번쨰", "${mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString()}, ${mViewModel.selectedMeasure?.recommendations}")
-                                program = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
-                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, null, Pair(0,0) ,"history")
+                                program = fetchProgram(getString(R.string.API_programs), requireContext(), mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
+                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, null, null, null,"history")
                             }
+
                             CoroutineScope(Dispatchers.Main).launch {
 
                                 // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------

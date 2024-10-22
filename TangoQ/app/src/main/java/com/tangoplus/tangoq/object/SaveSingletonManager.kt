@@ -42,7 +42,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         // 2. Measure 정보 필터링 및 저장
                         Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
                         // 3. 추천 프로그램 추가
-                        addRecommendations(userInfoSn)
+                        addRecommendations()
                         callbacks()
                     }
                 } else {
@@ -147,7 +147,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     *  3. progress -> 있는지 없는지 확인 여기서 안하고, 자동으로 반환 (없으면 생성 후 반환, 있으면 반환)
     * */
 
-    suspend fun addRecommendations(userInfoSn: Int) {
+    private suspend fun addRecommendations() {
         withContext(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("추천")
             dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
@@ -163,7 +163,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         measure.recommendations = groupedRecs[measureSn] ?: emptyList()
                     } else {
                         val recommendJson = JSONObject().apply {
-                            put("user_sn", userInfoSn)
                             put("exercise_type_id", JSONArray().apply { put(3); put(1); put(2) })
                             put("exercise_stage", JSONArray().apply { put(1); put(2); put(3) })
                             put("measure_sn", measureSn)
@@ -189,7 +188,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             // (자동) 있으면 가져오고 없으면 추가되서 가져오고
 
             if (progressUnits.isNotEmpty()) {
-                Log.v("프로그레스유닛들", "$progressUnits")
+                Log.v("프로그레스유닛들", "${progressUnits.size}")
                 val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
                 val requiredSequences = 1..progressUnits[0].requiredSequence // 3
                 val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
@@ -223,7 +222,11 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 }
                 // 결론적으로 4 * 21의 값만 들어와짐.
                 singletonProgress.programProgresses = organizedUnits
-                Log.v("singletonProgress", "${singletonProgress.programProgresses!![0].map { it.lastProgress }}, ${singletonProgress.programProgresses!![1].map { it.lastProgress }}, ${singletonProgress.programProgresses!![2].map { it.lastProgress }}, ${singletonProgress.programProgresses!![3].map { it.lastProgress }}, ")
+                Log.v("singletonProgress", "${singletonProgress.programProgresses!!.size}")
+                for (i in 0 until singletonProgress.programProgresses?.size!!) {
+                    Log.v("singletonProgress2", "${singletonProgress.programProgresses!!.get(i).size}")
+                }
+
                 continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
             } else {
                 // ------# 측정 기록이 없음 #------
