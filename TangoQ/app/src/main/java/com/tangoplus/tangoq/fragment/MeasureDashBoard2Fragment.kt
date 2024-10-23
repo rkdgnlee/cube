@@ -30,14 +30,11 @@ import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.adapter.MD2RVAdpater
 import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.HistorySummaryVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
-import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.`object`.NetworkProgress.getDailyProgress
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -55,7 +52,6 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
-import kotlin.random.Random
 
 
 class MeasureDashBoard2Fragment : Fragment() {
@@ -64,7 +60,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     var selectedDate = LocalDate.now()
 
     private var graphProgresses : MutableList<MutableList<ProgressUnitVO>>? = null
-    private lateinit var progresses: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
+//    private lateinit var progresses: MutableList<HistorySummaryVO> // 운동 기록 전체에서 어떤 프로그램의 운동이었는지를 보여줘야함.
     private val pvm : ProgressViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
     private val evm : ExerciseViewModel by activityViewModels()
@@ -128,7 +124,6 @@ class MeasureDashBoard2Fragment : Fragment() {
         val bcdata = BarData(dataSet)
         bcdata.apply {
             barWidth = 0.5f
-
         }
         barChart.data = bcdata
         // X축 설정

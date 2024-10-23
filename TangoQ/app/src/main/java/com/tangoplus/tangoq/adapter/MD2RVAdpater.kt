@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.HistorySummaryVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.databinding.RvDashboard2ItemBinding
 import java.time.LocalDateTime

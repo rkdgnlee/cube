@@ -90,9 +90,10 @@ class MainFragment : Fragment() {
         binding.nsvM.isNestedScrollingEnabled = false
         prefsManager = PreferencesManager(requireContext())
         prefsManager.setUserSn(Singleton_t_user.getInstance(requireContext()).jsonObject?.optInt("sn")!!)
-        Log.v("현재pref저장SN", "${prefsManager.getUserSn()}")
+
         latestRecSn = prefsManager.getLatestRecommendation()
-        Log.v("latestRecSn", "${latestRecSn}")
+        Log.v("latestRecSn", "$latestRecSn")
+
         AlarmController(requireContext()).setNotificationAlarm("TangoQ", "점심공복에는 운동효과가 더 좋답니다.", 14, 2)
 //        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "식곤증을 위해 스트레칭을 추천드려요.", 13, 36)
 
@@ -247,28 +248,27 @@ class MainFragment : Fragment() {
                         binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}부위가 부상 위험이 있습니다."
                     }
 
-
-
                     // ------# 측정 결과에 맞는 진행 프로그램 2번째 가져오기 #------
-
                     CoroutineScope(Dispatchers.IO).launch {
-                        val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
-                        val programSn = latestProgress.optInt("programSn")
-                        Log.v("프로그램sn", "$programSn") //8 이 나옴
-                        val adapter : ExerciseRVAdapter
-                        val program : ProgramVO?
-                        var currentPage = 0
-                        try {
 
+                        try {
+                            /* 1. 가장 최근에 한 운동 가져오기
+                            *  2. 그 값에서 가져와서 해당 주차의 uvp 가져오기 week가 (동일한 uvp)
+                            *  3. 그걸로만 rv 채우기.
+                            * */
+                            val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
+                            val programSn = latestProgress.optInt("exercise_program_sn")
+                            Log.v("프로그램sn", "$programSn") //8 이 나옴
+                            val adapter : ExerciseRVAdapter
+                            val program : ProgramVO?
+                            var currentPage = 0
                             // -------# 최근 진행 프로그램 가져오기 #------
                             if (programSn != 0) {
                                 val week = latestProgress.optInt("week_number")
-                                program  = fetchProgram("https://gym.tangostar.co.kr/tango_gym_admin/programs/read.php", requireContext(), programSn.toString())
-
+                                program  = fetchProgram(getString(R.string.API_programs), requireContext(), programSn.toString())
                                 val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
                                 currentPage = findCurrentIndex(progresses)
                                 adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, progresses, Pair(currentPage, currentPage) , null,"history")
-
                             } else {
                                 Log.v("뷰모델현재측정추천0번쨰", "${mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString()}, ${mViewModel.selectedMeasure?.recommendations}")
                                 program = fetchProgram(getString(R.string.API_programs), requireContext(), mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
@@ -276,13 +276,6 @@ class MainFragment : Fragment() {
                             }
 
                             CoroutineScope(Dispatchers.Main).launch {
-
-                                // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
-                                binding.tvMProgram.setOnClickListener {
-                                    val dialog = ProgramCustomDialogFragment.newInstance(program.programSn, prefsManager.getLatestRecommendation())
-                                    Log.v("프로그램direct", "$programSn, ${prefsManager.getLatestRecommendation()}")
-                                    dialog.show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
-                                }
 
                                 // -------# 최근 진행 프로그램 뷰페이저 #------
                                 binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -324,6 +317,14 @@ class MainFragment : Fragment() {
                                 binding.vpM.addItemDecoration(itemDecoration)
                                 binding.llM.visibility = View.GONE
                                 binding.sflM.stopShimmer()
+
+
+                                // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
+                                binding.tvMProgram.setOnClickListener {
+                                    val dialog = ProgramCustomDialogFragment.newInstance(program.programSn, prefsManager.getLatestRecommendation())
+                                    Log.v("프로그램direct", "$programSn, ${prefsManager.getLatestRecommendation()}")
+                                    dialog.show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                                }
                             }
                         } catch (e: Exception) {
                             Log.e("Error>Program", "${e.message}")

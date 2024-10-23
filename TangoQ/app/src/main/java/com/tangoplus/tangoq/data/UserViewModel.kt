@@ -26,11 +26,12 @@ class UserViewModel: ViewModel() {
         addSource(step32) { updateStep3() }
     }
 
+    var processingProgram : ProgramVO? = null
+
     init {
         User.value = JSONObject()
         setupProgress = 34
         setupStep = 0
-
     }
 
     private fun updateStep2() {

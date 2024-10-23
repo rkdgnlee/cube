@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -82,6 +84,9 @@ class IntroActivity : AppCompatActivity() {
         if (!isNetworkAvailable(this)) {
             Toast.makeText(this, "인터넷 연결 후 앱을 다시 실행해주세요", Toast.LENGTH_LONG).show()
         }
+
+        val code = intent.getIntExtra("SignInFinished", 0)
+        handleSignInResult(code)
 
         val currentUser = Firebase.auth.currentUser
         if (currentUser == null) {
@@ -335,17 +340,35 @@ class IntroActivity : AppCompatActivity() {
             }
         }
     }
-
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        // 새로운 인텐트가 들어왔을 때 딥링크 처리
-        val code = intent?.getIntExtra("SignInFinished", 0)
-        if (code == 201) {
-            val dialog = LoginDialogFragment()
-            dialog.show(supportFragmentManager, "LoginDialogFragment")
-        }
+        val code = intent?.getIntExtra("SignInFinished", 0) ?: 0
+        handleSignInResult(code)
     }
 
+    private fun handleSignInResult(code: Int) {
+        Log.v("SignInFinished", "$code")
+        runOnUiThread {
+            if (code == 201) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    Toast.makeText(this@IntroActivity, "회원가입을 축하합니다 ! 로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
+                }, 500)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val dialog = LoginDialogFragment()
+                    dialog.show(supportFragmentManager, "LoginDialogFragment")
+                }, 1500)
+            } else if (code != 0) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    Toast.makeText(this@IntroActivity, "이미 가입된 회원입니다. 아이디/비밀번호 찾기를 진행해주세요", Toast.LENGTH_SHORT).show()
+                }, 500)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val dialog = LoginDialogFragment()
+                    dialog.show(supportFragmentManager, "LoginDialogFragment")
+                }, 1500)
+            }
+
+        }
+    }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))

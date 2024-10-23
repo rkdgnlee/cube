@@ -112,28 +112,31 @@ object NetworkUser {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.e("insertUser, 응답실패", "Failed to execute request!")
-                }
+            try {
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        Log.e("insertUser, 응답실패", "Failed to execute request!")
+                        callback(500) // 실패 시 에러 코드 전달
+                    }
 
-                override fun onResponse(call: Call, response: Response) {
-                    val responseBody = response.body?.string()
-                    Log.v("응답성공", "$responseBody")
-                    val jo = responseBody?.let { JSONObject(it) }
-                    // 409 201
-                    callback(response.code)
+                    override fun onResponse(call: Call, response: Response) {
+                        val responseBody = response.body?.string()
+                        Log.v("응답성공", "code: ${response.code}, body: $responseBody")
 
-
-//                    // ------! 토큰 저장 !------
-//                    val jsonObj = JSONObject()
-//                    jsonObj.put("jwt", jo?.optString("jwt"))
-//                    jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
-//                    saveEncryptedJwtToken(context, jsonObj.toString())
-//
-//                    callback(jo)
-                }
-            })
+                        if (response.isSuccessful) {
+                            Log.v("회원가입로그", "${response.code}")
+                            val jo = responseBody?.let { JSONObject(it) }
+                            callback(response.code)
+                        } else {
+                            callback(response.code) // 에러 코드 전달
+                            Log.v("회원가입로그", "${response.code}")
+                        }
+                    }
+                })
+            } catch (e: Exception) {
+                Log.e("insertUser", "Error: ${e.message}")
+                callback(500)
+            }
         }
     }
 

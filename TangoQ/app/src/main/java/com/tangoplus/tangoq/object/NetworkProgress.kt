@@ -44,7 +44,7 @@ object NetworkProgress {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("Server>Progress", "${responseBody}")
+                Log.v("Post>Progress>inserOrSelect", "${responseBody}")
                 try {
                     val ja = JSONObject(responseBody.toString()).optJSONArray("data")
                     val progresses = mutableListOf<ProgressUnitVO>()
@@ -74,7 +74,7 @@ object NetworkProgress {
     }
 
     // ------# 현재 프로그램 프로그레스만 가져오기 #------
-    fun getAllProgresses(myUrl: String, context: Context, callback: (MutableList<ProgressUnitVO>) -> Unit) {
+    fun getRecProgresses(myUrl: String, context: Context, recSn: Int, callback: (MutableList<ProgressUnitVO>) -> Unit) {
 
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
@@ -87,7 +87,7 @@ object NetworkProgress {
             .addInterceptor(authInterceptor)
             .build()
         val request = Request.Builder()
-            .url(myUrl)
+            .url("$myUrl?recommendation_sn=$recSn")
             .get()
             .build()
 

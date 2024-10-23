@@ -26,6 +26,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -118,6 +119,7 @@ class SignInActivity : AppCompatActivity() {
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
                 Log.v("verifyComplete", "PhoneAuthCredential: $p0")
+
             }
             override fun onVerificationFailed(p0: FirebaseException) {
                 Log.e("failedAuth", "$p0")
@@ -307,12 +309,13 @@ class SignInActivity : AppCompatActivity() {
                     viewModel.User.value?.put("user_id", s.toString())
                 } else {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                    binding.tvIdCondition.text = "다시 입력해주세요"
+                    binding.tvIdCondition.text = "영문, 숫자를 포함해서 4자리 이상 입력해주세요"
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
         // ----- ! 비밀번호 조건 코드 ! -----
         binding.etPw.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
@@ -321,16 +324,15 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.pwCondition.value == true) {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwCondition.text = "사용 가능합니다"
-
                 } else {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-//                    binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ? .)를 모두 포함해서 8~20자리를 입력해주세요"
-                    binding.tvPwCondition.text = ""
+                    binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ? .)를 모두 포함해서\n8~20자리를 입력해주세요"
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
         // ----- ! 비밀번호 확인 코드 ! -----
         binding.etPwRepeat.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
@@ -345,7 +347,7 @@ class SignInActivity : AppCompatActivity() {
                     binding.btnSignIn.isEnabled = true
                 } else {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                    binding.tvPwRepeat.text = "다시 입력해주세요"
+                    binding.tvPwRepeat.text = "올바르지 않습니다"
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----
 
@@ -361,6 +363,7 @@ class SignInActivity : AppCompatActivity() {
             finish()
         }
     } // -----! 회원가입 입력 창 anime 끝 !-----
+
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
@@ -395,6 +398,9 @@ class SignInActivity : AppCompatActivity() {
                         snackbar.setAction("확인") { snackbar.dismiss() }
                         snackbar.setActionTextColor(Color.WHITE)
                         snackbar.show()
+
+                        binding.btnAuthSend.isEnabled = false
+                        binding.btnAuthConfirm.isEnabled = false
                     }
                 } else {
                     Toast.makeText(this@SignInActivity, "인증에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -450,24 +456,32 @@ class SignInActivity : AppCompatActivity() {
                     // ------! 광고성 넣기 끝 !------
                     Log.v("회원가입JSon", "$jsonObj")
                     if (jsonObj != null) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj, this@SignInActivity) { responseCode ->
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    val intent = Intent(this@SignInActivity, IntroActivity::class.java)
-                                    when (responseCode) {
-                                        409 -> {
-                                            Toast.makeText(this@SignInActivity, "이미 가입된 계정입니다. 아이디와 비밀번호 찾기를 실행해주세요", Toast.LENGTH_SHORT).show()
+                        lifecycleScope.launch {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj, this@SignInActivity) { responseCode ->
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        val intent = Intent(this@SignInActivity, IntroActivity::class.java)
+                                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                        when (responseCode) {
+                                            200 -> {
+                                                intent.putExtra("SignInFinished", 201)
+                                            }
+                                            500 -> {
+                                                intent.putExtra("SignInFinished", 500)
+                                            }
+                                            else -> {
+                                                intent.putExtra("SignInFinished", responseCode)
+                                            }
                                         }
-                                        else -> {
-                                            Toast.makeText(this@SignInActivity, "회원가입을 축하합니다 ! 로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
-                                            intent.putExtra("SignInFinished", 201)
-                                        }
+
+                                        finish()
+                                        startActivity(intent)
+
                                     }
-                                    startActivity(intent)
-                                    finish()
                                 }
                             }
                         }
+
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.data
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.time.LocalDate
@@ -36,8 +37,9 @@ class ProgressViewModel : ViewModel() {
     }
 
     fun calculateSequenceForWeek(weekIndex: Int): Int {
-        if (weekIndex == currentWeek) {
+        if (weekIndex <= currentWeek) {
             val weekProgress = currentProgresses[weekIndex]
+            Log.v("주차에서seq", "$weekIndex, ${weekProgress},${weekProgress.minOfOrNull { it.currentSequence } ?: 0}")
             return weekProgress.minOfOrNull { it.currentSequence } ?: 0
         }
         // 다른 주차로 이동한 경우

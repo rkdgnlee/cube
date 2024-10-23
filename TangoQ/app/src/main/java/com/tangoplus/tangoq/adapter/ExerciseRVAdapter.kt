@@ -175,7 +175,7 @@ class ExerciseRVAdapter (
                     *
                     * */
 
-                    // TODO ------# 시청 기록 및 완료 버튼 #------
+                    // ------# 시청 기록 및 완료 버튼 #------
                     Log.v("progresses[position]", "progresses[position]: ${progresses[position]}")
 
                     val currentItem = progresses[position] // 프로그램 갯수만큼의 progresses의 1개에 접근
@@ -183,28 +183,24 @@ class ExerciseRVAdapter (
 
                     val currentSeq = sequence.first // 안변함
                     val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
-                    val currentUnitsSeq = currentItem.currentSequence // 0,0 으로 나왔다고 쳤을 떄,
+//                    val currentUnitsSeq = currentItem.currentSequence // 0,0 으로 나왔다고 쳤을 떄,
+                    Log.v("어댑터내Seq", "currentSeq: $currentSeq, selectedSeq: $selectedSeq")
 
                     val condition = when {
-                        selectedSeq < currentSeq -> 0
-                        selectedSeq > currentSeq -> 2
-
-                        currentUnitsSeq > currentSeq -> { // (1,1) (1,1) (1,1) (1,1) (1,1)
-                            // 이미 지난 회차는 모두 완료 처리
-                            0
-                        }
-                        currentUnitsSeq == currentSeq -> { // 운동 아이템 하나가 required Seq가 2인데 전부 currentSeq도 2이면,
+                        selectedSeq == currentSeq -> {
                             if (currentItem.lastProgress > 0) {
                                 1
                             } else {
                                 2
                             }
                         }
-                        // 현재 아이템의 회차가 선택된 회차보다 큰 경우
-                        else -> 2
-                    }
+                        selectedSeq < currentSeq -> 0
+                        selectedSeq > currentSeq -> 2
+                        else -> {
+                            2
+                        }
 
-                    Log.v("시퀀스관리", "condition: $condition, currentUnitSeq: $currentUnitsSeq, currentSeq: $currentSeq, selectedSeq: $selectedSeq")
+                    }
                     when (condition) {
                         0 -> { // 재생 및 완료
                             holder.tvEIFinish.visibility = View.VISIBLE

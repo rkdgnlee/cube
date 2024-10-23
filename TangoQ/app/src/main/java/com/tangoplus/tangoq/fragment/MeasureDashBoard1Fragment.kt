@@ -189,7 +189,6 @@ class MeasureDashBoard1Fragment : Fragment() {
             lcEntries.add(Entry((i - startIndex).toFloat(), lcDataList[i].second.toFloat()))
         }
 
-
         val lcLineDataSet = LineDataSet(lcEntries, "")
         lcLineDataSet.apply {
             color = resources.getColor(R.color.thirdColor, null)
@@ -298,10 +297,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                     pts[1] = entry.y
                     lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
                     balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
-
-
                 }
-
             }
             override fun onNothingSelected() {}
         })
@@ -369,7 +365,7 @@ class MeasureDashBoard1Fragment : Fragment() {
     }
     fun calculatePercentage(value: Int): Float {
         // 70~100의 범위를 0~100%로 매핑
-        val minInput = 70
+        val minInput = 50
         val maxInput = 100
         val percentage = (value - minInput).toDouble() / (maxInput - minInput)
 

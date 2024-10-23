@@ -35,7 +35,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             // 1. saveAllMeasureInfo 부분 실행
 
             // 측정기록이 있는 user이다? 그러면 true문 없으면 바로 mainactivity로 감.
-            saveMeasureInfo(userUUID, userSn) { existed2 ->
+            saveMeasureInfo(userUUID, userInfoSn) { existed2 ->
                 if (existed2) {
                     CoroutineScope(Dispatchers.IO).launch {
                         fetchAndFilterMeasureInfo(userSn)
@@ -101,15 +101,19 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         val jsonFile: File?
                         val mediaFile: File?
 
-                        if (i == 0) {
-                            jsonFile = getFile(context, statics[0].measure_server_json_name.replace(baseUrl, ""))
-                            mediaFile = getFile(context, statics[0].measure_server_file_name.replace(baseUrl, ""))
-                        } else if (i == 1) {
-                            jsonFile = getFile(context, dynamic[0].measure_server_json_name?.replace(baseUrl, "")!!)
-                            mediaFile = getFile(context, dynamic[0].measure_server_file_name?.replace(baseUrl, "")!!)
-                        } else {
-                            jsonFile = getFile(context, statics[i - 1].measure_server_json_name.replace(baseUrl, ""))
-                            mediaFile = getFile(context, statics[i - 1].measure_server_file_name.replace(baseUrl, ""))
+                        when (i) {
+                            0 -> {
+                                jsonFile = getFile(context, statics[0].measure_server_json_name.replace(baseUrl, ""))
+                                mediaFile = getFile(context, statics[0].measure_server_file_name.replace(baseUrl, ""))
+                            }
+                            1 -> {
+                                jsonFile = getFile(context, dynamic[0].measure_server_json_name?.replace(baseUrl, "")!!)
+                                mediaFile = getFile(context, dynamic[0].measure_server_file_name?.replace(baseUrl, "")!!)
+                            }
+                            else -> {
+                                jsonFile = getFile(context, statics[i - 1].measure_server_json_name.replace(baseUrl, ""))
+                                mediaFile = getFile(context, statics[i - 1].measure_server_file_name.replace(baseUrl, ""))
+                            }
                         }
 
                         if (jsonFile != null && mediaFile != null) {
@@ -190,41 +194,17 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             if (progressUnits.isNotEmpty()) {
                 Log.v("프로그레스유닛들", "${progressUnits.size}")
                 val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
-                val requiredSequences = 1..progressUnits[0].requiredSequence // 3
+
                 val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
-                // 여기다가 4 * 3 * 21 에 맞게 넣으려면 mutableList가 하나 더 있어야 함 하지만?
-                // 넣지 않고,
                 for (week in weeks) { // 1, 2, 3, 4
-
                     val weekUnits = progressUnits.filter { it.currentWeek == week }.sortedBy { it.uvpSn }// 일단 주차별로 나눔. 1주차 2주차 3주차 4주차
-                    // week가 4개 그럼 84개가 들어옴
-//                    val groupedByUvpSn = weekUnits.groupBy { it.uvpSn } // 21개임
-//                    val maxCurrentSequence = weekUnits.maxOfOrNull { it.currentSequence } ?: 0 // 주차에서 가장 높은 seq를 저장.
-
                     organizedUnits.add(weekUnits.toMutableList())
-//                    for (seq in requiredSequences) { // 1, 2, 3
-//                        val orgUnit = mutableListOf<ProgressUnitVO>() // 시퀀스별로 새로운 리스트 생성
-//                        for ((_, units) in groupedByUvpSn) {
-//                            val unit = units.firstOrNull() ?: continue
-//                            val currentProgress = when {
-//
-//                                seq - 1 < maxCurrentSequence -> unit.lastProgress
-//                                else -> 0  // 미래 시퀀스
-//                            }
-//
-//                            orgUnit.add(unit.copy(
-//                                currentSequence = (seq - 1),
-//                                lastProgress = currentProgress
-//                            ))
-//                        }
-//                        organizedUnits.add(orgUnit) // 각 시퀀스마다 리스트 추가
-//                    }
                 }
                 // 결론적으로 4 * 21의 값만 들어와짐.
                 singletonProgress.programProgresses = organizedUnits
                 Log.v("singletonProgress", "${singletonProgress.programProgresses!!.size}")
                 for (i in 0 until singletonProgress.programProgresses?.size!!) {
-                    Log.v("singletonProgress2", "${singletonProgress.programProgresses!!.get(i).size}")
+                    Log.v("singletonProgress2", "${singletonProgress.programProgresses!![i].size}")
                 }
 
                 continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
