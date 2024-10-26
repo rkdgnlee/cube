@@ -50,8 +50,8 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val eViewModel : ExerciseViewModel by viewModels()
-//    private val uViewModel : UserViewModel by viewModels()
-//    private val hViewModel : ProgressViewModel by viewModels()
+    private val uViewModel : UserViewModel by viewModels()
+    private val hViewModel : ProgressViewModel by viewModels()
     private val mViewModel : MeasureViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity() {
 
         handleIntent(intent)
 
-
         // -------! 버튼 시작 !------
         binding.bnbMain.setOnItemSelectedListener {
             if (selectedTabId != it.itemId) {
@@ -138,10 +137,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -192,7 +188,6 @@ class MainActivity : AppCompatActivity() {
     private var backPressedOnce = false
     private val backPressHandler = Handler(Looper.getMainLooper())
     private val backPressRunnable = Runnable { backPressedOnce = false }
-
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             val fragmentManager = supportFragmentManager
@@ -251,9 +246,9 @@ class MainActivity : AppCompatActivity() {
             navigateToFragment(deepLinkPath, exerciseId)
         } else {
             // 딥링크가 아닌 경우 기본 Fragment로 이동
-
         }
     }
+
     private fun navigateToFragment(path: String, exerciseId : String?) {
         Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: ${exerciseId}")
         when (path) {
@@ -295,7 +290,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
-
     private fun isCurrentFragmentEmpty(): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
         return currentFragment == null || currentFragment.view == null || !currentFragment.isVisible

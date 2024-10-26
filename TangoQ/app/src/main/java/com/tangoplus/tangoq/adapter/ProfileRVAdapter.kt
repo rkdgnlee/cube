@@ -42,7 +42,12 @@ import org.json.JSONObject
 
 import java.lang.IllegalArgumentException
 
-class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickListener: BooleanClickListener, val first: Boolean, val case: String, val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
+class ProfileRVAdapter(private val fragment: Fragment,
+                       private val booleanClickListener: BooleanClickListener,
+                       val first: Boolean,
+                       val case: String,
+                       val vm: ViewModel
+) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
     var profilemenulist = mutableListOf<String>()
 
     private val VIEW_TYPE_NORMAL = 0
@@ -194,7 +199,6 @@ class ProfileRVAdapter(private val fragment: Fragment, private val booleanClickL
                             }
                             "성별" -> {
                                 holder.tvPfInfo.text = if (userJson.optString("gender")== "0") "여자" else "남자"
-
                                 holder.ivPf.setImageResource(R.drawable.icon_gender)
                             }
                             "몸무게" -> {

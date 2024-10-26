@@ -184,18 +184,18 @@
                         app:layout_constraintStart_toEndOf="@+id/cardView12"
                         app:layout_constraintTop_toTopOf="@+id/cardView12" />
 
-                    <com.tomlecollegue.progressbars.HorizontalProgressView
+                    <com.skydoves.progressview.ProgressView
                         android:id="@+id/hpvPCD"
                         android:layout_width="0dp"
                         android:layout_height="6dp"
                         android:layout_marginStart="10dp"
-                        android:layout_marginEnd="40dp"
-                        app:colorBackground="@color/secondContainerColor"
-                        app:colorProgress="@color/secondaryColor"
+                        android:layout_marginEnd="10dp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tvPCDWeek"
                         app:layout_constraintStart_toEndOf="@+id/tvPCDSet"
-                        app:layout_constraintTop_toTopOf="@+id/tvPCDSet" />
+                        app:layout_constraintTop_toTopOf="@+id/tvPCDSet"
+                        app:progressView_colorBackground="@color/secondContainerColor"
+                        app:progressView_colorProgress="@color/thirdColor" />
                     <TextView
                         android:id="@+id/tvPCDWeek"
                         android:layout_width="wrap_content"

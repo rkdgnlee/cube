@@ -210,8 +210,9 @@ object NetworkProgress {
                         jo.put("week_number", progressJo.optInt("week_number"))
                         jo.put("measure_sn", progressJo.optInt("measure_sn"))
                         jo.put("exercise_program_sn", programJo.optInt("exercise_program_sn"))
+                        return@use jo
                     } else {
-                        JSONObject()
+                        return@use jo
                     }
                 } catch (e: Exception) {
                     Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")

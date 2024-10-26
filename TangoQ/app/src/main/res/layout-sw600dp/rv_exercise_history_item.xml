@@ -114,16 +114,16 @@
             app:layout_constraintTop_toTopOf="@+id/tvEHIStage"
             app:srcCompat="@drawable/icon_stage_1" />
 
-        <com.tomlecollegue.progressbars.HorizontalProgressView
+
+        <com.skydoves.progressview.ProgressView
             android:id="@+id/hpvEHI"
             android:layout_width="0dp"
             android:layout_height="6dp"
-            android:layout_marginStart="5dp"
-            app:colorBackground="@color/subColor150"
-            app:colorProgress="@color/thirdColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvEHISeq"
-            app:layout_constraintStart_toEndOf="@+id/cardView2"
-            app:layout_constraintTop_toBottomOf="@+id/tvEHITime" />
+            app:layout_constraintStart_toStartOf="@+id/imageView10"
+            app:layout_constraintTop_toBottomOf="@+id/tvEHITime"
+            app:progressView_colorBackground="@color/subColor150"
+            app:progressView_colorProgress="@color/thirdColor" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

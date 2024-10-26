@@ -1,11 +1,14 @@
 package com.tangoplus.tangoq.db
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.provider.Settings
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.security.crypto.MasterKeys
@@ -113,6 +116,42 @@ object SecurePreferencesManager {
     fun loadEncryptedData(context: Context, key: String): String? {
         val sharedPreferences = context.getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         return sharedPreferences.getString(key, null)
+    }
+
+
+    // ------# SSAID 저장 #------
+    private const val SERVER_UUID_KEY = "encrypted_server_uuid"
+
+    fun saveServerUUID(context: Context, uuid: String) {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        val encryptedPrefs = EncryptedSharedPreferences.create(
+            context,
+            PREFERENCE_FILE,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+        Log.v("uuid", "uuid is Successed")
+        encryptedPrefs.edit().putString(SERVER_UUID_KEY, uuid).apply()
+    }
+
+    fun getServerUUID(context: Context): String? {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        val encryptedPrefs = EncryptedSharedPreferences.create(
+            context,
+            PREFERENCE_FILE,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        return encryptedPrefs.getString(SERVER_UUID_KEY, null)
     }
 
 }

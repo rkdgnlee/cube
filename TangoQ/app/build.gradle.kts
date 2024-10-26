@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id ("kotlin-kapt")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -62,7 +63,6 @@ dependencies {
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("com.airbnb.android:lottie:6.4.0")
     implementation("io.github.litao0621:nifty-slider:1.4.6")
-    implementation("com.github.TomLeCollegue:ProgressBar-Library-Android-Kotlin:0.1.1")
     implementation("com.mikhaellopez:circularprogressbar:3.1.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
@@ -89,6 +89,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics:22.1.2")
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("androidx.security:security-crypto:1.0.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")

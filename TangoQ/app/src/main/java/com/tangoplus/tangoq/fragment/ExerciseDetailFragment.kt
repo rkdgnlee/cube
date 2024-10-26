@@ -184,13 +184,23 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         Log.v("category,search", "1categoryId: ${categoryId}, searchId: ${categoryMap[category]}")
         try {
             currentCateExercises = filteredDataList.filter { it.exerciseTypeId == categoryMap.get(category).toString() }.sortedBy { it.exerciseId }.toMutableList()
-            updateRecyclerView(currentCateExercises)
+            val filterIndex = binding.spnrED.selectedItemPosition
+            when (filterIndex) {
+                0 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.exerciseId }.toMutableList())
+                1 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.relatedSymptom }.toMutableList())
+                2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.videoDuration }.toMutableList())
+            }
         } catch (e: Exception) {
             Log.e("Exercise>filter", "$e")
         }
     }
 
     override fun onDialogClosed() {
-        updateRecyclerView(currentCateExercises)
+        val filterIndex = binding.spnrED.selectedItemPosition
+        when (filterIndex) {
+            0 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.exerciseId }.toMutableList())
+            1 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.relatedSymptom }.toMutableList())
+            2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.videoDuration }.toMutableList())
+        }
     }
 }

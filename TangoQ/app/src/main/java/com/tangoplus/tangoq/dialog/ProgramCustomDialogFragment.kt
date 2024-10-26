@@ -133,7 +133,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     binding.rvPCDHorizontal.isEnabled = true
                 }
                 pvm.currentSequence = newSequence
-                Log.v("주차별Seq재설정", "selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
+                Log.v("주차별Seq재설정", "selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
                 setAdapter(pvm.currentProgram!!, pvm.currentProgresses[selectedWeek], Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
                 binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/${pvm.currentProgram?.programWeek!!} 주차"
                 setButtonFlavor()
@@ -218,7 +218,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 //                        put("user_sn", userJson.optString("sn"))
                         put("recommendation_sn", recommendationSn)
                         put("exercise_program_sn", programSn)
-                        put("measure_sn", mvm.selectedMeasure?.measureSn)
+                        put("server_sn", mvm.selectedMeasure?.sn)
                     }
                     Log.v("json>Progress", "$jo")
                     // ------# 프로그레스 가져오기 ( IO ) #------
@@ -226,7 +226,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                     ssm.getOrInsertProgress(jo)
                     pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses!! // 이곳에 프로그램하나에 해당되는 모든 upv들이 가져와짐.
-                    Log.v("현재진행기록", "pvm.currentProgresses.size: ${pvm.currentProgresses.size}")
                     // ------# 현재 시퀀스 찾기 #------
                     withContext(Dispatchers.Main) {
                         calculateInitialWeekAndSequence()
@@ -250,8 +249,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         val currentExercises = startIndex + 1
                         val completedExercises = previousWeeksExercises + previousSequencesExercises + currentExercises
                         val hpvProgress = (completedExercises * 100) / totalExercises
+
                         Log.v("프로그레스들", "hpvProgress: $hpvProgress, currentSequence: ${pvm.currentSequence + 1}, currentWeek: ${pvm.currentWeek + 1}, startIndex: ${startIndex + 1}")
-                        binding.hpvPCD.progress = hpvProgress
+                        binding.hpvPCD.progress = hpvProgress.toFloat()
 
                         // ------# 현재 기록으로 어댑터 연걸 #------
                         /* 어댑터에는 현재 회차를 자체적으로 가져와서 넣기.
@@ -276,6 +276,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             else -> ""
                         }
                         binding.tvPCDCount.text = "총 ${currentProgram.programCount} 개"
+                        setButtonFlavor()
                     } else {
                         Log.e("Error", "Some required data is null or empty")
                         // 에러 처리 로직 추가
@@ -317,7 +318,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         /* sequence = Pair(현재 회차(currentSeq), 선택한 회차 (selectedSeq))
         currentSequence 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
         pvm.selectedSequence.value = sequence.second
-        Log.v("클릭>ProgressSeq", "$progresses")
+        Log.v("클릭>ProgressSeq", "${progresses?.map { it.uvpSn }} ,currentSeq: ${progresses?.map { it.currentSequence }}")
         val adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
             Triple(program.programFrequency, pvm.currentSequence, pvm.selectedSequence.value!!),
             Pair(pvm.currentWeek, pvm.selectedWeek.value!!),
@@ -338,7 +339,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     override fun customCategoryClick(sequence: Int) {
         if (pvm.selectedWeek.value!! == pvm.currentWeek) {
             pvm.selectedSequence.value = sequence
-            Log.v("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence}")
+//            Log.v("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence}")
             setAdapter(pvm.currentProgram!!, pvm.currentProgresses[pvm.selectedWeek.value!!], Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
             setButtonFlavor()
         }

@@ -137,22 +137,22 @@
             app:sv_animationDuration="250"
             app:sv_animationType="Circle"
             app:sv_background="#00FFFFFF"
-            app:sv_doneCircleColor="@color/mainColor"
+            app:sv_doneCircleColor="@color/thirdColor"
             app:sv_doneStepLineColor="@color/subColor100"
             app:sv_doneStepMarkColor="@color/subColor100"
-            app:sv_doneTextColor="@color/mainColor"
+            app:sv_doneTextColor="@color/secondaryColor"
             app:sv_nextStepCircleColor="@color/subColor100"
             app:sv_nextStepCircleEnabled="true"
-            app:sv_nextStepLineColor="@color/subColor100"
+            app:sv_nextStepLineColor="@color/white"
             app:sv_nextTextColor="@color/subColor100"
-            app:sv_selectedCircleColor="@color/mainColor"
+            app:sv_selectedCircleColor="@color/thirdColor"
             app:sv_selectedStepNumberColor="@color/subColor100"
-            app:sv_selectedTextColor="@color/mainColor"
+            app:sv_selectedTextColor="@color/thirdColor"
             app:sv_stepsNumber="7"
             app:sv_textPadding="4dp"
             app:sv_textSize="14sp" />
 
-        <com.tomlecollegue.progressbars.HorizontalProgressView
+        <com.skydoves.progressview.ProgressView
             android:id="@+id/pvMeasureSkeleton"
             android:layout_width="0dp"
             android:layout_height="4dp"
@@ -162,11 +162,11 @@
             android:orientation="horizontal"
             android:requiresFadingEdge="horizontal"
             android:stateListAnimator="@null"
-            app:colorBackground="@color/subColor100"
-            app:colorProgress="@color/mainColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/svMeasureSkeleton" />
+            app:layout_constraintTop_toBottomOf="@+id/svMeasureSkeleton"
+            app:progressView_colorBackground="@color/secondContainerColor"
+            app:progressView_colorProgress="@color/thirdColor" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout

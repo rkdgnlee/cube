@@ -1,27 +1,13 @@
 package com.tangoplus.tangoq.data
 
-import android.content.Context
-import android.util.Log
-import androidx.core.content.FileProvider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.gun0912.tedpermission.provider.TedPermissionProvider.context
-import com.tangoplus.tangoq.db.FileStorageUtil.getCacheFile
-import com.tangoplus.tangoq.db.FileStorageUtil.getFile
-import com.tangoplus.tangoq.db.FileStorageUtil.readJsonArrayFile
-import com.tangoplus.tangoq.db.FileStorageUtil.readJsonFile
 import com.tangoplus.tangoq.db.MeasureDynamic
-import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class MeasureViewModel : ViewModel() {
     val parts = MutableLiveData(mutableListOf<MeasureVO>())
@@ -74,6 +60,7 @@ class MeasureViewModel : ViewModel() {
         }
     }
 
+    // ------# JSONObject로 변경 전 앞에 접두사 안생기게끔 하기 #------
     private val excludedKeys = setOf(
         "sn", "device_sn", "local_sn", "measure_sn", "user_uuid", "user_sn", "user_name",
         "measure_seq", "measure_type", "reg_date", "measure_start_time", "measure_end_time",
@@ -93,61 +80,25 @@ class MeasureViewModel : ViewModel() {
         "ols_front_right_vertical_angle_hip_knee_toe_opposite", "ols_front_right_vertical_distance_toe_opposite_toe",
     )
 
+    // json 파일 만들 때 사용해야 하는 거임. jsonObject에서
     fun convertToMeasureDynamic(jsonObject: JSONObject): MeasureDynamic {
         val gson = Gson()
 
-        // 1. JSON 객체의 모든 키-값 쌍을 순회하며 필요한 경우에만 "ohs_" 접두사 추가
-        val modifiedJsonObject = JSONObject()
-        for (key in jsonObject.keys()) {
-            val newKey = if (!excludedKeys.contains(key) && !key.startsWith("ohs_")) "ohs_$key" else key
-            modifiedJsonObject.put(newKey, jsonObject.get(key))
+        val modifiedJsonObject = JSONObject().apply {
+            // 기존 로직: ohs_ 접두사 처리
+            for (key in jsonObject.keys()) {
+                val newKey = if (!excludedKeys.contains(key) && !key.startsWith("ohs_")) "ohs_$key" else key
+                put(newKey, jsonObject.get(key))
+            }
+            // 기본값들이 없는 경우를 위한 추가
+            if (!has("uploaded")) put("uploaded", "0")
+            if (!has("upload_date")) put("upload_date", "")
+            if (!has("result_index")) put("result_index", 0)
+            if (!has("uploaded_json")) put("uploaded_json", "0")
+            if (!has("uploaded_file")) put("uploaded_file", "0")
+            if (!has("uploaded_json_fail")) put("uploaded_json_fail", "0")
+            if (!has("used")) put("used", "0")
         }
-
-        // 2. 수정된 JSON 객체를 MeasureDynamic 객체로 변환
         return gson.fromJson(modifiedJsonObject.toString(), MeasureDynamic::class.java)
-    }
-
-    fun convertJsonToMeasureVO(info: MeasureInfo, statics: MutableList<MeasureStatic>, dynamic: MeasureDynamic) : MeasureVO {
-        val ja = JSONArray()
-        val uris = mutableListOf<String>()
-        val baseUrl = "https://gym.tangostar.co.kr/data/Results/"
-
-        for (i in 0 until 6) { // 총 7개인거임
-            if (i == 1) {
-                val jsonFile = getCacheFile(context, dynamic.measure_server_json_name?.replace(baseUrl, "")!!)
-                val mediaFile = getCacheFile(context, dynamic.measure_server_file_name?.replace(baseUrl, "")!!)
-                Log.e("측정후dynamic", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                if (jsonFile != null && mediaFile != null) {
-                    ja.put(readJsonArrayFile(jsonFile))
-                    uris.add(mediaFile.absolutePath)
-                } else {
-                    Log.e("측정후dynamicError", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-                }
-            }
-
-            // ------# static 6개 #-------
-            val jsonFile = getCacheFile(context, statics[i].measure_server_json_name.replace(baseUrl, ""))
-            val mediaFile = getCacheFile(context, statics[i].measure_server_file_name.replace(baseUrl, ""))
-            if (jsonFile != null && mediaFile != null) {
-                ja.put(readJsonFile(jsonFile))
-                uris.add(mediaFile.absolutePath)
-                Log.e("측정후Static$i", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-            } else {
-                Log.e("측정후Static$i Error", "jsonFile: $jsonFile, mediaFile: $mediaFile")
-            }
-        }
-
-//        Log.v("VMUris", "${uris}")
-        return MeasureVO(
-            deviceSn = 0,
-            measureSn = info.measure_sn, // 아이디도 더미
-            regDate = info.measure_date,
-            overall = info.t_score, // 종합 점수 더미
-            dangerParts = mutableListOf(Pair("골반", 1f), Pair("어깨", 3f)), // 아픈 부위 더미
-            measureResult = ja,
-            fileUris = uris,
-            isMobile = true,
-            recommendations = null
-        )
     }
 }

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -56,6 +57,7 @@ class TrendCurveView @JvmOverloads constructor(
         }
     }
 
+    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 

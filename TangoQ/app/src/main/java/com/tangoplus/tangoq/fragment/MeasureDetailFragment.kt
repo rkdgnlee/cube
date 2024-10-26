@@ -84,7 +84,6 @@ class MeasureDetailFragment : Fragment() {
         updateUI()
 
         // ------# 10각형 레이더 차트 #------
-        // TODO 레이더 차트에도 값이 들어가야 함.
 
         val bodyParts = listOf("목관절", "우측 어깨", "좌측 어깨", "우측 팔꿉", "좌측 팔꿉","우측 손목","좌측 손목", "우측 골반","좌측 골반", "우측 무릎","좌측 무릎","우측 발목", "좌측 발목")
         val indices = listOf(0, 1, 3, 5, 7, 9, 11, 12, 10, 8, 6, 4, 2)
@@ -113,7 +112,6 @@ class MeasureDetailFragment : Fragment() {
         val entries = mutableListOf<RadarEntry>()
         for (i in 0 until bodyParts.size) {
             entries.add(RadarEntry(raderScores[i]))
-
         }
         Log.v("재조정x축", "$raderXParts")
         val dataSet = RadarDataSet(entries, "신체 부위").apply {

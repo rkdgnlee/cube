@@ -33,8 +33,8 @@ import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
-import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility
-import com.tangoplus.tangoq.mediapipe.ImageProcessingUtility.cropToPortraitRatio
+import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
+import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import kotlinx.coroutines.Dispatchers
@@ -582,7 +582,7 @@ class MeasureAnalysisFragment : Fragment() {
                                     val offsetX = (imageViewWidth - sWidth * scaleFactorX) / 2f
                                     val offsetY = (imageViewHeight - sHeight * scaleFactorY) / 2f
                                     val poseLandmarkResult = fromCoordinates(coordinates!!)
-                                    val combinedBitmap = ImageProcessingUtility.combineImageAndOverlay(
+                                    val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
                                         bitmap,
                                         poseLandmarkResult,
                                         scaleFactorX,

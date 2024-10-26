@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.ExerciseVO
@@ -27,8 +28,6 @@ import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
-import com.tomlecollegue.progressbars.HorizontalProgressView
-import kotlinx.coroutines.selects.select
 import java.lang.IllegalArgumentException
 
 
@@ -53,7 +52,7 @@ class ExerciseRVAdapter (
         val tvEIStage : TextView = view.findViewById(R.id.tvEIStage)
         val ibtnEILike : ImageButton= view.findViewById(R.id.ibtnEILike)
         val vEI : View = view.findViewById(R.id.vEI)
-        val hpvEI : HorizontalProgressView = view.findViewById(R.id.hpvEI)
+        val hpvEI : ProgressView = view.findViewById(R.id.hpvEI)
         val tvEIFinish : TextView = view.findViewById(R.id.tvEIFinish)
     }
 
@@ -72,7 +71,7 @@ class ExerciseRVAdapter (
         val tvEHITime : TextView = view.findViewById(R.id.tvEHITime)
         val tvEHIStage : TextView = view.findViewById(R.id.tvEHIStage)
         val ivEHIStage : ImageView = view.findViewById(R.id.ivEHIStage)
-        val hpvEHI : HorizontalProgressView  = view.findViewById(R.id.hpvEHI)
+        val hpvEHI : ProgressView  = view.findViewById(R.id.hpvEHI)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -176,20 +175,20 @@ class ExerciseRVAdapter (
                     * */
 
                     // ------# 시청 기록 및 완료 버튼 #------
-                    Log.v("progresses[position]", "progresses[position]: ${progresses[position]}")
-
                     val currentItem = progresses[position] // 프로그램 갯수만큼의 progresses의 1개에 접근
                     // currentItem의 currentWeek와 currentSequence로 현재 운동의 회차를 계산
 
                     val currentSeq = sequence.first // 안변함
                     val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
-//                    val currentUnitsSeq = currentItem.currentSequence // 0,0 으로 나왔다고 쳤을 떄,
-                    Log.v("어댑터내Seq", "currentSeq: $currentSeq, selectedSeq: $selectedSeq")
+                    val currentUnitsSeq = currentItem.currentSequence // 0,0 으로 나왔다고 쳤을 떄,
+//                    Log.v("어댑터내Seq", "currentSeq: $currentSeq, selectedSeq: $selectedSeq, currentUnitsSeq: $currentUnitsSeq")
 
                     val condition = when {
                         selectedSeq == currentSeq -> {
                             if (currentItem.lastProgress > 0) {
                                 1
+                            } else if (currentUnitsSeq > currentSeq) {
+                                0
                             } else {
                                 2
                             }
@@ -213,7 +212,7 @@ class ExerciseRVAdapter (
                         1 -> { // 재생 시간 중간
                             holder.tvEIFinish.visibility = View.GONE
                             holder.hpvEI.visibility = View.VISIBLE
-                            holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toInt()!!
+                            holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toFloat()!!
                             Log.v("hpvprogresses", "${holder.hpvEI.progress}")
                         }
                         else -> { // 재생기록 없는 item
@@ -296,7 +295,7 @@ class ExerciseRVAdapter (
                     .override(180)
                     .into(holder.ivEHIThumbnail)
                 if (currentItem != null) {
-                    holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toInt()!!
+                    holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toFloat()!!
                 }
                 holder.tvEHISeq.text = "${position+1}/${exerciseList.size}"
             }

@@ -2,6 +2,8 @@ package com.tangoplus.tangoq.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Entity(tableName = "t_measure_dynamic")
 data class MeasureDynamic(
@@ -13,14 +15,15 @@ data class MeasureDynamic(
 
 
     val user_uuid: String = "",
+    val mobile_device_uuid : String? = "",
     val user_sn: Int = 0,
     val user_name: String = "",
     val measure_seq: Int = 2,
     val measure_type: Int = 7,
-    val reg_date: String = "",
-    val measure_start_time: String = "",
-    val measure_end_time: String = "",
-    val measure_photo_file_name: String,
+    val reg_date: String? = getCurrentDateTime(),
+    val measure_start_time: String? = "",
+    val measure_end_time: String? = "",
+    val measure_photo_file_name: String? = null,
     val measure_server_json_name: String? = null,
     val measure_server_file_name: String? = null,
     val measure_overlay_width: Int = 0,
@@ -104,34 +107,39 @@ data class MeasureDynamic(
     val ohs_back_vertical_angle_knee_ankle_heel_left: Float = 0F,
     val ohs_back_vertical_angle_knee_ankle_heel_right: Float = 0F,
 
-    val ols_front_left_horizontal_angle_shoulder: Float = 0F,
-    val ols_front_left_horizontal_distance_shoulder: Float = 0F,
-    val ols_front_left_horizontal_angle_hip: Float = 0F,
-    val ols_front_left_horizontal_distance_hip: Float = 0F,
-    val ols_front_left_vertical_angle_hip_knee: Float = 0F,
-    val ols_front_left_vertical_angle_knee_toe: Float = 0F,
-    val ols_front_left_vertical_angle_hip_knee_toe: Float = 0F,
-    val ols_front_left_vertical_angle_hip_knee_opposite: Float = 0F,
-    val ols_front_left_vertical_angle_knee_toe_opposite: Float = 0F,
-    val ols_front_left_vertical_angle_hip_knee_toe_opposite: Float = 0F,
-    val ols_front_left_vertical_distance_toe_opposite_toe: Float = 0F,
-    val ols_front_right_horizontal_angle_shoulder: Float = 0F,
-    val ols_front_right_horizontal_distance_shoulder: Float = 0F,
-    val ols_front_right_horizontal_angle_hip: Float = 0F,
-    val ols_front_right_horizontal_distance_hip: Float = 0F,
-    val ols_front_right_vertical_angle_hip_knee: Float = 0F,
-    val ols_front_right_vertical_angle_knee_toe: Float = 0F,
-    val ols_front_right_vertical_angle_hip_knee_toe: Float = 0F,
-    val ols_front_right_vertical_angle_hip_knee_opposite: Float = 0F,
-    val ols_front_right_vertical_angle_knee_toe_opposite: Float = 0F,
-    val ols_front_right_vertical_angle_hip_knee_toe_opposite: Float = 0F,
-    val ols_front_right_vertical_distance_toe_opposite_toe: Float = 0F,
+    val ols_front_left_horizontal_angle_shoulder: Float? = 0F,
+    val ols_front_left_horizontal_distance_shoulder: Float? = 0F,
+    val ols_front_left_horizontal_angle_hip: Float? = 0F,
+    val ols_front_left_horizontal_distance_hip: Float? = 0F,
+    val ols_front_left_vertical_angle_hip_knee: Float? = 0F,
+    val ols_front_left_vertical_angle_knee_toe: Float? = 0F,
+    val ols_front_left_vertical_angle_hip_knee_toe: Float? = 0F,
+    val ols_front_left_vertical_angle_hip_knee_opposite: Float? = 0F,
+    val ols_front_left_vertical_angle_knee_toe_opposite: Float? = 0F,
+    val ols_front_left_vertical_angle_hip_knee_toe_opposite: Float? = 0F,
+    val ols_front_left_vertical_distance_toe_opposite_toe: Float? = 0F,
+    val ols_front_right_horizontal_angle_shoulder: Float? = 0F,
+    val ols_front_right_horizontal_distance_shoulder: Float? = 0F,
+    val ols_front_right_horizontal_angle_hip: Float? = 0F,
+    val ols_front_right_horizontal_distance_hip: Float? = 0F,
+    val ols_front_right_vertical_angle_hip_knee: Float? = 0F,
+    val ols_front_right_vertical_angle_knee_toe: Float? = 0F,
+    val ols_front_right_vertical_angle_hip_knee_toe: Float? = 0F,
+    val ols_front_right_vertical_angle_hip_knee_opposite: Float? = 0F,
+    val ols_front_right_vertical_angle_knee_toe_opposite: Float? = 0F,
+    val ols_front_right_vertical_angle_hip_knee_toe_opposite: Float? = 0F,
+    val ols_front_right_vertical_distance_toe_opposite_toe: Float? = 0F,
 
-    var uploaded: String = "0",
-    val upload_date: String = "",
+    var uploaded: String? = "0",
+    var upload_date: String? = getCurrentDateTime(),
     val result_index: Int = 0,
-    val uploaded_json: String = "0",
-    val uploaded_file: String = "0",
-    val uploaded_json_fail: String = "0",
-    val used: String = "0",
-)
+    val uploaded_json: String? = "0",
+    val uploaded_file: String? = "0",
+    val uploaded_json_fail: String? = "0",
+    val used: String? = "0",
+) {
+    companion object {
+        fun getCurrentDateTime(): String =
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    }
+}

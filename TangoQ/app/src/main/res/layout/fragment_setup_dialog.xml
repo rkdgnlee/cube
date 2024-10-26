@@ -38,7 +38,7 @@
             app:sv_textPadding="4dp"
             app:sv_textSize="16sp" />
 
-        <com.tomlecollegue.progressbars.HorizontalProgressView
+        <com.skydoves.progressview.ProgressView
             android:id="@+id/pvSD"
             android:layout_width="0dp"
             android:layout_height="4dp"
@@ -46,8 +46,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="20dp"
             android:background="@color/white"
-            app:colorBackground="@color/subColor100"
-            app:colorProgress="@color/mainColor"
+            app:progressView_colorBackground="@color/secondContainerColor"
+            app:progressView_colorProgress="@color/thirdColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/svSD"

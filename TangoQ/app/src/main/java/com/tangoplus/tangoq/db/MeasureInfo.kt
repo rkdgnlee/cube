@@ -2,6 +2,8 @@ package com.tangoplus.tangoq.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Entity(tableName = "t_measure_info")
 data class MeasureInfo(
@@ -10,6 +12,7 @@ data class MeasureInfo(
     val device_sn: Int = 0,
     val measure_sn: Int = 0,
     val user_uuid: String,
+    val mobile_device_uuid : String? = "",
     val user_sn: Int,
     val user_name: String,
     val measure_date: String,
@@ -30,10 +33,10 @@ data class MeasureInfo(
     val pain_part_right_knee: String = "0",
     val pain_part_left_ankle: String = "0",
     val pain_part_right_ankle: String = "0",
-    val uploaded: String = "0",
-    val upload_date: String = "0",
+    var uploaded: String = "0",
+    var upload_date: String = getCurrentDateTime(),
     val used: String = "0",
-    val modify_date: String = "0",
+    val modify_date: String = getCurrentDateTime(),
     val t_score: String = "0",
     val risk_neck: String = "0",
     val risk_shoulder_left: String = "0",
@@ -49,4 +52,9 @@ data class MeasureInfo(
     val risk_ankle_left: String = "0",
     val risk_ankle_right: String = "0",
 
-)
+    ) {
+    companion object {
+        fun getCurrentDateTime(): String =
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    }
+}

@@ -140,6 +140,34 @@ object NetworkUser {
         }
     }
 
+    suspend fun idDuplicateCheck(myUrl: String, jo: JSONObject, callback: (Int) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = RequestBody.create(mediaType, jo.toString())
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}register.php")
+            .post(body)
+            .build()
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        Log.e("중복확인, 응답실패", "Failed to execute request!")
+                        callback(500) // 실패 시 에러 코드 전달
+                    }
+                    override fun onResponse(call: Call, response: Response) {
+                        callback(response.code)
+                        Log.v("중복확안로그", "${response.code}")
+                    }
+                })
+            } catch (e: Exception) {
+                Log.e("중복확인Error", "Error: ${e.message}")
+                callback(500)
+            }
+        }
+    }
+
+
 
     // ------# 마케팅 수신 동의 관련 insert문 #------
     fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
@@ -219,7 +247,7 @@ object NetworkUser {
     }
 
     // ------! 프로필 사진 시작 !------
-    suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody) {
+    suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
@@ -239,8 +267,12 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                val motherJo = responseBody.let { JSONObject(it.toString()) }
-                Log.w("profileImage", "Success to execute request: $responseBody")
+                if (responseBody != null) {
+
+                    Log.w("profileImage", "Success to execute request: $responseBody")
+                    callback(extractProfileImageUrl(responseBody))
+                }
+
             }
         }
     }
@@ -286,5 +318,10 @@ object NetworkUser {
                 statusCode
             }
         }
+    }
+
+    private fun extractProfileImageUrl(jsonString: String): String {
+        val regex = """"file_path":\s*"([^"]+)"""".toRegex()
+        return regex.find(jsonString)?.groupValues?.get(1) ?: ""
     }
 }

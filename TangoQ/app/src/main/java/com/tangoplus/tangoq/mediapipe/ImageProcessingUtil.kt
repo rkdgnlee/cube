@@ -9,7 +9,7 @@ import android.graphics.Paint
 import android.media.ExifInterface
 import android.util.Log
 
-object ImageProcessingUtility {
+object ImageProcessingUtil {
 
 
     fun combineImageAndOverlay(

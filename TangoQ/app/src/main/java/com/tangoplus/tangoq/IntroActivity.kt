@@ -8,6 +8,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -295,8 +297,7 @@ class IntroActivity : AppCompatActivity() {
                 Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
                 val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid")!!
                 val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt()!!
-                val userSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("user_sn")?.toInt()!!
-                ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
+                ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
                     mainInit()
                 }
             }
@@ -357,14 +358,22 @@ class IntroActivity : AppCompatActivity() {
                     val dialog = LoginDialogFragment()
                     dialog.show(supportFragmentManager, "LoginDialogFragment")
                 }, 1500)
-            } else if (code != 0) {
+            }  else if (code == 409) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    Toast.makeText(this@IntroActivity, "잘못된 접근입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                }, 500)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val dialog = LoginDialogFragment()
+                    dialog.show(supportFragmentManager, "LoginDialogFragment")
+                }, 1200)
+            } else if (code == 402){
                 Handler(Looper.getMainLooper()).postDelayed({
                     Toast.makeText(this@IntroActivity, "이미 가입된 회원입니다. 아이디/비밀번호 찾기를 진행해주세요", Toast.LENGTH_SHORT).show()
                 }, 500)
                 Handler(Looper.getMainLooper()).postDelayed({
                     val dialog = LoginDialogFragment()
                     dialog.show(supportFragmentManager, "LoginDialogFragment")
-                }, 1500)
+                }, 1200)
             }
 
         }

@@ -53,7 +53,7 @@ object NetworkRecommendation {
                             for (i in 0 until ja.length()) {
                                 val recommendationVO = RecommendationVO(
                                     recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                    infoSn = ja.optJSONObject(i).optInt("measure_sn"),
+                                    serverSn = ja.optJSONObject(i).optInt("server_sn"),
                                     userSn = ja.optJSONObject(i).optInt("user_sn"),
                                     programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                     title = ja.optJSONObject(i).optString("recommendation_title"),
@@ -108,7 +108,57 @@ object NetworkRecommendation {
                         for (i in 0 until ja.length()) {
                             val recommendationVO = RecommendationVO(
                                 recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                infoSn = ja.optJSONObject(i).optInt("measure_sn"),
+                                serverSn = ja.optJSONObject(i).optInt("server_sn"),
+                                userSn = ja.optJSONObject(i).optInt("user_sn"),
+                                programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
+                                title = ja.optJSONObject(i).optString("recommendation_title"),
+                                regDate = ja.optJSONObject(i).optString("created_at")
+                            )
+                            recommendations.add(recommendationVO)
+                        }
+                        return@use recommendations
+                    } else {
+                        return@use recommendations
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                }
+            } as MutableList<RecommendationVO>
+        }
+    }
+
+    suspend fun getRecommendationInOneMeasure(myUrl: String, context: Context, measureInfoSn: Int) : MutableList<RecommendationVO> {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}?measure_sn=$measureInfoSn")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.v("Get>Recommendation", "$responseBody")
+
+                try {
+                    val dataJson = JSONObject(responseBody.toString())
+                    val ja = dataJson.optJSONArray("data")
+                    val recommendations = mutableListOf<RecommendationVO>()
+                    if (ja != null) {
+
+                        for (i in 0 until ja.length()) {
+                            val recommendationVO = RecommendationVO(
+                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                                serverSn = ja.optJSONObject(i).optInt("server_sn"),
                                 userSn = ja.optJSONObject(i).optInt("user_sn"),
                                 programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                 title = ja.optJSONObject(i).optString("recommendation_title"),
@@ -128,6 +178,5 @@ object NetworkRecommendation {
             } as MutableList<RecommendationVO>
         }
     }
-
 
 }

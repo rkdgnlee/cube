@@ -107,7 +107,7 @@ class SetupDialogFragment : DialogFragment() {
 //            }
 //        }
         viewModel.setupProgress = 34
-        binding.pvSD.progress = viewModel.setupProgress
+        binding.pvSD.progress = viewModel.setupProgress.toFloat()
         binding.svSD.getState().animationType(StepView.ANIMATION_CIRCLE)
             .steps(object : ArrayList<String?>() {
                 init {
@@ -226,7 +226,7 @@ class SetupDialogFragment : DialogFragment() {
         binding.vpSD.currentItem = viewModel.setupStep
         binding.svSD.go(viewModel.setupStep, true)
         viewModel.setupProgress -= 34
-        binding.pvSD.progress = viewModel.setupProgress
+        binding.pvSD.progress = viewModel.setupProgress.toFloat()
 //        when (arg) {
 //            "startSetup" -> {
 //                viewModel.setupProgress -= 34
@@ -244,7 +244,7 @@ class SetupDialogFragment : DialogFragment() {
         binding.vpSD.currentItem = viewModel.setupStep
         binding.svSD.go(viewModel.setupStep, true)
         viewModel.setupProgress += 34
-        binding.pvSD.progress = viewModel.setupProgress
+        binding.pvSD.progress = viewModel.setupProgress.toFloat()
 //        when (arg) {
 //            "startSetup" -> {
 //                viewModel.setupProgress += 34

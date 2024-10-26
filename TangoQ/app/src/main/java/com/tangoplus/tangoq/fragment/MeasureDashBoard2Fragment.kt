@@ -280,6 +280,9 @@ class MeasureDashBoard2Fragment : Fragment() {
                             in 10 .. 19 -> {
                                 setPadding(26, 24, 26, 24)
                             }
+                            in 30 .. 31 -> {
+                                setPadding(20, 24, 26, 20)
+                            }
                             else -> {
                                 setPadding(24)
                             }

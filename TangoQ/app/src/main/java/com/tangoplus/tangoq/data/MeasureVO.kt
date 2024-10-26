@@ -4,7 +4,7 @@ import org.json.JSONArray
 
 data class MeasureVO (
     val deviceSn : Int,
-    val measureSn : Int, // 해당 측정 sn
+    val sn : Int, // info_sn
     val regDate : String, // 측정 날짜
     val overall: String?, // 종합점수
     val dangerParts : MutableList<Pair<String, Float>>, // 취약한 부위, 위험도

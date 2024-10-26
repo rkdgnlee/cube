@@ -32,6 +32,7 @@ class UserViewModel: ViewModel() {
         User.value = JSONObject()
         setupProgress = 34
         setupStep = 0
+        processingProgram = null
     }
 
     private fun updateStep2() {

@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -39,6 +40,7 @@ import com.tangoplus.tangoq.`object`.NetworkUser.sendProfileImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -212,17 +214,16 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                             )
                             .build()
                         CoroutineScope(Dispatchers.IO).launch {
-                            sendProfileImage(requireContext(), getString(R.string.API_user), userJson.optString("sn"), requestBody)
+                            sendProfileImage(requireContext(), getString(R.string.API_user), userJson.optString("sn"), requestBody) { imageUrl ->
+                                Log.v("수정된프로필사진URL", "$imageUrl")
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
+                                }
+                            }
                         }
-
-
-                        Log.v("파일 정보", "imageFile: $imageFile, fileName: $fileName, mimeType: $mimeType")
-//                        val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-//                        val editor = sharedPreferences.edit()
-//                        editor.putString("imageUri", selectedImageUri.toString())
-//                        editor.apply()
                         Glide.with(this)
                             .load(selectedImageUri)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
                             .into(binding.civP)
                     }

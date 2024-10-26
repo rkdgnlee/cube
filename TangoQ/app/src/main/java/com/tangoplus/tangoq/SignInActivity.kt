@@ -27,6 +27,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -40,11 +41,13 @@ import com.tangoplus.tangoq.databinding.ActivitySignInBinding
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.`object`.NetworkUser.idDuplicateCheck
 import com.tangoplus.tangoq.`object`.NetworkUser.insertUser
 import com.tangoplus.tangoq.transition.SignInTransition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -70,7 +73,7 @@ class SignInActivity : AppCompatActivity() {
         binding.etPwRepeat.visibility = View.GONE
         binding.btnSignIn.visibility = View.GONE
         binding.llId.visibility = View.GONE
-        binding.etId.visibility = View.GONE
+        binding.llIdCondition.visibility = View.GONE
         binding.tvNameGuide.visibility = View.GONE
         binding.etName.visibility = View.GONE
         binding.llEmail.visibility = View.GONE
@@ -104,7 +107,7 @@ class SignInActivity : AppCompatActivity() {
         // -----! 초기 버튼 숨기기 및 세팅 끝 !-----
 
         // -----! progress bar 시작 !-----
-        binding.pvSignIn.progress = 25
+        binding.pvSignIn.progress = 25f
         // -----! progress bar 끝 !-----
 
         // -----! 통신사 선택 시작 !-----
@@ -189,7 +192,7 @@ class SignInActivity : AppCompatActivity() {
         binding.etEmailId.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
-                alphaAnimation.duration = 600
+                alphaAnimation.duration = 750
                 binding.etId.startAnimation(alphaAnimation)
                 binding.llId.startAnimation(alphaAnimation)
                 binding.llPwCondition.startAnimation(alphaAnimation)
@@ -198,7 +201,7 @@ class SignInActivity : AppCompatActivity() {
                 binding.etPwRepeat.startAnimation(alphaAnimation)
                 binding.btnSignIn.startAnimation(alphaAnimation)
 
-                binding.etId.visibility = View.VISIBLE
+                binding.llIdCondition.visibility = View.VISIBLE
                 binding.llId.visibility = View.VISIBLE
                 binding.llPwCondition.visibility = View.VISIBLE
                 binding.etPw.visibility = View.VISIBLE
@@ -244,6 +247,43 @@ class SignInActivity : AppCompatActivity() {
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+        binding.btnIdCondition.setOnClickListener {
+            val jo = JSONObject()
+            jo.apply {
+                put("user_id", binding.etId.text.toString())
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                idDuplicateCheck(getString(com.tangoplus.tangoq.R.string.API_user), jo) { responseCode ->
+                    CoroutineScope(Dispatchers.Main).launch {
+                        when (responseCode) {
+                            200 -> {
+                                MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                    setTitle("알림")
+                                    setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
+                                    setPositiveButton("예") { dialog, _ ->
+                                        binding.btnIdCondition.isEnabled = false
+                                        binding.etId.isEnabled = false
+                                        viewModel.User.value?.put("user_id", binding.etId.toString())
+                                    }
+                                    setNegativeButton("아니오") { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                }.show()
+                            }
+                            else -> {
+                                MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                    setTitle("알림")
+                                    setMessage("이미 사용중인 아이디입니다.")
+                                    setNeutralButton("확인") { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                }.show()
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         binding.etId.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
@@ -253,7 +293,7 @@ class SignInActivity : AppCompatActivity() {
                 val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                 objectAnimator.duration = 1000
                 objectAnimator.start()
-                binding.pvSignIn.progress = 75
+                binding.pvSignIn.progress = 75f
                 binding.etPw.requestFocus()
                 binding.svSignIn.go(2, true)
                 return@setOnEditorActionListener true
@@ -306,7 +346,7 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.idCondition.value == true) {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvIdCondition.text = "사용 가능합니다"
-                    viewModel.User.value?.put("user_id", s.toString())
+
                 } else {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
                     binding.tvIdCondition.text = "영문, 숫자를 포함해서 4자리 이상 입력해주세요"
@@ -341,7 +381,7 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.pwCompare.value == true) {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwRepeat.text = "일치합니다"
-                    binding.pvSignIn.progress = 100
+                    binding.pvSignIn.progress = 100f
                     binding.svSignIn.go(3, true)
                     binding.tvSignInGuide.text = "하단의 완료 버튼을 눌러주세요"
                     binding.btnSignIn.isEnabled = true
@@ -389,7 +429,7 @@ class SignInActivity : AppCompatActivity() {
                         val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                         objectAnimator.duration = 1000
                         objectAnimator.start()
-                        binding.pvSignIn.progress = 50
+                        binding.pvSignIn.progress = 50f
                         binding.etName.requestFocus()
                         binding.svSignIn.go(1, true)
                         // ------! 번호 인증 완료 !------
@@ -462,17 +502,7 @@ class SignInActivity : AppCompatActivity() {
                                     CoroutineScope(Dispatchers.Main).launch {
                                         val intent = Intent(this@SignInActivity, IntroActivity::class.java)
                                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                        when (responseCode) {
-                                            200 -> {
-                                                intent.putExtra("SignInFinished", 201)
-                                            }
-                                            500 -> {
-                                                intent.putExtra("SignInFinished", 500)
-                                            }
-                                            else -> {
-                                                intent.putExtra("SignInFinished", responseCode)
-                                            }
-                                        }
+                                        intent.putExtra("SignInFinished", 201)
 
                                         finish()
                                         startActivity(intent)

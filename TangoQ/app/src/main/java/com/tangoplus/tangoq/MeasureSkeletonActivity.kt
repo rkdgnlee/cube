@@ -69,12 +69,20 @@ import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
+import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerUUID
+import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateAngle
+import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateAngleByLine
+import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateDistanceByDots
+import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateSlope
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
-import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
+import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
+import com.tangoplus.tangoq.`object`.NetworkMeasure.toMeasureDynamic
+import com.tangoplus.tangoq.`object`.SaveSingletonManager
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
@@ -83,10 +91,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okio.Buffer
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -101,9 +111,11 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
+import kotlin.math.asin
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -154,8 +166,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private var videoFileName = ""
     private var measureVideoName = ""
     private var isNameInit = false
+    private var dynamicStartTime = ""
+    private var dynamicEndTime = ""
 
     // ------! 싱글턴 패턴 객체 가져오기 !------
+    private lateinit var decrptedUUID : String
     var poseLandmarks = JSONArray()
     private lateinit var singletonUser : Singleton_t_user
     private lateinit var singletonMeasure : Singleton_t_measure
@@ -172,6 +187,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private var timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
     private val startTime = LocalDateTime.now()
     private var endTime : LocalDateTime? = null
+
     // ------# 수직 감지기 #------
     private lateinit var hideIndicatorHandler: Handler
     private lateinit var hideIndicatorRunnable: Runnable
@@ -195,46 +211,60 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     Log.v("count", "${binding.tvMeasureSkeletonCount.text}")
                 }
             }
-            @SuppressLint("SetTextI18n")
+            @SuppressLint("SetTextI18n", "DefaultLocale")
             @RequiresApi(Build.VERSION_CODES.R)
             override fun onFinish() {
+
                 if (latestResult != null) {
                     // ------# resultBundleToJson이 동작하는 시간으로 통일 #------
                     timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
                     if (isRecording) { // 동영상 촬영
                         binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
-
                         setAnimation(binding.tvMeasureSkeletonCount, 1000, 500, false) {
-                            hideDynamicViews(5700)
+                            hideDynamicViews(6000)
                             setDrawableSequence()
                             // 녹화 종료 시점 아님
+                            dynamicStartTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                             startVideoRecording {
                                 Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
+                                dynamicEndTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                                 isRecording = false // 녹화 완료
                                 startRecording = false
                                 updateUI()
-                                binding.ivMeasureSkeletonFrame.visibility = View.VISIBLE
-                                binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
+                                Log.v("dynamic총길이", "${mViewModel.dynamicJa.length()}")
 
                                 // ------# 약 200프레임에서 db에 넣을 값을 찾는 곳 #------
                                 CoroutineScope(Dispatchers.IO).launch {
+
+                                    // ------# dynamic json파일 저장 전 첫번째 object에 times 넣기 #------
+                                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                                    val dynamicStart = LocalDateTime.parse(dynamicStartTime, formatter)
+                                    val dynamicEnd = LocalDateTime.parse(dynamicEndTime, formatter)
+                                    val duration = Duration.between(dynamicStart, dynamicEnd)
+                                    val diffInSeconds = String.format("%.7f",
+                                        duration.seconds.toFloat() + duration.nano.toFloat() / 1_000_000_000
+                                    ).toFloat()
+                                    mViewModel.dynamicJa.getJSONObject(0).put("time", diffInSeconds)
+
+                                    // ------# dynamic json을 파일로 저장 #------
                                     saveJa(this@MeasureSkeletonActivity, "${videoFileName}.json", mViewModel.dynamicJa, mViewModel)
                                     val noseDynamic = mViewModel.extractVideoCoordinates(mViewModel.dynamicJa).map { it[0] } // x, y좌표를 가져와서, nose(0)만 추출함.
-                                    Log.v("noseDynamic", "${noseDynamic}")
+                                    Log.v("noseDynamic", "$noseDynamic")
                                     val decreasingFrameIndex = findLowestYFrame(noseDynamic) // 전체 코의 y궤적에서 감소되는 구간의 index 추출
                                     val saveDynamic = mViewModel.dynamicJa.optJSONObject(decreasingFrameIndex)
-                                    Log.v("인덱스와변형전dynamicJson추출", "decreasingFrameIndex: ${decreasingFrameIndex}, saveDynamic: ${saveDynamic}")
-                                    //
+                                    Log.v("인덱스와변형전dynamicJson추출", "decreasingFrameIndex: ${decreasingFrameIndex}, saveDynamic: $saveDynamic")
+
+                                    // ------# dynamicJo에서 t_measure_dynamic으로 저장하게끔 column값 통일 시키기 #------
                                     saveDynamic?.let { jsonObject ->
+                                        jsonObject.put("measure_start_time", dynamicStartTime)
+                                        jsonObject.put("measure_end_time", dynamicEndTime)
                                         jsonObject.remove("pose_landmark")
                                         mViewModel.dynamic = mViewModel.convertToMeasureDynamic(jsonObject)
                                         // 정제된 dynamic을 viewModel을 담음.
                                         Log.v("mViewModelDynamic", "${mViewModel.dynamic}")
                                     }
-
                                 }
-
                             }
                         }
                     } else {
@@ -248,7 +278,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         Log.v("캡쳐종료시점", "step: ${repeatCount.value}")
                         updateUI()
                         isCapture = false
-
                     }
                     binding.btnMeasureSkeletonStep.isEnabled = true
                 } else {
@@ -268,7 +297,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // 권한 확인 및 요청
         if (!hasPermissions(this)) {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-
         } else {
             // 권한이 이미 부여된 경우 카메라 설정을 진행합니다.
             setUpCamera()
@@ -335,6 +363,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             Log.v("이제들어갈measureSn", "$measureInfoSn")
         }
 
+        decrptedUUID = getServerUUID(this@MeasureSkeletonActivity).toString()
+
         // ------# sensor 연결 #------
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -378,7 +408,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("알림")
                 setMessage("측정을 종료하시겠습니까 ?")
-                setPositiveButton("예") { dialog, _ ->
+                setPositiveButton("예") { _, _ ->
                     val activityIntent = Intent(this@MeasureSkeletonActivity, MainActivity::class.java)
                     intent.putExtra("showMeasureFragment", true);
                     startActivity(activityIntent)
@@ -410,12 +440,32 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
         // ------# 초기 시작 #------
         binding.svMeasureSkeleton.go(0, true)
-        binding.pvMeasureSkeleton.progress = 14
+        binding.pvMeasureSkeleton.progress = 14f
 
         // ------# 버튼 촬영 #------
         binding.btnMeasureSkeletonStep.setOnClickListener {
             if (binding.btnMeasureSkeletonStep.text == "완료하기") {
                 endTime = LocalDateTime.now()
+
+                // ------# 리소스 정리 #------
+                if(this::poseLandmarkerHelper.isInitialized) {
+                    viewModel.setMinPoseDetectionConfidence(poseLandmarkerHelper.minPoseDetectionConfidence)
+                    viewModel.setMinPoseTrackingConfidence(poseLandmarkerHelper.minPoseTrackingConfidence)
+                    viewModel.setMinPosePresenceConfidence(poseLandmarkerHelper.minPosePresenceConfidence)
+                    viewModel.setDelegate(poseLandmarkerHelper.currentDelegate)
+
+                    // Close the PoseLandmarkerHelper and release resources
+                    backgroundExecutor.execute { poseLandmarkerHelper.clearPoseLandmarker() }
+
+                    if (hideIndicator) {
+                        sensorManager.unregisterListener(this)
+                    }
+                }
+
+                // ------# 업로드 시작 #------
+                val dialog = LoadingDialogFragment.newInstance("업로드")
+                dialog.show(supportFragmentManager, "LoadingDialogFragment")
+
                 CoroutineScope(Dispatchers.IO).launch {
                     val motherJo = JSONObject()
 
@@ -428,9 +478,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val measureDate = outputFormat.format(date)
                     val seconds = Duration.between(startTime, endTime).toMillis() / 1000.0
                     val elapsedTime = "%.3f".format(seconds)
+
                     // ------# info 넣기 #------
+                    // TODO 리스크 추출에 관한 부분은 추후 추가 예정.
                     val measureInfo = MeasureInfo(
                         user_uuid = userUUID,
+                        mobile_device_uuid = getServerUUID(this@MeasureSkeletonActivity),
                         user_sn = userJson.optString("user_sn").toInt(),
                         user_name = userJson.optString("user_name"),
                         measure_date = measureDate,
@@ -441,7 +494,27 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         risk_elbow_left = "2",
                         risk_hip_left = "1"
                     )
-                    Log.v("measure빈칼럼여부", "${measureInfo}")
+                    Log.v("measure빈칼럼여부", "$measureInfo")
+
+
+
+                    val mobileInfoSn = mDao.insertInfo(measureInfo).toInt()
+                    var mobileDynamicSn = 0
+                    val mobileStaticSns = mutableListOf<Int>()
+                    for (i in 0 until mViewModel.statics.size) {
+                        val staticUnit = mViewModel.statics[i]
+                        val staticId = mDao.insertByStatic(staticUnit).toInt()
+                        mobileStaticSns.add(staticId)
+                    }
+                    val dynamic = mViewModel.dynamic
+                    if (dynamic != null) {
+                        val dynamicId = mDao.insertByDynamic(dynamic).toInt()
+                        mobileDynamicSn = dynamicId
+                    }
+                    Log.v("들어간데이터SN들", "mobileInfoSn: $mobileInfoSn, mobileDynamicSn: $mobileDynamicSn, mobileStaticSns: $mobileStaticSns")
+
+
+//                    // ------# 업로드 준비 #------
                     val infoJson = JSONObject(measureInfo.toJson())
                     motherJo.put("measure_info", infoJson)
 
@@ -452,17 +525,23 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         val joStaticUnit = JSONObject(staticUnit)
                         Log.v("스태틱변환", "$joStaticUnit")
                         motherJo.put("static_${i+1}", joStaticUnit)
-                        Log.v("motherJo2", "${motherJo.getJSONObject("static_${i+1}")}")
+                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").keys().asSequence().toList().filter { !it.startsWith("front") && !it.startsWith("side") && !it.startsWith("back") }}")
+                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").keys().asSequence().toList().map { motherJo.getJSONObject("static_${i+1}").get(it) }}")
+                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").length()}")
                     }
+
                     val dynamicJo = JSONObject(mViewModel.dynamic!!.toJson())
                     motherJo.put("dynamic", dynamicJo)
                     Log.v("motherJo1", "${motherJo.optJSONObject("measure_info")}")
                     Log.v("motherJo3", "${motherJo.optJSONObject("dynamic")}")
-                    // 일단 json 값들.
 
+
+                    // ------# 멀티파트 init 하면서 data 넣기 #------
                     val requestBodyBuilder = MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("json", motherJo.toString())
+                    Log.v("멀티파트바디빌드", "전체 데이터 - motherJo키값들 ${motherJo.keys().asSequence().toList()}")
+
 
                     // static jpg파일들
                     for (i in mViewModel.staticFiles.indices) {
@@ -473,7 +552,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             file.name,
                             file.asRequestBody("image/jpeg".toMediaTypeOrNull())
                         )
-
                     }
                     // static json파일
                     for (i in mViewModel.staticJsonFiles.indices) {
@@ -494,7 +572,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             file.asRequestBody("application/json".toMediaTypeOrNull())
                         )
                     }
-
                     // Dynamic mp4 파일
                     mViewModel.dynamicFile?.let { file ->
                         Log.v("파일정보", "Dynamic MP4: 이름=${file.name}, 크기=${file.length()} bytes")
@@ -505,17 +582,155 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         )
                     }
 
-                    val requestBody = requestBodyBuilder.build()
+                    Log.v("파일제외바디", "motherJo: $motherJo")
+
+                    var requestBody = requestBodyBuilder.build()
+//                    val buffer = Buffer()
+//                    requestBody.writeTo(buffer)
+//                    Log.d("RequestBody잘들어갔는지.", "Content: ${buffer.readUtf8()}")
                     val partCount = requestBodyBuilder.build().parts.size
                     Log.v("파트개수", "총 파트 개수: $partCount")
-//                    sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_results), requestBody)
+
+                    val maxRetries = 5
+//                    retryUpload(requestBody, maxRetries, mobileInfoSn, mobileStaticSns, mobileDynamicSn, measureInfo)
+//                    sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_results), requestBody, mobileInfoSn, mobileStaticSns, mobileDynamicSn) { jo ->
+//                        Log.e("send", "$jo")
+//                    }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+
+                            sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_results), requestBody, mobileInfoSn, mobileStaticSns, mobileDynamicSn) { jo ->
+
+                                val reMotherJo = JSONObject()
+                                val measureInfoSuccess = jo.optJSONObject("measureInfo")?.optString("uploaded") == "1"
+                                val staticUploadResults = mutableListOf<Triple<Boolean, Boolean,Boolean>>()
+                                for (i in 1..6) {
+                                    val staticResult = jo.optJSONObject("static_$i")
+                                    if (staticResult != null) {
+                                        val jsonSuccess = staticResult.optString("json") == "1"
+                                        val jsonFileSuccess = staticResult.optString("json_file") == "1"
+                                        val mediaFileSuccess = staticResult.optString("media_file") == "1"
+                                        staticUploadResults.add(Triple(jsonSuccess, jsonFileSuccess, mediaFileSuccess))
+                                    } else {
+                                        staticUploadResults.add(Triple(false, false, false)) // 실패로 간주
+                                    }
+                                }
+                                val dynamicResult = jo.optJSONObject("dynamic")
+                                var dynamicUploadResults = Triple(false, false, false) // 실패로 간주
+                                if (dynamicResult != null) {
+                                    val jsonSuccess = dynamicResult.optString("json") == "1"
+                                    val jsonFileSuccess = dynamicResult.optString("json_file") == "1"
+                                    val mediaFileSuccess = dynamicResult.optString("media_file") == "1"
+                                    dynamicUploadResults = Triple(jsonSuccess, jsonFileSuccess, mediaFileSuccess)
+                                }
+                                // 모든 업로드 항목이 성공했는지 확인
+                                val allStaticsUploaded = staticUploadResults.all { it.first && it.second && it.third }
+                                val allDynamicUploaded = dynamicUploadResults.first && dynamicUploadResults.second && dynamicUploadResults.third
+
+                                if (measureInfoSuccess && allStaticsUploaded && allDynamicUploaded) {
+                                    Log.d("Upload", "모든 파일이 성공적으로 업로드되었습니다.")
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        val ssm = SaveSingletonManager(this@MeasureSkeletonActivity, this@MeasureSkeletonActivity)
+                                        withContext(Dispatchers.IO) {
+                                            ssm.addMeasurementInSingleton(mobileInfoSn, mobileStaticSns, mobileDynamicSn)
+                                            cacheDir.deleteRecursively()
+                                        }
+                                        try {
+                                            dialog.dismiss()
+                                            val intent = Intent()
+                                            intent.putExtra("finishedMeasure", true)
+                                            setResult(Activity.RESULT_OK, intent)
+                                            finish()
+                                        } catch (e: Exception) {
+                                            Log.e("MeasureSkeletonActivity", "Error processing measure data", e)
+                                            // 에러 발생 시 사용자에게 알림
+                                            Toast.makeText(this@MeasureSkeletonActivity, "데이터 처리 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show()
+                                            val intent = Intent().apply { putExtra("finishedMeasure", false) }
+                                            setResult(Activity.RESULT_CANCELED, intent)
+                                            finish()
+                                        }
+                                    }
+                                    return@sendMeasureData
+                                }
+
+                                val retryRequestBodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
+                                // info 데이터 넣기.
+                                if (!measureInfoSuccess) {
+                                    val reInfoJson = JSONObject(measureInfo.toJson())
+                                    reMotherJo.put("measure_info", reInfoJson)
+                                }
+                                // static 파일들 재전송
+                                staticUploadResults.forEachIndexed { index, result ->
+                                    if (!result.first) {
+                                        val staticUnit = mViewModel.statics[index].toJson()
+                                        val joStaticUnit = JSONObject(staticUnit)
+                                        reMotherJo.put("static_${index+1}", joStaticUnit)
+                                    }
+                                    if (!result.second) {
+                                        val file = mViewModel.staticJsonFiles[index]
+                                        Log.v("파일정보", "Static JSON: 이름=${file.name}, 크기=${file.length()} bytes")
+                                        retryRequestBodyBuilder.addFormDataPart(
+                                            "static_json_${index+1}",
+                                            file.name,
+                                            file.asRequestBody("application/json".toMediaTypeOrNull())
+                                        )
+                                    }
+                                    if (!result.third) {
+                                        val file = mViewModel.staticFiles[index]
+                                        Log.v("파일 재전송", "Static File 재전송: 이름=${file.name}, 크기=${file.length()} bytes")
+                                        retryRequestBodyBuilder.addFormDataPart(
+                                            "static_file_${index + 1}",
+                                            file.name,
+                                            file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                                        )
+                                    }
+                                }
+                                // dynamic 파일들 재전송
+                                if (!dynamicUploadResults.first) {
+                                    val reDynamicJo = JSONObject(mViewModel.dynamic!!.toJson())
+                                    reMotherJo.put("dynamic", reDynamicJo)
+                                    Log.v("reMotherJo1", "${motherJo.optJSONObject("measure_info")}")
+                                    Log.v("reMotherJo3", "${motherJo.optJSONObject("dynamic")}")
+                                }
+                                if (!dynamicUploadResults.third) {
+                                    mViewModel.dynamicFile?.let { file ->
+                                        Log.v("파일 재전송", "Dynamic MP4 재전송: 이름=${file.name}, 크기=${file.length()} bytes")
+                                        retryRequestBodyBuilder.addFormDataPart(
+                                            "dynamic_file",
+                                            file.name,
+                                            file.asRequestBody("video/mp4".toMediaTypeOrNull())
+                                        )
+                                    }
+                                }
+                                if (!dynamicUploadResults.second) {
+                                    mViewModel.dynamicJsonFile?.let { file ->
+                                        Log.v("파일정보", "Dynamic JSON: 이름=${file.name}, 크기=${file.length()} bytes")
+                                        retryRequestBodyBuilder.addFormDataPart(
+                                            "dynamic_json",
+                                            file.name,
+                                            file.asRequestBody("application/json".toMediaTypeOrNull())
+                                        )
+                                    }
+                                }
+                                retryRequestBodyBuilder.addFormDataPart("json", reMotherJo.toString())
+
+                                // 새로운 requestBody로 재전송 시도
+                                requestBody = retryRequestBodyBuilder.build()
+                                val buffer2 = Buffer()
+                                requestBody.writeTo(buffer2)
+                                Log.d("RequestBody잘들어갔는지2번째 ", "request2Buffer reloaded.")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("ErrorUploadMeasure", "${e.printStackTrace()}")
+                        }
+                    }
 
 
 
                     // TODO 측정 후 값을 임시로 보고 싶을 때.
                     // ------# userJSonBody로 보내기 #------
 //                    sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_measure), requestBody) // getMeasureResult처럼 다 넣게됨.
-//
+////
 //                    val infoSn = Singleton_t_user.getInstance(this@MeasureSkeletonActivity).jsonObject?.optString("sn")?.toInt()!!
 //                    val userSn = Singleton_t_user.getInstance(this@MeasureSkeletonActivity).jsonObject?.optString("user_sn")?.toInt()!!
 //                    getMeasureResult(this@MeasureSkeletonActivity, getString(R.string.API_measure), infoSn, userSn , userUUID)
@@ -550,58 +765,53 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 //                        risk_hip_left = "1"
 //                    )
 //                    mDao.insertInfo(measureInfo)
-                    // TODO ------# 현재 값을 서버에 넣고 sn 받아서 저장해야함. #------
+                    // TODO ------# 현재 값을 서버에 넣고 sn 받아서 저장해야함. + singletonMeasure에다가도 넣어야함. #------
 
-                    Log.v("measureInfo넣기", "방금넣은info: ${measureInfo}, allInfo: ${mDao.getAllInfo(userJson.optString("user_sn").toInt())}")
+//                    Log.v("measureInfo넣기", "방금넣은info: ${measureInfo}, allInfo: ${mDao.getAllInfo(userJson.optString("user_sn").toInt())}")
 
                     // ------# static 넣기 #------
-                    for (i in 0 until mViewModel.statics.size) {
-                        mDao.insertWithAutoIncrementStatic(mViewModel.statics[i], userUUID, measureInfoSn)
-                    }
-
-                    // ------# dynamic 넣기 #------
-                    Log.v("다이나믹널찾기", "dynamic: ${mViewModel.dynamic}, userUUID: ${userUUID}, dynamicJa: ${mViewModel.dynamicJa.length()}, measureSn: ${measureInfoSn}")
-                    mDao.insertWithAutoIncrementDynamic(mViewModel.dynamic!!, userUUID, mViewModel.dynamicJa.length(), measureInfoSn)
-
-                    val convertedMeasureVO = mViewModel.convertJsonToMeasureVO(measureInfo, mViewModel.statics, mViewModel.dynamic!!)
-                    Log.v("변환된measureVO", "${convertedMeasureVO}")
-                    // 1. static 넣기 2. dynamic 넣기 3. 파일 매칭 되게 수정
-                    withContext(Dispatchers.Main) {
-                        val ja1 = JSONArray()
-                        ja1.apply {
-                            put(2)
-                            put(10)
-                            put(6)
-                        }
-                        val ja2 = JSONArray()
-                        ja2.apply {
-                            put(1)
-                            put(2)
-                            put(1)
-                        }
-                        val recJo = JSONObject().apply {
-                            put("user_sn", userJson.getString("user_sn").toInt())
-                            put("exercise_type_id", ja1)
-                            put("exercise_stage", ja2)
-                            put("measure_sn", measureInfoSn)
-                        }
-
-                        createRecommendProgram(getString(R.string.API_recommendation), recJo.toString(), this@MeasureSkeletonActivity) { recommendation ->
-                            singletonMeasure = Singleton_t_measure.getInstance(this@MeasureSkeletonActivity)
-                            convertedMeasureVO.recommendations = recommendation
-                            singletonMeasure.measures?.add(0, convertedMeasureVO)
-                            Log.v("측정싱글턴크기", "${singletonMeasure.measures?.size}")
-                            val intent = Intent()
-                            intent.putExtra("finishedMeasure", true)
-                            setResult(Activity.RESULT_OK, intent)
-                            finish()
-                        }
-
-                    }
-                    val intent = Intent()
-                    intent.putExtra("finishedMeasure", true)
-                    setResult(Activity.RESULT_OK, intent)
-                    finish()
+//                    for (i in 0 until mViewModel.statics.size) {
+//                        mDao.insertWithAutoIncrementStatic(mViewModel.statics[i], userUUID, measureInfoSn)
+//                    }
+//
+//                    // ------# dynamic 넣기 #------
+//                    Log.v("다이나믹널찾기", "dynamic: ${mViewModel.dynamic}, userUUID: ${userUUID}, dynamicJa: ${mViewModel.dynamicJa.length()}, measureSn: ${measureInfoSn}")
+//                    mDao.insertWithAutoIncrementDynamic(mViewModel.dynamic!!, userUUID, mViewModel.dynamicJa.length(), measureInfoSn)
+//
+//                    val convertedMeasureVO = mViewModel.convertJsonToMeasureVO(measureInfo, mViewModel.statics, mViewModel.dynamic!!)
+//                    Log.v("변환된measureVO", "${convertedMeasureVO}")
+//                    // 1. static 넣기 2. dynamic 넣기 3. 파일 매칭 되게 수정
+//                    withContext(Dispatchers.Main) {
+//                        val ja1 = JSONArray()
+//                        ja1.apply {
+//                            put(2)
+//                            put(10)
+//                            put(6)
+//                        }
+//                        val ja2 = JSONArray()
+//                        ja2.apply {
+//                            put(1)
+//                            put(2)
+//                            put(1)
+//                        }
+//                        val recJo = JSONObject().apply {
+//                            put("user_sn", userJson.getString("user_sn").toInt())
+//                            put("exercise_type_id", ja1)
+//                            put("exercise_stage", ja2)
+//                            put("measure_sn", measureInfoSn)
+//                        }
+//
+//                        createRecommendProgram(getString(R.string.API_recommendation), recJo.toString(), this@MeasureSkeletonActivity) { recommendation ->
+//                            singletonMeasure = Singleton_t_measure.getInstance(this@MeasureSkeletonActivity)
+//                            convertedMeasureVO.recommendations = recommendation
+//                            singletonMeasure.measures?.add(0, convertedMeasureVO)
+//                            Log.v("측정싱글턴크기", "${singletonMeasure.measures?.size}")
+//                            val intent = Intent()
+//                            intent.putExtra("finishedMeasure", true)
+//                            setResult(Activity.RESULT_OK, intent)
+//                            finish()
+//                        }
+//                    }
                 }
             } else {
                 startTimer()
@@ -656,7 +866,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // ------! 수직 감도 사라지기 보이기 끝 !------
     }
 
-
     // ------! 센서 시작 !------
     private fun lowPassFilter(input: Float): Float {
         filteredAngle += ALPHA * (input - filteredAngle)
@@ -671,7 +880,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
             val z = event.values[2]
             val clampedZ = z.coerceIn(-SensorManager.GRAVITY_EARTH, SensorManager.GRAVITY_EARTH)
-            val angle = Math.toDegrees(Math.asin(((clampedZ / SensorManager.GRAVITY_EARTH).toDouble())))
+            val angle = Math.toDegrees(asin(((clampedZ / SensorManager.GRAVITY_EARTH).toDouble())))
             filteredAngle = lowPassFilter(angle.toFloat())
             // 각도를 0~180 범위로 정규화
             val normalizedAngle = (filteredAngle + 90).coerceIn(0f, 180f)
@@ -695,45 +904,43 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     // ------! 센서 끝 !------
 
 
-    // ------! update UI 시작 !------
+    // ------# 측정 seq가 종료될 때 실행되는 함수 #------
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
         when (repeatCount.value!!) {
             maxRepeats -> {
-                binding.pvMeasureSkeleton.progress = 100
+                binding.pvMeasureSkeleton.progress = 100f
                 binding.tvMeasureSkeletonCount.text = "측정이 완료됐습니다 !"
                 binding.btnMeasureSkeletonStep.text = "완료하기"
                 mCountDown.cancel()
-                Log.v("repeat", "Max repeats reached, stopping the loop")
+                Log.v("몇단계?", "Max repeats reached, stopping the loop")
             }
             else -> {
-                if (repeatCount.value!! == 1) {
-                    binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
-                } else {
-                    binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
-                    binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
-                }
+                binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
+                binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
                 repeatCount.value = repeatCount.value!!.plus(1)
                 progress += 14
-                binding.pvMeasureSkeleton.progress = progress
+                binding.pvMeasureSkeleton.progress = progress.toFloat()
                 Log.v("몇단계?", "repeatCount: ${repeatCount.value}, progress: $progress")
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
                 val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
-                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
 
+                // VISIBLE을 사용해 1 -> 2 dynamic 끝나고도 0.3초 + recording 처리 시간 이후에 다시 보임.
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
+                }, 1100)
             }
-
         }
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")
-    } // ------! update UI 끝 !------
+    }
 
-
+    // ------# dynamic drawable 변경 #------
     fun setDrawableSequence(index: Int = 0) {
         val ids = listOf("1", "1_1", "1_2", "1_1", "1")
         if (index >= ids.size) {
             Log.v("DynamicDrawable", "Finished setDrawable in Frame.")
-            binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
+
             return
         }
 
@@ -757,20 +964,24 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
                 binding.btnMeasureSkeletonStep.text = "측정하기"
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
-
                 // 1 3 4 5 6 7
                 }
             else -> {
                 repeatCount.value = repeatCount.value?.minus(1)
                 progress -= 14
-                binding.pvMeasureSkeleton.progress = progress
+                binding.pvMeasureSkeleton.progress = progress.toFloat()
                 Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
                 val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
                 binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-                mViewModel.statics.removeAt(repeatCount.value!!)
-            }
+                if (repeatCount.value != 1) {
+                    mViewModel.statics.removeAt(repeatCount.value!!)
+                } else {
+                    mViewModel.dynamic = null
+                    mViewModel.dynamicJa = JSONArray()
+                }
 
+            }
         }
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")
     }
@@ -778,12 +989,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     // ------! 촬영 시 view 가리고 보이기 !-----
     private fun hideViews(delay : Long) {
         binding.clMeasureSkeletonTop.visibility = View.INVISIBLE
-        binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
+//        binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
         binding.llMeasureSkeletonBottom.visibility = View.INVISIBLE
         if (repeatCount.value != 1) startCameraShutterAnimation()
 
         setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
-        setAnimation(binding.ivMeasureSkeletonFrame, 850, delay, true) {}
+//        setAnimation(binding.ivMeasureSkeletonFrame, 850, delay, true) {}
         setAnimation(binding.llMeasureSkeletonBottom, 850, delay, true) {}
         setAnimation(binding.tvMeasureSkeletonCount, 850, delay ,true) {}
         binding.btnMeasureSkeletonStep.visibility = View.VISIBLE
@@ -799,7 +1010,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         binding.btnMeasureSkeletonStep.visibility = View.VISIBLE
         binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
     }
-
 
     // ------! 타이머 control 시작 !------
     private fun startTimer() {
@@ -828,18 +1038,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             {
                 // CameraProvider
                 cameraProvider = cameraProviderFuture.get()
-
                 // Build and bind the camera use cases
                 bindCameraUseCases()
             }, ContextCompat.getMainExecutor(this)
         )
     }
 
-    // Declare and bind preview, capture and analysis use cases
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
         preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-        // CameraProvider
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
 
@@ -948,56 +1155,19 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 )
                 latestResult = resultBundle
                 binding.overlay.invalidate()
-                if (scaleFactorX != null && scaleFactorY != null) {
-                    scaleFactorX = binding.overlay.width * 1f / latestResult!!.inputImageWidth
-                    scaleFactorY = binding.overlay.height * 1f / latestResult!!.inputImageHeight
-                }
             }
         }
-    }
-    // ------# 기울기 계산 #------
-    fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        return (y2 - y1) / (x2 - x1)
-    }
-    // ------# 점 3개의 각도 계산 #------
-    private fun calculateAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3:Float): Float {
-        val v1x = x1 - x2
-        val v1y = y1 - y2
-        val v2x = x3 - x2
-        val v2y = y3 - y2
-        val dotProduct = v1x * v2x + v1y * v2y
-        val magnitude1 = sqrt(v1x * v1x + v1y * v1y)
-        val magnitude2 = sqrt(v2x * v2x + v2y * v2y)
-
-        val cosTheta = dotProduct / (magnitude1 * magnitude2)
-        val angleRadians = acos(cosTheta)
-        return Math.toDegrees(angleRadians.toDouble()).toFloat()
-    }
-    // ------# 점과 점사이의 거리 #------
-    private fun calculateDistanceByDots(x1: Float, y1: Float, x2: Float, y2: Float) : Float{
-        val dx = x2 - x1
-        val dy = y2 - y1
-        return sqrt(dx * dx + dy * dy)
-    }
-
-    // ------! 선과 점의 X 거리 !------
-    private fun calculateAngleByLine(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) : Float {
-        val vector1X = x2 - x1
-        val vector1Y = y2 - y1
-        val vector2X = x3 - x1
-        val vector2Y = y3 - y1
-        val dotProduct = vector1X * vector2X + vector1Y * vector2Y
-        val magnitude1 = sqrt(vector1X.pow(2) + vector1Y.pow(2))
-        val magnitude2 = sqrt(vector2X.pow(2) + vector2Y.pow(2))
-
-        val cosTheta = dotProduct / (magnitude1 * magnitude2)
-        val angleRad = acos(cosTheta.coerceIn(-1.0F, 1.0F))
-
-        return angleRad * (180f / PI.toFloat())
     }
 
     // override 로 resultbundle이 계속 나오는데 해당 항목을 전역변수 latest
     fun resultBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle, step: Int) {
+        if (scaleFactorX == null && scaleFactorY == null) {
+            scaleFactorX = binding.overlay.width * 1f / latestResult!!.inputImageWidth
+            scaleFactorY = binding.overlay.height * 1f / latestResult!!.inputImageHeight
+            Log.v("scaleFactor초기화", "(x, y) : ($scaleFactorX, $scaleFactorY)")
+        }
+
+        val frameStartTime = System.nanoTime()
         val earData = mutableListOf<Pair<Float, Float>>() // index 0 왼 index 1 오른
         val shoulderData = mutableListOf<Pair<Float, Float>>()
         val elbowData = mutableListOf<Pair<Float, Float>>()
@@ -1191,6 +1361,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     mViewModel.dynamicJoUnit.apply {
                         put("device_sn", 0)
                         put("user_uuid", singletonUser.jsonObject?.getString("user_uuid"))
+                        put("mobile_device_uuid", decrptedUUID)
                         put("user_name", singletonUser.jsonObject?.getString("user_name")!! )
                         put("user_sn", singletonUser.jsonObject?.getInt("user_sn")!!)
                         put("measure_seq", 2)
@@ -1204,6 +1375,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("measure_photo_file_name", measureVideoName)
                         put("measure_server_json_name", "$videoFileName.json")
                         put("measure_server_file_name", "$videoFileName.mp4")
+
                         put("front_horizontal_angle_wrist", wristAngle)
                         put("front_horizontal_distance_wrist", wristDistance)
                         put("front_horizontal_distance_center_left_wrist", wristDistanceByCenter.first)
@@ -1231,22 +1403,24 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_vertical_angle_hip_knee_toe_left", hipKneeToeAngle.first)
                         put("front_vertical_angle_hip_knee_toe_right", hipKneeToeAngle.second)
                         put("front_vertical_angle_hip_knee_left", hipKneeAngle.first)
-                        put("front_vertical_angle_hip_knee_toe_right", hipKneeAngle.second)
-                        put("front_vertical_angle_hip_knee_left", kneeToeAngle.first)
-                        put("front_vertical_angle_hip_knee_right", kneeToeAngle.second)
+                        put("front_vertical_angle_hip_knee_right", hipKneeAngle.second)
+                        put("front_vertical_angle_knee_toe_left", kneeToeAngle.first)
+                        put("front_vertical_angle_knee_toe_right", kneeToeAngle.second)
                         put("front_vertical_angle_ankle_toe_left", ankleToeAngle.first)
                         put("front_vertical_angle_ankle_toe_right", ankleToeAngle.second)
                         put("front_vertical_angle_knee_ankle_toe_left", kneeAnkleToeAngle.first)
                         put("front_vertical_angle_knee_ankle_toe_right", kneeAnkleToeAngle.second)
-                        put("front_horizontal_distance_center_mid_finger_tip_left", indexDistanceByCenter.first)
-                        put("front_horizontal_distance_center_mid_finger_tip_right", indexDistanceByCenter.second)
                         put("front_horizontal_angle_mid_finger_tip", indexAngle)
                         put("front_horizontal_distance_mid_finger_tip", indexDistance)
+                        put("front_horizontal_distance_center_mid_finger_tip_left", indexDistanceByCenter.first)
+                        put("front_horizontal_distance_center_mid_finger_tip_right", indexDistanceByCenter.second)
+                        put("times",String.format("%.7f", (System.nanoTime() - frameStartTime) / 1_000_000_000f).toFloat())
                         put("pose_landmark", poseLandmarks)
+
                     }
 
                     // 1프레임당 dynamic 측정 모두 들어감
-                    Log.v("dynamicJa에들어감", "${mViewModel.dynamicJa.length()}")
+
                     mViewModel.dynamicJa.put(mViewModel.dynamicJoUnit)
                     mViewModel.dynamicJoUnit = JSONObject()
                 }
@@ -1267,7 +1441,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_elbow_align_distance_right_wrist_shoulder", wristShoulderDistance.second)
                         put("front_elbow_align_distance_wrist_height", wristsDistanceByY)
                         put("front_elbow_align_angle_mid_index_wrist_elbow_left", indexWristElbowAngle.first)
-                        put("front_elbow_align_angle_mid_index_wrist_elbow_rightt", indexWristElbowAngle.second)
+                        put("front_elbow_align_angle_mid_index_wrist_elbow_right", indexWristElbowAngle.second)
                         put("front_elbow_align_angle_left_shoulder_elbow_wrist", shoulderElbowWristAngle.first)
                         put("front_elbow_align_angle_right_shoulder_elbow_wrist", shoulderElbowWristAngle.second)
                         put("front_elbow_align_distance_center_mid_finger_left", indexDistanceByX.first)
@@ -1388,7 +1562,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("back_horizontal_distance_heel_right", backHeelDistanceByX.second)
 
                         put("back_vertical_angle_nose_center_shoulder", backNoseShoulderLean % 180)
-                        put("back_vertical_angle_shoudler_center_hip", backShoulderHipLean % 180)
+                        put("back_vertical_angle_shoulder_center_hip", backShoulderHipLean % 180)
                         put("back_vertical_angle_nose_center_hip", backNoseHipLean % 180)
                         put("back_vertical_angle_knee_heel_left", backKneeHeelLean.first% 180)
                         put("back_vertical_angle_knee_heel_right", backKneeHeelLean.second% 180)
@@ -1454,6 +1628,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 else -> -1
             })
             put("device_sn", 0)
+            put("mobile_device_uuid", decrptedUUID)
             put("user_uuid", singletonUser.jsonObject?.getString("user_uuid"))
             put("user_name", singletonUser.jsonObject?.getString("user_name")!!)
             put("user_sn", singletonUser.jsonObject?.getInt("user_sn")!!)
@@ -1468,11 +1643,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             put("measure_server_file_name", "${getFileName(step)}.jpg")
             put("pose_landmark", poseLandmarks)
         }
-        Log.v("${step}번JSON>Static변환", "${jsonObj.getString("measure_server_json_name")}, ${jsonObj.getString("measure_server_file_name")}")
-        saveJo(this@MeasureSkeletonActivity, "${getFileName(step)}.json", jsonObj, mViewModel)
+//        Log.v("${step}_JsonStatic변환scaleFactor", "${jsonObj.getString("measure_overlay_scale_factor_x")}, ${jsonObj.getString("measure_overlay_scale_factor_y")}")
+
         val measureStaticUnit = mViewModel.staticjo.toMeasureStatic()
         mViewModel.statics.add(measureStaticUnit)
-        Log.v("뷰모델스태틱", "${mViewModel.statics}")
+        Log.v("뷰모델스태틱_$step", "${measureStaticUnit}")
+        saveJo(this@MeasureSkeletonActivity, "${getFileName(step)}.json", JSONObject(measureStaticUnit.toJson()), mViewModel)
         mViewModel.staticjo = JSONObject()
     }
 
@@ -1500,7 +1676,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
     private fun captureImage(step: Int) {
-        val imageCapture = imageCapture ?: return
+        val imageCapture = imageCapture
 
         val name = getFileName(step)
         val contentValues = ContentValues().apply {
@@ -1540,10 +1716,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
 
     private fun startVideoRecording(callback: () -> Unit){
-
-
         recordingJob = CoroutineScope(Dispatchers.IO).launch {
-            val videoCapture = this@MeasureSkeletonActivity.videoCapture ?: return@launch
+            val videoCapture = this@MeasureSkeletonActivity.videoCapture
             val curRecording = recording
             if (curRecording != null) {
                 curRecording.stop()
@@ -1698,24 +1872,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             Log.e("MeasureViewModel", "Error saving media to cache: ${e.message}")
         }
     }
-//    fun rotateImageIfRequired(context: Context, uri: Uri, bitmap: Bitmap): Bitmap {
-//        val inputStream = context.contentResolver.openInputStream(uri)
-//        val exif = inputStream?.let { ExifInterface(it) }
-//        val orientation = exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-//
-//        return when (orientation) {
-//            ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
-//            ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
-//            ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
-//            else -> bitmap
-//        }
-//    }
-//
-//    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
-//        val matrix = Matrix()
-//        matrix.postRotate(degrees)
-//        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-//    }
 
     // ------! 애니메이션 !------
     private fun setAnimation(tv: View, duration : Long, delay: Long, fade: Boolean, callback: () -> Unit) {
@@ -1795,8 +1951,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
-
-
     suspend fun findLowestYFrame(coordinates: List<Pair<Float, Float>>): Int = withContext(Dispatchers.Default) {
         val yValues = coordinates.map { it.second }
         val highestYIndex = yValues.withIndex().maxByOrNull { it.value }?.index ?: 0
@@ -1804,6 +1958,181 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // 3프레임 전의 인덱스를 반환하되, 리스트의 범위를 벗어나지 않도록 합니다.
         maxOf(0, highestYIndex - 3)
     }
+
+    // Activity 내부에 추가할 함수
+    private suspend fun retryUpload(
+        requestBody: MultipartBody,
+        maxRetries: Int = 5,
+        mobileInfoSn : Int,
+        mobileStaticSns : MutableList<Int>,
+        mobileDynamicSn: Int,
+        measureInfo: MeasureInfo
+    ) {
+        var currentRetry = 0
+        var currentRequestBody = requestBody
+
+        while (currentRetry < maxRetries) {
+
+            try {
+                val success = suspendCancellableCoroutine<Boolean> { continuation ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        sendMeasureData(
+                            this@MeasureSkeletonActivity,
+                            getString(R.string.API_results),
+                            currentRequestBody,
+                            mobileInfoSn,
+                            mobileStaticSns,
+                            mobileDynamicSn
+                        ) { jo ->
+                            Log.v("Upload Attempt", "Try count: ${currentRetry + 1}")
+
+                            // 결과 파싱
+                            val measureInfoSuccess = jo.optJSONObject("measureInfo")?.optString("uploaded") == "1"
+                            val staticUploadResults = mutableListOf<Triple<Boolean, Boolean, Boolean>>()
+
+                            // Static 결과 확인
+                            for (i in 1..6) {
+                                val staticResult = jo.optJSONObject("static_$i")
+                                if (staticResult != null) {
+                                    val jsonSuccess = staticResult.optString("json") == "1"
+                                    val jsonFileSuccess = staticResult.optString("json_file") == "1"
+                                    val mediaFileSuccess = staticResult.optString("media_file") == "1"
+                                    staticUploadResults.add(Triple(jsonSuccess, jsonFileSuccess, mediaFileSuccess))
+                                } else {
+                                    staticUploadResults.add(Triple(false, false, false))
+                                }
+                            }
+
+                            // Dynamic 결과 확인
+                            val dynamicResult = jo.optJSONObject("dynamic")
+                            val dynamicUploadResults = if (dynamicResult != null) {
+                                Triple(
+                                    dynamicResult.optString("json") == "1",
+                                    dynamicResult.optString("json_file") == "1",
+                                    dynamicResult.optString("media_file") == "1"
+                                )
+                            } else {
+                                Triple(false, false, false)
+                            }
+
+                            val allStaticsUploaded = staticUploadResults.all { it.first && it.second && it.third }
+                            val allDynamicUploaded = dynamicUploadResults.first &&
+                                    dynamicUploadResults.second &&
+                                    dynamicUploadResults.third
+
+                            if (measureInfoSuccess && allStaticsUploaded && allDynamicUploaded) {
+                                continuation.resume(true)
+                                return@sendMeasureData
+                            }
+
+                            // 실패한 경우 새로운 requestBody 생성
+                            val reMotherJo = JSONObject()
+                            val retryRequestBodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
+
+                            // measureInfo 재전송
+                            if (!measureInfoSuccess) {
+                                val reInfoJson = JSONObject(measureInfo.toJson())
+                                reMotherJo.put("measure_info", reInfoJson)
+                            }
+
+                            // static 파일들 재전송
+                            staticUploadResults.forEachIndexed { index, result ->
+                                if (!result.first) {
+                                    val staticUnit = mViewModel.statics[index].toJson()
+                                    reMotherJo.put("static_${index+1}", JSONObject(staticUnit))
+                                }
+                                if (!result.second) {
+                                    val file = mViewModel.staticJsonFiles[index]
+                                    retryRequestBodyBuilder.addFormDataPart(
+                                        "static_json_${index+1}",
+                                        file.name,
+                                        file.asRequestBody("application/json".toMediaTypeOrNull())
+                                    )
+                                }
+                                if (!result.third) {
+                                    val file = mViewModel.staticFiles[index]
+                                    retryRequestBodyBuilder.addFormDataPart(
+                                        "static_file_${index + 1}",
+                                        file.name,
+                                        file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                                    )
+                                }
+                            }
+
+                            // dynamic 파일들 재전송
+                            if (!dynamicUploadResults.first) {
+                                mViewModel.dynamic?.let {
+                                    reMotherJo.put("dynamic", JSONObject(it.toJson()))
+                                }
+                            }
+                            if (!dynamicUploadResults.second) {
+                                mViewModel.dynamicJsonFile?.let { file ->
+                                    retryRequestBodyBuilder.addFormDataPart(
+                                        "dynamic_json",
+                                        file.name,
+                                        file.asRequestBody("application/json".toMediaTypeOrNull())
+                                    )
+                                }
+                            }
+                            if (!dynamicUploadResults.third) {
+                                mViewModel.dynamicFile?.let { file ->
+                                    retryRequestBodyBuilder.addFormDataPart(
+                                        "dynamic_file",
+                                        file.name,
+                                        file.asRequestBody("video/mp4".toMediaTypeOrNull())
+                                    )
+                                }
+                            }
+
+                            retryRequestBodyBuilder.addFormDataPart("json", reMotherJo.toString())
+                            currentRequestBody = retryRequestBodyBuilder.build()
+
+                            continuation.resume(false)
+                        }
+
+
+                    }
+
+                }
+
+                if (success) {
+                    // 성공 처리
+                    withContext(Dispatchers.Main) {
+                        val ssm = SaveSingletonManager(this@MeasureSkeletonActivity, this@MeasureSkeletonActivity)
+                        withContext(Dispatchers.IO) {
+                            ssm.addMeasurementInSingleton(mobileInfoSn, mobileStaticSns, mobileDynamicSn)
+                            cacheDir.deleteRecursively()
+                        }
+                        setResult(Activity.RESULT_OK, Intent().apply {
+                            putExtra("finishedMeasure", true)
+                        })
+                        finish()
+                    }
+                    return
+                }
+
+                if (currentRetry >= maxRetries - 1) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@MeasureSkeletonActivity, "업로드 실패", Toast.LENGTH_LONG).show()
+                        setResult(Activity.RESULT_CANCELED, Intent().apply {
+                            putExtra("finishedMeasure", false)
+                        })
+                        finish()
+                    }
+                    return
+                }
+                currentRetry++
+                Log.v("Upload Retry", "Attempt ${currentRetry + 1} failed. Retrying...")
+                delay(1000) // 1초 대기
+
+            } catch (e: Exception) {
+                Log.e("Upload Error", "Error during upload, ${e.printStackTrace()}" )
+
+            }
+        }
+    }
+
+
     private fun JSONObject.toMeasureStatic(): MeasureStatic {
         return Gson().fromJson(this.toString(), MeasureStatic::class.java)
     }
@@ -1812,13 +2141,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         return Gson().fromJson(this.toString(), MeasureDynamic::class.java)
     }
 
-    fun MeasureStatic.toJson(): String {
+    private fun MeasureStatic.toJson(): String {
         return Gson().toJson(this)
     }
-    fun MeasureDynamic.toJson(): String {
+    private fun MeasureDynamic.toJson(): String {
         return Gson().toJson(this)
     }
-    fun MeasureInfo.toJson(): String {
+    private fun MeasureInfo.toJson(): String {
         return Gson().toJson(this)
     }
 }

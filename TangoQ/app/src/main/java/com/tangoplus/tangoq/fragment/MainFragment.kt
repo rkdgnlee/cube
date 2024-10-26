@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -118,6 +119,7 @@ class MainFragment : Fragment() {
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 measures = Singleton_t_measure.getInstance(requireContext()).measures
+//                measures = mutableListOf()
                 binding.llM.visibility = View.VISIBLE
                 binding.sflM.startShimmer()
 
@@ -132,19 +134,6 @@ class MainFragment : Fragment() {
                 binding.tvMMeasureDate.setOnClickListener {
                     val dialog = MeasureBSDialogFragment()
                     dialog.show(requireActivity().supportFragmentManager, "MeasureBSDialogFragment")
-                }
-
-                binding.btnMProgram.setOnClickListener {
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flMain, ProgramSelectFragment())
-                        addToBackStack(null)
-                        commit()
-                    }
-                }
-
-                binding.ivMBlur.setOnClickListener {
-                    val bnb : BottomNavigationView = requireActivity().findViewById(R.id.bnbMain)
-                    bnb.selectedItemId = R.id.measure
                 }
             }
             false -> {
@@ -195,9 +184,6 @@ class MainFragment : Fragment() {
         stages.add(balanceParts5)
 
         val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
-
-
-
 //        val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
         // 부위에 대한 설명 타입 - 근육 긴장, 이상 감지, 불균형 등
 
@@ -213,11 +199,20 @@ class MainFragment : Fragment() {
             if (measure.size > 0) {
                 binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secondBgContainerColor))
                 binding.tvMMeasureDate.visibility = View.VISIBLE
-                binding.rvM3.visibility = View.VISIBLE
+                binding.rvM1.visibility = View.VISIBLE
+                binding.tvMTitle.text = "측정정보"
+                binding.llM.visibility = View.VISIBLE
+                binding.vpM.visibility = View.VISIBLE
+                binding.tvMProgram.visibility = View.VISIBLE
                 binding.tvMCustom.visibility = View.VISIBLE
-                binding.tvMBlur.visibility = View.GONE
-                binding.ivMBlur.visibility = View.GONE
-                binding.clMMeasure.visibility = View.VISIBLE
+                binding.rvM3.visibility = View.VISIBLE
+                binding.btnMProgram.setOnClickListener {
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flMain, ProgramSelectFragment())
+                        addToBackStack(null)
+                        commit()
+                    }
+                }
                 // ------# 바텀시트에서 변한 selectedMeasureDate 에 맞게 변함.
 
 
@@ -250,29 +245,105 @@ class MainFragment : Fragment() {
 
                     // ------# 측정 결과에 맞는 진행 프로그램 2번째 가져오기 #------
                     CoroutineScope(Dispatchers.IO).launch {
-
+                        /* 1. 가장 최근에 한 운동 가져오기
+                         *  2. 그 값에서 가져와서 해당 주차의 uvp 가져오기 week가 (동일한 uvp)
+                         *  3. 그걸로만 rv 채우기.
+                         * */
                         try {
-                            /* 1. 가장 최근에 한 운동 가져오기
-                            *  2. 그 값에서 가져와서 해당 주차의 uvp 가져오기 week가 (동일한 uvp)
-                            *  3. 그걸로만 rv 채우기.
-                            * */
                             val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
-                            val programSn = latestProgress.optInt("exercise_program_sn")
-                            Log.v("프로그램sn", "$programSn") //8 이 나옴
-                            val adapter : ExerciseRVAdapter
-                            val program : ProgramVO?
+                            val programSn = latestProgress.optInt("exercise_program_sn")  // 여기서 exception으로 나가짐.
                             var currentPage = 0
+                            val adapter : ExerciseRVAdapter
+
                             // -------# 최근 진행 프로그램 가져오기 #------
-                            if (programSn != 0) {
-                                val week = latestProgress.optInt("week_number")
-                                program  = fetchProgram(getString(R.string.API_programs), requireContext(), programSn.toString())
-                                val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
-                                currentPage = findCurrentIndex(progresses)
-                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, progresses, Pair(currentPage, currentPage) , null,"history")
-                            } else {
-                                Log.v("뷰모델현재측정추천0번쨰", "${mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString()}, ${mViewModel.selectedMeasure?.recommendations}")
-                                program = fetchProgram(getString(R.string.API_programs), requireContext(), mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
-                                adapter = ExerciseRVAdapter(this@MainFragment, program?.exercises!!, null, null, null,"history")
+                            withContext(Dispatchers.Main) {
+                                if (viewModel.processingProgram == null) {
+                                    if (programSn != 0) {
+                                        val week = latestProgress.optInt("week_number")
+                                        Log.v("프로세싱있을때week", "week: ${week}")
+                                        viewModel.processingProgram = fetchProgram(
+                                            getString(R.string.API_programs),
+                                            requireContext(),
+                                            programSn.toString()
+                                        )
+                                        withContext(Dispatchers.IO) {
+                                            val progresses = getWeekProgress(
+                                                getString(R.string.API_progress),
+                                                latestRecSn,
+                                                week,
+                                                requireContext()
+                                            )
+                                            currentPage = findCurrentIndex(progresses)
+                                            withContext(Dispatchers.Main) {
+                                                Log.w("저장안된프로그램", "${viewModel.processingProgram?.programSn!!}")
+                                                adapter = ExerciseRVAdapter(
+                                                    this@MainFragment,
+                                                    viewModel.processingProgram?.exercises!!,
+                                                    progresses,
+                                                    Pair(currentPage, currentPage),
+                                                    null,
+                                                    "history"
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        viewModel.processingProgram = fetchProgram(
+                                            getString(R.string.API_programs),
+                                            requireContext(),
+                                            mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString()
+                                        )
+                                        withContext(Dispatchers.Main) {
+                                            Log.w("저장안된프로그램", "${viewModel.processingProgram?.programSn!!}")
+                                            adapter = ExerciseRVAdapter(
+                                                this@MainFragment,
+                                                viewModel.processingProgram?.exercises!!,
+                                                null,
+                                                null,
+                                                null,
+                                                "history"
+                                            )
+                                        }
+                                    }
+                                } else {
+
+                                    if (programSn != 0) {
+                                        val week = latestProgress.optInt("week_number")
+                                        withContext(Dispatchers.IO) {
+                                            val progresses = getWeekProgress(
+                                                getString(R.string.API_progress),
+                                                latestRecSn,
+                                                week,
+                                                requireContext()
+                                            )
+                                            currentPage = findCurrentIndex(progresses)
+                                            withContext(Dispatchers.Main) {
+                                                Log.w("저장된프로그램", "${viewModel.processingProgram?.programSn!!}")
+
+                                                adapter = ExerciseRVAdapter(
+                                                    this@MainFragment,
+                                                    viewModel.processingProgram?.exercises!!,
+                                                    progresses,
+                                                    Pair(currentPage, currentPage),
+                                                    null,
+                                                    "history"
+                                                )
+                                            }
+                                        }
+
+                                    } else {
+                                        withContext(Dispatchers.Main) {
+                                            Log.w("저장된프로그램", "${viewModel.processingProgram?.programSn!!}")
+                                            adapter = ExerciseRVAdapter(
+                                                this@MainFragment,
+                                                viewModel.processingProgram?.exercises!!,
+                                                null,
+                                                null,
+                                                null,
+                                                "history"
+                                            )
+                                        }
+                                    }
+                                }
                             }
 
                             CoroutineScope(Dispatchers.Main).launch {
@@ -321,27 +392,54 @@ class MainFragment : Fragment() {
 
                                 // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
                                 binding.tvMProgram.setOnClickListener {
-                                    val dialog = ProgramCustomDialogFragment.newInstance(program.programSn, prefsManager.getLatestRecommendation())
-                                    Log.v("프로그램direct", "$programSn, ${prefsManager.getLatestRecommendation()}")
-                                    dialog.show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                                    try {
+                                        val programSn = viewModel.processingProgram?.programSn ?: throw IllegalStateException("Program SN is null")
+                                        val recommendationSn = when {
+                                            prefsManager.getLatestRecommendation() != -1 -> {
+                                                prefsManager.getLatestRecommendation()
+                                            }
+                                            mViewModel.selectedMeasure?.recommendations?.isNotEmpty() == true -> {
+                                                mViewModel.selectedMeasure?.recommendations?.get(0)?.recommendationSn
+                                                    ?: throw IllegalStateException("Recommendation SN is null")
+                                            }
+                                            else -> {
+                                                throw IllegalStateException("No valid recommendation available")
+                                            }
+                                        }
+                                        ProgramCustomDialogFragment.newInstance(programSn, recommendationSn)
+                                            .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                                    } catch (e: IllegalStateException) {
+                                        Log.e("프로그램오류", "${e.printStackTrace()}")
+                                    }
                                 }
                             }
                         } catch (e: Exception) {
-                            Log.e("Error>Program", "${e.message}")
+                            e.printStackTrace()
+                            Log.e("Error>Program", "${e.message} $e")
                         }
-
-
                     }
                 }
             } else {
                 binding.tvMTitle.text = "${Singleton_t_user.getInstance(requireContext()).jsonObject?.getString("user_name")}님"
                 binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                 binding.tvMMeasureDate.visibility = View.GONE
+                binding.tvMOverall.text = "-"
+                binding.tvMMeasureResult1.text = "측정 데이터가 없습니다."
+                binding.tvMMeasureResult2.text = "키오스크, 모바일을 통해 측정을 진행해주세요"
+                binding.rvM1.visibility = View.GONE
+                binding.llM.visibility = View.GONE
+                binding.vpM.visibility = View.GONE
+                binding.tvMProgram.visibility = View.GONE
+
                 binding.rvM3.visibility = View.GONE
                 binding.tvMCustom.visibility = View.GONE
-                binding.tvMBlur.visibility = View.VISIBLE
-                applyBlurToConstraintLayout(binding.clMMeasure, binding.ivMBlur)
-                binding.clMMeasure.visibility = View.INVISIBLE
+
+                binding.btnMProgram.apply {
+                    text = "프로그램 추천 받기"
+                    setOnClickListener{
+                        (activity as? MainActivity)?.launchMeasureSkeletonActivity()
+                    }
+                }
             }
         }
     }
@@ -381,15 +479,22 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun applyBlurToConstraintLayout(constraintLayout: ConstraintLayout, imageView: ImageView) {
-        constraintLayout.post {
-            Blurry.with(constraintLayout.context)
-                .radius(10)
-                .sampling(5)
-                .async()
-                .capture(constraintLayout) // ConstraintLayout의 스크린샷을 캡처하여 블러 처리
-                .into(imageView) // 블러 처리된 이미지를 ImageView에 설정
-        }
-
-    }
+//    private fun applyBlurToConstraintLayout(constraintLayout: ConstraintLayout, imageView: ImageView) {
+//        val paddingInDp = 10
+//        val density = constraintLayout.context.resources.displayMetrics.density
+//        val paddingInPx = (paddingInDp * density).toInt()
+//
+//        constraintLayout.setPadding(paddingInPx, paddingInPx, paddingInPx, paddingInPx)
+//
+//        constraintLayout.post {
+//            Blurry.with(constraintLayout.context)
+//                .radius(10)
+//                .sampling(5)
+//
+//                .async()
+//                .capture(constraintLayout) // ConstraintLayout의 스크린샷을 캡처하여 블러 처리
+//                .into(imageView) // 블러 처리된 이미지를 ImageView에 설정
+//        }
+//
+//    }
 }

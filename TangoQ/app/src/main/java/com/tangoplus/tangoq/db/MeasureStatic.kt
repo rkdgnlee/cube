@@ -2,23 +2,26 @@ package com.tangoplus.tangoq.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.tangoplus.tangoq.db.MeasureDynamic.Companion
 import org.json.JSONObject
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Entity(tableName = "t_measure_static")
 data class MeasureStatic(
-    @PrimaryKey(autoGenerate = true) var mobile_sn: Int = 0 ,
+    @PrimaryKey(autoGenerate = true) var mobile_sn: Int = 0,
     val server_sn: Int? = null, // info의 sn을 말함.
     val device_sn: Int = 0,
     val local_sn: Int = 0, // 이거는
     val measure_sn: Int = 0,
-
     val user_uuid: String = "",
+    val mobile_device_uuid : String? = "",
     val user_sn: Int = 0,
     val user_name: String = "",
     val measure_seq: Int = -1,
     val measure_type: Int = -1,
-    val reg_date: String = "",
+    val reg_date: String? = getCurrentDateTime(),
     val measure_start_time: String = "",
     val measure_end_time: String = "",
     val measure_photo_file_name: String = "",
@@ -28,7 +31,6 @@ data class MeasureStatic(
     val measure_overlay_height: Int = 0,
     val measure_overlay_scale_factor_x: Float = 0F,
     val measure_overlay_scale_factor_y: Float = 0F,
-
     val front_horizontal_angle_ear: Float = 0F,
     val front_horizontal_distance_sub_ear: Float = 0F,
     val front_horizontal_angle_shoulder: Float = 0F,
@@ -159,10 +161,14 @@ data class MeasureStatic(
     val front_elbow_align_distance_center_mid_finger_right: Float = 0F,
     val front_elbow_align_distance_center_wrist_left: Float = 0F,
     val front_elbow_align_distance_center_wrist_right: Float = 0F,
-    val uploaded: String = "0",
-    val upload_date: String = "",
-    val uploaded_json: String = "0",
-    val uploaded_file: String = "0",
-    val used: String = "0",
-
-)
+    var uploaded: String? = "0",
+    var upload_date: String? = getCurrentDateTime(),
+    var uploaded_json: String? = "0",
+    var uploaded_file: String? = "0",
+    val used: String? = "0"
+) {
+    companion object {
+        fun getCurrentDateTime(): String =
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    }
+}

@@ -26,8 +26,7 @@ class PreferencesManager(private val context: Context) {
         globalPrefs.edit().putInt(USER_SN_KEY, userSn).apply()
     }
 
-    // Latest Recommendation
-
+    // ------# Latest Recommendation #------
     private val latestRecommendationPrefs: SharedPreferences
         get() = getPrefs("latest_recommendation")
 

@@ -12,10 +12,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.PopupWindow
-import androidx.annotation.OptIn
-import androidx.compose.runtime.mutableStateOf
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -27,9 +23,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -37,32 +30,24 @@ import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard1Binding
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import okhttp3.internal.format
-import org.apache.commons.math3.distribution.NormalDistribution
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Date
-import java.util.Locale
 
 
 class MeasureDashBoard1Fragment : Fragment() {
     lateinit var binding : FragmentMeasureDashboard1Binding
     val viewModel : MeasureViewModel by activityViewModels()
     private var balloon : Balloon? = null
-    // ------! 싱글턴 패턴 객체 가져오기 !------
-    private lateinit var singletonMeasure: Singleton_t_measure
+    private var measures : MutableList<MeasureVO>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,14 +61,18 @@ class MeasureDashBoard1Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        singletonMeasure = Singleton_t_measure.getInstance(requireContext())
+        // ------# 싱글턴 패턴 객체 가져오기 #------
+        val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
+        measures = singletonMeasure.measures
+//        measures = mutableListOf()
+
         // ------!  이름 + 통증 부위 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 try {
-                    if (singletonMeasure.measures?.isNotEmpty() == true) {
+                    if (measures?.isNotEmpty() == true) {
                         val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
                         binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall?: 0}"
                         binding.tvMD1MeasureHistory.text = if (viewModel.selectedMeasure?.regDate == "") "측정기록없음" else "최근 측정 기록 - ${viewModel.selectedMeasure?.regDate?.substring(0, 10)}"
@@ -167,21 +156,26 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         val lcDataList: MutableList<Pair<String, Int>> = mutableListOf()
 
-        val measures = singletonMeasure.measures
+
         if (measures?.size != 7) {
             for (i in 0 until (7 - measures?.size!!)) {
                 lcDataList.add(Pair("", 0))
             }
         }
-
-        for (i in measures.size - 1 downTo 0) {
-            val measure = measures[i]
-            lcDataList.add(Pair(measure.regDate, measure.overall?.toInt()!!))
-        }
-        Log.v("lcDataList", "${lcDataList}")
-        for (i in lcDataList.indices) {
-            startIndex = i
-            break
+        if (!measures.isNullOrEmpty()) {
+            for (i in measures!!.size - 1 downTo 0) {
+                val measure = measures!![i]
+                lcDataList.add(Pair(measure.regDate, measure.overall?.toInt()!!))
+            }
+            Log.v("lcDataList", "${lcDataList}")
+            for (i in lcDataList.indices) {
+                startIndex = i
+                break
+            }
+        } else {
+            for (i in 6 downTo 0) {
+                lcDataList.add(Pair("", 0))
+            }
         }
 
         val lcEntries: MutableList<Entry> = mutableListOf()
@@ -305,8 +299,8 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         // ------! balloon 시작 !------
         var percentage = 0.5f
-        if (measures.size >= 1) {
-            val userPercentile = measures[0].overall
+        if (measures!!.size >= 1) {
+            val userPercentile = measures!![0].overall
             percentage = calculatePercentage(userPercentile?.toInt()!!)
         }
 

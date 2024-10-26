@@ -108,7 +108,6 @@
             android:background="@drawable/bckgnd_rectangle_20"
             android:backgroundTint="@color/secondaryColor"
             android:drawableEnd="@drawable/icon_arrow_right_small"
-            android:drawableTint="@color/white"
             android:gravity="center|center_vertical"
             android:paddingStart="15dp"
             android:paddingTop="4dp"

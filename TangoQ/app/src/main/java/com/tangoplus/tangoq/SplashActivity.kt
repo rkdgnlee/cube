@@ -95,7 +95,7 @@ class SplashActivity : AppCompatActivity() {
 //        CoroutineScope(Dispatchers.IO).launch {
 //            dao.insertInfo(info)
 //        }
-        // ----- API 초기화 시작 -----
+        // ------! API 초기화 시작 !------
         NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "TangoQ")
         KakaoSdk.init(this, getString(R.string.kakao_client_id))
         firebaseAuth = Firebase.auth
@@ -103,7 +103,7 @@ class SplashActivity : AppCompatActivity() {
         val googleUserExist = firebaseAuth.currentUser
         val naverTokenExist = NaverIdLoginSDK.getState()
         ssm = SaveSingletonManager(this@SplashActivity, this)
-        // ----- API 초기화 끝 ------
+        // ------! API 초기화 끝 !------
 
         // ------! 인터넷 연결 확인 !------
         when (isNetworkAvailable(this)) {
@@ -120,9 +120,9 @@ class SplashActivity : AppCompatActivity() {
                     Log.e("메시지토큰", "fcm token :: $token")
                 })
                 createNotificationChannel()
-                // ------! 푸쉬 알림 끝 !-----
+                // ------! 푸쉬 알림 끝 !------
 
-                // ----- 인 앱 알림 시작 -----
+                // ------! 인 앱 알림 시작 !------
                 AlarmReceiver()
                 val intent = Intent(this, AlarmReceiver::class.java)
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
@@ -138,11 +138,11 @@ class SplashActivity : AppCompatActivity() {
                     AlarmManager.INTERVAL_DAY,
                     pendingIntent
                 )
-                // ----- 인 앱 알림 끝 -----
+                // ------! 인 앱 알림 끝 !------
 
                 val userSingleton = Singleton_t_user.getInstance(this)
 
-                // -----! 다크모드 및 설정 불러오기 시작 !-----
+                // ------! 다크모드 및 설정 불러오기 시작 !------
                 val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
                 val darkMode = sharedPref.getBoolean("darkMode", false)
 
@@ -150,13 +150,12 @@ class SplashActivity : AppCompatActivity() {
                     if (darkMode) AppCompatDelegate.MODE_NIGHT_YES
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
-                // -----! 다크모드 및 설정 불러오기 끝 !-----
-
-
+                // ------! 다크모드 및 설정 불러오기 끝 !------
 
                 val Handler = Handler(Looper.getMainLooper())
                 Handler.postDelayed({
-                    // ----- 네이버 토큰 있음 시작 -----
+
+                    // ------! 네이버 토큰 있음 시작 !------
                     if (naverTokenExist == NidOAuthLoginState.OK) {
                         Log.e("네이버 로그인", "$naverTokenExist")
                         val naverToken = NaverIdLoginSDK.getAccessToken()
@@ -176,11 +175,11 @@ class SplashActivity : AppCompatActivity() {
                                     val jsonObj = JSONObject()
 
                                     jsonObj.put("user_name",jsonBody?.optString("name"))
-                                    jsonObj.put("user_gender", if (jsonBody?.optString("gender") == "M") "남자" else "여자")
+                                    jsonObj.put("gender", if (jsonBody?.optString("gender") == "M") "남자" else "여자")
                                     val naverMobile = jsonBody?.optString("mobile")?.replaceFirst("010", "+8210")
-                                    jsonObj.put("user_mobile", naverMobile)
-                                    jsonObj.put("user_email",jsonBody?.optString("email"))
-                                    jsonObj.put("user_birthday",jsonBody?.optString("birthyear")+"-"+jsonBody?.optString("birthday"))
+                                    jsonObj.put("mobile", naverMobile)
+                                    jsonObj.put("email",jsonBody?.optString("email"))
+                                    jsonObj.put("birthday",jsonBody?.optString("birthyear")+"-"+jsonBody?.optString("birthday"))
                                     jsonObj.put("naver_login_id", jsonBody?.optString("id"))
                                     jsonObj.put("social_account", "naver")
 
@@ -192,11 +191,7 @@ class SplashActivity : AppCompatActivity() {
                                         }
                                         val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                         val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
-                                        val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
-
-
-
-                                        ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
+                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                             navigateDeepLink()
                                         }
 
@@ -204,9 +199,9 @@ class SplashActivity : AppCompatActivity() {
                                 }
                             }
                         })
-                        // ----- 네이버 토큰 있음 끝 -----
+                        // ------! 네이버 토큰 있음 끝 !------
 
-                        // ----- 구글 토큰 있음 시작 -----
+                        // ------! 구글 토큰 있음 시작 !------
                     } else if (googleUserExist != null) {
                         val user = FirebaseAuth.getInstance().currentUser
                         user!!.getIdToken(true)
@@ -215,9 +210,9 @@ class SplashActivity : AppCompatActivity() {
                                     val jsonObj = JSONObject()
                                     jsonObj.put("google_login_id", user.uid)
                                     jsonObj.put("user_name", user.displayName.toString())
-                                    jsonObj.put("user_email", user.email.toString())
+                                    jsonObj.put("email", user.email.toString())
                                     jsonObj.put("google_login_id", user.uid)
-                                    jsonObj.put("user_mobile", user.phoneNumber)
+                                    jsonObj.put("mobile", user.phoneNumber)
                                     jsonObj.put("social_account", "google")
                                     getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
@@ -226,17 +221,15 @@ class SplashActivity : AppCompatActivity() {
                                         }
                                         val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                         val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
-                                        val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
-
-                                        ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
+                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                             navigateDeepLink()
                                         }
                                     }
                                 }
                             }
-                        // ----- 구글 토큰 있음 끝 -----
+                        // ------! 구글 토큰 있음 끝 !------
 
-                        // ----- 카카오 토큰 있음 시작 -----
+                        // ------! 카카오 토큰 있음 시작 !------
                     } else if (AuthApiClient.instance.hasToken()) {
                         UserApiClient.instance.me { user, error ->
                             if (error != null) {
@@ -248,10 +241,10 @@ class SplashActivity : AppCompatActivity() {
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
-                                jsonObj.put("user_gender", kakaoUserGender)
-                                jsonObj.put("user_mobile", kakaoMobile)
-                                jsonObj.put("user_email", user.kakaoAccount?.email.toString())
-                                jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
+                                jsonObj.put("gender", kakaoUserGender)
+                                jsonObj.put("mobile", kakaoMobile)
+                                jsonObj.put("email", user.kakaoAccount?.email.toString())
+                                jsonObj.put("birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 jsonObj.put("kakao_login_id" , user.id.toString())
                                 jsonObj.put("social_account", "kakao")
                                 getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
@@ -261,10 +254,7 @@ class SplashActivity : AppCompatActivity() {
                                     }
                                     val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                     val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
-                                    val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
-
-
-                                    ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
+                                    ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                         navigateDeepLink()
                                     }
                                 }
@@ -284,9 +274,8 @@ class SplashActivity : AppCompatActivity() {
                                     Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                     val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
                                     val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
-                                    val userSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_sn")?.toInt()!!
 
-                                    ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
+                                    ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
 
                                         navigateDeepLink()
                                     }
@@ -300,8 +289,8 @@ class SplashActivity : AppCompatActivity() {
                     }
                 }, 1500)
 
-                // ----- 카카오 토큰 있음 끝 -----
-                // ---- 화면 경로 설정 끝 ----
+                // ------! 카카오 토큰 있음 끝 !------
+                // ------! 화면 경로 설정 끝 !------
             }
             false -> {
                 Toast.makeText(this, "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show()

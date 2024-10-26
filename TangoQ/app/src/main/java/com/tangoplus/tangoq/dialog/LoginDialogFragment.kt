@@ -107,7 +107,7 @@ class LoginDialogFragment : DialogFragment() {
                 lifecycleScope.launch {
                     getUserIdentifyJson(getString(R.string.API_user), jsonObject, requireContext()) { jo ->
 
-                        if (jo?.getString("message") == "invalid auth") { // 기존에 정보가 있을 경우 - 로그인 성공
+                        if (jo?.getString("message") == "invalid login data") { // 기존에 정보가 있을 경우 - 로그인 성공
                             requireActivity().runOnUiThread {
                                 dialog.dismiss()
                                 MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
@@ -137,10 +137,9 @@ class LoginDialogFragment : DialogFragment() {
                                         lifecycleScope.launch {
                                             val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")!!
                                             val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()!!
-                                            val userSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_sn")?.toInt()!!
 
                                             dialog.dismiss()
-                                            ssm.getMeasures(userUUID, userInfoSn, userSn, CoroutineScope(Dispatchers.IO)) {
+                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                                 Log.v("자체로그인완료", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                                                 Handler(Looper.getMainLooper()).postDelayed({
                                                     val intent = Intent(requireContext(), MainActivity::class.java)

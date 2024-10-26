@@ -74,12 +74,12 @@ object FileStorageUtil {
             false
         }
     }
-    fun getCacheFile(context: Context, fileName: String): File? {
-        val dir = context.cacheDir
-        val file = File(dir, fileName)
-        Log.v("file가져오기", "파라미터이름: ${fileName}, 주소: ${file.absolutePath}")
-        return if (file.exists()) file else null
-    }
+//    fun getCacheFile(context: Context, fileName: String): File? {
+//        val dir = context.cacheDir
+//        val file = File(dir, fileName)
+//        Log.v("file가져오기", "파라미터이름: ${fileName}, 주소: ${file.absolutePath}")
+//        return if (file.exists()) file else null
+//    }
 
     fun getFile(context: Context, fileName: String): File? {
         val fileType = getFileTypeFromExtension(fileName)
@@ -117,7 +117,7 @@ object FileStorageUtil {
     }
 
     // 파일 타입에 따른 디렉토리 가져오기
-    private fun getFileTypeFromExtension(fileName: String): FileType {
+    fun getFileTypeFromExtension(fileName: String): FileType {
         return when (fileName.substringAfterLast(".", "").lowercase()) {
             "jpg", "jpeg", "png" -> FileType.IMAGE
             "mp4", "mov", "avi" -> FileType.VIDEO
