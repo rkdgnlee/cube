@@ -27,9 +27,101 @@ import java.io.File
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 object NetworkMeasure {
+    // ------# 전송 실패된 항목 PUT #------
+    suspend fun resendMeasureFile(context: Context, myUrl: String, requestBody: RequestBody, isStatic: Boolean, serverMeasureSn: Int, mobileDbSn: Int,  callback: (Pair<String,String>?) -> Unit) : Result<Unit> {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("$myUrl/$serverMeasureSn")
+            .put(requestBody)
+            .build()
+        Log.v("sendMeasureData", "Try to send MultipartBody")
 
+        return withContext(Dispatchers.IO) {
+
+            try {
+                client.newCall(request).execute().use { response ->
+
+                    if (response.code == 500) {
+                        // 서버 응답이 성공하지 않았을 경우 처리
+                        Log.e("전송실패3", "$response")
+                        Log.e("전송실패3", "body: ${response.body?.string()}")
+                        callback(null)
+                        return@withContext Result.failure(Exception("Failed to fetch data: ${response.code}"))
+                    }
+
+                    // ------# db 초기화 #------
+                    val md = MeasureDatabase.getDatabase(context)
+                    val mDao = md.measureDao()
+
+                    val responseBody = response.body?.string()
+                    Log.w("getMeasureResult", "$responseBody")
+
+                    val bodyJo = JSONObject(responseBody.toString())
+                    val fileSuccess = bodyJo.optString("reupload_file")
+                    val jsonSuccess = bodyJo.optString("reupload_json")
+                    val serverJsonName = bodyJo.optString("measure_server_json_name")
+                    val serverFileName = bodyJo.optString("measure_server_file_name")
+
+                    if (jsonSuccess == "1") {
+                        when (isStatic) {
+                            true -> mDao.updateAndGetStatic(mobileDbSn, uploadedJson = jsonSuccess, serverJsonName = serverJsonName)
+                            false -> mDao.updateAndGetDynamic(mobileDbSn, uploadedJson = jsonSuccess, serverJsonName = serverJsonName)
+                        }
+                        saveFileFromUrl(context, serverJsonName, FileStorageUtil.FileType.JSON)
+                    }
+                    if (fileSuccess == "1") {
+                        when (isStatic) {
+                            true -> {
+                                mDao.updateAndGetStatic(mobileDbSn, uploadedFile = fileSuccess,serverFileName = serverFileName)
+                                saveFileFromUrl(context, serverFileName, FileStorageUtil.FileType.IMAGE)
+                            }
+                            false -> {
+                                mDao.updateAndGetDynamic(mobileDbSn, uploadedFile = fileSuccess, serverFileName = serverFileName)
+                                saveFileFromUrl(context, serverFileName, FileStorageUtil.FileType.VIDEO)
+                            }
+                        }
+                    }
+
+                    callback(Pair(jsonSuccess, fileSuccess))
+                    return@withContext Result.success(Unit)
+                    /* 앱 내 DB 수정 완료했음. 그러면 measureInfo와 static, dynamic이 들어가있는데 사진만 저장이 안된 상황.
+                    * 현재 로그인 시 measure 인포 전부 가져오기 및 db저장. 여기서는 인포 저장됨. db에도 저장됨. 그러면? 전부 1일때만? 파일들 서버에서 받아오기, 그리고 확정된 파일 이름에 맞게 저장하고 cache 비우기 하면 됨.
+                    * 근데 전부 안들어갔을 때는을 대비해서. 그냥 업로드 된 항목들 2*2 로나눠서 하나라도 되면 그거 파일 값 저장하기로 넘어가야함. 근데 일부가 안들어갔을 때, 그냥 계속 보내기? ㅋㅋㅋ
+                    * */
+                }
+
+            } catch (e: SocketTimeoutException) {
+                // 타임아웃 처리
+                Log.e("getMeasureResultError", "Request timed out", e)
+                callback(null)
+                return@withContext Result.failure(Exception("Request timed out"))
+            } catch (e: IOException) {
+                // 네트워크 문제 처리
+                Log.e("getMeasureResultError", "Network error", e)
+                callback(null)
+                return@withContext Result.failure(Exception("Network error: ${e.message}"))
+            } catch (e: Exception) {
+                // 일반적인 예외 처리
+                Log.e("getMeasureResultError", "Error fetching measure result", e)
+                callback(null)
+                return@withContext Result.failure(e)
+            }
+        }
+    }
+
+    // ------# 측정 완료 후 최초 전송 #------
     suspend fun sendMeasureData(context: Context, myUrl: String, requestBody: RequestBody, infoSn: Int, staticSns: MutableList<Int>, dynamicSn: Int, callback: (JSONObject) -> Unit) : Result<Unit> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
@@ -50,14 +142,12 @@ object NetworkMeasure {
 
             try {
                 client.newCall(request).execute().use { response ->
-
-                    if (!response.isSuccessful) {
-                        // 서버 응답이 성공하지 않았을 경우 처리
+                    // 서버 응답이 성공하지 않았을 경우 처리
+                    if (response.code == 500) {
                         Log.e("전송실패3", "$response")
                         Log.e("전송실패3", "body: ${response.body?.string()}")
                         callback(JSONObject())
                         return@withContext Result.failure(Exception("Failed to fetch data: ${response.code}"))
-
                     }
 
                     // ------# db 초기화 #------
@@ -85,8 +175,11 @@ object NetworkMeasure {
                             val staticUploadDate = staticJo.optString("upload_date")
                             val staticUploadJson = staticJo.optString("uploaded_json")
                             val staticUploadFile = staticJo.optString("uploaded_file")
-
-                            mDao.updateAndGetStatic(staticSns[i], serverSn, staticUploaded, staticUploadDate, staticUploadJson, staticUploadFile) // TODO body에서 static에서 부여받은 값넣기.
+                            val staticServerJsonName = staticJo.optString("measure_server_json_name")
+                            val staticServerFileName = staticJo.optString("measure_server_file_name")
+                            mDao.updateAndGetStatic(staticSns[i], serverSn, staticUploaded, staticUploadDate, staticUploadJson, staticUploadFile, staticServerJsonName, staticServerFileName)
+                            saveFileFromUrl(context, staticServerJsonName, FileStorageUtil.FileType.JSON)
+                            saveFileFromUrl(context, staticServerFileName, FileStorageUtil.FileType.IMAGE)
                         }
                     }
 
@@ -97,96 +190,12 @@ object NetworkMeasure {
                         val dynamicUploadDate = dynamicJo.optString("upload_date")
                         val dynamicUploadJson = dynamicJo.optString("uploaded_json")
                         val dynamicUploadFile = dynamicJo.optString("uploaded_file")
-                        mDao.updateAndGetDynamic(dynamicSn, serverSn, dynamicUploaded, dynamicUploadDate, dynamicUploadJson, dynamicUploadFile)
+                        val dynamicServerJsonName = dynamicJo.optString("measure_server_json_name")
+                        val dynamicServerFileName = dynamicJo.optString("measure_server_file_name")
+                        mDao.updateAndGetDynamic(dynamicSn, serverSn, dynamicUploaded, dynamicUploadDate, dynamicUploadJson, dynamicUploadFile, dynamicServerJsonName, dynamicServerFileName)
+                        saveFileFromUrl(context, dynamicServerJsonName, FileStorageUtil.FileType.JSON)
+                        saveFileFromUrl(context, dynamicServerFileName, FileStorageUtil.FileType.VIDEO)
                     }
-
-
-//                    // ------# info로 변환 #------
-//                    val info = infoJo?.toMeasureInfo()
-//                    if (info != null) {
-//                        mDao.insertInfo(info)
-//                    }
-//
-//                    // ------# static, dynamic 싱글턴에 넣을 변수 #------
-//                    val ja = JSONArray()
-//                    val uris = mutableListOf<String>()
-//                    val baseUrl = "https://gym.tangostar.co.kr/data/Results/"
-//
-//                    // ------# static, dynamic 넣기 #------
-//                    for (i in 0 until bodyJo.optString("count").toInt()) { // 0 ~ 7
-//                        val jsonFile: File?
-//                        val mediaFile: File?
-//                        if (i == 0) {
-//                            val staticJo = bodyJo.optJSONObject("static_${i+1}")
-//                            if (staticJo != null) {
-//                                Log.v("스태틱조1~6", "${staticJo.optInt("measure_seq")}")
-//                                mDao.insertWithAutoIncrementStatic(staticJo.toMeasureStatic(), userUUID)
-//                                val fileName = staticJo.optString("measure_server_file_name")
-//                                val jsonName = staticJo.optString("measure_server_json_name")
-//                                saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
-//                                saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
-//
-//                                jsonFile = getFile(context, jsonName.replace(baseUrl, ""))
-//                                mediaFile = getFile(context, fileName.replace(baseUrl, ""))
-//                                if (jsonFile != null && mediaFile != null) {
-//                                    ja.put(readJsonFile(jsonFile))
-//                                    uris.add(mediaFile.absolutePath)
-//                                    Log.v("URI,FILENAME0", "uris: ${uris}, jsonFile: $jsonFile, mediaFile: $mediaFile")
-//                                }
-//                            }
-//                        } else if (i == 1) {
-//                            val dynamicJo = bodyJo.optJSONObject("dynamic")
-//                            if (dynamicJo != null) {
-//                                Log.v("다이나믹", "${dynamicJo.optInt("measure_seq")}")
-//                                mDao.insertWithAutoIncrementDynamic(dynamicJo.toMeasureDynamic(), userUUID, dynamicJo.optInt("result_index"))
-//                                val fileName = dynamicJo.optString("measure_server_file_name")
-//                                val jsonName = dynamicJo.optString("measure_server_json_name")
-//                                saveFileFromUrl(context, fileName, FileStorageUtil.FileType.VIDEO)
-//                                saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
-//
-//                                jsonFile = getFile(context, jsonName.replace(baseUrl, ""))
-//                                mediaFile = getFile(context, fileName.replace(baseUrl, ""))
-//                                if (jsonFile != null && mediaFile != null) {
-//                                    ja.put(readJsonArrayFile(jsonFile))
-//                                    uris.add(mediaFile.absolutePath)
-//                                    Log.v("URI,FILENAME1", "uris: ${uris}, jsonFile: $jsonFile, mediaFile: $mediaFile")
-//                                }
-//                            }
-//                        } else {
-//                            val staticJo = bodyJo.optJSONObject("static_${i}")
-//                            if (staticJo != null) {
-//                                Log.v("스태틱조1~6", "${staticJo.optInt("measure_seq")}")
-//                                mDao.insertWithAutoIncrementStatic(staticJo.toMeasureStatic(), userUUID)
-//                                val fileName = staticJo.optString("measure_server_file_name")
-//                                val jsonName = staticJo.optString("measure_server_json_name")
-//                                saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
-//                                saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
-//
-//                                jsonFile = getFile(context, jsonName.replace(baseUrl, ""))
-//                                mediaFile = getFile(context, fileName.replace(baseUrl, ""))
-//                                if (jsonFile != null && mediaFile != null) {
-//                                    ja.put(readJsonFile(jsonFile))
-//                                    uris.add(mediaFile.absolutePath)
-//                                    Log.v("URI,FILENAME2~6", "uris: ${uris}, jsonFile: $jsonFile, mediaFile: $mediaFile")
-//                                }
-//                            }
-//                        }
-//                    }
-//                    val dangerParts = if (info != null) getDangerParts(info) else emptyList()
-//                    val measureVO = MeasureVO(
-//                        deviceSn = 0,
-//                        sn = info?.sn!!,
-//                        regDate = info.measure_date,
-//                        overall = info.t_score,
-//                        dangerParts = dangerParts.toMutableList(),
-//                        measureResult = ja,
-//                        fileUris = uris,
-//                        isMobile = info.device_sn == 0,
-//                        recommendations = null
-//                    )
-//                    Log.v("measureAdd전", "${measureVO}, 변경전 갯수: ${Singleton_t_measure.getInstance(context).measures?.size}")
-//                    Singleton_t_measure.getInstance(context).measures?.add(0, measureVO)
-//                    Log.v("measureAdd후", "변경후 갯수: ${Singleton_t_measure.getInstance(context).measures?.size}")
                     callback(bodyJo)
 
                     return@withContext Result.success(Unit)
@@ -245,14 +254,14 @@ object NetworkMeasure {
                 val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
                 val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
                 Log.v("룸에저장된info들", "$roomInfoSns")
-//                Log.v("룸에저장된static", "${mDao.getAllStatic(userUUID)}")
+
                 val getInfos = mutableListOf<MeasureInfo>()
-//                for (i in 0 until ja.length()) {
-//                    val jo = ja.optJSONObject(i)
-//                    getInfos.add(jo.toMeasureInfo())
-//                }
-                val jo = ja.optJSONObject(1) // 현재 0번째 index는 7가지 동작이 없음.
-                getInfos.add(jo.toMeasureInfo())
+                for (i in 1 until ja.length()) {
+                    val jo = ja.optJSONObject(i)
+                    getInfos.add(jo.toMeasureInfo())
+                }
+//                val jo = ja.optJSONObject(1) // 현재 0번째 index는 7가지 동작이 없음.
+//                getInfos.add(jo.toMeasureInfo())
                 Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID)}")
 
                 val newInfos = getInfos.filter { apiInfo ->
@@ -265,7 +274,7 @@ object NetworkMeasure {
                 Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
                 newInfos.forEach{ newInfo ->
                     mDao.insertInfo(newInfo)
-                    getMeasureResult(context, myUrl, newInfo.sn!!,  userUUID)
+                    getMeasureResult(context, myUrl, newInfo.sn!!, userUUID)
                 }
                 return@withContext callback(true)
             }
@@ -274,7 +283,7 @@ object NetworkMeasure {
     // -------------# TODO 전제: 측정 결과 모바일에서 업로드할 때 무조건 sn을 저장해야함 #------------------
 
     // 측정 결과 1개 sequence 전체 가져오기
-    suspend fun getMeasureResult(context: Context, myUrl: String, measureInfoSn: Int, userUUID: String) : Result<Unit> {
+    private suspend fun getMeasureResult(context: Context, myUrl: String, measureInfoSn: Int, userUUID: String) : Result<Unit> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()

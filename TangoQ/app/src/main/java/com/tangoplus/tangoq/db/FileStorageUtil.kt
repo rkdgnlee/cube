@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.db
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureViewModel
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,10 +19,11 @@ object FileStorageUtil {
     private const val JSON_DIR = "json"
 
     // URL에서 파일 저장
-    fun saveFileFromUrl(context: Context, url: String, fileType: FileType): Boolean {
-        val fileName = url.substringAfterLast("/").replace("https://", "")
+    fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
+        val url = context.getString(R.string.file_url) + fileName  // 수정된 부분
+        Log.v("url에서파일저장", url)
         val dir = getDirectory(context, fileType)
-        val file = File(dir, fileName)
+        val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 
         return try {
             val connection = URL(url).openConnection() as HttpURLConnection
@@ -44,7 +46,6 @@ object FileStorageUtil {
             false
         }
     }
-
     fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
         val file = File(dir, fileName)
@@ -59,6 +60,7 @@ object FileStorageUtil {
             false
         }
     }
+
     fun saveJa(context: Context, fileName: String, jsonArray: JSONArray,  mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
         val file = File(dir, fileName)

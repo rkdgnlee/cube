@@ -156,184 +156,186 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         val lcDataList: MutableList<Pair<String, Int>> = mutableListOf()
 
-
-        if (measures?.size != 7) {
-            for (i in 0 until (7 - measures?.size!!)) {
-                lcDataList.add(Pair("", 0))
+        measures?.let { measure ->
+            if (measures?.size != 7) {
+                for (i in 0 until (7 - measures?.size!!)) {
+                    lcDataList.add(Pair("", 0))
+                }
             }
-        }
-        if (!measures.isNullOrEmpty()) {
-            for (i in measures!!.size - 1 downTo 0) {
-                val measure = measures!![i]
-                lcDataList.add(Pair(measure.regDate, measure.overall?.toInt()!!))
-            }
-            Log.v("lcDataList", "${lcDataList}")
-            for (i in lcDataList.indices) {
-                startIndex = i
-                break
-            }
-        } else {
-            for (i in 6 downTo 0) {
-                lcDataList.add(Pair("", 0))
-            }
-        }
-
-        val lcEntries: MutableList<Entry> = mutableListOf()
-        for (i in startIndex until lcDataList.size) {
-            lcEntries.add(Entry((i - startIndex).toFloat(), lcDataList[i].second.toFloat()))
-        }
-
-        val lcLineDataSet = LineDataSet(lcEntries, "")
-        lcLineDataSet.apply {
-            color = resources.getColor(R.color.thirdColor, null)
-            circleRadius = 4F
-            lineWidth = 4F
-            valueTextSize = 0F
-            setCircleColors(resources.getColor(R.color.thirdColor, null))
-            setDrawCircleHole(false)
-            setDrawFilled(false)
-            mode = LineDataSet.Mode.CUBIC_BEZIER
-        }
-
-        lcXAxis.apply {
-            isEnabled = false
-            textSize = 14f
-            textColor = resources.getColor(R.color.subColor500)
-            labelRotationAngle = 2F
-            setDrawAxisLine(false)
-            setDrawGridLines(false)
-
-            setLabelCount(lcDataList.size, true)
-            position = XAxis.XAxisPosition.BOTTOM
-            axisLineWidth = 1.0f
-        }
-        lcYAxisLeft.apply {
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            setLabelCount(3, false)
-            setDrawLabels(false)
-        }
-        lcYAxisRight.apply {
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            setLabelCount(0, false)
-            setDrawLabels(false)
-        }
-        lcLegend.apply {
-            lcLegend.formSize = 0f
-        }
-        lineChart.apply {
-            data = LineData(lcLineDataSet)
-            setTouchEnabled(true)
-            isDragEnabled = true
-            description.isEnabled = false
-            xAxis.setDrawGridLines(false)
-            axisLeft.setDrawGridLines(false)
-            axisRight.isEnabled = false
-            data.setDrawValues(false)
-            for (set in data.dataSets) {
-                if (set is LineDataSet) {
-                    set.setDrawHighlightIndicators(false)
+            if (!measures.isNullOrEmpty()) {
+                for (i in measures!!.size - 1 downTo 0) {
+                    val measure = measures!![i]
+                    lcDataList.add(Pair(measure.regDate, measure.overall?.toInt()!!))
+                }
+                Log.v("lcDataList", "${lcDataList}")
+                for (i in lcDataList.indices) {
+                    startIndex = i
+                    break
+                }
+            } else {
+                for (i in 6 downTo 0) {
+                    lcDataList.add(Pair("", 0))
                 }
             }
 
-            notifyDataSetChanged()
-            description.text = ""
-            setScaleEnabled(false)
-            invalidate()
-        }
-        // ------! 날짜 기간 가져오기 시작 !------
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val outputFormatter = DateTimeFormatter.ofPattern("MM.dd")
-
-        val datesWithIndex = lcDataList.mapIndexedNotNull { index, pair ->
-            if (pair.first.isNotEmpty()) {
-                index to LocalDate.parse(pair.first, inputFormatter)
-            } else null
-        }
-
-        if (datesWithIndex.isNotEmpty()) {
-            val oldestDate = datesWithIndex.minByOrNull { it.second }
-            val newestDate = datesWithIndex.maxByOrNull { it.second }
-
-            if (oldestDate != null && newestDate != null) {
-                binding.tvMD1Duration.text = "${oldestDate.second.format(outputFormatter)} ~ ${newestDate.second.format(outputFormatter)}"
+            val lcEntries: MutableList<Entry> = mutableListOf()
+            for (i in startIndex until lcDataList.size) {
+                lcEntries.add(Entry((i - startIndex).toFloat(), lcDataList[i].second.toFloat()))
             }
-        }
-        // ------! 날짜 기간 가져오기 끝 !------
 
-        // ------! 값 클릭 시 벌룬 나오기 시작 !------
-        lineChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
-            override fun onValueSelected(e: Entry?, h: Highlight?) {
-                e?.let { entry ->
-                    val originalIndex = startIndex + entry.x.toInt()
-                    val selectedData = lcDataList[originalIndex]
-                    val balloonText = if (selectedData.first != "") "측정날짜: ${selectedData.first.substring(0, 10)}\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
-                    val balloonlc1 = Balloon.Builder(requireContext())
-                        .setWidthRatio(0.5f)
-                        .setHeight(BalloonSizeSpec.WRAP)
-                        .setText(balloonText)
-                        .setTextColorResource(R.color.subColor800)
-                        .setTextSize(15f)
-                        .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-                        .setArrowSize(0)
-                        .setMargin(10)
-                        .setPadding(12)
-                        .setCornerRadius(8f)
-                        .setBackgroundColorResource(R.color.white)
-                        .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-                        .setLifecycleOwner(viewLifecycleOwner)
-                        .build()
+            val lcLineDataSet = LineDataSet(lcEntries, "")
+            lcLineDataSet.apply {
+                color = resources.getColor(R.color.thirdColor, null)
+                circleRadius = 4F
+                lineWidth = 4F
+                valueTextSize = 0F
+                setCircleColors(resources.getColor(R.color.thirdColor, null))
+                setDrawCircleHole(false)
+                setDrawFilled(false)
+                mode = LineDataSet.Mode.CUBIC_BEZIER
+            }
 
+            lcXAxis.apply {
+                isEnabled = false
+                textSize = 14f
+                textColor = resources.getColor(R.color.subColor500)
+                labelRotationAngle = 2F
+                setDrawAxisLine(false)
+                setDrawGridLines(false)
 
-                    val pts = FloatArray(2)
-                    pts[0] = entry.x
-                    pts[1] = entry.y
-                    lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
-                    balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
+                setLabelCount(lcDataList.size, true)
+                position = XAxis.XAxisPosition.BOTTOM
+                axisLineWidth = 1.0f
+            }
+            lcYAxisLeft.apply {
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+                setLabelCount(3, false)
+                setDrawLabels(false)
+            }
+            lcYAxisRight.apply {
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+                setLabelCount(0, false)
+                setDrawLabels(false)
+            }
+            lcLegend.apply {
+                lcLegend.formSize = 0f
+            }
+            lineChart.apply {
+                data = LineData(lcLineDataSet)
+                setTouchEnabled(true)
+                isDragEnabled = true
+                description.isEnabled = false
+                xAxis.setDrawGridLines(false)
+                axisLeft.setDrawGridLines(false)
+                axisRight.isEnabled = false
+                data.setDrawValues(false)
+                for (set in data.dataSets) {
+                    if (set is LineDataSet) {
+                        set.setDrawHighlightIndicators(false)
+                    }
+                }
+
+                notifyDataSetChanged()
+                description.text = ""
+                setScaleEnabled(false)
+                invalidate()
+            }
+            // ------! 날짜 기간 가져오기 시작 !------
+            val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val outputFormatter = DateTimeFormatter.ofPattern("MM.dd")
+
+            val datesWithIndex = lcDataList.mapIndexedNotNull { index, pair ->
+                if (pair.first.isNotEmpty()) {
+                    index to LocalDate.parse(pair.first, inputFormatter)
+                } else null
+            }
+
+            if (datesWithIndex.isNotEmpty()) {
+                val oldestDate = datesWithIndex.minByOrNull { it.second }
+                val newestDate = datesWithIndex.maxByOrNull { it.second }
+
+                if (oldestDate != null && newestDate != null) {
+                    binding.tvMD1Duration.text = "${oldestDate.second.format(outputFormatter)} ~ ${newestDate.second.format(outputFormatter)}"
                 }
             }
-            override fun onNothingSelected() {}
-        })
-        // ------! 꺾은선 그래프 코드 끝 !------
+            // ------! 날짜 기간 가져오기 끝 !------
 
-        // ------! balloon 시작 !------
-        var percentage = 0.5f
-        if (measures!!.size >= 1) {
-            val userPercentile = measures!![0].overall
-            percentage = calculatePercentage(userPercentile?.toInt()!!)
+            // ------! 값 클릭 시 벌룬 나오기 시작 !------
+            lineChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    e?.let { entry ->
+                        val originalIndex = startIndex + entry.x.toInt()
+                        val selectedData = lcDataList[originalIndex]
+                        val balloonText = if (selectedData.first != "") "측정날짜: ${selectedData.first.substring(0, 10)}\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
+                        val balloonlc1 = Balloon.Builder(requireContext())
+                            .setWidthRatio(0.5f)
+                            .setHeight(BalloonSizeSpec.WRAP)
+                            .setText(balloonText)
+                            .setTextColorResource(R.color.subColor800)
+                            .setTextSize(15f)
+                            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                            .setArrowSize(0)
+                            .setMargin(10)
+                            .setPadding(12)
+                            .setCornerRadius(8f)
+                            .setBackgroundColorResource(R.color.white)
+                            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+                            .setLifecycleOwner(viewLifecycleOwner)
+                            .build()
+
+
+                        val pts = FloatArray(2)
+                        pts[0] = entry.x
+                        pts[1] = entry.y
+                        lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
+                        balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
+                    }
+                }
+                override fun onNothingSelected() {}
+            })
+            // ------! 꺾은선 그래프 코드 끝 !------
+
+            // ------! balloon 시작 !------
+            var percentage = 0.5f
+            if (measures!!.size >= 1) {
+                val userPercentile = measures!![0].overall
+                percentage = calculatePercentage(userPercentile?.toInt()!!)
+            }
+
+            val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
+            params.horizontalBias = percentage
+            binding.ivMD1Position.layoutParams = params
+            val percent = (params.horizontalBias * 100).toInt()
+
+            when (percent) {
+                in 0 .. 30 -> {
+                    createBalloon(userJson, percent)
+                    binding.vMD1Middle.visibility = View.INVISIBLE
+                    binding.vMD1Low.visibility = View.VISIBLE
+                }
+                in 70 .. 100 -> {
+                    createBalloon(userJson, percent)
+                    binding.vMD1Middle.visibility = View.INVISIBLE
+                    binding.vMD1Low.visibility = View.GONE
+                    binding.vMD1High.visibility = View.VISIBLE
+                }
+                else -> {
+                    createBalloon(userJson, percent)
+                    binding.vMD1Middle.visibility = View.VISIBLE
+                    binding.vMD1High.visibility = View.GONE
+                    binding.vMD1Low.visibility = View.GONE
+                }
+            }
+            binding.clMD1Percent.setOnClickListener {
+                balloon!!.dismissWithDelay(2500L)
+            }
+            binding.ivMD1Position.setOnClickListener{
+                binding.ivMD1Position.showAlignTop(balloon!!)
+            }
         }
 
-        val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-        params.horizontalBias = percentage
-        binding.ivMD1Position.layoutParams = params
-        val percent = (params.horizontalBias * 100).toInt()
-
-        when (percent) {
-            in 0 .. 30 -> {
-                createBalloon(userJson, percent)
-                binding.vMD1Middle.visibility = View.INVISIBLE
-                binding.vMD1Low.visibility = View.VISIBLE
-            }
-            in 70 .. 100 -> {
-                createBalloon(userJson, percent)
-                binding.vMD1Middle.visibility = View.INVISIBLE
-                binding.vMD1Low.visibility = View.GONE
-                binding.vMD1High.visibility = View.VISIBLE
-            }
-            else -> {
-                createBalloon(userJson, percent)
-                binding.vMD1Middle.visibility = View.VISIBLE
-                binding.vMD1High.visibility = View.GONE
-                binding.vMD1Low.visibility = View.GONE
-            }
-        }
-        binding.clMD1Percent.setOnClickListener {
-            balloon!!.dismissWithDelay(2500L)
-        }
-        binding.ivMD1Position.setOnClickListener{
-            binding.ivMD1Position.showAlignTop(balloon!!)
-        }
     }
     // ------! 추천 운동 받기 끝!------
     private fun createBalloon(userJson: JSONObject?, percent: Int) {

@@ -60,7 +60,6 @@ object NetworkUser {
                 // ------! 토큰 저장 !------
                 val token = jo?.optString("jwt")
                 if (token != null) {
-                    Log.v("token" , token)
                     saveEncryptedJwtToken(context, token)
                 }
                 callback(jo)

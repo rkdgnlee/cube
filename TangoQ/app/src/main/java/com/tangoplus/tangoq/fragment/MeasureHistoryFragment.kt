@@ -28,7 +28,7 @@ import kotlin.random.Random
 class MeasureHistoryFragment : Fragment() {
     lateinit var binding : FragmentMeasureHistoryBinding
 
-    private var singletonMeasure : MutableList<MeasureVO>? = null
+    private var measures : MutableList<MeasureVO>? = null
     private val viewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,45 +49,47 @@ class MeasureHistoryFragment : Fragment() {
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
-        setAdpater(singletonMeasure!!)
-        binding.tvMHCount.text = "총 측정건: ${singletonMeasure!!.size}건"
 
-        // -----! spinner 연결 시작 !-----
         val filterList = arrayListOf<String>()
         filterList.add("최신순")
         filterList.add("오래된순")
         filterList.add("높은 점수순")
         filterList.add("낮은 점수순")
         binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, false)
-        binding.spnrMH.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-                when (position) {
-                    0 -> {
-                        singletonMeasure!!.sortedByDescending { it.regDate }
-                    }
-                    1 -> {
-                        singletonMeasure!!.sortedBy { it.regDate }
-                    }
-                    2 -> {
-                        singletonMeasure!!.sortedByDescending { it.overall?.toInt() }
-                    }
-                    3 -> {
-                        singletonMeasure!!.sortedBy { it.overall?.toInt() }
+
+        measures = Singleton_t_measure.getInstance(requireContext()).measures
+        measures?.let { measure ->
+            setAdpater(measures!!)
+            binding.tvMHCount.text = "총 측정건: ${measures!!.size}건"
+
+            // ------# spinner 연결 #------
+            binding.spnrMH.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    when (position) {
+                        0 -> {
+                            measures!!.sortedByDescending { it.regDate }
+                        }
+                        1 -> {
+                            measures!!.sortedBy { it.regDate }
+                        }
+                        2 -> {
+                            measures!!.sortedByDescending { it.overall?.toInt() }
+                        }
+                        3 -> {
+                            measures!!.sortedBy { it.overall?.toInt() }
+                        }
                     }
                 }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            // ------# spinner 연결 #------
         }
-
-        // ------! spinner 연결 끝 !------
-
+        
         binding.fabtnMH.setOnClickListener{
             val intent = Intent(requireContext(), MeasureSkeletonActivity::class.java)
             startActivity(intent)
         }
-
     }
 
     private fun setAdpater(measures: MutableList<MeasureVO>) {

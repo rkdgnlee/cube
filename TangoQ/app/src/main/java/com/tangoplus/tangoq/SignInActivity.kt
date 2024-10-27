@@ -493,6 +493,8 @@ class SignInActivity : AppCompatActivity() {
                     val jsonObj = viewModel.User.value
                     jsonObj?.put("sms_receive", if (viewModel.agreementMk1.value == true) 1 else 0)
                     jsonObj?.put("email_receive", if (viewModel.agreementMk2.value == true) 1 else 0)
+                    jsonObj?.put("device_sn" ,0)
+                    jsonObj?.put("user_sn", 0)
                     // ------! 광고성 넣기 끝 !------
                     Log.v("회원가입JSon", "$jsonObj")
                     if (jsonObj != null) {

@@ -136,10 +136,12 @@ data class MeasureDynamic(
     val uploaded_json: String? = "0",
     val uploaded_file: String? = "0",
     val uploaded_json_fail: String? = "0",
+    val uploaded_file_fail: String? = "0",
     val used: String? = "0",
 ) {
     companion object {
         fun getCurrentDateTime(): String =
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+
     }
 }

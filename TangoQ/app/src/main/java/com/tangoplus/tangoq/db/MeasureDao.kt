@@ -79,6 +79,12 @@ interface MeasureDao {
     @Query("UPDATE t_measure_static SET uploaded = :uploaded WHERE mobile_sn = :mobileSn")
     suspend fun updateStaticUploaded(mobileSn: Int, uploaded: String)
 
+    @Query("UPDATE t_measure_static SET measure_server_json_name = :serverJsonName WHERE mobile_sn = :mobileSn")
+    suspend fun updateStaticServerJsonName(mobileSn: Int, serverJsonName: String)
+
+    @Query("UPDATE t_measure_static SET measure_server_file_name = :serverFileName WHERE mobile_sn = :mobileSn")
+    suspend fun updateStaticServerFIleName(mobileSn: Int, serverFileName: String)
+
     @Transaction
     suspend fun updateAndGetStatic(
         mobileSn: Int,
@@ -86,14 +92,17 @@ interface MeasureDao {
         uploaded: String? = null,
         uploadDate: String? = null,
         uploadedJson: String? = null,
-        uploadedFile: String? = null
+        uploadedFile: String? = null,
+        serverJsonName: String? = null,
+        serverFileName: String? = null
     ): MeasureStatic {
         serverSn?.let { updateStaticServerSn(mobileSn, it) }
         uploaded?.let { updateStaticUploaded(mobileSn, it) }
         uploadDate?.let { updateStaticUploadDate(mobileSn, it) }
         uploadedJson?.let { updateStaticUploadedJson(mobileSn, it) }
         uploadedFile?.let { updateStaticUploadedFile(mobileSn, it) }
-
+        serverJsonName?.let { updateStaticServerJsonName(mobileSn, it) }
+        serverFileName?.let { updateStaticServerFIleName(mobileSn, it) }
         return getStaticByMobileSn(mobileSn)
     }
 
@@ -141,6 +150,12 @@ interface MeasureDao {
     @Query("UPDATE t_measure_dynamic SET uploaded = :uploaded WHERE mobile_sn = :mobileSn")
     suspend fun updateDynamicUploaded(mobileSn: Int, uploaded: String)
 
+    @Query("UPDATE t_measure_dynamic SET measure_server_json_name = :serverJsonName WHERE mobile_sn = :mobileSn")
+    suspend fun updateDynamicServerJsonName(mobileSn: Int, serverJsonName: String)
+
+    @Query("UPDATE t_measure_dynamic SET measure_server_file_name = :serverFileName WHERE mobile_sn = :mobileSn")
+    suspend fun updateDynamicServerFIleName(mobileSn: Int, serverFileName: String)
+
     @Transaction
     suspend fun updateAndGetDynamic(
         mobileSn: Int,
@@ -148,13 +163,17 @@ interface MeasureDao {
         uploaded: String? = null,
         uploadDate: String? = null,
         uploadedJson: String? = null,
-        uploadedFile: String? = null
+        uploadedFile: String? = null,
+        serverJsonName: String? = null,
+        serverFileName: String? = null
     ): MeasureDynamic {
         serverSn?.let { updateDynamicServerSn(mobileSn, it) }
         uploaded?.let { updateDynamicUploaded(mobileSn, it) }
         uploadDate?.let { updateDynamicUploadDate(mobileSn, it) }
         uploadedJson?.let { updateDynamicUploadedJson(mobileSn, it) }
         uploadedFile?.let { updateDynamicUploadedFile(mobileSn, it) }
+        serverJsonName?.let { updateDynamicServerJsonName(mobileSn, it) }
+        serverFileName?.let { updateDynamicServerFIleName(mobileSn, it) }
 
         return getDynamicByMobileSn(mobileSn)
     }

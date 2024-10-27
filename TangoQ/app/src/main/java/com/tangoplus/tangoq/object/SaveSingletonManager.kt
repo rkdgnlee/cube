@@ -46,7 +46,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 Log.v("ssaidExist", "mobile Num is not existed")
                 val jo = JSONObject().put("serial_number", ssaid)
                 getDeviceUUID(context.getString(R.string.API_user), context, jo) { mobileDeviceUuid ->
-                    Log.v("mobileDeviceUuid", mobileDeviceUuid)
+//                    Log.v("mobileDeviceUuid", mobileDeviceUuid)
                     saveServerUUID(context, mobileDeviceUuid)
                 }
             } else {
@@ -79,7 +79,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             withContext(Dispatchers.IO) {
                 saveAllMeasureInfo(context, context.getString(R.string.API_measure), userUUID) { existed ->
                     callbacks(existed)
-
                 }
                 withContext(Dispatchers.Main) {
                     dialog.dismiss()
@@ -123,7 +122,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                     val ja = JSONArray()
                     val uris = mutableListOf<String>()
-                    val baseUrl = "https://gym.tangostar.co.kr/data/Results/"
 
                     for (i in 0 until 7) {
                         val jsonFile: File?
@@ -131,16 +129,16 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                         when (i) {
                             0 -> {
-                                jsonFile = getFile(context, statics[0].measure_server_json_name.replace(baseUrl, ""))
-                                mediaFile = getFile(context, statics[0].measure_server_file_name.replace(baseUrl, ""))
+                                jsonFile = getFile(context, statics[0].measure_server_json_name)
+                                mediaFile = getFile(context, statics[0].measure_server_file_name)
                             }
                             1 -> {
-                                jsonFile = getFile(context, dynamic[0].measure_server_json_name?.replace(baseUrl, "")!!)
-                                mediaFile = getFile(context, dynamic[0].measure_server_file_name?.replace(baseUrl, "")!!)
+                                jsonFile = getFile(context, dynamic[0].measure_server_json_name!!)
+                                mediaFile = getFile(context, dynamic[0].measure_server_file_name!!)
                             }
                             else -> {
-                                jsonFile = getFile(context, statics[i - 1].measure_server_json_name.replace(baseUrl, ""))
-                                mediaFile = getFile(context, statics[i - 1].measure_server_file_name.replace(baseUrl, ""))
+                                jsonFile = getFile(context, statics[i - 1].measure_server_json_name)
+                                mediaFile = getFile(context, statics[i - 1].measure_server_file_name)
                             }
                         }
 
@@ -190,7 +188,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
             val ja = JSONArray()
             val uris = mutableListOf<String>()
-            val baseUrl = "https://gym.tangostar.co.kr/data/Results/"
 
             for (i in 0 until 7) {
                 val jsonFile: File?
@@ -198,16 +195,16 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                 when (i) {
                     0 -> {
-                        jsonFile = getFile(context, statics[0].measure_server_json_name.replace(baseUrl, ""))
-                        mediaFile = getFile(context, statics[0].measure_server_file_name.replace(baseUrl, ""))
+                        jsonFile = getFile(context, statics[0].measure_server_json_name)
+                        mediaFile = getFile(context, statics[0].measure_server_file_name)
                     }
                     1 -> {
-                        jsonFile = getFile(context, dynamic.measure_server_json_name?.replace(baseUrl, "")!!)
-                        mediaFile = getFile(context, dynamic.measure_server_file_name?.replace(baseUrl, "")!!)
+                        jsonFile = getFile(context, dynamic.measure_server_json_name!!)
+                        mediaFile = getFile(context, dynamic.measure_server_file_name!!)
                     }
                     else -> {
-                        jsonFile = getFile(context, statics[i - 1].measure_server_json_name.replace(baseUrl, ""))
-                        mediaFile = getFile(context, statics[i - 1].measure_server_file_name.replace(baseUrl, ""))
+                        jsonFile = getFile(context, statics[i - 1].measure_server_json_name)
+                        mediaFile = getFile(context, statics[i - 1].measure_server_file_name)
                     }
                 }
 
@@ -231,7 +228,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 recommendations = null
             )
             singletonMeasure.measures?.add(0, measureVO)
-            Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
+            Log.v("싱글턴Measure1Item", "${singletonMeasure.measures?.size}")
             // 3. 추천 프로그램 추가
             mergeRecommendationInOneMeasure(measureVO.sn)
         }

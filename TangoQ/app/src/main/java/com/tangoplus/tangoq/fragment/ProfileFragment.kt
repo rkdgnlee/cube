@@ -261,13 +261,17 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
                 // ----- 이미지 로드 시작 -----
                 val imageUri = userJson.optString("profile_file_path")
-                Glide.with(this)
-                    .load(imageUri)
-                    .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                    .into(binding.civP)
+                Log.v("imageUri", imageUri)
+                if (imageUri != "") {
+                    Glide.with(this)
+                        .load(imageUri)
+                        .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                        .into(binding.civP)
+                }
             }
         }
     }
+
     override fun onSwitchChanged(isChecked: Boolean) {
         val sharedPref = requireActivity().getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
         val modeEditor = sharedPref?.edit()

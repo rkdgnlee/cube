@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
-        if (singletonMeasure.measures != null) { // 값이 하나라도 있을 때만 가져오기.
+        if (!singletonMeasure.measures.isNullOrEmpty()) { // 값이 하나라도 있을 때만 가져오기.
             mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
             mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
         }

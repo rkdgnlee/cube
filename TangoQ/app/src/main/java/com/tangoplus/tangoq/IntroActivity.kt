@@ -113,11 +113,13 @@ class IntroActivity : AppCompatActivity() {
                                             Log.v("user", user.providerId)
                                             // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
                                             val jsonObj = JSONObject()
+                                            jsonObj.put("device_sn" ,0)
+                                            jsonObj.put("user_sn", 0)
                                             jsonObj.put("user_name", user.displayName.toString())
-                                            jsonObj.put("user_email", user.email.toString())
+                                            jsonObj.put("email", user.email.toString())
                                             jsonObj.put("google_login_id", user.uid)
 //                                            jsonObj.put("google_id_token", tokenId) // 토큰 값
-                                            jsonObj.put("user_mobile", user.phoneNumber)
+                                            jsonObj.put("mobile", user.phoneNumber)
                                             jsonObj.put("social_account", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                             Log.v("jsonObj", "$jsonObj")
@@ -182,6 +184,8 @@ class IntroActivity : AppCompatActivity() {
                         val jsonObj = JSONObject()
                         val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
                         val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
+                        jsonObj.put("device_sn" ,0)
+                        jsonObj.put("user_sn", 0)
                         jsonObj.put("user_name", result.profile?.name.toString())
                         jsonObj.put("gender", naverGender)
                         jsonObj.put("mobile", naverMobile)
@@ -236,10 +240,12 @@ class IntroActivity : AppCompatActivity() {
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
-                                jsonObj.put("user_gender", kakaoUserGender)
-                                jsonObj.put("user_mobile", kakaoMobile)
-                                jsonObj.put("user_email", user.kakaoAccount?.email.toString())
-                                jsonObj.put("user_birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
+                                jsonObj.put("device_sn" ,0)
+                                jsonObj.put("user_sn", 0)
+                                jsonObj.put("gender", kakaoUserGender)
+                                jsonObj.put("mobile", kakaoMobile)
+                                jsonObj.put("email", user.kakaoAccount?.email.toString())
+                                jsonObj.put("birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
                                 jsonObj.put("kakao_login_id" , user.id.toString())
                                 jsonObj.put("kakao_id_token", token.idToken)
                                 jsonObj.put("social_account", "kakao")
@@ -311,12 +317,27 @@ class IntroActivity : AppCompatActivity() {
                 bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.OnAgreeListener {
                     override fun onFinish(agree: Boolean) {
                         if (agree) {
+
+                            // TODO 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
+                            jsonObj.put("device_sn" ,0)
+                            jsonObj.put("user_sn", 0)
                             jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
                             jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
                             Log.v("Intro>SMS", "$jsonObj")
                             Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                            val dialog = SetupDialogFragment()
-                            dialog.show(supportFragmentManager, "SetupDialogFragment")
+
+
+                            storeUserInSingleton(this@IntroActivity, jo)
+                            createKey(getString(R.string.SECURE_KEY_ALIAS))
+                            Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+                            val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")!!
+                            val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()!!
+                            ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+                                mainInit()
+                            }
+
+//                            val dialog = SetupDialogFragment()
+//                            dialog.show(supportFragmentManager, "SetupDialogFragment")
 
                         } else {
                             // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------

@@ -173,7 +173,8 @@ class SplashActivity : AppCompatActivity() {
                                     val jsonBody = response.body?.string()?.let { JSONObject(it) }?.getJSONObject("response")
 
                                     val jsonObj = JSONObject()
-
+                                    jsonObj.put("device_sn", 0)
+                                    jsonObj.put("user_sn", 0)
                                     jsonObj.put("user_name",jsonBody?.optString("name"))
                                     jsonObj.put("gender", if (jsonBody?.optString("gender") == "M") "남자" else "여자")
                                     val naverMobile = jsonBody?.optString("mobile")?.replaceFirst("010", "+8210")
@@ -208,6 +209,8 @@ class SplashActivity : AppCompatActivity() {
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val jsonObj = JSONObject()
+                                    jsonObj.put("device_sn", 0)
+                                    jsonObj.put("user_sn", 0)
                                     jsonObj.put("google_login_id", user.uid)
                                     jsonObj.put("user_name", user.displayName.toString())
                                     jsonObj.put("email", user.email.toString())
@@ -241,6 +244,8 @@ class SplashActivity : AppCompatActivity() {
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
+                                jsonObj.put("device_sn", 0)
+                                jsonObj.put("user_sn", 0)
                                 jsonObj.put("gender", kakaoUserGender)
                                 jsonObj.put("mobile", kakaoMobile)
                                 jsonObj.put("email", user.kakaoAccount?.email.toString())

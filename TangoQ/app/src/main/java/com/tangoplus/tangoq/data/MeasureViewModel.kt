@@ -8,6 +8,8 @@ import com.tangoplus.tangoq.db.MeasureStatic
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MeasureViewModel : ViewModel() {
     val parts = MutableLiveData(mutableListOf<MeasureVO>())
@@ -40,6 +42,21 @@ class MeasureViewModel : ViewModel() {
 
     val staticJsonFiles = mutableListOf<File>()
     var dynamicJsonFile : File? = null
+
+    // ------# 각 부위 데이터들 #------
+    var earData = listOf<Pair<Float, Float>>()
+    var shoulderData = listOf<Pair<Float, Float>>()
+    var elbowData = listOf<Pair<Float, Float>>()
+    var wristData = listOf<Pair<Float, Float>>()
+    var indexData = listOf<Pair<Float, Float>>()
+    var pinkyData = listOf<Pair<Float, Float>>()
+    var thumbData = listOf<Pair<Float, Float>>()
+    var hipData = listOf<Pair<Float, Float>>()
+    var kneeData = listOf<Pair<Float, Float>>()
+    var ankleData = listOf<Pair<Float, Float>>()
+    var heelData = listOf<Pair<Float, Float>>()
+    var toeData = listOf<Pair<Float, Float>>()
+
 
     init {
         selectedMeasureDate.value = ""
@@ -92,7 +109,7 @@ class MeasureViewModel : ViewModel() {
             }
             // 기본값들이 없는 경우를 위한 추가
             if (!has("uploaded")) put("uploaded", "0")
-            if (!has("upload_date")) put("upload_date", "")
+            if (!has("upload_date")) put("upload_date", getCurrentDateTime())
             if (!has("result_index")) put("result_index", 0)
             if (!has("uploaded_json")) put("uploaded_json", "0")
             if (!has("uploaded_file")) put("uploaded_file", "0")
@@ -101,4 +118,7 @@ class MeasureViewModel : ViewModel() {
         }
         return gson.fromJson(modifiedJsonObject.toString(), MeasureDynamic::class.java)
     }
+    fun getCurrentDateTime(): String =
+        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+
 }
