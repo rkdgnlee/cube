@@ -134,7 +134,7 @@ object SecurePreferencesManager {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-        Log.v("uuid", "uuid is Successed")
+        Log.v("uuid", "Save uuid Successes")
         encryptedPrefs.edit().putString(SERVER_UUID_KEY, uuid).apply()
     }
 

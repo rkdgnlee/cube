@@ -55,7 +55,6 @@ class MeasureAnalysisFragment : Fragment() {
 
     private var updateUI = false
     private var count = false
-
     // 영상재생
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
@@ -173,7 +172,6 @@ class MeasureAnalysisFragment : Fragment() {
                 setDynamicUI(true)
                 setPlayer()
             }
-
         }
     }
 
@@ -186,11 +184,11 @@ class MeasureAnalysisFragment : Fragment() {
             0 -> {
                 // ------# 수직 값 #------
                 val keyPairs = mapOf(
-                    "front_vertical_angle_shoulder_elbow" to "어깨와 팔꿈치 기울기",
-                    "front_vertical_angle_elbow_wrist" to "팔꿈치와 손목 기울기",
+                    "front_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
+                    "front_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
                     "front_vertical_angle_hip_knee" to "골반과 무릎 기울기",
                     "front_vertical_angle_knee_ankle" to "무릎과 발목 기울기",
-                    "front_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿈치-손목 기울기",
+                    "front_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기",
                     "front_vertical_angle_hip_knee_ankle" to "골반-무릎-발목 기울기"
                 )
                 minResultData = keyPairs.mapNotNull {(key, description) ->
@@ -232,7 +230,6 @@ class MeasureAnalysisFragment : Fragment() {
                     }
                 }
                 set012Adapter(minResultData)
-
             }
             1 -> {
                 lifecycleScope.launch {
@@ -249,17 +246,17 @@ class MeasureAnalysisFragment : Fragment() {
                         }
                         filteredCoordinates.add(filteredCoordinate)
                     }
-
                     setVideoAdapter(filteredCoordinates)
                 }
             }
+
             2 -> {
                 val valuePairs = listOf(
                     Triple("엄지와 엄지관절 기울기", "front_hand_angle_thumb_cmc_tip_left", "front_hand_angle_thumb_cmc_tip_right"),
                     Triple("팔꿉-손목-중지관절 기울기", "front_hand_angle_elbow_wrist_mid_finger_mcp_left", "front_hand_angle_elbow_wrist_mid_finger_mcp_right"),
-                    Triple("상완-팔꿈치-손목 기울기", "front_elbow_align_angle_left_upper_elbow_elbow_wrist", "front_elbow_align_angle_right_upper_elbow_elbow_wrist"),
+                    Triple("상완-팔꿉-손목 기울기", "front_elbow_align_angle_left_upper_elbow_elbow_wrist", "front_elbow_align_angle_right_upper_elbow_elbow_wrist"),
                     Triple("양 손목과 어깨 기울기", "front_elbow_align_distance_left_wrist_shoulder", "front_elbow_align_distance_right_wrist_shoulder"),
-                    Triple("중지-손목-팔꿈치 기울기", "front_elbow_align_angle_mid_index_wrist_elbow_left", "front_elbow_align_angle_mid_index_wrist_elbow_right"),
+                    Triple("중지-손목-팔꿉 기울기", "front_elbow_align_angle_mid_index_wrist_elbow_left", "front_elbow_align_angle_mid_index_wrist_elbow_right"),
                     Triple("어깨-팔꿈치-손목 기울기", "front_elbow_align_angle_left_shoulder_elbow_wrist", "front_elbow_align_angle_right_shoulder_elbow_wrist")
                 )
                 valuePairs.forEach{ (descrption, leftKey, rightKey) ->
@@ -303,10 +300,11 @@ class MeasureAnalysisFragment : Fragment() {
                 }
                 set012Adapter(minResultData)
             }
+
             3 -> {
                 val keyAnglePairs = mapOf(
-                    "side_left_vertical_angle_shoulder_elbow" to "어깨와 팔꿈치 기울기",
-                    "side_left_vertical_angle_elbow_wrist" to "팔꿈치와 손목 기울기",
+                    "side_left_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
+                    "side_left_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
                     "side_left_vertical_angle_hip_knee" to "골반과 무릎 기울기",
                     "side_left_vertical_angle_ear_shoulder" to "귀와 어깨 기울기",
                     "side_left_vertical_angle_nose_shoulder" to "코와 어깨 기울기",
@@ -338,8 +336,8 @@ class MeasureAnalysisFragment : Fragment() {
             }
             4 -> {
                 val keyAnglePairs = mapOf(
-                    "side_right_vertical_angle_shoulder_elbow" to "어깨와 팔꿈치 기울기",
-                    "side_right_vertical_angle_elbow_wrist" to "팔꿈치와 손목 기울기",
+                    "side_right_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
+                    "side_right_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
                     "side_right_vertical_angle_hip_knee" to "골반과 무릎 기울기",
                     "side_right_vertical_angle_ear_shoulder" to "귀와 어깨 기울기",
                     "side_right_vertical_angle_nose_shoulder" to "코와 어깨 기울기",
@@ -369,6 +367,7 @@ class MeasureAnalysisFragment : Fragment() {
                 }
                 set012Adapter(minResultData)
             }
+
             5 -> {
                 // ------# 수직 #------
                 val verticalKeyPairs = mapOf(
@@ -377,7 +376,7 @@ class MeasureAnalysisFragment : Fragment() {
                     "back_vertical_angle_nose_center_shoulder" to "어깨중심과 코 기울기",
                 )
                 val verticalDistancePairs = listOf(
-                    Triple("중심에서 양 손목 거리", "back_vertical_angle_knee_heel_left", "back_vertical_angle_knee_heel_right"),
+                    Triple("무릎과 발목 기울기", "back_vertical_angle_knee_heel_left", "back_vertical_angle_knee_heel_right"),
                 )
                 verticalKeyPairs.forEach { (key, description) ->
                     val angleValue = measureResult.optJSONObject(0).optDouble(key)
@@ -426,6 +425,7 @@ class MeasureAnalysisFragment : Fragment() {
                 }
                 set012Adapter(minResultData)
             }
+
             6 -> {
                 val keyPairs = mapOf(
                     "back_sit_vertical_angle_nose_left_shoulder_right_shoulder" to "코-좌측 어깨-우측 어깨 기울기",
@@ -508,6 +508,7 @@ class MeasureAnalysisFragment : Fragment() {
 
         val dangerParts = viewModel.selectedMeasure?.dangerParts?.map { it.first }!!.map { it.replace("좌측 ", "").replace("우측 ", "") }
         val filteredData = allData.filter { dangerParts.any { part -> it.first.contains(part) } }
+        if (filteredData.isEmpty())  binding.tvMANotice1.visibility = View.GONE else binding.tvMANotice2.visibility = View.VISIBLE
 
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val leftTopAdapter = DataStaticRVAdapter(requireContext(), filteredData.filterIndexed { index, _ -> index % 2 == 0 }, true)
@@ -568,7 +569,6 @@ class MeasureAnalysisFragment : Fragment() {
 //                                    val jsonObject = Gson().fromJson(jsonData.toString(), JsonObject::class.java)
 //                                    val scaleFactorX = jsonObject.get("measure_overlay_scale_factor_x").asDouble
 //                                    val scaleFactorY = jsonObject.get("measure_overlay_scale_factor_y").asDouble
-
 
                                     val imageViewWidth = ssiv.width
                                     val imageViewHeight = ssiv.height

@@ -5,12 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDivider
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvHistoryItemBinding
-import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
 

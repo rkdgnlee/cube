@@ -76,6 +76,7 @@ object FileStorageUtil {
             false
         }
     }
+
 //    fun getCacheFile(context: Context, fileName: String): File? {
 //        val dir = context.cacheDir
 //        val file = File(dir, fileName)
@@ -128,7 +129,7 @@ object FileStorageUtil {
         }
     }
 
-    fun getDirectory(context: Context, fileType: FileType): File {
+    private fun getDirectory(context: Context, fileType: FileType): File {
         val baseDir = when (fileType) {
             FileType.IMAGE -> context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             FileType.VIDEO -> context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)

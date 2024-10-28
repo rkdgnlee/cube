@@ -25,7 +25,6 @@ interface MeasureDao {
     @Query("SELECT mobile_info_sn FROM t_measure_info WHERE sn = :userSn") // mobile_info_sn이란 실제 db의 sn이 아님. room의 sn
     fun getMaxMobileInfoSn(userSn: Int) : Int
 
-    // ------# server_sn과 uploaded를 update 하는 쿼리문 #------
 
     @Query("UPDATE t_measure_info SET uploaded = :uploaded WHERE mobile_info_sn = :mobileInfoSn")
     suspend fun updateUploaded(mobileInfoSn: Int, uploaded: String)
@@ -54,7 +53,8 @@ interface MeasureDao {
 
     @Query("SELECT * FROM t_measure_info WHERE user_uuid = :userUUID AND uploaded = '0'")
     fun getNotUploadedInfo(userUUID: String) : List<MeasureInfo>
-    // -------------------------------# MeasureStatic sn 증가 #-------------------------------
+
+    // -------------------------------# MeasureStatic #-------------------------------
     @Insert
     suspend fun insertByStatic(entity: MeasureStatic) : Long
 
@@ -85,6 +85,9 @@ interface MeasureDao {
     @Query("UPDATE t_measure_static SET measure_server_file_name = :serverFileName WHERE mobile_sn = :mobileSn")
     suspend fun updateStaticServerFIleName(mobileSn: Int, serverFileName: String)
 
+    @Query("SELECT * FROM t_measure_static WHERE uploaded_json = '0' OR uploaded_file = '0'")
+    suspend fun getFailedUploadedStatics() : List<MeasureStatic>
+
     @Transaction
     suspend fun updateAndGetStatic(
         mobileSn: Int,
@@ -112,22 +115,8 @@ interface MeasureDao {
     @Query("SELECT * FROM t_measure_static WHERE mobile_sn = :mobileSn")
     fun getStaticByMobileSn(mobileSn: Int): MeasureStatic
 
-    // -------------------------------# MeasureDynamic sn 증가 #-------------------------------
-//    @Transaction
-//    suspend fun insertWithAutoIncrementDynamic(entity: MeasureDynamic, userUUID: String , indexes: Int) {
-//        val newEntity = entity.copy(
-//            user_uuid = userUUID,
-//            reg_date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-//            result_index = indexes,
-//            uploaded = "0",
-//            upload_date = "0",
-//            uploaded_json = "0",
-//            uploaded_file = "0",
-//            uploaded_json_fail = "0",
-//            used = "0"
-//        )
-//        insertByDynamic(newEntity)
-//    }
+
+    // -------------------------------# MeasureDynamic #-------------------------------
     @Insert
     suspend fun insertByDynamic(entity: MeasureDynamic)  : Long
 
@@ -154,7 +143,10 @@ interface MeasureDao {
     suspend fun updateDynamicServerJsonName(mobileSn: Int, serverJsonName: String)
 
     @Query("UPDATE t_measure_dynamic SET measure_server_file_name = :serverFileName WHERE mobile_sn = :mobileSn")
-    suspend fun updateDynamicServerFIleName(mobileSn: Int, serverFileName: String)
+    suspend fun updateDynamicServerFileName(mobileSn: Int, serverFileName: String)
+
+    @Query("SELECT * FROM t_measure_dynamic WHERE uploaded_json = '0' OR uploaded_file = '0'")
+    suspend fun getFailedUploadedDynamic() : List<MeasureDynamic>
 
     @Transaction
     suspend fun updateAndGetDynamic(
@@ -173,7 +165,7 @@ interface MeasureDao {
         uploadedJson?.let { updateDynamicUploadedJson(mobileSn, it) }
         uploadedFile?.let { updateDynamicUploadedFile(mobileSn, it) }
         serverJsonName?.let { updateDynamicServerJsonName(mobileSn, it) }
-        serverFileName?.let { updateDynamicServerFIleName(mobileSn, it) }
+        serverFileName?.let { updateDynamicServerFileName(mobileSn, it) }
 
         return getDynamicByMobileSn(mobileSn)
     }

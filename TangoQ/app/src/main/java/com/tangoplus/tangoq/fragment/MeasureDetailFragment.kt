@@ -13,12 +13,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.marginEnd
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -120,6 +122,7 @@ class MeasureDetailFragment : Fragment() {
             fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_rader_main_second_90)
             lineWidth = 2f
             setDrawValues(false)  // 값 표시 제거
+
         }
         val radarData = RadarData(dataSet)
 
@@ -136,8 +139,8 @@ class MeasureDetailFragment : Fragment() {
                 setDrawGridLines(true)
                 valueFormatter = IndexAxisValueFormatter(raderXParts)
                 textColor = resources.getColor(R.color.subColor400, null)
-                textSize = 13f  // 텍스트 크기 증가
-                yOffset = 0f  // 텍스트를 차트에서 조금 더 멀리 배치
+                textSize = if (isTablet(requireContext())) 18f else 13f   // 텍스트 크기 증가
+                yOffset = 20f  // 텍스트를 차트에서 조금 더 멀리 배치
 
 
             }

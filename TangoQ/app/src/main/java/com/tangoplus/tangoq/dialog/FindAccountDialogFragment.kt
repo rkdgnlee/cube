@@ -59,14 +59,13 @@ class FindAccountDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! 초기 세팅 시작 !------
+        // ------# 초기 세팅 #------
         binding.clFADId.visibility = View.GONE
         binding.clFADIdResult.visibility = View.GONE
         binding.clFADResetPassword.visibility = View.GONE
         auth = FirebaseAuth.getInstance()
         auth.setLanguageCode("kr")
         binding.btnFADAuthSend.isEnabled = false
-        // ------! 초기 세팅 끝 !------
 
         // ------! 탭으로 아이디 비밀번호 레이아웃 나누기 시작 !------
         binding.tlFAD.addOnTabSelectedListener(object : OnTabSelectedListener{
@@ -196,7 +195,7 @@ class FindAccountDialogFragment : DialogFragment() {
                     }
                     Log.v("찾기>핸드폰번호", "$jo")
 
-                    // ------! 핸드폰 번호를 보내면 아이디를 알려주는 api 필요 !------
+                    // TODO ------! 핸드폰 번호를 보내면 아이디를 알려주는 api 필요 !------
 //                    getUserBySdk(getString(R.string.IP_ADDRESS_t_user), , requireContext()) { jo ->
 //                        if (jo?.getInt("status") == 404) {
 //                            requireActivity().runOnUiThread {

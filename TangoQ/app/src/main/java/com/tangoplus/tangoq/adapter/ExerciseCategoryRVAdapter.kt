@@ -33,9 +33,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
 
     inner class SubCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
         val tvSCName : TextView = view.findViewById(R.id.tvSCName)
-
     }
-
 
     override fun getItemViewType(position: Int): Int {
         return when (xmlname) {

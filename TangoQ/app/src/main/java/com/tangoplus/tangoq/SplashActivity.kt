@@ -76,6 +76,17 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var ssm : SaveSingletonManager
 
+    override fun onPause() {
+        super.onPause()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
@@ -142,7 +153,7 @@ class SplashActivity : AppCompatActivity() {
 
                 val userSingleton = Singleton_t_user.getInstance(this)
 
-                // ------! 다크모드 및 설정 불러오기 시작 !------
+                // ------# 다크모드 및 설정 불러오기  #------
                 val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
                 val darkMode = sharedPref.getBoolean("darkMode", false)
 
@@ -150,7 +161,7 @@ class SplashActivity : AppCompatActivity() {
                     if (darkMode) AppCompatDelegate.MODE_NIGHT_YES
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
-                // ------! 다크모드 및 설정 불러오기 끝 !------
+
 
                 val Handler = Handler(Looper.getMainLooper())
                 Handler.postDelayed({
@@ -186,7 +197,6 @@ class SplashActivity : AppCompatActivity() {
 
                                     getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
-
                                             storeUserInSingleton(this@SplashActivity, jo)
                                             Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
@@ -290,7 +300,7 @@ class SplashActivity : AppCompatActivity() {
                     }
                     else {
                         // 로그인 정보가 없을 경우
-                        IntroInit()
+                        introInit()
                     }
                 }, 1500)
 
@@ -325,23 +335,22 @@ class SplashActivity : AppCompatActivity() {
         }
     }
     private fun createNotificationChannel() {
-        // Create the NotificationChannel.
         val name = getString(R.string.channel_name)
         val descriptionText = getString(R.string.channel_description)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val mChannel = NotificationChannel(descriptionText , name, importance)
         mChannel.description = descriptionText
-        // 채널을 등록해야 알림을 받을 수 있음
+
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
     }
 
-    private fun MainInit() {
+    private fun mainInit() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
-    private fun IntroInit() {
+    private fun introInit() {
         val intent = Intent(this@SplashActivity, IntroActivity::class.java)
         startActivity(intent)
         finish()
@@ -354,7 +363,7 @@ class SplashActivity : AppCompatActivity() {
             // 딥링크 처리
             DeepLinkManager.handleDeepLink(this, data)
         } else {
-            MainInit()
+            mainInit()
         }
     }
 }

@@ -223,19 +223,28 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     }
                     Player.STATE_ENDED -> {
                         Log.v("PlaybackState", "Player.STATE_ENDED")
-                        sendData(true)
-                        val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
-                        val elapsedSeconds = elapsedMillis / 1000
-                        chronometer.stop()
-                        Log.v("elapsedSeconds", "$elapsedSeconds")
-                        viewModel.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
-                        // 이 곳에 총 크로노미터 + 도합 운동시간 + 운동 갯수 3개 보내야함.
-                        val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-                        intent.putExtra("feedback_finish", viewModel.exerciseLog)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        Log.v("feedback_finish", "VM_exercise_log: ${viewModel.exerciseLog}")
-                        startActivity(intent)
-                        finish()
+
+                        if (baseUrls.size > 1) {
+                            sendData(true)
+                            val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
+                            val elapsedSeconds = elapsedMillis / 1000
+                            chronometer.stop()
+                            Log.v("elapsedSeconds", "$elapsedSeconds")
+                            viewModel.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
+                            // 이 곳에 총 크로노미터 + 도합 운동시간 + 운동 갯수 3개 보내야함.
+                            val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                            intent.putExtra("feedback_finish", viewModel.exerciseLog)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            Log.v("feedback_finish", "VM_exercise_log: ${viewModel.exerciseLog}")
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+
+
                     }
                 }
             }
@@ -245,21 +254,24 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 val currentWindowIndex = simpleExoPlayer!!.currentWindowIndex
 
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-                    sendData(true)
-                    val currentPlaybackPosition = simpleExoPlayer!!.currentPosition
-                    pViewModel.currentWindowIndex.value = currentWindowIndex
-                    pViewModel.currentPlaybackPosition.value = currentPlaybackPosition
+                    if (baseUrls.size > 1) {
+                        sendData(true)
+                        val currentPlaybackPosition = simpleExoPlayer!!.currentPosition
+                        pViewModel.currentWindowIndex.value = currentWindowIndex
+                        pViewModel.currentPlaybackPosition.value = currentPlaybackPosition
 
-                    if (currentWindowIndex < mediaSourceList.size) {
-                        viewModel.totalProgressDuration += simpleExoPlayer!!.duration.toInt()
-                        currentMediaSourceIndex++
-                        Log.v("윈도우인덱스", "$currentMediaSourceIndex")
+                        if (currentWindowIndex < mediaSourceList.size) {
+                            viewModel.totalProgressDuration += simpleExoPlayer!!.duration.toInt()
+                            currentMediaSourceIndex++
+                            Log.v("윈도우인덱스", "$currentMediaSourceIndex")
 
-                        currentExerciseId = sns!![currentWindowIndex]
-                        startNextVideoCountdown()
-                        currentVideoDuration = simpleExoPlayer!!.duration
-                        Log.e("currentVideoDuration임", "$currentVideoDuration")
+                            currentExerciseId = sns!![currentWindowIndex]
+                            startNextVideoCountdown()
+                            currentVideoDuration = simpleExoPlayer!!.duration
+                            Log.e("currentVideoDuration임", "$currentVideoDuration")
+                        }
                     }
+
                 }
             }
         })
@@ -328,12 +340,18 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setTitle("알림")
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
+                if (baseUrls.size > 1) {
+                    sendData(false)
+                    val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(intent)
+                    finish()
+                } else {
+                    val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
 
-                sendData(false)
-                val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                startActivity(intent)
-                finish()
             }
             setNegativeButton("아니오") { dialog, _ ->
                 dialog.dismiss()

@@ -133,15 +133,11 @@ class ExerciseRVAdapter (
                     }
                 }
 
-
                 Glide.with(fragment.requireContext())
                     .load("${currentExerciseItem.imageFilePathReal}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEIThumbnail)
-
-
-
 
                 // ------# 시청 기록 #------\
 //                if (currentExerciseItem.exerciseId == currentHistoryItem.exerciseId) {
@@ -198,8 +194,8 @@ class ExerciseRVAdapter (
                         else -> {
                             2
                         }
-
                     }
+
                     when (condition) {
                         0 -> { // 재생 및 완료
                             holder.tvEIFinish.visibility = View.VISIBLE

@@ -14,17 +14,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.ProgressViewModel
-import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
-import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
@@ -37,14 +31,11 @@ import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -95,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         handleIntent(intent)
 
-        // -------! 버튼 시작 !------
+        // -------# 버튼 시작 #------
         binding.bnbMain.setOnItemSelectedListener {
             if (selectedTabId != it.itemId) {
                 selectedTabId = it.itemId
@@ -113,7 +104,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.profile -> {}
             }
         }
-        // -------! 버튼 끝 !------
 
         // ------# 측정 완료 후 측정 디테일 화면으로 바로 가기 #------
         measureSkeletonLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -184,7 +174,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
+    // ------# 한 번 더 누르시면 앱이 종료됩니다. #------
     private var backPressedOnce = false
     private val backPressHandler = Handler(Looper.getMainLooper())
     private val backPressRunnable = Runnable { backPressedOnce = false }
@@ -203,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                     backPressHandler.postDelayed(backPressRunnable, 1000)
                 }
             } else {
-                // 그 외의 경우 이전 프래그먼트로 돌아갑니다.
+
                 fragmentManager.popBackStack()
             }
         }
@@ -217,10 +207,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clearCache() {
-        val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
-        cacheDir?.let {
-            deleteDir(it)
-        }
+//        val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
+//        cacheDir?.let {
+//            deleteDir(it)
+//        }
     }
 
     private fun deleteDir(dir: File?): Boolean {
@@ -299,5 +289,6 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MeasureSkeletonActivity::class.java)
         measureSkeletonLauncher.launch(intent)
     }
+
 }
 

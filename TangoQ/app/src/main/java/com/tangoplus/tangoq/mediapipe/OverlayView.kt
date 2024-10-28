@@ -211,9 +211,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val rightKneeY = rightKnee.y * scaleFactorY + offsetY
 
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
-                canvas.drawLine(leftIndexX + 100, leftIndexY, rightIndexX - 100, rightIndexY, axisPaint)
-                canvas.drawLine(leftHipX + 100, leftHipY, rightHipX - 100, rightHipY, axisPaint)
-                canvas.drawLine(leftKneeX + 100, leftKneeY, rightKneeX - 100, rightKneeY, axisPaint)
+                canvas.drawLine(leftIndexX - 100, leftIndexY, rightIndexX + 100, rightIndexY, axisPaint)
+                canvas.drawLine(leftHipX - 100, leftHipY, rightHipX + 100, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
 
             }
 

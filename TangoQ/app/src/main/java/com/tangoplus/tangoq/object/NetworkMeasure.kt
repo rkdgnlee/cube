@@ -3,17 +3,12 @@ package com.tangoplus.tangoq.`object`
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
-import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.db.FileStorageUtil
-import com.tangoplus.tangoq.db.FileStorageUtil.getFile
-import com.tangoplus.tangoq.db.FileStorageUtil.readJsonArrayFile
-import com.tangoplus.tangoq.db.FileStorageUtil.readJsonFile
 import com.tangoplus.tangoq.db.FileStorageUtil.saveFileFromUrl
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.db.MeasurementManager.getDangerParts
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,16 +16,14 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 object NetworkMeasure {
-    // ------# 전송 실패된 항목 PUT #------
+
+    // ------# 전송 실패된 항목 POST #------
     suspend fun resendMeasureFile(context: Context, myUrl: String, requestBody: RequestBody, isStatic: Boolean, serverMeasureSn: Int, mobileDbSn: Int,  callback: (Pair<String,String>?) -> Unit) : Result<Unit> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
@@ -44,7 +37,7 @@ object NetworkMeasure {
             .build()
         val request = Request.Builder()
             .url("$myUrl/$serverMeasureSn")
-            .put(requestBody)
+            .post(requestBody)
             .build()
         Log.v("sendMeasureData", "Try to send MultipartBody")
 
@@ -52,7 +45,6 @@ object NetworkMeasure {
 
             try {
                 client.newCall(request).execute().use { response ->
-
                     if (response.code == 500) {
                         // 서버 응답이 성공하지 않았을 경우 처리
                         Log.e("전송실패3", "$response")
@@ -98,7 +90,7 @@ object NetworkMeasure {
                     return@withContext Result.success(Unit)
                     /* 앱 내 DB 수정 완료했음. 그러면 measureInfo와 static, dynamic이 들어가있는데 사진만 저장이 안된 상황.
                     * 현재 로그인 시 measure 인포 전부 가져오기 및 db저장. 여기서는 인포 저장됨. db에도 저장됨. 그러면? 전부 1일때만? 파일들 서버에서 받아오기, 그리고 확정된 파일 이름에 맞게 저장하고 cache 비우기 하면 됨.
-                    * 근데 전부 안들어갔을 때는을 대비해서. 그냥 업로드 된 항목들 2*2 로나눠서 하나라도 되면 그거 파일 값 저장하기로 넘어가야함. 근데 일부가 안들어갔을 때, 그냥 계속 보내기? ㅋㅋㅋ
+                    * 근데 전부 안들어갔을 때는을 대비해서. 그냥 업로드 된 항목들 2*2 로 나눠서 하나라도 되면 그거 파일 값 저장하기로 넘어가야함. 근데 일부가 안들어갔을 때, 그냥 계속 보내기? ㅋㅋㅋ
                     * */
                 }
 
@@ -269,12 +261,12 @@ object NetworkMeasure {
                 }
 
                 // ------# 없는 것들만 필터링 #------
-                Log.v("db없는infoSn", "newInfos: ${newInfos}")
+                Log.v("db없는infoSn", "newInfos: $newInfos")
 
                 Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
                 newInfos.forEach{ newInfo ->
                     mDao.insertInfo(newInfo)
-                    getMeasureResult(context, myUrl, newInfo.sn!!, userUUID)
+                    getMeasureResult(context, myUrl, newInfo.sn!!)
                 }
                 return@withContext callback(true)
             }
@@ -283,7 +275,7 @@ object NetworkMeasure {
     // -------------# TODO 전제: 측정 결과 모바일에서 업로드할 때 무조건 sn을 저장해야함 #------------------
 
     // 측정 결과 1개 sequence 전체 가져오기
-    private suspend fun getMeasureResult(context: Context, myUrl: String, measureInfoSn: Int, userUUID: String) : Result<Unit> {
+    private suspend fun getMeasureResult(context: Context, myUrl: String, measureInfoSn: Int) : Result<Unit> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()

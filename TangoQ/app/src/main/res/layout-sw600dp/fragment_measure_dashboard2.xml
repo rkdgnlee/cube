@@ -20,16 +20,16 @@
                 android:id="@+id/constraintLayout9"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="40dp"
                 android:background="@drawable/bckgnd_1_sub150_20"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMD2Title">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
+                    android:layout_width="50dp"
                     android:layout_height="0dp"
                     android:layout_marginBottom="8dp"
                     app:cardCornerRadius="6dp"
@@ -110,10 +110,10 @@
                     android:id="@+id/bcMD2"
                     android:layout_width="match_parent"
                     android:layout_height="128dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="40dp"
                     app:cardBackgroundColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -136,49 +136,49 @@
                     <ImageView
                         android:id="@+id/ivMD21"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="26dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_week_1_disabled" />
 
                     <ImageView
                         android:id="@+id/ivMD22"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="26dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_week_2_disabled" />
 
                     <ImageView
                         android:id="@+id/ivMD23"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="26dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_week_3_disabled" />
 
                     <ImageView
                         android:id="@+id/ivMD24"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="26dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_week_4_disabled" />
 
                     <ImageView
                         android:id="@+id/ivMD25"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="26dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_week_5_disabled" />
 
                     <ImageView
                         android:id="@+id/ivMD26"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="26dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_week_6_disabled" />
 
                     <ImageView
                         android:id="@+id/ivMD27"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="26dp"
                         android:layout_weight="1"
                         android:src="@drawable/icon_week_7_disabled" />
                 </LinearLayout>
@@ -189,8 +189,8 @@
                 android:id="@+id/tvMD2Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="30dp"
                 android:text="000님의 기록"
                 android:textColor="@color/subColor800"
                 android:textSize="24dp"
@@ -202,9 +202,9 @@
                 android:id="@+id/cardView10"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="40dp"
                 android:background="@drawable/bckgnd_2_main_20"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="0dp"
@@ -247,7 +247,7 @@
                             android:layout_weight="8"
                             android:gravity="center"
                             android:textColor="@color/black"
-                            android:textSize="18sp"
+                            android:textSize="22dp"
                             tools:text="2024년 5월" />
 
                         <ImageButton
@@ -282,10 +282,10 @@
                 android:id="@+id/tvMD2Date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="40dp"
                 android:text="2024년 5월 9일"
-                android:textSize="18dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView10" />
@@ -323,7 +323,7 @@
                     android:layout_marginTop="28dp"
                     android:text="진행한 운동이 없습니다"
                     android:textColor="@color/subColor800"
-                    android:textSize="18dp"
+                    android:textSize="22dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -333,12 +333,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:background="@drawable/bckgnd_1_sub200_12"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
                     android:stateListAnimator="@null"
                     android:text="운동으로 이동"
                     android:textColor="@color/subColor800"
-                    android:textSize="16dp"
+                    android:textSize="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -361,7 +361,7 @@
                     android:layout_marginStart="10dp"
                     android:text="7개"
                     android:textColor="@color/thirdColor"
-                    android:textSize="20dp"
+                    android:textSize="24dp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView24"
                     app:layout_constraintStart_toEndOf="@+id/textView24"
                     app:layout_constraintTop_toTopOf="@+id/imageView21" />
@@ -382,6 +382,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="운동시간"
+                    android:textSize="18dp"
                     app:layout_constraintEnd_toStartOf="@+id/view6"
                     app:layout_constraintHorizontal_bias="0.375"
                     app:layout_constraintStart_toStartOf="parent"
@@ -403,6 +404,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="운동종류"
+                    android:textSize="18dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.375"
                     app:layout_constraintStart_toEndOf="@+id/view6"
@@ -415,7 +417,7 @@
                     android:layout_marginStart="10dp"
                     android:text="25개"
                     android:textColor="@color/thirdColor"
-                    android:textSize="20dp"
+                    android:textSize="24dp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView23"
                     app:layout_constraintStart_toEndOf="@+id/textView23"
                     app:layout_constraintTop_toTopOf="@+id/imageView17" />

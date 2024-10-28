@@ -13,7 +13,6 @@ data class MeasureDynamic(
     val local_sn: Int = 0,
     val measure_sn: Int = 0,
 
-
     val user_uuid: String = "",
     val mobile_device_uuid : String? = "",
     val user_sn: Int = 0,
@@ -30,7 +29,6 @@ data class MeasureDynamic(
     val measure_overlay_height: Int = 0,
     val measure_overlay_scale_factor_x: Float = 0F,
     val measure_overlay_scale_factor_y: Float = 0F,
-
 
     val ohs_front_horizontal_angle_elbow: Float = 0F,
     val ohs_front_horizontal_distance_elbow: Float = 0F,

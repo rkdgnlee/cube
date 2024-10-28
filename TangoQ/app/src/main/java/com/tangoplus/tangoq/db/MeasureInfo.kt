@@ -38,23 +38,65 @@ data class MeasureInfo(
     val used: String = "0",
     val modify_date: String = getCurrentDateTime(),
     val t_score: String = "0",
-    val risk_neck: String = "0",
-    val risk_shoulder_left: String = "0",
-    val risk_shoulder_right: String = "0",
-    val risk_elbow_left: String = "0",
-    val risk_elbow_right: String = "0",
-    val risk_wrist_left: String = "0",
-    val risk_wrist_right: String = "0",
-    val risk_hip_left: String = "0",
-    val risk_hip_right: String = "0",
-    val risk_knee_left: String = "0",
-    val risk_knee_right: String = "0",
-    val risk_ankle_left: String = "0",
-    val risk_ankle_right: String = "0",
+    var risk_neck: String = "0",
+    var risk_shoulder_left: String = "0",
+    var risk_shoulder_right: String = "0",
+    var risk_elbow_left: String = "0",
+    var risk_elbow_right: String = "0",
+    var risk_wrist_left: String = "0",
+    var risk_wrist_right: String = "0",
+    var risk_hip_left: String = "0",
+    var risk_hip_right: String = "0",
+    var risk_knee_left: String = "0",
+    var risk_knee_right: String = "0",
+    var risk_ankle_left: String = "0",
+    var risk_ankle_right: String = "0",
 
     ) {
     companion object {
         fun getCurrentDateTime(): String =
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    }
+
+    // TODO 랜덤으로 부위 넣는 함수는 분석부분이 만들어지면 삭제 예정
+    fun setRandomRiskValues() {
+        val riskFields = mutableListOf(
+            "risk_neck",
+            "risk_shoulder_left",
+            "risk_shoulder_right",
+            "risk_elbow_left",
+            "risk_elbow_right",
+            "risk_wrist_left",
+            "risk_wrist_right",
+            "risk_hip_left",
+            "risk_hip_right",
+            "risk_knee_left",
+            "risk_knee_right",
+            "risk_ankle_left",
+            "risk_ankle_right"
+        )
+
+        // 랜덤으로 2~4개 선택
+        val randomCount = (2..4).random()
+        val selectedFields = riskFields.shuffled().take(randomCount)
+
+        // 선택한 필드의 값을 "1" 또는 "2"로 설정
+        selectedFields.forEach { field ->
+            when (field) {
+                "risk_neck" -> this.risk_neck = (1..2).random().toString()
+                "risk_shoulder_left" -> this.risk_shoulder_left = (1..2).random().toString()
+                "risk_shoulder_right" -> this.risk_shoulder_right = (1..2).random().toString()
+                "risk_elbow_left" -> this.risk_elbow_left = (1..2).random().toString()
+                "risk_elbow_right" -> this.risk_elbow_right = (1..2).random().toString()
+                "risk_wrist_left" -> this.risk_wrist_left = (1..2).random().toString()
+                "risk_wrist_right" -> this.risk_wrist_right = (1..2).random().toString()
+                "risk_hip_left" -> this.risk_hip_left = (1..2).random().toString()
+                "risk_hip_right" -> this.risk_hip_right = (1..2).random().toString()
+                "risk_knee_left" -> this.risk_knee_left = (1..2).random().toString()
+                "risk_knee_right" -> this.risk_knee_right = (1..2).random().toString()
+                "risk_ankle_left" -> this.risk_ankle_left = (1..2).random().toString()
+                "risk_ankle_right" -> this.risk_ankle_right = (1..2).random().toString()
+            }
+        }
     }
 }

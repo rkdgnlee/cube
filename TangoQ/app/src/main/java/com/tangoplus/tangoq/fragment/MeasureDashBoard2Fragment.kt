@@ -21,6 +21,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -454,14 +455,6 @@ class MeasureDashBoard2Fragment : Fragment() {
 
     }
 
-    private fun isTablet(context: Context): Boolean {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val metrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(metrics)
-
-        val widthDp = metrics.widthPixels / metrics.density
-        return widthDp >= 600
-    }
 
     private fun updateMonthView() {
         binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"

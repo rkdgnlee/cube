@@ -2,26 +2,25 @@ package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.provider.Settings
+import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.view.WindowManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -30,11 +29,8 @@ import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.broadcastReceiver.AlarmController
 import com.tangoplus.tangoq.db.PreferencesManager
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
-import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
@@ -44,18 +40,14 @@ import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureBSDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
 import com.tangoplus.tangoq.`object`.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.`object`.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
-import jp.wasabeef.blurry.Blurry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.random.Random
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -95,7 +87,7 @@ class MainFragment : Fragment() {
         latestRecSn = prefsManager.getLatestRecommendation()
         Log.v("latestRecSn", "$latestRecSn")
 
-        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "점심공복에는 운동효과가 더 좋답니다.", 14, 2)
+//        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "점심공복에는 운동효과가 더 좋답니다.", 14, 2)
 //        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "식곤증을 위해 스트레칭을 추천드려요.", 13, 36)
 
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
@@ -383,9 +375,12 @@ class MainFragment : Fragment() {
                                         offscreenPageLimit = 3
                                         setAdapter(adapter)
                                         currentItem = currentPage
-
+                                        val dp = when (isTablet(requireContext())) {
+                                            true -> 28
+                                            false -> 5
+                                        }
                                         (getChildAt(0) as RecyclerView).apply {
-                                            setPadding(dpToPx(5), 0, dpToPx(5), 0)
+                                            setPadding(dpToPx(dp), 0, dpToPx(dp), 0)
                                             clipToPadding = false
                                         }
                                     }
@@ -485,6 +480,8 @@ class MainFragment : Fragment() {
 
         }
     }
+
+
 
 //    private fun applyBlurToConstraintLayout(constraintLayout: ConstraintLayout, imageView: ImageView) {
 //        val paddingInDp = 10

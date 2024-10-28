@@ -1,5 +1,8 @@
 package com.tangoplus.tangoq.mediapipe
 
+import android.content.Context
+import android.util.DisplayMetrics
+import android.view.WindowManager
 import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.math.pow
@@ -46,5 +49,15 @@ object CalculateUtil {
         val angleRad = acos(cosTheta.coerceIn(-1.0F, 1.0F))
 
         return angleRad * (180f / PI.toFloat())
+    }
+
+
+    private fun isTablet(context: Context): Boolean {
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val metrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(metrics)
+
+        val widthDp = metrics.widthPixels / metrics.density
+        return widthDp >= 600
     }
 }

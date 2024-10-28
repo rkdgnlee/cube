@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="29dp"
                 android:text="측정 이력"
                 android:textColor="@color/subColor800"
                 android:textSize="28dp"
@@ -47,7 +47,7 @@
                 android:id="@+id/materialDivider15"
                 android:layout_width="wrap_content"
                 android:layout_height="1.5dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="29dp"
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -110,15 +110,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 android:text="2024.08.07"
                 android:textColor="@color/subColor800"
                 android:textSize="22dp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
-                app:layout_constraintTop_toTopOf="@+id/constraintLayout29" />
+                app:layout_constraintTop_toTopOf="@+id/constraintLayout29"
+                app:layout_constraintVertical_bias="0.3" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnMDShare"
@@ -153,7 +154,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
-                app:layout_constraintTop_toBottomOf="@+id/tvMDDate" />
+                app:layout_constraintTop_toBottomOf="@+id/tvMDDate"
+                app:layout_constraintVertical_bias="0.2" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMD"
