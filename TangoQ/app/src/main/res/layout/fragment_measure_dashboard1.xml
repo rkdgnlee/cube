@@ -425,7 +425,7 @@
                 android:paddingTop="8dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="8dp"
-                android:text="기록 더 보기"
+                android:text="기록 비교하기"
                 android:textColor="@color/secondWhiteColor"
                 android:textSize="14dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvMD1Name"

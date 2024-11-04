@@ -81,6 +81,7 @@ import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateSlope
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
+import com.tangoplus.tangoq.mediapipe.SecureMultipartUtil
 import com.tangoplus.tangoq.`object`.NetworkMeasure.resendMeasureFile
 import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
 import com.tangoplus.tangoq.`object`.SaveSingletonManager
@@ -487,8 +488,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 dialog.show(supportFragmentManager, "LoadingDialogFragment")
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val motherJo = JSONObject()
-
+                    val commonJo = JSONObject()
+                    val userJo = JSONObject()
                     val userJson = singletonUser.jsonObject
                     val userUUID = userJson?.getString("user_uuid")!!
 
@@ -515,6 +516,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     measureInfo.setRandomRiskValues()
                     Log.v("measure빈칼럼여부", "$measureInfo")
 
+
+                    val smu = SecureMultipartUtil(this@MeasureSkeletonActivity, userJson.optString("sn").toInt())
                     val mobileInfoSn = mDao.insertInfo(measureInfo).toInt()
                     var mobileDynamicSn = 0
                     val mobileStaticSns = mutableListOf<Int>()
@@ -531,65 +534,102 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     Log.v("들어간데이터SN들", "mobileInfoSn: $mobileInfoSn, mobileDynamicSn: $mobileDynamicSn, mobileStaticSns: $mobileStaticSns")
 
 //                    // ------# 업로드 준비 #------
+
+                    // ------# info 분리 #------
                     val infoJson = JSONObject(measureInfo.toJson())
-                    motherJo.put("measure_info", infoJson)
+                    val infoDataJson = JSONObject()
+                    val infoCommonKeys = listOf(
+                        "mobile_info_sn", "sn", "device_sn", "measure_sn", "user_uuid",
+                        "mobile_device_uuid", "user_sn", "user_name", "measure_date",
+                        "elapsed_time", "measure_seq"
+                    )
+                    for (key in infoJson.keys()) {
+                        if (key !in infoCommonKeys) {
+                            infoDataJson.put(key, infoJson.get(key))
+                        }
+                    }
+                    userJo.put("measure_info", smu.encryptString(infoDataJson.toString()))
 
                     Log.v("뷰모델스태틱", "${mvm.statics.size}")
 
-                    for (i in 0 until mvm.statics.size) {
-                        val staticUnit = mvm.statics[i].toJson()
-                        val joStaticUnit = JSONObject(staticUnit)
-                        Log.v("스태틱변환", "$joStaticUnit")
-                        motherJo.put("static_${i+1}", joStaticUnit)
-//                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").keys().asSequence().toList().filter { !it.startsWith("front") && !it.startsWith("side") && !it.startsWith("back") }}")
-//                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").keys().asSequence().toList().map { motherJo.getJSONObject("static_${i+1}").get(it) }}")
-//                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").length()}")
-                    }
+                    // ------# static 시작 #------
+                    val staticCommonKeys = listOf(
+                        "mobile_sn", "server_sn", "device_sn", "local_sn","measure_sn", "user_uuid",
+                        "mobile_device_uuid", "user_sn", "user_name", "reg_date",
+                        "measure_overlay_width", "measure_overlay_height", "measure_overlay_scale_factor_x", "measure_overlay_scale_factor_y",
+                        "uploaded", "upload_date", "uploaded_json", "uploaded_file", "used"
+                    )
 
+                    for (i in 0 until mvm.statics.size) {
+                        val staticDataJson = JSONObject()
+                        val staticUnit = JSONObject(mvm.statics[i].toJson())
+                        for (key in staticUnit.keys()) {
+                            if (key !in staticCommonKeys) {
+                                staticDataJson.put(key, staticUnit.get(key))
+                            }
+                        }
+                        userJo.put("static_${i+1}", smu.encryptString(staticDataJson.toString()))
+                    }
+                    // ------# static 끝 #------
+
+                    // ------# dynamic 시작 #------
                     val dynamicJo = JSONObject(mvm.dynamic!!.toJson())
-                    motherJo.put("dynamic", dynamicJo)
-                    Log.v("motherJo1", "${motherJo.optJSONObject("measure_info")}")
-                    Log.v("dynamic", motherJo.optJSONObject("dynamic")?.optString("upload_date")!!)
-                    Log.v("dynamic", "${motherJo.getJSONObject("dynamic").keys().asSequence().toList().filter { !it.startsWith("ohs") && !it.startsWith("ols")}}")
+                    val dynamicCommonKeys = listOf(
+                        "mobile_sn", "server_sn", "device_sn", "local_sn","measure_sn", "user_uuid",
+                        "mobile_device_uuid", "user_sn", "user_name", "reg_date",
+                        "measure_overlay_width", "measure_overlay_height", "measure_overlay_scale_factor_x", "measure_overlay_scale_factor_y",
+                        "uploaded", "upload_date", "result_index", "uploaded_json", "uploaded_file", "uploaded_json_fail", "uploaded_file_fail","used"
+                    )
+
+                    val dynamicDataJson = JSONObject()
+                    for (key in dynamicJo.keys()) {
+                        if (key !in dynamicCommonKeys) {
+                            dynamicDataJson.put(key, dynamicJo.get(key))
+                        }
+                    }
+                    userJo.put("dynamic", smu.encryptString(dynamicDataJson.toString()))
+
 
                     // ------# 멀티파트 init 하면서 data 넣기 #------
                     val requestBodyBuilder = MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("json", motherJo.toString())
-                    Log.v("멀티파트바디빌드", "전체 데이터 - motherJo키값들 ${motherJo.keys().asSequence().toList()}")
+                        .addFormDataPart("json", smu.encryptString(commonJo.toString()))
+                    Log.v("멀티파트바디빌드", "전체 데이터 - commonJo키값들 ${commonJo.keys().asSequence().toList()}")
 
 
                     // static jpg파일들
                     for (i in mvm.staticFiles.indices) {
-                        val file = mvm.staticFiles[i]
+                        val (file, type) = smu.encryptFile(mvm.staticFiles[i])
                         Log.v("파일정보", "Static File: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "static_file_${i+1}",
                             file.name,
-                            file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                            file.asRequestBody(type.toMediaTypeOrNull())
                         )
                     }
                     // static json파일
                     for (i in mvm.staticJsonFiles.indices) {
-                        val file = mvm.staticJsonFiles[i]
+                        val  (file, type) = smu.encryptFile(mvm.staticJsonFiles[i])
                         Log.v("파일정보", "Static JSON: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "static_json_${i+1}",
                             file.name,
-                            file.asRequestBody("application/json".toMediaTypeOrNull())
+                            file.asRequestBody(type.toMediaTypeOrNull())
                         )
                     }
                     // Dynamic json파일
-                    mvm.dynamicJsonFile?.let { file ->
+                    mvm.dynamicJsonFile?.let { f ->
+                        val (file, type) = smu.encryptFile(f)
                         Log.v("파일정보", "Dynamic JSON: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "dynamic_json",
                             file.name,
-                            file.asRequestBody("application/json".toMediaTypeOrNull())
+                            file.asRequestBody(type.toMediaTypeOrNull())
                         )
                     }
                     // Dynamic mp4 파일
-                    mvm.dynamicFile?.let { file ->
+                    mvm.dynamicFile?.let { f ->
+                        val file = smu.compressAndEncryptVideo(f)
                         Log.v("파일정보", "Dynamic MP4: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "dynamic_file",
@@ -598,19 +638,16 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         )
                     }
 
-                    Log.v("파일제외바디", "motherJo: $motherJo")
+                    Log.v("파일제외바디", "commonJo: $commonJo")
 
                     var requestBody = requestBodyBuilder.build()
-                    val partCount = requestBodyBuilder.build().parts.size
-                    Log.v("파트개수", "총 파트 개수: $partCount")
-//                    val maxRetries = 5
-//                    retryUpload(requestBody, maxRetries, mobileInfoSn, mobileStaticSns, mobileDynamicSn, measureInfo)
 
+                    Log.v("파트개수", "총 파트 개수: ${requestBodyBuilder.build().parts.size}")
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_results), requestBody, mobileInfoSn, mobileStaticSns, mobileDynamicSn) { jo ->
 
-                                val reMotherJo = JSONObject()
+                                val retryJo = JSONObject()
                                 if (jo != JSONObject()) {
                                     val staticUploadResults = mutableListOf<Triple<Boolean, Boolean,Boolean>>()
                                     val staticUploadSns = mutableListOf<Int>()
@@ -663,7 +700,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 //                                            if (!result.first) {
 //                                                val staticUnit = mvm.statics[index].toJson()
 //                                                val joStaticUnit = JSONObject(staticUnit)
-//                                                reMotherJo.put("static_${index+1}", joStaticUnit)
+//                                                retryJo.put("static_${index+1}", joStaticUnit)
 //                                            }
                                             if (!result.second) {
                                                 val file = mvm.staticJsonFiles[index]
@@ -710,9 +747,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                             .addFormDataPart("json", dynamicTargetJo.toString())
 //                                        if (!dynamicUploadResults.first) {
 //                                            val reDynamicJo = JSONObject(mvm.dynamic!!.toJson())
-//                                            reMotherJo.put("dynamic", reDynamicJo)
-//                                            Log.v("reMotherJo1", "${motherJo.optJSONObject("measure_info")}")
-//                                            Log.v("reMotherJo3", "${motherJo.optJSONObject("dynamic")}")
+//                                            retryJo.put("dynamic", reDynamicJo)
+//                                            Log.v("retryJo1", "${commonJo.optJSONObject("measure_info")}")
+//                                            Log.v("retryJo3", "${commonJo.optJSONObject("dynamic")}")
 //                                        }
                                         if (!dynamicUploadResults.second) {
                                             mvm.dynamicJsonFile?.let { file ->
@@ -735,7 +772,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                             }
                                         }
 
-                                        retryDynamicRequestBodyBuilder.addFormDataPart("json", reMotherJo.toString())
+                                        retryDynamicRequestBodyBuilder.addFormDataPart("json", retryJo.toString())
 
                                         // 새로운 requestBody로 재전송 시도
 

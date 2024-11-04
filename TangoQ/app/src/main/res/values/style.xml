@@ -25,7 +25,6 @@
     </style>
     <!--    alertdialog 끝 -->
 
-
     <!--b bottomsheetdialog 스타일 -->
     <style name="Theme_Design_BottomSheetDialog1" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
@@ -48,19 +47,6 @@
         <item name="colorPrimary">@color/mainColor</item>
     </style>
 
-    <!-- bottom navigation bar   -->
-<!--    <style name="MyBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">-->
-<!--        <item name="itemIconTint">@color/subColor200</item>-->
-<!--        <item name="itemTextColor">@color/subColor500</item>-->
-<!--    </style>-->
-<!--    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">-->
-<!--        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>-->
-<!--    </style>-->
-<!--    <style name="ThemeOverlay.App.BottomNavigationView" parent="">-->
-<!--        <item name="colorSurface">@color/white</item>-->
-<!--        <item name="colorOnSurfaceVariant">@color/white</item>-->
-<!--    </style>-->
-    <!-- radiobutton   -->
     <style name="Widget.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.RadioButton</item>
     </style>
@@ -69,7 +55,6 @@
         <item name="colorControlNormal">@color/white</item>
         <item name="colorPrimary">@color/mainColor</item>
     </style>
-
 
     <!--   fab   -->
     <style name="Stroke.FloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
@@ -82,13 +67,6 @@
         <item name="strokeWidth">4dp</item>
         <item name="strokeColor">@color/subColor200</item>
     </style>
-
-<!--    <style name="Theme.App.Starting" parent="Theme.SplashScreen">-->
-<!--        <item name="windowSplashScreenBackground">@color/white</item>-->
-<!--        <item name="windowSplashScreenAnimatedIcon">@drawable/app_logo</item>-->
-<!--        <item name="windowSplashScreenAnimationDuration">200</item>-->
-<!--        <item name="postSplashScreenTheme">@style/Theme.TangoQ</item>-->
-<!--    </style>-->
 
 <!--    popupMenu-->
     <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">
@@ -108,5 +86,14 @@
     <style name="TabLayoutTextStyle" parent="Base.TextAppearance.AppCompat.Large">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+
     </style>
 </resources>

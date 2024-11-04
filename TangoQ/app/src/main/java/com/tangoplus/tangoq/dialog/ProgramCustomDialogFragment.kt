@@ -110,7 +110,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             binding.sflPCD.startShimmer()
             binding.sflPCD.visibility = View.VISIBLE
             initializeProgram()
-
         }
 
         pvm.selectedWeek.observe(viewLifecycleOwner) { selectedWeek ->

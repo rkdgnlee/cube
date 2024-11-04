@@ -546,12 +546,9 @@ class MeasureAnalysisFragment : Fragment() {
             }
         } else null
     }
-    /* TODO 현재 File 형식으로 받아오는중 (assets폴더에서 가져오기 때문)
-    *   추후 API에서는 그냥 URL일 수 있음. 이부분이 생략되고 ,setImage(url), initPlayer(videoUrl)일 수 있음. */
+
     private suspend fun setImage(seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
             try {
-
-
                 val jsonData = viewModel.selectedMeasure?.measureResult?.optJSONObject(seq)
                 val coordinates = extractImageCoordinates(jsonData!!)
                 val imageUrls = viewModel.selectedMeasure?.fileUris?.get(seq)

@@ -19,8 +19,12 @@ import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
+import com.tangoplus.tangoq.dialog.MainPartDialogFragment
 
-class StringRVAdapter(private val fragment: Fragment, private val stringList: MutableList<String>?, private val xmlName: String, private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class StringRVAdapter(private val fragment: Fragment,
+                      private val stringList: MutableList<String>?,
+                      private val xmlName: String,
+                      private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class muscleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val ivMI : ImageView = view.findViewById(R.id.ivMI)
@@ -37,6 +41,7 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
     inner class cbViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cbWI : CheckBox = view.findViewById(R.id.cbWI)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -192,6 +197,11 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
                         "우측 무릎", "좌측 무릎" -> holder.ivPI.setImageResource(R.drawable.icon_part6)
                         "우측 발목", "좌측 발목" -> holder.ivPI.setImageResource(R.drawable.icon_part7)
                     }
+
+                    holder.clPI.setOnClickListener {
+                        val dialog = MainPartDialogFragment.newInstance(currentItem)
+                        dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartDialogFragment")
+                    }
                 }
             }
 
@@ -233,9 +243,7 @@ class StringRVAdapter(private val fragment: Fragment, private val stringList: Mu
                         Log.v("selectDate", "selectWeek: ${vm.selectWeek.value}")
                     }
                 }
-
             }
-
         }
     }
 

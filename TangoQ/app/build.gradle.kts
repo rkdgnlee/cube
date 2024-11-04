@@ -53,7 +53,8 @@ dependencies {
 
     // 스켈레톤
     implementation("com.google.mediapipe:tasks-vision:0.20230731")
-
+//    implementation("org.bytedeco:javacv-platform:1.5.9")
+//    implementation("org.bytedeco.javacpp-presets:ffmpeg:4.5.1-1.5.9")
 
     // 외부 라이브러리
     implementation("com.github.shuhart:StepView:v1.5.1")

@@ -57,6 +57,9 @@ class MeasureViewModel : ViewModel() {
     var heelData = listOf<Pair<Float, Float>>()
     var toeData = listOf<Pair<Float, Float>>()
 
+    // ------# 비교할 measure 담을 공간 #------
+    val trends = mutableListOf<MeasureVO>()
+
 
     init {
         selectedMeasureDate.value = ""

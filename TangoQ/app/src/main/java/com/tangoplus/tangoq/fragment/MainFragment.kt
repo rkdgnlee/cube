@@ -85,7 +85,6 @@ class MainFragment : Fragment() {
         prefsManager.setUserSn(Singleton_t_user.getInstance(requireContext()).jsonObject?.optInt("sn")!!)
 
         latestRecSn = prefsManager.getLatestRecommendation()
-        Log.v("latestRecSn", "$latestRecSn")
 
 //        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "점심공복에는 운동효과가 더 좋답니다.", 14, 2)
 //        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "식곤증을 위해 스트레칭을 추천드려요.", 13, 36)
@@ -375,10 +374,16 @@ class MainFragment : Fragment() {
                                         offscreenPageLimit = 3
                                         setAdapter(adapter)
                                         currentItem = currentPage
-                                        val dp = when (isTablet(requireContext())) {
-                                            true -> 28
-                                            false -> 5
+                                        var dp = 5
+                                        try {
+                                            dp = when (isTablet(requireContext())) {
+                                                true -> 28
+                                                false -> 5
+                                            }
+                                        } catch (e:IllegalStateException) {
+                                            Log.e("MainFragmentError", "${e.printStackTrace()}")
                                         }
+
                                         (getChildAt(0) as RecyclerView).apply {
                                             setPadding(dpToPx(dp), 0, dpToPx(dp), 0)
                                             clipToPadding = false
@@ -477,28 +482,6 @@ class MainFragment : Fragment() {
         } else {
             binding.btnMProgram.text = "프로그램 완료, 재측정을 진행해 주세요"
             binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.subColor150)
-
         }
     }
-
-
-
-//    private fun applyBlurToConstraintLayout(constraintLayout: ConstraintLayout, imageView: ImageView) {
-//        val paddingInDp = 10
-//        val density = constraintLayout.context.resources.displayMetrics.density
-//        val paddingInPx = (paddingInDp * density).toInt()
-//
-//        constraintLayout.setPadding(paddingInPx, paddingInPx, paddingInPx, paddingInPx)
-//
-//        constraintLayout.post {
-//            Blurry.with(constraintLayout.context)
-//                .radius(10)
-//                .sampling(5)
-//
-//                .async()
-//                .capture(constraintLayout) // ConstraintLayout의 스크린샷을 캡처하여 블러 처리
-//                .into(imageView) // 블러 처리된 이미지를 ImageView에 설정
-//        }
-//
-//    }
 }
