@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#000000</color>
+    <color name="black">#121212</color>
     <color name="white">#FFFFFF</color>
-    <color name="mainColor">#0CDCDC</color>
-    <color name="secondaryColor">#6AD4DD</color>
+    <color name="whitebar">#FFFFFF</color>
+
+    <color name="mainColor">#2EE88B</color>
+    <color name="mainDeepColor">#0C894C</color>
+    <color name="mainContainerColor">#EFFEF6</color>
+
+    <color name="secondaryColor">#2C4FD0</color>
+    <color name="secondDeepColor">#1B2450</color>
+    <color name="secondHalfColor">#9BC1F5</color>
+    <color name="secondContainerColor">#EFF7FF</color>
+    <color name="secondBgContainerColor">#F0F5FE</color>
+    <color name="secondWhiteColor">#2C4FD0</color>
+    <color name="secondContainerWhiteColor">#EFF7FF</color>
+    <color name="thirdColor">#36ABFF</color>
+    <color name="thirdWhiteColor">#36ABFF</color>
+
+    <color name="deleteColor">#FF5449</color>
+    <color name="deleteContainerColor">#FFDAD6</color>
+    <color name="deleteTextColor">#FF5449</color>
+    <color name="cautionColor">#FF981D</color>
+    <color name="cautionContainerColor">#FFEFDC</color>
+
     <color name="subColor100">#F5F5F5</color>
     <color name="subColor150">#DFDFE0</color>
     <color name="subColor200">#D9D9D9</color>
@@ -11,10 +31,10 @@
     <color name="subColor400">#AEAEAE</color>
     <color name="subColor500">#959595</color>
     <color name="subColor700">#757575</color>
-    <color name="subColor800">#454545</color>
+    <color name="subColor800">#47484C</color>
 
     <color name="successColor">#45FF02</color>
     <color name="conditionSuccessColor">#7AA2E3</color>
-    <color name="deleteColor">#FF3B30</color>
-    <color name="opacityColor">#B3454545</color>
+    <color name="opacityColor">#4D000000</color>
+    <color name="opacitySubColor">#25959595</color>
 </resources>

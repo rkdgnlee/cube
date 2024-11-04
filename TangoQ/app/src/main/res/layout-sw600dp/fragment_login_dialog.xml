@@ -16,7 +16,7 @@
             android:id="@+id/linearLayout11"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="156dp"
+            android:layout_marginTop="100dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:text="운동 다짐은 큐짐과 함께"
                 android:textColor="@color/black"
-                android:textSize="34sp"
+                android:textSize="36dp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -58,7 +58,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="200dp"
             android:layout_marginEnd="32dp"
-            android:background="@drawable/background_stroke_1dp_sub_color"
+            android:background="@drawable/bckgnd_2_main_20"
             android:ems="10"
             android:hint="아이디를 입력해 주세요"
             android:inputType="text"
@@ -67,6 +67,7 @@
             android:paddingRight="28dp"
             android:paddingBottom="28dp"
             android:textColor="@color/black"
+            android:textSize="22dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +90,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="86dp"
-            android:background="@drawable/background_stroke_1dp_sub_color"
+            android:background="@drawable/bckgnd_2_main_20"
             android:ems="10"
             android:hint="비밀 번호를 입력해주세요"
             android:inputType="textPassword"
@@ -98,6 +99,7 @@
             android:paddingRight="28dp"
             android:paddingBottom="28dp"
             android:textColor="@color/black"
+            android:textSize="22dp"
             app:layout_constraintEnd_toEndOf="@+id/etLDId"
             app:layout_constraintStart_toStartOf="@+id/etLDId"
             app:layout_constraintTop_toBottomOf="@+id/etLDId" />
@@ -129,7 +131,7 @@
             android:padding="4dp"
             android:text="아이디 / 패스워드를 잊어버렸나요?"
             android:textColor="@color/subColor200"
-            android:textSize="16sp"
+            android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="@+id/btnLDLogin"
             app:layout_constraintStart_toStartOf="@+id/btnLDLogin"
             app:layout_constraintTop_toBottomOf="@+id/btnLDLogin" />

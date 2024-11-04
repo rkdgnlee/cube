@@ -2,11 +2,13 @@ package com.tangoplus.tangoq.`object`
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.tangoplus.tangoq.data.MeasureVO
 import org.json.JSONArray
 import org.json.JSONObject
 
 class Singleton_t_measure private constructor(context: Context){
-    var jsonObject : JSONObject? = null
+    var measures : MutableList<MeasureVO>? = null
+
 
     init {
         initialize()
@@ -27,7 +29,7 @@ class Singleton_t_measure private constructor(context: Context){
 
     private fun initialize() {
         // JSON 초기화 로직을 여기에 추가
-        jsonObject = JSONObject()
+        measures = null
 
     }
 }

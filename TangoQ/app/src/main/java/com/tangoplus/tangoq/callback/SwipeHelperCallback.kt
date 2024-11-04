@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.callback
 import android.graphics.Canvas
 import android.icu.lang.UCharacter
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -32,13 +33,15 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
         target: RecyclerView.ViewHolder
     )= false
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-    }
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         currentDx = 0f
         previousPosition = viewHolder.adapterPosition
         getDefaultUIUtil().clearView(getView(viewHolder))
+        Log.v("SwipeHelperCallback", "clearView - previousPosition: $previousPosition")
     }
+
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         viewHolder?.let {
             currentPosition = viewHolder.adapterPosition
@@ -66,8 +69,7 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
             val view = getView(viewHolder)
             val isClamped = getTag(viewHolder)      // 고정할지 말지 결정, true : 고정함 false : 고정 안 함
             val newX = clampViewPositionHorizontal(dX, isClamped, isCurrentlyActive)  // newX 만큼 이동(고정 시 이동 위치/고정 해제 시 이동 위치 결정)
-            val tvAlarmDelete: View = viewHolder.itemView.findViewById(R.id.tvAlarmDelete)
-            val clSwipe : View = viewHolder.itemView.findViewById(R.id.clSwipe)
+
             // 고정시킬 시 애니메이션 추가
             if (newX == -clamp) {
                 getView(viewHolder).animate().translationX(-clamp).setDuration(80L).start()
@@ -84,16 +86,6 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
                 actionState,
                 isCurrentlyActive
             )
-            if (dX < 0) { // 슬라이드했을 때의
-                val deleteButtonWidth = tvAlarmDelete.width.toFloat()
-                if (tvAlarmDelete.x >= clSwipe.x) {
-                    val translationX = dX.coerceAtLeast(-deleteButtonWidth)
-                    tvAlarmDelete.translationX = translationX
-                } else { // 스와이프 되돌릴 때
-                    tvAlarmDelete.translationX = 0f
-                    tvAlarmDelete.alpha = 0f
-                }
-            }
         }
     }
     // swipe_view 를 swipe 했을 때 <삭제> 화면이 보이도록 고정
@@ -139,17 +131,17 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
     }
 
     private fun getView(viewHolder: RecyclerView.ViewHolder): View {
-        return (viewHolder as AlarmRVAdapter.MyViewHolder).itemView.findViewById(R.id.clSwipe)
+        return (viewHolder as AlarmRVAdapter.MyViewHolder).itemView.findViewById(R.id.llSwipe)
     }
 
     fun removePreviousClamp(recyclerView: RecyclerView) {
-        if (currentPosition == previousPosition)
-            return
         previousPosition?.let {
             val viewHolder = recyclerView.findViewHolderForAdapterPosition(it) ?: return
+            Log.d("SwipeHelperCallback", "removePreviousClamp - clearing clamp for position: $it")
             getView(viewHolder).translationX = 0f
             setTag(viewHolder, false)
             previousPosition = null
         }
+        currentPosition = null
     }
 }

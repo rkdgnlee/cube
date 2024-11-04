@@ -9,7 +9,7 @@
     tools:context=".SignInActivity">
 
     <TextView
-        android:id="@+id/TextView124"
+        android:id="@+id/tvSignInGuide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -30,26 +30,27 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TextView124"
+        app:layout_constraintTop_toBottomOf="@+id/tvSignInGuide"
         app:sv_animationDuration="250"
         app:sv_animationType="Circle"
         app:sv_background="@color/white"
-        app:sv_doneCircleColor="@color/mainColor"
+        app:sv_doneCircleColor="@color/thirdColor"
         app:sv_doneStepLineColor="@color/white"
         app:sv_doneStepMarkColor="@color/white"
-        app:sv_doneTextColor="@color/mainColor"
+        app:sv_doneTextColor="@color/thirdColor"
         app:sv_nextStepCircleColor="@color/subColor100"
         app:sv_nextStepCircleEnabled="true"
         app:sv_nextStepLineColor="@color/white"
         app:sv_nextTextColor="@color/white"
-        app:sv_selectedCircleColor="@color/mainColor"
+        app:sv_selectedCircleColor="@color/thirdColor"
         app:sv_selectedStepNumberColor="@color/white"
-        app:sv_selectedTextColor="@color/mainColor"
+        app:sv_selectedTextColor="@color/secondaryColor"
         app:sv_stepsNumber="4"
         app:sv_textPadding="4dp"
         app:sv_textSize="16sp" />
 
-    <com.tomlecollegue.progressbars.HorizontalProgressView
+
+    <com.skydoves.progressview.ProgressView
         android:id="@+id/pvSignIn"
         android:layout_width="0dp"
         android:layout_height="4dp"
@@ -57,8 +58,8 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
         android:background="@color/white"
-        app:colorBackground="@color/subColor100"
-        app:colorProgress="@color/mainColor"
+        app:progressView_colorBackground="@color/secondContainerColor"
+        app:progressView_colorProgress="@color/thirdColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/svSignIn"
@@ -84,6 +85,78 @@
 
 
             <LinearLayout
+                android:id="@+id/llId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvAlarmMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="아이디"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvIdCondition"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/conditionSuccessColor"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llIdCondition"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="30dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etId"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bckgnd_2_main_20"
+                    android:ems="10"
+                    android:hint="아이디"
+                    android:inputType="text"
+                    android:paddingLeft="12dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="16dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/subColor100"
+                    android:textSize="18sp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnIdCondition"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/mainColor"
+                    android:stateListAnimator="@null"
+                    android:text="중복 확인"
+                    android:textColor="@color/white"
+                    android:textSize="16dp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/llPwCondition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,9 +177,11 @@
                 <TextView
                     android:id="@+id/tvPwCondition"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_weight="1"
+                    android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:textSize="10sp" />
             </LinearLayout>
@@ -118,7 +193,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="12dp"
-                android:background="@drawable/background_stroke_1dp_sub_color"
+                android:background="@drawable/bckgnd_2_main_20"
                 android:ems="10"
                 android:hint="비밀번호"
                 android:inputType="textPassword"
@@ -139,7 +214,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/tvMDDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -151,8 +226,10 @@
                 <TextView
                     android:id="@+id/tvPwRepeat"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:textSize="10sp" />
 
@@ -164,7 +241,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/background_stroke_1dp_sub_color"
+                android:background="@drawable/bckgnd_2_main_20"
                 android:ems="10"
                 android:hint="비밀번호 확인"
                 android:inputType="textPassword"
@@ -197,54 +274,6 @@
                 android:textSize="18sp"
                 app:cornerRadius="12dp" />
 
-            <LinearLayout
-                android:id="@+id/llId"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="20dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="아이디"
-                    android:textColor="@color/subColor800"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvIdCondition"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:textColor="@color/conditionSuccessColor"
-                    android:textSize="10sp" />
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/etId"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="30dp"
-                android:background="@drawable/background_stroke_1dp_sub_color"
-                android:ems="10"
-                android:hint="아이디"
-                android:inputType="text"
-                android:paddingLeft="12dp"
-                android:paddingTop="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="16dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/subColor100"
-                android:textSize="18sp" />
-
             <TextView
                 android:id="@+id/tvNameGuide"
                 android:layout_width="match_parent"
@@ -267,7 +296,7 @@
 
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/background_stroke_1dp_sub_color"
+                android:background="@drawable/bckgnd_2_main_20"
                 android:ems="10"
                 android:hint="이름을 입력해주세요"
                 android:inputType="text"
@@ -296,7 +325,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/background_stroke_1dp_sub_color"
+                    android:background="@drawable/bckgnd_2_main_20"
                     android:ems="10"
                     android:hint="이메일을 입력해주세요"
                     android:inputType="textEmailAddress"
@@ -309,7 +338,7 @@
                     android:textSize="18sp" />
 
                 <ImageView
-                    android:id="@+id/imageView"
+                    android:id="@+id/ssivMDI"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -321,7 +350,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/background_stroke_1dp_sub_color">
+                    android:background="@drawable/bckgnd_2_main_20">
 
                     <ImageView
                         android:id="@+id/ivSpinner"
@@ -406,7 +435,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
-                        android:background="@drawable/background_stroke_1dp_sub_color"
+                        android:background="@drawable/bckgnd_2_main_20"
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
                         android:inputType="phone"
@@ -445,7 +474,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/background_stroke_1dp_sub_color"
+                    android:background="@drawable/bckgnd_2_main_20"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvMobile">
@@ -488,7 +517,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/background_stroke_1dp_sub_color"
+                    android:background="@drawable/bckgnd_2_main_20"
                     android:ems="10"
                     android:hint="인증 번호를 입력해주세요"
                     android:inputType="number"

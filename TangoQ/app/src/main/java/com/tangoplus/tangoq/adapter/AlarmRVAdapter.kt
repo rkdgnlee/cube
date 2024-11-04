@@ -3,38 +3,57 @@ package com.tangoplus.tangoq.adapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.data.MessageVO
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
-import com.tangoplus.tangoq.Room.Message
 import com.tangoplus.tangoq.databinding.RvAlarmItemBinding
+import com.tangoplus.tangoq.fragment.hideBadgeOnClick
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
-class AlarmRVAdapter(var alarmList: MutableList<Message>, private val clicklistener: OnAlarmClickListener, private val deletelistener: OnAlarmDeleteListener) : RecyclerView.Adapter<AlarmRVAdapter.MyViewHolder>() {
+class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList<MessageVO>, private val clicklistener: OnAlarmClickListener, private val deleteListener: OnAlarmDeleteListener) : RecyclerView.Adapter<AlarmRVAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(private val binding: RvAlarmItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            alarm: Message,
+            alarm: MessageVO,
             clickListener: OnAlarmClickListener,
             deleteListener: OnAlarmDeleteListener
         ) {
-            binding.tvAlarm.text = alarm.message
-            binding.tvAlarmDelete.setOnClickListener {
-                deleteListener.onAlarmDelete(alarm.id)
-            }
-            binding.tvAlarm.setOnClickListener {
-                clickListener.onAlarmClick(alarm.route)
-            }
-            val timeStampMillis = Duration.between(Instant.now(), Instant.ofEpochMilli(alarm.timestamp)).abs().toMillis()
+            val hideBadgeFunction = fragment.hideBadgeOnClick(
+                binding.tvAlarmMessage,
+                binding.clAlarm,
+                "${alarm.message}",
+                ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
-            Log.v("알림 기록", "$timeStampMillis")
+            binding.tvAlarmMessage.text = alarm.message
+            binding.tvAlarmRemove.setOnClickListener {
+                deleteListener.onAlarmDelete(alarm.timeStamp)
+            }
+            binding.tvAlarmMessage.setOnClickListener {
+                clickListener.onAlarmClick(alarm.route)
+                hideBadgeFunction?.invoke()
+            }
+
+            val now = System.currentTimeMillis()
+            val timeStamp  = alarm.timeStamp
+            val duration = Duration.between(Instant.ofEpochMilli(timeStamp), Instant.ofEpochMilli(now))
+
+            val seconds = duration.seconds
+            val minutes = duration.toMinutes()
+            val hours = duration.toHours()
+            val days = duration.toDays()
             binding.tvAlarmTime.text = when {
-                TimeUnit.MILLISECONDS.toSeconds(timeStampMillis) < 60 -> "1분"
-                TimeUnit.MILLISECONDS.toMinutes(timeStampMillis) < 60 -> "${TimeUnit.MILLISECONDS.toMinutes(timeStampMillis)}분"
-                TimeUnit.MILLISECONDS.toHours(timeStampMillis) < 24 -> "${TimeUnit.MILLISECONDS.toHours(timeStampMillis)}시간"
-                else -> "${TimeUnit.MILLISECONDS.toDays(timeStampMillis)}일"
+                seconds < 60 -> "1분 전"
+                minutes < 60 -> "${minutes}분 전"
+                hours < 24 -> "${hours}시간 전"
+                else -> "${days}일 전"
             }
 
         }
@@ -52,6 +71,6 @@ class AlarmRVAdapter(var alarmList: MutableList<Message>, private val clickliste
         return alarmList.size
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(alarmList[position], clicklistener, deletelistener)
+        holder.bind(alarmList[position], clicklistener, deleteListener)
     }
 }

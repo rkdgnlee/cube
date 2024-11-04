@@ -6,50 +6,54 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.room.Room
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.Room.Database
-import com.tangoplus.tangoq.Room.Message
-import com.tangoplus.tangoq.Room.MessageDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.`object`.Singleton_t_user
+import java.time.LocalDateTime
 
-class MyFirebaseMessagingService : FirebaseMessagingService() {
-    private lateinit var messageDao: MessageDao
+class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림 채널.
+//    private val userSn: Int = Singleton_t_user.getInstance(applicationContext).jsonObject?.optString("user_sn")?.toInt()!! // 예시로 사용자 SN 값을 설정
+    private lateinit var preferencesManager: PreferencesManager
 
+//    override fun onCreate() {
+//        super.onCreate()
+//        // PreferencesManager 초기화
+//        preferencesManager = PreferencesManager(applicationContext, userSn)
+//    }
     override fun onCreate() {
         super.onCreate()
-        val db = Room.databaseBuilder(
-            applicationContext,
-            Database::class.java, "tangoqDB"
-        ).build()
-        messageDao = db.messageDao()
+        preferencesManager = (application as MyApplication).preferencesManager
     }
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         // 메시지에 데이터 페이로드가 포함 되어 있는지 확인
-        // 페이로드란 전송된 데이터를 의미한다.
+        // 페이로드란 전송된 데이터를 의미
+        val messageToStore: MessageVO
+
+        val userSn = preferencesManager.getUserSn()
+        if (userSn == -1) {
+            Log.e("FirebaseMessaging", "User SN not set")
+            return
+        }
         if (message.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${message.data}")
             sendNotification(
                 message.data["title"].toString(),
                 message.data["message"].toString()
             )
-            val messageToStore = Message(
+            messageToStore = MessageVO(
                 message = message.data["message"].toString(),
-                timestamp = System.currentTimeMillis(),
+                timeStamp = System.currentTimeMillis(),
                 route = "AlarmActivity"
             )
-            CoroutineScope(Dispatchers.IO).launch {
-                messageDao.insert(messageToStore)
-            }
+            preferencesManager.storeAlarm(messageToStore)
         } else {
             // 메시지에 알림 페이로드가 포함되어 있는지 확인
             message.notification?.let {
@@ -57,14 +61,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     message.notification!!.title.toString(),
                     message.notification!!.body.toString()
                 )
-                val messageToStore = Message(
+                messageToStore = MessageVO(
                     message = message.notification!!.body.toString(),
-                    timestamp = System.currentTimeMillis(),
+                    timeStamp = System.currentTimeMillis(),
                     route = "AlarmActivity"
                 )
-                CoroutineScope(Dispatchers.IO).launch {
-                    messageDao.insert(messageToStore)
-                }
+                preferencesManager.storeAlarm(messageToStore)
             }
         }
     }
@@ -79,7 +81,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             this, 0, intent,
             PendingIntent.FLAG_IMMUTABLE
         )
-        // ----- 해당 알림의 화면 경로 설정 끝 -----
+        // ------! 해당 알림의 화면 경로 설정 끝 !------
         val channelId = "TangoQ"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)

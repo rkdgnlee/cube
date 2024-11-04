@@ -5,16 +5,17 @@
     android:id="@+id/clSplash"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/splash_image"
     tools:context=".SplashActivity">
 
     <ImageView
         android:id="@+id/imageView16"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="100dp"
+        android:layout_height="145dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/splash_image" />
+        app:srcCompat="@drawable/app_logo_white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

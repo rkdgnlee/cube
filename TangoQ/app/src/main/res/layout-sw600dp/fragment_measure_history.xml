@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.MeasureHistoryFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvMH"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout45"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/textView121"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="29dp"
+                android:text="측정 이력"
+                android:textColor="@color/subColor800"
+                android:textSize="28dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider3"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_marginTop="29dp"
+                app:dividerColor="@color/subColor150"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView121" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/materialDivider21"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                app:dividerColor="@color/subColor150"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMHCount" />
+
+            <TextView
+                android:id="@+id/tvMHCount"
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:background="@color/secondContainerColor"
+                android:gravity="center_vertical"
+                android:paddingStart="40dp"
+                android:text="총 측정건: 4건"
+                android:textColor="@color/secondWhiteColor"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider3" />
+
+            <Spinner
+                android:id="@+id/spnrMH"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/bckgnd_1_second_spinner"
+                android:paddingStart="10dp"
+                android:paddingEnd="40dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvMHCount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvMHCount" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMH"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider21" />
+
+            <ImageButton
+                android:id="@+id/ibtnMHAlarm"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_alarm"
+                app:layout_constraintBottom_toBottomOf="@+id/textView121"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView121" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/fabtnMH"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/bckgnd_rectangle_36"
+        android:gravity="center|center_vertical"
+        android:padding="24dp"
+        android:stateListAnimator="@null"
+        android:text="측정하기"
+        android:textColor="#FFFFFF"
+        android:textSize="24dp"
+        app:backgroundTint="@color/mainColor" />
+
+</FrameLayout>

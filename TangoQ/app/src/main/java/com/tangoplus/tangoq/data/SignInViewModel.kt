@@ -8,21 +8,26 @@ import org.json.JSONObject
 class SignInViewModel: ViewModel() {
     // 회원가입에 담는 user
     val User = MutableLiveData(JSONObject())
-    // 로그인
+    // ------# 로그인 #------
     var currentIdCon = MutableLiveData(false)
     var currentPwCon = MutableLiveData(false)
     var idPwCondition = MutableLiveData(false)
     var id = MutableLiveData("")
     var pw = MutableLiveData("")
     var emailId = MutableLiveData("")
+    var isFindId = false
 
+    // ------# 약관 동의 #------
+    val agreementMk1 = MutableLiveData(false)
+    val agreementMk2 = MutableLiveData(false)
+    val marketingAgree = MutableLiveData(false)
+
+    // ------# profile edit #------
     val ivProfile = MutableLiveData<Uri>()
-
-    // 구글 로그인에 담을 json
-    val googleJson = JSONObject()
-
     var snsCount = 0
-
+    val setWeight = MutableLiveData<Int>()
+    val setHeight = MutableLiveData<Int>()
+    val setEmail = MutableLiveData<String>()
 
     init {
         User.value = JSONObject()
@@ -31,17 +36,18 @@ class SignInViewModel: ViewModel() {
         id.value = ""
         pw.value = ""
         emailId.value = ""
+        setWeight.value = 0
+        setHeight.value = 0
+        setEmail.value = ""
     }
     private fun updateIdPwCondition() {
         idPwCondition.value = currentIdCon.value == true && currentPwCon.value == true
     }
 
     val idCondition = MutableLiveData(false)
-//    val nameCondition = MutableLiveData(false)
     val mobileCondition = MutableLiveData(false)
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
-//    val emailCondition = MutableLiveData(false)
     val mobileAuthCondition = MutableLiveData(false)
 
     override fun onCleared() {

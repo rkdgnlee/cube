@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/subColor100">
+    <item>
+        <layer-list>
+            <!-- Outer shape with gradient -->
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="16dp"/>
+                    <gradient
+                        android:type="linear"
+                        android:angle="90"
+                        android:startColor="@color/mainColor"
+                        android:centerColor="@color/white"
+                        android:endColor="@color/mainColor"
+                        android:centerX="0.5"
+                        android:centerY="0.5"
+                        android:gradientRadius="1.0"/>
+                </shape>
+            </item>
+            <!-- Inner shape with solid color -->
+            <item android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/whitebar"/>
+                    <corners android:radius="16dp"/>
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</ripple>

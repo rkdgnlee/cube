@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout63"
-    android:layout_width="218dp"
+    android:layout_width="256dp"
     android:layout_height="110dp"
     android:background="@color/white">
 
@@ -18,42 +18,31 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView35"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginTop="4dp"
+        android:id="@+id/ivM3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@+id/tvRcPName"
         app:layout_constraintTop_toBottomOf="@+id/tvRcPName"
         app:srcCompat="@drawable/icon_rv_summary_time" />
 
     <ImageView
 
-        android:id="@+id/imageView36"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="@+id/imageView35"
-        app:layout_constraintTop_toBottomOf="@+id/imageView35"
-        app:srcCompat="@drawable/icon_rv_summary_intensity" />
-
-    <ImageView
-
-        android:id="@+id/imageView37"
-        android:layout_width="16dp"
-
-        android:layout_height="16dp"
-        android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="@+id/imageView36"
-        app:layout_constraintTop_toBottomOf="@+id/imageView36"
-        app:srcCompat="@drawable/icon_kcal_main_color" />
+        android:id="@+id/ivM4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/ivM3"
+        app:layout_constraintTop_toBottomOf="@+id/ivM3"
+        app:srcCompat="@drawable/icon_stage_1" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView9"
-        android:layout_width="90dp"
+        android:layout_width="100dp"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -64,17 +53,22 @@
             android:id="@+id/ivRcPThumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             app:srcCompat="@color/mainColor" />
     </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/tvRcPName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:maxLength="10"
+        android:layout_marginEnd="5dp"
+        android:singleLine="true"
         android:text="관절 관절 관절"
+        android:textColor="@color/subColor800"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cardView9"
         app:layout_constraintTop_toTopOf="@+id/cardView9" />
 
@@ -82,51 +76,25 @@
         android:id="@+id/tvRcPTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="10dp"
         android:text="25"
         android:textColor="@color/black"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView35"
-        app:layout_constraintStart_toEndOf="@+id/imageView35"
-        app:layout_constraintTop_toTopOf="@+id/imageView35"
-        app:layout_constraintVertical_bias="0.0" />
+        android:textSize="14dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivM3"
+        app:layout_constraintStart_toEndOf="@+id/ivM3"
+        app:layout_constraintTop_toTopOf="@+id/ivM3" />
 
     <TextView
         android:id="@+id/tvRcPStage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="10dp"
         android:text="중급자"
         android:textColor="@color/black"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView36"
-        app:layout_constraintStart_toEndOf="@+id/imageView36"
-        app:layout_constraintTop_toTopOf="@+id/imageView36" />
-
-    <TextView
-        android:id="@+id/tvRcPKcal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="48"
-        android:textColor="@color/black"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView37"
-        app:layout_constraintStart_toEndOf="@+id/imageView37"
-        app:layout_constraintTop_toTopOf="@+id/imageView37"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/textView105"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="Kcal"
-        android:textColor="@color/black"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvRcPKcal"
-        app:layout_constraintStart_toEndOf="@+id/tvRcPKcal"
-        app:layout_constraintTop_toTopOf="@+id/tvRcPKcal" />
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivM4"
+        app:layout_constraintStart_toEndOf="@+id/ivM4"
+        app:layout_constraintTop_toTopOf="@+id/ivM4" />
 
     <View
         android:id="@+id/view2"

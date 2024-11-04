@@ -1,5 +1,7 @@
 package com.tangoplus.tangoq.listener
 
+import java.time.LocalDateTime
+
 interface OnAlarmDeleteListener {
-    fun onAlarmDelete(messageId: Long)
+    fun onAlarmDelete(timeStamp: Long?)
 }

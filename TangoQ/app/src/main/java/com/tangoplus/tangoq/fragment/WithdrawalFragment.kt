@@ -52,18 +52,6 @@ class WithdrawalFragment : Fragment() {
         // ------! 화면 확장 및 세팅 & 싱글턴 초기화 끝 !------
 
 
-
-        // ------! 뒤로가기 !------
-        binding.ibtnW.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flMain, ProfileFragment())
-                addToBackStack(null)
-                commit()
-            }
-        }
-
-
         // ------! spinner !------
         val withDrawalList = listOf("선택해주세요" ,"앱을 너무 많이 사용해요", "원하는 서비스가 없어요", "서비스가 어려워요","개인 정보를 너무 많이 사용하는 것 같아요","단순 변심이에요", "기타(개인 사정)")
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, withDrawalList)
@@ -104,7 +92,7 @@ class WithdrawalFragment : Fragment() {
         }
     }
     private fun deleteAccount() {
-        fetchUserDeleteJson(getString(R.string.IP_ADDRESS_t_user),
+        fetchUserDeleteJson(getString(R.string.API_user),
             singletonUserInstance.jsonObject?.optJSONObject("data")?.optString("user_email").toString()
         ) {
             requireActivity().runOnUiThread {
@@ -113,7 +101,7 @@ class WithdrawalFragment : Fragment() {
                     setPositiveButton("예") { dialog, _ ->
                         val intent = Intent(requireContext(), IntroActivity::class.java)
                         singletonUserInstance.jsonObject = null
-                        singletonMeasureInstance.jsonObject = null
+                        singletonMeasureInstance.measures = null
                         startActivity(intent)
                         requireActivity().finishAffinity()
                     }
@@ -145,13 +133,4 @@ class WithdrawalFragment : Fragment() {
         binding.btnWd.backgroundTintList = colorStateList
         binding.btnWd.isEnabled = isChecked
     }
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        (activity as? MainActivity)?.setOptiLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain), requireActivity().findViewById(R.id.cvCl))
-//    }
 }

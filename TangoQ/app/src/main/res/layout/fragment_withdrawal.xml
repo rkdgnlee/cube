@@ -27,29 +27,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageButton
-                    android:id="@+id/ibtnW"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/subColor100"
-                    android:src="@drawable/icon_arrow_left"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="20dp"
                     android:text="회원탈퇴"
                     android:textColor="@color/black"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/ibtnW"
-                    app:layout_constraintStart_toEndOf="@+id/ibtnW"
-                    app:layout_constraintTop_toTopOf="@+id/ibtnW" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -185,12 +173,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/background_stroke_1dp_sub_color"
+                    android:background="@drawable/bckgnd_2_main_20"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:inputType="none"
                     android:padding="16dp"
-                    android:text="AutoCompleteTextView" />
+                    android:text="_" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

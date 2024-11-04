@@ -37,7 +37,7 @@ class AgreementDetailDialogFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAgreementDetailDialogBinding.inflate(inflater)
         return binding.root
     }
@@ -86,7 +86,8 @@ class AgreementDetailDialogFragment : DialogFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.6f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.background_dialog))
+        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
+
         val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
         if (agreementType == "agreement1") {
             dialogFragmentResize(0.8f, 0.7f)

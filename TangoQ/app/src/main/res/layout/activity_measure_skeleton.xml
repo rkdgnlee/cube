@@ -8,20 +8,10 @@
     android:layout_weight="1"
     tools:context=".MeasureSkeletonActivity">
 
-    <!--    <com.tangoplus.tangoq.view.CameraSurfaceView-->
-    <!--        android:id="@+id/csvMeasureSkeleton"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent" />-->
-
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -38,42 +28,74 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvMeasureSkeletonGuide"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#80000000"
-        android:gravity="center"
-        android:paddingBottom="256dp"
-        android:text="곧 측정이 시작됩니다 !  📸\n카메라를 잘 조정해주세요"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/ivMeasureSkeletonFrame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@+id/view_finder"
+        android:layout_width="300dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="140dp"
+        android:layout_marginBottom="60dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/llMeasureSkeletonBottom"
         app:layout_constraintEnd_toEndOf="@+id/view_finder"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view_finder"
         app:layout_constraintVertical_bias="0.6"
         app:srcCompat="@drawable/drawable_measure_0" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMeasureSkeletonAngle"
+        android:layout_width="40dp"
+        android:layout_height="300dp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView21"
+            android:layout_width="16dp"
+            android:layout_height="0dp"
+            app:cardBackgroundColor="@color/subColor800"
+            app:cardCornerRadius="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvMeasureSkeletonIndicator"
+            android:layout_width="36dp"
+            android:layout_height="48dp"
+            app:cardBackgroundColor="@color/subColor100"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/cardView21"
+            app:layout_constraintEnd_toEndOf="@+id/cardView21"
+            app:layout_constraintStart_toStartOf="@+id/cardView21"
+            app:layout_constraintTop_toTopOf="@+id/cardView21" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clMeasureSkeletonTop"
         android:layout_width="match_parent"
         android:layout_height="128dp"
-        android:background="@drawable/background_radius_8dp_top"
+        android:background="@drawable/bckgnd_top_4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/ibtnMeasureSkeletonInfo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#00FFFFFF"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icon_info" />
 
         <TextView
             android:id="@+id/tvMeasureSkeletonCount"
@@ -85,10 +107,10 @@
             android:textSize="27sp"
             android:textStyle="bold"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/svMeasureSkeleton"
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnMeasureSkeletonBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/ibtnMeasureSkeletonBack" />
 
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonBack"
@@ -114,22 +136,23 @@
             app:sv_animationDuration="250"
             app:sv_animationType="Circle"
             app:sv_background="#00FFFFFF"
-            app:sv_doneCircleColor="@color/mainColor"
+            app:sv_doneCircleColor="@color/thirdColor"
             app:sv_doneStepLineColor="@color/subColor100"
             app:sv_doneStepMarkColor="@color/subColor100"
-            app:sv_doneTextColor="@color/mainColor"
+            app:sv_doneTextColor="@color/secondaryColor"
             app:sv_nextStepCircleColor="@color/subColor100"
             app:sv_nextStepCircleEnabled="true"
-            app:sv_nextStepLineColor="@color/subColor100"
+            app:sv_nextStepLineColor="@color/white"
             app:sv_nextTextColor="@color/subColor100"
-            app:sv_selectedCircleColor="@color/mainColor"
+            app:sv_selectedCircleColor="@color/thirdColor"
             app:sv_selectedStepNumberColor="@color/subColor100"
-            app:sv_selectedTextColor="@color/mainColor"
+            app:sv_selectedTextColor="@color/thirdColor"
             app:sv_stepsNumber="7"
             app:sv_textPadding="4dp"
             app:sv_textSize="14sp" />
 
-        <com.tomlecollegue.progressbars.HorizontalProgressView
+
+        <com.skydoves.progressview.ProgressView
             android:id="@+id/pvMeasureSkeleton"
             android:layout_width="0dp"
             android:layout_height="4dp"
@@ -139,45 +162,62 @@
             android:orientation="horizontal"
             android:requiresFadingEdge="horizontal"
             android:stateListAnimator="@null"
-            app:colorBackground="@color/subColor100"
-            app:colorProgress="@color/mainColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/svMeasureSkeleton" />
+            app:layout_constraintTop_toBottomOf="@+id/svMeasureSkeleton"
+            app:progressView_colorBackground="@color/secondContainerColor"
+            app:progressView_colorProgress="@color/thirdColor"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clMeasureSkeletonBottom"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/llMeasureSkeletonBottom"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_radius_8dp_bottom"
+        android:background="@drawable/bckgnd_top_16"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnMeasureSkeletonStepPrevious"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_weight="1.5"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:padding="16dp"
+            android:stateListAnimator="@null"
+            android:text="이전 단계로"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnMeasureSkeletonStep"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
+            android:layout_weight="1"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/mainColor"
             android:padding="16dp"
             android:stateListAnimator="@null"
             android:text="측정하기"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/flMeasureSkeleton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="@color/white"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

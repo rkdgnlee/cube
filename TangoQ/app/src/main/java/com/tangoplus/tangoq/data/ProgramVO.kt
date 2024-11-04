@@ -5,44 +5,57 @@ import android.os.Parcelable
 
 data class ProgramVO(
     var programSn :Int = 0,
-    var imgThumbnails : MutableList<String>?,
     var programName : String? = "",
-    var programTime : Int = 0,
     var programStage : String? = "",
-    var programDescription : String? = "",
     var programCount : String? = "",
-    var exercises : MutableList<ExerciseVO>?
+    var programTime : Int = 0,
+    var programFrequency : Int = 0,
+    var programWeek : Int = 0,
+    var exerciseTime : Int = 0,
+    var exercises : MutableList<ExerciseVO>? = mutableListOf()
 ): Parcelable {
-    constructor(parcel: Parcel): this(
-        parcel.readInt(),
-        parcel.createStringArrayList(),
-        parcel.readString(),
-        parcel.readInt(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.createTypedArrayList(ExerciseVO.CREATOR)
+    constructor(parcel: Parcel) : this(
+        programSn = parcel.readInt(),
+        programName = parcel.readString(),
+        programStage = parcel.readString(),
+        programCount = parcel.readString(),
+        programTime = parcel.readInt(),
+        programFrequency = parcel.readInt(),
+        programWeek = parcel.readInt(),
+        exerciseTime = parcel.readInt(),
+        exercises = mutableListOf<ExerciseVO>().apply {
+            parcel.readList(this, ExerciseVO::class.java.classLoader)
+        }
+
+//        mutableListOf<Pair<String, Int>>().apply {
+//            parcel.readList(this, List::class.java.classLoader)
+//        }
+
     )
 
-    override fun describeContents(): Int = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(programSn)
-        dest.writeStringList(imgThumbnails)
-        dest.writeString(programName)
-        dest.writeInt(programTime)
-        dest.writeString(programDescription)
-        dest.writeString(programStage)
-        dest.writeString(programCount)
-        dest.writeTypedList(exercises)
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(programSn)
+        parcel.writeString(programName)
+        parcel.writeString(programStage)
+        parcel.writeString(programCount)
+        parcel.writeInt(programTime)
+        parcel.writeInt(programFrequency)
+        parcel.writeInt(programWeek)
+        parcel.writeInt(exerciseTime)
+        parcel.writeList(exercises)
     }
-    companion object CREATOR: Parcelable.Creator<ProgramVO> {
-            override fun createFromParcel(parcel: Parcel): ProgramVO {
-                return ProgramVO(parcel)
-            }
 
-            override fun newArray(size: Int): Array<ProgramVO?> {
-                return arrayOfNulls(size)
-            }
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<ProgramVO> {
+        override fun createFromParcel(parcel: Parcel): ProgramVO {
+            return ProgramVO(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ProgramVO?> {
+            return arrayOfNulls(size)
+        }
     }
 }

@@ -13,13 +13,12 @@
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
-        android:background="@drawable/background_shadow_top_stroke"
+        android:background="@color/whitebar"
         android:backgroundTintMode="add"
-        android:clipToPadding="false"
+        android:clipToPadding="true"
         android:outlineProvider="none"
         android:persistentDrawingCache="none"
-        android:stateListAnimator="@null"
-        app:elevation="12dp"
+        app:elevation="20dp"
         app:itemIconSize="32dp"
         app:itemPaddingBottom="20dp"
         app:itemPaddingTop="20dp"
@@ -28,7 +27,6 @@
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/main_menu" />
 
@@ -37,10 +35,20 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/white"
+        android:elevation="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bnbMain"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </FrameLayout>
+
+    <View
+        android:id="@+id/view9"
+        android:layout_width="wrap_content"
+        android:layout_height="8dp"
+        android:background="@drawable/gradient_top_90"
+        app:layout_constraintBottom_toTopOf="@+id/bnbMain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

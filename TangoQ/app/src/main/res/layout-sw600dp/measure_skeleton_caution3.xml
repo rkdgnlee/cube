@@ -6,29 +6,30 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <ImageView
-        android:id="@+id/imageView52"
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lavSC3"
         android:layout_width="0dp"
-        android:layout_height="550dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.65"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/drawable_measure_skeleton_caution_3" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView102"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
         android:text="3."
         android:textColor="@color/mainColor"
-        android:textSize="40sp"
+        android:textSize="30dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView52"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView6" />
 
     <TextView
         android:id="@+id/textView108"
@@ -37,7 +38,7 @@
         android:layout_marginStart="4dp"
         android:text="측정 전 주의사항"
         android:textColor="@color/subColor800"
-        android:textSize="40sp"
+        android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/textView102"
         app:layout_constraintStart_toEndOf="@+id/textView102"
@@ -47,34 +48,34 @@
         android:id="@+id/textView124"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="16dp"
+        android:lineSpacingExtra="8sp"
         android:text="측정 도중에는 움직이지 마시고\n편안한 상태로 지시를 따라해주세요"
         android:textColor="@color/subColor800"
-        android:textSize="30sp"
+        android:textSize="24dp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView102" />
 
     <androidx.cardview.widget.CardView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:id="@+id/cardView22"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginEnd="20dp"
         app:cardBackgroundColor="@color/subColor200"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView6"
         app:layout_constraintEnd_toStartOf="@+id/cardView6"
         app:layout_constraintTop_toTopOf="@+id/cardView6" />
 
     <androidx.cardview.widget.CardView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginStart="20dp"
         app:cardBackgroundColor="@color/mainColor"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView6"
         app:layout_constraintStart_toEndOf="@+id/cardView6"
@@ -82,13 +83,13 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView6"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginTop="20dp"
         app:cardBackgroundColor="@color/subColor200"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView52" />
+        app:layout_constraintTop_toBottomOf="@id/lavSC3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

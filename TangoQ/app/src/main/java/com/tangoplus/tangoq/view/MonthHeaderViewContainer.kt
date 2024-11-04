@@ -13,7 +13,4 @@ class MonthHeaderViewContainer(view: View) : ViewContainer(view) {
     val tvTUR : TextView = view.findViewById(R.id.tvTUR)
     val tvFRI : TextView = view.findViewById(R.id.tvFRI)
     val tvSAT : TextView = view.findViewById(R.id.tvSAT)
-
-
-
 }

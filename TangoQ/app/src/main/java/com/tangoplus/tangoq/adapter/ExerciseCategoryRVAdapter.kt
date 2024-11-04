@@ -1,42 +1,38 @@
 package com.tangoplus.tangoq.adapter
 
-import android.os.Handler
-import android.os.Looper
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.card.MaterialCardView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
-import com.tangoplus.tangoq.listener.OnCategoryScrollListener
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
 
 class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int, String>>,
-                                private val subCategorys: MutableList<Pair<Int, String>>,
+                                private val subCategorys: List<String>,
                                 private val fragment: Fragment,
-                                private val mainCategoryIndex: Int,
-                                private val onCategoryScrollListener: OnCategoryScrollListener,
+                                private val onCategoryClickListener: OnCategoryClickListener,
+                                private val sn : Int,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-
+    private var selectedPosition = 0
     inner class MainCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
-        val tvMCName : TextView = view.findViewById(R.id.tvMCName)
         val ivMCThumbnail : ImageView = view.findViewById(R.id.ivMCThumbnail)
-        val rvMC : RecyclerView = view.findViewById(R.id.rvMC)
-        val mcvMC : MaterialCardView = view.findViewById(R.id.mcvMC)
     }
+
     inner class SubCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
         val tvSCName : TextView = view.findViewById(R.id.tvSCName)
-
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -45,7 +41,6 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
             "subCategory" -> 1
             else -> throw IllegalArgumentException("invalid View Type")
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -61,6 +56,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
             }
             else -> throw IllegalArgumentException("invalid view type binding")
         }
+
     }
 
     override fun getItemCount(): Int {
@@ -80,58 +76,52 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
             // ------! 대분류 item 시작 !------
             is MainCategoryViewHolder -> {
                 val currentItemMain = mainCategorys[position]
-                holder.mcvMC.visibility = View.GONE
-                holder.tvMCName.text = currentItemMain.second
+
                 Glide.with(fragment)
-                    .load(fragment.resources.getIdentifier("drawable_main_category_${position + 1}", "drawable", fragment.requireActivity().packageName))
+                    .load(fragment.resources.getIdentifier("drawable_main_category_${position}", "drawable", fragment.requireActivity().packageName))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // 캐싱 무시
+                    .skipMemoryCache(true) // 메모리 캐시 무시
 
                     .into(holder.ivMCThumbnail)
 
-                // -----! 이미지 클릭 시 서브 카테고리 시작 !------
-                val adapter = ExerciseCategoryRVAdapter(mainCategorys, subCategorys, fragment, position ,onCategoryScrollListener,"subCategory" )
-                holder.rvMC.adapter = adapter
-                val linearLayoutManager = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
-                holder.rvMC.layoutManager = linearLayoutManager
-
                 holder.ivMCThumbnail.setOnClickListener{
-                    if (holder.mcvMC.visibility == View.GONE) {
-                        holder.mcvMC.visibility = View.VISIBLE
-                        holder.mcvMC.alpha = 0f
-                        holder.mcvMC.animate().apply {
-                            duration = 100
-                            alpha(1f)
-                        }
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            onCategoryScrollListener.categoryScroll(holder.ivMCThumbnail)
-                        }, 150)
+                    goExerciseDetail(currentItemMain)
 
-                    } else {
-                        holder.mcvMC.animate().apply {
-                            duration = 100
-                            alpha(0f)
-                            withEndAction {
-                                holder.mcvMC.visibility = View.GONE
-                            }
-                        }
-                    }
                 }
             }
             is SubCategoryViewHolder -> {
                 val currentItem = subCategorys[position]
-                holder.tvSCName.text = currentItem.second
+                holder.tvSCName.text = currentItem
+                val adapterPosition = holder.adapterPosition
+                holder.tvSCName.setBackgroundResource(R.drawable.bckgnd_rectangle_20)
+                if (adapterPosition == selectedPosition) {
+                    holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondaryColor)
+                    holder.tvSCName.setTextColor(Color.WHITE)
+                } else {
+                    holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
+                    holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor100)
 
+                }
                 holder.tvSCName.setOnClickListener {
-                    goExerciseDetail(mainCategorys[mainCategoryIndex], currentItem)
+                    Log.v("카테고리커런트아이템", currentItem)
+                    onCategoryClickListener.onCategoryClick(currentItem)
+                    val previousPosition = selectedPosition
+                    selectedPosition = adapterPosition
+                    notifyItemChanged(previousPosition) // 이전 선택된 아이템 갱신
+                    notifyItemChanged(selectedPosition) // 새로 선택된 아이템 갱신
+                    Log.v("subCategoryIndex", "$selectedPosition")
                 }
             }
         }
     }
-    private fun goExerciseDetail(category : Pair<Int, String>, search: Pair<Int, String>) {
-        Log.v("ClickIndex", "category: $category type: $search")
+
+    private fun goExerciseDetail(category : Pair<Int, String>) {
+        Log.v("ClickIndex", "category: $category")
+        Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-            add(R.id.flMain, ExerciseDetailFragment.newInstance(category, search))
-//            addToBackStack(null)
+//            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+            replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
+            addToBackStack(null)
             commit()
         }
     }

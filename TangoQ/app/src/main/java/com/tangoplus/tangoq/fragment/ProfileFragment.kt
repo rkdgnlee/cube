@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,28 +17,45 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
+import androidx.core.net.toFile
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.tangoplus.tangoq.AlarmActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.data.SignInViewModel
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileBinding
+import com.tangoplus.tangoq.dialog.AlarmDialogFragment
+import com.tangoplus.tangoq.listener.ProfileUpdateListener
+import com.tangoplus.tangoq.`object`.NetworkUser.sendProfileImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Calendar
 import java.util.TimeZone
 
 
-class ProfileFragment : Fragment(), BooleanClickListener {
+
+class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener {
     lateinit var binding : FragmentProfileBinding
     val viewModel : SignInViewModel by activityViewModels()
+    lateinit var userJson : JSONObject
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,32 +69,14 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
-        val t_userdata = Singleton_t_user.getInstance(requireContext())
-        val userJson= t_userdata.jsonObject?.getJSONObject("data")
-        Log.v("Singleton>Profile", "${userJson}")
-        binding.tvPfName.text = userJson?.optString("user_name")
-        binding.tvPHeight.text = userJson?.optString("user_height") + " cm"
-        binding.tvPWeight.text = userJson?.optString("user_weight") + " kg"
-        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-        val age = (c.get(Calendar.YEAR) - userJson?.optString("user_birthday")?.substring(0, 4)!!.toInt()).toString()
-        binding.tvPAge.text = "$age 세"
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
 
-        binding.tvPAge.text = if (age == null) "미설정" else "$age 세"
-        // ----- 이미지 로드 시작 -----
-        val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-        val imageUri = sharedPreferences.getString("imageUri", null)
-        if (imageUri != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                Glide.with(this)
-                    .load(imageUri)
-                    .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                    .into(binding.civP)
-            }
-        }
+        Log.v("Singleton>Profile", "${userJson}")
+        updateUserData()
 
         binding.ibtnPAlarm.setOnClickListener {
-            val intent = Intent(requireContext(), AlarmActivity::class.java)
-            startActivity(intent)
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
         // ------! 프로필 사진 관찰 시작 !------
@@ -87,13 +87,25 @@ class ProfileFragment : Fragment(), BooleanClickListener {
                     .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
                     .into(binding.civP)
             }
-        } // ------! 프로필 사진 관찰 끝 !------
+        }
+        binding.civP.setOnClickListener {
+            when {
+                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+                    navigateGallery()
+                }
+                else -> requestPermissions(
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                    1000
+                )
+            }
+        }
+        // ------! 프로필 사진 관찰 끝 !------
 
-
+        // ------! 정보 목록 recyclerView 연결 시작 !------
         val profilemenulist = mutableListOf(
             "내정보",
             "다크 모드",
-//            "연동 관리",
+            "QR코드 핀번호 로그인",
             "푸쉬 알림 설정",
             "자주 묻는 질문",
             "문의하기",
@@ -103,9 +115,11 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             "서비스 이용약관",
             "로그아웃",
         )
-        setAdpater(profilemenulist.subList(0,3), binding.rvPNormal,0)
-        setAdpater(profilemenulist.subList(3,5), binding.rvPHelp, 1)
-        setAdpater(profilemenulist.subList(5, profilemenulist.size), binding.rvPDetail, 2)
+        setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
+        setAdapter(profilemenulist.subList(4,6), binding.rvPHelp, 1)
+        setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
+        // ------! 정보 목록 recyclerView 연결 끝 !------
+
 //        binding.ibtnPfEdit.setOnClickListener {
 //            when {
 //                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
@@ -117,21 +131,6 @@ class ProfileFragment : Fragment(), BooleanClickListener {
 //                )
 //            }
 //        }
-    }
-
-    private fun setAdpater(list: MutableList<String>, rv: RecyclerView, index: Int) {
-        if (index != 0 ) {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false)
-            adapter.profilemenulist = list
-            rv.adapter = adapter
-            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        } else {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true)
-            adapter.profilemenulist = list
-            rv.adapter = adapter
-            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        }
-
         // ------! 회원탈퇴 시작 !------
         binding.tvWithDrawal.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -142,8 +141,23 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             }
         }
 
-        // ------! 회원탈퇴 시작 !------
+        // ------! 회원탈퇴 끝 !------
     }
+
+    private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
+        if (index != 0 ) {
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", viewModel)
+            adapter.profilemenulist = list
+            rv.adapter = adapter
+            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        } else {
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", viewModel)
+            adapter.profilemenulist = list
+            rv.adapter = adapter
+            rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        }
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -160,6 +174,8 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             }
         }
     }
+
+    // ------# code 2000 으로 갤러리 프로필 사진 바꾸기 #------
     private fun navigateGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -174,36 +190,86 @@ class ProfileFragment : Fragment(), BooleanClickListener {
             return
         when (requestCode) {
             2000 -> {
-                val selectedImageUri : Uri? = data?.data
-                if (selectedImageUri != null) {
-                    val sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.putString("imageUri", selectedImageUri.toString())
-                    editor.apply()
-                    Glide.with(this)
-                        .load(selectedImageUri)
-                        .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
-                        .into(binding.civP)
-                } else {
-                    Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                val selectedImageUri: Uri? = data?.data
+                selectedImageUri?.let { uri ->
+                    val contentResolver = requireContext().contentResolver
+                    // 실제 파일 이름 가져오기
+                    val cursor = contentResolver.query(uri, null, null, null, null)
+                    val nameIndex = cursor?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    cursor?.moveToFirst()
+                    val fileName = cursor?.getString(nameIndex ?: 0) ?: "unknown_file"
+                    cursor?.close()
+
+                    // MIME 타입 가져오기
+//                    val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+                    val mimeType = "image/jpeg"
+                    val imageFile = requireContext().uriToFile(uri, fileName)
+                    imageFile?.let {
+                        val requestBody = MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart(
+                                "profile_image",
+                                fileName,
+                                it.asRequestBody(mimeType.toMediaTypeOrNull())
+                            )
+                            .build()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            sendProfileImage(requireContext(), getString(R.string.API_user), userJson.optString("sn"), requestBody) { imageUrl ->
+                                Log.v("수정된프로필사진URL", "$imageUrl")
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
+                                }
+                            }
+                        }
+                        Glide.with(this)
+                            .load(selectedImageUri)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                            .into(binding.civP)
+                    }
                 }
-            }
-            else -> {
-                Toast.makeText(requireContext(), "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
+    private fun updateUserData() {
+        // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+        Log.v("Singleton>updateUserData", "$userJson")
+        requireActivity().runOnUiThread {
+            if (userJson != null) {
+                binding.tvPfName.text = userJson.optString("user_name")
 
-    private fun showPermissionContextPopup() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("권한이 필요합니다.")
-            .setMessage("프로필 이미지를 바꾸기 위해서는 갤러리 접근 권한이 필요합니다.")
-            .setPositiveButton("동의하기") { _, _ ->
-                requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1000)
+                val height = when (userJson.optDouble("height")) {
+                    in 0.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
+                    else -> { "미설정" }
+                }
+                binding.tvPHeight.text = height
+
+                val weight = when(userJson.optDouble("weight")) {
+                    in 0.0 .. 150.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
+                    else -> { "미설정" }
+                }
+                binding.tvPWeight.text = weight
+
+                val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+                binding.tvPAge.text = try {
+                    (c.get(Calendar.YEAR) - userJson.optString("birthday").substring(0, 4).toInt()).toString() + "세"
+                } catch (e: Exception) {
+                    "미설정"
+                }
+
+
+                // ----- 이미지 로드 시작 -----
+                val imageUri = userJson.optString("profile_file_path")
+                Log.v("imageUri", imageUri)
+                if (imageUri != "") {
+                    Glide.with(this)
+                        .load(imageUri)
+                        .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
+                        .into(binding.civP)
+                }
             }
-            .setNegativeButton("취소하기") { _, _ -> }
-            .create()
-            .show()
+        }
     }
 
     override fun onSwitchChanged(isChecked: Boolean) {
@@ -220,4 +286,18 @@ class ProfileFragment : Fragment(), BooleanClickListener {
         }
     }
 
+    override fun onProfileUpdated() {
+        updateUserData()
+    }
+
+    fun Context.uriToFile(uri: Uri, fileName: String): File? {
+        val inputStream = contentResolver.openInputStream(uri) ?: return null
+        val file = File(cacheDir, fileName)
+        inputStream.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        return file
+    }
 }

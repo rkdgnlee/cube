@@ -3,36 +3,27 @@ package com.tangoplus.tangoq.mediapipe
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.ContextCompat
-import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import com.tangoplus.tangoq.R
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.round
-import kotlin.math.roundToLong
 
-class OverlayView(context: Context?, attrs: AttributeSet?) :
-    View(context, attrs) {
-    /** -----------------------------------! 스켈레톤 선 굵기 !------------------------------------ */
+class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
-        const val LANDMARK_STROKE_WIDTH = 6F
+        const val LANDMARK_STROKE_WIDTH = 5F
     }
 
+    private var results: PoseLandmarkResult? = null
 
-    private var results: PoseLandmarkerResult? = null
     private var pointPaint = Paint()
     private var linePaint = Paint()
-    private var textPaint = Paint()
-    private var scaleFactor: Float = 1f
+    private var axisPaint = Paint()
+    private var scaleFactorX: Float = 1f
+    private var scaleFactorY : Float = 1f
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
-
+    private var currentRunningMode: RunningMode = RunningMode.IMAGE
     init {
         initPaints()
     }
@@ -47,117 +38,217 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     @SuppressLint("ResourceAsColor")
     private fun initPaints() {
         // -----! 연결선 색 !-----
-        linePaint.color =
-            ContextCompat.getColor(context!!, R.color.white)
-        linePaint.strokeWidth = LANDMARK_STROKE_WIDTH
-        linePaint.style = Paint.Style.STROKE
-        textPaint.color = ContextCompat.getColor(context!!, R.color.mainColor)
-        textPaint.textSize = 32f
+        linePaint.apply {
+            color = 0xFFFFFFFF.toInt()
+            strokeWidth = LANDMARK_STROKE_WIDTH
+            style = Paint.Style.STROKE
+        }
 
         // -----! 꼭짓점 색 !-----
-        pointPaint.color = R.color.mainColor
-        pointPaint.strokeWidth = LANDMARK_STROKE_WIDTH
-        pointPaint.style = Paint.Style.FILL
-    }
-
-    override fun draw(canvas: Canvas) {
-        super.draw(canvas)
-        results?.let { poseLandmarkerResult ->
-            for(landmark in poseLandmarkerResult.landmarks()) {
-                for(normalizedLandmark in landmark) {
-                    canvas.drawPoint(
-                        normalizedLandmark.x() * imageWidth * scaleFactor,
-                        normalizedLandmark.y() * imageHeight * scaleFactor,
-                        pointPaint
-                    )
-                }
-
-                // ------! 기울기 라인 적기 !------
-                PoseLandmarker.POSE_LANDMARKS.forEach {
-                    // ------! 코와 어깨 좌표 가져오기 !------
-                    val noseX = poseLandmarkerResult.landmarks().get(0).get(0).x() * imageWidth * scaleFactor
-                    val noseY = poseLandmarkerResult.landmarks().get(0).get(0).y() * imageHeight * scaleFactor
-                    val leftShoulderX = poseLandmarkerResult.landmarks().get(0).get(11).x() * imageWidth * scaleFactor
-                    val leftShoulderY = poseLandmarkerResult.landmarks().get(0).get(11).y() * imageHeight * scaleFactor
-
-                    val rightShoulderX = poseLandmarkerResult.landmarks().get(0).get(12).x() * imageWidth * scaleFactor
-                    val rightShoulderY = poseLandmarkerResult.landmarks().get(0).get(12).y() * imageHeight * scaleFactor
-
-                    val midShoulderX = (leftShoulderX + rightShoulderX) / 2
-                    val midShoulderY = (leftShoulderY + rightShoulderY) / 2
-
-                    canvas.drawLine(
-                        noseX,
-                        noseY,
-                        midShoulderX,
-                        midShoulderY,
-                        linePaint
-                    )
-
-                    if (it!!.start() !in 1..10 && it.start() !in 17..22 && it.start() !in 29..32) {
-                        val x1 = poseLandmarkerResult.landmarks().get(0).get(it.start()).x() * imageWidth * scaleFactor
-                        val y1 = poseLandmarkerResult.landmarks().get(0).get(it.start()).y() * imageHeight * scaleFactor
-                        val x2 = poseLandmarkerResult.landmarks().get(0).get(it.end()).x() * imageWidth * scaleFactor
-                        val y2 = poseLandmarkerResult.landmarks().get(0).get(it.end()).y() * imageHeight * scaleFactor
-
-                        val slope = (y2 - y1) / (x2 - x1)
-
-//                        canvas.drawText(
-//                            "%.2f".format(slope),
-//                            (x1 + x2) / 2,
-//                            (y1 + y2)  / 2,
-//                            textPaint)
-                        canvas.drawLine(
-                            x1,
-                            y1,
-                            x2,
-                            y2,
-                            linePaint)
-                    }
-                }
-                val ankleXAxis = (poseLandmarkerResult.landmarks().get(0).get(27).x() - poseLandmarkerResult.landmarks().get(0).get(28).x()) / 2
-                val bodyParts = listOf("leftshoulder", "rightshoulder", "leftelbow", "rightelbow", "leftwrist", "rightwrist", "lefthip", "righthip", "leftknee", "rightknee", "leftankle", "rightankle")
-                val bodyPartIndices = listOf(11, 12, 13, 14, 15 , 16, 23, 24, 25, 26, 27, 28)
-                bodyParts.zip(bodyPartIndices).forEach { (bodyPart, index) ->
-                    val distance = abs(poseLandmarkerResult.landmarks().get(0).get(index).x() - ankleXAxis)
-                    val y = poseLandmarkerResult.landmarks().get(0).get(index).y() * imageHeight * scaleFactor
-
-                    // 거리를 화면에 표시
-//                    canvas.drawText(
-//                        "%.2f".format(distance),
-//                        poseLandmarkerResult.landmarks().get(0).get(index).x() * imageWidth * scaleFactor,
-//                        y,
-//                        textPaint
-//                    )
-                }
-            }
+        pointPaint.apply {
+            color = R.color.mainColor
+            strokeWidth = LANDMARK_STROKE_WIDTH
+            style = Paint.Style.FILL
+        }
+        axisPaint.apply {
+            color = Color.parseColor("#FF5449")
+            strokeWidth = 4f
+            style = Paint.Style.STROKE
         }
     }
 
+
+
     fun setResults(
-        poseLandmarkerResults: PoseLandmarkerResult,
-        imageHeight: Int,
+        poseLandmarkResult: PoseLandmarkResult,
         imageWidth: Int,
+        imageHeight: Int,
         runningMode: RunningMode = RunningMode.IMAGE
     ) {
-        results = poseLandmarkerResults
-
+        results = poseLandmarkResult
         this.imageHeight = imageHeight
         this.imageWidth = imageWidth
+        currentRunningMode = runningMode
 
-        scaleFactor = when (runningMode) {
-            RunningMode.IMAGE,
-            RunningMode.VIDEO -> {
-                min(width * 1f / imageWidth, height * 1f / imageHeight)
+        scaleFactorX = when (runningMode) {
+            RunningMode.IMAGE, RunningMode.VIDEO -> {
+                width * 1f / imageWidth
             }
             RunningMode.LIVE_STREAM -> {
-                // PreviewView is in FILL_START mode. So we need to scale up the
-                // landmarks to match with the size that the captured images will be
-                // displayed.
-                max(width * 1f / imageWidth, height * 1f / imageHeight)
+                width * 1f / imageWidth
+            }
+        }
+        scaleFactorY = when (runningMode) {
+            RunningMode.IMAGE, RunningMode.VIDEO -> {
+                height * 1f / imageHeight
+            }
+            RunningMode.LIVE_STREAM -> {
+                height * 1f / imageHeight
             }
         }
         invalidate()
     }
 
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+        results?.let { poseLandmarkResult ->
+            drawLandmarks(canvas, poseLandmarkResult.landmarks)
+        }
+    }
+    enum class RunningMode {
+        IMAGE, VIDEO, LIVE_STREAM
+    }
+
+    private fun drawLandmarks(canvas: Canvas, landmarks: List<PoseLandmarkResult.PoseLandmark>) {
+
+        if (landmarks.isEmpty()) {
+            return
+        }
+
+
+        if (currentRunningMode == RunningMode.LIVE_STREAM) {
+
+            val offsetX = ((width - imageWidth * scaleFactorX) / 2 ) + 30
+            val offsetY = (height - imageHeight * scaleFactorY) / 2
+            landmarks.forEach { landmark ->
+                canvas.drawPoint(
+                    landmark.x * imageWidth * scaleFactorX + offsetX,
+                    landmark.y * imageHeight * scaleFactorY + offsetY,
+                    pointPaint
+                )
+            }
+
+
+            // 안전하게 특정 랜드마크 접근
+            val nose = landmarks.getOrNull(0)
+            val leftShoulder = landmarks.getOrNull(11)
+            val rightShoulder = landmarks.getOrNull(12)
+
+            // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
+            if (nose != null && leftShoulder != null && rightShoulder != null) {
+                val noseX = nose.x * imageWidth * scaleFactorX + offsetX
+                val noseY = nose.y * imageHeight * scaleFactorY + offsetY
+                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * imageWidth * scaleFactorX + offsetX
+                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * imageHeight * scaleFactorY + offsetY
+
+                canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
+
+            }
+
+            // Draw lines between landmarks
+            // Note: You'll need to define which landmarks should be connected
+            // This is just an example and may need to be adjusted
+            val connections = listOf(
+                // 얼굴
+                Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),
+                // 손
+                Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(15, 17), Pair(15, 19), Pair(15, 21),
+                // 몸통 + 팔
+                Pair(11, 12), Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
+                // Legs
+                Pair(11, 23), Pair(12, 24), Pair(23, 25), Pair(23, 24), Pair(24, 26), Pair(25, 27), Pair(26, 28),
+                // 다리
+                Pair(27, 31), Pair(28, 32), Pair(27, 29), Pair(28, 30),
+            )
+
+            connections.forEach { (start, end) ->
+                if (start < landmarks.size && end < landmarks.size) {
+                    canvas.drawLine(
+                        landmarks[start].x * imageWidth * scaleFactorX + offsetX,
+                        landmarks[start].y * imageHeight * scaleFactorY + offsetY,
+                        landmarks[end].x * imageWidth * scaleFactorX + offsetX,
+                        landmarks[end].y * imageHeight * scaleFactorY + offsetY,
+                        linePaint
+                    )
+                }
+            }
+        }
+
+        else { // video 일 때
+            val offsetX = ((width - imageWidth * scaleFactorX) / 2 )
+            val offsetY = (height - imageHeight * scaleFactorY) / 2
+
+            landmarks.forEach { landmark ->
+                canvas.drawPoint(
+                    landmark.x * scaleFactorX + offsetX,
+                    landmark.y * scaleFactorY + offsetY,
+                    pointPaint
+                )
+            }
+
+            // 안전하게 특정 랜드마크 접근
+            val nose = landmarks.getOrNull(0)
+            val leftShoulder = landmarks.getOrNull(11)
+            val rightShoulder = landmarks.getOrNull(12)
+            val leftIndex = landmarks.getOrNull(19)
+            val rightIndex = landmarks.getOrNull(20)
+
+            val leftHip = landmarks.getOrNull(23)
+            val rightHip = landmarks.getOrNull(24)
+
+            val leftKnee = landmarks.getOrNull(25)
+            val rightKnee = landmarks.getOrNull(26)
+            // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
+            if (nose != null && leftShoulder != null && rightShoulder != null && leftIndex != null && rightIndex != null && leftHip != null && rightHip != null && leftKnee != null && rightKnee != null) {
+                val noseX = nose.x * scaleFactorX + offsetX
+                val noseY = nose.y * scaleFactorY + offsetY
+                val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * scaleFactorX + offsetX
+                val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * scaleFactorY + offsetY
+
+                val leftIndexX = leftIndex.x * scaleFactorX + offsetX
+                val leftIndexY = leftIndex.y * scaleFactorY + offsetY
+                val rightIndexX = rightIndex.x * scaleFactorX + offsetX
+                val rightIndexY = rightIndex.y * scaleFactorY + offsetY
+
+                val leftHipX = leftHip.x * scaleFactorX + offsetX
+                val leftHipY = leftHip.y * scaleFactorY + offsetY
+                val rightHipX = rightHip.x * scaleFactorX + offsetX
+                val rightHipY = rightHip.y * scaleFactorY + offsetY
+
+                val leftKneeX = leftKnee.x * scaleFactorX + offsetX
+                val leftKneeY = leftKnee.y * scaleFactorY + offsetY
+                val rightKneeX = rightKnee.x * scaleFactorX + offsetX
+                val rightKneeY = rightKnee.y * scaleFactorY + offsetY
+
+                canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
+                canvas.drawLine(leftIndexX - 100, leftIndexY, rightIndexX + 100, rightIndexY, axisPaint)
+                canvas.drawLine(leftHipX - 100, leftHipY, rightHipX + 100, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
+
+            }
+
+
+
+
+
+            val connections = listOf(
+                // 얼굴
+                Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),
+                // 손
+                Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(15, 17), Pair(15, 19), Pair(15, 21),
+                // 몸통 + 팔
+                Pair(11, 12), Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
+                // Legs
+                Pair(11, 23), Pair(12, 24), Pair(23, 25), Pair(23, 24), Pair(24, 26), Pair(25, 27), Pair(26, 28),
+                // 다리
+                Pair(27, 31), Pair(28, 32), Pair(27, 29), Pair(28, 30),
+            )
+
+            connections.forEach { (start, end) ->
+                if (start < landmarks.size && end < landmarks.size) {
+                    canvas.drawLine(
+                        landmarks[start].x * scaleFactorX + offsetX,
+                        landmarks[start].y  * scaleFactorY + offsetY,
+                        landmarks[end].x * scaleFactorX + offsetX,
+                        landmarks[end].y * scaleFactorY + offsetY,
+                        linePaint
+                    )
+
+                }
+            }
+        }
+
+
+
+    }
 }

@@ -3,8 +3,6 @@ package com.tangoplus.tangoq.mediapipe
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.VisibleForTesting
@@ -16,13 +14,15 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
-import kotlin.math.abs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class PoseLandmarkerHelper(
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
     var minPoseTrackingConfidence: Float = DEFAULT_POSE_TRACKING_CONFIDENCE,
     var minPosePresenceConfidence: Float = DEFAULT_POSE_PRESENCE_CONFIDENCE,
-    var currentModel: Int = MODEL_POSE_LANDMARKER_HEAVY,
+    var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
     var currentDelegate: Int = DELEGATE_GPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
@@ -104,12 +104,14 @@ class PoseLandmarkerHelper(
                 optionsBuilder
                     .setResultListener(this::returnLivestreamResult)
                     .setErrorListener(this::returnLivestreamError)
-
             }
 
-            val options = optionsBuilder.build()
-            poseLandmarker =
-                PoseLandmarker.createFromOptions(context, options)
+
+            CoroutineScope(Dispatchers.Main).launch {
+                val options = optionsBuilder.build()
+                poseLandmarker = PoseLandmarker.createFromOptions(context, options)
+            }
+
         } catch (e: IllegalStateException) {
             poseLandmarkerHelperListener?.onError(
                 "Pose Landmarker failed to initialize. See error logs for " +
@@ -188,135 +190,6 @@ class PoseLandmarkerHelper(
         // returnLivestreamResult 함수에서 반환됩니다.
     }
 
-    // 사용자 갤러리에서 로드된 비디오 파일의 URI를 수락하고 실행을 시도합니다.
-    // 비디오에 랜드마크 추론을 적용합니다. 이 프로세스에서는 모든 항목을 평가합니다.
-    // 비디오의 프레임을 만들고 결과를 번들에 첨부합니다.
-    // 반환되었습니다.
-    fun detectVideoFile(
-        videoUri: Uri,
-        inferenceIntervalMs: Long
-    ): ResultBundle? {
-        if (runningMode != RunningMode.VIDEO) {
-            throw IllegalArgumentException(
-                "Attempting to call detectVideoFile" +
-                        " while not using RunningMode.VIDEO"
-            )
-        }
-
-        // 추론 시간은 시작과 끝의 시스템 시간의 차이입니다.
-        // 프로세스
-        val startTime = SystemClock.uptimeMillis()
-
-        var didErrorOccurred = false
-
-
-        // 비디오에서 프레임을 로드하고 포즈 랜드마크를 실행합니다.
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(context, videoUri)
-        val videoLengthMs =
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.toLong()
-
-
-        // 참고: 너비/높이를 가져오는 대신 프레임에서 너비/높이를 읽어야 합니다.
-        // MediaRetriever가
-        // 비디오 파일의 실제 크기입니다.
-        val firstFrame = retriever.getFrameAtTime(0)
-        val width = firstFrame?.width
-        val height = firstFrame?.height
-
-        // If the video is invalid, returns a null detection result
-        if ((videoLengthMs == null) || (width == null) || (height == null)) return null
-
-        // Next, we'll get one frame every frameInterval ms, then run detection on these frames.
-        val resultList = mutableListOf<PoseLandmarkerResult>()
-        val numberOfFrameToRead = videoLengthMs.div(inferenceIntervalMs)
-
-        for (i in 0..numberOfFrameToRead) {
-            val timestampMs = i * inferenceIntervalMs // ms
-
-            retriever
-                .getFrameAtTime(
-                    timestampMs * 1000, // convert from ms to micro-s
-                    MediaMetadataRetriever.OPTION_CLOSEST
-                )
-                ?.let { frame ->
-                    // 비디오 프레임을 MediaPipe에 필요한 ARGB_8888로 변환합니다.
-                    val argb8888Frame =
-                        if (frame.config == Bitmap.Config.ARGB_8888) frame
-                        else frame.copy(Bitmap.Config.ARGB_8888, false)
-
-                    // 추론을 실행하기 위해 입력 Bitmap 객체를 MPImage 객체로 변환합니다.
-                    val mpImage = BitmapImageBuilder(argb8888Frame).build()
-
-                    // MediaPipe Pose Landmarker API를 사용하여 포즈 랜드마크를 실행합니다.
-                    poseLandmarker?.detectForVideo(mpImage, timestampMs)
-                        ?.let { detectionResult ->
-                            resultList.add(detectionResult)
-                        } ?: {
-                        didErrorOccurred = true
-                        poseLandmarkerHelperListener?.onError(
-                            "ResultBundle could not be returned" +
-                                    " in detectVideoFile"
-                        )
-                    }
-                }
-                ?: run {
-                    didErrorOccurred = true
-                    poseLandmarkerHelperListener?.onError(
-                        "Frame at specified time could not be" +
-                                " retrieved when detecting in video."
-                    )
-                }
-        }
-
-        retriever.release()
-
-        val inferenceTimePerFrameMs =
-            (SystemClock.uptimeMillis() - startTime).div(numberOfFrameToRead)
-
-        return if (didErrorOccurred) {
-            null
-        } else {
-            ResultBundle(resultList, inferenceTimePerFrameMs, height, width)
-        }
-    }
-    fun detectImage(image: Bitmap): ResultBundle? {
-        if (runningMode != RunningMode.IMAGE) {
-            throw IllegalArgumentException(
-                "Attempting to call detectImage" +
-                        " while not using RunningMode.IMAGE"
-            )
-        }
-
-
-        // 추론 시간은 시스템 시간의 차이입니다.
-        //프로세스의 시작과 끝
-        val startTime = SystemClock.uptimeMillis()
-
-        // 추론을 실행하기 위해 입력 Bitmap 객체를 MPImage 객체로 변환합니다.
-        val mpImage = BitmapImageBuilder(image).build()
-
-        // MediaPipe Pose Landmarker API를 사용하여 포즈 랜드마크를 실행합니다.
-        poseLandmarker?.detect(mpImage)?.also { landmarkResult ->
-            val inferenceTimeMs = SystemClock.uptimeMillis() - startTime
-            return ResultBundle(
-                listOf(landmarkResult),
-                inferenceTimeMs,
-                image.height,
-                image.width
-            )
-        }
-
-        //poseLandmarker?.Detect()가 null을 반환하는 경우 오류일 가능성이 높습니다. null 반환
-        // 이를 나타냅니다.
-        poseLandmarkerHelperListener?.onError(
-            "Pose Landmarker failed to detect."
-        )
-        return null
-    }
-
-
     // poseLandmarker?.Detect()가 null을 반환하는 경우 이는 오류일 가능성이 높습니다. null 반환
     // 이를 나타냅니다.
     private fun returnLivestreamResult(
@@ -352,15 +225,12 @@ class PoseLandmarkerHelper(
         const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.5F
         const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.5F
         const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.5F
-        const val DEFAULT_NUM_POSES = 1
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
         const val MODEL_POSE_LANDMARKER_FULL = 0
-        const val MODEL_POSE_LANDMARKER_LITE = 1
-        const val MODEL_POSE_LANDMARKER_HEAVY = 2
     }
     data class ResultBundle(
-        val results: List<PoseLandmarkerResult>,
+        var results: List<PoseLandmarkerResult>,
         val inferenceTime: Long,
         val inputImageHeight: Int,
         val inputImageWidth: Int,
