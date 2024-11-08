@@ -17,67 +17,99 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="측정 비교"
+            android:text="측정 기록 비교"
             android:textColor="@color/subColor800"
             android:textSize="24dp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/materialDivider19"
+        <Spinner
+            android:id="@+id/spnrMTDLeft"
             android:layout_width="wrap_content"
-            android:layout_height="2dp"
-            android:layout_marginTop="20dp"
-            app:dividerColor="@color/subColor150"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/bckgnd_0_spinner"
+            android:paddingTop="4dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="4dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.15"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView30" />
 
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tlMTD"
-            android:layout_width="match_parent"
+        <Spinner
+            android:id="@+id/spnrMTDRight"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/bckgnd_3_bottom_under_line_second_container"
+            android:layout_weight="1"
+            android:background="@drawable/bckgnd_0_spinner"
+            android:paddingTop="4dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="4dp"
+            app:layout_constraintBottom_toTopOf="@+id/nestedScrollView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialDivider19"
-            app:tabIndicatorAnimationDuration="400"
-            app:tabIndicatorColor="@color/secondWhiteColor"
-            app:tabIndicatorFullWidth="true"
-            app:tabPaddingEnd="0dp"
-            app:tabPaddingStart="0dp"
-            app:tabRippleColor="#20FFFFFF"
-            app:tabSelectedTextColor="@color/secondWhiteColor"
-            app:tabTextAppearance="@style/TabLayoutTextStyle"
-            app:tabTextColor="@color/secondContainerWhiteColor">
+            app:layout_constraintHorizontal_bias="0.85"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="날짜1" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="날짜2" />
-
-        </com.google.android.material.tabs.TabLayout>
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/vpMTD"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tlMTD"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/spnrMTDLeft">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:paddingBottom="40dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView30">
+
+                    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                        android:id="@+id/ssivMTDLeft"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/spnrMTDLeft"
+                        app:layout_constraintWidth_percent="0.5" />
+
+                    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                        android:id="@+id/ssivMTDRight"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/spnrMTDRight"
+                        app:layout_constraintWidth_percent="0.5" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMTD"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

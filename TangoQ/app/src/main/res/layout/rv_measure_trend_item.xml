@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tvMTIPart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bckgnd_rectangle_20"
+        android:backgroundTint="@color/subColor800"
+        android:paddingStart="8dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="2dp"
+        android:text="좌측 어깨"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/ivMTI"
+        app:layout_constraintStart_toStartOf="@+id/ivMTI" />
+
+    <ImageView
+        android:id="@+id/ivMTI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/drawable_front" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout14"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivMTI"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.skydoves.progressview.ProgressView
+                android:id="@+id/pvMTI1Left"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="-2dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvMTI1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.35"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq1"
+                app:progressView_colorProgress="@color/subColor200"
+                app:progressView_orientation="vertical"
+                app:progressView_radius="2dp" />
+
+            <com.skydoves.progressview.ProgressView
+                android:id="@+id/pvMTI1Right"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="-2dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvMTI1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.65"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq1"
+                app:progressView_animation="accelerateDecelerate"
+                app:progressView_colorProgress="@color/thirdColor"
+                app:progressView_orientation="vertical"
+                app:progressView_radius="2dp" />
+
+            <TextView
+                android:id="@+id/tvMTI1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center|center_horizontal"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:text="양 손목 거리"
+                android:textColor="@color/subColor800"
+                android:textSize="13dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tvMTISeq1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bckgnd_righttop_0_4"
+                android:paddingStart="4dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="2dp"
+                android:text="00측정"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.skydoves.progressview.ProgressView
+                android:id="@+id/pvMTI2Left"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="-2dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvMTI2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.35"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq2"
+                app:progressView_colorProgress="@color/subColor200"
+                app:progressView_orientation="vertical"
+                app:progressView_radius="2dp" />
+
+            <com.skydoves.progressview.ProgressView
+                android:id="@+id/pvMTI2Right"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="-2dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvMTI2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.65"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq2"
+                app:progressView_animation="accelerateDecelerate"
+                app:progressView_colorProgress="@color/thirdColor"
+                app:progressView_orientation="vertical"
+                app:progressView_radius="2dp" />
+
+            <TextView
+                android:id="@+id/tvMTI2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center|center_horizontal"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:text="높이 차"
+                android:textColor="@color/subColor800"
+                android:textSize="13dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tvMTISeq2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bckgnd_righttop_0_4"
+                android:paddingStart="4dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="2dp"
+                android:text="00측정"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.skydoves.progressview.ProgressView
+                android:id="@+id/pvMTI3Left"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="-2dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvMTI3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.35"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq3"
+                app:progressView_colorProgress="@color/subColor200"
+                app:progressView_orientation="vertical"
+                app:progressView_radius="2dp" />
+
+            <com.skydoves.progressview.ProgressView
+                android:id="@+id/pvMTI3Right"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="-2dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvMTI3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.65"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq3"
+                app:progressView_animation="accelerateDecelerate"
+                app:progressView_colorProgress="@color/thirdColor"
+                app:progressView_orientation="vertical"
+                app:progressView_radius="2dp" />
+
+            <TextView
+                android:id="@+id/tvMTI3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center|center_horizontal"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:text="양 손목 거리"
+                android:textColor="@color/subColor800"
+                android:textSize="13dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tvMTISeq3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bckgnd_righttop_0_4"
+                android:paddingStart="4dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="2dp"
+                android:text="00측정"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView27"
+        android:layout_width="0dp"
+        android:layout_height="10dp"
+        android:tint="@color/deleteContainerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout14"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout14"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/line_dash_horizontal" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

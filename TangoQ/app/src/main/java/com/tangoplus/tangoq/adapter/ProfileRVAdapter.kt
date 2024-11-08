@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -32,6 +31,7 @@ import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
+import com.tangoplus.tangoq.dialog.ConnectManageDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditBSDialogFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
@@ -91,6 +91,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         when (currentItem) {
                             "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
                             "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+                            "QR코드 핀번호 로그인" -> holder.ivPf.setImageResource(R.drawable.icon_qr_code)
                             "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
                             "문의하기" -> holder.ivPf.setImageResource(R.drawable.icon_inquire)
                             "공지사항" -> holder.ivPf.setImageResource(R.drawable.icon_announcement)
@@ -120,7 +121,11 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 }
                                 "QR코드 핀번호 로그인" -> {
                                     val dialog = QRCodeDialogFragment()
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LoginScanDialogFragment")
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "QRCodeDialogFragment")
+                                }
+                                "연동 관리" -> {
+                                    val dialog = ConnectManageDialogFragment()
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LinkManageDialogFragment")
                                 }
                                 "푸쉬 알림 설정" -> {
                                     val intent = Intent().apply {

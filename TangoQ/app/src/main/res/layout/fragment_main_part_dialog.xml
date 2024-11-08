@@ -25,7 +25,7 @@
                 android:layout_marginTop="20dp"
                 android:text="위험 부위 분석 - 어깨"
                 android:textColor="@color/subColor800"
-                android:textSize="24dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -41,30 +41,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvMPD" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMPDHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider20" />
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider24"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                app:dividerColor="@color/subColor150"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvMPDHorizontal" />
-
-            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMPD"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider24" />
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider20" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

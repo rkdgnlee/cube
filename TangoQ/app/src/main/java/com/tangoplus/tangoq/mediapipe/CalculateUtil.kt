@@ -51,6 +51,33 @@ object CalculateUtil {
         return angleRad * (180f / PI.toFloat())
     }
 
+    fun calculateBoundedScore(value: Float, range: Pair<Float, Float>): Float {
+        val min = range.first
+        val max = range.second
+        val midpoint = (min + max) / 2
+        val halfRange = (max - min) / 2
+        val boundaryMultiplier = 3f // 범위를 벗어난 3배 거리에서 0점
+
+        return when {
+            value in min..max -> {
+                // 범위 내 점수 계산 (0~100)
+                val centeredValue = value - midpoint
+                val percentage = ((halfRange - kotlin.math.abs(centeredValue)) / halfRange) * 100f
+                percentage
+            }
+            value < min -> {
+                // 범위보다 작은 값에 대해 점수 감소
+                val diff = min - value
+                maxOf(0f, 50f - (diff / (halfRange * boundaryMultiplier)) * 50f)
+            }
+            value > max -> {
+                // 범위보다 큰 값에 대해 점수 감소
+                val diff = value - max
+                maxOf(0f, 50f - (diff / (halfRange * boundaryMultiplier)) * 50f)
+            }
+            else -> 0f
+        }
+    }
 
     private fun isTablet(context: Context): Boolean {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

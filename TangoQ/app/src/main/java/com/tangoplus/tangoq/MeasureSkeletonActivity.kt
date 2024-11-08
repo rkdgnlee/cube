@@ -70,6 +70,7 @@ import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
+import com.tangoplus.tangoq.db.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerUUID
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
@@ -81,7 +82,6 @@ import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateSlope
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
-import com.tangoplus.tangoq.mediapipe.SecureMultipartUtil
 import com.tangoplus.tangoq.`object`.NetworkMeasure.resendMeasureFile
 import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
 import com.tangoplus.tangoq.`object`.SaveSingletonManager
@@ -126,7 +126,7 @@ private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 
 class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener, SensorEventListener {
-// ------! POSE LANDMARKER 설정 시작 !------
+    // ------! POSE LANDMARKER 설정 시작 !------
     companion object {
         private const val TAG = "Pose Landmarker"
         private const val REQUEST_CODE_PERMISSIONS = 1001
@@ -262,7 +262,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                                         if (saveResult) {
                                             withContext(Dispatchers.Main) {
-                                                val noseDynamic = mvm.extractVideoCoordinates(jsonArrayCopy).map { it[0] }
+                                                val noseDynamic = extractVideoCoordinates(jsonArrayCopy).map { it[0] }
                                                 Log.v("noseDynamic", "$noseDynamic")
                                                 val decreasingFrameIndex = findLowestYFrame(noseDynamic)
                                                 val saveDynamic = jsonArrayCopy.optJSONObject(decreasingFrameIndex)
@@ -437,7 +437,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     finish()
                 }
                 setNegativeButton("아니오") { dialog, _ ->
-                   dialog.dismiss()
+                    dialog.dismiss()
                 }
             }.show()
         }
@@ -488,8 +488,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 dialog.show(supportFragmentManager, "LoadingDialogFragment")
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val commonJo = JSONObject()
-                    val userJo = JSONObject()
+                    val motherJo = JSONObject()
+
                     val userJson = singletonUser.jsonObject
                     val userUUID = userJson?.getString("user_uuid")!!
 
@@ -516,8 +516,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     measureInfo.setRandomRiskValues()
                     Log.v("measure빈칼럼여부", "$measureInfo")
 
-
-                    val smu = SecureMultipartUtil(this@MeasureSkeletonActivity, userJson.optString("sn").toInt())
                     val mobileInfoSn = mDao.insertInfo(measureInfo).toInt()
                     var mobileDynamicSn = 0
                     val mobileStaticSns = mutableListOf<Int>()
@@ -534,102 +532,65 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     Log.v("들어간데이터SN들", "mobileInfoSn: $mobileInfoSn, mobileDynamicSn: $mobileDynamicSn, mobileStaticSns: $mobileStaticSns")
 
 //                    // ------# 업로드 준비 #------
-
-                    // ------# info 분리 #------
                     val infoJson = JSONObject(measureInfo.toJson())
-                    val infoDataJson = JSONObject()
-                    val infoCommonKeys = listOf(
-                        "mobile_info_sn", "sn", "device_sn", "measure_sn", "user_uuid",
-                        "mobile_device_uuid", "user_sn", "user_name", "measure_date",
-                        "elapsed_time", "measure_seq"
-                    )
-                    for (key in infoJson.keys()) {
-                        if (key !in infoCommonKeys) {
-                            infoDataJson.put(key, infoJson.get(key))
-                        }
-                    }
-                    userJo.put("measure_info", smu.encryptString(infoDataJson.toString()))
+                    motherJo.put("measure_info", infoJson)
 
                     Log.v("뷰모델스태틱", "${mvm.statics.size}")
 
-                    // ------# static 시작 #------
-                    val staticCommonKeys = listOf(
-                        "mobile_sn", "server_sn", "device_sn", "local_sn","measure_sn", "user_uuid",
-                        "mobile_device_uuid", "user_sn", "user_name", "reg_date",
-                        "measure_overlay_width", "measure_overlay_height", "measure_overlay_scale_factor_x", "measure_overlay_scale_factor_y",
-                        "uploaded", "upload_date", "uploaded_json", "uploaded_file", "used"
-                    )
-
                     for (i in 0 until mvm.statics.size) {
-                        val staticDataJson = JSONObject()
-                        val staticUnit = JSONObject(mvm.statics[i].toJson())
-                        for (key in staticUnit.keys()) {
-                            if (key !in staticCommonKeys) {
-                                staticDataJson.put(key, staticUnit.get(key))
-                            }
-                        }
-                        userJo.put("static_${i+1}", smu.encryptString(staticDataJson.toString()))
+                        val staticUnit = mvm.statics[i].toJson()
+                        val joStaticUnit = JSONObject(staticUnit)
+                        Log.v("스태틱변환", "$joStaticUnit")
+                        motherJo.put("static_${i+1}", joStaticUnit)
+//                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").keys().asSequence().toList().filter { !it.startsWith("front") && !it.startsWith("side") && !it.startsWith("back") }}")
+//                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").keys().asSequence().toList().map { motherJo.getJSONObject("static_${i+1}").get(it) }}")
+//                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").length()}")
                     }
-                    // ------# static 끝 #------
 
-                    // ------# dynamic 시작 #------
                     val dynamicJo = JSONObject(mvm.dynamic!!.toJson())
-                    val dynamicCommonKeys = listOf(
-                        "mobile_sn", "server_sn", "device_sn", "local_sn","measure_sn", "user_uuid",
-                        "mobile_device_uuid", "user_sn", "user_name", "reg_date",
-                        "measure_overlay_width", "measure_overlay_height", "measure_overlay_scale_factor_x", "measure_overlay_scale_factor_y",
-                        "uploaded", "upload_date", "result_index", "uploaded_json", "uploaded_file", "uploaded_json_fail", "uploaded_file_fail","used"
-                    )
-
-                    val dynamicDataJson = JSONObject()
-                    for (key in dynamicJo.keys()) {
-                        if (key !in dynamicCommonKeys) {
-                            dynamicDataJson.put(key, dynamicJo.get(key))
-                        }
-                    }
-                    userJo.put("dynamic", smu.encryptString(dynamicDataJson.toString()))
-
+                    motherJo.put("dynamic", dynamicJo)
+                    Log.v("motherJo1", "${motherJo.optJSONObject("measure_info")}")
+                    Log.v("dynamic", motherJo.optJSONObject("dynamic")?.optString("upload_date")!!)
+                    Log.v("dynamic", "${motherJo.getJSONObject("dynamic").keys().asSequence().toList().filter { !it.startsWith("ohs") && !it.startsWith("ols")}}")
 
                     // ------# 멀티파트 init 하면서 data 넣기 #------
                     val requestBodyBuilder = MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("json", smu.encryptString(commonJo.toString()))
-                    Log.v("멀티파트바디빌드", "전체 데이터 - commonJo키값들 ${commonJo.keys().asSequence().toList()}")
+                        .addFormDataPart("json", motherJo.toString())
+                    Log.v("멀티파트바디빌드", "전체 데이터 - motherJo키값들 ${motherJo.keys().asSequence().toList()}")
 
 
                     // static jpg파일들
                     for (i in mvm.staticFiles.indices) {
-                        val (file, type) = smu.encryptFile(mvm.staticFiles[i])
+                        val file = mvm.staticFiles[i]
                         Log.v("파일정보", "Static File: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "static_file_${i+1}",
                             file.name,
-                            file.asRequestBody(type.toMediaTypeOrNull())
+                            file.asRequestBody("image/jpeg".toMediaTypeOrNull())
                         )
                     }
                     // static json파일
                     for (i in mvm.staticJsonFiles.indices) {
-                        val  (file, type) = smu.encryptFile(mvm.staticJsonFiles[i])
+                        val file = mvm.staticJsonFiles[i]
                         Log.v("파일정보", "Static JSON: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "static_json_${i+1}",
                             file.name,
-                            file.asRequestBody(type.toMediaTypeOrNull())
+                            file.asRequestBody("application/json".toMediaTypeOrNull())
                         )
                     }
                     // Dynamic json파일
-                    mvm.dynamicJsonFile?.let { f ->
-                        val (file, type) = smu.encryptFile(f)
+                    mvm.dynamicJsonFile?.let { file ->
                         Log.v("파일정보", "Dynamic JSON: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "dynamic_json",
                             file.name,
-                            file.asRequestBody(type.toMediaTypeOrNull())
+                            file.asRequestBody("application/json".toMediaTypeOrNull())
                         )
                     }
                     // Dynamic mp4 파일
-                    mvm.dynamicFile?.let { f ->
-                        val file = smu.compressAndEncryptVideo(f)
+                    mvm.dynamicFile?.let { file ->
                         Log.v("파일정보", "Dynamic MP4: 이름=${file.name}, 크기=${file.length()} bytes")
                         requestBodyBuilder.addFormDataPart(
                             "dynamic_file",
@@ -638,16 +599,19 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         )
                     }
 
-                    Log.v("파일제외바디", "commonJo: $commonJo")
+                    Log.v("파일제외바디", "motherJo: $motherJo")
 
                     var requestBody = requestBodyBuilder.build()
+                    val partCount = requestBodyBuilder.build().parts.size
+                    Log.v("파트개수", "총 파트 개수: $partCount")
+//                    val maxRetries = 5
+//                    retryUpload(requestBody, maxRetries, mobileInfoSn, mobileStaticSns, mobileDynamicSn, measureInfo)
 
-                    Log.v("파트개수", "총 파트 개수: ${requestBodyBuilder.build().parts.size}")
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_results), requestBody, mobileInfoSn, mobileStaticSns, mobileDynamicSn) { jo ->
 
-                                val retryJo = JSONObject()
+                                val reMotherJo = JSONObject()
                                 if (jo != JSONObject()) {
                                     val staticUploadResults = mutableListOf<Triple<Boolean, Boolean,Boolean>>()
                                     val staticUploadSns = mutableListOf<Int>()
@@ -700,7 +664,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 //                                            if (!result.first) {
 //                                                val staticUnit = mvm.statics[index].toJson()
 //                                                val joStaticUnit = JSONObject(staticUnit)
-//                                                retryJo.put("static_${index+1}", joStaticUnit)
+//                                                reMotherJo.put("static_${index+1}", joStaticUnit)
 //                                            }
                                             if (!result.second) {
                                                 val file = mvm.staticJsonFiles[index]
@@ -747,9 +711,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                             .addFormDataPart("json", dynamicTargetJo.toString())
 //                                        if (!dynamicUploadResults.first) {
 //                                            val reDynamicJo = JSONObject(mvm.dynamic!!.toJson())
-//                                            retryJo.put("dynamic", reDynamicJo)
-//                                            Log.v("retryJo1", "${commonJo.optJSONObject("measure_info")}")
-//                                            Log.v("retryJo3", "${commonJo.optJSONObject("dynamic")}")
+//                                            reMotherJo.put("dynamic", reDynamicJo)
+//                                            Log.v("reMotherJo1", "${motherJo.optJSONObject("measure_info")}")
+//                                            Log.v("reMotherJo3", "${motherJo.optJSONObject("dynamic")}")
 //                                        }
                                         if (!dynamicUploadResults.second) {
                                             mvm.dynamicJsonFile?.let { file ->
@@ -772,7 +736,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                             }
                                         }
 
-                                        retryDynamicRequestBodyBuilder.addFormDataPart("json", retryJo.toString())
+                                        retryDynamicRequestBodyBuilder.addFormDataPart("json", reMotherJo.toString())
 
                                         // 새로운 requestBody로 재전송 시도
 
@@ -969,7 +933,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 binding.btnMeasureSkeletonStep.text = "측정하기"
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
                 // 1 3 4 5 6 7
-                }
+            }
             else -> {
                 repeatCount.value = repeatCount.value?.minus(1)
                 progress -= 14
@@ -1086,8 +1050,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
         videoCapture = VideoCapture.withOutput(
             Recorder.Builder()
-            .setQualitySelector(QualitySelector.from(Quality.HD))
-            .build()
+                .setQualitySelector(QualitySelector.from(Quality.HD))
+                .build()
         )
 
         // ------! 카메라에 poselandmarker 그리기 !------
@@ -1247,24 +1211,36 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             val middleHip = Pair((mvm.hipData[0].first + mvm.hipData[1].first) / 2, (mvm.hipData[0].second + mvm.hipData[1].second) / 2)
             val middleShoulder = Pair((mvm.shoulderData[0].first + mvm.shoulderData[1].first) / 2, (mvm.shoulderData[0].second + mvm.shoulderData[1].second) / 2)
             /** mutablelist 0 왼쪽 1 오른쪽
-            *  , 그리고 first: x    second: y
-            * */
+             *  , 그리고 first: x    second: y
+             * */
             when (step) {
                 0 -> {
                     val earAngle : Float = calculateSlope(mvm.earData[0].first, mvm.earData[0].second, mvm.earData[1].first, mvm.earData[1].second)
+
                     val shoulderAngle : Float = calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)
+
                     val elbowAngle : Float = calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.elbowData[1].first, mvm.elbowData[1].second)
+
                     val wristAngle : Float = calculateSlope(mvm.wristData[0].first, mvm.wristData[0].second, mvm.wristData[1].first, mvm.wristData[1].second)
+
                     val hipAngle : Float = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second)
+
                     val kneeAngle : Float = calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
+
                     val ankleAngle : Float = calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.ankleData[1].first, mvm.ankleData[1].second)
                     // 부위 양 높이 차이
                     val earDistance : Float = abs(mvm.earData[0].second.minus(mvm.earData[1].second))
+
                     val shoulderDistance : Float = abs(mvm.shoulderData[0].second.minus(mvm.shoulderData[1].second))
+
                     val elbowDistance : Float = abs(mvm.elbowData[0].second.minus(mvm.elbowData[1].second))
+
                     val wristDistance : Float = abs(mvm.wristData[0].second.minus(mvm.wristData[1].second))
+
                     val hipDistance : Float = abs(mvm.hipData[0].second.minus(mvm.hipData[1].second))
+
                     val kneeDistance : Float = abs(mvm.kneeData[0].second.minus(mvm.kneeData[1].second))
+
                     val ankleDistance : Float = abs(mvm.ankleData[0].second.minus(mvm.ankleData[1].second))
 
                     // 각 부위 x축 부터 거리 거리
@@ -1274,16 +1250,28 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val toeSubDistance : Pair<Float, Float> = Pair(abs(mvm.toeData[0].first.minus(ankleXAxis)), abs(mvm.toeData[1].first.minus(ankleXAxis)))
 
                     // 팔 각도
-                    val shoulderElbowLean: Pair<Float, Float> = Pair(calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second), calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second))
-                    val elbowWristLean: Pair<Float, Float> = Pair(calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second), calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second))
-                    val wristThumbLean: Pair<Float, Float> = Pair(calculateSlope(mvm.wristData[0].first, mvm.wristData[0].second, mvm.thumbData[0].first, mvm.thumbData[0].second), calculateSlope(mvm.wristData[1].first, mvm.wristData[1].second, mvm.thumbData[1].first, mvm.thumbData[1].second))
-                    val hipKneeLean : Pair<Float, Float> = Pair(calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second), calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second))
-                    val kneeAnkleLean : Pair<Float, Float> = Pair(calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second), calculateSlope(mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second))
-                    val ankleToeLean : Pair<Float, Float> = Pair(calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.toeData[0].first, mvm.toeData[0].second), calculateSlope(mvm.ankleData[1].first, mvm.ankleData[1].second, mvm.toeData[1].first, mvm.toeData[1].second))
+                    val shoulderElbowLean: Pair<Float, Float> = Pair(calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second),
+                        calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second))
+
+                    val elbowWristLean: Pair<Float, Float> = Pair(calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second),
+                        calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second))
+
+                    val wristThumbLean: Pair<Float, Float> = Pair(calculateSlope(mvm.wristData[0].first, mvm.wristData[0].second, mvm.thumbData[0].first, mvm.thumbData[0].second),
+                        calculateSlope(mvm.wristData[1].first, mvm.wristData[1].second, mvm.thumbData[1].first, mvm.thumbData[1].second))
+
+                    val hipKneeLean : Pair<Float, Float> = Pair(calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second),
+                        calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second))
+
+                    val kneeAnkleLean : Pair<Float, Float> = Pair(calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second),
+                        calculateSlope(mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second))
+                    val ankleToeLean : Pair<Float, Float> = Pair(calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.toeData[0].first, mvm.toeData[0].second),
+                        calculateSlope(mvm.ankleData[1].first, mvm.ankleData[1].second, mvm.toeData[1].first, mvm.toeData[1].second))
 
                     val shoulderElbowWristAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second),
                         calculateAngle(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second))
+
                     val hipKneeAnkleAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second),
+
                         calculateAngle(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second))
 
 
@@ -1326,10 +1314,10 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_vertical_angle_ankle_toe_left", (ankleToeLean.first % 180))
                         put("front_vertical_angle_ankle_toe_right",( ankleToeLean.second % 180))
 
-                        put("front_vertical_angle_shoulder_elbow_wrist_left", shoulderElbowWristAngle.first)
-                        put("front_vertical_angle_shoulder_elbow_wrist_right", shoulderElbowWristAngle.second)
-                        put("front_vertical_angle_hip_knee_ankle_left", hipKneeAnkleAngle.first)
-                        put("front_vertical_angle_hip_knee_ankle_right", hipKneeAnkleAngle.second)
+                        put("front_vertical_angle_shoulder_elbow_wrist_left", shoulderElbowWristAngle.first  % 180 )
+                        put("front_vertical_angle_shoulder_elbow_wrist_right", shoulderElbowWristAngle.second  % 180 )
+                        put("front_vertical_angle_hip_knee_ankle_left", hipKneeAnkleAngle.first % 180 )
+                        put("front_vertical_angle_hip_knee_ankle_right", hipKneeAnkleAngle.second  % 180 )
                     }
                     saveJson(mvm.staticjo, step)
                 }
@@ -1348,24 +1336,33 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val hipDistanceByCenter : Pair<Float, Float> = Pair(abs(mvm.hipData[0].first.minus(ankleXAxis)), abs(mvm.hipData[1].first.minus(ankleXAxis)))
                     val kneeAngle : Float = calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
                     val kneeDistance : Float = abs(mvm.kneeData[0].second - mvm.kneeData[1].second)
+
                     val kneeDistanceByCenter : Pair<Float, Float> = Pair(abs(mvm.kneeData[0].first.minus(ankleXAxis)), abs(mvm.kneeData[1].first.minus(ankleXAxis)))
                     val toeDistanceByCenter : Pair<Float, Float> = Pair(abs(mvm.toeData[0].first.minus(ankleXAxis)), abs(mvm.toeData[1].first.minus(ankleXAxis)))
                     val wristElbowShoulderAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.wristData[0].first, mvm.wristData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second),
                         calculateAngle(mvm.wristData[1].first, mvm.wristData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second))
+
                     val wristElbowAngle : Pair<Float, Float> = Pair(calculateSlope(mvm.wristData[0].first, mvm.wristData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second),
                         calculateSlope(mvm.wristData[1].first, mvm.wristData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second))
+
                     val elbowShoulderAngle : Pair<Float, Float> = Pair(calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second),
                         calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second))
+
                     val hipKneeToeAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.toeData[0].first, mvm.toeData[0].second),
                         calculateAngle(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.toeData[1].first, mvm.toeData[1].second))
+
                     val hipKneeAngle : Pair<Float, Float> = Pair(calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second),
                         calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second))
+
                     val kneeToeAngle : Pair<Float, Float> = Pair(calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.toeData[0].first, mvm.toeData[0].second),
                         calculateSlope(mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.toeData[1].first, mvm.toeData[1].second))
+
                     val ankleToeAngle : Pair<Float, Float> = Pair(calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.toeData[0].first, mvm.toeData[0].second),
                         calculateSlope(mvm.ankleData[1].first, mvm.ankleData[1].second, mvm.toeData[1].first, mvm.toeData[1].second))
+
                     val kneeAnkleToeAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.toeData[0].first, mvm.toeData[0].second),
                         calculateAngle(mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second, mvm.toeData[1].first, mvm.toeData[1].second))
+
                     val indexDistanceByCenter : Pair<Float, Float> = Pair(abs(mvm.indexData[0].first.minus(ankleXAxis)), abs(mvm.indexData[1].first.minus(ankleXAxis)))
                     val indexAngle : Float = calculateSlope(mvm.indexData[0].first, mvm.indexData[0].second, mvm.indexData[1].first, mvm.indexData[1].second)
                     val indexDistance : Float = abs(mvm.indexData[0].second - mvm.indexData[1].second)
@@ -1413,22 +1410,22 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_horizontal_distance_center_right_knee", kneeDistanceByCenter.second)
                         put("front_horizontal_distance_center_left_toe", toeDistanceByCenter.first)
                         put("front_horizontal_distance_center_right_toe", toeDistanceByCenter.second)
-                        put("front_vertical_angle_wrist_elbow_shoulder_left", wristElbowShoulderAngle.first)
-                        put("front_vertical_angle_wrist_elbow_shoulder_right", wristElbowShoulderAngle.second)
-                        put("front_vertical_angle_wrist_elbow_left", wristElbowAngle.first)
-                        put("front_vertical_angle_wrist_elbow_right", wristElbowAngle.second)
-                        put("front_vertical_angle_elbow_shoulder_left", elbowShoulderAngle.first)
-                        put("front_vertical_angle_elbow_shoulder_right", elbowShoulderAngle.second)
-                        put("front_vertical_angle_hip_knee_toe_left", hipKneeToeAngle.first)
-                        put("front_vertical_angle_hip_knee_toe_right", hipKneeToeAngle.second)
-                        put("front_vertical_angle_hip_knee_left", hipKneeAngle.first)
-                        put("front_vertical_angle_hip_knee_right", hipKneeAngle.second)
-                        put("front_vertical_angle_knee_toe_left", kneeToeAngle.first)
-                        put("front_vertical_angle_knee_toe_right", kneeToeAngle.second)
-                        put("front_vertical_angle_ankle_toe_left", ankleToeAngle.first)
-                        put("front_vertical_angle_ankle_toe_right", ankleToeAngle.second)
-                        put("front_vertical_angle_knee_ankle_toe_left", kneeAnkleToeAngle.first)
-                        put("front_vertical_angle_knee_ankle_toe_right", kneeAnkleToeAngle.second)
+                        put("front_vertical_angle_wrist_elbow_shoulder_left", wristElbowShoulderAngle.first % 180 )
+                        put("front_vertical_angle_wrist_elbow_shoulder_right", wristElbowShoulderAngle.second % 180 )
+                        put("front_vertical_angle_wrist_elbow_left", wristElbowAngle.first % 180 )
+                        put("front_vertical_angle_wrist_elbow_right", wristElbowAngle.second % 180 )
+                        put("front_vertical_angle_elbow_shoulder_left", elbowShoulderAngle.first % 180 )
+                        put("front_vertical_angle_elbow_shoulder_right", elbowShoulderAngle.second % 180 )
+                        put("front_vertical_angle_hip_knee_toe_left", hipKneeToeAngle.first % 180 )
+                        put("front_vertical_angle_hip_knee_toe_right", hipKneeToeAngle.second % 180 )
+                        put("front_vertical_angle_hip_knee_left", hipKneeAngle.first % 180 )
+                        put("front_vertical_angle_hip_knee_right", hipKneeAngle.second % 180 )
+                        put("front_vertical_angle_knee_toe_left", kneeToeAngle.first % 180 )
+                        put("front_vertical_angle_knee_toe_right", kneeToeAngle.second % 180 )
+                        put("front_vertical_angle_ankle_toe_left", ankleToeAngle.first % 180 )
+                        put("front_vertical_angle_ankle_toe_right", ankleToeAngle.second % 180 )
+                        put("front_vertical_angle_knee_ankle_toe_left", kneeAnkleToeAngle.first % 180 )
+                        put("front_vertical_angle_knee_ankle_toe_right", kneeAnkleToeAngle.second % 180 )
                         put("front_horizontal_angle_mid_finger_tip", indexAngle)
                         put("front_horizontal_distance_mid_finger_tip", indexDistance)
                         put("front_horizontal_distance_center_mid_finger_tip_left", indexDistanceByCenter.first)
@@ -1444,11 +1441,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                     val wristShoulderDistance : Pair<Float, Float> = Pair(calculateDistanceByDots(mvm.wristData[0].first, mvm.wristData[0].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second),
                         calculateDistanceByDots(mvm.wristData[1].first, mvm.wristData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second))
+
                     val wristsDistanceByY : Float = abs(mvm.wristData[0].second - mvm.wristData[1].second)
+
                     val indexWristElbowAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.indexData[0].first, mvm.indexData[0].second, mvm.wristData[0].first, mvm.wristData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second),
                         calculateAngle(mvm.indexData[1].first, mvm.indexData[1].second, mvm.wristData[1].first, mvm.wristData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second))
+
                     val shoulderElbowWristAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second),
                         calculateAngle(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second))
+
                     val indexDistanceByX: Pair<Float, Float> = Pair(abs(mvm.indexData[0].first.minus(ankleXAxis)), abs(mvm.indexData[1].first.minus(ankleXAxis)))
                     val wristDistanceByX: Pair<Float, Float> = Pair(abs(mvm.wristData[0].first.minus(ankleXAxis)), abs(mvm.wristData[1].first.minus(ankleXAxis)))
 
@@ -1456,10 +1457,10 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_elbow_align_distance_left_wrist_shoulder", wristShoulderDistance.first)
                         put("front_elbow_align_distance_right_wrist_shoulder", wristShoulderDistance.second)
                         put("front_elbow_align_distance_wrist_height", wristsDistanceByY)
-                        put("front_elbow_align_angle_mid_index_wrist_elbow_left", indexWristElbowAngle.first)
-                        put("front_elbow_align_angle_mid_index_wrist_elbow_right", indexWristElbowAngle.second)
-                        put("front_elbow_align_angle_left_shoulder_elbow_wrist", shoulderElbowWristAngle.first)
-                        put("front_elbow_align_angle_right_shoulder_elbow_wrist", shoulderElbowWristAngle.second)
+                        put("front_elbow_align_angle_mid_index_wrist_elbow_left", indexWristElbowAngle.first % 180 )
+                        put("front_elbow_align_angle_mid_index_wrist_elbow_right", indexWristElbowAngle.second % 180 )
+                        put("front_elbow_align_angle_left_shoulder_elbow_wrist", shoulderElbowWristAngle.first % 180 )
+                        put("front_elbow_align_angle_right_shoulder_elbow_wrist", shoulderElbowWristAngle.second % 180 )
                         put("front_elbow_align_distance_center_mid_finger_left", indexDistanceByX.first)
                         put("front_elbow_align_distance_center_mid_finger_right", indexDistanceByX.second)
                         put("front_elbow_align_distance_center_wrist_left", wristDistanceByX.first)
@@ -1476,8 +1477,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val sideLeftHipDistance : Float = abs(mvm.hipData[0].first.minus(ankleXAxis))
 
                     val sideLeftShoulderElbowLean : Float = calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second)
+
                     val sideLeftElbowWristLean: Float =calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second)
+
                     val sideLeftHipKneeLean : Float = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second)
+
                     val sideLeftEarShoulderLean : Float = calculateSlope(mvm.earData[0].first, mvm.earData[0].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second)
                     val sideLeftNoseShoulderLean : Float = calculateSlope(nose.first, nose.second, mvm.shoulderData[0].first, mvm.shoulderData[0].second)
                     val sideLeftShoulderElbowWristAngle : Float = calculateAngle(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second)
@@ -1506,9 +1510,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val sideRightWristDistance : Float = abs(mvm.wristData[1].first.minus(ankleXAxis))
                     val sideRightPinkyDistance : Float = abs(mvm.pinkyData[1].first.minus(ankleXAxis))
                     val sideRightHipDistance : Float = abs(mvm.hipData[1].first.minus(ankleXAxis))
-                                        // ------! 측면 기울기  - 오른쪽 !------
+                    // ------! 측면 기울기  - 오른쪽 !------
                     val sideRightShoulderElbowLean : Float = calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
-                    val sideRightElbowWristLean: Float =calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second)
+                    val sideRightElbowWristLean: Float = calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second)
                     val sideRightHipKneeLean : Float = calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
                     val sideRightEarShoulderLean : Float = calculateSlope(mvm.earData[1].first, mvm.earData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)
                     val sideRightNoseShoulderLean : Float = calculateSlope(nose.first, nose.second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)
@@ -1532,14 +1536,19 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 }
                 5 -> { // ------! 후면 서서 !-------
                     val backEarAngle : Float = calculateSlope(mvm.earData[0].first, mvm.earData[0].second, mvm.earData[1].first, mvm.earData[1].second)
+
                     val backShoulderAngle : Float = calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)
+
                     val backWristAngle : Float = calculateSlope(mvm.wristData[0].first, mvm.wristData[0].second, mvm.wristData[1].first, mvm.wristData[1].second)
+
                     val backElbowAngle : Float = calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.elbowData[1].first, mvm.elbowData[1].second)
+
                     val backHipAngle : Float = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second)
                     val backKneeAngle : Float = calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
                     val backAnkleAngle : Float = calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.ankleData[1].first, mvm.ankleData[1].second)
-                                        // ------! 후면 거리 !------
+                    // ------! 후면 거리 !------
                     val backEarDistance : Float = abs(mvm.earData[0].second.minus(mvm.earData[1].second))
+
                     val backShoulderDistance  : Float = abs(mvm.shoulderData[0].second.minus(mvm.shoulderData[1].second))
                     val backElbowDistance  : Float = abs(mvm.shoulderData[0].second.minus(mvm.shoulderData[1].second))
                     val backWristDistance  : Float = abs(mvm.shoulderData[0].second.minus(mvm.shoulderData[1].second))

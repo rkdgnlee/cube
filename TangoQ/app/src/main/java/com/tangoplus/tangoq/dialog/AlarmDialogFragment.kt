@@ -87,6 +87,12 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
 
             }
         }
+
+        binding.tvAlarmClear.setOnClickListener {
+            alarmList.clear()
+            pm.deleteAllAlarms()
+            alarmRecyclerViewAdapter.notifyDataSetChanged()
+        }
     }
 
     override fun onAlarmClick(fragmentId: String) {

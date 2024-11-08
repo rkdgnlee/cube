@@ -26,6 +26,10 @@ class UserViewModel: ViewModel() {
         addSource(step32) { updateStep3() }
     }
 
+    // ------# connected 날짜 담기 #------
+
+    val connectedCenters = mutableListOf<Pair<String, String>>()
+
     var processingProgram : ProgramVO? = null
 
     init {

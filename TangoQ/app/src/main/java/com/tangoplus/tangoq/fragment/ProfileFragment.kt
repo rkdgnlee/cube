@@ -106,6 +106,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "내정보",
             "다크 모드",
             "QR코드 핀번호 로그인",
+            "연동 관리",
             "푸쉬 알림 설정",
             "자주 묻는 질문",
             "문의하기",
@@ -116,8 +117,8 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "로그아웃",
         )
         setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
-        setAdapter(profilemenulist.subList(4,6), binding.rvPHelp, 1)
-        setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
+        setAdapter(profilemenulist.subList(4,7), binding.rvPHelp, 1)
+        setAdapter(profilemenulist.subList(7, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
 
 //        binding.ibtnPfEdit.setOnClickListener {

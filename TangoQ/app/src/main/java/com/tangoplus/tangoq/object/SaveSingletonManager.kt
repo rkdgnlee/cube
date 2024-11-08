@@ -111,11 +111,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 for (info in allInfos) {
                     Log.v("인포리스트", "$allInfos")
 
-
-
                     val currentInfoSn = info.sn
                     Log.v("현재인포sn", "$currentInfoSn")
-
 
                     val statics = groupedStatics[info.sn]?.sortedBy { it.measure_seq } ?: emptyList()
                     val dynamic = groupedDynamics[info.sn] ?: emptyList()

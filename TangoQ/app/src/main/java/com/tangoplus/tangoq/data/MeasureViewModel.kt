@@ -57,27 +57,9 @@ class MeasureViewModel : ViewModel() {
     var heelData = listOf<Pair<Float, Float>>()
     var toeData = listOf<Pair<Float, Float>>()
 
-    // ------# 비교할 measure 담을 공간 #------
-    val trends = mutableListOf<MeasureVO>()
-
-
     init {
         selectedMeasureDate.value = ""
         selectedMeasure = MeasureVO(-1,-1, "", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
-    }
-
-    // -------# 측정 결과 MeasureVO로 변환 #------
-    fun extractVideoCoordinates(jsonData: JSONArray) : List<List<Pair<Float,Float>>> { // 200개의 33개의 x,y
-        return List(jsonData.length()) { i ->
-            val landmarks = jsonData.getJSONObject(i).getJSONArray("pose_landmark")
-            List(landmarks.length()) { j ->
-                val landmark = landmarks.getJSONObject(j)
-                Pair(
-                    landmark.getDouble("sx").toFloat(),
-                    landmark.getDouble("sy").toFloat()
-                )
-            }
-        }
     }
 
     // ------# JSONObject로 변경 전 앞에 접두사 안생기게끔 하기 #------

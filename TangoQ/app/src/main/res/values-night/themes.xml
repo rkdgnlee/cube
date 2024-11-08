@@ -20,10 +20,17 @@
         <item name="android:background">@color/white</item>
         <item name="android:windowBackground">@color/subColor100</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.App.Body.Text</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text
+        </item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.App.Body.Text
+        </item>
 
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
+    <style name="ThemeOverlay.TangoQ.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
+        <item name="fullscreenTextColor">@color/light_blue_A400</item>
     </style>
 </resources>

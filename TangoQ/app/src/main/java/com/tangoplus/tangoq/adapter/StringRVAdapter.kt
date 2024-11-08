@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -7,39 +8,51 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.data.ProgressViewModel
+import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.databinding.RvConnectItemBinding
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
 import com.tangoplus.tangoq.dialog.MainPartDialogFragment
+import com.tangoplus.tangoq.listener.OnDisconnectListener
 
 class StringRVAdapter(private val fragment: Fragment,
                       private val stringList: MutableList<String>?,
                       private val xmlName: String,
                       private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    inner class muscleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+    var onDisconnectListener: OnDisconnectListener? = null
+    inner class MuscleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val ivMI : ImageView = view.findViewById(R.id.ivMI)
         val tvMIName : TextView = view.findViewById(R.id.tvMIName)
     }
 
-    inner class partViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class PartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvPI : TextView = view.findViewById(R.id.tvPI)
         val cvPI : CardView = view.findViewById(R.id.cvPI)
         val ivPI : ImageView = view.findViewById(R.id.ivPI)
         val clPI : ConstraintLayout = view.findViewById(R.id.clPI)
     }
 
-    inner class cbViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class CbViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cbWI : CheckBox = view.findViewById(R.id.cbWI)
+    }
+
+    inner class ConnectViewHolder(view:View) : RecyclerView.ViewHolder(view) {
+        val tvCIName : TextView = view.findViewById(R.id.tvCIName)
+        val tvCIDate : TextView = view.findViewById(R.id.tvCIDate)
+        val btnCI : AppCompatButton = view.findViewById(R.id.btnCI)
     }
 
 
@@ -48,15 +61,19 @@ class StringRVAdapter(private val fragment: Fragment,
         return when (viewType) {
             0 -> {
                 val binding = RvMuscleItemBinding.inflate(inflater, parent, false)
-                muscleViewHolder(binding.root)
+                MuscleViewHolder(binding.root)
             }
             1 -> {
                 val binding = RvPartItemBinding.inflate(inflater, parent, false)
-                partViewHolder(binding.root)
+                PartViewHolder(binding.root)
             }
             2 -> {
                 val binding = RvWeeklyItemBinding.inflate(inflater, parent, false)
-                cbViewHolder(binding.root)
+                CbViewHolder(binding.root)
+            }
+            3 -> {
+                val binding = RvConnectItemBinding.inflate(inflater, parent, false)
+                ConnectViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("Invaild View Type")
         }
@@ -68,13 +85,14 @@ class StringRVAdapter(private val fragment: Fragment,
             "part" -> 1
             "measure" -> 2
             "week" -> 2
+            "connect" -> 3
             else -> throw IllegalArgumentException("Invalid View Type")
         }
     }
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = stringList?.get(position)
         when (holder) {
-            is muscleViewHolder -> {
+            is MuscleViewHolder -> {
                 if (currentItem != null) {
                     holder.tvMIName.text = currentItem
                     when (currentItem) {
@@ -184,7 +202,7 @@ class StringRVAdapter(private val fragment: Fragment,
                 }
 
             }
-            is partViewHolder -> {
+            is PartViewHolder -> {
                 if (currentItem != null) {
                     holder.tvPI.text = currentItem
                     setPartItem(holder.clPI, holder.cvPI, holder.tvPI)
@@ -205,7 +223,7 @@ class StringRVAdapter(private val fragment: Fragment,
                 }
             }
 
-            is cbViewHolder -> {
+            is CbViewHolder -> {
                 if (xmlName == "measure") {
                     holder.cbWI.setText("${currentItem?.substring(0, 10)}")
                     val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
@@ -244,6 +262,24 @@ class StringRVAdapter(private val fragment: Fragment,
                     }
                 }
             }
+            is ConnectViewHolder -> {
+                holder.tvCIDate.text = "등록일자: ${(vm as UserViewModel).connectedCenters[position].second}"
+                holder.tvCIName.text = currentItem
+                holder.btnCI.setOnClickListener {
+                    MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                        setTitle("연결 해제")
+                        setMessage("${currentItem}와(과) 연결을 해제하시겠습니까?")
+                        setPositiveButton("예") { _, _ ->
+                            if (currentItem != null) {
+                                onDisconnectListener?.onDisconnect(currentItem)
+                            }
+                        }
+                        setNegativeButton("아니오") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                    }.show()
+                }
+            }
         }
     }
 
@@ -252,9 +288,7 @@ class StringRVAdapter(private val fragment: Fragment,
     }
 
     private fun updateCheckboxTextColor(checkbox: CheckBox, isChecked: Boolean = checkbox.isChecked) {
-
         val colorResId = if (isChecked) R.color.mainColor else R.color.subColor800
-
         checkbox.setTextColor(ContextCompat.getColor(fragment.requireContext(), colorResId))
     }
 
