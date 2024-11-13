@@ -15,7 +15,6 @@ class AlarmController(private val context: Context) {
      fun setNotificationAlarm(title:String, text: String, hour: Int, minute : Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // 오늘 저녁 8시의 시간을 설정
         val timeZone = TimeZone.getTimeZone("Asia/Seoul")
         val calendar = Calendar.getInstance(timeZone).apply {
             set(Calendar.HOUR_OF_DAY, hour)
@@ -35,6 +34,6 @@ class AlarmController(private val context: Context) {
         val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
 
-        Log.v("현재 시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
+        Log.v("현재시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
     }
 }

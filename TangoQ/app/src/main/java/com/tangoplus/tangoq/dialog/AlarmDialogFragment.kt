@@ -61,7 +61,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
                 alarmList = pm.getAlarms()
-                alarmList.reverse()
+                alarmList.sortByDescending { it.timeStamp }
                 // ------! alarm touchhelper 연동 시작 !------
                 if (alarmList.isEmpty()) {
                     binding.tvAlarm.visibility = View.VISIBLE
@@ -69,7 +69,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
                     binding.tvAlarm.visibility = View.GONE
                 }
 
-                val alarmRecyclerViewAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
+                alarmRecyclerViewAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
                 swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
                 }

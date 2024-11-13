@@ -80,7 +80,7 @@ data class MeasureInfo(
         val randomCount = (2..4).random()
         val selectedFields = riskFields.shuffled().take(randomCount)
 
-        // 선택한 필드의 값을 "1" 또는 "2"로 설정
+
         selectedFields.forEach { field ->
             when (field) {
                 "risk_neck" -> this.risk_neck = (1..2).random().toString()
@@ -90,12 +90,12 @@ data class MeasureInfo(
                 "risk_elbow_right" -> this.risk_elbow_right = (1..2).random().toString()
                 "risk_wrist_left" -> this.risk_wrist_left = (1..2).random().toString()
                 "risk_wrist_right" -> this.risk_wrist_right = (1..2).random().toString()
-                "risk_hip_left" -> this.risk_hip_left = (1..2).random().toString()
-                "risk_hip_right" -> this.risk_hip_right = (1..2).random().toString()
+                "risk_hip_left" -> this.risk_hip_left = (1..1).random().toString()
+                "risk_hip_right" -> this.risk_hip_right = (1..1).random().toString()
                 "risk_knee_left" -> this.risk_knee_left = (1..2).random().toString()
                 "risk_knee_right" -> this.risk_knee_right = (1..2).random().toString()
-                "risk_ankle_left" -> this.risk_ankle_left = (1..2).random().toString()
-                "risk_ankle_right" -> this.risk_ankle_right = (1..2).random().toString()
+                "risk_ankle_left" -> this.risk_ankle_left = (1..1).random().toString()
+                "risk_ankle_right" -> this.risk_ankle_right = (1..1).random().toString()
             }
         }
     }

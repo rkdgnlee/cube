@@ -30,13 +30,13 @@ class UserViewModel: ViewModel() {
 
     val connectedCenters = mutableListOf<Pair<String, String>>()
 
-    var processingProgram : ProgramVO? = null
+    var existedProgramData : ProgramVO? = null
 
     init {
         User.value = JSONObject()
         setupProgress = 34
         setupStep = 0
-        processingProgram = null
+        existedProgramData = null
     }
 
     private fun updateStep2() {

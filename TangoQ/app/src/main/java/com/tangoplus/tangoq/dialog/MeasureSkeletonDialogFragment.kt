@@ -15,7 +15,22 @@ import com.tangoplus.tangoq.adapter.CautionVPAdapter
 import com.tangoplus.tangoq.databinding.FragmentMeasureSkeletonDialogBinding
 
 class MeasureSkeletonDialogFragment : DialogFragment() {
-   lateinit var binding : FragmentMeasureSkeletonDialogBinding
+    lateinit var binding : FragmentMeasureSkeletonDialogBinding
+    private var isPose = false
+    private var seq = 0
+    companion object {
+        const val ARG_MS_TYPE = "ms_alert"
+        const val ARG_MS_SEQ = "ms_alert_seq"
+        fun newInstance(isPose: Boolean, seq: Int = 0): MeasureSkeletonDialogFragment {
+            val fragment = MeasureSkeletonDialogFragment()
+            val args = Bundle()
+            args.putBoolean(ARG_MS_TYPE, isPose)
+            args.putInt(ARG_MS_SEQ, seq)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,19 +42,31 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val layouts = listOf(
-            R.layout.measure_skeleton_caution1,
-            R.layout.measure_skeleton_caution2,
-            R.layout.measure_skeleton_caution3,
-        )
-        binding.vpMSD.adapter = CautionVPAdapter(layouts)
-
+        isPose = arguments?.getBoolean(ARG_MS_TYPE) ?: false
+        seq = arguments?.getInt(ARG_MS_SEQ) ?: 0
+        val layouts = when (isPose) {
+            true -> listOf(R.layout.measure_skeleton_caution1)
+            false -> listOf(
+                R.layout.measure_skeleton_caution1,
+                R.layout.measure_skeleton_caution2,
+                R.layout.measure_skeleton_caution3,)
+        }
+        binding.vpMSD.adapter = CautionVPAdapter(layouts, isPose, seq)
         binding.btnMSDConfirm.setOnClickListener { dismiss() }
         binding.ibtnMSDExit.setOnClickListener { dismiss() }
-
+        setUI(isPose)
 
     }
-
+    private fun setUI(isPose: Boolean) {
+        when (isPose) {
+            true -> {
+                binding.btnMSDConfirm.text = "확인했습니다"
+            }
+            false -> {
+                binding.btnMSDConfirm.text = "모두 이해했습니다"
+            }
+        }
+    }
     @Deprecated("Deprecated in Java")
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onActivityCreated(savedInstanceState: Bundle?) {

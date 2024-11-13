@@ -139,7 +139,7 @@ class SplashActivity : AppCompatActivity() {
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
                 val calander: Calendar = Calendar.getInstance().apply {
                     timeInMillis = System.currentTimeMillis()
-                    set(Calendar.HOUR_OF_DAY, 13)
+                    set(Calendar.HOUR_OF_DAY, 16)
                 } // 오후 1시에 알림이 오게끔 돼 있음.
 
                 val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
@@ -151,8 +151,7 @@ class SplashActivity : AppCompatActivity() {
                 )
                 // ------! 인 앱 알림 끝 !------
 
-                val userSingleton = Singleton_t_user.getInstance(this)
-
+                cacheDir.deleteRecursively()
                 // ------# 다크모드 및 설정 불러오기  #------
                 val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
                 val darkMode = sharedPref.getBoolean("darkMode", false)
@@ -161,7 +160,6 @@ class SplashActivity : AppCompatActivity() {
                     if (darkMode) AppCompatDelegate.MODE_NIGHT_YES
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
-
 
                 val Handler = Handler(Looper.getMainLooper())
                 Handler.postDelayed({

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -97,8 +98,8 @@ class MainPartDialogFragment : DialogFragment() {
         "목관절" to listOf(0, 3, 4, 5, 6),
         "좌측 어깨" to listOf(0, 1, 3, 5, 6),
         "우측 어깨" to listOf(0, 1, 4, 5, 6),
-        "좌측 팔꿉" to listOf(0, 2, 3, 4),
-        "우측 팔꿉" to listOf(0, 2, 3, 4),
+        "좌측 팔꿉" to listOf(0, 2, 3),
+        "우측 팔꿉" to listOf(0, 2, 4),
         "좌측 손목" to listOf(0, 2, 3),
         "우측 손목" to listOf(0, 2, 4),
         "좌측 골반" to listOf(0, 1, 3, 5, 6),
@@ -125,17 +126,15 @@ class MainPartDialogFragment : DialogFragment() {
         // 어깨
         mapOf(
             0 to mapOf("front_horizontal_angle_shoulder" to Pair(-2f, 2f),
-                "front_horizontal_distance_sub_shoulder" to Pair(0.5f, 1.5f)),
-            3 to mapOf("side_left_horizontal_distance_shoulder" to Pair(-2f, 2f),
-                "side_left_vertical_angle_shoulder_elbow_wrist" to Pair(-5f, 5f)),
+                "front_horizontal_distance_sub_shoulder" to Pair(-1.5f, 1.5f)),
+            3 to mapOf("side_left_horizontal_distance_shoulder" to Pair(-2f, 2f)),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Pair(-2f, 2f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Pair(85f, 95f))
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_shoulder" to Pair(-2f, 2f),
-                "front_horizontal_distance_sub_shoulder" to Pair(0.5f, 1.5f)),
-            4 to mapOf("side_right_horizontal_distance_shoulder" to Pair(-2f, 2f),
-                "side_right_vertical_angle_shoulder_elbow_wrist" to Pair(-5f, 5f)),
+                "front_horizontal_distance_sub_shoulder" to Pair(-1.5f, 1.5f)),
+            4 to mapOf("side_right_horizontal_distance_shoulder" to Pair(-2f, 2f)),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Pair(-2f, 2f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Pair(85f, 95f))
         ),
@@ -143,8 +142,7 @@ class MainPartDialogFragment : DialogFragment() {
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to Pair(-1f, 1f),
                 "front_horizontal_distance_sub_elbow" to Pair(0.5f, 1.5f),
-                "front_vertical_angle_shoulder_elbow_right" to Pair(-5f, 5f),
-                "front_vertical_angle_elbow_wrist" to Pair(85f, 95f)),
+                "front_vertical_angle_shoulder_elbow_right" to Pair(-5f, 5f)),
             2 to mapOf("front_elbow_align_angle_left_upper_elbow_elbow_wrist" to Pair(25f, 35f),
                 "front_elbow_align_angle_left_shoulder_elbow_wrist" to Pair(8f, 18f)),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to Pair(0f, 5f),
@@ -154,8 +152,7 @@ class MainPartDialogFragment : DialogFragment() {
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to Pair(40f, 50f),
                 "front_horizontal_distance_sub_elbow" to Pair(40f, 50f),
-                "front_vertical_angle_shoulder_elbow_left" to Pair(40f, 50f),
-                "front_vertical_angle_elbow_wrist" to Pair(165f, 175f)),
+                "front_vertical_angle_shoulder_elbow_left" to Pair(40f, 50f)),
             2 to mapOf("front_elbow_align_angle_right_upper_elbow_elbow_wrist" to Pair(25f, 35f),
                "front_elbow_align_angle_right_shoulder_elbow_wrist" to Pair(8f, 18f)),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to Pair(0f, 5f),
@@ -180,22 +177,21 @@ class MainPartDialogFragment : DialogFragment() {
         // 좌측 골반
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_left" to Pair(85f, 95f),
-                "front_vertical_angle_hip_knee_ankle" to Pair(175f, 185f),
+                "front_vertical_angle_hip_knee_ankle_left" to Pair(175f, 185f),
                 "front_horizontal_angle_hip" to Pair(-2.5f, 2.5f)),
             3 to mapOf("side_left_vertical_angle_hip_knee" to Pair(85f, 95f),
-                "side_left_horizontal_distance_hip" to Pair(-0.5f, 0.5f),
-                "side_left_vertical_angle_hip_knee_ankle" to Pair(175f, 185f)),
+                "side_left_horizontal_distance_hip" to Pair(-0.5f, 0.5f)
+            ),
             5 to mapOf("back_horizontal_angle_hip" to Pair(-0.5f, 0.5f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Pair(40f, 60f),
                 "back_sit_vertical_angle_shoulder_center_hip" to Pair(-1f, 1f))
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_right" to Pair(85f, 95f),
-                "front_vertical_angle_hip_knee_ankle" to Pair(175f, 185f),
+                "front_vertical_angle_hip_knee_ankle_right" to Pair(175f, 185f),
                 "front_horizontal_angle_hip" to Pair(-2.5f, 2.5f)),
             4 to mapOf("side_right_vertical_angle_hip_knee" to Pair(40f, 50f),
-                "side_right_horizontal_distance_hip" to Pair(40f, 50f),
-                "side_right_vertical_angle_hip_knee_ankle" to Pair(40f, 50f)),
+                "side_right_horizontal_distance_hip" to Pair(40f, 50f)),
             5 to mapOf("back_horizontal_angle_hip" to Pair(-0.5f, 0.5f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Pair(40f, 60f),
                 "back_sit_vertical_angle_shoulder_center_hip" to Pair(-1f, 1f))
@@ -246,16 +242,14 @@ class MainPartDialogFragment : DialogFragment() {
         mapOf(
             0 to mapOf("front_horizontal_angle_shoulder" to "양 어깨 기울기",
                 "front_horizontal_distance_sub_shoulder" to "양 어깨 높이 차"),
-            3 to mapOf("side_left_horizontal_distance_shoulder" to "중심과 어깨 거리",
-                "side_left_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기"),
+            3 to mapOf("side_left_horizontal_distance_shoulder" to "중심과 어깨 거리"),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기")
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_shoulder" to "양 어깨 기울기",
                 "front_horizontal_distance_sub_shoulder" to "양 어깨 높이 차"),
-            4 to mapOf("side_right_horizontal_distance_shoulder" to "중심과 어깨 거리",
-                "side_right_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기"),
+            4 to mapOf("side_right_horizontal_distance_shoulder" to "중심과 어깨 거리"),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기")
         ),
@@ -263,8 +257,7 @@ class MainPartDialogFragment : DialogFragment() {
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to "양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "양 팔꿉 높이 차",
-                "front_vertical_angle_shoulder_elbow_left" to "좌측 어깨와 팔꿉 기울기",
-                "front_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기"),
+                "front_vertical_angle_shoulder_elbow_left" to "좌측 어깨와 팔꿉 기울기"),
             2 to mapOf("front_elbow_align_angle_left_upper_elbow_elbow_wrist" to "좌측 상완-팔꿉-손목 기울기",
                 "front_elbow_align_angle_left_shoulder_elbow_wrist" to "좌측 어깨-팔꿈치-손목 기울기"),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
@@ -274,8 +267,7 @@ class MainPartDialogFragment : DialogFragment() {
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to "양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "양 팔꿉 높이 차",
-                "front_vertical_angle_shoulder_elbow_right" to "우측 어깨와 팔꿉 기울기",
-                "front_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기"),
+                "front_vertical_angle_shoulder_elbow_right" to "우측 어깨와 팔꿉 기울기"),
             2 to mapOf("front_elbow_align_angle_right_upper_elbow_elbow_wrist" to "좌측 상완-팔꿉-손목 기울기",
                 "front_elbow_align_angle_right_shoulder_elbow_wrist" to "좌측 어깨-팔꿈치-손목 기울기"),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
@@ -300,22 +292,18 @@ class MainPartDialogFragment : DialogFragment() {
         // 좌측 골반
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_left" to "좌측 골반과 무릎 기울기",
-                "front_vertical_angle_hip_knee_ankle" to "골반-무릎-발목 기울기",
                 "front_horizontal_angle_hip" to "양 골반 기울기"),
             3 to mapOf("side_left_vertical_angle_hip_knee" to "좌측 골반과 무릎 기울기",
-                "side_left_horizontal_distance_hip" to "중심과 좌측 골반 거리",
-                "side_left_vertical_angle_hip_knee_ankle" to "좌측 골반-무릎-발목 기울기"),
+                "side_left_horizontal_distance_hip" to "중심과 좌측 골반 거리"),
             5 to mapOf("back_horizontal_angle_hip" to "양 골반 기울기"),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "좌측 어깨-골반중심-우측 어깨 기울기",
                 "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",)
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_right" to "우측 골반과 무릎 기울기",
-                "front_vertical_angle_hip_knee_ankle" to "골반-무릎-발목 기울기",
                 "front_horizontal_angle_hip" to "양 골반 기울기"),
-            3 to mapOf("side_right_vertical_angle_hip_knee" to "우측 골반과 무릎 기울기",
-                "side_right_horizontal_distance_hip" to "중심과 우측 골반 거리",
-                "side_right_vertical_angle_hip_knee_ankle" to "우측 골반-무릎-발목 기울기"),
+            4 to mapOf("side_right_vertical_angle_hip_knee" to "우측 골반과 무릎 기울기",
+                "side_right_horizontal_distance_hip" to "중심과 우측 골반 거리"),
             5 to mapOf("back_horizontal_angle_hip" to "양 골반 기울기"),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "좌측 어깨-골반중심-우측 어깨 기울기",
                 "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",)
@@ -354,18 +342,10 @@ class MainPartDialogFragment : DialogFragment() {
 
     // 정상 범위 판단 -> 좌측 우측 기울기 + 거리가 더 먼것도 판단해야함 / 손목 > 정면 측정 >
     // 현재는 부위 -> 그냥
+    @SuppressLint("DefaultLocale")
     private fun createSummary(part: String, seq: Int, units: MutableList<AnalysisUnitVO>): String {
         val resultString = StringBuilder()
-        var hasAbnormalAngle = false
-        var hasAbnormalPosition = false
-        var hasAbnormalOutAngle = false
-        var hasAbnormalForwardAngle = false
 
-        var heightDirection = ""
-        var angleDirection = ""
-        var forwardDirection = ""
-        var angleValue = 0f
-        var forwardAngleValue = 0f
         fun isInNormalRange(unit: AnalysisUnitVO): Boolean {
             return unit.rawData in unit.rawDataBound.first..unit.rawDataBound.second
         }
@@ -392,594 +372,849 @@ class MainPartDialogFragment : DialogFragment() {
         when (part) {
             "목관절" -> {
                 when (seq) {
-                    3 -> {
-                        val frontNeckData = units.find { it.columnName == "side_left_vertical_angle_nose_shoulder"}
+                    0 -> {
+                        val frontNeckData = units.find { it.columnName == "front_horizontal_angle_ear"}
+                        var angleData = 0f
+                        var angleDirection = ""
                         frontNeckData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalForwardAngle = true
-                                forwardAngleValue = it.rawData
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("머리가 $angleDirection 방향으로 ${String.format("%.2f", abs(angleData))}° 치우쳐 있습니다. 바른 자세와 목근육 긴장을 수시로 이완해주세요. ")
+                            }
+                        }
+                    }
+                    3 -> {
+                        val frontNeckData = units.find { it.columnName == "side_left_vertical_angle_nose_shoulder"}
+                        var angleData = 0f
+                        var angleDirection = ""
+                        frontNeckData?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("거북목 의심 - 목이 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 바른 자세와 목 스트레칭을 추천드립니다. ")
+                            }
+                        }
+                    }
+                    4 -> {
+                        val frontNeckData = units.find { it.columnName == "side_right_vertical_angle_nose_shoulder"}
+                        var angleData = 0f
+                        var angleDirection = ""
+                        frontNeckData?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("거북목 의심 - 목이 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 바른 자세와 목 스트레칭을 추천드립니다. ")
                             }
                         }
                     }
                     6 -> {
-                        val frontNeckData1 = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_nose_left_shoulder"}
-                        frontNeckData1?.let {
+
+                        val frontNeckData = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_nose_left_shoulder"}
+                        var angleData = 0f
+                        var angleDirection = ""
+                        frontNeckData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
+                                angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
+                                resultString.append("선자세와 비교했을 때, 앉았을 때 목이 약 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
                             }
                         }
                     }
                 }
-                if (hasAbnormalForwardAngle && hasAbnormalAngle) {
-                    resultString.append("거북목 의심 - 목이 ${String.format("%.2f", abs(forwardAngleValue))}° 기울어져 있습니다. 또한,  ${angleDirection}방향으로 틀어져 있습니다. 바른 자세와 목 스트레칭을 추천드립니다.")
-                } else if (hasAbnormalForwardAngle) {
-                    resultString.append("거북목 의심 - 목이 ${String.format("%.2f", abs(forwardAngleValue))}° 기울어져 있습니다. 목 스트레칭을 권장드립니다.")
-                } else if (hasAbnormalAngle) {
-                    resultString.append("목이 ${angleDirection}방향으로 ${angleValue}° 틀어져있습니다. 바른 자세를 권장드립니다.")
-                }
+
             }
 
             "좌측 어깨" -> {
                 when (seq) {
                     0 -> {
-                        val shoulderData = units.find { it.columnName == "front_horizontal_angle_shoulder"}
-                        shoulderData?.let {
+                        var angleData = 0f
+                        var angleDirection = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        val shoulderData1 = units.find { it.columnName == "front_horizontal_angle_shoulder"}
+                        shoulderData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("어깨는 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 골반 교정운동을 추천드립니다. ")
+
+                            }
+                        }
+                        val shoulderData2 = units.find { it.columnName == "front_horizontal_angle_shoulder"}
+                        shoulderData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("또한 양 어깨가 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                     }
                     3 -> {
                         val shoulderData = units.find { it.columnName == "side_left_horizontal_distance_shoulder"}
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
                         shoulderData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalForwardAngle = true
-                                forwardAngleValue = it.rawData
-                                forwardDirection = getForwardDirection(it.rawData)
+                                subDistanceData = it.rawData
+                                distanceDirection = getForwardDirection(it.rawData)
+                                resultString.append("중심에서 좌측 어깨까지 ${String.format("%.2f", abs(subDistanceData))}cm 차이가 있습니다. 중심보다 앞에 있을 경우 라운드 숄더가 의심됩니다. ")
                             }
                         }
                     }
                     6 -> {
                         val shoulderData = units.find { it.columnName == "back_sit_vertical_angle_shoulder_center_hip"}
+                        var angleData = 0f
+                        var angleDirection = ""
                         shoulderData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalOutAngle = true
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
                             }
                         }
                     }
-                }
-                if (hasAbnormalAngle && hasAbnormalForwardAngle && hasAbnormalOutAngle) {
-                    resultString.append("어깨가 ${heightDirection} 방향으로 ${String.format("%.2f", abs(angleValue))}° 기울어져있고, 라운드 숄더가 의심됩니다. 등 스트레칭을 통해 날개뼈를 펼치고 틀어진 방향 반대쪽으로 스트레칭을 추천드립니다")
-                } else if (hasAbnormalAngle && hasAbnormalForwardAngle) {
-                    resultString.append("어깨가 ${heightDirection} 방향으로 ${String.format("%.2f", abs(angleValue))}° 기울어져있고, 라운드 숄더가 의심됩니다. 등 스트레칭을 통해 날개뼈를 펼치고 틀어진 방향 반대쪽으로 스트레칭을 추천드립니다")
-                } else if (hasAbnormalForwardAngle) {
-                    resultString.append("어깨는 기울어지지 않았지만 라운드 숄더가 의심됩니다. 등 스트레칭을 권장합니다.")
                 }
             }
             "우측 어깨" -> {
                 when (seq) {
                     0 -> {
-                        val shoulderData = units.find { it.columnName == "front_horizontal_angle_shoulder"}
-                        shoulderData?.let {
+                        var angleData = 0f
+                        var angleDirection = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        val shoulderData1 = units.find { it.columnName == "front_horizontal_angle_shoulder"}
+                        shoulderData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("어깨는 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 골반 교정운동을 추천드립니다. ")
+
                             }
                         }
+                        val shoulderData2 = units.find { it.columnName == "front_horizontal_angle_shoulder"}
+                        shoulderData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("또한 양 어깨가 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                            }
+                        }
+
                     }
-                    3 -> {
+                    4 -> {
                         val shoulderData = units.find { it.columnName == "side_right_horizontal_distance_shoulder"}
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
                         shoulderData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalForwardAngle = true
-                                forwardAngleValue = it.rawData
-                                forwardDirection = getForwardDirection(it.rawData)
+                                subDistanceData = it.rawData
+                                distanceDirection = getForwardDirection(it.rawData)
+                                resultString.append("중심에서 우측 어깨까지 ${String.format("%.2f", abs(subDistanceData))}cm 차이가 있습니다. 라운드 숄더를 조심하세요. ")
                             }
                         }
                     }
                     6 -> {
                         val shoulderData = units.find { it.columnName == "back_sit_vertical_angle_shoulder_center_hip"}
+                        var angleData = 0f
+                        var angleDirection = ""
                         shoulderData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalOutAngle = true
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
                             }
                         }
                     }
-                }
-                if (hasAbnormalAngle && hasAbnormalForwardAngle && hasAbnormalOutAngle) {
-                    resultString.append("어깨가 ${heightDirection} 방향으로 ${String.format("%.2f", abs(angleValue))}° 기울어져있고, 라운드 숄더가 의심됩니다. 등 스트레칭을 통해 날개뼈를 펼치고 틀어진 방향 반대쪽으로 스트레칭을 추천드립니다")
-                } else if (hasAbnormalAngle && hasAbnormalForwardAngle) {
-                    resultString.append("어깨가 ${heightDirection} 방향으로 ${String.format("%.2f", abs(angleValue))}° 기울어져있고, 라운드 숄더가 의심됩니다. 등 스트레칭을 통해 날개뼈를 펼치고 틀어진 방향 반대쪽으로 스트레칭을 추천드립니다")
-                } else if (hasAbnormalForwardAngle) {
-                    resultString.append("어깨는 기울어지지 않았지만 라운드 숄더가 의심됩니다. 등 스트레칭을 권장합니다.")
                 }
             }
             "좌측 팔꿉"-> {
-
                 when (seq) {
                     0 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
                         val frontElbowData1 = units.find { it.columnName == "front_horizontal_angle_elbow"}
-                        val frontElbowData2 = units.find { it.columnName == "front_horizontal_distance_sub_elbow"}
-                        val frontElbowData3 = units.find { it.columnName == "front_vertical_angle_shoulder_elbow_left"}
-//                        val frontElbowData4 = units.find { it.columnName == "front_vertical_angle_elbow_wrist"}
                         frontElbowData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                heightDirection = getHeightDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("어깨는 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
+                        val frontElbowData2 = units.find { it.columnName == "front_horizontal_distance_sub_elbow"}
                         frontElbowData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleDirection = getDirection(it.rawData)
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
+                        val frontElbowData3 = units.find { it.columnName == "front_vertical_angle_shoulder_elbow_left"}
                         frontElbowData3?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalOutAngle = true
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("어깨-팔꿉의 각도가 ${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
-//                        frontElbowData4?.let {
-//                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-//                                hasAbnormalAngle = true
-//                                angleValue = it.rawData
-//                                heightDirection = getHeightDirection(it.rawData)
-//                            }
-//                        }
                     }
                     2 -> {
-                        val frontElbowData1 = units.find { it.columnName == "front_elbow_align_angle_left_upper_elbow_elbow_wrist"}
-//                        val frontElbowData2 = units.find { it.columnName == "front_elbow_align_angle_left_shoulder_elbow_wrist"}
-                        frontElbowData1?.let {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val elbowData1 = units.find { it.columnName == "front_elbow_align_angle_left_upper_elbow_elbow_wrist"}
+                        elbowData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("상완과 하완을 겹쳤을 때 ${String.format("%.2f", abs(angleData1))}° 로 정상범위보다 팔이 겹쳐지지 않습니다. ")
+
                             }
                         }
-//                        frontElbowData2?.let {
-//                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-//                                hasAbnormalPosition = true
-//                            }
-//                        }
+                        val elbowData2 = units.find { it.columnName == "front_elbow_align_angle_left_shoulder_elbow_wrist"}
+                        elbowData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 정상범위보다 팔이 겹쳐지지 않습니다. ")
+                            }
+                        }
                     }
                     3 -> {
-//                        val sideElbowData1 = units.find { it.columnName == "side_left_vertical_angle_shoulder_elbow"}
-//                        val sideElbowData2 = units.find { it.columnName == "side_left_vertical_angle_elbow_wrist"}
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
+                        val sideElbowData1 = units.find { it.columnName == "side_left_vertical_angle_shoulder_elbow"}
+                        sideElbowData1?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                            }
+                        }
+                        val sideElbowData2 = units.find { it.columnName == "side_left_vertical_angle_elbow_wrist"}
+                        sideElbowData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                            }
+                        }
                         val sideElbowData3 = units.find { it.columnName == "side_left_vertical_angle_shoulder_elbow_wrist"}
                         sideElbowData3?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData2 = it.rawData
+                                resultString.append("좌측 어깨-팔꿉 각도는 ${String.format("%.2f", abs(angleData2))}°로 팔이 바깥쪽으로 벌어져 주변 근육 긴장이 의심됩니다. ")
                             }
                         }
                     }
-                }
-                if (hasAbnormalAngle && hasAbnormalPosition && hasAbnormalOutAngle) {
-                    resultString.append("좌측 팔꿉이 우측보다 ${heightDirection}에 위치해 있으며(${String.format("%.2f", abs(angleValue))}°), 팔이 바깥쪽으로 벌어져 있습니다. 주변 근육이 긴장된 상태입니다")
-                } else if (hasAbnormalAngle && hasAbnormalPosition) {
-                    resultString.append("좌측 팔꿉이 우측과 균형이 맞지않습니다. 어깨, 상완의 근육이나 자주 사용하는 부분의 긴장을 풀어주세요")
-                } else if (hasAbnormalOutAngle) {
-                    resultString.append("좌측 팔꿉이 우측보다 ${angleDirection}에 위치해 있습니다(${String.format("%.2f", abs(angleValue))}°). ")
-                    resultString.append("평소 팔꿉 주변 근육의 긴장상태를 주의하여 관리하세요.")
-                } else {
-                    resultString.append("좌측 팔꿉의 위치와 각도가 정상 범위 내에 있습니다.")
                 }
             }
             "우측 팔꿉" -> {
                 when (seq) {
                     0 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
                         val frontElbowData1 = units.find { it.columnName == "front_horizontal_angle_elbow"}
-                        val frontElbowData2 = units.find { it.columnName == "front_horizontal_distance_sub_elbow"}
-                        val frontElbowData3 = units.find { it.columnName == "front_vertical_angle_shoulder_elbow_right"}
-//                        val frontElbowData4 = units.find { it.columnName == "front_vertical_angle_elbow_wrist"}
                         frontElbowData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                heightDirection = getHeightDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("어깨는 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
+                        val frontElbowData2 = units.find { it.columnName == "front_horizontal_distance_sub_elbow"}
                         frontElbowData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleDirection = getDirection(it.rawData)
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
+                        val frontElbowData3 = units.find { it.columnName == "front_vertical_angle_shoulder_elbow_right"}
                         frontElbowData3?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalOutAngle = true
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("어깨-팔꿉의 각도가 ${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
-//                        frontElbowData4?.let {
-//                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-//                                hasAbnormalAngle = true
-//                                angleValue = it.rawData
-//                                heightDirection = getHeightDirection(it.rawData)
-//                            }
-//                        }
                     }
                     2 -> {
-                        val frontElbowData1 = units.find { it.columnName == "front_elbow_align_angle_right_upper_elbow_elbow_wrist"}
-//                        val frontElbowData2 = units.find { it.columnName == "front_elbow_align_angle_right_shoulder_elbow_wrist"}
-                        frontElbowData1?.let {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val elbowData1 = units.find { it.columnName == "front_elbow_align_angle_right_upper_elbow_elbow_wrist"}
+                        elbowData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("상완과 하완을 겹쳤을 때 ${String.format("%.2f", abs(angleData1))}° 로 정상범위보다 팔이 겹쳐지지 않습니다. ")
+
                             }
                         }
-//                        frontElbowData2?.let {
-//                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-//                                hasAbnormalPosition = true
-//                            }
-//                        }
+                        val elbowData2 = units.find { it.columnName == "front_elbow_align_angle_right_shoulder_elbow_wrist"}
+                        elbowData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 정상범위보다 팔이 겹쳐지지 않습니다. ")
+                            }
+                        }
                     }
-                    4 -> {
-//                        val sideElbowData1 = units.find { it.columnName == "side_right_vertical_angle_shoulder_elbow"}
-//                        val sideElbowData2 = units.find { it.columnName == "side_right_vertical_angle_elbow_wrist"}
+                    3 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
+                        val sideElbowData1 = units.find { it.columnName == "side_right_vertical_angle_shoulder_elbow"}
+                        sideElbowData1?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("어깨-팔꿉이 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                            }
+                        }
+                        val sideElbowData2 = units.find { it.columnName == "side_right_vertical_angle_elbow_wrist"}
+                        sideElbowData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                            }
+                        }
                         val sideElbowData3 = units.find { it.columnName == "side_right_vertical_angle_shoulder_elbow_wrist"}
                         sideElbowData3?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData2 = it.rawData
+                                resultString.append("좌측 어깨-팔꿉 각도는 ${String.format("%.2f", abs(angleData2))}°로 팔이 바깥쪽으로 벌어져 주변 근육 긴장이 의심됩니다. ")
                             }
                         }
                     }
-                }
-                if (hasAbnormalAngle && hasAbnormalPosition && hasAbnormalOutAngle) {
-                    resultString.append("좌측 팔꿉이 우측보다 ${heightDirection}에 위치해 있으며(${String.format("%.2f", abs(angleValue))}°), 팔이 바깥쪽으로 벌어져 있습니다. 주변 근육이 긴장된 상태입니다")
-                    resultString.append("평소 팔꿉 주변 근육의 긴장상태를 주의하여 관리하세요.")
-                } else if (hasAbnormalAngle && hasAbnormalPosition) {
-                    resultString.append("좌측 팔꿉이 우측과 균형이 맞지않습니다. 어깨, 상완의 근육이나 자주 사용하는 부분의 긴장을 풀어주세요")
-                } else if (hasAbnormalOutAngle) {
-                    resultString.append("좌측 팔꿉이 우측보다 ${angleDirection}에 위치해 있습니다(${String.format("%.2f", abs(angleValue))}°)")
-                    resultString.append("평소 팔꿉 주변 근육의 긴장상태를 주의하여 관리하세요.")
-                } else {
-                    resultString.append("좌측 팔꿉의 위치와 각도가 정상 범위 내에 있습니다.")
                 }
             }
             "좌측 손목" -> {
                 when (seq) {
                     0 -> {
-                        val frontWristData1 = units.find { it.columnName == "front_vertical_angle_elbow_wrist_left"}
-                        val frontWristData2 = units.find { it.columnName == "front_horizontal_angle_wrist"}
-                        frontWristData1?.let {
+                        var angleData1 = 0f
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val WristData1 = units.find { it.columnName == "front_vertical_angle_elbow_wrist_left"}
+                        WristData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
+                                angleData1 = it.rawData
+
+                                resultString.append("손목의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
 
                             }
                         }
-                        frontWristData2?.let {
+                        val WristData2 = units.find { it.columnName == "front_horizontal_angle_wrist"}
+                        WristData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                     }
                     2 -> {
-                        val frontWristData1 = units.find { it.columnName == "front_elbow_align_angle_mid_index_wrist_elbow_left"}
-                        val frontWristData2 = units.find { it.columnName == "front_elbow_align_distance_left_wrist_shoulder"}
-                        frontWristData1?.let {
+                        var angleData1 = 0f
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val wristData1 = units.find { it.columnName == "front_elbow_align_angle_mid_index_wrist_elbow_left"}
+                        wristData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                            }
-                        }
-                        frontWristData2?.let {
-                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleValue = it.rawData
-                            }
-                        }
-                    }
-                    4 -> {
-                        val frontWristData1 = units.find { it.columnName == "side_left_horizontal_distance_wrist"}
-                        frontWristData1?.let {
-                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalForwardAngle = true
-                                forwardDirection = getForwardDirection(it.rawData)
-                                forwardAngleValue = it.rawData
-                            }
-                        }
-                    }
-                }
-                if (hasAbnormalAngle && hasAbnormalForwardAngle ) {
-                    resultString.append("우측 손목이 좌측 손목보다 ${heightDirection}에 위치해 있으며, 반대 손목과 높이가 다릅니다")
-                    resultString.append("평소 손목 주변 근육의 긴장상태를 주의하여 관리하세요.")
-                } else if (hasAbnormalAngle) {
-                    resultString.append("우측 손목의 각도가 ${String.format("%.2f", abs(angleValue))}°만큼 기울었습니다.")
-                    resultString.append("평소 손목 주변 근육의 긴장상태를 주의하여 관리하세요.")
-                } else if (hasAbnormalForwardAngle) {
-                    resultString.append("우측 손목이 중심에서 ${forwardAngleValue} 만큼 벌어져 있습니다. 상완 근육과 어깨의 긴장을 주목해주세요")
-                } else {
-                    resultString.append("우측 손목의 위치와 각도가 정상 범위 내에 있습니다.")
-                }
+                                angleData1 = it.rawData
 
+                                resultString.append("손-손목의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어났습니다. 과부하된 손목의 근육을 확인하세요. ")
+
+                            }
+                        }
+                        val wristData2 = units.find { it.columnName == "front_elbow_align_distance_left_wrist_shoulder"}
+                        wristData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 수직상태에서 벗어났습니다. ")
+                            }
+                        }
+                    }
+                    3 -> {
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        val wristData1 = units.find { it.columnName == "side_left_horizontal_distance_wrist"}
+                        wristData1?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                subDistanceData = it.rawData
+                                distanceDirection = getForwardDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm로 벗어나있습니다. 이두근, 손목 긴장을 체크하세요. ")
+
+                            }
+                        }
+                    }
+                }
             }
             "우측 손목" -> {
                 when (seq) {
                     0 -> {
-                        val frontWristData1 = units.find { it.columnName == "front_vertical_angle_elbow_wrist_right"}
-                        val frontWristData2 = units.find { it.columnName == "front_horizontal_angle_wrist"}
-                        frontWristData1?.let {
+                        var angleData1 = 0f
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val WristData1 = units.find { it.columnName == "front_vertical_angle_elbow_wrist_left"}
+                        WristData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
+                                angleData1 = it.rawData
+
+                                resultString.append("손목의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
 
                             }
                         }
-                        frontWristData2?.let {
+                        val WristData2 = units.find { it.columnName == "front_horizontal_angle_wrist"}
+                        WristData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                     }
                     2 -> {
-                        val frontWristData1 = units.find { it.columnName == "front_elbow_align_angle_mid_index_wrist_elbow_right"}
-                        val frontWristData2 = units.find { it.columnName == "front_elbow_align_distance_right_wrist_shoulder"}
-                        frontWristData1?.let {
+                        var angleData1 = 0f
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val wristData1 = units.find { it.columnName == "front_elbow_align_angle_mid_index_wrist_elbow_right"}
+                        wristData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
+                                angleData1 = it.rawData
+
+                                resultString.append("손-손목의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어났습니다. 과부하된 손목의 근육을 확인하세요. ")
+
                             }
                         }
-                        frontWristData2?.let {
+                        val wristData2 = units.find { it.columnName == "front_elbow_align_distance_right_wrist_shoulder"}
+                        wristData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleValue = it.rawData
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 수직상태에서 벗어났습니다. ")
                             }
                         }
                     }
                     4 -> {
-                        val frontWristData1 = units.find { it.columnName == "side_right_horizontal_distance_wrist"}
-                        frontWristData1?.let {
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        val wristData1 = units.find { it.columnName == "side_right_horizontal_distance_wrist"}
+                        wristData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalForwardAngle = true
-                                forwardDirection = getForwardDirection(it.rawData)
+                                subDistanceData = it.rawData
+                                distanceDirection = getForwardDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm로 벗어나있습니다. 이두근, 손목 긴장을 체크하세요. ")
+
                             }
                         }
                     }
                 }
-                if (hasAbnormalAngle && hasAbnormalForwardAngle ) {
-                    resultString.append("우측 손목이 좌측 손목보다 ${heightDirection}에 위치해 있으며, 반대 손목과 높이가 다릅니다")
-                    resultString.append("평소 손목 주변 근육의 긴장상태를 주의하여 관리하세요.")
-                } else if (hasAbnormalAngle) {
-                    resultString.append("우측 손목의 각도가 ${String.format("%.2f", abs(angleValue))}°만큼 기울었습니다.")
-                    resultString.append("평소 손목 주변 근육의 긴장상태를 주의하여 관리하세요.")
-                } else if (hasAbnormalForwardAngle) {
-                    resultString.append("우측 손목이 중심에서 ${String.format("%.2f", abs(forwardAngleValue))}° 만큼 벌어져 있습니다. 상완 근육과 어깨의 긴장을 주목해주세요")
-                } else {
-                    resultString.append("우측 손목의 위치와 각도가 정상 범위 내에 있습니다.")
-                }
-
             }
             "좌측 골반" -> {
                 when (seq) {
-                    3 -> {
-                        val hipData = units.find { it.columnName == "side_left_horizontal_distance_hip"}
-                        hipData?.let {
+                    0 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val hipData1 = units.find { it.columnName == "front_vertical_angle_hip_knee_left"}
+                        hipData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalForwardAngle = true
-                                forwardAngleValue = it.rawData
-                                forwardDirection = getHeightDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("무릎과의 기울기 ${String.format("%.2f", abs(angleData1))}° 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                            }
+                        }
+                        val hipData2 = units.find { it.columnName == "front_horizontal_angle_hip"}
+                        hipData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("양 골반의 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 치우쳐져 있습니다. ")
+                            }
+                        }
+                    }
+                    3 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        val hipData1 = units.find { it.columnName == "side_left_vertical_angle_hip_knee"}
+                        hipData1?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("골반-무릎간 측면 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                            }
+                        }
+                        val hipData2 = units.find { it.columnName == "side_left_horizontal_distance_hip"}
+                        hipData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+
+                                subDistanceData = it.rawData
+                                distanceDirection = getForwardDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 나와있습니다. ")
                             }
                         }
                     }
                     5 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
                         val hipData = units.find { it.columnName == "back_horizontal_angle_hip"}
                         hipData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("후면 측정 시 ${String.format("%.2f", abs(angleData1))}°로 ${angleDirection1}방향으로 틀어져 있습니다. 골반 틀어짐 교정 운동을 추천드립니다. ")
                             }
                         }
                     }
                     6 -> {
-                        val hipData = units.find { it.columnName == "back_sit_vertical_angle_shoulder_center_hip"}
-                        hipData?.let {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val hipData1 = units.find { it.columnName == "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder"}
+                        hipData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("양 어깨와 골반 중심의 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 굽은 등 및 거북목 스트레칭을 추천합니다. ")
+                            }
+                        }
+                        val hipData2 = units.find { it.columnName == "back_sit_vertical_angle_shoulder_center_hip"}
+                        hipData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+//                                resultString.append("양 어깨와 골반 중심의 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 굽은 등 및 거북목 스트레칭을 추천합니다.")
                             }
                         }
                     }
-                }
-                if (hasAbnormalForwardAngle && hasAbnormalAngle) {
-                    resultString.append("골반이 ${forwardAngleValue}cm 중심과 차이가 있습니다. 또한 골반이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("엉덩이와 허벅지 뒤쪽을 스트레칭하고, 균형을 위한 골반 교정 스트레칭을 추천드립니다")
-                } else if (hasAbnormalForwardAngle) {
-                    resultString.append("골반이 ${forwardAngleValue}cm 중심과 차이가 있습니다.")
-                    resultString.append("엉덩이와 허벅지 뒤쪽을 스트레칭하고, 코어 근육을 강화하는 운동을 해보세요.")
-                }  else if (hasAbnormalAngle) {
-                    resultString.append("골반이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("허리와 엉덩이 근육을 균형 있게 풀어주는 스트레칭을 해보세요. ")
                 }
             }
             "우측 골반" -> {
                 when (seq) {
-                    4 -> {
-                        val hipData = units.find { it.columnName == "side_right_horizontal_distance_hip"}
-                        hipData?.let {
+                    0 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val hipData1 = units.find { it.columnName == "front_vertical_angle_hip_knee_right"}
+                        hipData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalForwardAngle = true
-                                forwardAngleValue = it.rawData
-                                forwardDirection = getHeightDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("무릎과의 기울기 ${String.format("%.2f", abs(angleData1))}° 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                            }
+                        }
+                        val hipData2 = units.find { it.columnName == "front_horizontal_angle_hip"}
+                        hipData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("양 골반의 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 치우쳐져 있습니다. ")
+                            }
+                        }
+                    }
+                    4 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        val hipData1 = units.find { it.columnName == "side_right_vertical_angle_hip_knee"}
+                        hipData1?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("골반-무릎간 측면 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                            }
+                        }
+                        val hipData2 = units.find { it.columnName == "side_left_horizontal_distance_hip"}
+                        hipData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+
+                                subDistanceData = it.rawData
+                                distanceDirection = getForwardDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 나와있습니다. ")
                             }
                         }
                     }
                     5 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
                         val hipData = units.find { it.columnName == "back_horizontal_angle_hip"}
                         hipData?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("후면 측정 시 ${String.format("%.2f", abs(angleData1))}°로 ${angleDirection1}방향으로 틀어져 있습니다. 골반 틀어짐 교정 운동을 추천드립니다. ")
                             }
                         }
                     }
                     6 -> {
-                        val hipData = units.find { it.columnName == "back_sit_vertical_angle_shoulder_center_hip"}
-                        hipData?.let {
+                        var angleData1 = 0f
+
+                        val hipData1 = units.find { it.columnName == "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder"}
+                        hipData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
+                                angleData1 = it.rawData
+                                resultString.append("양 어깨와 골반 중심의 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 굽은 등 및 거북목 스트레칭을 추천합니다. ")
                             }
                         }
                     }
-                }
-                if (hasAbnormalForwardAngle && hasAbnormalAngle) {
-                    resultString.append("골반이 ${forwardAngleValue}cm 중심과 차이가 있습니다. 또한 골반이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("엉덩이와 허벅지 뒤쪽을 스트레칭하고, 균형을 위한 골반 교정 스트레칭을 추천드립니다")
-                } else if (hasAbnormalForwardAngle) {
-                    resultString.append("골반이 ${forwardAngleValue}cm 중심과 차이가 있습니다.")
-                    resultString.append("엉덩이와 허벅지 뒤쪽을 스트레칭하고, 코어 근육을 강화하는 운동을 해보세요.")
-                }  else if (hasAbnormalAngle) {
-                    resultString.append("골반이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("허리와 엉덩이 근육을 균형 있게 풀어주는 스트레칭을 해보세요. ")
                 }
             }
 
             "좌측 무릎" -> {
                 when (seq) {
                     0 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
                         val kneeData1 = units.find { it.columnName == "front_horizontal_angle_knee"}
-                        val kneeData2 = units.find { it.columnName == "front_horizontal_distance_knee_left"}
-
                         kneeData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
+                        val kneeData2 = units.find { it.columnName == "front_horizontal_distance_knee_left"}
                         kneeData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleDirection = getDirection(it.rawData)
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                            }
+                        }
+                        val kneeData3 = units.find { it.columnName == "front_vertical_angle_hip_knee_ankle_left"}
+                        kneeData3?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                resultString.append("좌측 골반-무릎-팔꿉 각도는 ${String.format("%.2f", abs(angleData2))}°로  팔이 바깥쪽으로 벌어져 있습니다. 주변 근육이 긴장된 상태입니다. ")
                             }
                         }
                     }
-                }
-                if (hasAbnormalAngle && hasAbnormalPosition) {
-                    resultString.append("무릎이 ${angleDirection}방향으로 ${angleValue}° 기울어져 있습니다.")
-                    resultString.append("허벅지와 엉덩이 근육을 강화하는 스트레칭을 해보세요.")
-                } else if (hasAbnormalAngle) {
-                    resultString.append("좌측 무릎이 ${forwardAngleValue}cm 중심과 차이가 있습니다.")
-                    resultString.append("무릎 안정성을 높이는 운동을 추천합니다.")
-                }  else if (hasAbnormalPosition) {
-                    resultString.append("무릎이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("허벅지와 엉덩이 근육을 강화하는 스트레칭을 해보세요.")
+                    5 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val kneeData1 = units.find { it.columnName == "back_horizontal_angle_knee"}
+                        kneeData1?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("양 무릎의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어났습니다. ")
+
+                            }
+                        }
+                        val kneeData2 = units.find { it.columnName == "back_horizontal_distance_knee_left"}
+                        kneeData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}cm 로 중심에서 더 멉니다. 골반 틀어짐이나 허벅지 근육 긴장을 확인하세요. ")
+                            }
+                        }
+                    }
                 }
             }
             "우측 무릎" -> {
                 when (seq) {
                     0 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
                         val kneeData1 = units.find { it.columnName == "front_horizontal_angle_knee"}
-                        val kneeData2 = units.find { it.columnName == "front_horizontal_distance_knee_left"}
-
                         kneeData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
+                        val kneeData2 = units.find { it.columnName == "front_horizontal_distance_knee_right"}
                         kneeData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleDirection = getDirection(it.rawData)
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                            }
+                        }
+                        val kneeData3 = units.find { it.columnName == "front_vertical_angle_hip_knee_ankle_right"}
+                        kneeData3?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                resultString.append("좌측 골반-무릎-팔꿉 각도는 ${String.format("%.2f", abs(angleData2))}°로  팔이 바깥쪽으로 벌어져 있습니다. 주변 근육이 긴장된 상태입니다. ")
                             }
                         }
                     }
-                }
-                if (hasAbnormalAngle && hasAbnormalPosition) {
-                    resultString.append("무릎이 ${angleDirection}방향으로 ${angleValue}° 기울어져 있습니다.")
-                    resultString.append("허벅지와 엉덩이 근육을 강화하는 스트레칭을 해보세요.")
-                } else if (hasAbnormalAngle) {
-                    resultString.append("좌측 무릎이 ${forwardAngleValue}cm 중심과 차이가 있습니다.")
-                    resultString.append("무릎 안정성을 높이는 운동을 추천합니다.")
-                }  else if (hasAbnormalPosition) {
-                    resultString.append("무릎이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("허벅지와 엉덩이 근육을 강화하는 스트레칭을 해보세요.")
+                    5 -> {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val kneeData1 = units.find { it.columnName == "back_horizontal_angle_knee"}
+                        kneeData1?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("양 무릎의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어났습니다. ")
+
+                            }
+                        }
+                        val kneeData2 = units.find { it.columnName == "back_horizontal_distance_knee_right"}
+                        kneeData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("${String.format("%.2f", abs(angleData2))}cm 로 중심에서 더 멉니다. 골반 틀어짐이나 허벅지 근육 긴장을 확인하세요. ")
+                            }
+                        }
+                    }
                 }
             }
 
             "좌측 발목"-> {
                 when (seq) {
                     0 -> {
-                        val ankleData = units.find { it.columnName == "front_horizontal_angle_ankle"}
-                        ankleData?.let {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val ankleData1 = units.find { it.columnName == "front_vertical_angle_knee_ankle_left"}
+                        ankleData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("무릎과의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상 범위에서 벗어나 있습니다. ")
+                            }
+                        }
+                        val ankleData2 = units.find { it.columnName == "front_horizontal_angle_ankle"}
+                        ankleData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("양 발목간 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 기울어져 있습니다. ")
+                            }
+                        }
+                        val ankleData3 = units.find { it.columnName == "front_horizontal_distance_ankle_left"}
+                        ankleData3?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm로 발목이 바깥쪽으로 벌어져 있습니다. 골반부터 서있는 자세를 확인하세요. ")
                             }
                         }
                     }
                     5 -> {
-                        val ankleData = units.find { it.columnName == "back_horizontal_distance_sub_ankle"}
-                        ankleData?.let {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val ankleData1 = units.find { it.columnName == "back_horizontal_distance_sub_ankle"}
+                        ankleData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleDirection = getDirection(it.rawData)
-                                forwardAngleValue = it.rawData
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("양 발목의 높이차가 ${String.format("%.2f", abs(angleData1))}cm 로 ${angleDirection1}방향으로 높이가 다릅니다. ")
+
+                            }
+                        }
+                        val ankleData2 = units.find { it.columnName == "back_horizontal_distance_ankle_left"}
+                        ankleData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}cm 로 거리가 정상범위에서 벗어나 있습니다. ")
                             }
                         }
                     }
-
-                }
-                if (hasAbnormalAngle && hasAbnormalPosition) {
-                    resultString.append("발목이 ${angleDirection} 방향으로 ${angleValue}° 기울고 ${forwardAngleValue}cm만큼 ${angleDirection}방향으로 틀어져있습니다.")
-                    resultString.append("발목틀어짐을 위해 골반, 무릎, 서있는 자세를 종합적으로 관리하길 권장드립니다.")
-                } else if (hasAbnormalPosition) {
-                    resultString.append("골반이 ${forwardAngleValue}cm ${angleDirection}방향으로 틀어져있습니다.")
-                    resultString.append("엉덩이와 허벅지 뒤쪽을 스트레칭하고, 코어 근육을 강화하는 운동을 해보세요.")
-                }  else if (hasAbnormalAngle) {
-                    resultString.append("골반이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("허리와 엉덩이 근육을 균형 있게 풀어주는 스트레칭을 해보세요. ")
                 }
             }
             "우측 발목" -> {
                 when (seq) {
                     0 -> {
-                        val ankleData = units.find { it.columnName == "front_horizontal_angle_ankle"}
-                        ankleData?.let {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var subDistanceData = 0f
+                        var distanceDirection = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val ankleData1 = units.find { it.columnName == "front_vertical_angle_knee_ankle_right"}
+                        ankleData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalAngle = true
-                                angleValue = it.rawData
-                                angleDirection = getDirection(it.rawData)
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("무릎과의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상 범위에서 벗어나 있습니다. ")
+                            }
+                        }
+                        val ankleData2 = units.find { it.columnName == "front_horizontal_angle_ankle"}
+                        ankleData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("양 발목간 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 기울어져 있습니다. ")
+                            }
+                        }
+                        val ankleData3 = units.find { it.columnName == "front_horizontal_distance_ankle_right"}
+                        ankleData3?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                subDistanceData = it.rawData
+                                distanceDirection = getDirection(it.rawData)
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm로 발목이 바깥쪽으로 벌어져 있습니다. 골반부터 서있는 자세를 확인하세요. ")
                             }
                         }
                     }
                     5 -> {
-                        val ankleData = units.find { it.columnName == "back_horizontal_distance_sub_ankle"}
-                        ankleData?.let {
+                        var angleData1 = 0f
+                        var angleDirection1 = ""
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        val ankleData1 = units.find { it.columnName == "back_horizontal_distance_sub_ankle"}
+                        ankleData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                hasAbnormalPosition = true
-                                angleDirection = getDirection(it.rawData)
-                                forwardAngleValue = it.rawData
+                                angleData1 = it.rawData
+                                angleDirection1 = getDirection(it.rawData)
+                                resultString.append("양 발목의 높이차가 ${String.format("%.2f", abs(angleData1))}cm 로 ${angleDirection1}방향으로 높이가 다릅니다. ")
+
+                            }
+                        }
+                        val ankleData2 = units.find { it.columnName == "back_horizontal_distance_ankle_right"}
+                        ankleData2?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData2 = it.rawData
+
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}cm 로 거리가 정상범위에서 벗어나 있습니다.")
                             }
                         }
                     }
-
-                }
-                if (hasAbnormalAngle && hasAbnormalPosition) {
-                    resultString.append("발목이 ${angleDirection} 방향으로 ${angleValue}° 기울고 ${forwardAngleValue}cm만큼 ${angleDirection}방향으로 틀어져있습니다.")
-                    resultString.append("발목틀어짐을 위해 골반, 무릎, 서있는 자세를 종합적으로 관리하길 권장드립니다.")
-                } else if (hasAbnormalPosition) {
-                    resultString.append("골반이 ${forwardAngleValue}cm ${angleDirection}방향으로 틀어져있습니다.")
-                    resultString.append("엉덩이와 허벅지 뒤쪽을 스트레칭하고, 코어 근육을 강화하는 운동을 해보세요.")
-                }  else if (hasAbnormalAngle) {
-                    resultString.append("골반이 ${angleDirection} 방향으로 ${angleValue}° 기울어져있습니다.")
-                    resultString.append("허리와 엉덩이 근육을 균형 있게 풀어주는 스트레칭을 해보세요. ")
                 }
             }
         }
@@ -998,7 +1233,7 @@ class MainPartDialogFragment : DialogFragment() {
         val mainSeq = mainPartSeqs[partIndex]
         val errorBound = errorBounds[partIndex]
         if (currentKey != 1) {
-            val jo = measureResult.getJSONObject(currentKey) // 지금 1이 껴있어서 (dynamic이 있어서 오류가 나옴)
+            val jo = measureResult.getJSONObject(currentKey)
 
             // 현재 key에 해당하는 데이터만 처리
             mainSeq[currentKey]?.forEach { (columnName, rawDataName) ->
@@ -1014,7 +1249,7 @@ class MainPartDialogFragment : DialogFragment() {
                             rawData = data,
                             rawDataBound = boundPair,
                             summary = "",
-                            state = if (boundPair.first <= data && boundPair.second >= data) true else false
+                            state = boundPair.first <= data && data <= boundPair.second
                         )
                     )
                 }

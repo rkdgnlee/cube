@@ -1,6 +1,9 @@
 package com.tangoplus.tangoq
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
@@ -15,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.tangoplus.tangoq.broadcastReceiver.AlarmController
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.ExerciseViewModel
 import com.tangoplus.tangoq.data.ProgressViewModel
@@ -37,6 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -58,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ScheduleExactAlarm")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -71,6 +77,21 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         AlarmReceiver()
 
+        val intent = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
+            putExtra("title", title)
+            putExtra("text", "구부정한 자세. 스트레칭을 추천드려요")
+        }
+        val hour = 13
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, 6)
+        calendar.set(Calendar.SECOND, 0)
+        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
         // -----# 초기 화면 설정 #-----
 //        handlePendingDeepLink()
 

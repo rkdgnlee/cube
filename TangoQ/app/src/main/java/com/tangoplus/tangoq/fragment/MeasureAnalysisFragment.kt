@@ -833,14 +833,14 @@ class MeasureAnalysisFragment : Fragment() {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val leftData = data.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
         val leftTitle = titles.filterIndexed{ index, _ -> index % 2 == 0}
-        val leftadapter = DataDynamicRVAdapter(leftData, leftTitle)
+        val leftadapter = DataDynamicRVAdapter(leftData, leftTitle, 0)
         binding.rvMALeft.layoutManager = linearLayoutManager1
         binding.rvMALeft.adapter = leftadapter
 
         val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val rightData = data.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
         val rightTitle = titles.filterIndexed{ index, _ -> index % 2 == 1}
-        val rightadapter = DataDynamicRVAdapter(rightData, rightTitle)
+        val rightadapter = DataDynamicRVAdapter(rightData, rightTitle, 0)
         binding.rvMARight.layoutManager = linearLayoutManager2
         binding.rvMARight.adapter = rightadapter
     }

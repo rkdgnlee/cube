@@ -147,7 +147,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     val prefManager = PreferencesManager(requireContext())
                     prefManager.saveLatestRecommendation(recommendationSn)
                     Log.v("마지막시청rec", "${prefManager.getLatestRecommendation()}")
-                    uvm.processingProgram = pvm.currentProgram
+                    uvm.existedProgramData = pvm.currentProgram
 
                     val currentSequenceProgresses = pvm.currentProgresses[pvm.currentWeek]
                     // 가장 최근에 시작한 운동의 인덱스 찾기

@@ -17,6 +17,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 
 class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList<MessageVO>, private val clicklistener: OnAlarmClickListener, private val deleteListener: OnAlarmDeleteListener) : RecyclerView.Adapter<AlarmRVAdapter.MyViewHolder>() {
 
@@ -49,11 +50,13 @@ class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList
             val minutes = duration.toMinutes()
             val hours = duration.toHours()
             val days = duration.toDays()
+
             binding.tvAlarmTime.text = when {
-                seconds < 60 -> "1분 전"
-                minutes < 60 -> "${minutes}분 전"
-                hours < 24 -> "${hours}시간 전"
-                else -> "${days}일 전"
+                days >= 1 -> "${days}일 전"
+                hours >= 1 -> "${hours}시간 전"
+                minutes >= 1 -> "${minutes}분 전"
+                seconds >= 0 -> "1분 전"
+                else -> "방금 전"
             }
 
         }

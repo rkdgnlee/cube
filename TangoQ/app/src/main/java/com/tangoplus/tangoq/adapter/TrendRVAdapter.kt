@@ -1,23 +1,21 @@
 package com.tangoplus.tangoq.adapter
 
-import android.graphics.Bitmap
-import android.graphics.Matrix
+import android.content.res.ColorStateList
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
 import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateBoundedScore
-import java.security.MessageDigest
 
 class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: MutableList<MutableList<AnalysisVO>>?, private val analyzes2: MutableList<MutableList<AnalysisVO>>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class TrendViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -35,7 +33,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         val pvMTI2Right : ProgressView = view.findViewById(R.id.pvMTI2Right)
         val pvMTI3Left : ProgressView = view.findViewById(R.id.pvMTI3Left)
         val pvMTI3Right : ProgressView = view.findViewById(R.id.pvMTI3Right)
-
+        val cvMTI : CardView = view.findViewById(R.id.cvMTI)
         val tvSeqs = listOf(tvMTISeq1, tvMTISeq2, tvMTISeq3)
         val pvs = listOf(listOf(pvMTI1Left, pvMTI1Right), listOf(pvMTI2Left, pvMTI2Right), listOf(pvMTI3Left, pvMTI3Right))
         val tvPoses = listOf(tvMTI1, tvMTI2, tvMTI3)
@@ -56,18 +54,53 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
             if (analyzes2 != null) {
                 val currentItem = analyzes2.get(position) // analysisVO가 들어가있는 부위 별임.
                 holder.tvMTIPart.text = matchedParts[position]
-                /* 1. analysisVO를 통해 관절별 -> seq를 기준으로 끊을 수 있음 그 안에 어차피 AnalysisUnitVO가 있어서 낱개로 접근가능함.
-                *  2. 안에 있는 analysisUnitVO를 통해서 그래프 값을 넣을 수 있음.
-                */
+
+                val jointIndex = if (position == 0) 1 else (position + 1) / 2 + 1
+
+                val resourceName = "@drawable/icon_part$jointIndex"
+                val resourceId = holder.ivMTI.context.resources.getIdentifier(
+                    resourceName, "drawable", holder.ivMTI.context.packageName
+                )
+
+                holder.ivMTI.setImageResource(resourceId)
+                // 2~7에 해당하는 홀수 번째 항목일 때만 좌우 반전 적용
+                if (position != 0 && position % 2 != 0) {
+                    holder.ivMTI.scaleX = -1f // 좌우 반전
+                } else {
+                    holder.ivMTI.scaleX = 1f // 원래 상태
+                }
 
                 val selectAnalysisIndex = matchedIndexs[position]
+
+                val normalCount = selectAnalysisIndex.count { indexTriple ->
+                    currentItem[indexTriple.second].labels[indexTriple.third].state
+                }
+                Log.v("선택된 항목 판단", "선택된 3개 중 normal 개수: $normalCount")
+                if (normalCount >= 2) { // 3개 중 2개 이상이 normal이면 true
+                    setPartState(holder, true)
+                } else {
+                    setPartState(holder, false)
+                }
+
                 selectAnalysisIndex.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
                     holder.tvSeqs[index].text = setSeqString(indexTriple.first)
 
                     val unit = currentItem.get(indexTriple.second).labels.get(indexTriple.third)
-                    Log.v("각 점수들", "측정명: ${unit.rawDataName}, 값: ${unit.rawData}, 범위: ${unit.rawDataBound}")
-                    holder.pvs[index][1].progress = calculateBoundedScore(unit.rawData, unit.rawDataBound)
+                    val score = calculateBoundedScore(unit.rawData, unit.rawDataBound)
+                    holder.pvs[index][1].progress = score
                     holder.tvPoses[index].text = unit.rawDataName
+                    setState(holder, index, splitState(score))
+                }
+
+            }
+            if (analyzes1 != null) {
+                val currentItem = analyzes1.get(position) // analysisVO가 들어가있는 부위 별임.
+                val selectAnalysisIndex = matchedIndexs[position]
+                selectAnalysisIndex.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
+                    val unit = currentItem.get(indexTriple.second).labels.get(indexTriple.third)
+                    Log.v("각 점수들", "측정명: ${unit.rawDataName}, 값: ${unit.rawData}, 범위: ${unit.rawDataBound}")
+                    val score = calculateBoundedScore(unit.rawData, unit.rawDataBound)
+                    holder.pvs[index][0].progress = score
                 }
             }
         }
@@ -82,8 +115,8 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         listOf(Triple(0,0,0), Triple(3, 1, 0), Triple(6, 3, 0)),
         listOf(Triple(0,0,0), Triple(4, 1, 0), Triple(6, 3, 0)),
         // 팔꿉
-        listOf(Triple(2,1,0), Triple(2, 1, 1), Triple(3, 2, 2)),
-        listOf(Triple(2,1,0), Triple(2, 1, 1), Triple(4, 2, 2)),
+        listOf(Triple(0,0,0), Triple(2, 1, 1), Triple(3, 2, 2)),
+        listOf(Triple(0,0,0), Triple(2, 1, 1), Triple(4, 2, 2)),
         // 손목
         listOf(Triple(0,0,1), Triple(2, 2, 0), Triple(3, 1, 0)),
         listOf(Triple(0,0,1), Triple(2, 2, 0), Triple(4, 1, 0)),
@@ -98,7 +131,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
     )
 
-    private fun setSeqString(seq: Int?) :String {
+    private fun setSeqString(seq: Int?) : String {
         return when (seq) {
             0 -> "정면 분석"
             1 -> "동적 분석"
@@ -108,6 +141,40 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
             5 -> "후면 분석"
             6 -> "앉아 후면"
             else -> ""
+        }
+    }
+
+    private fun splitState(score : Float) : Boolean {
+        return when {
+            score in 50f .. 100f -> true
+            else -> false
+        }
+    }
+
+    private fun setState(holder: TrendViewHolder, index: Int,state: Boolean) {
+        when (state) {
+            true -> {
+                holder.tvSeqs[index].backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
+                holder.pvs[index][1].highlightView.color = ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor)
+            }
+            else -> {
+                holder.tvSeqs[index].backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                holder.pvs[index][1].highlightView.color = ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)
+            }
+        }
+    }
+    private fun setPartState(holder: TrendViewHolder, state: Boolean) {
+        when (state) {
+            true -> {
+                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
+                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)))
+                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor500)))
+            }
+            else -> {
+                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteContainerColor))
+                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
+                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
+            }
         }
     }
 }

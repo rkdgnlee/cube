@@ -86,8 +86,7 @@ class MainFragment : Fragment() {
 
         latestRecSn = prefsManager.getLatestRecommendation()
 
-//        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "점심공복에는 운동효과가 더 좋답니다.", 14, 2)
-//        AlarmController(requireContext()).setNotificationAlarm("TangoQ", "식곤증을 위해 스트레칭을 추천드려요.", 13, 36)
+
 
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
@@ -237,8 +236,8 @@ class MainFragment : Fragment() {
                     mViewModel.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
                         Log.v("현재 선택된 날짜", "$selectedDate")
                         val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate }!!)
+
                         // ------# 매칭 프로그램이 있는지 없는지 확인하기 #------
-                        // measureVo에 매칭 프로그램스가 있는데 이걸 연결해줘야함 그럼 어떻게? -> MeasureVO에 일단 다 빈값인데 내가 만약 값들을 넣었을 때, 그냥
                         if (dateIndex != null) {
                             measures?.get(dateIndex)?.recommendations
                         }
@@ -255,10 +254,10 @@ class MainFragment : Fragment() {
 
                         Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure: ${measures!![dateIndex].dangerParts}, ${measures!![dateIndex].recommendations}")
                         if (measures?.get(dateIndex)?.dangerParts?.size!! > 1) {
-                            binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}부위가 부상 위험이 있습니다."
-                            binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}부위가 부상 위험이 있습니다."
+                            binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
+                            binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}이(가) 부상 위험이 있습니다."
                         } else {
-                            binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}부위가 부상 위험이 있습니다."
+                            binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
                         }
 
                         // ------# 측정 결과에 맞는 진행 프로그램 2번째 가져오기 #------
@@ -275,91 +274,66 @@ class MainFragment : Fragment() {
 
                                 // -------# 최근 진행 프로그램 가져오기 #------
                                 withContext(Dispatchers.Main) {
-                                    if (viewModel.processingProgram == null) {
-                                        if (programSn != 0) {
-                                            val week = latestProgress.optInt("week_number")
-                                            Log.v("프로세싱있을때week", "week: ${week}")
-                                            viewModel.processingProgram = fetchProgram(
-                                                getString(R.string.API_programs),
-                                                requireContext(),
-                                                programSn.toString()
+                                    // ------# 마지막으로 시청한 정보가 있을 때 #------
+                                    if (programSn != 0 && viewModel.existedProgramData == null) {
+                                        val week = latestProgress.optInt("week_number")
+                                        Log.v("프로세싱있을때week", "week: ${week}")
+                                        viewModel.existedProgramData = fetchProgram(
+                                            getString(R.string.API_programs),
+                                            requireContext(),
+                                            programSn.toString()
+                                        )
+                                        withContext(Dispatchers.IO) {
+                                            val progresses = getWeekProgress(
+                                                getString(R.string.API_progress),
+                                                latestRecSn,
+                                                week,
+                                                requireContext()
                                             )
-                                            withContext(Dispatchers.IO) {
-                                                val progresses = getWeekProgress(
-                                                    getString(R.string.API_progress),
-                                                    latestRecSn,
-                                                    week,
-                                                    requireContext()
-                                                )
-                                                currentPage = findCurrentIndex(progresses)
-                                                withContext(Dispatchers.Main) {
-                                                    Log.w("저장안된프로그램", "${viewModel.processingProgram?.programSn!!}")
-                                                    adapter = ExerciseRVAdapter(
-                                                        this@MainFragment,
-                                                        viewModel.processingProgram?.exercises!!,
-                                                        progresses,
-                                                        Pair(currentPage, currentPage),
-                                                        null,
-                                                        "history"
-                                                    )
-                                                }
-                                            }
-                                        } else {
-                                            viewModel.processingProgram = fetchProgram(
-                                                getString(R.string.API_programs),
-                                                requireContext(),
-                                                mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString()
-                                            )
+                                            currentPage = findCurrentIndex(progresses)
                                             withContext(Dispatchers.Main) {
-                                                Log.w("저장안된프로그램", "${viewModel.processingProgram?.programSn!!}")
+                                                Log.w("저장안된프로그램", "${viewModel.existedProgramData?.programSn!!}")
                                                 adapter = ExerciseRVAdapter(
                                                     this@MainFragment,
-                                                    viewModel.processingProgram?.exercises!!,
-                                                    null,
-                                                    null,
+                                                    viewModel.existedProgramData?.exercises!!,
+                                                    progresses,
+                                                    Pair(currentPage, currentPage),
                                                     null,
                                                     "history"
                                                 )
                                             }
                                         }
-                                    } else {
-
+                                        // ------# 마지막으로 시청한 정보가 없을 때 + 근데 프로그램 조회는 했음. #------
+                                    } else if (viewModel.existedProgramData != null) {
                                         if (programSn != 0) {
                                             val week = latestProgress.optInt("week_number")
                                             withContext(Dispatchers.IO) {
-                                                val progresses = getWeekProgress(
-                                                    getString(R.string.API_progress),
-                                                    latestRecSn,
-                                                    week,
-                                                    requireContext()
-                                                )
+                                                val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
                                                 currentPage = findCurrentIndex(progresses)
                                                 withContext(Dispatchers.Main) {
-                                                    Log.w("저장된프로그램", "${viewModel.processingProgram?.programSn!!}")
-
-                                                    adapter = ExerciseRVAdapter(
-                                                        this@MainFragment,
-                                                        viewModel.processingProgram?.exercises!!,
-                                                        progresses,
-                                                        Pair(currentPage, currentPage),
-                                                        null,
-                                                        "history"
-                                                    )
+                                                    Log.w("저장된프로그램", "${viewModel.existedProgramData?.programSn!!}")
+                                                    adapter = ExerciseRVAdapter(this@MainFragment, viewModel.existedProgramData?.exercises!!, progresses, Pair(currentPage, currentPage), null, "history")
                                                 }
                                             }
-
                                         } else {
+                                            viewModel.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
                                             withContext(Dispatchers.Main) {
-                                                Log.w("저장된프로그램", "${viewModel.processingProgram?.programSn!!}")
-                                                adapter = ExerciseRVAdapter(
-                                                    this@MainFragment,
-                                                    viewModel.processingProgram?.exercises!!,
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    "history"
-                                                )
+                                                Log.w("저장된프로그램", "${viewModel.existedProgramData?.programSn!!}")
+                                                adapter = ExerciseRVAdapter(this@MainFragment, viewModel.existedProgramData?.exercises!!, null, null, null, "history")
                                             }
+                                        }
+                                    } else {
+                                        viewModel.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
+                                        withContext(Dispatchers.Main) {
+                                            Log.w("저장안된프로그램", "${viewModel.existedProgramData?.programSn!!}")
+                                            adapter = ExerciseRVAdapter(
+                                                this@MainFragment,
+                                                viewModel.existedProgramData?.exercises!!,
+                                                null,
+                                                null,
+                                                null,
+                                                "history"
+                                            )
                                         }
                                     }
                                 }
@@ -420,7 +394,7 @@ class MainFragment : Fragment() {
                                     // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
                                     binding.tvMProgram.setOnClickListener {
                                         try {
-                                            val programSn = viewModel.processingProgram?.programSn ?: throw IllegalStateException("Program SN is null")
+                                            val programSn = viewModel.existedProgramData?.programSn ?: throw IllegalStateException("Program SN is null")
                                             val recommendationSn = when {
                                                 prefsManager.getLatestRecommendation() != -1 -> {
                                                     prefsManager.getLatestRecommendation()

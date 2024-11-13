@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -26,6 +27,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.util.Size
 import android.view.View
@@ -53,6 +55,7 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.util.DeviceProperties.isTablet
@@ -130,16 +133,42 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     companion object {
         private const val TAG = "Pose Landmarker"
         private const val REQUEST_CODE_PERMISSIONS = 1001
-        private val REQUIRED_PERMISSIONS = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        fun hasPermissions(context: Context) = REQUIRED_PERMISSIONS.all {
-            ContextCompat.checkSelfPermission(
-                context,
-                it
-            ) == PackageManager.PERMISSION_GRANTED
+        // 버전별 필요 권한 정의
+        private fun getRequiredPermissions(): Array<String> {
+            return when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VIDEO,
+                        Manifest.permission.READ_MEDIA_AUDIO,
+                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                    )
+                }
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VIDEO,
+                        Manifest.permission.READ_MEDIA_AUDIO
+                    )
+                }
+                else -> {
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                }
+            }
+        }
+        fun hasPermissions(context: Context): Boolean {
+            return getRequiredPermissions().all {
+                ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+            }
         }
     }
     private var _binding: ActivityMeasureSkeletonBinding? = null
@@ -206,6 +235,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 runOnUiThread{
+                    binding.btnMeasureSkeletonStepPrevious.isEnabled = false
                     binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
                     binding.tvMeasureSkeletonCount.alpha = 1f
                     binding.tvMeasureSkeletonCount.text = "${(millisUntilFinished / 1000.0f).roundToInt()}"
@@ -224,8 +254,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     if (isRecording) { // 동영상 촬영
                         binding.tvMeasureSkeletonCount.text = "스쿼트를 실시해주세요"
                         setAnimation(binding.tvMeasureSkeletonCount, 1000, 500, false) {
-                            hideDynamicViews(6000)
-                            setDrawableSequence()
+                            hideViews(6000)
                             // 녹화 종료 시점 아님
                             dynamicStartTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                             startVideoRecording {
@@ -306,6 +335,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     binding.btnMeasureSkeletonStep.isEnabled = true
                     Toast.makeText(this@MeasureSkeletonActivity, "측정에 실패했습니다\n자세를 다시 취해주세요", Toast.LENGTH_LONG).show()
                 }
+                binding.btnMeasureSkeletonStepPrevious.isEnabled = true
             }
         }
     } //  ------! 카운트 다운 끝 !-------
@@ -318,7 +348,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // 앱이 일시 중지된 상태에서 사용자가 해당 항목을 제거했을 수 있습니다.
         // 권한 확인 및 요청
         if (!hasPermissions(this)) {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+            ActivityCompat.requestPermissions(this, getRequiredPermissions(), REQUEST_CODE_PERMISSIONS)
         } else {
             // 권한이 이미 부여된 경우 카메라 설정을 진행합니다.
             setUpCamera()
@@ -416,7 +446,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.e("PoseLandmarkerHelper", "Failed to load libmediapipe_tasks_vision_jni.so", e)
             }
             if (!hasPermissions(this)) {
-                requestPermissions(PERMISSIONS_REQUIRED, REQUEST_CODE_PERMISSIONS)
+                ActivityCompat.requestPermissions(
+                    this,
+                    getRequiredPermissions(),
+                    REQUEST_CODE_PERMISSIONS
+                )
+            } else {
                 setUpCamera()
             }
         }
@@ -787,11 +822,17 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
 
         // ------# 주의사항 키기 #------
-        val dialog = MeasureSkeletonDialogFragment()
-        dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+        val dialog1 = MeasureSkeletonDialogFragment.newInstance(true, 0)
+        dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+        val dialog2 = MeasureSkeletonDialogFragment.newInstance(false)
+        dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
 
-        binding.ibtnMeasureSkeletonInfo.setOnClickListener {
-            dialog.show(supportFragmentManager, "MeasureSkeletonDialogFraagment")
+        binding.ibtnMeasureSkeletonInfo.setOnSingleClickListener {
+            dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFraagment")
+        }
+        binding.fabtnMeasureSkeleton.setOnSingleClickListener {
+            val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value!!.toInt())
+            dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
 
         // ------! 다시 찍기 관리 시작 !------
@@ -884,6 +925,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.v("몇단계?", "Max repeats reached, stopping the loop")
             }
             else -> {
+
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
                 binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
                 repeatCount.value = repeatCount.value!!.plus(1)
@@ -892,36 +934,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.v("몇단계?", "repeatCount: ${repeatCount.value}, progress: $progress")
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
 
-                // VISIBLE을 사용해 1 -> 2 dynamic 끝나고도 0.3초 + recording 처리 시간 이후에 다시 보임.
-                Handler(Looper.getMainLooper()).postDelayed({
-                    binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-                }, 1100)
+                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value!!.toInt())
+                    dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }, 1000)
             }
         }
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")
     }
 
-    // ------# dynamic drawable 변경 #------
-    fun setDrawableSequence(index: Int = 0) {
-        val ids = listOf("1", "1_1", "1_2", "1_1", "1")
-        if (index >= ids.size) {
-            Log.v("DynamicDrawable", "Finished setDrawable in Frame.")
-
-            return
-        }
-
-        val drawableId = resources.getIdentifier("drawable_measure_${ids[index]}", "drawable", packageName)
-        val drawable = ContextCompat.getDrawable(this@MeasureSkeletonActivity, drawableId)
-        binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-
-        val delay = if (ids[index] == "1_2") 1600L else 1000L
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            setDrawableSequence(index + 1)
-        }, delay)
-    }
 
     @SuppressLint("SetTextI18n")
     private fun setPreviousStep() {
@@ -940,8 +960,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
                 Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
                 binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
-                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
+//                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+//                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
                 if (repeatCount.value != 1) {
                     mvm.statics.removeAt(repeatCount.value!!)
                 } else {
@@ -954,36 +974,26 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")
     }
 
-    // ------! 촬영 시 view 가리고 보이기 !-----
+    // ------! 촬영 시 view 즉시 가리고 -> 서서히 보이기 !-----
     private fun hideViews(delay : Long) {
         binding.clMeasureSkeletonTop.visibility = View.INVISIBLE
-//        binding.ivMeasureSkeletonFrame.visibility = View.INVISIBLE
+        binding.fabtnMeasureSkeleton.visibility = View.INVISIBLE
         binding.llMeasureSkeletonBottom.visibility = View.INVISIBLE
         if (repeatCount.value != 1) startCameraShutterAnimation()
 
         setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
-//        setAnimation(binding.ivMeasureSkeletonFrame, 850, delay, true) {}
+        setAnimation(binding.fabtnMeasureSkeleton, 850, delay, true) {}
         setAnimation(binding.llMeasureSkeletonBottom, 850, delay, true) {}
         setAnimation(binding.tvMeasureSkeletonCount, 850, delay ,true) {}
         binding.btnMeasureSkeletonStep.visibility = View.VISIBLE
         binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
     }
 
-    private fun hideDynamicViews(delay: Long) {
-        binding.clMeasureSkeletonTop.visibility = View.INVISIBLE
-        binding.llMeasureSkeletonBottom.visibility = View.INVISIBLE
-        setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
-        setAnimation(binding.llMeasureSkeletonBottom, 850, delay, true) {}
-        setAnimation(binding.tvMeasureSkeletonCount, 850, delay ,true) {}
-        binding.btnMeasureSkeletonStep.visibility = View.VISIBLE
-        binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
-    }
 
     // ------! 타이머 control 시작 !------
     private fun startTimer() {
         // 시작 버튼 후 시작
         binding.btnMeasureSkeletonStep.isEnabled = false
-
         when (repeatCount.value) {
             1 -> {
                 isCapture = false
@@ -1094,14 +1104,58 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
+            if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 setUpCamera()
-                Log.v("스켈레톤 Init", "동작 성공")
+                Log.v("스켈레톤 Init", "모든 권한 승인 완료")
             } else {
-                Log.v("스켈레톤 Init", "동작 실패")
+                // 거부된 권한 확인
+                val deniedPermissions = permissions.filterIndexed { index, _ ->
+                    grantResults[index] == PackageManager.PERMISSION_DENIED
+                }
+                Log.v("스켈레톤 Init", "거부된 권한: ${deniedPermissions.joinToString()}")
+
+                // 권한이 필요한 이유를 설명하는 다이얼로그 표시
+                if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
+                    showPermissionExplanationDialog()
+                } else {
+                    // 다시 묻지 않기를 선택한 경우
+                    showSettingsDialog()
+                }
             }
         }
     }
+
+    private fun showPermissionExplanationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("권한 필요")
+            .setMessage("앱의 정상적인 동작을 위해서는 모든 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+            .setPositiveButton("설정으로 이동") { _, _ ->
+                // 앱 설정 화면으로 이동
+                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                })
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+    private fun showSettingsDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("권한 설정 필요")
+            .setMessage("설정에서 권한을 허용해주세요.")
+            .setPositiveButton("설정으로 이동") { _, _ ->
+                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                })
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+            .show()
+    }
+
     override fun onError(error: String, errorCode: Int) {
         runOnUiThread {
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
@@ -1318,6 +1372,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_vertical_angle_shoulder_elbow_wrist_right", shoulderElbowWristAngle.second  % 180 )
                         put("front_vertical_angle_hip_knee_ankle_left", hipKneeAnkleAngle.first % 180 )
                         put("front_vertical_angle_hip_knee_ankle_right", hipKneeAnkleAngle.second  % 180 )
+
                     }
                     saveJson(mvm.staticjo, step)
                 }
@@ -1911,6 +1966,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     }
 
     // ------! 애니메이션 !------
+    // duration 서서히 떠오르는 시간 / delay 딜레이시간
     private fun setAnimation(tv: View, duration : Long, delay: Long, fade: Boolean, callback: () -> Unit) {
         val animator = ObjectAnimator.ofFloat(tv, "alpha", if (fade) 0f else 1f, if (fade) 1f else 0f)
         animator.duration = duration
@@ -2072,7 +2128,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             val ssm = SaveSingletonManager(this@MeasureSkeletonActivity, this@MeasureSkeletonActivity)
             withContext(Dispatchers.IO) {
                 ssm.addMeasurementInSingleton(mobileInfoSn, mobileStaticSns, mobileDynamicSn)
-//                cacheDir.deleteRecursively()
             }
 
             val intent = Intent()
@@ -2087,7 +2142,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             setResult(Activity.RESULT_CANCELED, intent)
             finish()
         }
-
     }
 
     private fun JSONObject.toMeasureStatic(): MeasureStatic {

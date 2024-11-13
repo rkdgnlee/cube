@@ -91,11 +91,11 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
         // ------# 키보드 올라오기 #------
         binding.etPEBSD.requestFocus()
         binding.etPEBSD.postDelayed({
-            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.etPEBSD, InputMethodManager.SHOW_IMPLICIT)
+            context?.let { context ->
+                val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(binding.etPEBSD, InputMethodManager.SHOW_IMPLICIT)
+            }
         }, 250)
-        val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
 
 
         binding.btnPEBSDFinish.setOnClickListener {

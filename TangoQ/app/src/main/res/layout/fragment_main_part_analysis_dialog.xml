@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="12dp"
+    android:background="@drawable/bckgnd_rectangle_12"
     tools:context=".dialog.MainPartAnaysisDialogFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +24,7 @@
                 android:id="@+id/tvMPADTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="20dp"
                 android:text="목관절 - 앉아 후면"
                 android:textColor="@color/subColor800"
@@ -35,7 +37,7 @@
                 android:id="@+id/ibtnMPADExit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="12dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:padding="4dp"
                 android:src="@drawable/icon_exit"
@@ -47,9 +49,9 @@
                 android:id="@+id/tvMPADSummary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/bckgnd_rectangle_12"
                 android:backgroundTint="@color/deleteContainerColor"
                 android:gravity="center_vertical"
@@ -68,43 +70,18 @@
                 android:id="@+id/rvMPADLeft"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMPADSummary"
-                app:layout_constraintWidth_percent="0.45">
+                app:layout_constraintVertical_bias="0.0">
 
             </androidx.recyclerview.widget.RecyclerView>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMPADRight"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMPADSummary"
-                app:layout_constraintWidth_percent="0.45" />
-
-            <TextView
-                android:id="@+id/tvMPAIDynamic"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:text="스쿼트를 진행한 동안,  좌우 각 부위의 궤적을 의미합니다. 좌우를 비교했을 때, 대칭일 때 가장 이상적이고, 궤적이 좌우가 다를경우 해당 관절부위를 지지해주는 주변 근육의 긴장과 불편함이 있다는 것을 의미합니다."
-                android:textColor="@color/subColor500"
-                android:textSize="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvMPADLeft" />
 
             <ImageView
                 android:id="@+id/ivMPADIcon"

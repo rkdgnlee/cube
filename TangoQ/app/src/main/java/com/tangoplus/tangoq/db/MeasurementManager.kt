@@ -230,6 +230,4 @@ object MeasurementManager {
             }
         }
     }
-
-
 }

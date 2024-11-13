@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -163,7 +165,7 @@ class MeasureDashBoard1Fragment : Fragment() {
         measures?.let { measure ->
             if (measures?.size != 7) {
                 for (i in 0 until (7 - measures?.size!!)) {
-                    lcDataList.add(Pair("", 0))
+                    lcDataList.add(Pair("", 50))
                 }
             }
             if (!measures.isNullOrEmpty()) {
@@ -178,7 +180,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 }
             } else {
                 for (i in 6 downTo 0) {
-                    lcDataList.add(Pair("", 0))
+                    lcDataList.add(Pair("", 50))
                 }
             }
 
@@ -212,6 +214,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                 axisLineWidth = 1.0f
             }
             lcYAxisLeft.apply {
+                axisMinimum = 45f
+                axisMaximum = 100f
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 setLabelCount(3, false)
@@ -228,6 +232,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             }
             lineChart.apply {
                 data = LineData(lcLineDataSet)
+
                 setTouchEnabled(true)
                 isDragEnabled = true
                 description.isEnabled = false
@@ -308,30 +313,28 @@ class MeasureDashBoard1Fragment : Fragment() {
                 percentage = calculatePercentage(userPercentile?.toInt()!!)
             }
 
-            val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-            params.horizontalBias = percentage
-            binding.ivMD1Position.layoutParams = params
-            val percent = (params.horizontalBias * 100).toInt()
-
-            when (percent) {
-                in 0 .. 30 -> {
-                    createBalloon(userJson, percent)
+//            val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
+//            params.horizontalBias = percentage
+//            binding.ivMD1Position.layoutParams = params
+//            val percent = (params.horizontalBias * 100).toInt()
+            animateImageViewToPercentage(percentage)
+            when (percentage) {
+                in 0f .. 0.3f -> {
                     binding.vMD1Middle.visibility = View.INVISIBLE
                     binding.vMD1Low.visibility = View.VISIBLE
                 }
-                in 70 .. 100 -> {
-                    createBalloon(userJson, percent)
+                in 0.7f .. 1.0f -> {
                     binding.vMD1Middle.visibility = View.INVISIBLE
                     binding.vMD1Low.visibility = View.GONE
                     binding.vMD1High.visibility = View.VISIBLE
                 }
                 else -> {
-                    createBalloon(userJson, percent)
                     binding.vMD1Middle.visibility = View.VISIBLE
                     binding.vMD1High.visibility = View.GONE
                     binding.vMD1Low.visibility = View.GONE
                 }
             }
+            createBalloon(userJson, percentage)
             binding.clMD1Percent.setOnClickListener {
                 balloon!!.dismissWithDelay(2500L)
             }
@@ -342,12 +345,11 @@ class MeasureDashBoard1Fragment : Fragment() {
 
     }
     // ------! 추천 운동 받기 끝!------
-    private fun createBalloon(userJson: JSONObject?, percent: Int) {
-
+    private fun createBalloon(userJson: JSONObject?, percent: Float) {
         balloon = Balloon.Builder(requireContext())
             .setWidthRatio(0.6f)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 50) "상위 ${100 - percent}" else "하위 ${percent}"}%에 위치합니다.")
+            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 0.5f) "상위 ${((1.0f - percent) * 100).toInt()}" else "하위 ${(percent * 100).toInt()}"}%에 위치합니다.")
             .setTextColorResource(R.color.white)
             .setTextSize(15f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
@@ -356,7 +358,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             .setPadding(8)
             .setCornerRadius(16f)
             .setBackgroundColorResource(when (percent) {
-                in 0..30 -> {R.color.deleteColor}
+                in 0f..0.3f -> {R.color.deleteColor}
                 else -> {R.color.mainColor}
             })
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
@@ -371,5 +373,27 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         // 소수점 두 자리까지 반올림
         return String.format("%.3f", percentage).toFloat()
+    }
+
+    private fun animateImageViewToPercentage(percent: Float) {
+        val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
+
+        // 현재 horizontalBias
+        val startBias = params.horizontalBias
+        val endBias = percent // 이동할 목표 위치
+
+        // ValueAnimator 생성
+        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+            duration = 1000L // 1초 동안 애니메이션
+            interpolator = AccelerateDecelerateInterpolator() // 가속/감속 효과
+
+            addUpdateListener { animation ->
+                val animatedValue = animation.animatedValue as Float
+                params.horizontalBias = animatedValue
+                binding.ivMD1Position.layoutParams = params
+            }
+        }
+
+        animator.start()
     }
 }

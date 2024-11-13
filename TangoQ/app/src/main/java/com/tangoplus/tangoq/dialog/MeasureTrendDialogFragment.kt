@@ -73,6 +73,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         trend1 = arguments?.getString(ARG_COMPARE1) ?: ""
         trend2 = arguments?. getString(ARG_COMPARE2) ?: ""
         measures = Singleton_t_measure.getInstance(requireContext()).measures ?: mutableListOf()
+
         try {
             if (measures.isNotEmpty()) {
                 showBalloon()
@@ -81,15 +82,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 // ------# 비교할 모든 analysisVO 넣기 #------
                 avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult!!)
                 CoroutineScope(Dispatchers.IO).launch {
-                    trend2 = measures[0].regDate
-                    val trendOne = measures.find { it.regDate == trend1 }
-                    if (trendOne != null) {
-                        avm.trends.add(trendOne)
-                    }
-                    val trendTwo = measures.find { it.regDate == trend2 }
-                    if (trendTwo != null) {
-                        avm.trends.add(trendTwo)
-                    }
                     setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value,0, binding.ssivMTDRight)
 
                     // ------#날짜 변경 감지 #------
@@ -108,9 +100,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                             if (position != 0) {
                                 setLeftMeasurement()
-                                avm.rightMeasurement.value = measures[position]
+                                avm.leftMeasurement.value = measures[position - 1]
                                 avm.leftAnalyzes = transformAnalysis(avm.leftMeasurement.value?.measureResult!!)
-
+                                Log.v("왼쪽analysis", "${avm.leftMeasurement.value}")
                                 setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                             }
                         }
@@ -128,6 +120,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                             avm.rightMeasurement.value = measures[position]
                             avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult!!)
+                            Log.v("오른쪽Measurement", "${avm.rightMeasurement.value}")
+                            Log.v("오른쪽Analysis", "${avm.rightAnalyzes}")
                             setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                         }
                         override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -315,17 +309,16 @@ class MeasureTrendDialogFragment : DialogFragment() {
             0 to mapOf("front_vertical_angle_knee_ankle_left" to Pair(85f, 95f),
                 "front_horizontal_angle_ankle" to Pair(-0.5f, 0.5f),
                 "front_horizontal_distance_ankle_left" to Pair(-0.5f, 0.5f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(5f, 15f),
-                "back_horizontal_distance_ankle_left" to Pair(-0.5f, 0.5f))
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(-1f, 1f),
+                "back_horizontal_distance_heel_left" to Pair(-10f, 10f))
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to Pair(85f, 95f),
                 "front_horizontal_angle_ankle" to Pair(-0.5f, 0.5f),
                 "front_horizontal_distance_ankle_right" to Pair(-0.5f, 0.5f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(5f, 15f),
-                "back_horizontal_distance_ankle_right" to Pair(-0.5f, 0.5f))
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(-1f, 1f),
+                "back_horizontal_distance_heel_right" to Pair(-10f, 10f))
         )
-
     )
 
 
@@ -435,14 +428,14 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 "front_horizontal_angle_ankle" to "양 발목 기울기",
                 "front_horizontal_distance_ankle_left" to "중심에서 좌측 발목 거리"),
             5 to mapOf("back_horizontal_distance_sub_ankle" to "양 발목 높이 차",
-                "back_horizontal_distance_ankle_left" to "중심에서 좌측 발목 거리")
+                "back_horizontal_distance_heel_left" to "중심에서 좌측 발뒷꿈치 거리")
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to "우측 무릎과 발목 기울기",
                 "front_horizontal_angle_ankle" to "양 발목 기울기",
                 "front_horizontal_distance_ankle_right" to "중심에서 우측 발목 거리"),
             5 to mapOf("back_horizontal_distance_sub_ankle" to "양 발목 높이 차",
-                "back_horizontal_distance_ankle_right" to "중심에서 우측 발목 거리")
+                "back_horizontal_distance_heel_right" to "중심에서 우측 발뒷꿈치 거리")
         )
     )
 
@@ -474,7 +467,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                             rawData = data,
                             rawDataBound = boundPair,
                             summary = "",
-                            state = if (boundPair.first <= data && boundPair.second >= data) true else false
+                            state = boundPair.first <= data && boundPair.second >= data
                         )
                     )
                 }
