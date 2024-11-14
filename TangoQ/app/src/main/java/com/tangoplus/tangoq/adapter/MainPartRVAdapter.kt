@@ -82,41 +82,6 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
             }
 
             holder.tvMPISummary.text = currentItem.summary
-
-//            val balloon2 = Balloon.Builder(fragment.requireContext())
-//                .setWidthRatio(0.5f)
-//                .setHeight(BalloonSizeSpec.WRAP)
-//                .setText("±2° 이내를 정상범위로 취급합니다.")
-//                .setTextColorResource(R.color.white)
-//                .setTextSize(15f)
-//                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-//                .setArrowSize(0)
-//                .setMargin(10)
-//                .setPadding(12)
-//                .setCornerRadius(8f)
-//                .setBackgroundColorResource(R.color.mainColor)
-//                .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-//                .setLifecycleOwner(fragment.viewLifecycleOwner)
-//                .build()
-//            holder.ivMPIAlert.setOnClickListener{
-//                it.showAlignBottom(balloon2)
-//            }
-
-//            // ------# 결과값 #------
-//            if (ja != null) {
-//                // seq를 통해 jsonObject값 가져오기
-//                Log.v("columns", "${columns.map { it.key }}")
-//                var resultText = ""
-//                columns.get(currentItem.second)?.forEach{ (key, data) ->
-//                    val raw = ja.getJSONObject(currentItem.second).optDouble(key)
-//                    if (data.contains("기울기")) {
-//                        resultText += "$data: ${String.format("%.2f", raw)}°\n"
-//                    } else {
-//                        resultText += "$data: ${String.format("%.2f", raw)}cm\n"
-//                    }
-//                }
-//                holder.tvMPIResult.text = resultText.removeSuffix("\n")
-//            }
         }
     }
 

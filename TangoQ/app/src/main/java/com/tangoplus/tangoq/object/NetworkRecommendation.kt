@@ -63,7 +63,6 @@ object NetworkRecommendation {
                             }
                         }
                     }
-
                     withContext(Dispatchers.Main) {
                         callback(recommendations)
                     }

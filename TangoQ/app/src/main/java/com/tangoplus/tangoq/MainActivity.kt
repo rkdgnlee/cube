@@ -18,17 +18,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.tangoplus.tangoq.broadcastReceiver.AlarmController
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.data.ProgressViewModel
 import com.tangoplus.tangoq.data.UserViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.db.DeepLinkManager
+import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
@@ -45,10 +45,10 @@ import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-    private val eViewModel : ExerciseViewModel by viewModels()
+    private val evm : ExerciseViewModel by viewModels()
     private val uViewModel : UserViewModel by viewModels()
     private val hViewModel : ProgressViewModel by viewModels()
-    private val mViewModel : MeasureViewModel by viewModels()
+    private val mvm : MeasureViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
 //    private lateinit var program : ProgramVO
@@ -101,8 +101,8 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
         if (!singletonMeasure.measures.isNullOrEmpty()) { // 값이 하나라도 있을 때만 가져오기.
-            mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
-            mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+            mvm.selectedMeasure = singletonMeasure.measures?.get(0)
+            mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
         }
 
         handleIntent(intent)
@@ -131,8 +131,8 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val finishedMeasure = result.data?.getBooleanExtra("finishedMeasure", false) ?: false
                 if (finishedMeasure) {
-                    mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
-                    mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
+                    mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+                    mvm.selectedMeasure = singletonMeasure.measures?.get(0)
                     val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure
                     val bundle = Bundle()
@@ -178,8 +178,8 @@ class MainActivity : AppCompatActivity() {
         val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
         Log.v("intent>feedback", "$feedbackData")
         if (feedbackData != null) {
-            if (eViewModel.isDialogShown.value == false) {
-                eViewModel.exerciseLog = feedbackData
+            if (evm.isDialogShown.value == false) {
+                evm.exerciseLog = feedbackData
 
                 // 이미 DialogFragment가 표시되어 있는지 확인
                 val fragmentManager = supportFragmentManager
@@ -190,7 +190,7 @@ class MainActivity : AppCompatActivity() {
                     dialog.show(fragmentManager, "FeedbackDialogFragment")
                 }
             } else {
-                eViewModel.isDialogShown.value = true
+                evm.isDialogShown.value = true
             }
         }
     }
@@ -209,6 +209,7 @@ class MainActivity : AppCompatActivity() {
                     isEnabled = false
                     finishAffinity() // 앱을 완전히 종료
                 } else {
+                    MeasureDatabase.closeDatabase()
                     backPressedOnce = true
                     Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
                     backPressHandler.postDelayed(backPressRunnable, 1000)

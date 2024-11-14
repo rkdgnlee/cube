@@ -10,7 +10,10 @@ import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -296,7 +299,6 @@ object NetworkMeasure {
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).execute().use { response ->
-
                     if (!response.isSuccessful) {
                         // 서버 응답이 성공하지 않았을 경우 처리
                         return@withContext Result.failure(Exception("Failed to fetch data: ${response.code}"))
@@ -310,6 +312,8 @@ object NetworkMeasure {
 
                     val motherJo = responseBody?.let { JSONObject(it) }
                     if (motherJo != null) {
+                        val saveJobs = mutableListOf<Deferred<Boolean>>()
+
                         for (i in 0 until motherJo.optString("count").toInt() - 1) {
                             val staticJo = motherJo.optJSONObject("static_${i+1}")
                             if (staticJo != null) {
@@ -317,8 +321,13 @@ object NetworkMeasure {
                                 mDao.insertByStatic(staticJo.toMeasureStatic())
                                 val fileName = staticJo.optString("measure_server_file_name")
                                 val jsonName = staticJo.optString("measure_server_json_name")
-                                saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
-                                saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
+
+                                saveJobs.add(async {
+                                    saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
+                                })
+                                saveJobs.add(async {
+                                    saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
+                                })
                             }
                         }
                         val dynamicJo = motherJo.optJSONObject("dynamic")
@@ -327,9 +336,12 @@ object NetworkMeasure {
                             mDao.insertByDynamic(dynamicJo.toMeasureDynamic())
                             val fileName = dynamicJo.optString("measure_server_file_name")
                             val jsonName = dynamicJo.optString("measure_server_json_name")
-                            saveFileFromUrl(context, fileName, FileStorageUtil.FileType.VIDEO)
-                            saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
+
+                            saveJobs.add(async { saveFileFromUrl(context, fileName, FileStorageUtil.FileType.VIDEO) })
+                            saveJobs.add(async { saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON) })
+
                         }
+                        saveJobs.awaitAll()
                     }
                     return@withContext Result.success(Unit)
                 }

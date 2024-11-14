@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -27,7 +29,6 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.StringRVAdapter
-import com.tangoplus.tangoq.broadcastReceiver.AlarmController
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.data.MeasureViewModel
@@ -48,6 +49,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -274,7 +276,7 @@ class MainFragment : Fragment() {
 
                                 // -------# 최근 진행 프로그램 가져오기 #------
                                 withContext(Dispatchers.Main) {
-                                    // ------# 마지막으로 시청한 정보가 있을 때 #------
+                                    // ------# 마지막으로 시청한 정보가 없을 때 #------
                                     if (programSn != 0 && viewModel.existedProgramData == null) {
                                         val week = latestProgress.optInt("week_number")
                                         Log.v("프로세싱있을때week", "week: ${week}")
@@ -292,7 +294,7 @@ class MainFragment : Fragment() {
                                             )
                                             currentPage = findCurrentIndex(progresses)
                                             withContext(Dispatchers.Main) {
-                                                Log.w("저장안된프로그램", "${viewModel.existedProgramData?.programSn!!}")
+                                                Log.w("저장안된 프로그램", "${viewModel.existedProgramData?.programSn!!}")
                                                 adapter = ExerciseRVAdapter(
                                                     this@MainFragment,
                                                     viewModel.existedProgramData?.exercises!!,
@@ -316,6 +318,7 @@ class MainFragment : Fragment() {
                                                 }
                                             }
                                         } else {
+
                                             viewModel.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
                                             withContext(Dispatchers.Main) {
                                                 Log.w("저장된프로그램", "${viewModel.existedProgramData?.programSn!!}")
@@ -323,7 +326,10 @@ class MainFragment : Fragment() {
                                             }
                                         }
                                     } else {
-                                        viewModel.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), mViewModel.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
+                                        Log.v("추천들", "${mViewModel.selectedMeasure?.recommendations}")
+                                        Log.v("추천들", "${mViewModel.selectedMeasure?.recommendations?.map { it.programSn }}")
+                                        val randomProgramSn = mViewModel.selectedMeasure?.recommendations?.map { it.programSn }?.random().toString()
+                                        viewModel.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), randomProgramSn)
                                         withContext(Dispatchers.Main) {
                                             Log.w("저장안된프로그램", "${viewModel.existedProgramData?.programSn!!}")
                                             adapter = ExerciseRVAdapter(
@@ -338,8 +344,8 @@ class MainFragment : Fragment() {
                                     }
                                 }
 
-                                CoroutineScope(Dispatchers.Main).launch {
 
+                                CoroutineScope(Dispatchers.Main).launch {
                                     // -------# 최근 진행 프로그램 뷰페이저 #------
                                     binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
                                     binding.vpM.apply {
@@ -416,6 +422,9 @@ class MainFragment : Fragment() {
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    binding.sflM.stopShimmer()
+                                                                            }, 3000)
                                 Log.e("Error>Program", "${e.message} $e")
                             }
                         }

@@ -20,8 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
@@ -34,38 +32,27 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.db.DeepLinkManager
-import com.tangoplus.tangoq.db.MeasureDatabase
-import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptData
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.db.SecurePreferencesManager.loadEncryptedData
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.SaveSingletonManager
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 import java.io.IOException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @SuppressLint("CustomSplashScreen")
@@ -73,19 +60,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private val PERMISSION_REQUEST_CODE = 5000
-    private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var ssm : SaveSingletonManager
-
-    override fun onPause() {
-        super.onPause()
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

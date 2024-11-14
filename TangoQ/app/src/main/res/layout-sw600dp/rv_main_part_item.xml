@@ -5,16 +5,16 @@
     android:id="@+id/clMPI"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
     android:background="@drawable/bckgnd_2_sub100_12">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView27"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="30dp"
         android:layout_marginBottom="10dp"
         android:padding="10dp"
         app:cardCornerRadius="12dp"
@@ -35,7 +35,7 @@
         android:id="@+id/tvMPITitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:text="오버헤드 스쿼트"
         android:textColor="@color/subColor800"
@@ -47,21 +47,21 @@
     <View
         android:id="@+id/view31"
         android:layout_width="0dp"
-        android:layout_height="10dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="20dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/bckgnd_rectangle_8"
         android:backgroundTint="@color/subColor200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cardView27"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.6" />
+        app:layout_constraintWidth_percent="0.7" />
 
     <View
         android:id="@+id/vMPILeft"
         android:layout_width="0dp"
-        android:layout_height="10dp"
+        android:layout_height="15dp"
         android:background="@drawable/bckgnd_left_delete_8"
         android:elevation="4dp"
         android:visibility="gone"
@@ -73,7 +73,7 @@
     <View
         android:id="@+id/vMPIRight"
         android:layout_width="0dp"
-        android:layout_height="10dp"
+        android:layout_height="15dp"
         android:background="@drawable/bckgnd_both_8"
         android:backgroundTint="@color/thirdColor"
         android:elevation="2dp"
@@ -83,7 +83,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/view31"
         app:layout_constraintTop_toTopOf="@+id/view31"
-        app:layout_constraintWidth_percent="0.4" />
+        app:layout_constraintWidth_percent="0.45" />
 
     <View
         android:id="@+id/view32"
@@ -104,7 +104,7 @@
         android:layout_marginTop="4dp"
         android:text="표준이하"
         android:textColor="@color/deleteColor"
-        android:textSize="16dp"
+        android:textSize="18dp"
         app:layout_constraintEnd_toStartOf="@+id/view32"
         app:layout_constraintStart_toStartOf="@+id/view31"
         app:layout_constraintTop_toBottomOf="@+id/view31" />
@@ -116,15 +116,15 @@
         android:layout_marginTop="4dp"
         android:text="표준"
         android:textColor="@color/subColor400"
-        android:textSize="16dp"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="@+id/view31"
         app:layout_constraintStart_toEndOf="@+id/view32"
         app:layout_constraintTop_toBottomOf="@+id/view31" />
 
     <ImageView
         android:id="@+id/ivMPIArrow"
-        android:layout_width="20dp"
-        android:layout_height="16dp"
+        android:layout_width="25dp"
+        android:layout_height="20dp"
         android:layout_marginBottom="2dp"
         android:padding="4dp"
         android:scaleType="centerCrop"
@@ -138,14 +138,14 @@
         android:id="@+id/tvMPISummary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="30dp"
         android:breakStrategy="simple"
         android:gravity="center_vertical"
         android:maxLines="2"
         android:textColor="@color/subColor800"
-        android:textSize="14dp"
+        android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/ivMPIArrow"
         app:layout_constraintEnd_toStartOf="@+id/cardView27"
         app:layout_constraintStart_toStartOf="parent"

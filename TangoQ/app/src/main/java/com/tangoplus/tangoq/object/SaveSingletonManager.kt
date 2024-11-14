@@ -25,6 +25,8 @@ import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendationInOneMeasure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -89,10 +91,13 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
     // static과 dynamic에서는 column을 쓰지를 않음. 그냥 json파일에 있는 값들을 내가 쓰지,
     private suspend fun fetchAndFilterMeasureInfo(userUUID: String) {
-        withContext(Dispatchers.Main) {
-            val dialog = LoadingDialogFragment.newInstance("측정파일")
-            dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
-
+        val currentActivity = activity ?: return
+        val dialog = withContext(Dispatchers.Main) {
+            LoadingDialogFragment.newInstance("측정파일").apply {
+                show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
+            }
+        }
+        try {
             withContext(Dispatchers.IO) {
 
                 val md = MeasureDatabase.getDatabase(context)
@@ -108,65 +113,77 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                 val measures = mutableListOf<MeasureVO>()
 
-                for (info in allInfos) {
-                    Log.v("인포리스트", "$allInfos")
+                allInfos.map { info ->
+                    async {
+                        Log.v("인포리스트", "$allInfos")
+                        val currentInfoSn = info.sn
+                        Log.v("현재인포sn", "$currentInfoSn")
+                        val statics = groupedStatics[info.sn]?.sortedBy { it.measure_seq } ?: emptyList()
+                        val dynamic = groupedDynamics[info.sn] ?: emptyList()
 
-                    val currentInfoSn = info.sn
-                    Log.v("현재인포sn", "$currentInfoSn")
+                        val ja = JSONArray()
+                        val uris = mutableListOf<String>()
+                        val fileResults = (0 until 7).map { i ->
+                            async {
+                                val (jsonFileName, mediaFileName) = when (i) {
+                                    0 -> statics[0].let {
+                                        it.measure_server_json_name to it.measure_server_file_name
+                                    }
+                                    1 -> dynamic[0].let {
+                                        it.measure_server_json_name to it.measure_server_file_name
+                                    }
+                                    else -> statics[i - 1].let {
+                                        it.measure_server_json_name to it.measure_server_file_name
+                                    }
+                                }
 
-                    val statics = groupedStatics[info.sn]?.sortedBy { it.measure_seq } ?: emptyList()
-                    val dynamic = groupedDynamics[info.sn] ?: emptyList()
+                                // null이 아닌 경우에만 파일 처리
+                                if (jsonFileName != null && mediaFileName != null) {
+                                    val jsonFile = getFile(context, jsonFileName)
+                                    val mediaFile = getFile(context, mediaFileName)
 
-                    val ja = JSONArray()
-                    val uris = mutableListOf<String>()
-
-                    for (i in 0 until 7) {
-                        val jsonFile: File?
-                        val mediaFile: File?
-
-                        when (i) {
-                            0 -> {
-                                jsonFile = getFile(context, statics[0].measure_server_json_name)
-                                mediaFile = getFile(context, statics[0].measure_server_file_name)
+                                    if (jsonFile != null && mediaFile != null) {
+                                        Triple(i,
+                                            if (i == 1) readJsonArrayFile(jsonFile) else readJsonFile(jsonFile),
+                                            mediaFile.absolutePath
+                                        )
+                                    } else null
+                                } else null
                             }
-                            1 -> {
-                                jsonFile = getFile(context, dynamic[0].measure_server_json_name!!)
-                                mediaFile = getFile(context, dynamic[0].measure_server_file_name!!)
-                            }
-                            else -> {
-                                jsonFile = getFile(context, statics[i - 1].measure_server_json_name)
-                                mediaFile = getFile(context, statics[i - 1].measure_server_file_name)
-                            }
+                        }.awaitAll()
+                        fileResults.filterNotNull().sortedBy { it.first }.forEach { (_, json, uri) ->
+                            ja.put(json)
+                            uris.add(uri)
                         }
+                        Log.v("인포목록들", "${info}, sn: ${info.sn}")
+                        val dangerParts = getDangerParts(info)
+                        val measureVO = MeasureVO(
+                            deviceSn = 0,
+                            sn = currentInfoSn!!,
+                            regDate = info.measure_date,
+                            overall = info.t_score,
+                            dangerParts = dangerParts.toMutableList(),
+                            measureResult = ja,
+                            fileUris = uris,
+                            isMobile = info.device_sn == 0,
+                            recommendations = null
+                        )
+                        measures.add(measureVO)
+                        measures.sortByDescending { it.regDate }
 
-                        if (jsonFile != null && mediaFile != null) {
-                            if (i == 1) ja.put(readJsonArrayFile(jsonFile)) else ja.put(readJsonFile(jsonFile))
-                            uris.add(mediaFile.absolutePath)
-                        }
-                    }
-                    Log.v("인포목록들", "${info}, sn: ${info.sn}")
-                    val dangerParts = getDangerParts(info)
-                    val measureVO = MeasureVO(
-                        deviceSn = 0,
-                        sn = currentInfoSn!!,
-                        regDate = info.measure_date,
-                        overall = info.t_score,
-                        dangerParts = dangerParts.toMutableList(),
-                        measureResult = ja,
-                        fileUris = uris,
-                        isMobile = info.device_sn == 0,
-                        recommendations = null
-                    )
-
-                    measures.add(measureVO)
+                        singletonMeasure.measures = measures.toMutableList()
+                    }.await()
                 }
-                measures.reverse()
-                withContext(Dispatchers.Main) {
-                    dialog.dismiss()
-                }
-                singletonMeasure.measures = measures.toMutableList()
+            }
+        } catch (e: Exception) {
+            Log.e("측정목록가져오기실패", "${e.printStackTrace()}")
+        } finally {
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
             }
         }
+
+
     }
     // ------# measure 1개 기존 싱글턴에 추가 #-------
     suspend fun addMeasurementInSingleton(mobileInfoSn: Int, mobileStaticSns : MutableList<Int>, mobileDynamicSn: Int) {
@@ -247,25 +264,28 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 val groupedRecs = recommendations.groupBy { it.serverSn }
 
                 // eachIndexed로 각각의 measureSn에 접근. 현재 근데 여기서 measureSn이라는게 좀 애매함. info에 있는 sn을 활용해야하는 것 같기도.
-                singletonMeasure.measures?.forEachIndexed { index, measure ->
-                    val measureSn = measure.sn
-                    if (measureSn in groupedRecs) {
-                        measure.recommendations = groupedRecs[measureSn] ?: emptyList()
-                    } else {
-                        val (types, stages) = convertToJsonArrays(measure.dangerParts)
-                        Log.v("types와stages", "types: $types, stages: $stages")
-                        val recommendJson = JSONObject().apply {
-                            put("exercise_type_id", types)
-                            put("exercise_stage", stages)
-                            put("server_sn", measureSn)
+                singletonMeasure.measures?.mapIndexed { index, measure ->
+                    async {
+                        val measureSn = measure.sn
+                        if (measureSn in groupedRecs) {
+                            measure.recommendations = groupedRecs[measureSn] ?: emptyList()
+                        } else {
+                            val (types, stages) = convertToJsonArrays(measure.dangerParts)
+                            Log.v("types와stages", "types: $types, stages: $stages")
+                            val recommendJson = JSONObject().apply {
+                                put("exercise_type_id", types)
+                                put("exercise_stage", stages)
+                                put("server_sn", measureSn)
+                            }
+                            createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
+                                measure.recommendations = newRecommendations
+                                singletonMeasure.measures!![index] = measure
+                                Log.v("recommendCreated", "New recommendations for measureSn: $newRecommendations")
+                            }
                         }
-                        createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
-                            measure.recommendations = newRecommendations
-                            singletonMeasure.measures!![index] = measure
-                            Log.v("recommendCreated", "New recommendations for measureSn: $measureSn")
-                        }
-                    }
-                    Log.v("recommendUpdate", "MeasureSn: $measureSn, Recommendations: ${measure.recommendations}")
+                        Log.v("recommendUpdate", "MeasureSn: $measureSn, Recommendations: ${measure.recommendations}")
+
+                    }.await() // 모든 async 작업이 완료될 때까지 대기
                     withContext(Dispatchers.Main) {
                         dialog.dismiss()
                     }

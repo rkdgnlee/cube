@@ -74,7 +74,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     binding.tvFullScreenGuide.visibility = View.VISIBLE
                     binding.tvFullScreenGuide.alpha = 1f
                     binding.tvFullScreenGuide.text = "다음 운동이 곧 시작합니다 !\n준비해 주세요\n\n${(millisUntilFinished.toFloat() / 1000.0f).roundToInt()}"
-
                 }
             }
 

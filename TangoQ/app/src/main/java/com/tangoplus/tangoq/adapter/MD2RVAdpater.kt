@@ -34,7 +34,7 @@ class MD2RVAdpater(private val fragment: Fragment, val data: List<ProgressUnitVO
         if (holder is viewHolder) {
             holder.tvD2ICount.text = "현재까지 반복한 횟수: ${currentItem.currentWeek}번"
             holder.tvD2IDate.text = "마지막 완료 일자: ${convertDateString(currentItem.currentWeek.toString())}"
-//            holder.tvD2ITitle.text = "${currentItem.exerciseId}"
+
         }
     }
 

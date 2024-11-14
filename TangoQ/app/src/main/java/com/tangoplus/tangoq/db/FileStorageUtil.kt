@@ -5,10 +5,14 @@ import android.os.Environment
 import android.util.Log
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptFile
+import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptFile
+import com.tangoplus.tangoq.db.SecurePreferencesManager.generateAESKey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -19,32 +23,39 @@ object FileStorageUtil {
     private const val JSON_DIR = "json"
 
     // URL에서 파일 저장
-    fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
-        val url = context.getString(R.string.file_url) + fileName  // 수정된 부분
-        Log.v("url에서파일저장", url)
-        val dir = getDirectory(context, fileType)
-        val file = File(dir, fileName)  // 파일 이름을 그대로 사용
+    suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
+        return withContext(Dispatchers.IO) {
+            val url = context.getString(R.string.file_url) + fileName  // 수정된 부분
+            Log.v("url에서파일저장", url)
+            val dir = getDirectory(context, fileType)
+            val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 
-        return try {
-            val connection = URL(url).openConnection() as HttpURLConnection
-            connection.connect()
+            try {
+                val connection = URL(url).openConnection() as HttpURLConnection
+                connection.connect()
 
-            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                connection.inputStream.use { input ->
-                    file.outputStream().use { output ->
-                        input.copyTo(output)
+                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                    val tempFile = File.createTempFile("temp_", null, context.cacheDir)
+                    connection.inputStream.use { input ->
+                        tempFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
                     }
+                    encryptFile(tempFile, file, generateAESKey(context))
+                    tempFile.delete()
+
+                    Log.v("SaveFileFromUrl", "Success To Save File : ${file.absolutePath}")
+                    true
+                } else {
+                    Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
+                    false
                 }
-                Log.v("SaveFileFromUrl", "Success To Save File : ${file.absolutePath}")
-                true
-            } else {
-                Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
+            } catch (e: Exception) {
+                Log.e("SaveFileFromUrl", "Error saving file from URL: ${e.message}")
                 false
             }
-        } catch (e: Exception) {
-            Log.e("SaveFileFromUrl", "Error saving file from URL: ${e.message}")
-            false
         }
+
     }
     fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
@@ -84,14 +95,48 @@ object FileStorageUtil {
 //        return if (file.exists()) file else null
 //    }
 
-    fun getFile(context: Context, fileName: String): File? {
-        val fileType = getFileTypeFromExtension(fileName)
-        val dir = getDirectory(context, fileType)
-        val file = File(dir, fileName)
-        Log.v("file가져오기", "파라미터이름: ${fileName}, 주소: ${file.absolutePath}")
-        return if (file.exists()) file else null
-    }
+    // 개선된 getFile 함수
+    suspend fun getFile(context: Context, fileName: String): File? {
+        return withContext(Dispatchers.IO) {
+            val cache = SecurePreferencesManager.DecryptedFileCache.getInstance()
 
+            // 캐시에서 먼저 확인
+            val cachedData = cache.get(fileName)
+            if (cachedData != null) {
+                return@withContext createTempFileFromBytes(context, cachedData)
+            }
+
+            val fileType = getFileTypeFromExtension(fileName)
+            val dir = getDirectory(context, fileType)
+            val encryptedFile = File(dir, fileName)
+
+            if (!encryptedFile.exists()) return@withContext null
+
+            try {
+                // 파일을 메모리로 읽어옴
+                val encryptedData = encryptedFile.readBytes()
+
+                // 복호화
+                val decryptedData = decryptFile(encryptedData, generateAESKey(context))
+                    ?: return@withContext null
+
+                // 캐시에 저장
+                cache.put(fileName, decryptedData)
+
+                // 임시 파일 생성 및 반환
+                createTempFileFromBytes(context, decryptedData)
+            } catch (e: Exception) {
+                Log.e("SecureFileManager", "File processing failed: ${e.message}")
+                null
+            }
+        }
+    }
+    private fun createTempFileFromBytes(context: Context, data: ByteArray): File {
+        val tempFile = File.createTempFile("decrypted_", null, context.cacheDir)
+        tempFile.writeBytes(data)
+        tempFile.deleteOnExit() // 앱 종료 시 임시 파일 삭제
+        return tempFile
+    }
     fun deleteFile(context: Context, fileName: String): Boolean {
         val fileType = getFileTypeFromExtension(fileName)
         val dir = getDirectory(context, fileType)

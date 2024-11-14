@@ -152,20 +152,11 @@ class MainPartPoseDialogFragment : DialogFragment() {
         params.height = adjustedHeight
         binding.clMPPD.layoutParams = params
 
-        // llMARV를 clMA 아래에 위치시키기
-//        val constraintSet = ConstraintSet()
-//        constraintSet.clone(binding.clMPPD)
-//        constraintSet.connect(binding.llMARV.id, ConstraintSet.TOP, binding.clMPPD.id, ConstraintSet.BOTTOM)
-//        constraintSet.applyTo(binding.clMPPD)
-
         // PlayerView 크기 조절 (필요한 경우)
         val playerParams = binding.pvMPPD.layoutParams
         playerParams.width = screenWidth
         playerParams.height = adjustedHeight
         binding.pvMPPD.layoutParams = playerParams
-
-//        setScreenRawData(measureResult, 1)
-//        binding.ivMA.setImageResource(R.drawable.drawable_dynamic)
 
     }
 

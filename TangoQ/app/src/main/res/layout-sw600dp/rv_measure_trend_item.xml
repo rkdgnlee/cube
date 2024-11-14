@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="136dp"
+    android:layout_height="170dp"
     android:layout_marginTop="4dp"
     android:layout_marginBottom="4dp"
     android:background="@color/white">
@@ -13,27 +13,27 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/subColor100"
-        android:paddingStart="50dp"
-        android:paddingTop="4dp"
+        android:paddingStart="80dp"
+        android:paddingTop="6dp"
         android:paddingEnd="8dp"
-        android:paddingBottom="4dp"
+        android:paddingBottom="6dp"
         android:text="좌측 어깨"
         android:textColor="@color/subColor800"
-        android:textSize="16dp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvMTI"
-        android:layout_width="22dp"
+        android:layout_width="30dp"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:background="@color/subColor500"
         app:cardBackgroundColor="@color/subColor500"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvMTIPart"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,9 +78,9 @@
         android:id="@+id/linearLayout14"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="40dp"
         android:layout_marginBottom="5dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -95,7 +95,7 @@
 
             <com.skydoves.progressview.ProgressView
                 android:id="@+id/pvMTI1Left"
-                android:layout_width="9dp"
+                android:layout_width="14dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="-2dp"
@@ -110,7 +110,7 @@
 
             <com.skydoves.progressview.ProgressView
                 android:id="@+id/pvMTI1Right"
-                android:layout_width="9dp"
+                android:layout_width="14dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="-2dp"
@@ -133,7 +133,7 @@
                 android:singleLine="true"
                 android:text="양 손목 거리"
                 android:textColor="@color/subColor800"
-                android:textSize="13dp"
+                android:textSize="17dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -143,13 +143,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bckgnd_righttop_0_4"
-                android:paddingStart="4dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
+                android:paddingStart="6dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="4dp"
                 android:text="00측정"
                 android:textColor="@color/white"
-                android:textSize="14dp"
+                android:textSize="18dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -162,7 +162,7 @@
 
             <com.skydoves.progressview.ProgressView
                 android:id="@+id/pvMTI2Left"
-                android:layout_width="9dp"
+                android:layout_width="14dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="-2dp"
@@ -177,7 +177,7 @@
 
             <com.skydoves.progressview.ProgressView
                 android:id="@+id/pvMTI2Right"
-                android:layout_width="9dp"
+                android:layout_width="14dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="-2dp"
@@ -200,7 +200,7 @@
                 android:singleLine="true"
                 android:text="높이 차"
                 android:textColor="@color/subColor800"
-                android:textSize="13dp"
+                android:textSize="17dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -210,13 +210,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bckgnd_righttop_0_4"
-                android:paddingStart="4dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
+                android:paddingStart="6dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="4dp"
                 android:text="00측정"
                 android:textColor="@color/white"
-                android:textSize="14dp"
+                android:textSize="18dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -229,7 +229,7 @@
 
             <com.skydoves.progressview.ProgressView
                 android:id="@+id/pvMTI3Left"
-                android:layout_width="9dp"
+                android:layout_width="14dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="-2dp"
@@ -244,7 +244,7 @@
 
             <com.skydoves.progressview.ProgressView
                 android:id="@+id/pvMTI3Right"
-                android:layout_width="9dp"
+                android:layout_width="14dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="-2dp"
@@ -267,7 +267,7 @@
                 android:singleLine="true"
                 android:text="양 손목 거리"
                 android:textColor="@color/subColor800"
-                android:textSize="13dp"
+                android:textSize="17dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -278,13 +278,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bckgnd_righttop_0_4"
-                android:paddingStart="4dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
+                android:paddingStart="6dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="4dp"
                 android:text="00측정"
                 android:textColor="@color/white"
-                android:textSize="14dp"
+                android:textSize="18dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

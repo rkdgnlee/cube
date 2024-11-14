@@ -40,11 +40,6 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
                 setBackgroundDrawable(holder.clDSI)
                 holder.ivDSI.visibility = View.VISIBLE
             }
-//            val newDangerParts = dangerParts.map { it.replace("좌측 ", "").replace("우측 ", "") }
-//            val containsDangerPart = newDangerParts.any { part -> currentItem.first.contains(part) }
-//            if (containsDangerPart) {
-//                setBackgroundDrawable(holder.clDSI)
-//            }
             holder.tvDSITitle.text = currentItem.first
             if (currentItem.third == null) {
                 holder.tvDSI1.text = currentItem.second

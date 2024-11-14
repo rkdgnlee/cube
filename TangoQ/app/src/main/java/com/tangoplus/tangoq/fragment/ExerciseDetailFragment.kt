@@ -147,7 +147,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         filterList.add("최신순")
         filterList.add("인기순")
         filterList.add("추천순")
-        binding.spnrED.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, false)
+        binding.spnrED.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, 1)
         binding.spnrED.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {

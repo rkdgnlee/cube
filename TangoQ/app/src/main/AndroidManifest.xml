@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 저장소 권한 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- Android 13 (SDK 33) 이하를 위한 저장소 권한 -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"

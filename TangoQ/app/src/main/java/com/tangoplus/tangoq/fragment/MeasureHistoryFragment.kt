@@ -55,7 +55,7 @@ class MeasureHistoryFragment : Fragment() {
         filterList.add("오래된순")
         filterList.add("높은 점수순")
         filterList.add("낮은 점수순")
-        binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, false)
+        binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, 1)
 
         measures = Singleton_t_measure.getInstance(requireContext()).measures
         measures?.let { measure ->

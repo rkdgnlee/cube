@@ -38,16 +38,15 @@ class ConnectManageDialogFragment : DialogFragment(), OnDisconnectListener {
 
         // ------# 연동된 기기 rv 연결 #------
         if (uvm.connectedCenters.isEmpty()) {
-            uvm.connectedCenters.add(Pair("동천 탱고플러스 실버 하나로 센터 키오스크 B", "2024-11-06"))
-            uvm.connectedCenters.add(Pair("탱고플러스 실버 하나로 센터 키오스크 A", "2024-11-07"))
-            uvm.connectedCenters.add(Pair("광주 고령화 친화 사업장 탱고플러스 센터", "2023-12-13"))
+//            uvm.connectedCenters.add(Pair("동천 탱고플러스 실버 하나로 센터 키오스크 B", "2024-11-06"))
+//            uvm.connectedCenters.add(Pair("탱고플러스 실버 하나로 센터 키오스크 A", "2024-11-07"))
+//            uvm.connectedCenters.add(Pair("광주 고령화 친화 사업장 탱고플러스 센터", "2023-12-13"))
         }
         setAdapter()
     }
 
     override fun onResume() {
         super.onResume()
-
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -61,7 +60,6 @@ class ConnectManageDialogFragment : DialogFragment(), OnDisconnectListener {
         binding.rvCMD.adapter =  adapter
     }
 
-    // TODO 연결해제에 필요한 API 필요
     override fun onDisconnect(title: String) {
         uvm.connectedCenters.remove(uvm.connectedCenters.find { it.first == title })
         setAdapter()

@@ -37,4 +37,6 @@
     <color name="conditionSuccessColor">#7AA2E3</color>
     <color name="opacityColor">#4D000000</color>
     <color name="opacitySubColor">#25959595</color>
+    <color name="transparentColor">#00000000</color>
+
 </resources>

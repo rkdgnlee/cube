@@ -173,9 +173,6 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
                         if (simpleExoPlayer!!.currentWindowIndex == url_list.size - 1) {
 
                             val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
-//                            eViewModel.exerciseLog.value = Triple((elapsedMills / 1000).toInt(), "${(simpleExoPlayer?.currentWindowIndex)!! + 1}",56)
-//                            val intent = Intent(this@PlaySkeletonActivity, MainActivity::class.java)
-//                            intent.putExtra("feedback_finish", eViewModel.exerciseLog.value)
 //                            Log.v("feedback_finish", "VM_exercise_log: ${eViewModel.exerciseLog.value}")
                             startActivity(intent)
                             finish()

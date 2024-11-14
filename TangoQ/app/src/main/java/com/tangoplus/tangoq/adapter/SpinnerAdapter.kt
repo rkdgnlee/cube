@@ -15,30 +15,35 @@ import com.tangoplus.tangoq.databinding.ItemSpinnerBinding
 
 
 @Suppress("UNREACHABLE_CODE")
-class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>, private val isWhite: Boolean) : ArrayAdapter<String>(context, resId, list) {
+class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>, private val case: Int) : ArrayAdapter<String>(context, resId, list) {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        if (isWhite) {
-            binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+        when (case) {
+            0 -> {
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
+            }
+            1 -> {
+                binding.root.setPadding(0, 2, 2, 0)
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
+                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
+            }
+            2 -> {
+                binding.root.setPadding(0, 2, 2, 0)
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.transparentColor))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.transparentColor))
+                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.white))
+            }
 
-            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
-
-            binding.tvSpinner.text = list[position]
-            binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
-        } else {
-            binding.root.setPadding(0, 2, 2, 0)
-            binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
-            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.secondContainerColor))
-
-            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
-
-            binding.tvSpinner.text = list[position]
-            binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
         }
+        binding.tvSpinner.text = list[position]
+        binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+
         binding.tvSpinner.gravity = Gravity.CENTER
         return binding.root
     }
@@ -47,17 +52,21 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.tvSpinner.text = list[position]
         binding.tvSpinner.gravity = Gravity.CENTER
-        if (isWhite) {
-            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
-            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-            binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+        when (case) {
+            0 -> {
+                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+            }
+            1 -> {
+                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+            }
+            2 -> {
 
-        } else {
-            binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
-            binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
-            binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+            }
         }
-
         binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
         return binding.root
     }

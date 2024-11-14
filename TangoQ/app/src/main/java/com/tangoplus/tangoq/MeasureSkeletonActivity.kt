@@ -875,6 +875,27 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // ------! 수직 감도 사라지기 보이기 끝 !------
     }
 
+    // ------# poselandmark 멈추고 끄는 diloagFragment #------
+
+    fun pausePoseLandmarker() {
+        if (this::poseLandmarkerHelper.isInitialized) {
+            backgroundExecutor.execute {
+                poseLandmarkerHelper.clearPoseLandmarker()
+            }
+        }
+    }
+
+    // PoseLandmarker 다시 시작 메서드
+    fun resumePoseLandmarker() {
+        if (this::poseLandmarkerHelper.isInitialized) {
+            backgroundExecutor.execute {
+                poseLandmarkerHelper.setupPoseLandmarker()
+            }
+        }
+    }
+
+
+
     // ------! 센서 시작 !------
     private fun lowPassFilter(input: Float): Float {
         filteredAngle += ALPHA * (input - filteredAngle)

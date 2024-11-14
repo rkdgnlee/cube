@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Point
 import android.os.Build
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.CautionVPAdapter
 import com.tangoplus.tangoq.databinding.FragmentMeasureSkeletonDialogBinding
@@ -31,6 +33,25 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+
+        // Dialog가 실제로 표시될 때 호출되는 Listener를 설정
+        dialog.setOnShowListener {
+            // PoseLandmarker를 일시 중지하는 코드 삽입
+            (activity as? MeasureSkeletonActivity)?.pausePoseLandmarker()
+        }
+
+        return dialog
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        dialog?.setOnDismissListener {
+            (activity as? MeasureSkeletonActivity)?.resumePoseLandmarker()
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

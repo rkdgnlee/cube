@@ -68,7 +68,7 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
             when (currentAnalysis?.seq) {
                 1 -> {
                     // -----# 동적 측정 setUI #------
-                    binding.tvMPADSummary.text = "스쿼트를 진행한 동안,  좌우 각 부위의 궤적을 그려 좌우를 비교합니다. 대칭일 때 가장 이상적이고, 궤적이 좌우가 다를경우 해당 관절부위를 지지해주는 주변 근육의 긴장과 불편함이 있다는 것을 의미합니다."
+                    binding.tvMPADSummary.text = "스쿼트를 진행한 동안, 좌우 각 부위의 궤적을 그려 좌우를 비교합니다.\n대칭일 때 가장 이상적이고, 궤적이 좌우가 다를경우 해당 관절의 주변 근육의 긴장과 불편함이 있다는 것을 의미합니다."
                     binding.tvMPADSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.secondContainerColor))
                     binding.tvMPADSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
                     binding.ivMPADIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.thirdColor))

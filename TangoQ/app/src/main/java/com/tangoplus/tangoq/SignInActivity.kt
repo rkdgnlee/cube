@@ -221,7 +221,7 @@ class SignInActivity : AppCompatActivity() {
 
 
         val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-        binding.spinner.adapter = SpinnerAdapter(this, com.tangoplus.tangoq.R.layout.item_spinner, domainList, true)
+        binding.spinner.adapter = SpinnerAdapter(this, com.tangoplus.tangoq.R.layout.item_spinner, domainList, 0)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             @SuppressLint("SetTextI18n")
             override fun onItemSelected(

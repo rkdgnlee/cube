@@ -33,7 +33,6 @@ class RecommendationRVAdapter(private val fragment: Fragment, private val data: 
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-//        Log.v("adapter내부정보", "${data}, ${exerciseTypeIds}")
         val currentItem = data[position]
         val typeItem = exerciseTypeIds[position]
         if (holder is programViewHolder) {
@@ -42,8 +41,6 @@ class RecommendationRVAdapter(private val fragment: Fragment, private val data: 
                 val dialog = ProgramCustomDialogFragment.newInstance(currentItem.programSn, currentItem.recommendationSn)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             }
-
-            // drawable 가져오기
 
             val drawableResId = fragment.resources.getIdentifier("drawable_joint_$typeItem", "drawable", fragment.requireContext().packageName)
             holder.ivPIThumbnail.setImageResource(drawableResId)

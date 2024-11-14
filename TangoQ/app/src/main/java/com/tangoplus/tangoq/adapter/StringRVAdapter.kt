@@ -215,7 +215,6 @@ class StringRVAdapter(private val fragment: Fragment,
                         "우측 무릎", "좌측 무릎" -> holder.ivPI.setImageResource(R.drawable.icon_part6)
                         "우측 발목", "좌측 발목" -> holder.ivPI.setImageResource(R.drawable.icon_part7)
                     }
-
                     holder.clPI.setOnClickListener {
                         val dialog = MainPartDialogFragment.newInstance(currentItem)
                         dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartDialogFragment")

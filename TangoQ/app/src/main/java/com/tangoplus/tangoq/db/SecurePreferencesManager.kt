@@ -8,21 +8,35 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
+import android.util.LruCache
 import androidx.fragment.app.FragmentActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.security.crypto.MasterKeys
 import org.json.JSONObject
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.charset.Charset
 import java.security.KeyStore
+import java.security.MessageDigest
+import java.security.SecureRandom
 import javax.crypto.Cipher
+import javax.crypto.CipherInputStream
+import javax.crypto.CipherOutputStream
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 
 object SecurePreferencesManager {
     private const val PREFERENCE_FILE = "secure_prefs"
     private lateinit var encryptedSharedPreferences: EncryptedSharedPreferences
+    private const val SALT_LENGTH = 16
+    private const val IV_SIZE = 12
+    private const val GCM_TAG_LENGTH = 128
 
     fun getInstance(context: Context): EncryptedSharedPreferences {
         if (!::encryptedSharedPreferences.isInitialized) {
@@ -40,6 +54,143 @@ object SecurePreferencesManager {
         }
         return encryptedSharedPreferences
     }
+
+    // ------# 파일 암호화 #------
+    @SuppressLint("HardwareIds")
+    fun generateAESKey(context: Context): SecretKey {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            context,
+            "File_Encryption_Prefs",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        var salt = sharedPreferences.getString("file_encryption_salt", null)
+        if (salt == null) {
+            salt = generateSalt()
+            sharedPreferences.edit().putString("file_encryption_salt", salt).apply()
+        }
+
+        val deviceId = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
+        val keyBytes = hashWithSHA512(deviceId, salt)
+        return SecretKeySpec(keyBytes, "AES")
+    }
+
+
+    fun encryptFile(inputFile: File, outputFile: File, secretKey: SecretKey) {
+
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        val iv = ByteArray(IV_SIZE)
+        SecureRandom().nextBytes(iv)
+        val gcmSpec = GCMParameterSpec(GCM_TAG_LENGTH, iv)
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec)
+
+        FileOutputStream(outputFile).use { output ->
+            // Write IV (salt는 EncryptedSharedPreferences에 저장되므로 파일에 쓸 필요 없음)
+            output.write(iv)
+
+            // Encrypt file content
+            CipherOutputStream(output, cipher).use { cipherOutStream ->
+                FileInputStream(inputFile).use { input ->
+                    input.copyTo(cipherOutStream)
+                }
+            }
+        }
+    }
+    class DecryptedFileCache {
+        private val cache = LruCache<String, ByteArray>(50 * 1024 * 1024) // 50MB 캐시
+
+        fun get(key: String): ByteArray? = cache.get(key)
+
+        fun put(key: String, value: ByteArray) {
+            cache.put(key, value)
+        }
+
+        fun clear() {
+            cache.evictAll()
+        }
+
+        companion object {
+            private var instance: DecryptedFileCache? = null
+
+            fun getInstance(): DecryptedFileCache {
+                if (instance == null) {
+                    instance = DecryptedFileCache()
+                }
+                return instance!!
+            }
+        }
+    }
+    // 메모리 기반 복호화 함수
+    fun decryptFile(encryptedData: ByteArray, secretKey: SecretKey): ByteArray? {
+        return try {
+            // IV 추출
+            val iv = encryptedData.copyOfRange(0, IV_SIZE)
+            val encryptedContent = encryptedData.copyOfRange(IV_SIZE, encryptedData.size)
+
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            val gcmSpec = GCMParameterSpec(GCM_TAG_LENGTH, iv)
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmSpec)
+
+            cipher.doFinal(encryptedContent)
+        } catch (e: Exception) {
+            Log.e("SecureFileManager", "Decryption failed: ${e.message}")
+            null
+        }
+    }
+
+    // ------# DB 암호화 #------
+    @SuppressLint("HardwareIds")
+    fun generateSecurePassphrase(context: Context) : ByteArray {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            context,
+            "DB_Shared_Prefs_Encrypted",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        var salt = sharedPreferences.getString("db_salt", null)
+        if (salt == null) {
+            salt = generateSalt()
+            sharedPreferences.edit().putString("db_salt", salt).apply()
+        }
+        val deviceId = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
+        return hashWithSHA512(deviceId, salt)
+    }
+
+    private fun generateSalt() : String {
+        val random = SecureRandom()
+        val salt = ByteArray(SALT_LENGTH)
+        random.nextBytes(salt)
+        return Base64.encodeToString(salt, Base64.NO_WRAP)
+    }
+
+    private fun hashWithSHA512(input: String, salt: String) : ByteArray {
+        val messageDigest = MessageDigest.getInstance("SHA-512")
+        val saltBytes = Base64.decode(salt, Base64.NO_WRAP)
+
+        val inputBytes = input.toByteArray(Charset.forName("UTF-8"))
+        val combined = inputBytes + saltBytes
+        val hashedBytes = messageDigest.digest(combined)
+
+        return hashedBytes.copyOfRange(0, 32)
+    }
+
 
     // ------! 토큰 저장 !------
     fun saveEncryptedJwtToken(context: Context, token: String?) {

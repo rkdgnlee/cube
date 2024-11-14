@@ -144,7 +144,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             viewModel.isDialogShown.value = false
 
             if (exerciseData.exerciseFrequency?.length!! >= 3) {
-                setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 20)
+                setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 19)
                 Log.v("notification 완료", "Success make plan to send notification Alarm")
             }
         } // ------! 하단 운동 시작 버튼 끝 !------

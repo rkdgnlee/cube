@@ -7,50 +7,58 @@
     app:layout_gravity="center"
     tools:context=".dialog.MainPartPoseDialogFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clMPPD"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/bckgnd_rectangle_12"
-        android:backgroundTint="#00FFFFFF">
+        app:cardCornerRadius="12dp">
 
-        <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-            android:id="@+id/ssivMPPD"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <FrameLayout
-            android:id="@+id/flMPPD"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMPPD"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_gravity="center"
+            android:background="@drawable/bckgnd_rectangle_12"
+            android:backgroundTint="#00FFFFFF">
 
-            <com.google.android.exoplayer2.ui.PlayerView
-                android:id="@+id/pvMPPD"
+            <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                android:id="@+id/ssivMPPD"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/flMPPD"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:auto_show="true"
-                app:controller_layout_id="@layout/exo_player_control_view"
-                app:resize_mode="fit"
-                app:surface_type="surface_view"
-                app:use_controller="true" />
-        </FrameLayout>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <com.tangoplus.tangoq.mediapipe.OverlayView
-            android:id="@+id/ovMPPD"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/flMPPD"
-            app:layout_constraintEnd_toEndOf="@id/flMPPD"
-            app:layout_constraintStart_toStartOf="@id/flMPPD"
-            app:layout_constraintTop_toTopOf="@id/flMPPD" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.exoplayer2.ui.PlayerView
+                    android:id="@+id/pvMPPD"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:auto_show="true"
+                    app:controller_layout_id="@layout/exo_player_control_view"
+                    app:resize_mode="fit"
+                    app:surface_type="surface_view"
+                    app:use_controller="true" />
+            </FrameLayout>
+
+            <com.tangoplus.tangoq.mediapipe.OverlayView
+                android:id="@+id/ovMPPD"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@id/flMPPD"
+                app:layout_constraintEnd_toEndOf="@id/flMPPD"
+                app:layout_constraintStart_toStartOf="@id/flMPPD"
+                app:layout_constraintTop_toTopOf="@id/flMPPD" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
 </FrameLayout>

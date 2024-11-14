@@ -75,7 +75,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                 val normalCount = selectAnalysisIndex.count { indexTriple ->
                     currentItem[indexTriple.second].labels[indexTriple.third].state
                 }
-                Log.v("선택된 항목 판단", "선택된 3개 중 normal 개수: $normalCount")
+                Log.v("선택된 항목 판단", "$selectAnalysisIndex,선택된 3개 중 normal 개수: $normalCount")
                 if (normalCount >= 2) { // 3개 중 2개 이상이 normal이면 true
                     setPartState(holder, true)
                 } else {
@@ -88,7 +88,15 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                     val unit = currentItem.get(indexTriple.second).labels.get(indexTriple.third)
                     val score = calculateBoundedScore(unit.rawData, unit.rawDataBound)
                     holder.pvs[index][1].progress = score
+
                     holder.tvPoses[index].text = unit.rawDataName
+                        .replace("양", "")
+                        .replace("과", "")
+                        .replace("와", "")
+                        .replace("에서", "-")
+                        .replace("좌측 ", "")
+                        .replace("우측 ", "")
+
                     setState(holder, index, splitState(score))
                 }
 
@@ -118,11 +126,11 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         listOf(Triple(0,0,0), Triple(2, 1, 1), Triple(3, 2, 2)),
         listOf(Triple(0,0,0), Triple(2, 1, 1), Triple(4, 2, 2)),
         // 손목
-        listOf(Triple(0,0,1), Triple(2, 2, 0), Triple(3, 1, 0)),
-        listOf(Triple(0,0,1), Triple(2, 2, 0), Triple(4, 1, 0)),
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
         // 골반
-        listOf(Triple(3,1,2), Triple(5, 2, 0), Triple(6, 3, 0)),
-        listOf(Triple(4,1,2), Triple(5, 2, 0), Triple(6, 3, 0)),
+        listOf(Triple(3,1,1), Triple(5, 2, 0), Triple(6, 3, 1)),
+        listOf(Triple(4,1,1), Triple(5, 2, 0), Triple(6, 3, 1)),
         // 무릎
         listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),
         listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),
@@ -136,8 +144,8 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
             0 -> "정면 분석"
             1 -> "동적 분석"
             2 -> "팔꿉 분석"
-            3 -> "왼쪽 측면"
-            4 -> "오른쪽 측면"
+            3 -> "좌측 분석"
+            4 -> "우측 분석"
             5 -> "후면 분석"
             6 -> "앉아 후면"
             else -> ""
