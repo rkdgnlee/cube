@@ -7,13 +7,11 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
@@ -139,9 +137,7 @@ object MeasurementManager {
             5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(5f, 15f),
                 "back_horizontal_distance_ankle_right" to Pair(-0.5f, 0.5f))
         )
-
     )
-
 
     private val mainPartSeqs = listOf(
         mapOf(
@@ -284,29 +280,6 @@ object MeasurementManager {
                     )
                 }
             }
-        } else {
-//            val ja = measureResult.getJSONArray(currentKey) // 지금 1이 껴있어서 (dynamic이 있어서 오류가 나옴)
-//            avm.dynamicJa = ja
-
-            // 현재 key에 해당하는 데이터만 처리
-//            mainSeq[currentKey]?.forEach { (columnName, rawDataName) ->
-//                // errorBounds에서 해당하는 Pair 값 찾기
-//                val boundPair = errorBound[currentKey]?.get(columnName)
-//
-//                if (boundPair != null) {
-//                    val data = ja.opt(columnName).toFloat()
-//                    result.add(
-//                        AnalysisUnitVO(
-//                            columnName = columnName,
-//                            rawDataName = rawDataName,
-//                            rawData = data,
-//                            rawDataBound = boundPair,
-//                            comment = "",
-//                            state = if (boundPair.first <= data && boundPair.second >= data) true else false
-//                        )
-//                    )
-//                }
-//            }
         }
         return result
     }

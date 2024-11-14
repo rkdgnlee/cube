@@ -17,7 +17,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
 
-class AnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>? ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class AnalysisViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPAITitle : TextView = view.findViewById(R.id.tvMPAITitle)
         val vMPAILeft : View = view.findViewById(R.id.vMPAILeft)

@@ -9,15 +9,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.adapter.StringRVAdapter
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBSDialogBinding
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 
 class MeasureBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding: FragmentMeasureBSDialogBinding
     lateinit var singletonMeasure : Singleton_t_measure
-    val viewModel: ExerciseViewModel by activityViewModels()
+
     val mvm : MeasureViewModel by activityViewModels()
 
     override fun onCreateView(

@@ -16,7 +16,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentSetup2Binding
 import com.tangoplus.tangoq.listener.WeightVisibilityListener
 

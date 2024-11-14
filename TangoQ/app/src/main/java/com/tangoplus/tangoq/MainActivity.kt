@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -19,10 +18,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.MeasureViewModel
-import com.tangoplus.tangoq.data.ProgressViewModel
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
@@ -36,6 +32,7 @@ import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,13 +42,11 @@ import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-    private val evm : ExerciseViewModel by viewModels()
-    private val uViewModel : UserViewModel by viewModels()
-    private val hViewModel : ProgressViewModel by viewModels()
+    private val pvm : PlayViewModel by viewModels()
     private val mvm : MeasureViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
-//    private lateinit var program : ProgramVO
+
 
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
 
@@ -69,17 +64,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ------# 다크모드 메뉴 이름 설정 시작 #------
-        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        val isNightMode = uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
-
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         AlarmReceiver()
-
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
             putExtra("title", title)
-            putExtra("text", "구부정한 자세. 스트레칭을 추천드려요")
+            putExtra("text", "장시간 앉아 무리한 허리를 위해 스트레칭을 추천드려요")
         }
         val hour = 13
         val calendar = Calendar.getInstance()
@@ -155,7 +145,7 @@ class MainActivity : AppCompatActivity() {
         outState.putInt("selectedTabId", selectedTabId)
     }
 
-    fun setCurrentFragment(itemId: Int) {
+    private fun setCurrentFragment(itemId: Int) {
         val fragment = when(itemId) {
             R.id.main -> MainFragment()
             R.id.exercise -> ExerciseFragment()
@@ -178,8 +168,8 @@ class MainActivity : AppCompatActivity() {
         val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
         Log.v("intent>feedback", "$feedbackData")
         if (feedbackData != null) {
-            if (evm.isDialogShown.value == false) {
-                evm.exerciseLog = feedbackData
+            if (pvm.isDialogShown.value == false) {
+                pvm.exerciseLog = feedbackData
 
                 // 이미 DialogFragment가 표시되어 있는지 확인
                 val fragmentManager = supportFragmentManager
@@ -190,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                     dialog.show(fragmentManager, "FeedbackDialogFragment")
                 }
             } else {
-                evm.isDialogShown.value = true
+                pvm.isDialogShown.value = true
             }
         }
     }
@@ -229,10 +219,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clearCache() {
-//        val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
-//        cacheDir?.let {
-//            deleteDir(it)
-//        }
+        val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
+        cacheDir?.let {
+            deleteDir(it)
+        }
     }
 
     private fun deleteDir(dir: File?): Boolean {

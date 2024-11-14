@@ -8,19 +8,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.adapter.StringRVAdapter
-import com.tangoplus.tangoq.data.ProgressViewModel
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramWeekBSDialogBinding
 
 class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentProgramWeekBSDialogBinding
     val pvm : ProgressViewModel by activityViewModels()
     var totalWeek = 0
-//    override fun onResume() {
-//        super.onResume()
-//        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-//        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,8 +44,6 @@ class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
             if (pvm.currentWeek != pvm.selectedWeek.value) {
                 pvm.selectedSequence.value = 0
                 pvm.currentSequence = 0
-            } else {
-
             }
             dismiss()
         }

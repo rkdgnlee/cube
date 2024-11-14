@@ -79,7 +79,7 @@ object CalculateUtil {
         }
     }
 
-    private fun isTablet(context: Context): Boolean {
+    fun isTablet(context: Context): Boolean {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)

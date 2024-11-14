@@ -11,7 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentAgreementBSDialogBinding
 
 class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
@@ -67,7 +67,6 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
             binding.ivAgreementMk2.setImageResource(
                 if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
             )
-
             agreement1.value = newValue
             agreement2.value = newValue
             agreement3.value = newValue
@@ -76,7 +75,6 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
             viewModel.agreementMk1.value = newValue
             viewModel.agreementMk2.value = newValue
             viewModel.marketingAgree.value = newValue
-
         }
 
         // ------! 나가기 !------
@@ -199,7 +197,7 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     }
 
-    // ------! 전체 동의 시작 !------
+    // ------# 전체 동의 #------
     private fun updateAgreeAllState() {
         val allChecked = agreement1.value == true && agreement2.value == true && agreement3.value == true && viewModel.agreementMk1.value == true && viewModel.agreementMk2.value == true
         if (agreeAll.value != allChecked) {

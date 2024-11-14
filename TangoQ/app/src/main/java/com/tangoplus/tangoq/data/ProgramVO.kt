@@ -26,11 +26,6 @@ data class ProgramVO(
         exercises = mutableListOf<ExerciseVO>().apply {
             parcel.readList(this, ExerciseVO::class.java.classLoader)
         }
-
-//        mutableListOf<Pair<String, Int>>().apply {
-//            parcel.readList(this, List::class.java.classLoader)
-//        }
-
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

@@ -2,17 +2,14 @@ package com.tangoplus.tangoq
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -47,18 +44,18 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.SkeletonViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlaySkeletonBinding
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.internal.format
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -81,7 +78,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
     var totalTime = 0
 
     // ------! exoplayer2 !------
-    val eViewModel: ExerciseViewModel by viewModels()
+    val pvm: PlayViewModel by viewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var chronometer: Chronometer
@@ -506,11 +503,6 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-    }
-
     override fun onResults(resultBundle: PoseLandmarkerHelper.ResultBundle) {
         runOnUiThread {
             if (_binding != null) {
@@ -527,11 +519,11 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
 
                 binding.olPS.invalidate()
                 latestResult = resultBundle
-                if (!eViewModel.isDefaultPoseSet) {
+                if (!pvm.isDefaultPoseSet) {
                     // 5초 후에 setDefaultPoseBundle 함수를 한 번만 실행
                     Handler(Looper.getMainLooper()).postDelayed({
                         setDefaultPoseBundle(latestResult!!)
-                        eViewModel.isDefaultPoseSet = true
+                        pvm.isDefaultPoseSet = true
                     }, 2500)
                 } else {
                     // setDefaultPoseBundle이 실행된 후에는 매 프레임마다 countBundleToJson 실행
@@ -563,13 +555,13 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
             val plr = resultBundle.results.first().landmarks()[0]!!
             for (i in 0 until  plr.size) {
                 when (i) {
-                    0 -> eViewModel.normalNose = Pair(plr[0].x().toDouble(), plr[0].y().toDouble())
-                    in 11 .. 12 -> eViewModel.normalShoulderData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
-                    in 13 .. 14 -> eViewModel.normalElbowData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
-                    in 15 .. 16 -> eViewModel.normalWristData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
-                    in 23 .. 24 -> eViewModel.normalHipData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
-                    in 25 .. 26 -> eViewModel.normalKneeData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
-                    in 27 .. 28 -> eViewModel.normalAnkleData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                    0 -> pvm.normalNose = Pair(plr[0].x().toDouble(), plr[0].y().toDouble())
+                    in 11 .. 12 -> pvm.normalShoulderData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                    in 13 .. 14 -> pvm.normalElbowData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                    in 15 .. 16 -> pvm.normalWristData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                    in 23 .. 24 -> pvm.normalHipData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                    in 25 .. 26 -> pvm.normalKneeData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
+                    in 27 .. 28 -> pvm.normalAnkleData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
                 }
             }
         }
@@ -616,7 +608,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
              * */
 
             try {
-                if (poseLandmarkerHelper.minPoseDetectionConfidence >= 0.7 || eViewModel.isCountingEnabled) {
+                if (poseLandmarkerHelper.minPoseDetectionConfidence >= 0.7 || pvm.isCountingEnabled) {
                     // ------# 각 운동 별 count 기준 정하기 #------ TODO 각 부위별로 Threshold 수치를 정하는게 더 효율적..
 
                     // ------# 각 운동 별 count 경로 정하기 #------
@@ -624,34 +616,34 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
                         "74" -> { // 완료
                             leftThreshold = 0.1f
                             rightThreshold = 0.1f
-                            countBothDirectMovement("wrist", true, countHorizontalMovement(eViewModel.normalWristData[1], wristData[1])) // 오른손 기준
+                            countBothDirectMovement("wrist", true, countHorizontalMovement(pvm.normalWristData[1], wristData[1])) // 오른손 기준
                         }
                         "133" -> {
                             leftThreshold = 0.1f
                             rightThreshold = 0.1f
-                            countBothDirectMovement("knee", countHorizontalMovement(eViewModel.normalKneeData[0], kneeData[0]), true)
+                            countBothDirectMovement("knee", countHorizontalMovement(pvm.normalKneeData[0], kneeData[0]), true)
                         }
                         "134" -> { // 완료
                             leftThreshold = 0.06f
                             rightThreshold = 0.06f
-                            countBothDirectMovement("nose", true, countHorizontalMovement(eViewModel.normalNose, nose))
+                            countBothDirectMovement("nose", true, countHorizontalMovement(pvm.normalNose, nose))
                         }
                         "171" -> { // 스쿼트 https://gym.tangostar.co.kr/data/contents/videos/2024/98.mp4
                             topThreshold = 0.2f
                             downThreshold = 0.2f
-                            countBothDirectMovement("hip",true, countVerticalMovement(eViewModel.normalHipData[0], hipData[0]))
+                            countBothDirectMovement("hip",true, countVerticalMovement(pvm.normalHipData[0], hipData[0]))
                         }
                         "197" -> {
                             topThreshold = 0.05f
                             downThreshold = 0.05f
                             leftThreshold = 0.4f
                             rightThreshold = 0.4f
-                            countBothDirectMovement("shoulder", countCrossHorizontalMovement(eViewModel.normalWristData, wristData), countVerticalMovement(eViewModel.normalShoulderData[0], shoulderData[0]))
+                            countBothDirectMovement("shoulder", countCrossHorizontalMovement(pvm.normalWristData, wristData), countVerticalMovement(pvm.normalShoulderData[0], shoulderData[0]))
                         }
                         "202" -> { // 고양이 자세 https://gym.tangostar.co.kr/data/contents/videos/2024/195.mp4
                             leftThreshold = 0.45f
                             rightThreshold = 0.45f
-                            countBothDirectMovement("lieDown", countHorizontalMovement(eViewModel.normalWristData[1], wristData[1]), countVerticalMovement(eViewModel.normalShoulderData[0], shoulderData[0]))
+                            countBothDirectMovement("lieDown", countHorizontalMovement(pvm.normalWristData[1], wristData[1]), countVerticalMovement(pvm.normalShoulderData[0], shoulderData[0]))
 
                         }
                     }
@@ -663,21 +655,21 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         }
     }
     private fun countAndLimitTime(type: String) {
-        if (eViewModel.isCountingEnabled) {
-            eViewModel.count += 1
-            eViewModel.isCountingEnabled = false
-            eViewModel.lastCountTime = System.currentTimeMillis()
+        if (pvm.isCountingEnabled) {
+            pvm.count += 1
+            pvm.isCountingEnabled = false
+            pvm.lastCountTime = System.currentTimeMillis()
 
             CoroutineScope(Dispatchers.Main).launch {
                 when (type) {
-                    "neck" -> delay(eViewModel.countDown5)
-                    "knee" -> delay(eViewModel.countDown8)
-                    "lieDown", "shoulder" -> delay(eViewModel.countDown6)
-                    else -> delay(eViewModel.countDown3_5)
+                    "neck" -> delay(pvm.countDown5)
+                    "knee" -> delay(pvm.countDown8)
+                    "lieDown", "shoulder" -> delay(pvm.countDown6)
+                    else -> delay(pvm.countDown3_5)
                 }
-                eViewModel.isCountingEnabled = true
+                pvm.isCountingEnabled = true
             }
-            Log.e("partCount", "count: ${eViewModel.count}")
+            Log.e("partCount", "count: ${pvm.count}")
         }
     }
 
@@ -695,7 +687,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         val currentPartY = part.second
         val difference = currentPartY - normalPartY
 
-        val oldPosition = eViewModel.currentVerticalPosition
+        val oldPosition = pvm.currentVerticalPosition
         var newPosition = oldPosition
         var counted = false
 
@@ -703,27 +695,27 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
             verticalPosition.CENTER -> {
                 if (difference > topThreshold) {
                     newPosition = verticalPosition.TOP
-                    eViewModel.hasMovedVertically = true
+                    pvm.hasMovedVertically = true
                 } else if (difference < -downThreshold) { /// -0.3 < -0.2
                     newPosition = verticalPosition.DOWN
-                    eViewModel.hasMovedVertically = true
+                    pvm.hasMovedVertically = true
                 }
             }
             verticalPosition.TOP, verticalPosition.DOWN -> {
                 if (abs(difference) <= centerThreshold) {
                     newPosition = verticalPosition.CENTER
-                    if (eViewModel.hasMovedVertically) {
+                    if (pvm.hasMovedVertically) {
                         counted = true
-                        eViewModel.hasMovedVertically = false
+                        pvm.hasMovedVertically = false
                     }
                 }
             }
         }
         if (oldPosition != newPosition) {
-            eViewModel.currentVerticalPosition = newPosition
+            pvm.currentVerticalPosition = newPosition
         }
 
-        Log.v("ComparePose", "counted: $counted currentPart: $currentPartY, normalPart: $normalPartY, difference: $difference, position: ${eViewModel.currentVerticalPosition}")
+        Log.v("ComparePose", "counted: $counted currentPart: $currentPartY, normalPart: $normalPartY, difference: $difference, position: ${pvm.currentVerticalPosition}")
         return counted
     }
     private fun countHorizontalMovement(normalPart: Pair<Double, Double>, part: Pair<Double, Double>) : Boolean {
@@ -731,7 +723,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         val currentPartX = part.first
         val difference = currentPartX - normalPartX
 
-        val oldPosition = eViewModel.currentHorizontalPosition
+        val oldPosition = pvm.currentHorizontalPosition
         var newPosition = oldPosition
         var counted = false
 
@@ -739,26 +731,26 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
             horizontalPosition.CENTER -> {
                 if (difference < -leftThreshold) {
                     newPosition = horizontalPosition.LEFT
-                    eViewModel.hasMovedHorizontally = true
+                    pvm.hasMovedHorizontally = true
                 } else if (difference > rightThreshold) {
                     newPosition = horizontalPosition.RIGHT
-                    eViewModel.hasMovedHorizontally = true
+                    pvm.hasMovedHorizontally = true
                 }
             }
             horizontalPosition.LEFT, horizontalPosition.RIGHT -> {
                 if (abs(difference) <= centerThreshold) {
                     newPosition = horizontalPosition.CENTER
-                    if (eViewModel.hasMovedHorizontally) {
+                    if (pvm.hasMovedHorizontally) {
                         counted = true
-                        eViewModel.hasMovedHorizontally = false
+                        pvm.hasMovedHorizontally = false
                     }
                 }
             }
         }
         if (oldPosition != newPosition) {
-            eViewModel.currentHorizontalPosition = newPosition
+            pvm.currentHorizontalPosition = newPosition
         }
-        Log.v("ComparePose", "currentPart: $currentPartX, normalPart: $normalPartX, difference: $difference, position: ${eViewModel.currentHorizontalPosition}")
+        Log.v("ComparePose", "currentPart: $currentPartX, normalPart: $normalPartX, difference: $difference, position: ${pvm.currentHorizontalPosition}")
         return counted
     }
 
@@ -771,8 +763,8 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         val rightCurrentPartX = part[1].first
         val rightDifference = rightNormalPartX - rightCurrentPartX
 
-        val leftOldPosition = eViewModel.currentLeftHorizontalPosition
-        val rightOldPosition = eViewModel.currentRightHorizontalPosition
+        val leftOldPosition = pvm.currentLeftHorizontalPosition
+        val rightOldPosition = pvm.currentRightHorizontalPosition
         var leftNewPosition = leftOldPosition
         var rightNewPosition = rightOldPosition
         var counted = false
@@ -781,17 +773,17 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
             horizontalPosition.CENTER -> {
                 if (leftDifference < -leftThreshold) {
                     leftNewPosition = horizontalPosition.LEFT
-                    eViewModel.hasMovedLeftHorizontally = true
+                    pvm.hasMovedLeftHorizontally = true
                 } else if (leftDifference > rightThreshold) {
                     leftNewPosition = horizontalPosition.RIGHT
-                    eViewModel.hasMovedLeftHorizontally = true
+                    pvm.hasMovedLeftHorizontally = true
                 }
             }
             horizontalPosition.LEFT, horizontalPosition.RIGHT -> {
                 if (abs(leftDifference) <= centerThreshold) {
                     leftNewPosition = horizontalPosition.CENTER
-                    if (eViewModel.hasMovedLeftHorizontally) {
-                        eViewModel.hasMovedLeftHorizontally = false
+                    if (pvm.hasMovedLeftHorizontally) {
+                        pvm.hasMovedLeftHorizontally = false
                         counted = true
                     }
                 }
@@ -803,17 +795,17 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
             horizontalPosition.CENTER -> {
                 if (rightDifference < -leftThreshold) {
                     rightNewPosition = horizontalPosition.LEFT
-                    eViewModel.hasMovedRightHorizontally = true
+                    pvm.hasMovedRightHorizontally = true
                 } else if (rightDifference > rightThreshold) {
                     rightNewPosition = horizontalPosition.RIGHT
-                    eViewModel.hasMovedRightHorizontally = true
+                    pvm.hasMovedRightHorizontally = true
                 }
             }
             horizontalPosition.LEFT, horizontalPosition.RIGHT -> {
                 if (abs(rightDifference) <= centerThreshold) {
                     rightNewPosition = horizontalPosition.CENTER
-                    if (eViewModel.hasMovedRightHorizontally) {
-                        eViewModel.hasMovedRightHorizontally = false
+                    if (pvm.hasMovedRightHorizontally) {
+                        pvm.hasMovedRightHorizontally = false
                         counted = counted || true  // 둘 중 하나라도 카운트되면 true
                     }
                 }
@@ -821,10 +813,10 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         }
 
         if (leftOldPosition != leftNewPosition) {
-            eViewModel.currentLeftHorizontalPosition = leftNewPosition
+            pvm.currentLeftHorizontalPosition = leftNewPosition
         }
         if (rightOldPosition != rightNewPosition) {
-            eViewModel.currentRightHorizontalPosition = rightNewPosition
+            pvm.currentRightHorizontalPosition = rightNewPosition
         }
 
         // 교차 움직임 확인

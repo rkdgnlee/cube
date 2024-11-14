@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
+import com.tangoplus.tangoq.fragment.dialogFragmentResize
 
 
 class ProgramAlertDialogFragment : DialogFragment() {
@@ -66,33 +67,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
         dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
-        dialogFragmentResize()
+        dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment)
     }
 
-    private fun dialogFragmentResize() {
-        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val width = 0.8f
-        val height = 0.5f
-        if (Build.VERSION.SDK_INT < 30) {
-            val display = windowManager.defaultDisplay
-            val size = Point()
-
-            display.getSize(size)
-
-            val window = dialog?.window
-
-            val x = (size.x * width).toInt()
-            val y = (size.y * height).toInt()
-            window?.setLayout(x, y)
-        } else {
-            val rect = windowManager.currentWindowMetrics.bounds
-
-            val window = dialog?.window
-
-            val x = (rect.width() *  width).toInt()
-            val y = (rect.height() * height).toInt()
-
-            window?.setLayout(x, y)
-        }
-    }
 }

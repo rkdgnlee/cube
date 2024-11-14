@@ -195,7 +195,7 @@ interface MeasureDao {
     fun String.toMeasureInfo(): MeasureInfo {
         return Gson().fromJson(this, MeasureInfo::class.java)
     }
-    // JSONObject를 사용하는 경우 (org.json 라이브러리 필요)
+
     fun JSONObject.toMeasureStatic(): MeasureStatic {
         return Gson().fromJson(this.toString(), MeasureStatic::class.java)
     }

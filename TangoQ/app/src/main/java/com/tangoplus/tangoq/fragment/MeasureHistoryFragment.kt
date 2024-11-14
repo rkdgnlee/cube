@@ -17,13 +17,10 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MeasureHistoryRVAdapter
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureHistoryBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import org.json.JSONObject
-import java.time.LocalDate
-import kotlin.random.Random
 
 class MeasureHistoryFragment : Fragment() {
     lateinit var binding : FragmentMeasureHistoryBinding
@@ -43,12 +40,10 @@ class MeasureHistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.ibtnMHAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
-
 
         val filterList = arrayListOf<String>()
         filterList.add("최신순")

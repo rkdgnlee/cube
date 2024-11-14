@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.data
+package com.tangoplus.tangoq.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData

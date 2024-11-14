@@ -24,7 +24,6 @@ class Singleton_t_progress private constructor(context: Context){
             }
         }
     }
-
     private fun initialize() {
         graphProgresses = mutableListOf()
         programProgresses = mutableListOf()

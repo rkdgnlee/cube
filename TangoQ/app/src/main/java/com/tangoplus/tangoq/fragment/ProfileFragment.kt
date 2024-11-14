@@ -2,12 +2,10 @@ package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
@@ -18,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +27,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileBinding
@@ -40,13 +37,11 @@ import com.tangoplus.tangoq.`object`.NetworkUser.sendProfileImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
 import java.io.File
-import java.io.FileOutputStream
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -291,7 +286,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         updateUserData()
     }
 
-    fun Context.uriToFile(uri: Uri, fileName: String): File? {
+    private fun Context.uriToFile(uri: Uri, fileName: String): File? {
         val inputStream = contentResolver.openInputStream(uri) ?: return null
         val file = File(cacheDir, fileName)
         inputStream.use { input ->

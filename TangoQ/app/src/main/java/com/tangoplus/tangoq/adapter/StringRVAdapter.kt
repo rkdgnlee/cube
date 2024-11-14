@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.adapter
 
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,11 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.MeasureViewModel
-import com.tangoplus.tangoq.data.ProgressViewModel
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
+import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.RvConnectItemBinding
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding

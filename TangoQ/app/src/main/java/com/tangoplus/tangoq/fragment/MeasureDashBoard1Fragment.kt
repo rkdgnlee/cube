@@ -33,7 +33,7 @@ import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard1Binding
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
@@ -98,8 +98,6 @@ class MeasureDashBoard1Fragment : Fragment() {
                 } catch (e: NullPointerException) {
                     Log.e("MD1Error", "$e")
                 }
-
-
             }
             false -> {
 
@@ -134,13 +132,6 @@ class MeasureDashBoard1Fragment : Fragment() {
         binding.tvMD1More1.setOnClickListener {
             val dialog = MeasureTrendDialogFragment.newInstance("", "")
             dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
-
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-//                replace(R.id.flMain, MeasureHistoryFragment())
-//                addToBackStack(null)
-//                commit()
-//            }
         }
 
         binding.btnMD1More2.setOnClickListener{
@@ -150,7 +141,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                 addToBackStack(null)
                 commit()
             }
-        } // ------ ! 자세히 보기 끝 !------
+        }
+        // ------ ! 자세히 보기 끝 !------
 
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMD1

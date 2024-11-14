@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptFile
 import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptFile
 import com.tangoplus.tangoq.db.SecurePreferencesManager.generateAESKey
@@ -165,7 +165,7 @@ object FileStorageUtil {
     }
 
     // 파일 타입에 따른 디렉토리 가져오기
-    fun getFileTypeFromExtension(fileName: String): FileType {
+    private fun getFileTypeFromExtension(fileName: String): FileType {
         return when (fileName.substringAfterLast(".", "").lowercase()) {
             "jpg", "jpeg", "png" -> FileType.IMAGE
             "mp4", "mov", "avi" -> FileType.VIDEO

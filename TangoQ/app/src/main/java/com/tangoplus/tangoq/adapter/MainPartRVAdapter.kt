@@ -22,7 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisVO
-import com.tangoplus.tangoq.data.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.databinding.RvMainPartItemBinding
 import com.tangoplus.tangoq.dialog.MainPartAnalysisDialogFragment
 import com.tangoplus.tangoq.dialog.MainPartPoseDialogFragment

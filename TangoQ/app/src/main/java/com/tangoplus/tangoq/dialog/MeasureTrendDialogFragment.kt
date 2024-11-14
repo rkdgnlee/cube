@@ -22,9 +22,9 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.adapter.TrendRVAdapter
 import com.tangoplus.tangoq.data.AnalysisVO
-import com.tangoplus.tangoq.data.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
 import com.tangoplus.tangoq.db.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.db.MeasurementManager.setImage
@@ -43,7 +43,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private val avm : AnalysisViewModel by activityViewModels()
     private val mvm : MeasureViewModel by activityViewModels()
     private lateinit var measures : MutableList<MeasureVO>
-    private var count = false
+
 
     private lateinit var measureResult : JSONArray
     companion object{

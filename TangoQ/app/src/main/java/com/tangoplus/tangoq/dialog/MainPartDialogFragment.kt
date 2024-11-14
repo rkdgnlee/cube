@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.MainPartRVAdapter
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.data.AnalysisVO
-import com.tangoplus.tangoq.data.AnalysisViewModel
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartDialogBinding
 import com.tangoplus.tangoq.db.MeasurementManager.getAnalysisUnits
 import org.json.JSONArray

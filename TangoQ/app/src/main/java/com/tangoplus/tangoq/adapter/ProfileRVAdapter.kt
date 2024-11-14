@@ -26,7 +26,7 @@ import com.tangoplus.tangoq.dialog.ProfileEditDialogFragment
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken

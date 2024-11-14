@@ -297,37 +297,6 @@ class ExerciseRVAdapter (
             }
         }
     }
-
-    private fun changeBackgroundColor(view:View, startColor: Int, endColor: Int, duration: Long = 350) {
-        val animator = ValueAnimator.ofFloat(0f, 1f)
-        animator.duration = duration
-
-        animator.addUpdateListener { animation ->
-            val fraction = animation.animatedValue as Float
-            val newColor = ColorUtils.blendARGB(startColor, endColor, fraction)
-            view.backgroundTintList = ColorStateList.valueOf(newColor)
-        }
-        animator.interpolator = LinearInterpolator()
-        animator.start()
-    }
-
-    fun List<ProgressUnitVO>.getExerciseStatuses(currentWeek: Int, currentSeq: Int): List<Int> {
-        return this.map { exercise ->
-            when {
-                exercise.currentWeek < currentWeek ||
-                        (exercise.currentWeek == currentWeek && exercise.currentSequence < currentSeq) -> {
-                    if (exercise.lastProgress >= exercise.videoDuration) 0
-                    else 1
-                }
-                exercise.currentWeek == currentWeek && exercise.currentSequence == currentSeq -> {
-                    if (exercise.lastProgress > 0) 1
-                    else 2
-                }
-                else -> 2
-            }
-        }
-    }
-
     private fun updateLikeButtonState(exerciseId: String, ibtn : ImageButton) {
         val isLike = prefs.existLike(exerciseId)
         ibtn.setImageDrawable(
@@ -336,8 +305,5 @@ class ExerciseRVAdapter (
                 if (isLike) R.drawable.icon_like_enabled else R.drawable.icon_like_disabled
             )
         )
-    }
-    fun setOnDialogClosedListener(listener: OnDialogClosedListener) {
-        dialogClosedListener = listener
     }
 }

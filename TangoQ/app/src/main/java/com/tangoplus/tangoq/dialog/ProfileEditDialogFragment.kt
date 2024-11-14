@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,15 +14,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
-import com.tangoplus.tangoq.data.SignInViewModel
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileEditDialogBinding
-import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
@@ -32,7 +27,7 @@ import org.json.JSONObject
 
 class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     lateinit var binding : FragmentProfileEditDialogBinding
-    val viewModel : SignInViewModel by activityViewModels()
+    val svm : SignInViewModel by activityViewModels()
 
     private val agreement3 = MutableLiveData(false)
     private val agreementMk1 = MutableLiveData(false)
@@ -62,17 +57,17 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AppTheme_DialogFragment)
 
-        viewModel.snsCount = 0
+        svm.snsCount = 0
         // ------! 싱글턴에서 가져오기 !------
-        viewModel.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject!!
+        svm.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject!!
 
-        viewModel.setHeight.value = viewModel.User.value!!.optInt("height")
-        viewModel.setWeight.value = viewModel.User.value!!.optInt("weight")
-        viewModel.setEmail.value = viewModel.User.value!!.optString("email")
+        svm.setHeight.value = svm.User.value!!.optInt("height")
+        svm.setWeight.value = svm.User.value!!.optInt("weight")
+        svm.setEmail.value = svm.User.value!!.optString("email")
 
 
-        userSn = viewModel.User.value!!.optString("sn")
-        Log.v("개인정보편집", "${viewModel.User.value}")
+        userSn = svm.User.value!!.optString("sn")
+        Log.v("개인정보편집", "${svm.User.value}")
 
         // ------! 정보 목록 recyclerView 연결 시작 !------
         profilemenulist = mutableListOf(
@@ -93,43 +88,43 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
 
 //        // ------! 소셜 계정 로그인 연동 시작 !------
-        val snsIntegrations = checkSNSLogin(viewModel.User.value)
+        val snsIntegrations = checkSNSLogin(svm.User.value)
 
         if (snsIntegrations.first) {
             binding.tvGoogleInteCheck.text = "계정연동"
             binding.tvGoogleInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
             binding.clGoogle.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            viewModel.snsCount += 1
-            Log.v("snsCount", "${viewModel.snsCount}")
+            svm.snsCount += 1
+            Log.v("snsCount", "${svm.snsCount}")
         }
         if (snsIntegrations.second) {
             binding.tvKakaoIntecheck.text = "계정연동"
             binding.tvKakaoIntecheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
             binding.clKakao.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            viewModel.snsCount += 1
-            Log.v("snsCount", "${viewModel.snsCount}")
+            svm.snsCount += 1
+            Log.v("snsCount", "${svm.snsCount}")
         }
         if (snsIntegrations.third) {
             binding.tvNaverInteCheck.text = "계정연동"
             binding.tvNaverInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
             binding.clNaver.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            viewModel.snsCount += 1
-            Log.v("snsCount", "${viewModel.snsCount}")
+            svm.snsCount += 1
+            Log.v("snsCount", "${svm.snsCount}")
         }
 
         // ------! id, pw, EmailId VM에 값 보존 시작 !------
-        viewModel.id.value = viewModel.User.value!!.optString("user_id")
+        svm.id.value = svm.User.value!!.optString("user_id")
 
-        when (viewModel.User.value!!.optInt("sms_receive")) {
+        when (svm.User.value!!.optInt("sms_receive")) {
             1 -> agreementMk1.value = true
             else -> agreementMk1.value = false
         }
-        Log.v("userJson", viewModel.User.value!!.optInt("sms_receive").toString())
-        when (viewModel.User.value!!.optInt("email_receive")) {
+        Log.v("userJson", svm.User.value!!.optInt("sms_receive").toString())
+        when (svm.User.value!!.optInt("email_receive")) {
             1 -> agreementMk2.value = true
             else -> agreementMk2.value = false
         }
-        Log.v("userJson", viewModel.User.value!!.optInt("email_receive").toString())
+        Log.v("userJson", svm.User.value!!.optInt("email_receive").toString())
         // ------! 광고성 수신 동의 시작 !------
         binding.clPEDAgreement3.setOnClickListener{
             val newValue = agreement3.value?.not() ?: false
@@ -184,17 +179,17 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         binding.btnPEDFinish.setOnClickListener {
 //            viewModel.User.value!!.put("user_id", viewModel.id.value.toString())
 //            viewModel.User.value!!.put("password", viewModel.pw.value.toString())
-            viewModel.User.value!!.put("sms_receive", if (agreementMk1.value!!) 1 else 0)
-            viewModel.User.value!!.put("email_receive", if (agreementMk2.value!!) 1 else 0)
-            viewModel.User.value!!.put("height", viewModel.setHeight.value)
-            viewModel.User.value!!.put("weight", viewModel.setWeight.value)
-            viewModel.User.value!!.put("email", viewModel.setEmail.value)
-            Log.v("userJson>receive", "${viewModel.User.value!!}")
+            svm.User.value!!.put("sms_receive", if (agreementMk1.value!!) 1 else 0)
+            svm.User.value!!.put("email_receive", if (agreementMk2.value!!) 1 else 0)
+            svm.User.value!!.put("height", svm.setHeight.value)
+            svm.User.value!!.put("weight", svm.setWeight.value)
+            svm.User.value!!.put("email", svm.setEmail.value)
+            Log.v("userJson>receive", "${svm.User.value!!}")
 //            val userEditEmail = userJson.optString("user_email")
 //            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
-            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), viewModel.User.value!!.toString(), userSn) {
-                Log.w(" 싱글톤객체추가", "$userSn, ${viewModel.User.value!!}")
-                Singleton_t_user.getInstance(requireContext()).jsonObject = viewModel.User.value!!
+            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), svm.User.value!!.toString(), userSn) {
+                Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value!!}")
+                Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value!!
 //                requireActivity().runOnUiThread{
 //                    uViewModel.setupProgress = 34
 //                    uViewModel.setupStep = 0
@@ -216,8 +211,8 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
     private fun setAdapter(list: MutableList<String>) {
         binding.rvPED.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val adapter = ProfileRVAdapter(this@ProfileEditDialogFragment, this@ProfileEditDialogFragment, false, "profileEdit", viewModel)
-        adapter.userJson = viewModel.User.value!!
+        val adapter = ProfileRVAdapter(this@ProfileEditDialogFragment, this@ProfileEditDialogFragment, false, "profileEdit", svm)
+        adapter.userJson = svm.User.value!!
         adapter.profilemenulist = list
         binding.rvPED.adapter = adapter
 

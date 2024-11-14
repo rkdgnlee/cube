@@ -18,7 +18,7 @@ import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.SetupVPAdapter
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentSetupDialogBinding
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.listener.WeightVisibilityListener
@@ -160,16 +160,6 @@ class SetupDialogFragment : DialogFragment() {
         binding.svSD.go(uvm.setupStep, true)
         uvm.setupProgress -= 34
         binding.pvSD.progress = uvm.setupProgress.toFloat()
-//        when (arg) {
-//            "startSetup" -> {
-//                viewModel.setupProgress -= 34
-//                binding.pvSD.progress = viewModel.setupProgress
-//            }
-//            else -> {
-//                viewModel.setupProgress -= 50
-//                binding.pvSD.progress = viewModel.setupProgress
-//            }
-//        }
     }
 
     fun setNextPage() {
@@ -178,16 +168,6 @@ class SetupDialogFragment : DialogFragment() {
         binding.svSD.go(uvm.setupStep, true)
         uvm.setupProgress += 34
         binding.pvSD.progress = uvm.setupProgress.toFloat()
-//        when (arg) {
-//            "startSetup" -> {
-//                viewModel.setupProgress += 34
-//                binding.pvSD.progress = viewModel.setupProgress
-//            }
-//            else -> {
-//                viewModel.setupProgress += 50
-//                binding.pvSD.progress = viewModel.setupProgress
-//            }
-//        }
     }
 
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {

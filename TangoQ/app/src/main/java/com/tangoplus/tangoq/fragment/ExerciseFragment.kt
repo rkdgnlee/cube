@@ -7,11 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
@@ -80,7 +79,8 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
                     try { // ------! rv vertical 시작 !------
 
-                        val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, sn, "mainCategory" )
+                        val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment,  sn, "mainCategory" )
+
                         binding.rvEMainCategory.adapter = adapter
                         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                         binding.rvEMainCategory.layoutManager = linearLayoutManager

@@ -36,7 +36,7 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
 import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
 import com.tangoplus.tangoq.dialog.SignInBSDialogFragment

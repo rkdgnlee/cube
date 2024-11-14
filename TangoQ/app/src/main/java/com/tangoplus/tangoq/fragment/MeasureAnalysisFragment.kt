@@ -31,13 +31,14 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
 import com.tangoplus.tangoq.db.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ import kotlin.coroutines.resume
 class MeasureAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMeasureAnalysisBinding
     private val viewModel : MeasureViewModel by activityViewModels()
-    private lateinit var measureResult: JSONArray
+    private val avm : AnalysisViewModel by activityViewModels()
     private lateinit var mr : JSONArray
     private var index = -1
 
@@ -89,10 +90,10 @@ class MeasureAnalysisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // ------# 데이터 필터링을 위한 사전 세팅 #------
-        measureResult = JSONArray()
+
         index = arguments?.getInt(ARG_INDEX)!!
         mr = viewModel.selectedMeasure!!.measureResult
-
+        avm.mafMeasureResult = JSONArray()
         Log.v("현재측정", viewModel.selectedMeasure!!.regDate)
         val noticeScore = arguments?.getInt(ARG_SCORE)
         val noticeComment = arguments?.getString(ARG_COMMENT)
@@ -107,8 +108,8 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.tvMAName.text = "정면 균형"
                 binding.tvMAPart1.text = "정면 측정"
                 binding.tvMAPart2.text = "팔꿉 측정"
-                measureResult.put(mr.optJSONObject(0))
-                measureResult.put(mr.optJSONObject(2))
+                avm.mafMeasureResult.put(mr.optJSONObject(0))
+                avm.mafMeasureResult.put(mr.optJSONObject(2))
                 setDynamicUI(false)
                 setStaticSplitUi(true)
                 binding.flMA.visibility = View.GONE
@@ -116,7 +117,7 @@ class MeasureAnalysisFragment : Fragment() {
                     setImage(0, binding.ssivMA1)
                     setImage(2, binding.ssivMA2)
                 }
-                setScreenRawData(measureResult, 0)
+                setScreenRawData(avm.mafMeasureResult, 0)
                 binding.ivMA.setImageResource(R.drawable.drawable_front)
 
             }
@@ -125,15 +126,15 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.tvMAName.text = "측면 균형"
                 binding.tvMAPart1.text = "좌측 측정"
                 binding.tvMAPart2.text = "우측 측정"
-                measureResult.put(mr.optJSONObject(3))
-                measureResult.put(mr.optJSONObject(4))
+                avm.mafMeasureResult.put(mr.optJSONObject(3))
+                avm.mafMeasureResult.put(mr.optJSONObject(4))
                 setDynamicUI(false)
                 setStaticSplitUi(true)
                 lifecycleScope.launch {
                     setImage(3, binding.ssivMA1)
                     setImage(4, binding.ssivMA2)
                 }
-                setScreenRawData(measureResult,  3)
+                setScreenRawData(avm.mafMeasureResult,  3)
                 binding.ivMA.setImageResource(R.drawable.drawable_side)
 
             }
@@ -141,12 +142,12 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.tvMPTitle.text = "후면 균형"
                 binding.tvMAName.text = "후면 균형"
                 binding.tvMAPart1.text = "후면 측정"
-                measureResult.put(mr.optJSONObject(5))
+                avm.mafMeasureResult.put(mr.optJSONObject(5))
                 setDynamicUI(false)
                 setStaticSplitUi(false)
                 lifecycleScope.launch { setImage(5, binding.ssivMA1) }
                 binding.flMA.visibility = View.GONE
-                setScreenRawData(measureResult,  5)
+                setScreenRawData(avm.mafMeasureResult,  5)
                 binding.ivMA.setImageResource(R.drawable.drawable_back)
 
 
@@ -155,21 +156,21 @@ class MeasureAnalysisFragment : Fragment() {
                 binding.tvMPTitle.text = "앉은 후면"
                 binding.tvMAName.text = "앉은 후면"
                 binding.tvMAPart1.text = "앉은 후면"
-                measureResult.put(mr.optJSONObject(6))
+                avm.mafMeasureResult.put(mr.optJSONObject(6))
                 setDynamicUI(false)
                 setStaticSplitUi(false)
                 binding.tvMPTitle.visibility = View.VISIBLE
                 binding.flMA.visibility = View.GONE
                 lifecycleScope.launch { setImage(6, binding.ssivMA1) }
                 binding.ssivMA2.visibility = View.GONE
-                setScreenRawData(measureResult,  6)
+                setScreenRawData(avm.mafMeasureResult,  6)
                 binding.ivMA.setImageResource(R.drawable.drawable_back)
 
 
             }
             4 -> { // 동적 균형
                 binding.tvMPTitle.text = "동적 측정"
-                measureResult.put(mr.optJSONArray(1))
+                avm.mafMeasureResult.put(mr.optJSONArray(1))
                 setDynamicUI(true)
                 setPlayer()
             }
@@ -299,58 +300,6 @@ class MeasureAnalysisFragment : Fragment() {
                     setVideoAdapter(filteredCoordinates)
                 }
             }
-
-            2 -> {
-//                val valuePairs = listOf(
-//                    Triple("엄지와 엄지관절 기울기", "front_hand_angle_thumb_cmc_tip_left", "front_hand_angle_thumb_cmc_tip_right"),
-//                    Triple("팔꿉-손목-중지관절 기울기", "front_hand_angle_elbow_wrist_mid_finger_mcp_left", "front_hand_angle_elbow_wrist_mid_finger_mcp_right"),
-//                    Triple("상완-팔꿉-손목 기울기", "front_elbow_align_angle_left_upper_elbow_elbow_wrist", "front_elbow_align_angle_right_upper_elbow_elbow_wrist"),
-//                    Triple("양 손목과 어깨 기울기", "front_elbow_align_distance_left_wrist_shoulder", "front_elbow_align_distance_right_wrist_shoulder"),
-//                    Triple("중지-손목-팔꿉 기울기", "front_elbow_align_angle_mid_index_wrist_elbow_left", "front_elbow_align_angle_mid_index_wrist_elbow_right"),
-//                    Triple("어깨-팔꿈치-손목 기울기", "front_elbow_align_angle_left_shoulder_elbow_wrist", "front_elbow_align_angle_right_shoulder_elbow_wrist")
-//                )
-//                valuePairs.forEach{ (descrption, leftKey, rightKey) ->
-//                    val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
-//                    val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
-//                    if (!leftValue.isNaN() && !rightValue.isNaN()) {
-//                        minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.2f", leftValue)}°", "오른쪽: ${String.format("%.2f", rightValue)}°"))
-//                    }
-//                }
-//                val distancePairs = listOf(
-//                    Triple("검지관절과 새끼관절 거리", "front_hand_distance_index_pinky_mcp_left", "front_hand_distance_index_pinky_mcp_right"),
-//                    Triple("어깨와 중지 거리", "front_elbow_align_distance_shoulder_mid_index_left", "front_elbow_align_distance_shoulder_mid_index_right"),
-//                    Triple("중심과 중지 거리", "front_elbow_align_distance_center_mid_finger_left", "front_elbow_align_distance_center_mid_finger_right"),
-//                    Triple("중심과 손목 거리", "front_elbow_align_distance_center_wrist_left", "front_elbow_align_distance_center_wrist_right"),
-//                    Triple("중심에서 양 엄지 거리", "front_horizontal_distance_thumb_left", "front_horizontal_distance_thumb_right")
-//                )
-//
-//                val anglePairs = listOf(
-//                    "thumb" to "엄지"
-//                ).map { (part, description) ->
-//                    Triple(
-//                        "양 $description 기울기 높이 차",
-//                        "front_horizontal_angle_$part",
-//                        "front_horizontal_distance_sub_$part"
-//                    )
-//                }
-//
-//                anglePairs.forEach { (description, angleKey, distanceKey) ->
-//                    val angleValue = measureResult.optJSONObject(1).optDouble(angleKey)
-//                    val distanceValue = measureResult.optJSONObject(1).optDouble(distanceKey)
-//                    if (!angleValue.isNaN() && !distanceValue.isNaN()) {
-//                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
-//                    }
-//                }
-//                distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-//                    val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
-//                    val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
-//                    if (!leftValue.isNaN() && !rightValue.isNaN()) {
-//                        minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.2f", leftValue)}cm", "오른쪽: ${String.format("%.2f", rightValue)}cm"))
-//                    }
-//                }
-//                set012Adapter(minResultData)
-            }
-
             3 -> {
                 val keyAnglePairs = mapOf(
                     "side_left_vertical_angle_shoulder_elbow" to "왼쪽 어깨와 팔꿉 기울기",
@@ -416,40 +365,6 @@ class MeasureAnalysisFragment : Fragment() {
                 }
                 set012Adapter(minResultData)
             }
-            4 -> {
-//                val keyAnglePairs = mapOf(
-//                    "side_right_vertical_angle_shoulder_elbow" to "오른쪽 어깨와 팔꿉 기울기",
-//                    "side_right_vertical_angle_elbow_wrist" to "오른쪽 팔꿉와 손목 기울기",
-//                    "side_right_vertical_angle_hip_knee" to "오른쪽 골반과 무릎 기울기",
-//                    "side_right_vertical_angle_ear_shoulder" to "오른쪽 귀와 어깨 기울기",
-//                    "side_right_vertical_angle_nose_shoulder" to "오른쪽 코와 어깨 기울기",
-//                    "side_right_vertical_angle_shoulder_elbow_wrist" to "오른쪽 어깨-팔꿉-손목 기울기",
-//                    "side_right_vertical_angle_hip_knee_ankle" to "오른쪽 골반-무릎-발목 기울기"
-//                )
-//                keyAnglePairs.forEach { (key, description) ->
-//                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
-//
-//                    if (!angleValue.isNaN()) {
-//                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
-//                    }
-//                }
-//                val keyDistancePairs = mapOf(
-//                    "side_right_horizontal_distance_shoulder" to "오른쪽 중심과 어깨 거리",
-//                    "side_right_horizontal_distance_hip" to "오른쪽 중심과 골반 거리",
-//                    "side_right_horizontal_distance_pinky" to "오른쪽 중심과 새끼 거리",
-//                    "side_right_horizontal_distance_wrist" to "오른쪽 중심과 손목 거리",
-//
-//                    )
-//                keyDistancePairs.forEach { (key, description) ->
-//                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
-//
-//                    if (!angleValue.isNaN() ) {
-//                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
-//                    }
-//                }
-//                set012Adapter(minResultData)
-            }
-
             5 -> {
                 // ------# 수직 #------
                 val verticalKeyPairs = mapOf(
@@ -814,7 +729,7 @@ class MeasureAnalysisFragment : Fragment() {
         playerParams.height = adjustedHeight
         binding.pvMA.layoutParams = playerParams
 
-        setScreenRawData(measureResult, 1)
+        setScreenRawData(avm.mafMeasureResult, 1)
         binding.ivMA.setImageResource(R.drawable.drawable_dynamic)
 
     }

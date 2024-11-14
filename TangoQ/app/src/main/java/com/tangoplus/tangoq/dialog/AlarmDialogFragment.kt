@@ -40,7 +40,7 @@ import java.util.Locale
 class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDeleteListener {
     lateinit var binding : FragmentAlarmDialogBinding
     private lateinit var swipeHelperCallback: SwipeHelperCallback
-    private lateinit var alarmRecyclerViewAdapter : AlarmRVAdapter
+    private lateinit var alarmRVAdapter : AlarmRVAdapter
     private var alarmList = mutableListOf<MessageVO>()
     private lateinit var pm: PreferencesManager
 
@@ -69,7 +69,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
                     binding.tvAlarm.visibility = View.GONE
                 }
 
-                alarmRecyclerViewAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
+                alarmRVAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
                 swipeHelperCallback = SwipeHelperCallback().apply {
                     setClamp(250f)
                 }
@@ -78,7 +78,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
                 itemTouchHelper.attachToRecyclerView(binding.rvAlarm)
                 binding.rvAlarm.apply {
                     layoutManager = LinearLayoutManager(requireContext().applicationContext)
-                    adapter = alarmRecyclerViewAdapter
+                    adapter = alarmRVAdapter
                     setOnTouchListener{ _, _ ->
                         swipeHelperCallback.removePreviousClamp(binding.rvAlarm)
                         false
@@ -91,7 +91,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         binding.tvAlarmClear.setOnClickListener {
             alarmList.clear()
             pm.deleteAllAlarms()
-            alarmRecyclerViewAdapter.notifyDataSetChanged()
+            alarmRVAdapter.notifyDataSetChanged()
         }
     }
 

@@ -1,8 +1,9 @@
-package com.tangoplus.tangoq.data
+package com.tangoplus.tangoq.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
+import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureStatic
 import org.json.JSONArray

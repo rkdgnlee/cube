@@ -18,8 +18,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.datastore.preferences.PreferencesMapCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -32,26 +32,25 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.PlaySkeletonActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.`object`.NetworkExercise
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
-import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
+import com.tangoplus.tangoq.mediapipe.CalculateUtil.isTablet
 import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class PlayThumbnailDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
-    val viewModel: ExerciseViewModel by activityViewModels()
-    val uViewModel : UserViewModel by activityViewModels()
+    val evm: ExerciseViewModel by activityViewModels()
+    val pvm: PlayViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var prefs :  PreferencesManager
@@ -126,7 +125,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             ?.map { it.first() }
             ?.toMutableList()
 
-        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle", viewModel)
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle", evm)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
@@ -141,7 +140,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
-            viewModel.isDialogShown.value = false
+            pvm.isDialogShown.value = false
 
             if (exerciseData.exerciseFrequency?.length!! >= 3) {
                 setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 19)
@@ -194,7 +193,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
-            val responseArrayList = viewModel.allExercises
+            val responseArrayList = evm.allExercises
             try {
                 val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
                     exerciseData.relatedJoint!!.split(", ")[0])}.subList(0, 10).toMutableList()
@@ -210,27 +209,33 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         // ------! 관련 운동 횡 rv 끝 !------
 
         // ------! ai코칭 시작 !------
-//        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
-//            binding.btnPTDAIPlay.visibility = View.VISIBLE
-//        } else {
+        if (exerciseData.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
+            binding.btnPTDAIPlay.visibility = View.VISIBLE
+        } else {
+            binding.btnPTDAIPlay.visibility = View.GONE
+        }
+        binding.btnPTDAIPlay.setOnClickListener {
 
-//        }
-        binding.btnPTDAIPlay.visibility = View.GONE
-//        binding.btnPTDAIPlay.setOnClickListener {
-//            val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
-//
-//            val exerciseIds = mutableListOf(exerciseData?.exerciseId)
-//            val videoUrls = mutableListOf(videoUrl)
-//            intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-//            intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-//            intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
-//            startActivity(intent)
-//        }
+            if (isTablet(requireContext())) {
+                val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
+
+                val exerciseIds = mutableListOf(exerciseData.exerciseId)
+                val videoUrls = mutableListOf(videoUrl)
+                intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
+                intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
+                intent.putExtra("total_time", exerciseData.videoDuration?.toInt())
+                startActivity(intent)
+            } else {
+                context.let { Toast.makeText(it, "태블릿 기기에서 운동을 추천드립니다", Toast.LENGTH_SHORT).show() }
+            }
+
+
+        }
         // ------! ai코칭 끝 !------
 
         // ------# share #------
         binding.ibtnPTDShare.setOnClickListener {
-            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/1?exercise=${exerciseData?.exerciseId!!}")
+            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/1?exercise=${exerciseData.exerciseId!!}")
             val intent = Intent(Intent.ACTION_SEND)
             intent.putExtra(Intent.EXTRA_TEXT, url.toString())
             intent.type = "text/plain" // 공유할 데이터의 타입을 설정 (텍스트)

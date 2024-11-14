@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,7 +19,6 @@ import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.LoadControl
 import com.google.android.exoplayer2.MediaItem
@@ -31,15 +29,12 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
-import com.tangoplus.tangoq.data.ProgressUnitVO
-import com.tangoplus.tangoq.data.PlayViewModel
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
 import com.tangoplus.tangoq.`object`.NetworkProgress.patchProgress1Item
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -48,8 +43,8 @@ import kotlin.math.roundToInt
 
 class PlayFullScreenActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayFullScreenBinding
-    val viewModel: ExerciseViewModel by viewModels()
-    val pViewModel : PlayViewModel by viewModels()
+    val evm: ExerciseViewModel by viewModels()
+    val pvm : PlayViewModel by viewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var chronometer: Chronometer
@@ -229,12 +224,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             val elapsedSeconds = elapsedMillis / 1000
                             chronometer.stop()
                             Log.v("elapsedSeconds", "$elapsedSeconds")
-                            viewModel.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
+                            pvm.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
                             // 이 곳에 총 크로노미터 + 도합 운동시간 + 운동 갯수 3개 보내야함.
                             val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-                            intent.putExtra("feedback_finish", viewModel.exerciseLog)
+                            intent.putExtra("feedback_finish", pvm.exerciseLog)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                            Log.v("feedback_finish", "VM_exercise_log: ${viewModel.exerciseLog}")
+                            Log.v("feedback_finish", "VM_exercise_log: ${pvm.exerciseLog}")
                             startActivity(intent)
                             finish()
                         } else {
@@ -256,11 +251,11 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     if (baseUrls.size > 1) {
                         sendData(true)
                         val currentPlaybackPosition = simpleExoPlayer!!.currentPosition
-                        pViewModel.currentWindowIndex.value = currentWindowIndex
-                        pViewModel.currentPlaybackPosition.value = currentPlaybackPosition
+                        pvm.currentWindowIndex.value = currentWindowIndex
+                        pvm.currentPlaybackPosition.value = currentPlaybackPosition
 
                         if (currentWindowIndex < mediaSourceList.size) {
-                            viewModel.totalProgressDuration += simpleExoPlayer!!.duration.toInt()
+                            pvm.totalProgressDuration += simpleExoPlayer!!.duration.toInt()
                             currentMediaSourceIndex++
                             Log.v("윈도우인덱스", "$currentMediaSourceIndex")
 

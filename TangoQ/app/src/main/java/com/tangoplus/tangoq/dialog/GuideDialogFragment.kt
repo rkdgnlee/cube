@@ -1,19 +1,13 @@
 package com.tangoplus.tangoq.dialog
 
-import android.content.Context
 import android.graphics.Color
-import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentGuideDialogBinding
 
 class GuideDialogFragment : DialogFragment() {

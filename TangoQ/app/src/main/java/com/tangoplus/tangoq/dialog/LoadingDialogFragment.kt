@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.databinding.FragmentLoadingDialogBinding
+import com.tangoplus.tangoq.fragment.dialogFragmentResize
 
 class LoadingDialogFragment : DialogFragment() {
     lateinit var binding : FragmentLoadingDialogBinding

@@ -55,7 +55,6 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.util.DeviceProperties.isTablet
@@ -63,8 +62,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.shuhart.stepview.StepView
-import com.tangoplus.tangoq.data.MeasureViewModel
-import com.tangoplus.tangoq.data.SkeletonViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.SkeletonViewModel
 import com.tangoplus.tangoq.databinding.ActivityMeasureSkeletonBinding
 import com.tangoplus.tangoq.db.FileStorageUtil.saveJa
 import com.tangoplus.tangoq.db.FileStorageUtil.saveJo
@@ -88,7 +87,6 @@ import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 import com.tangoplus.tangoq.`object`.NetworkMeasure.resendMeasureFile
 import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
 import com.tangoplus.tangoq.`object`.SaveSingletonManager
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -124,9 +122,6 @@ import kotlin.math.abs
 import kotlin.math.asin
 import kotlin.math.roundToInt
 import kotlin.random.Random
-
-private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
-
 
 class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener, SensorEventListener {
     // ------! POSE LANDMARKER 설정 시작 !------
@@ -461,7 +456,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
          * 1. isLooping true -> repeatCount확인 -> count에 맞게 isCapture및 isRecord 선택
          * 2. mCountdown.start() -> 카운트 다운이 종료될 때 isCapture, isRecording에 따라 service 함수 실행 */
         binding.ibtnMeasureSkeletonBack.setOnClickListener {
-
             MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("알림")
                 setMessage("측정을 종료하시겠습니까 ?")
@@ -639,8 +633,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     var requestBody = requestBodyBuilder.build()
                     val partCount = requestBodyBuilder.build().parts.size
                     Log.v("파트개수", "총 파트 개수: $partCount")
-//                    val maxRetries = 5
-//                    retryUpload(requestBody, maxRetries, mobileInfoSn, mobileStaticSns, mobileDynamicSn, measureInfo)
 
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
@@ -894,8 +886,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
-
-
     // ------! 센서 시작 !------
     private fun lowPassFilter(input: Float): Float {
         filteredAngle += ALPHA * (input - filteredAngle)
@@ -932,7 +922,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     }
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     // ------! 센서 끝 !------
-
 
     // ------# 측정 seq가 종료될 때 실행되는 함수 #------
     @SuppressLint("SetTextI18n")
@@ -1718,12 +1707,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     private fun saveJson(jsonObj: JSONObject, step: Int) {
 
-        /* 1. mvm.staticJo 가져오기. 공통사항 넣기
-        *  2. measureStatic으로 변환
-        *  3. 변환 후 statics에 넣기
-        *  4. statics를 다시 json으로 바꾸고 poselandmark넣기
-        * */
-
         jsonObj.apply {
             put("measure_seq", step + 1)
             put("measure_type", when (step) {
@@ -2069,7 +2052,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         val yValues = coordinates.map { it.second }
         val highestYIndex = yValues.withIndex().maxByOrNull { it.value }?.index ?: 0
 
-        // 3프레임 전의 인덱스를 반환하되, 리스트의 범위를 벗어나지 않도록 합니다.
+
         maxOf(0, highestYIndex - 3)
     }
 
@@ -2139,7 +2122,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 attempts++
             }
         }
-
         Result.failure(lastException ?: Exception("Failed after $maxRetries attempts"))
     }
 

@@ -105,9 +105,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             return
         }
 
-
         if (currentRunningMode == RunningMode.LIVE_STREAM) {
-
             val offsetX = ((width - imageWidth * scaleFactorX) / 2 ) + 30
             val offsetY = (height - imageHeight * scaleFactorY) / 2
             landmarks.forEach { landmark ->
@@ -117,7 +115,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                     pointPaint
                 )
             }
-
 
             // 안전하게 특정 랜드마크 접근
             val nose = landmarks.getOrNull(0)
@@ -135,9 +132,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
             }
 
-            // Draw lines between landmarks
-            // Note: You'll need to define which landmarks should be connected
-            // This is just an example and may need to be adjusted
             val connections = listOf(
                 // 얼굴
                 Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),
@@ -214,12 +208,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 canvas.drawLine(leftIndexX - 100, leftIndexY, rightIndexX + 100, rightIndexY, axisPaint)
                 canvas.drawLine(leftHipX - 100, leftHipY, rightHipX + 100, rightHipY, axisPaint)
                 canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
-
             }
-
-
-
-
 
             val connections = listOf(
                 // 얼굴
@@ -247,8 +236,5 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 }
             }
         }
-
-
-
     }
 }

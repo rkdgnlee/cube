@@ -5,23 +5,19 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.SignInViewModel
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentProfileEditBSDialogBinding
 
 class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding: FragmentProfileEditBSDialogBinding
     lateinit var arg : String
-    val viewModel : SignInViewModel by activityViewModels()
+    val svm : SignInViewModel by activityViewModels()
 
     companion object {
         private const val ARG_EDIT_BS_TITLE = "profileEditTitle"
@@ -100,11 +96,11 @@ class ProfileEditBSDialogFragment : BottomSheetDialogFragment() {
 
         binding.btnPEBSDFinish.setOnClickListener {
             when (arg) {
-                "몸무게" -> viewModel.setWeight.value = binding.etPEBSD.text.toString().toInt()
-                "신장" -> viewModel.setHeight.value = binding.etPEBSD.text.toString().toInt()
-                "이메일" -> viewModel.setEmail.value = binding.etPEBSD.text.toString()
+                "몸무게" -> svm.setWeight.value = binding.etPEBSD.text.toString().toInt()
+                "신장" -> svm.setHeight.value = binding.etPEBSD.text.toString().toInt()
+                "이메일" -> svm.setEmail.value = binding.etPEBSD.text.toString()
             }
-            Log.v("뷰모델에 잘담겼는지", "${viewModel.User.value}")
+            Log.v("뷰모델에 잘담겼는지", "${svm.User.value}")
             dismiss()
         }
 

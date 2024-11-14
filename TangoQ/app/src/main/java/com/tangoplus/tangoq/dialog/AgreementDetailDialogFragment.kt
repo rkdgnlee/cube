@@ -14,12 +14,14 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentAgreementDetailDialogBinding
+import com.tangoplus.tangoq.fragment.dialogFragmentResize
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
 
 class AgreementDetailDialogFragment : DialogFragment() {
+    lateinit var binding: FragmentAgreementDetailDialogBinding
     companion object {
         const val ARG_AGREEMENT_TYPE = "agreement_type"
 
@@ -32,7 +34,6 @@ class AgreementDetailDialogFragment : DialogFragment() {
             return fragment
         }
     }
-    lateinit var binding: FragmentAgreementDetailDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,51 +74,20 @@ class AgreementDetailDialogFragment : DialogFragment() {
             else -> ""
         }
         val builder = AlertDialog.Builder(requireContext())
-
         binding = FragmentAgreementDetailDialogBinding.inflate(layoutInflater)
         builder.setView(binding.root)
-
         binding.tvAgreement.text = agreementText
-
         return builder.create()
     }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.6f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
+        dialogFragmentResize(requireContext(), this@AgreementDetailDialogFragment)
 
-        val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
-        if (agreementType == "agreement1") {
-            dialogFragmentResize(0.8f, 0.7f)
-        } else {
-            dialogFragmentResize(0.8f, 0.7f)
-        }
     }
-    private fun dialogFragmentResize(width: Float, height: Float) {
-        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        if (Build.VERSION.SDK_INT < 30) {
-            val display = windowManager.defaultDisplay
-            val size = Point()
-
-            display.getSize(size)
-
-            val window = dialog?.window
-
-            val x = (size.x * width).toInt()
-            val y = (size.y * height).toInt()
-            window?.setLayout(x, y)
-        } else {
-            val rect = windowManager.currentWindowMetrics.bounds
-
-            val window = dialog?.window
-
-            val x = (rect.width() * width).toInt()
-            val y = (rect.height() * height).toInt()
-
-            window?.setLayout(x, y)
-        }
-    }
 }

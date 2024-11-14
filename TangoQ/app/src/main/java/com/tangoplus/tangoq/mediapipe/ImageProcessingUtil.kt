@@ -19,13 +19,10 @@ object ImageProcessingUtil {
         scaleFactorY: Float,
         offSetX: Float,
         offSetY: Float,
-
         sequence: Int,
     ): Bitmap {
         Log.v("스케일과오프셋", "scaleFactor: (${scaleFactorX}, ${scaleFactorY}), offset: ($offSetX, $offSetY)")
 
-//        val resultBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
-//        val canvas = Canvas(resultBitmap)
 
         val matrix = Matrix().apply {
             preScale(-1f, 1f)

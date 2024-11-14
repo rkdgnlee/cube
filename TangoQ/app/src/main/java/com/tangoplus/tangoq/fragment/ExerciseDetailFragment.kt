@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +17,7 @@ import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.SpinnerAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
 import com.tangoplus.tangoq.db.PreferencesManager
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
@@ -27,10 +26,9 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import kotlinx.coroutines.launch
-import java.util.prefs.Preferences
 
 
-class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClosedListener{
+class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClosedListener {
     lateinit var binding : FragmentExerciseDetailBinding
     private var filteredDataList = mutableListOf<ExerciseVO>()
     private var currentCateExercises = mutableListOf<ExerciseVO>()
@@ -46,8 +44,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentExerciseDetailBinding.inflate(inflater)
-//        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
-
         return binding.root
     }
 
@@ -114,7 +110,8 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             "발목" to 9
         )
 
-        val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryList, this@ExerciseDetailFragment, this@ExerciseDetailFragment, sn!! ,"subCategory" )
+        val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryList, this@ExerciseDetailFragment,  sn!! ,"subCategory" )
+        adapter2.onCategoryClickListener = this
         binding.rvEDCategory.adapter = adapter2
         val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvEDCategory.layoutManager = linearLayoutManager2
@@ -195,6 +192,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         }
     }
 
+    // ------# 좋아요 누르고 PlayThumbnail 에서 종료 #------
     override fun onDialogClosed() {
         val filterIndex = binding.spnrED.selectedItemPosition
         when (filterIndex) {

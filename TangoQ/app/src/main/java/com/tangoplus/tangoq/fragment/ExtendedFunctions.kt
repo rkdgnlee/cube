@@ -1,11 +1,16 @@
 package com.tangoplus.tangoq.fragment
 
+import android.app.Dialog
 import android.content.Context
+import android.graphics.Point
+import android.os.Build
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.annotation.OptIn
 import androidx.compose.runtime.MutableState
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
@@ -48,4 +53,30 @@ fun Fragment.hideBadgeOnClick(badgeView: View,
         }
     }
     return null
+}
+
+fun dialogFragmentResize(context: Context, df: DialogFragment) {
+    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+    if (Build.VERSION.SDK_INT < 30) {
+        val display = windowManager.defaultDisplay
+        val size = Point()
+
+        display.getSize(size)
+
+        val window = df.dialog?.window
+
+        val x = (size.x * 0.8f).toInt()
+        val y = (size.y * 0.7f).toInt()
+        window?.setLayout(x, y)
+    } else {
+        val rect = windowManager.currentWindowMetrics.bounds
+
+        val window = df.dialog?.window
+
+        val x = (rect.width() * 0.8f).toInt()
+        val y = (rect.height() * 0.7f).toInt()
+
+        window?.setLayout(x, y)
+    }
 }

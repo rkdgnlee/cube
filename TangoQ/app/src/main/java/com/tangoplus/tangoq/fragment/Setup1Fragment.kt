@@ -1,20 +1,14 @@
 package com.tangoplus.tangoq.fragment
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.icu.util.Calendar
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
-import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentSetup1Binding
 
 class Setup1Fragment : Fragment() {

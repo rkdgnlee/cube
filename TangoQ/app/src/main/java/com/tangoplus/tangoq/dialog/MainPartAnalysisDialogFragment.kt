@@ -1,18 +1,13 @@
 package com.tangoplus.tangoq.dialog
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -20,30 +15,29 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.AnalysisRVAdapter
-import com.tangoplus.tangoq.adapter.AnalysisRVAdapter.AnalysisViewHolder
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.data.AnalysisVO
-import com.tangoplus.tangoq.data.AnalysisViewModel
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartAnalysisDialogBinding
 import com.tangoplus.tangoq.db.MeasurementManager.extractVideoCoordinates
-import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment.Companion.ARG_AGREEMENT_TYPE
+import com.tangoplus.tangoq.fragment.dialogFragmentResize
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 
 class MainPartAnalysisDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMainPartAnalysisDialogBinding
     val mvm : MeasureViewModel by activityViewModels()
-    val avm : AnalysisViewModel by activityViewModels()
-    private var currentAnalysis : AnalysisVO? = null
+    private val avm : AnalysisViewModel by activityViewModels()
+
     private var measureResult: JSONArray? = null
     override fun onResume() {
         super.onResume()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         dialog?.window?.setDimAmount(0.6f) // 원하는 만큼의 어둠 설정
-        dialogFragmentResize()
+        dialogFragmentResize(requireContext(), this@MainPartAnalysisDialogFragment)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,15 +51,15 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 선택한 자세의 raw Data들이 들어간 변수 하나 가져오기
-        currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
+        avm.currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
 
         binding.ibtnMPADExit.setOnClickListener { dismiss() }
-        binding.tvMPADTitle.text = "${avm.selectedPart} - ${setSeqString(currentAnalysis?.seq)}"
-        binding.tvMPADSummary.text = currentAnalysis?.summary
+        binding.tvMPADTitle.text = "${avm.selectedPart} - ${avm.setSeqString(avm.currentAnalysis?.seq)}"
+        binding.tvMPADSummary.text = avm.currentAnalysis?.summary
         measureResult = mvm.selectedMeasure?.measureResult
-        setState(currentAnalysis?.isNormal)
-        if (currentAnalysis != null) {
-            when (currentAnalysis?.seq) {
+        setState(avm.currentAnalysis?.isNormal)
+        if (avm.currentAnalysis != null) {
+            when (avm.currentAnalysis?.seq) {
                 1 -> {
                     // -----# 동적 측정 setUI #------
                     binding.tvMPADSummary.text = "스쿼트를 진행한 동안, 좌우 각 부위의 궤적을 그려 좌우를 비교합니다.\n대칭일 때 가장 이상적이고, 궤적이 좌우가 다를경우 해당 관절의 주변 근육의 긴장과 불편함이 있다는 것을 의미합니다."
@@ -96,7 +90,7 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
                 }
                 else -> {
                     setAdapter()
-                    for (uni in currentAnalysis?.labels!!) {
+                    for (uni in avm.currentAnalysis?.labels!!) {
                         uni.summary = setLabels(uni)
                     }
                 }
@@ -104,16 +98,15 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
         }
     }
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
-        val titles = listOf("좌측 손", "우측 손", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val leftadapter = DataDynamicRVAdapter(data, titles, 1)
+        val leftadapter = DataDynamicRVAdapter(data, avm.DynamicTitles, 1)
         binding.rvMPADLeft.layoutManager = linearLayoutManager1
         binding.rvMPADLeft.adapter = leftadapter
     }
 
     private fun setAdapter() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val adapter = AnalysisRVAdapter(this@MainPartAnalysisDialogFragment, currentAnalysis?.labels)
+        val adapter = AnalysisRVAdapter(this@MainPartAnalysisDialogFragment, avm.currentAnalysis?.labels)
         binding.rvMPADLeft.layoutManager = layoutManager
         binding.rvMPADLeft.adapter = adapter
     }
@@ -217,46 +210,6 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
             "front_horizontal_distance_ankle_right" -> "몸의 중심에서 우측 발목의 거리를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"
 //            "back_horizontal_distance_sub_ankle" -> ""
             "back_horizontal_distance_ankle_right" -> "몸의 중심에서 우측 발목의 거리를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"
-            else -> ""
-        }
-    }
-
-
-
-    private fun dialogFragmentResize() {
-        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-        if (Build.VERSION.SDK_INT < 30) {
-            val display = windowManager.defaultDisplay
-            val size = Point()
-
-            display.getSize(size)
-
-            val window = dialog?.window
-
-            val x = (size.x * 0.85f).toInt()
-            val y = (size.y * 0.8f).toInt()
-            window?.setLayout(x, y)
-        } else {
-            val rect = windowManager.currentWindowMetrics.bounds
-
-            val window = dialog?.window
-
-            val x = (rect.width() * 0.85f).toInt()
-            val y = (rect.height() * 0.8f).toInt()
-
-            window?.setLayout(x, y)
-        }
-    }
-    private fun setSeqString(seq: Int?) :String {
-        return when (seq) {
-            0 -> "정면 분석"
-            1 -> "동적 분석"
-            2 -> "팔꿉 분석"
-            3 -> "왼쪽 측면"
-            4 -> "오른쪽 측면"
-            5 -> "후면 분석"
-            6 -> "앉아 후면"
             else -> ""
         }
     }

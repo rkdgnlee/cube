@@ -26,10 +26,8 @@ class Singleton_t_measure private constructor(context: Context){
             }
         }
     }
-
     private fun initialize() {
         // JSON 초기화 로직을 여기에 추가
         measures = null
-
     }
 }

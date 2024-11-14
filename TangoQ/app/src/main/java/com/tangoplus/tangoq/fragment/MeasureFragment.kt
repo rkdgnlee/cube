@@ -19,7 +19,6 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 
 class MeasureFragment : Fragment() {
     lateinit var binding : FragmentMeasureBinding
-    private var pendingTabSelection: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,12 +65,5 @@ class MeasureFragment : Fragment() {
                 binding.tlMs.selectTab(binding.tlMs.getTabAt(position))
             }
         })
-    }
-
-    // ------# main에서 dashboard2로 옮겨가기
-    fun selectDashBoard2() {
-        binding.tlMs.getTabAt(1)?.select()
-        binding.vpMs.setCurrentItem(1, false)
-        Log.v("db2", "select: ${binding.vpMs.currentItem} ")
     }
 }

@@ -43,13 +43,12 @@ class WithdrawalFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        // ------! 화면 확장 및 세팅 & 싱글턴 초기화 시작 !------
-//        (activity as MainActivity).setFullLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
+        // ------# 화면 확장 및 세팅 & 싱글턴 초기화 #------
+
         binding.btnWd.isEnabled = false
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())
-//            .jsonObject?.optJSONObject("data")
-        // ------! 화면 확장 및 세팅 & 싱글턴 초기화 끝 !------
+
 
 
         // ------! spinner !------

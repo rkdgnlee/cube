@@ -15,7 +15,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -24,21 +23,17 @@ import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.`object`.NetworkUser
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
 import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptData
 import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedData
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.SaveSingletonManager
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 import java.util.regex.Pattern
 
 class LoginDialogFragment : DialogFragment() {

@@ -21,11 +21,10 @@ import com.tangoplus.tangoq.listener.OnCategoryClickListener
 class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int, String>>,
                                 private val subCategorys: List<String>,
                                 private val fragment: Fragment,
-                                private val onCategoryClickListener: OnCategoryClickListener,
                                 private val sn : Int,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
+    var onCategoryClickListener: OnCategoryClickListener? = null
     private var selectedPosition = 0
     inner class MainCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
         val ivMCThumbnail : ImageView = view.findViewById(R.id.ivMCThumbnail)
@@ -79,8 +78,8 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
 
                 Glide.with(fragment)
                     .load(fragment.resources.getIdentifier("drawable_main_category_${position}", "drawable", fragment.requireActivity().packageName))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // 캐싱 무시
-                    .skipMemoryCache(true) // 메모리 캐시 무시
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
 
                     .into(holder.ivMCThumbnail)
 
@@ -100,11 +99,11 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
                 } else {
                     holder.tvSCName.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor100)
-
                 }
+
                 holder.tvSCName.setOnClickListener {
                     Log.v("카테고리커런트아이템", currentItem)
-                    onCategoryClickListener.onCategoryClick(currentItem)
+                    onCategoryClickListener?.onCategoryClick(currentItem)
                     val previousPosition = selectedPosition
                     selectedPosition = adapterPosition
                     notifyItemChanged(previousPosition) // 이전 선택된 아이템 갱신
@@ -119,7 +118,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
         Log.v("ClickIndex", "category: $category")
         Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-//            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+
             replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
             addToBackStack(null)
             commit()

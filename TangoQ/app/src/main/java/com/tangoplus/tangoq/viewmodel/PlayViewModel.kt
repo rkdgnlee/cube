@@ -1,18 +1,18 @@
-package com.tangoplus.tangoq.data
+package com.tangoplus.tangoq.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tangoplus.tangoq.PlaySkeletonActivity
 import com.tangoplus.tangoq.PlaySkeletonActivity.horizontalPosition
 
-class ExerciseViewModel : ViewModel() {
+class PlayViewModel : ViewModel() {
+    val currentPlaybackPosition = MutableLiveData<Long>()
+    val currentWindowIndex = MutableLiveData<Int>()
 
-    // 모든 운동 exerciseFragment에서 받아서 VM에 넣는 곳
-    var allExercises : MutableList<ExerciseVO>
-    // 운동 검색 기록 임시로 담아두는 곳.
-    var searchHistory = MutableLiveData(mutableListOf<Pair<Int, String>>()) // 운동 검색 history
-
-
+    // 재생목록 재생 후 피드백 담기
+    var totalProgressDuration = 0
+    var exerciseLog = Triple(0, 0, 0) // 진행시간, 갯수, 총 시간.
+    var isDialogShown = MutableLiveData(false)
 
     //  PlaySkeleton에서 count하는 공간
     var normalNose  =  Pair(0.0, 0.0)
@@ -40,16 +40,4 @@ class ExerciseViewModel : ViewModel() {
     var hasMovedLeftHorizontally = false
     var hasMovedRightHorizontally = false
 
-
-    // 재생목록 재생 후 피드백 담기
-    var totalProgressDuration = 0
-    var exerciseLog = Triple(0, 0, 0) // 진행시간, 갯수, 총 시간
-    var isDialogShown = MutableLiveData(false)
-
-
-    init {
-        exerciseLog = Triple(0, 0, 0)
-        allExercises = mutableListOf()
-
-    }
 }

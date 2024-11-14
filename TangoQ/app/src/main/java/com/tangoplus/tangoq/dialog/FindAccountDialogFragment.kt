@@ -19,7 +19,6 @@ import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat.requireViewById
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
@@ -30,10 +29,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
@@ -43,8 +39,8 @@ import java.util.regex.Pattern
 class FindAccountDialogFragment : DialogFragment() {
     lateinit var binding : FragmentFindAccountDialogBinding
     private lateinit var auth : FirebaseAuth
-    val viewModel : SignInViewModel by viewModels()
-    var verifId = ""
+    val svm : SignInViewModel by viewModels()
+    var verifyId = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,8 +68,8 @@ class FindAccountDialogFragment : DialogFragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
                 imm!!.hideSoftInputFromWindow(view.windowToken, 0)
-                viewModel.mobileCondition.value = false
-                viewModel.mobileAuthCondition.value = false
+                svm.mobileCondition.value = false
+                svm.mobileAuthCondition.value = false
                 binding.etFADMobile.isEnabled = true
                 binding.etFADAuthNumber.isEnabled = false
                 binding.btnFADAuthSend.isEnabled = true
@@ -86,7 +82,7 @@ class FindAccountDialogFragment : DialogFragment() {
                         binding.clFADIdResult.visibility = View.GONE
                         binding.clFADResetPassword.visibility = View.GONE
                         binding.btnFADConfirm.isEnabled = false
-                        viewModel.isFindId = true
+                        svm.isFindId = true
                     }
                     1 -> {
                         binding.clFADMobile.visibility = View.VISIBLE
@@ -96,7 +92,7 @@ class FindAccountDialogFragment : DialogFragment() {
                         binding.btnFADConfirm.isEnabled = true
                         binding.etFADAuthNumber.text = null
                         binding.etFADMobile.text = null
-                        viewModel.isFindId = false
+                        svm.isFindId = false
                     }
                 }
             }
@@ -116,7 +112,7 @@ class FindAccountDialogFragment : DialogFragment() {
             @RequiresApi(Build.VERSION_CODES.P)
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
-                verifId = verificationId
+                verifyId = verificationId
                 Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireView(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
@@ -143,9 +139,9 @@ class FindAccountDialogFragment : DialogFragment() {
                 }
                 isFormatting = false
                 Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()}")
-                viewModel.mobileCondition.value = mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()
-                if (viewModel.mobileCondition.value == true) {
-                    viewModel.User.value?.put("user_mobile", s.toString() )
+                svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()
+                if (svm.mobileCondition.value == true) {
+                    svm.User.value?.put("user_mobile", s.toString() )
                     binding.btnFADAuthSend.isEnabled = true
                 }
 
@@ -185,7 +181,7 @@ class FindAccountDialogFragment : DialogFragment() {
         binding.btnFADConfirm.setOnClickListener{
             when (binding.btnFADConfirm.text) {
                 "인증 하기" -> {
-                    val credential = PhoneAuthProvider.getCredential(verifId, binding.etFADAuthNumber.text.toString())
+                    val credential = PhoneAuthProvider.getCredential(verifyId, binding.etFADAuthNumber.text.toString())
                     signInWithPhoneAuthCredential(credential)
                 }
                 "아이디 찾기" -> {
@@ -217,7 +213,7 @@ class FindAccountDialogFragment : DialogFragment() {
                     binding.btnFADConfirm.text= "초기 화면으로"
                 }
                 "인증 하기" -> {
-                    val credential = PhoneAuthProvider.getCredential(verifId, binding.etFADAuthNumber.text.toString())
+                    val credential = PhoneAuthProvider.getCredential(verifyId, binding.etFADAuthNumber.text.toString())
                     signInWithPhoneAuthCredential(credential)
                 }
                 "비밀번호 재설정" -> {
@@ -287,7 +283,7 @@ class FindAccountDialogFragment : DialogFragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     requireActivity().runOnUiThread {
-                        viewModel.mobileAuthCondition.value = true
+                        svm.mobileAuthCondition.value = true
                         binding.etFADAuthNumber.isEnabled = false
                         binding.etFADMobile.isEnabled = false
 
@@ -297,7 +293,7 @@ class FindAccountDialogFragment : DialogFragment() {
                         snackbar.setAction("확인") { snackbar.dismiss() }
                         snackbar.setActionTextColor(Color.WHITE)
                         snackbar.show()
-                        binding.btnFADConfirm.text = if (viewModel.isFindId) "아이디 찾기" else "비밀번호 재설정"
+                        binding.btnFADConfirm.text = if (svm.isFindId) "아이디 찾기" else "비밀번호 재설정"
                     }
                 } else {
                     Log.w(ContentValues.TAG, "mobile auth failed.")
