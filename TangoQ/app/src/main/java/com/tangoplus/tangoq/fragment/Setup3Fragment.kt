@@ -44,25 +44,25 @@ class Setup3Fragment : Fragment(){
         }
     }
 
-    private fun transIdByCheckbox(checkBox: CheckBox) : Int {
-        return when (checkBox.text) {
-            "체력증가" -> 0
-            "기초 운동 능력 증가" -> 1
-            "자세 교정" -> 2
-            "근재활운동 (통증 관리)" -> 3
-            "일상생활 개선" -> 4
-
-            "목관절" -> 0
-            "어깨" -> 1
-            "팔꿉" -> 2
-            "손목" -> 3
-            "하복부" -> 4
-            "등" -> 5
-            "무릎" -> 6
-            "발목" -> 7
-
-            else -> -1
-        }
-    }
+//    private fun transIdByCheckbox(checkBox: CheckBox) : Int {
+//        return when (checkBox.text) {
+//            "체력증가" -> 0
+//            "기초 운동 능력 증가" -> 1
+//            "자세 교정" -> 2
+//            "근재활운동 (통증 관리)" -> 3
+//            "일상생활 개선" -> 4
+//
+//            "목관절" -> 0
+//            "어깨" -> 1
+//            "팔꿉" -> 2
+//            "손목" -> 3
+//            "하복부" -> 4
+//            "등" -> 5
+//            "무릎" -> 6
+//            "발목" -> 7
+//
+//            else -> -1
+//        }
+//    }
 
 }

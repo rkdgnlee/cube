@@ -35,11 +35,11 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.shuhart.stepview.StepView
-import com.tangoplus.tangoq.adapter.SpinnerAdapter
+import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
-import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
-import com.tangoplus.tangoq.dialog.SignInBSDialogFragment
+import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
+import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.`object`.NetworkUser.idDuplicateCheck
 import com.tangoplus.tangoq.`object`.NetworkUser.insertUser
@@ -474,8 +474,8 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
-        val bottomSheetFragment = AgreementBottomSheetDialogFragment()
-        bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.OnAgreeListener {
+        val bottomSheetFragment = AgreementBSDialogFragment()
+        bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
             override fun onFinish(agree: Boolean) {
                 if (agree) {
                     // TODO 동의 간주 후, 연락처 보내기

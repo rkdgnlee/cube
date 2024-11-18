@@ -264,7 +264,11 @@ class QRCodeDialogFragment : DialogFragment() {
         binding.otvLSD.visibility = View.VISIBLE
         binding.ibtnLSDInfo.visibility = View.GONE
         binding.ibtnLSDBack2.visibility = View.GONE
-        codeScanner.startPreview()
+        CoroutineScope(Dispatchers.Main).launch {
+
+            initScanner()
+            codeScanner.startPreview()
+        }
 
     }
 

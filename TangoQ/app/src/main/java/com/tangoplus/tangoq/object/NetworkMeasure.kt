@@ -9,7 +9,7 @@ import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

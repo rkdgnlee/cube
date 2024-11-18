@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.db
+package com.tangoplus.tangoq.function
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -12,6 +12,7 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
@@ -446,7 +447,7 @@ object MeasurementManager {
                         override fun onTileLoadError(e: Exception?) { continuation.resume(false) }
                         override fun onPreviewReleased() { continuation.resume(false) }
                     })
-                    Log.v("ImageLoading", "Image loaded successfully. Width: ${bitmap.width}, Height: ${bitmap.height}")
+
                 }
             } else { continuation.resume(false) }
         } catch (e: IndexOutOfBoundsException) {

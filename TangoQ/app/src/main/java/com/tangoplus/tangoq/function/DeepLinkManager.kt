@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.db
+package com.tangoplus.tangoq.function
 
 import android.content.Context
 import android.content.Intent

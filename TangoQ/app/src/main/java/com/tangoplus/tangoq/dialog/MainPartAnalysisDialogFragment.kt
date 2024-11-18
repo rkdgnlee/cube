@@ -17,11 +17,10 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.AnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.data.AnalysisUnitVO
-import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartAnalysisDialogBinding
-import com.tangoplus.tangoq.db.MeasurementManager.extractVideoCoordinates
+import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.fragment.dialogFragmentResize
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -62,6 +61,7 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
             when (avm.currentAnalysis?.seq) {
                 1 -> {
                     // -----# 동적 측정 setUI #------
+                    binding.tvMPADSummary.textSize = 14f
                     binding.tvMPADSummary.text = "스쿼트를 진행한 동안, 좌우 각 부위의 궤적을 그려 좌우를 비교합니다.\n대칭일 때 가장 이상적이고, 궤적이 좌우가 다를경우 해당 관절의 주변 근육의 긴장과 불편함이 있다는 것을 의미합니다."
                     binding.tvMPADSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.secondContainerColor))
                     binding.tvMPADSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
@@ -89,6 +89,7 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
                     }
                 }
                 else -> {
+                    binding.tvMPADSummary.textSize = 15f
                     setAdapter()
                     for (uni in avm.currentAnalysis?.labels!!) {
                         uni.summary = setLabels(uni)
@@ -155,13 +156,13 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
             "side_right_vertical_angle_elbow_wrist" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 할수록 어깨 주변 근육의 긴장이 의심됩니다"
             "side_right_vertical_angle_shoulder_elbow_wrist" -> "측면에서 어깨-팔꿉-손목의 각도입니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             // 좌측 손목
-            "front_vertical_angle_elbow_wrist_left" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
+            "front_vertical_angle_elbow_wrist_left" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
             "front_horizontal_angle_wrist" -> "양 손목의 높이 차를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "front_elbow_align_angle_mid_index_wrist_elbow_left" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
             "front_elbow_align_distance_left_wrist_shoulder" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
             "side_left_horizontal_distance_wrist" -> "측면에서 몸의 무게중심에서 손목까지의 거리를 의미합니다. 멀어질 수록 이두근 긴장, 전완근의 긴장 등이 의심됩니다."
             // 우측 손목
-            "front_vertical_angle_elbow_wrist_right" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
+            "front_vertical_angle_elbow_wrist_right" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
 //            "front_horizontal_angle_wrist" -> ""
             "front_elbow_align_angle_mid_index_wrist_elbow_right" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
             "front_elbow_align_distance_right_wrist_shoulder" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"

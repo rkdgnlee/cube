@@ -107,14 +107,17 @@
 
                     <TextView
                         android:id="@+id/tvMTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="30dp"
-                        android:text="측정 정보"
+                        android:layout_marginEnd="10dp"
+                        android:text="000님의 최근 측정 기록"
                         android:textColor="@color/subColor800"
-                        android:textSize="24dp"
+                        android:textSize="20dp"
                         android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvMMeasureDate"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -123,7 +126,7 @@
                         android:layout_width="140dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
-                        android:background="@drawable/bckgnd_rectangle_20"
+                        android:background="@drawable/effect_ibtn_20dp"
                         android:backgroundTint="@color/secondaryColor"
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
@@ -244,7 +247,7 @@
                         android:layout_marginTop="20dp"
                         android:text="진행 프로그램"
                         android:textColor="@color/subColor800"
-                        android:textSize="24dp"
+                        android:textSize="20dp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
@@ -254,7 +257,7 @@
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
-                        android:background="@drawable/bckgnd_rectangle_20"
+                        android:background="@drawable/effect_ibtn_20dp"
                         android:backgroundTint="@color/secondaryColor"
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
@@ -301,6 +304,7 @@
 
                             </com.facebook.shimmer.ShimmerFrameLayout>
                         </LinearLayout>
+
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMProgram"

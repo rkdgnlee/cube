@@ -90,7 +90,7 @@ class MeasureDetailFragment : Fragment() {
         val indices = listOf(0, 1, 3, 5, 7, 9, 11, 12, 10, 8, 6, 4, 2)
 
         // 먼저 모든 점수를 95로 초기화
-        val scores = MutableList(bodyParts.size) { 97f }
+        val scores = MutableList(bodyParts.size) { 91f }
         Log.v("raderScores", "${ measure.dangerParts}")
         // measure.dangerParts에 있는 부위들의 점수만 업데이트
         measure.dangerParts.forEach { (part, danger) ->
@@ -100,7 +100,7 @@ class MeasureDetailFragment : Fragment() {
                     1.0f -> 80f
                     2.0f -> 70f
                     3.0f -> 60f
-                    else -> 97f
+                    else -> 91f
                 }
             }
         }
@@ -138,8 +138,8 @@ class MeasureDetailFragment : Fragment() {
                 setDrawGridLines(true)
                 valueFormatter = IndexAxisValueFormatter(raderXParts)
                 textColor = resources.getColor(R.color.subColor400, null)
-                textSize = if (isTablet(requireContext())) 18f else 13f   // 텍스트 크기 증가
-                yOffset = 20f  // 텍스트를 차트에서 조금 더 멀리 배치
+                textSize = if (isTablet(requireContext())) 20f else 13f   // 텍스트 크기 증가
+                yOffset = 40f
 
 
             }

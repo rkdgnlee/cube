@@ -15,11 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.adapter.SpinnerAdapter
+import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment

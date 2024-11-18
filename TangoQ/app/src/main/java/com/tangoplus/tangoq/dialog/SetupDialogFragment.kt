@@ -17,7 +17,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.SetupVPAdapter
+import com.tangoplus.tangoq.adapter.etc.SetupVPAdapter
 import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentSetupDialogBinding
 import com.tangoplus.tangoq.listener.OnSingleClickListener
@@ -75,7 +75,7 @@ class SetupDialogFragment : DialogFragment() {
                 init {
                     add("성별")
                     add("신장, 몸무게")
-                    add("위험부위")
+                    add("통증 부위 선태고")
                 }
             }).stepsNumber(3)
             .animationDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))

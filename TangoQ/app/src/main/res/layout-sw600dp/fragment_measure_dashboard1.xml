@@ -36,6 +36,7 @@
                 app:layout_constraintVertical_bias="0.0">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cvMD1"
                     android:layout_width="36dp"
                     android:layout_height="0dp"
                     android:layout_marginEnd="12dp"
@@ -43,6 +44,8 @@
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="@+id/lcMD1"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/lcMD1"
                     app:layout_constraintTop_toTopOf="@+id/lcMD1">
 
                     <androidx.constraintlayout.widget.ConstraintLayout

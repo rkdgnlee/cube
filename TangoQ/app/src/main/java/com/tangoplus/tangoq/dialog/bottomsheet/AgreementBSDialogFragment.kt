@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.dialog
+package com.tangoplus.tangoq.dialog.bottomsheet
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
@@ -13,8 +13,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentAgreementBSDialogBinding
+import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment
 
-class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
+class AgreementBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding: FragmentAgreementBSDialogBinding
     val viewModel : SignInViewModel by activityViewModels()
     private var agreeAll = MutableLiveData(false)
@@ -173,7 +174,6 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
             Log.v("광고성2", "${viewModel.agreementMk2.value}")
         }
 
-
         binding.btnAgreementFinish.setOnClickListener {
             dismiss()
             listener?.onFinish(true)
@@ -222,5 +222,11 @@ class AgreementBottomSheetDialogFragment : BottomSheetDialogFragment() {
             Log.v("광고성3", "${viewModel.marketingAgree.value}")
 
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setDimAmount(0.6f)
+        isCancelable = false
     }
 }

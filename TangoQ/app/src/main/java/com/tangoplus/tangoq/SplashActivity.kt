@@ -1,16 +1,12 @@
 package com.tangoplus.tangoq
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,8 +14,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
@@ -34,15 +28,16 @@ import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
-import com.tangoplus.tangoq.db.DeepLinkManager
-import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptData
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
-import com.tangoplus.tangoq.db.SecurePreferencesManager.loadEncryptedData
+import com.tangoplus.tangoq.function.DeepLinkManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.clearEncryptedToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.decryptToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.loadEncryptedToken
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
-import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,13 +48,12 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import java.util.Calendar
+import javax.crypto.AEADBadTagException
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
-    private val PERMISSION_REQUEST_CODE = 5000
     private lateinit var ssm : SaveSingletonManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +89,6 @@ class SplashActivity : AppCompatActivity() {
         when (isNetworkAvailable(this)) {
             true -> {
                 // ------! 푸쉬 알림 시작 !-----
-                permissionCheck()
 
                 FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
@@ -110,22 +103,6 @@ class SplashActivity : AppCompatActivity() {
 
                 // ------! 인 앱 알림 시작 !------
                 AlarmReceiver()
-                val intent = Intent(this, AlarmReceiver::class.java)
-                val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-                val calander: Calendar = Calendar.getInstance().apply {
-                    timeInMillis = System.currentTimeMillis()
-                    set(Calendar.HOUR_OF_DAY, 16)
-                } // 오후 1시에 알림이 오게끔 돼 있음.
-
-                val alarmManager = this.getSystemService(ALARM_SERVICE) as AlarmManager
-                alarmManager.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    calander.timeInMillis,
-                    AlarmManager.INTERVAL_DAY,
-                    pendingIntent
-                )
-                // ------! 인 앱 알림 끝 !------
-
                 cacheDir.deleteRecursively()
                 // ------# 다크모드 및 설정 불러오기  #------
                 val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
@@ -198,8 +175,8 @@ class SplashActivity : AppCompatActivity() {
                                     jsonObj.put("user_name", user.displayName.toString())
                                     jsonObj.put("email", user.email.toString())
                                     jsonObj.put("google_login_id", user.uid)
-                                    jsonObj.put("mobile", user.phoneNumber)
                                     jsonObj.put("social_account", "google")
+                                    Log.v("구글Json", "${jsonObj}")
                                     getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
                                             storeUserInSingleton(this, jo)
@@ -249,26 +226,32 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    else if (getEncryptedJwtToken(this@SplashActivity) != null && loadEncryptedData(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)) != null) {
+                    else if (getEncryptedJwtToken(this@SplashActivity) != null && loadEncryptedToken(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)) != null) {
 
                         // ------! 자체 로그인 !------
-                        val jsonObj = decryptData(getString(R.string.SECURE_KEY_ALIAS),
-                            loadEncryptedData(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)).toString()
-                        )
-                        lifecycleScope.launch {
-                            getUserIdentifyJson(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
-                                if (jo != null) {
-                                    storeUserInSingleton(this@SplashActivity, jo)
-                                    Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                    val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
-                                    val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                        try {
+                            val jsonObj = decryptToken(getString(R.string.SECURE_KEY_ALIAS),
+                                loadEncryptedToken(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)).toString()
+                            )
+                            lifecycleScope.launch {
+                                getUserIdentifyJson(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
+                                    if (jo != null) {
+                                        storeUserInSingleton(this@SplashActivity, jo)
+                                        Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
+                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
 
-                                    ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
 
-                                        navigateDeepLink()
+                                            navigateDeepLink()
+                                        }
                                     }
                                 }
                             }
+                        } catch (e: AEADBadTagException) {
+                            Log.e("decryptedError", e.stackTraceToString())
+                            clearEncryptedToken(this@SplashActivity)
+                            introInit()
                         }
                     }
                     else {
@@ -287,22 +270,6 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 }, 4000
-                )
-            }
-        }
-    }
-
-    private fun permissionCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val permissionCheck = ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.POST_NOTIFICATIONS
-            )
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    PERMISSION_REQUEST_CODE
                 )
             }
         }

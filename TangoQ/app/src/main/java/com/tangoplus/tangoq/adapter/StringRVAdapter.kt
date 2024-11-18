@@ -203,7 +203,7 @@ class StringRVAdapter(private val fragment: Fragment,
             is PartViewHolder -> {
                 if (currentItem != null) {
                     holder.tvPI.text = currentItem
-                    setPartItem(holder.clPI, holder.cvPI, holder.tvPI)
+//                    setPartItem(holder.clPI, holder.cvPI, holder.tvPI)
                     when (currentItem) {
                         "목" -> holder.ivPI.setImageResource(R.drawable.icon_part1)
                         "우측 어깨", "좌측 어깨" -> holder.ivPI.setImageResource(R.drawable.icon_part2)
@@ -293,9 +293,9 @@ class StringRVAdapter(private val fragment: Fragment,
         imageView.setImageResource(fragment.resources.getIdentifier("drawable_muscle_${name}", "drawable", fragment.requireActivity().packageName))
     }
 
-    private fun setPartItem(cl: ConstraintLayout, cv: CardView, tv: TextView){
-        cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteContainerColor)
-        cv.setCardBackgroundColor(fragment.resources.getColor(R.color.deleteColor, null))
-        tv.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteTextColor))
-    }
+//    private fun setPartItem(cl: ConstraintLayout, cv: CardView, tv: TextView){
+//        cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteContainerColor)
+//        cv.setCardBackgroundColor(fragment.resources.getColor(R.color.deleteColor, null))
+//        tv.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteTextColor))
+//    }
 }

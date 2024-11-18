@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.adapter
+package com.tangoplus.tangoq.adapter.etc
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

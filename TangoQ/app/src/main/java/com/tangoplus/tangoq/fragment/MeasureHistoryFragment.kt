@@ -15,7 +15,7 @@ import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MeasureHistoryRVAdapter
-import com.tangoplus.tangoq.adapter.SpinnerAdapter
+import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureHistoryBinding

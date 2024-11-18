@@ -3,7 +3,7 @@ package com.tangoplus.tangoq.`object`
 import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.data.ProgressUnitVO
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call

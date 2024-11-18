@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.dialog
+package com.tangoplus.tangoq.dialog.bottomsheet
 
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle

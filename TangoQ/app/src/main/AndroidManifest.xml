@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-feature
-        android:name="android.hardware.telephony"
-        android:required="false" />
-    <uses-feature
         android:name="android.hardware.camera.any"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -95,7 +95,7 @@
             </intent-filter>
 
             <intent-filter>
-                <!-- Google 검색에서 인텐트 필터에 도달할 수 있도록 action 태그에 추가-->
+
                 <action android:name="android.intent.action.VIEW"/>
                 <!-- scheme 속성을 포함하는 data 태그 추가 -->
                 <data android:scheme="tangoplus" android:host="tangoq" android:pathPrefix="/"/>
@@ -149,6 +149,7 @@
         <receiver
             android:name=".broadcastReceiver.AlarmReceiver"
             android:exported="true" />
+
     </application>
 
 </manifest>

@@ -18,6 +18,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -224,7 +226,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             }
             lineChart.apply {
                 data = LineData(lcLineDataSet)
-
+//                animateX(1000, Easing.EaseInOutBack)
                 setTouchEnabled(true)
                 isDragEnabled = true
                 description.isEnabled = false
@@ -237,12 +239,14 @@ class MeasureDashBoard1Fragment : Fragment() {
                         set.setDrawHighlightIndicators(false)
                     }
                 }
-
+//                animateChart(lineChart, lcLineDataSet, lcEntries)
                 notifyDataSetChanged()
                 description.text = ""
                 setScaleEnabled(false)
                 invalidate()
             }
+
+
             // ------! 날짜 기간 가져오기 시작 !------
             val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             val outputFormatter = DateTimeFormatter.ofPattern("MM.dd")
@@ -309,7 +313,8 @@ class MeasureDashBoard1Fragment : Fragment() {
 //            params.horizontalBias = percentage
 //            binding.ivMD1Position.layoutParams = params
 //            val percent = (params.horizontalBias * 100).toInt()
-            animateImageViewToPercentage(percentage)
+            animateArrowToPercentage(percentage)
+            animateCardViewToPercentage()
             when (percentage) {
                 in 0f .. 0.3f -> {
                     binding.vMD1Middle.visibility = View.INVISIBLE
@@ -367,9 +372,8 @@ class MeasureDashBoard1Fragment : Fragment() {
         return String.format("%.3f", percentage).toFloat()
     }
 
-    private fun animateImageViewToPercentage(percent: Float) {
+    private fun animateArrowToPercentage(percent: Float) {
         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-
         // 현재 horizontalBias
         val startBias = params.horizontalBias
         val endBias = percent // 이동할 목표 위치
@@ -388,4 +392,45 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         animator.start()
     }
+
+    private fun animateCardViewToPercentage() {
+        val params = binding.cvMD1.layoutParams as ConstraintLayout.LayoutParams
+        val startBias = params.horizontalBias
+        val endBias = 1.0f // 이동할 목표 위치
+
+        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+            duration = 1000L // 1초 동안 애니메이션
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { animation ->
+                val animatedValue = animation.animatedValue as Float
+                params.horizontalBias = animatedValue
+                binding.cvMD1.layoutParams = params
+            }
+        }
+        animator.start()
+    }
+
+//    private fun animateChart(chart: LineChart, dataSet: LineDataSet, allEntries: List<Entry>) {
+//        if (allEntries.isEmpty()) {
+//            Log.e("Error", "allEntries is empty. No data to animate.")
+//            return
+//        }
+//
+//        val animator = ValueAnimator.ofInt(0, allEntries.size.coerceAtLeast(1)).apply {
+//            duration = 1000L
+//            interpolator = AccelerateDecelerateInterpolator()
+//            addUpdateListener { animation ->
+//                val currentIndex = animation.animatedValue as Int
+//                if (currentIndex in 0..allEntries.size) {
+//                    dataSet.values = allEntries.subList(0, currentIndex)
+//                    chart.data.notifyDataChanged()
+//                    chart.notifyDataSetChanged()
+//                    chart.invalidate()
+//                } else {
+//                    Log.e("Error", "Invalid currentIndex: $currentIndex, allEntries size: ${allEntries.size}")
+//                }
+//            }
+//        }
+//        animator.start()
+//    }
 }

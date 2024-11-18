@@ -1,12 +1,17 @@
 package com.tangoplus.tangoq.fragment
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -25,7 +30,7 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.StringRVAdapter
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.data.ProgressUnitVO
@@ -35,12 +40,14 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.GuideDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.dialog.MeasureBSDialogFragment
+import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
+import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
 import com.tangoplus.tangoq.`object`.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.`object`.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.transition.PartAnimationController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,8 +55,9 @@ import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
-    val uvm : UserViewModel by activityViewModels()
-    val mvm : MeasureViewModel by activityViewModels()
+    val uvm by activityViewModels<UserViewModel>()
+    val mvm by activityViewModels<MeasureViewModel>()
+
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
@@ -111,6 +119,15 @@ class MainFragment : Fragment() {
                 if (!measures.isNullOrEmpty()) {
                     mvm.selectedMeasureDate.value = measures!!.get(0).regDate
                     mvm.selectMeasureDate.value = measures!!.get(0).regDate
+
+                    // ------# 측정결과 있을 때 도움말 툴팁 #------
+                    if (isFirstRun("Tooltip_isFirstRun_existed")) {
+                        existedMeasurementGuide()
+                    }
+                } else {
+                    if (isFirstRun("Tooltip_isFirstRun_not_existed")) {
+                        notExistedMeasurementGuide()
+                    }
                 }
                 Log.v("선택된measureDate", "${mvm.selectedMeasureDate.value}")
                 updateUI()
@@ -130,10 +147,16 @@ class MainFragment : Fragment() {
     private fun setAdapter(index: Int) {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvM1.layoutManager = layoutManager1
-        val muscleAdapter = StringRVAdapter(this@MainFragment, measures?.get(index)?.dangerParts?.map { it.first }?.toMutableList(), "part", mvm)
-        binding.rvM1.adapter = muscleAdapter
+        val partAdapter = StringRVAdapter(this@MainFragment, measures?.get(index)?.dangerParts?.map { it.first }?.toMutableList(), "part", mvm)
+        binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
-
+        Handler(Looper.getMainLooper()).postDelayed({
+            val animationController = PartAnimationController(
+                recyclerView = binding.rvM1,
+                itemCount = partAdapter.itemCount
+            )
+            animationController.startSequentialAnimation()
+        }, 500)
         // ------# balance check #------
         /* 이미 순위가 매겨진 부위들을 넣어서 index별로 각 밸런스 체크에 들어간다 */
         // TODO 고정으로 일단 위험부위와 점수는 넣어놓기.
@@ -225,7 +248,7 @@ class MainFragment : Fragment() {
                             commit()
                         }
                     }
-                    // ------# 바텀시트에서 변한 selectedMeasureDate 에 맞게 변함.
+                    // ------# 바텀시트에서 변한 selectedMeasureDate 에 맞게 변함 #------
 
 
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
@@ -389,6 +412,23 @@ class MainFragment : Fragment() {
 
 
                                     // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(),
+                                            ContextCompat.getColor(requireContext(), R.color.mainColor),
+                                            Color.parseColor("#2DE187")).apply {
+                                            duration = 1000
+                                            repeatCount = ValueAnimator.INFINITE
+                                            repeatMode = ValueAnimator.REVERSE
+
+                                            addUpdateListener { animator ->
+                                                val color = animator.animatedValue as Int
+                                                binding.btnMProgram.backgroundTintList = ColorStateList.valueOf(color)
+                                            }
+                                        }
+                                        colorAnimation.start()
+                                    }, 3000)
+
+
                                     binding.tvMProgram.setOnClickListener {
                                         try {
                                             val programSn = uvm.existedProgramData?.programSn ?: throw IllegalStateException("Program SN is null")
@@ -457,5 +497,53 @@ class MainFragment : Fragment() {
             binding.btnMProgram.text = "프로그램 완료, 재측정을 진행해 주세요"
             binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.subColor150)
         }
+    }
+
+    private fun existedMeasurementGuide() {
+        TooltipManager.createGuide(
+            context = requireContext(),
+            text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
+            anchor = binding.tvMOverall,
+            gravity = Gravity.BOTTOM,
+            dismiss = {
+
+                TooltipManager.createGuide(
+                    context = requireContext(),
+                    text = "탭하여 지난 측정 결과 선택하세요\n측정 결과와 지난 프로그램을 볼 수 있습니다",
+                    anchor = binding.tvMMeasureDate,
+                    gravity = Gravity.BOTTOM,
+                    dismiss = {
+                        TooltipManager.createGuide(
+                            context = requireContext(),
+                            text = " 탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
+                            anchor = binding.btnMProgram,
+                            gravity = Gravity.BOTTOM,
+                            dismiss = {
+                            })
+                    }
+                )
+            }
+        )
+    }
+
+
+    private fun notExistedMeasurementGuide() {
+        TooltipManager.createGuide(
+            context = requireContext(),
+            text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
+            anchor = binding.tvMOverall,
+            gravity = Gravity.BOTTOM,
+            dismiss = {
+
+                TooltipManager.createGuide(
+                    context = requireContext(),
+                    text = " 측정을 완료해서 운동 프로그램을 추천받으세요",
+                    anchor = binding.btnMProgram,
+                    gravity = Gravity.BOTTOM,
+                    dismiss = {
+                    }
+                )
+            }
+        )
     }
 }

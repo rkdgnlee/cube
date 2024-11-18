@@ -2,23 +2,16 @@ package com.tangoplus.tangoq.`object`
 
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.data.ProgramVO
-import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.data.RecommendationVO
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-import okhttp3.Response
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.IOException
 
 object NetworkRecommendation {
     suspend fun createRecommendProgram(myUrl: String, jo: String, context: Context, callback: (MutableList<RecommendationVO>) -> Unit) {

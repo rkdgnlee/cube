@@ -27,9 +27,9 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartPoseDialogBinding
-import com.tangoplus.tangoq.db.MeasurementManager.extractVideoCoordinates
-import com.tangoplus.tangoq.db.MeasurementManager.getVideoDimensions
-import com.tangoplus.tangoq.db.MeasurementManager.setImage
+import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
+import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
+import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import kotlinx.coroutines.delay

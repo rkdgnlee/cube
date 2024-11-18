@@ -23,7 +23,7 @@ import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
-import com.tangoplus.tangoq.db.DeepLinkManager
+import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
@@ -67,15 +67,16 @@ class MainActivity : AppCompatActivity() {
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         AlarmReceiver()
+        val time = Triple(13, 6, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
             putExtra("title", title)
-            putExtra("text", "장시간 앉아 무리한 허리를 위해 스트레칭을 추천드려요")
+            putExtra("text", "장시간 앉은자세 무리한 허리를 위해 스트레칭을 추천드려요")
         }
-        val hour = 13
         val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, hour)
-        calendar.set(Calendar.MINUTE, 6)
-        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.HOUR_OF_DAY, time.first)
+        calendar.set(Calendar.MINUTE, time.second)
+        calendar.set(Calendar.SECOND, time.third)
+
         if (calendar.timeInMillis <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_MONTH, 1)
         }

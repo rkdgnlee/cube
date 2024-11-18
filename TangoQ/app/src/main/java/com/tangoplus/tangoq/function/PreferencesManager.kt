@@ -1,14 +1,10 @@
-package com.tangoplus.tangoq.db
+package com.tangoplus.tangoq.function
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.tangoplus.tangoq.data.MessageVO
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 class PreferencesManager(private val context: Context) {
     private val LAST_SN_KEY = "last_sn"
@@ -69,16 +65,16 @@ class PreferencesManager(private val context: Context) {
 
     fun storeAlarm(messageVO: MessageVO) {
         val alarm = Gson().toJson(messageVO)
-        alarmPrefs.edit().putString("alarmMessage_${messageVO.timeStamp}", alarm).apply()
+        alarmPrefs.edit().putString("alarmMessage_${messageVO.sn}_${messageVO.timeStamp}", alarm).apply()
     }
 
-    fun getAlarms(): MutableList<MessageVO> {
+    fun getAlarms(sn: Int): MutableList<MessageVO> {
         val allEntries = alarmPrefs.all
         val alarmsList = mutableListOf<MessageVO>()
         val gson = Gson()
         Log.v("올엔트리알람", "$allEntries")
         for ((key, value) in allEntries) {
-            if (key.startsWith("alarmMessage_")) {
+            if (key.startsWith("alarmMessage_$sn")) {
                 val alarmJson = value as? String ?: continue
                 val messageVO = gson.fromJson(alarmJson, MessageVO::class.java)
                 alarmsList.add(messageVO)
@@ -87,16 +83,16 @@ class PreferencesManager(private val context: Context) {
         return alarmsList
     }
 
-    fun deleteAlarm(timeStamp: Long) {
-        alarmPrefs.edit().remove("alarmMessage_$timeStamp").apply()
+    fun deleteAlarm(sn: Int, timeStamp: Long) {
+        alarmPrefs.edit().remove("alarmMessage_${sn}_$timeStamp").apply()
     }
 
-    fun deleteAllAlarms() {
+    fun deleteAllAlarms(sn: Int) {
         val editor = alarmPrefs.edit()
         val allEntries = alarmPrefs.all
 
         for ((key, _) in allEntries) {
-            if (key.startsWith("alarmMessage_")) {
+            if (key.startsWith("alarmMessage_$sn")) {
                 editor.remove(key)
             }
         }

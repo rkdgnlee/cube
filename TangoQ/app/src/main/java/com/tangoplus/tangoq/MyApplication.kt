@@ -3,7 +3,7 @@ package com.tangoplus.tangoq
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 
 class MyApplication : Application() {

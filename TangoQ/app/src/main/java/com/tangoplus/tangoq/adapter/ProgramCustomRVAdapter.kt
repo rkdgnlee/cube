@@ -54,7 +54,6 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                 setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)
             }
 
-
              // 회차별 상태 업데이트
             holder.tvPSIName.setOnClickListener {
                 onCustomCategoryClickListener.customCategoryClick(position)

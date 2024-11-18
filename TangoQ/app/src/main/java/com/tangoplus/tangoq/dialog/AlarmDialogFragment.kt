@@ -1,15 +1,10 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +13,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.MainActivity
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.AlarmRVAdapter
 import com.tangoplus.tangoq.callback.SwipeHelperCallback
 import com.tangoplus.tangoq.data.MessageVO
 import com.tangoplus.tangoq.databinding.FragmentAlarmDialogBinding
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
 import com.tangoplus.tangoq.`object`.Singleton_t_user
@@ -31,11 +25,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import org.json.JSONObject
+import kotlin.properties.Delegates
 
 class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDeleteListener {
     lateinit var binding : FragmentAlarmDialogBinding
@@ -43,6 +34,9 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     private lateinit var alarmRVAdapter : AlarmRVAdapter
     private var alarmList = mutableListOf<MessageVO>()
     private lateinit var pm: PreferencesManager
+    private lateinit var userJson : JSONObject
+    private var userSn by Delegates.notNull<Int>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,10 +51,12 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         super.onViewCreated(view, savedInstanceState)
 
         pm = PreferencesManager(requireContext())
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
+        userSn = userJson?.optInt("sn") ?:0
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
-                alarmList = pm.getAlarms()
+                alarmList = pm.getAlarms(userSn)
                 alarmList.sortByDescending { it.timeStamp }
                 // ------! alarm touchhelper 연동 시작 !------
                 if (alarmList.isEmpty()) {
@@ -90,7 +86,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
 
         binding.tvAlarmClear.setOnClickListener {
             alarmList.clear()
-            pm.deleteAllAlarms()
+            pm.deleteAllAlarms(userSn)
             alarmRVAdapter.notifyDataSetChanged()
         }
     }
@@ -111,7 +107,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
             binding.rvAlarm.invalidateItemDecorations()
         }
         alarmList.remove(alarmList.find { it.timeStamp == timeStamp })
-        pm.deleteAlarm(timeStamp!!)
+        pm.deleteAlarm(userSn, timeStamp!!)
 
 
         // ------! 삭제 후 스와이프 초기화 끝 !------

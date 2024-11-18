@@ -18,7 +18,7 @@ import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartDialogBinding
-import com.tangoplus.tangoq.db.MeasurementManager.getAnalysisUnits
+import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import org.json.JSONArray
 import kotlin.math.abs
 
@@ -534,17 +534,16 @@ class MainPartDialogFragment : DialogFragment() {
                         var angleData1 = 0f
                         var angleData2 = 0f
                         var angleDirection2 = ""
-                        val WristData1 = units.find { it.columnName == "front_vertical_angle_elbow_wrist_left"}
-                        WristData1?.let {
+                        val wristData1 = units.find { it.columnName == "front_vertical_angle_elbow_wrist_right"}
+                        wristData1?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
                                 angleData1 = it.rawData
-
-                                resultString.append("손목의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
+                                resultString.append("손목의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상 범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
 
                             }
                         }
-                        val WristData2 = units.find { it.columnName == "front_horizontal_angle_wrist"}
-                        WristData2?.let {
+                        val wristData2 = units.find { it.columnName == "front_horizontal_angle_wrist"}
+                        wristData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)

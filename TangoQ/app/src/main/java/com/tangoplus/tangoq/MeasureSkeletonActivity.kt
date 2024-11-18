@@ -72,8 +72,9 @@ import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.db.MeasurementManager.extractVideoCoordinates
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerUUID
+import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getServerUUID
+import com.tangoplus.tangoq.dialog.GuideDialogFragment.Companion.getRequiredPermissions
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
@@ -86,7 +87,7 @@ import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 import com.tangoplus.tangoq.`object`.NetworkMeasure.resendMeasureFile
 import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
-import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -129,37 +130,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         private const val TAG = "Pose Landmarker"
         private const val REQUEST_CODE_PERMISSIONS = 1001
         // 버전별 필요 권한 정의
-        private fun getRequiredPermissions(): Array<String> {
-            return when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
-                    arrayOf(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO,
-                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-                    )
-                }
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                    arrayOf(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO
-                    )
-                }
-                else -> {
-                    arrayOf(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                }
-            }
-        }
         fun hasPermissions(context: Context): Boolean {
             return getRequiredPermissions().all {
                 ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED

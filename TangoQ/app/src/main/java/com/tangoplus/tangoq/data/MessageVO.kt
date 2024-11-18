@@ -2,7 +2,7 @@ package com.tangoplus.tangoq.data
 
 
 data class MessageVO(
-    val sn: Long = 0L,
+    val sn: Int = 0 ,
     val message : String = "",
     val timeStamp : Long = 0L,
     val route : String = ""

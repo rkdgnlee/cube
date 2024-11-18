@@ -13,7 +13,7 @@ import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramSelectBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
-import com.tangoplus.tangoq.dialog.MeasureBSDialogFragment
+import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 

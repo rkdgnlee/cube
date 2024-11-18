@@ -73,13 +73,14 @@ dependencies {
     implementation("com.kizitonwose.calendar:view:2.5.1")
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.runtime.android)
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.3")
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("jp.wasabeef:blurry:4.0.1")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
+    implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
 
 
     // api
@@ -88,10 +89,10 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation("com.kakao.sdk:v2-auth:2.19.0")
     implementation("com.google.gms:google-services:4.4.2")
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.firebase:firebase-messaging-ktx:24.0.2")
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
     implementation("com.google.firebase:firebase-analytics:22.1.2")
-    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
@@ -126,7 +127,7 @@ dependencies {
 
 
     // 미디어
-    val camera_version = "1.3.4"
+    val camera_version = "1.4.0"
     implementation("androidx.camera:camera-core:$camera_version")
     implementation("androidx.camera:camera-camera2:$camera_version")
     implementation("androidx.camera:camera-lifecycle:$camera_version")
@@ -137,8 +138,8 @@ dependencies {
     implementation("com.arthenica:ffmpeg-kit-full:4.5")
 
     // 내부 라이브러리
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
-    implementation("androidx.fragment:fragment-ktx:1.8.4")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")

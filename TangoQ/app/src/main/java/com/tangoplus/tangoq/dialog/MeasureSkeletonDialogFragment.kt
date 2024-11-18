@@ -13,7 +13,7 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.CautionVPAdapter
+import com.tangoplus.tangoq.adapter.etc.CautionVPAdapter
 import com.tangoplus.tangoq.databinding.FragmentMeasureSkeletonDialogBinding
 
 class MeasureSkeletonDialogFragment : DialogFragment() {

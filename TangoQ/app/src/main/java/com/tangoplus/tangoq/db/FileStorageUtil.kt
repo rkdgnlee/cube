@@ -4,10 +4,11 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.function.SecurePreferencesManager
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
-import com.tangoplus.tangoq.db.SecurePreferencesManager.decryptFile
-import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptFile
-import com.tangoplus.tangoq.db.SecurePreferencesManager.generateAESKey
+import com.tangoplus.tangoq.function.SecurePreferencesManager.decryptFile
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encryptFile
+import com.tangoplus.tangoq.function.SecurePreferencesManager.generateAESKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray

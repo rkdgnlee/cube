@@ -6,14 +6,12 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MessageVO
-import com.tangoplus.tangoq.db.PreferencesManager
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.tangoplus.tangoq.function.PreferencesManager
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 
 class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -36,6 +34,7 @@ class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
 
         val prefs = PreferencesManager(context)
         val message = MessageVO(
+            sn = Singleton_t_user.getInstance(context).jsonObject?.optInt("sn") ?: 0,
             message = text,
             timeStamp = System.currentTimeMillis(),
         )

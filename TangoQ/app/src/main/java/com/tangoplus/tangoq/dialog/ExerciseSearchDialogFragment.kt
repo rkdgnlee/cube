@@ -22,7 +22,7 @@ import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseSearchDialogBinding
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
 import java.util.Locale

@@ -33,7 +33,7 @@ import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
-import com.tangoplus.tangoq.db.MeasurementManager.extractVideoCoordinates
+import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.OverlayView

@@ -58,7 +58,8 @@ class ReportDiseaseDialogFragment : DialogFragment() {
             startActivity(Intent.createChooser(intent, "질병 예측 결과"))
         }
 
-        // TODO ------# 관계에 맞는 값들을 넣어야함. #------
+
+
         binding.btnRDRecommend.setOnClickListener {
             val bnb : BottomNavigationView = requireActivity().findViewById(R.id.bnbMain)
             bnb.selectedItemId = R.id.exercise

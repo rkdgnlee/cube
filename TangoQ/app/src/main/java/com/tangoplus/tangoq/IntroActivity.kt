@@ -40,12 +40,12 @@ import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
-import com.tangoplus.tangoq.db.SecurePreferencesManager
-import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
-import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
+import com.tangoplus.tangoq.function.SecurePreferencesManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
+import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
-import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -98,7 +98,7 @@ class IntroActivity : AppCompatActivity() {
                                             // ---- Google 토큰에서 가져오기 시작 ----
                                             val user: FirebaseUser = firebaseAuth.currentUser!!
                                             Log.v("user", "${user.phoneNumber}")
-                                            Log.v("user", user.providerId)
+                                            Log.v("user", user.uid)
                                             // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
                                             val jsonObj = JSONObject()
                                             jsonObj.put("device_sn" ,0)
@@ -107,7 +107,6 @@ class IntroActivity : AppCompatActivity() {
                                             jsonObj.put("email", user.email.toString())
                                             jsonObj.put("google_login_id", user.uid)
 //                                            jsonObj.put("google_id_token", tokenId) // 토큰 값
-                                            jsonObj.put("mobile", user.phoneNumber)
                                             jsonObj.put("social_account", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                             Log.v("jsonObj", "$jsonObj")
@@ -120,9 +119,6 @@ class IntroActivity : AppCompatActivity() {
                                                     }
                                                 }
                                             }
-                                        // ------! GOOGLE API에서 DB에 넣는 공간 끝 !------
-
-                                        // ------! Google 토큰에서 가져오기 끝 !------
                                         }
                                     }
                             }
@@ -299,10 +295,10 @@ class IntroActivity : AppCompatActivity() {
             201 -> {
 
                 // ------! 광고성 수신 동의 문자 시작 !------
-                val bottomSheetFragment = AgreementBottomSheetDialogFragment()
+                val bottomSheetFragment = AgreementBSDialogFragment()
                 bottomSheetFragment.isCancelable = false
                 bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
-                bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.OnAgreeListener {
+                bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
                     override fun onFinish(agree: Boolean) {
                         if (agree) {
 
@@ -344,6 +340,7 @@ class IntroActivity : AppCompatActivity() {
                                     }
                                 }
                             }
+                            this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
                         }
                     }
                 })

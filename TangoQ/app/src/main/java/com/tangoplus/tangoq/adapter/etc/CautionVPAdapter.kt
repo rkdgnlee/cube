@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.adapter
+package com.tangoplus.tangoq.adapter.etc
 
 import android.view.LayoutInflater
 import android.view.View

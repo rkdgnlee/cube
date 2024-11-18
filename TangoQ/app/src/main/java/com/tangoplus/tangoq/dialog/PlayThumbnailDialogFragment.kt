@@ -35,7 +35,7 @@ import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
@@ -53,7 +53,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     val pvm: PlayViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
-    private lateinit var prefs :  PreferencesManager
+    private lateinit var prefs : PreferencesManager
 
     interface DialogCloseListener {
         fun onDialogClose()

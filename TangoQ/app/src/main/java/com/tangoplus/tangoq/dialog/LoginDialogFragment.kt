@@ -25,11 +25,11 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
-import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
-import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptData
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedData
+import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encryptToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedToken
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
-import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -128,7 +128,7 @@ class LoginDialogFragment : DialogFragment() {
                                     } else {
                                         NetworkUser.storeUserInSingleton(requireContext(), jo)
                                         createKey(getString(R.string.SECURE_KEY_ALIAS))
-                                        saveEncryptedData(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptData(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
+                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
                                         lifecycleScope.launch {
                                             val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")!!
                                             val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()!!

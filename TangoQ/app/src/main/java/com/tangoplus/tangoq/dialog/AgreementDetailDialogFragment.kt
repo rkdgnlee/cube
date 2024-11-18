@@ -87,7 +87,6 @@ class AgreementDetailDialogFragment : DialogFragment() {
         dialog?.window?.setDimAmount(0.6f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialogFragmentResize(requireContext(), this@AgreementDetailDialogFragment)
-
     }
 
 }

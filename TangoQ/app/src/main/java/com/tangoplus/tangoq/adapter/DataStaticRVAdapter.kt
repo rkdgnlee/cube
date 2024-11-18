@@ -48,17 +48,10 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
             holder.tvDSI1.text = currentItem.second
             holder.tvDSI2.text = currentItem.third
             }
-
-
-
-
         }
     }
     private fun setBackgroundDrawable(cl : ConstraintLayout) {
         cl.setBackgroundResource(R.drawable.bckgnd_rectangle_12)
         cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.subColor100))
     }
-
-
-
-}   // @drawable/background_stroke_1dp_sub_color
+}

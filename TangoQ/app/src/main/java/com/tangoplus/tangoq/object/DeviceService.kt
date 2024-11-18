@@ -4,14 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import com.bumptech.glide.RequestBuilder
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -24,7 +20,6 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import java.io.StringReader
 
 object DeviceService {
     fun isNetworkAvailable(context: Context): Boolean {

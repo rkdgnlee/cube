@@ -29,11 +29,11 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.dialog.ConnectManageDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.dialog.ProfileEditBSDialogFragment
+import com.tangoplus.tangoq.dialog.bottomsheet.ProfileEditBSDialogFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_progress

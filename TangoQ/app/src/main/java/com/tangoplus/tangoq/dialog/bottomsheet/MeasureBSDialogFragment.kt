@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.dialog
+package com.tangoplus.tangoq.dialog.bottomsheet
 
 import android.os.Bundle
 import android.util.Log

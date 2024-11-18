@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/effect_ibtn_12dp"
     app:layout_behavior="@string/bottom_sheet_behavior"
-    tools:context=".dialog.AgreementBottomSheetDialogFragment">
+    tools:context=".dialog.bottomsheet.AgreementBSDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ConstraintLayout17"

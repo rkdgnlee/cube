@@ -1,19 +1,15 @@
 package com.tangoplus.tangoq.adapter
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -26,7 +22,7 @@ import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.databinding.RvExerciseHistoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import java.lang.IllegalArgumentException
 

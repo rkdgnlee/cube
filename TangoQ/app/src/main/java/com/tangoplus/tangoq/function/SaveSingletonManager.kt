@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.function
 
 import android.content.Context
 import android.util.Log
@@ -11,10 +11,10 @@ import com.tangoplus.tangoq.db.FileStorageUtil.readJsonArrayFile
 import com.tangoplus.tangoq.db.FileStorageUtil.readJsonFile
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.db.MeasurementManager.convertToJsonArrays
-import com.tangoplus.tangoq.db.MeasurementManager.getDangerParts
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getServerUUID
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveServerUUID
+import com.tangoplus.tangoq.function.MeasurementManager.convertToJsonArrays
+import com.tangoplus.tangoq.function.MeasurementManager.getDangerParts
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getServerUUID
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveServerUUID
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.`object`.DeviceService.getDeviceUUID
 import com.tangoplus.tangoq.`object`.DeviceService.getSSAID
@@ -23,6 +23,8 @@ import com.tangoplus.tangoq.`object`.NetworkProgress.postProgressInCurrentProgra
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendationInOneMeasure
+import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -83,7 +85,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     callbacks(existed)
                 }
                 withContext(Dispatchers.Main) {
-                    dialog.dismiss()
+                    context.let { dialog.dismiss() }
                 }
             }
         }
@@ -93,11 +95,14 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     private suspend fun fetchAndFilterMeasureInfo(userUUID: String) {
         val currentActivity = activity ?: return
         val dialog = withContext(Dispatchers.Main) {
-            LoadingDialogFragment.newInstance("측정파일").apply {
-                show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
-            }
+            if (!currentActivity.isFinishing && !currentActivity.isDestroyed) {
+                LoadingDialogFragment.newInstance("측정파일").apply {
+                    show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
+                }
+            } else null
         }
         try {
+
             withContext(Dispatchers.IO) {
 
                 val md = MeasureDatabase.getDatabase(context)
@@ -179,7 +184,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             Log.e("측정목록가져오기실패", "${e.printStackTrace()}")
         } finally {
             withContext(Dispatchers.Main) {
-                dialog.dismiss()
+                dialog.let { it?.dismiss() }
             }
         }
 

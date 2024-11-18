@@ -2,19 +2,13 @@ package com.tangoplus.tangoq.`object`
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.util.Base64
 import android.util.Log
-import android.widget.ImageView
-import com.google.android.gms.common.api.Api.Client
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -23,7 +17,6 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 object NetworkUser {

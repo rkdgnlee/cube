@@ -1,5 +1,7 @@
 package com.tangoplus.tangoq.dialog
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -34,11 +36,12 @@ import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramCustomDialogBinding
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.dialog.bottomsheet.ProgramWeekBSDialogFragment
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.fragment.isFirstRun
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
-import com.tangoplus.tangoq.`object`.SaveSingletonManager
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.Dispatchers
@@ -138,10 +141,32 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             }
         }
 
+//        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotation)
+//
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            binding.btnPCDRight.elevation = 2f
+//            binding.btnPCDRight.startAnimation(animation) }, 5000)
+        Handler(Looper.getMainLooper()).postDelayed({
+            val colorAnimation = ValueAnimator.ofObject(
+                ArgbEvaluator(),
+                ContextCompat.getColor(requireContext(), R.color.mainColor),
+                Color.parseColor("#2BEE8C")).apply {
+                duration = 500
+                repeatCount = ValueAnimator.INFINITE
+                repeatMode = ValueAnimator.REVERSE
+
+                addUpdateListener { animator ->
+                    val color = animator.animatedValue as Int
+                    binding.btnPCDRight.backgroundTintList = ColorStateList.valueOf(color)
+                }
+            }
+            colorAnimation.start()
+        }, 5000)
 
         binding.btnPCDRight.setOnClickListener {
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
+
                     // PreferencesManager 초기화 및 추천 저장
                     val prefManager = PreferencesManager(requireContext())
                     prefManager.saveLatestRecommendation(recommendationSn)
@@ -206,8 +231,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             Log.e("Error", "Program fetch failed: ${e.message}", e)
         }
     }
-    private fun updateUI() {
 
+    private fun updateUI() {
         lifecycleScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) {
