@@ -58,11 +58,12 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
         android:background="@color/white"
-        app:progressView_colorBackground="@color/secondContainerColor"
-        app:progressView_colorProgress="@color/thirdColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/svSignIn"
+        app:progressView_colorBackground="@color/secondContainerColor"
+        app:progressView_colorProgress="@color/thirdColor"
+        app:progressView_progressFromPrevious="true"
         app:strokeWidth="4dp" />
 
     <androidx.core.widget.NestedScrollView
@@ -130,7 +131,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_2_main_20"
+                    android:background="@drawable/bckgnd_1_sub200_12"
                     android:ems="10"
                     android:hint="아이디"
                     android:inputType="text"
@@ -193,7 +194,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="12dp"
-                android:background="@drawable/bckgnd_2_main_20"
+                android:background="@drawable/bckgnd_1_sub200_12"
                 android:ems="10"
                 android:hint="비밀번호"
                 android:inputType="textPassword"
@@ -241,7 +242,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/bckgnd_2_main_20"
+                android:background="@drawable/bckgnd_1_sub150_12"
                 android:ems="10"
                 android:hint="비밀번호 확인"
                 android:inputType="textPassword"
@@ -296,7 +297,7 @@
 
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/bckgnd_2_main_20"
+                android:background="@drawable/bckgnd_1_sub150_12"
                 android:ems="10"
                 android:hint="이름을 입력해주세요"
                 android:inputType="text"
@@ -314,7 +315,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
                 <EditText
@@ -325,7 +326,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_2_main_20"
+                    android:background="@drawable/bckgnd_1_sub150_12"
                     android:ems="10"
                     android:hint="이메일을 입력해주세요"
                     android:inputType="textEmailAddress"
@@ -350,7 +351,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_2_main_20">
+                    android:background="@drawable/bckgnd_1_sub150_12">
 
                     <ImageView
                         android:id="@+id/ivSpinner"
@@ -396,7 +397,23 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnEmailNext"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/mainColor"
+                android:padding="16dp"
+                android:stateListAnimator="@null"
+                android:text="다음으로"
+                android:textColor="@color/white"
+                android:textSize="18dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clMobile"
@@ -435,7 +452,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
-                        android:background="@drawable/bckgnd_2_main_20"
+                        android:background="@drawable/bckgnd_1_sub150_12"
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
                         android:inputType="phone"
@@ -474,7 +491,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_2_main_20"
+                    android:background="@drawable/bckgnd_1_sub150_12"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvMobile">
@@ -517,7 +534,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_2_main_20"
+                    android:background="@drawable/bckgnd_1_sub150_12"
                     android:ems="10"
                     android:hint="인증 번호를 입력해주세요"
                     android:inputType="number"

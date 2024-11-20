@@ -17,6 +17,7 @@ import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 
 object FileStorageUtil {
     private const val IMAGE_DIR = "images"
@@ -24,6 +25,11 @@ object FileStorageUtil {
     private const val JSON_DIR = "json"
 
     // URL에서 파일 저장
+    /* 1. SHA-256을 통해 hash 값 받기
+    * 2. 저장해서 hash값이 같으면 저장 -> 암호화
+    * 3. hash값이 다른 것들은 일단 SharedPreferences에 저장하고 넘기기
+    * 4. 암호화가 끝난 후 hash값이 다른 재다운로드 파일들을 다운로드 받아야함.
+    * */
     suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
         return withContext(Dispatchers.IO) {
             val url = context.getString(R.string.file_url) + fileName  // 수정된 부분
@@ -42,6 +48,12 @@ object FileStorageUtil {
                             input.copyTo(output)
                         }
                     }
+                    // TODO 유효성 검증을 통해서 암호화전 손상된 파일들 복구.
+//                    if (isFileIntegrityValid(tempFile, "")) {
+//                        encryptFile(tempFile, file, generateAESKey(context))
+//                        tempFile.delete()
+//                    }
+
                     encryptFile(tempFile, file, generateAESKey(context))
                     tempFile.delete()
 
@@ -56,12 +68,11 @@ object FileStorageUtil {
                 false
             }
         }
-
     }
+
     fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
         val file = File(dir, fileName)
-
         return try {
             val fileContent = jsonObject.toString().toByteArray() // JSONObject를 String으로 변환 후 ByteArray로 변환
             file.outputStream().use { it.write(fileContent) }
@@ -138,6 +149,7 @@ object FileStorageUtil {
         tempFile.deleteOnExit() // 앱 종료 시 임시 파일 삭제
         return tempFile
     }
+
     fun deleteFile(context: Context, fileName: String): Boolean {
         val fileType = getFileTypeFromExtension(fileName)
         val dir = getDirectory(context, fileType)
@@ -196,5 +208,21 @@ object FileStorageUtil {
 
     enum class FileType {
         IMAGE, VIDEO, JSON
+    }
+
+    private fun calculateFileHash(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { input ->
+            val buffer = ByteArray(1024)
+            var bytesRead: Int
+            while (input.read(buffer).also { bytesRead = it } != -1) {
+                digest.update(buffer, 0, bytesRead)
+            }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
+    }
+
+    fun isFileIntegrityValid(file: File, expectedHash: String): Boolean {
+        return calculateFileHash(file) == expectedHash
     }
 }

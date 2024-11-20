@@ -40,7 +40,9 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.GuideDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
+import com.tangoplus.tangoq.dialog.SetupDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
@@ -412,10 +414,10 @@ class MainFragment : Fragment() {
 
 
                                     // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
-                                    Handler(Looper.getMainLooper()).postDelayed({
+                                    context.let { context ->
                                         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(),
                                             ContextCompat.getColor(requireContext(), R.color.mainColor),
-                                            Color.parseColor("#2DE187")).apply {
+                                            ContextCompat.getColor(requireContext(), R.color.mainRippleColor)).apply {
                                             duration = 1000
                                             repeatCount = ValueAnimator.INFINITE
                                             repeatMode = ValueAnimator.REVERSE
@@ -426,8 +428,7 @@ class MainFragment : Fragment() {
                                             }
                                         }
                                         colorAnimation.start()
-                                    }, 3000)
-
+                                    }
 
                                     binding.tvMProgram.setOnClickListener {
                                         try {

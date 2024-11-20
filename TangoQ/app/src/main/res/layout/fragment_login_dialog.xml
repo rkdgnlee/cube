@@ -58,12 +58,13 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="86dp"
             android:layout_marginEnd="32dp"
-            android:background="@drawable/bckgnd_2_main_20"
+            android:background="@drawable/bckgnd_1_sub200_12"
             android:ems="10"
             android:hint="아이디를 입력해 주세요"
             android:inputType="text"
             android:padding="20dp"
             android:textColor="@color/black"
+            android:textColorHint="@color/subColor150"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -86,12 +87,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="64dp"
-            android:background="@drawable/bckgnd_2_main_20"
+            android:background="@drawable/bckgnd_1_sub200_12"
             android:ems="10"
             android:hint="비밀 번호를 입력해주세요"
             android:inputType="textPassword"
             android:padding="20dp"
             android:textColor="@color/black"
+            android:textColorHint="@color/subColor150"
             app:layout_constraintEnd_toEndOf="@+id/etLDId"
             app:layout_constraintStart_toStartOf="@+id/etLDId"
             app:layout_constraintTop_toBottomOf="@+id/etLDId" />
@@ -100,7 +102,7 @@
             android:id="@+id/btnLDLogin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/mainColor"
             android:insetTop="0dp"
@@ -123,9 +125,33 @@
             android:padding="4dp"
             android:text="아이디 / 패스워드를 잊어버렸나요?"
             android:textColor="@color/subColor400"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="@+id/btnLDLogin"
             app:layout_constraintStart_toStartOf="@+id/btnLDLogin"
             app:layout_constraintTop_toBottomOf="@+id/btnLDLogin" />
+
+        <ImageButton
+            android:id="@+id/ibtnLDIdClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/icon_text_clear"
+            app:layout_constraintBottom_toBottomOf="@+id/etLDId"
+            app:layout_constraintEnd_toEndOf="@+id/etLDId"
+            app:layout_constraintTop_toTopOf="@+id/etLDId" />
+
+        <ImageButton
+            android:id="@+id/ibtnLDPwClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/icon_text_clear"
+            app:layout_constraintBottom_toBottomOf="@+id/etLDPw"
+            app:layout_constraintEnd_toEndOf="@+id/etLDPw"
+            app:layout_constraintTop_toTopOf="@+id/etLDPw" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

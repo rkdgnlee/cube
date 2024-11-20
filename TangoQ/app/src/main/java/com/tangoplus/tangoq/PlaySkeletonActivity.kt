@@ -183,6 +183,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
                 }
             })
         }
+
         // -----! 받아온 즐겨찾기 재생 목록 끝 !-----
         val exitButton = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {

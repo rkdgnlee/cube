@@ -27,7 +27,8 @@ import com.kizitonwose.calendar.core.yearMonth
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
+import com.tangoplus.tangoq.adapter.ProgressHistoryRVAdapter
+import com.tangoplus.tangoq.data.ProgressHistoryVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
@@ -65,7 +66,11 @@ class MeasureDashBoard2Fragment : Fragment() {
 
     private lateinit var  todayInWeek : List<Int>
 
-
+    override fun onStop() {
+        super.onStop()
+        pvm.selectedDailyTime.value = 0
+        pvm.selectedDailyCount.value = 0
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,7 +87,6 @@ class MeasureDashBoard2Fragment : Fragment() {
         // ------# 운동 기록 API 공간 #------
         todayInWeek = sortTodayInWeek()
 
-
         // ------# 일별 운동 담기 #------
         graphProgresses = Singleton_t_progress.getInstance(requireContext()).graphProgresses
         // TODO 여기서 이틀했을 수도 있고, 삼일 했을 수도 있고, 전혀 없을 수도 있음.
@@ -91,7 +95,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         val weeklySets = mutableListOf<Float>()
         if (graphProgresses != null) {
             for (i in 0 until 7) {
-                if (i < graphProgresses!!.size && graphProgresses!![i].count() > 0) {
+                if (i < graphProgresses!!.size && graphProgresses!![i].isNotEmpty()) {
                     weeklySets.add(graphProgresses!![i].count() * 100 / 7.toFloat())
                 } else {
                     weeklySets.add(1f)
@@ -226,10 +230,9 @@ class MeasureDashBoard2Fragment : Fragment() {
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
                 updateMonthView()
-                updateExerciseList()
+                updateMonthProgress()
             }
         }
-
 
         binding.previousMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
@@ -240,12 +243,12 @@ class MeasureDashBoard2Fragment : Fragment() {
             if (currentMonth > YearMonth.now().minusMonths(24)) {
                 currentMonth = currentMonth.minusMonths(1)
                 updateMonthView()
-                updateExerciseList()
+                updateMonthProgress()
             }
         }
 
         binding.monthText.setOnClickListener {
-            updateExerciseList()
+            updateMonthProgress()
         }
 
         // ------# 운동 기록 날짜 받아오기 #------
@@ -272,14 +275,23 @@ class MeasureDashBoard2Fragment : Fragment() {
                         text = day.date.dayOfMonth.toString()
                         textSize = if (isTablet(requireContext())) 24f else 20f
                         when (day.date.dayOfMonth) {
-                            in 0 .. 9 -> {
-                                setPadding(32, 20, 32, 20)
+                            in 2 .. 9 -> {
+                                setPadding(32, 17, 32, 17)
                             }
-                            in 10 .. 19 -> {
-                                setPadding(26, 24, 26, 24)
+                            in 12 .. 19 -> {
+                                setPadding(26, 22, 26, 22)
                             }
-                            in 30 .. 31 -> {
-                                setPadding(20, 24, 26, 20)
+                            in 22 .. 29 -> {
+                                setPadding(26, 23, 26, 23)
+                            }
+                            30 -> {
+                                setPadding(24, 24, 24, 24)
+                            }
+                            11, 21, 31 -> {
+                                setPadding(30, 24, 30, 24)
+                            }
+                            1 -> {
+                                setPadding(30, 12, 30, 12)
                             }
                             else -> {
                                 setPadding(24)
@@ -302,6 +314,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                                         withContext(Dispatchers.Main) {
                                             setAdapter(currentProgresses)
                                         }
+
 //                                    pvm.currentProgressItem =
 //                                    val filteredExercises = pvm.allHistorys.filter { history ->
 //                                        history.regDate?.let { regDateString ->
@@ -309,9 +322,8 @@ class MeasureDashBoard2Fragment : Fragment() {
 //                                            historyDate.isEqual(selectedDate)
 //                                        } ?: false
 //                                    }.toHistorySummaries()
-//
 //                                    setAdapter(filteredExercises)
-//                                    binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
+                                    binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
                                     } ?: run {
                                         Log.e("DateSelection", "Selected date is null")
                                     }
@@ -336,7 +348,6 @@ class MeasureDashBoard2Fragment : Fragment() {
             val bnb : BottomNavigationView = requireActivity().findViewById(R.id.bnbMain)
             bnb.selectedItemId = R.id.exercise
         }
-
     }
 
     private fun setDateStyle(container: DayViewContainer, day: CalendarDay) {
@@ -359,7 +370,6 @@ class MeasureDashBoard2Fragment : Fragment() {
             }
             else -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor150))
-
             }
         }
     }
@@ -378,20 +388,18 @@ class MeasureDashBoard2Fragment : Fragment() {
         return localDateTime.toLocalDate()
     }
 
-    private fun setAdapter(progresses: List<ProgressUnitVO>) {
+    private fun setAdapter(progresses: List<ProgressHistoryVO>) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMD2.layoutManager = layoutManager
 
         // ------# 운동시청기록 + 운동 #------
-        // 같이 들어와야 하는게 좋을 듯 함. 그래서 그걸 exerciseUnit으로 만들기.
 
         pvm.selectedDailyCount.value = progresses.size
-        pvm.selectedDailyTime.value = progresses.sumOf { it.videoDuration }
+        pvm.selectedDailyTime.value = progresses.sumOf { it.sn }
         Log.v("프로그레스", "${progresses}")
-        val adapter = ExerciseRVAdapter(this@MeasureDashBoard2Fragment, mutableListOf(), null, null, null, "main")
-//        val adapter = MD2RVAdpater(this@MeasureDashBoard2Fragment, progresses)
+//        val adapter = ExerciseRVAdapter(this@MeasureDashBoard2Fragment, mutableListOf(), null, null, null, "main")
+        val adapter = ProgressHistoryRVAdapter(this@MeasureDashBoard2Fragment, progresses)
         binding.rvMD2.adapter = adapter
-
 
         if (progresses.isEmpty()) {
             binding.clMD2Empty.visibility = View.VISIBLE
@@ -458,7 +466,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         binding.cvMD2Calendar.scrollToMonth(currentMonth)
     }
 
-    private fun updateExerciseList() {
+    private fun updateMonthProgress() {
 //        val filteredExercises = pvm.allHistorys.filter { history ->
 //            history.regDate?.let { regDateString ->
 //                val historyDate = stringToLocalDate(regDateString)

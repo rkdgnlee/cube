@@ -47,11 +47,11 @@ class StringRVAdapter(private val fragment: Fragment,
         val cbWI : CheckBox = view.findViewById(R.id.cbWI)
     }
 
-    inner class ConnectViewHolder(view:View) : RecyclerView.ViewHolder(view) {
-        val tvCIName : TextView = view.findViewById(R.id.tvCIName)
-        val tvCIDate : TextView = view.findViewById(R.id.tvCIDate)
-        val btnCI : AppCompatButton = view.findViewById(R.id.btnCI)
-    }
+//    inner class ConnectViewHolder(view:View) : RecyclerView.ViewHolder(view) {
+//        val tvCIName : TextView = view.findViewById(R.id.tvCIName)
+//        val tvCIDate : TextView = view.findViewById(R.id.tvCIDate)
+//        val btnCI : AppCompatButton = view.findViewById(R.id.btnCI)
+//    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -69,10 +69,10 @@ class StringRVAdapter(private val fragment: Fragment,
                 val binding = RvWeeklyItemBinding.inflate(inflater, parent, false)
                 CbViewHolder(binding.root)
             }
-            3 -> {
-                val binding = RvConnectItemBinding.inflate(inflater, parent, false)
-                ConnectViewHolder(binding.root)
-            }
+//            3 -> {
+//                val binding = RvConnectItemBinding.inflate(inflater, parent, false)
+//                ConnectViewHolder(binding.root)
+//            }
             else -> throw IllegalArgumentException("Invaild View Type")
         }
     }
@@ -83,7 +83,7 @@ class StringRVAdapter(private val fragment: Fragment,
             "part" -> 1
             "measure" -> 2
             "week" -> 2
-            "connect" -> 3
+//            "connect" -> 3
             else -> throw IllegalArgumentException("Invalid View Type")
         }
     }
@@ -259,24 +259,24 @@ class StringRVAdapter(private val fragment: Fragment,
                     }
                 }
             }
-            is ConnectViewHolder -> {
-                holder.tvCIDate.text = "등록일자: ${(vm as UserViewModel).connectedCenters[position].second}"
-                holder.tvCIName.text = currentItem
-                holder.btnCI.setOnClickListener {
-                    MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                        setTitle("연결 해제")
-                        setMessage("${currentItem}와(과) 연결을 해제하시겠습니까?")
-                        setPositiveButton("예") { _, _ ->
-                            if (currentItem != null) {
-                                onDisconnectListener?.onDisconnect(currentItem)
-                            }
-                        }
-                        setNegativeButton("아니오") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                    }.show()
-                }
-            }
+//            is ConnectViewHolder -> {
+//                holder.tvCIDate.text = "등록일자: ${(vm as UserViewModel).connectedCenters[position].second}"
+//                holder.tvCIName.text = currentItem
+//                holder.btnCI.setOnClickListener {
+//                    MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+//                        setTitle("연결 해제")
+//                        setMessage("${currentItem}와(과) 연결을 해제하시겠습니까?")
+//                        setPositiveButton("예") { _, _ ->
+//                            if (currentItem != null) {
+//                                onDisconnectListener?.onDisconnect(currentItem)
+//                            }
+//                        }
+//                        setNegativeButton("아니오") { dialog, _ ->
+//                            dialog.dismiss()
+//                        }
+//                    }.show()
+//                }
+//            }
         }
     }
 

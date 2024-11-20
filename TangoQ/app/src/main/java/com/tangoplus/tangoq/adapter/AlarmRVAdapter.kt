@@ -10,7 +10,7 @@ import com.tangoplus.tangoq.data.MessageVO
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
 import com.tangoplus.tangoq.databinding.RvAlarmItemBinding
-import com.tangoplus.tangoq.fragment.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import java.time.Duration
 import java.time.Instant
 class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList<MessageVO>, private val clicklistener: OnAlarmClickListener, private val deleteListener: OnAlarmDeleteListener) : RecyclerView.Adapter<AlarmRVAdapter.MyViewHolder>() {

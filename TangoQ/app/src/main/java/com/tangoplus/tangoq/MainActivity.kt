@@ -6,6 +6,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -26,6 +27,7 @@ import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
+import com.tangoplus.tangoq.dialog.GuideDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
@@ -46,8 +48,6 @@ class MainActivity : AppCompatActivity() {
     private val mvm : MeasureViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
-
-
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
 
     override fun onNewIntent(intent: Intent?) {
@@ -67,22 +67,27 @@ class MainActivity : AppCompatActivity() {
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         AlarmReceiver()
-        val time = Triple(13, 6, 0)
-        val intent = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
-            putExtra("title", title)
-            putExtra("text", "장시간 앉은자세 무리한 허리를 위해 스트레칭을 추천드려요")
-        }
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, time.first)
-        calendar.set(Calendar.MINUTE, time.second)
-        calendar.set(Calendar.SECOND, time.third)
-
-        if (calendar.timeInMillis <= System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-        val pendingIntent = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        if (hasExactAlarmPermission(this@MainActivity)) {
+
+            val time = Triple(13, 5, 0)
+            val intent = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
+                putExtra("title", title)
+                putExtra("text", "장시간 앉아있었다면 무리한 목과 허리를 위해 스트레칭을 추천드려요")
+            }
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, time.first)
+            calendar.set(Calendar.MINUTE, time.second)
+            calendar.set(Calendar.SECOND, time.third)
+
+            if (calendar.timeInMillis <= System.currentTimeMillis()) {
+                calendar.add(Calendar.DAY_OF_MONTH, 1)
+            }
+            val pendingIntent = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
+            Log.v("ㅅ", "Success to Alarm $title, $time")
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        }
+
         // -----# 초기 화면 설정 #-----
 //        handlePendingDeepLink()
 
@@ -302,6 +307,13 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MeasureSkeletonActivity::class.java)
         measureSkeletonLauncher.launch(intent)
     }
-
+    fun hasExactAlarmPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.canScheduleExactAlarms()
+        } else {
+            true
+        }
+    }
 }
 

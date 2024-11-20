@@ -9,7 +9,8 @@ import com.tangoplus.tangoq.fragment.Setup2Fragment
 import com.tangoplus.tangoq.fragment.Setup3Fragment
 
 class SetupVPAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle) {
-    private val fragments = listOf(Setup1Fragment(), Setup2Fragment(), Setup3Fragment())
+//    private val fragments = listOf(Setup1Fragment(), Setup2Fragment(), Setup3Fragment())
+    private val fragments = listOf(Setup1Fragment(), Setup2Fragment())
     override fun getItemCount(): Int {
         return fragments.size
     }

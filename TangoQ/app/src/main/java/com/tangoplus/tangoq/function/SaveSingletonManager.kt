@@ -25,6 +25,7 @@ import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendationInOneMeasure
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -165,7 +166,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         val measureVO = MeasureVO(
                             deviceSn = 0,
                             sn = currentInfoSn!!,
-                            regDate = info.measure_date,
+                            regDate = info.measure_date.toString(),
                             overall = info.t_score,
                             dangerParts = dangerParts.toMutableList(),
                             measureResult = ja,
@@ -238,7 +239,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             val measureVO = MeasureVO(
                 deviceSn = 0,
                 sn = info.sn!!,
-                regDate = info.measure_date,
+                regDate = info.measure_date.toString(),
                 overall = info.t_score,
                 dangerParts = dangerParts.toMutableList(),
                 measureResult = ja,
@@ -365,5 +366,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         }
     }
 
-
+    fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
+        Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
+        Singleton_t_user.getInstance(context).jsonObject?.put("profile_file_path", jsonObj.optJSONObject("profile_file_path")?.optString("file_path"))
+    }
 }

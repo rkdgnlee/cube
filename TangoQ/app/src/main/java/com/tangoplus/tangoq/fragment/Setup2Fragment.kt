@@ -37,10 +37,8 @@ class Setup2Fragment : Fragment(), WeightVisibilityListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ------! 초기에 몸무게 나중에 나오게 하기 시작 !------
+        // ------# 초기에 몸무게 나중에 나오게 하기  #------
         binding.clSetupWeight.visibility = View.GONE
-
-        // ------! 초기에 몸무게 나중에 나오게 하기 끝 !------
 
         binding.etSetupHeight.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -51,6 +49,9 @@ class Setup2Fragment : Fragment(), WeightVisibilityListener {
                     try {
                         val heightValue = height.toInt()
                         viewModel.step21.value = !(heightValue >= 250 || heightValue <= 90)
+                        if (viewModel.step21.value == true) {
+                            viewModel.User.value?.put("height", heightValue)
+                        }
                     } catch (e: NumberFormatException) {
                         viewModel.step21.value = false
                     }
@@ -70,6 +71,9 @@ class Setup2Fragment : Fragment(), WeightVisibilityListener {
                     try {
                         val weightValue = weight.toInt()
                         viewModel.step22.value = !(weightValue >= 180 || weightValue <= 30)
+                        if (viewModel.step21.value == true) {
+                            viewModel.User.value?.put("weight", weightValue)
+                        }
                     } catch (e: NumberFormatException) {
                         viewModel.step22.value = false
                     }
@@ -114,11 +118,11 @@ class Setup2Fragment : Fragment(), WeightVisibilityListener {
 
     override fun onPause() {
         super.onPause()
-        height = binding.etSetupWeight.text.toString()
-        weight = binding.etSetupWeight.text.toString()
-        viewModel.User.value?.put("user_height", height)
-        viewModel.User.value?.put("user_weight", weight)
-        Log.v("키 , 몸무게", "몸무게: ${viewModel.User.value?.optString("user_weight")}, 키: ${viewModel.User.value?.getString("user_height")}")
+//        height = binding.etSetupWeight.text.toString()
+//        weight = binding.etSetupWeight.text.toString()
+//        viewModel.User.value?.put("user_height", height)
+//        viewModel.User.value?.put("user_weight", weight)
+//        Log.v("키 , 몸무게", "몸무게: ${viewModel.User.value?.optString("user_weight")}, 키: ${viewModel.User.value?.getString("user_height")}")
     }
 
     override fun visibleWeight() {
@@ -138,5 +142,7 @@ class Setup2Fragment : Fragment(), WeightVisibilityListener {
         animatorSet.playTogether(moveUpHeight, fadeIn, moveUpWeight)
         animatorSet.duration = 700
         animatorSet.start()
+
+        //
     }
 }

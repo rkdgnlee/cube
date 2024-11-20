@@ -26,9 +26,9 @@ import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
-import com.tangoplus.tangoq.fragment.isFirstRun
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

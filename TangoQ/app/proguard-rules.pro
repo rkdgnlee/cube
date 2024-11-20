@@ -27,6 +27,8 @@
 
 -keep class com.kakao.sdk.**.model.* { <fields>; }
 -keep class * extends com.google.gson.TypeAdapter
+-keep class net.sqlcipher.** { *; }
+-keep class net.sqlcipher.database.** { *; }
 
 # https://github.com/square/okhttp/pull/6792
 -dontwarn org.bouncycastle.jsse.**

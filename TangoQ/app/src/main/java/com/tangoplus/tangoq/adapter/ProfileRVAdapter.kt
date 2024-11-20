@@ -90,7 +90,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                     "profile" -> {
                         when (currentItem) {
                             "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
-                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+//                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
                             "QR코드 핀번호 로그인" -> holder.ivPf.setImageResource(R.drawable.icon_qr_code)
                             "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
                             "문의하기" -> holder.ivPf.setImageResource(R.drawable.icon_inquire)
@@ -123,10 +123,10 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     val dialog = QRCodeDialogFragment()
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "QRCodeDialogFragment")
                                 }
-                                "연동 관리" -> {
-                                    val dialog = ConnectManageDialogFragment()
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LinkManageDialogFragment")
-                                }
+//                                "연동 관리" -> {
+//                                    val dialog = ConnectManageDialogFragment()
+//                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LinkManageDialogFragment")
+//                                }
                                 "푸쉬 알림 설정" -> {
                                     val intent = Intent().apply {
                                         action = "android.settings.APP_NOTIFICATION_SETTINGS"

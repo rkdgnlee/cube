@@ -40,7 +40,7 @@ import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
-import com.tangoplus.tangoq.mediapipe.CalculateUtil.isTablet
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.launch

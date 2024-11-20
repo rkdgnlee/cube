@@ -11,12 +11,12 @@ data class MeasureInfo(
     val sn: Int? = null, // 132받아옴 -> 현재 132측정 1개 -> 모바일에서 측정함 -> null -> server로 업로드 -> sn 수정 ->
     val device_sn: Int = 0,
     val measure_sn: Int = 0,
-    val user_uuid: String,
+    val user_uuid: String? = "",
     val mobile_device_uuid : String? = "",
     val user_sn: Int,
-    val user_name: String,
-    val measure_date: String,
-    val elapsed_time: String,
+    val user_name: String? = "",
+    val measure_date: String? = "",
+    val elapsed_time: String? = "",
     val measure_seq: Int,
 
     val pain_part_neck: String = "0",

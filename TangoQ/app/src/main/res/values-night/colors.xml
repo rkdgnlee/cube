@@ -39,4 +39,7 @@
     <color name="opacitySubColor">#25959595</color>
     <color name="transparentColor">#00000000</color>
 
+
+    <color name="deleteRippleColor">#27313D</color>
+    <color name="mainRippleColor">#42ED97</color>
 </resources>

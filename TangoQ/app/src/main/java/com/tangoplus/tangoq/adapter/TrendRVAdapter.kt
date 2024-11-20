@@ -15,7 +15,7 @@ import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
-import com.tangoplus.tangoq.mediapipe.CalculateUtil.calculateBoundedScore
+import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
 
 class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: MutableList<MutableList<AnalysisVO>>?, private val analyzes2: MutableList<MutableList<AnalysisVO>>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class TrendViewHolder(view: View) : RecyclerView.ViewHolder(view) {

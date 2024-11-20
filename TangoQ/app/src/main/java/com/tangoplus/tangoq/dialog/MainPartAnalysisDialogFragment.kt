@@ -20,8 +20,8 @@ import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartAnalysisDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
-import com.tangoplus.tangoq.fragment.dialogFragmentResize
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 

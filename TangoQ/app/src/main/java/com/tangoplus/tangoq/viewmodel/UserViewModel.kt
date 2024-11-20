@@ -20,12 +20,12 @@ class UserViewModel: ViewModel() {
         addSource(step22) { _ -> updateStep2() }
     }
 
-    var step31 = MutableLiveData<Boolean?>(null)
-    var step32 = MutableLiveData<Boolean?>(null)
-    var step3 = MediatorLiveData<Boolean?>().apply {
-        addSource(step31) { updateStep3() }
-        addSource(step32) { updateStep3() }
-    }
+//    var step31 = MutableLiveData<Boolean?>(null)
+//    var step32 = MutableLiveData<Boolean?>(null)
+//    var step3 = MediatorLiveData<Boolean?>().apply {
+//        addSource(step31) { updateStep3() }
+//        addSource(step32) { updateStep3() }
+//    }
 
     // ------# connected 날짜 담기 #------
 
@@ -48,11 +48,11 @@ class UserViewModel: ViewModel() {
         }
     }
 
-    private fun updateStep3() {
-        step3.value = when {
-            step31.value == null && step32.value == null -> null
-            step31.value == true && step32.value == true -> true
-            else -> false
-        }
-    }
+//    private fun updateStep3() {
+//        step3.value = when {
+//            step31.value == null && step32.value == null -> null
+//            step31.value == true && step32.value == true -> true
+//            else -> false
+//        }
+//    }
 }

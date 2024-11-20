@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -41,7 +42,8 @@ class GuideDialogFragment : DialogFragment() {
                         Manifest.permission.READ_MEDIA_VIDEO,
                         Manifest.permission.READ_MEDIA_AUDIO,
                         Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
-                        Manifest.permission.POST_NOTIFICATIONS
+                        Manifest.permission.POST_NOTIFICATIONS,
+                        Manifest.permission.USE_EXACT_ALARM
                     )
                 }
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
@@ -51,7 +53,8 @@ class GuideDialogFragment : DialogFragment() {
                         Manifest.permission.READ_MEDIA_IMAGES,
                         Manifest.permission.READ_MEDIA_VIDEO,
                         Manifest.permission.READ_MEDIA_AUDIO,
-                        Manifest.permission.POST_NOTIFICATIONS
+                        Manifest.permission.POST_NOTIFICATIONS,
+                        Manifest.permission.SCHEDULE_EXACT_ALARM
                     )
                 }
                 else -> {
@@ -59,8 +62,7 @@ class GuideDialogFragment : DialogFragment() {
                         Manifest.permission.CAMERA,
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.POST_NOTIFICATIONS
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )
                 }
             }
@@ -85,24 +87,11 @@ class GuideDialogFragment : DialogFragment() {
         if (!hasPermissions(requireContext())) {
             requestPermissionsLauncher.launch(getRequiredPermissions())
         }
+
+        if (!hasExactAlarmPermission(requireContext())) {
+            requestExactAlarmPermission(requireContext())
+        }
         binding.btnGD.setOnClickListener { dismiss() }
-
-        // ------! 인 앱 알림 시작 !------
-        val intent = Intent(requireContext(), AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        val calander: Calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 16)
-        } // 오후 1시에 알림이 오게끔 돼 있음.
-
-        val alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calander.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-        )
-        // ------! 인 앱 알림 끝 !------
     }
 
     override fun onResume() {
@@ -132,5 +121,18 @@ class GuideDialogFragment : DialogFragment() {
             }
         }
     }
+    private fun hasExactAlarmPermission(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // API 31 이상
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            return alarmManager.canScheduleExactAlarms()
+        }
+        return true // API 31 미만은 권한 필요 없음
+    }
 
+    fun requestExactAlarmPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            context.startActivity(intent)
+        }
+    }
 }

@@ -12,8 +12,8 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.RvMeasureItemBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
-import com.tangoplus.tangoq.fragment.hideBadgeOnClick
 
 class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>, private val viewModel : MeasureViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

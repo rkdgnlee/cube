@@ -1,11 +1,13 @@
 package com.tangoplus.tangoq.fragment
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
@@ -85,23 +87,49 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         }
         binding.civP.setOnClickListener {
             when {
-                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-                    navigateGallery()
+                // Android 14
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                    if (hasPermissions(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+                        navigateGallery()
+                    } else {
+                        requestPermissions(
+                            arrayOf(
+                                Manifest.permission.READ_MEDIA_IMAGES,
+                                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                            ), 1000)
+                    }
                 }
-                else -> requestPermissions(
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    1000
-                )
+                // Android 13
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    if (hasPermission(Manifest.permission.READ_MEDIA_IMAGES)) {
+                        navigateGallery()
+                    } else {
+                        requestPermissions(
+                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 1000)
+                    }
+                }
+                // Android 12 이하
+                else -> {
+                    if (hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        navigateGallery()
+                    } else {
+                        requestPermissions(
+                            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                            1000
+                        )
+                    }
+                }
             }
         }
-        // ------! 프로필 사진 관찰 끝 !------
 
         // ------! 정보 목록 recyclerView 연결 시작 !------
         val profilemenulist = mutableListOf(
             "내정보",
             "다크 모드",
             "QR코드 핀번호 로그인",
-            "연동 관리",
+//            "연동 관리",
             "푸쉬 알림 설정",
             "자주 묻는 질문",
             "문의하기",
@@ -111,23 +139,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "서비스 이용약관",
             "로그아웃",
         )
-        setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
-        setAdapter(profilemenulist.subList(4,7), binding.rvPHelp, 1)
-        setAdapter(profilemenulist.subList(7, profilemenulist.size), binding.rvPDetail, 2)
+        setAdapter(profilemenulist.subList(0,3), binding.rvPNormal,0)
+        setAdapter(profilemenulist.subList(3,6), binding.rvPHelp, 1)
+        setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
 
-//        binding.ibtnPfEdit.setOnClickListener {
-//            when {
-//                ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-//                    navigateGallery()
-//                }
-//                else -> requestPermissions(
-//                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-//                    1000
-//                )
-//            }
-//        }
-        // ------! 회원탈퇴 시작 !------
+        // ------# 회원탈퇴 #------
         binding.tvWithDrawal.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
@@ -137,7 +154,43 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             }
         }
 
-        // ------! 회원탈퇴 끝 !------
+    }
+
+    // ------! 프로필 사진 관찰 끝 !------
+    fun hasPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    // 여러 권한 체크 헬퍼 함수
+    fun hasPermissions(vararg permissions: String): Boolean {
+        return permissions.all { permission ->
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    // permission 결과 처리
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1000 -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    navigateGallery()
+                } else {
+                    Toast.makeText(requireContext(), "권한 설정을 허용해 주십시오", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
@@ -153,24 +206,6 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
     }
-
-    @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            1000 -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    navigateGallery()
-                else
-                    Toast.makeText(requireContext(), "권한 설정을 허용해 주십시오", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     // ------# code 2000 으로 갤러리 프로필 사진 바꾸기 #------
     private fun navigateGallery() {
         val intent = Intent(Intent.ACTION_PICK)

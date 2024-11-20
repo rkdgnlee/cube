@@ -41,7 +41,6 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             // PoseLandmarker를 일시 중지하는 코드 삽입
             (activity as? MeasureSkeletonActivity)?.pausePoseLandmarker()
         }
-
         return dialog
     }
 
@@ -72,7 +71,7 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
                 R.layout.measure_skeleton_caution2,
                 R.layout.measure_skeleton_caution3,)
         }
-        binding.vpMSD.adapter = CautionVPAdapter(layouts, isPose, seq)
+        binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq)
         binding.btnMSDConfirm.setOnClickListener { dismiss() }
         binding.ibtnMSDExit.setOnClickListener { dismiss() }
         setUI(isPose)
@@ -81,6 +80,7 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
     private fun setUI(isPose: Boolean) {
         when (isPose) {
             true -> {
+
                 binding.btnMSDConfirm.text = "확인했습니다"
             }
             false -> {

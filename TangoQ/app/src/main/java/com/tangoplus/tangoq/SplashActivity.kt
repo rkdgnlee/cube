@@ -29,15 +29,14 @@ import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
-import com.tangoplus.tangoq.function.SecurePreferencesManager.clearEncryptedToken
-import com.tangoplus.tangoq.function.SecurePreferencesManager.decryptToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
-import com.tangoplus.tangoq.function.SecurePreferencesManager.loadEncryptedToken
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.clearEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -226,13 +225,11 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    else if (getEncryptedJwtToken(this@SplashActivity) != null && loadEncryptedToken(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)) != null) {
-
+                    else if (isValidToken(getEncryptedJwtToken(this@SplashActivity))) {
                         // ------! 자체 로그인 !------
                         try {
-                            val jsonObj = decryptToken(getString(R.string.SECURE_KEY_ALIAS),
-                                loadEncryptedToken(this@SplashActivity, getString(R.string.SECURE_KEY_ALIAS)).toString()
-                            )
+                            val jsonObj = getEncryptedJwtToken(this@SplashActivity)
+                            Log.v("자체로그인Splash", "$jsonObj")
                             lifecycleScope.launch {
                                 getUserIdentifyJson(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                     if (jo != null) {
@@ -250,7 +247,7 @@ class SplashActivity : AppCompatActivity() {
                             }
                         } catch (e: AEADBadTagException) {
                             Log.e("decryptedError", e.stackTraceToString())
-                            clearEncryptedToken(this@SplashActivity)
+                            clearEncryptedJwtToken(this@SplashActivity)
                             introInit()
                         }
                     }

@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.`object`
 
 import android.content.Context
 import android.util.Log
+import com.tangoplus.tangoq.data.ProgressHistoryVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import kotlinx.coroutines.Dispatchers
@@ -275,7 +276,7 @@ object NetworkProgress {
     }
 
     // TODO ------# 달력 함수에 맞게 수정 해야함 #------
-    suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressUnitVO> {
+    suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressHistoryVO> {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
@@ -297,23 +298,22 @@ object NetworkProgress {
                 Log.v("Server>week>Progress", "${responseBody}")
                 try {
                     val ja = JSONObject(responseBody.toString()).optJSONArray("data")
-                    val progresses = mutableListOf<ProgressUnitVO>()
+                    val progresses = mutableListOf<ProgressHistoryVO>()
                     if (ja != null) {
                         for (i in 0 until ja.length()) {
-                            val progressUnitVO = ProgressUnitVO(
+                            val progressHistory = ProgressHistoryVO(
+                                sn = ja.optJSONObject(i).optInt("progress_history_sn"),
+                                userSn = ja.optJSONObject(i).optInt("user_sn"),
                                 uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
-                                exerciseId = ja.optJSONObject(i).optInt("content_sn"),
-                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                currentWeek = ja.optJSONObject(i).optInt("week_number"),
-                                currentSequence = ja.optJSONObject(i).optInt("count_set"),
-                                requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-                                videoDuration = ja.optJSONObject(i).optInt("duration"),
-                                lastProgress = ja.optJSONObject(i).optInt("progress"),
-                                isCompleted = ja.optJSONObject(i).optInt("completed"),
-                                updateDate = ja.optJSONObject(i).optString("updated_at")
-
+                                exerciseName = ja.optJSONObject(i).optString("exercise_name"),
+                                recommendationTitle = ja.optJSONObject(i).optString("recommendation_title"),
+                                weekNumber = ja.optJSONObject(i).optInt("week_number"),
+                                executionDate = ja.optJSONObject(i).optString("execution_date"),
+                                countSet = ja.optJSONObject(i).optInt("count_set"),
+                                completed = ja.optJSONObject(i).optInt("completed"),
+                                expired = ja.optJSONObject(i).optInt("expired"),
                             )
-                            progresses.add(progressUnitVO)
+                            progresses.add(progressHistory)
                         }
                         Log.v("진행길이", "${progresses.size}")
                         return@use progresses
@@ -323,7 +323,7 @@ object NetworkProgress {
                 } catch (e: Exception) {
                     Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
                 }
-            } as MutableList<ProgressUnitVO>
+            } as MutableList<ProgressHistoryVO>
         }
     }
 }

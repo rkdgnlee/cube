@@ -37,8 +37,8 @@ import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramCustomDialogBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.ProgramWeekBSDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.PreferencesManager
-import com.tangoplus.tangoq.fragment.isFirstRun
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
 import com.tangoplus.tangoq.function.SaveSingletonManager
@@ -146,22 +146,28 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 //        Handler(Looper.getMainLooper()).postDelayed({
 //            binding.btnPCDRight.elevation = 2f
 //            binding.btnPCDRight.startAnimation(animation) }, 5000)
-        Handler(Looper.getMainLooper()).postDelayed({
-            val colorAnimation = ValueAnimator.ofObject(
-                ArgbEvaluator(),
-                ContextCompat.getColor(requireContext(), R.color.mainColor),
-                Color.parseColor("#2BEE8C")).apply {
-                duration = 500
-                repeatCount = ValueAnimator.INFINITE
-                repeatMode = ValueAnimator.REVERSE
+//        // TODO 버튼 깜빡임
+//        context.let { context ->
+//            if (context != null) {
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    val colorAnimation = ValueAnimator.ofObject(
+//                        ArgbEvaluator(),
+//                        ContextCompat.getColor(context, R.color.mainColor),
+//                        Color.parseColor("#2BEE8C")).apply {
+//                        duration = 500
+//                        repeatCount = ValueAnimator.INFINITE
+//                        repeatMode = ValueAnimator.REVERSE
+//
+//                        addUpdateListener { animator ->
+//                            val color = animator.animatedValue as Int
+//                            binding.btnPCDRight.backgroundTintList = ColorStateList.valueOf(color)
+//                        }
+//                    }
+//                    colorAnimation.start()
+//                }, 4000)
+//            }
+//        }
 
-                addUpdateListener { animator ->
-                    val color = animator.animatedValue as Int
-                    binding.btnPCDRight.backgroundTintList = ColorStateList.valueOf(color)
-                }
-            }
-            colorAnimation.start()
-        }, 5000)
 
         binding.btnPCDRight.setOnClickListener {
             when (binding.btnPCDRight.text) {

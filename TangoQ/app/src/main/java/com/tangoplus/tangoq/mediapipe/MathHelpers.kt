@@ -4,11 +4,14 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-object CalculateUtil {
+object MathHelpers {
+    private const val SCALE_X = 50f
+    private const val SCALE_Y = 80f
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
@@ -28,14 +31,8 @@ object CalculateUtil {
         val angleRadians = acos(cosTheta)
         return Math.toDegrees(angleRadians.toDouble()).toFloat()
     }
-    // ------# 점과 점사이의 거리 #------
-    fun calculateDistanceByDots(x1: Float, y1: Float, x2: Float, y2: Float) : Float{
-        val dx = x2 - x1
-        val dy = y2 - y1
-        return sqrt(dx * dx + dy * dy)
-    }
 
-    // ------! 선과 점의 X 거리 !------
+    // ------! 선과 점의 X 각도 !------
     fun calculateAngleByLine(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) : Float {
         val vector1X = x2 - x1
         val vector1Y = y2 - y1
@@ -76,6 +73,38 @@ object CalculateUtil {
                 maxOf(0f, 50f - (diff / (halfRange * boundaryMultiplier)) * 50f)
             }
             else -> 0f
+        }
+    }
+    // ------# 점과 점사이의 거리 #------
+
+
+    fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
+        return abs(point2.first - point1.first)
+    }
+
+    // Y축 거리 계산
+    fun getDistanceY(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
+        return abs(point2.second - point1.second)
+    }
+
+    fun getRealDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>) : Float {
+        val normalizedDistance = getDistanceX(point1, point2)
+        return normalizedToRealDistance(normalizedDistance,true)
+    }
+
+    fun getRealDistanceY(point1: Pair<Float, Float>, point2: Pair<Float, Float>) : Float {
+        val normalizedDistance = getDistanceY(point1, point2)
+        return normalizedToRealDistance(normalizedDistance,  false)
+    }
+
+    private fun normalizedToRealDistance(
+        normalizedDistance: Float,
+        isXAxis: Boolean = true
+    ): Float {
+        return if (isXAxis) {
+            normalizedDistance * SCALE_X
+        } else {
+            normalizedDistance * SCALE_Y
         }
     }
 

@@ -39,6 +39,7 @@ import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard1Binding
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import org.json.JSONObject
@@ -68,7 +69,7 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         // ------# 싱글턴 패턴 객체 가져오기 #------
         val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
-        measures = singletonMeasure.measures
+        measures = singletonMeasure.measures ?: mutableListOf()
 //        measures = mutableListOf()
 
         // ------!  이름 + 통증 부위 시작 !------
@@ -79,8 +80,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                 try {
                     if (measures?.isNotEmpty() == true) {
                         val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
-                        binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall?: 0}"
-                        binding.tvMD1MeasureHistory.text = if (viewModel.selectedMeasure?.regDate == "") "측정기록없음" else "최근 측정 기록 - ${viewModel.selectedMeasure?.regDate?.substring(0, 10)}"
+                        binding.tvMD1TotalScore.text = "${measures!![0].overall ?: 0}"
+                        binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${measures!![0].regDate.substring(0, 10)}"
                         binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMD1PredictDicease.setOnClickListener{
                             hideBadgeFunction?.invoke()
@@ -290,7 +291,6 @@ class MeasureDashBoard1Fragment : Fragment() {
                             .setLifecycleOwner(viewLifecycleOwner)
                             .build()
 
-
                         val pts = FloatArray(2)
                         pts[0] = entry.x
                         pts[1] = entry.y
@@ -362,7 +362,8 @@ class MeasureDashBoard1Fragment : Fragment() {
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
     }
-    fun calculatePercentage(value: Int): Float {
+
+    private fun calculatePercentage(value: Int): Float {
         // 70~100의 범위를 0~100%로 매핑
         val minInput = 50
         val maxInput = 100

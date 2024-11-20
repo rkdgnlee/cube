@@ -47,18 +47,18 @@ class SetupDialogFragment : DialogFragment() {
 //        arg = arguments?.getString(ARG_SETUP).toString()
         binding.btnSD.text = "다음으로"
 
-        //------! 페이지 변경 call back 메소드 시작 !------
-        binding.vpSD.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            @SuppressLint("SetTextI18n")
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                if (position == 2) {
-                    binding.btnSD.text = "완료"
-                } else {
-                    binding.btnSD.text = "다음으로"
-                }
-            }
-        }) // -----! 페이지 변경 call back 메소드 끝 !-----
+//        //------! 페이지 변경 call back 메소드 시작 !------
+//        binding.vpSD.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+//            @SuppressLint("SetTextI18n")
+//            override fun onPageSelected(position: Int) {
+//                super.onPageSelected(position)
+//                if (position == 2) {
+//                    binding.btnSD.text = "완료"
+//                } else {
+//                    binding.btnSD.text = "다음으로"
+//                }
+//            }
+//        }) // -----! 페이지 변경 call back 메소드 끝 !-----
 
 //        Log.v("arg", arg)
         binding.vpSD.adapter = SetupVPAdapter(childFragmentManager, lifecycle)
@@ -74,8 +74,9 @@ class SetupDialogFragment : DialogFragment() {
             .steps(object : ArrayList<String?>() {
                 init {
                     add("성별")
-                    add("신장, 몸무게")
-                    add("통증 부위 선태고")
+                    add("신장")
+                    add("몸무게")
+//                    add("통증 부위 선태고")
                 }
             }).stepsNumber(3)
             .animationDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
@@ -92,7 +93,7 @@ class SetupDialogFragment : DialogFragment() {
         // ------! 이전 버튼 끝 !------
 
         binding.btnSD.setOnSingleClickListener {
-            if (binding.btnSD.text == "완료" && uvm.step3.value == true) {
+            if (binding.btnSD.text == "완료" ) { // && uvm.step3.value == true
 
                 if (userSn != null) {
                     // ------! 1. 초기 설정 완료 !------
@@ -100,10 +101,10 @@ class SetupDialogFragment : DialogFragment() {
                     Log.v("JSON몸통", "$jsonObj")
 
                     fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jsonObj.toString(), userSn.toString()) {
-                        userJson.put("height", uvm.User.value?.optString("user_height"))
-                        userJson.put("weight", uvm.User.value?.optString("user_weight"))
-                        userJson.put("user_goal", uvm.User.value?.optString("user_goal"))
-                        userJson.put("user_part", uvm.User.value?.optString("user_part"))
+                        userJson.put("height", uvm.User.value?.optString("height"))
+                        userJson.put("weight", uvm.User.value?.optString("weight"))
+//                        userJson.put("user_goal", uvm.User.value?.optString("user_goal"))
+//                        userJson.put("user_part", uvm.User.value?.optString("user_part"))
                         requireActivity().runOnUiThread{
                             uvm.setupProgress = 34
                             uvm.setupStep = 0
@@ -111,9 +112,9 @@ class SetupDialogFragment : DialogFragment() {
                             uvm.step21.value = null
                             uvm.step22.value = null
                             uvm.step2.value = null
-                            uvm.step31.value = null
-                            uvm.step32.value = null
-                            uvm.step3.value = null
+//                            uvm.step31.value = null
+//                            uvm.step32.value = null
+//                            uvm.step3.value = null
                             uvm.User.value = null
                         }
                         val intent = Intent(requireContext(), MainActivity::class.java)
@@ -122,15 +123,15 @@ class SetupDialogFragment : DialogFragment() {
                     }
                 }
                 // ------! 3. 미설정된 목표, 통증부위 !------
-            } else if (binding.btnSD.text == "완료" && uvm.step32.value == false) {
-                Toast.makeText(requireContext(), "통증 부위를 올바르게 해주세요", Toast.LENGTH_SHORT).show()
-
-            } else if (binding.btnSD.text == "다음으로" && uvm.step31.value == true) {
-                showFragmentComponent()
-                binding.btnSD.text = "완료"
-
-            } else if (binding.btnSD.text == "다음으로" && uvm.step31.value == false) {
-                Toast.makeText(requireContext(), "목표 설정을 올바르게 해주세요", Toast.LENGTH_SHORT).show()
+//            } else if (binding.btnSD.text == "완료" && uvm.step32.value == false) {
+//                Toast.makeText(requireContext(), "통증 부위를 올바르게 해주세요", Toast.LENGTH_SHORT).show()
+//
+//            } else if (binding.btnSD.text == "다음으로" && uvm.step31.value == true) {
+//                showFragmentComponent()
+//                binding.btnSD.text = "완료"
+//
+//            } else if (binding.btnSD.text == "다음으로" && uvm.step31.value == false) {
+//                Toast.makeText(requireContext(), "목표 설정을 올바르게 해주세요", Toast.LENGTH_SHORT).show()
 
             } else if (binding.btnSD.text == "다음으로" && uvm.step2.value == true) {
                 setNextPage()
@@ -181,6 +182,14 @@ class SetupDialogFragment : DialogFragment() {
 
         if (currentFragment is WeightVisibilityListener) {
             currentFragment.visibleWeight()
+            binding.btnSD.text = "완료"
+            uvm.setupStep += 1
+            binding.vpSD.currentItem = uvm.setupStep
+            binding.svSD.go(uvm.setupStep, true)
+            uvm.setupProgress += 34
+            binding.pvSD.progress = uvm.setupProgress.toFloat()
+
+            Log.v("셋업2", "${uvm.setupStep}, ${binding.vpSD.currentItem}")
         }
     }
     override fun onResume() {

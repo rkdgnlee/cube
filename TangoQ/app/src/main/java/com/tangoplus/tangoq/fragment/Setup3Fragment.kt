@@ -33,15 +33,15 @@ class Setup3Fragment : Fragment(){
             fragmentManager?.beginTransaction()?.addToBackStack(tag)?.commit()
         }
 
-        viewModel.step3.observe(viewLifecycleOwner) {
-            if (it == true) {
-                viewModel.User.value?.put("user_goal", "$goals")
-                viewModel.User.value?.put("user_parts", "$parts")
-            } else {
-                viewModel.User.value?.put("user_goal", "")
-                viewModel.User.value?.put("user_parts", "")
-            }
-        }
+//        viewModel.step3.observe(viewLifecycleOwner) {
+//            if (it == true) {
+//                viewModel.User.value?.put("user_goal", "$goals")
+//                viewModel.User.value?.put("user_parts", "$parts")
+//            } else {
+//                viewModel.User.value?.put("user_goal", "")
+//                viewModel.User.value?.put("user_parts", "")
+//            }
+//        }
     }
 
 //    private fun transIdByCheckbox(checkBox: CheckBox) : Int {

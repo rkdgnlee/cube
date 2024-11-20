@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -25,7 +26,9 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -34,6 +37,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -57,6 +62,32 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var auth : FirebaseAuth
 
     var verificationId = ""
+
+    override fun onDestroy() {
+        super.onDestroy()
+        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseAuth.getInstance().signOut()
+                val user = FirebaseAuth.getInstance().currentUser
+                Log.v("user", "$user")
+                user?.delete()
+            }
+        }
+        auth.signOut()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseAuth.getInstance().signOut()
+                val user = FirebaseAuth.getInstance().currentUser
+                Log.v("user", "$user")
+                user?.delete()
+            }
+        }
+        auth.signOut()
+    }
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,17 +108,23 @@ class SignInActivity : AppCompatActivity() {
         binding.tvNameGuide.visibility = View.GONE
         binding.etName.visibility = View.GONE
         binding.llEmail.visibility = View.GONE
-
+        binding.btnEmailNext.visibility = View.GONE
         binding.btnAuthSend.isEnabled = false
         binding.etAuthNumber.isEnabled = false
         binding.btnAuthConfirm.isEnabled = false
         binding.btnSignIn.isEnabled = false
 
+        viewModel.invalidIdCondition.observe(this) { state ->
+            binding.btnSignIn.isEnabled  = state
+            binding.btnSignIn.backgroundTintList = if (state) ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400)) else
+                ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.mainColor))
+        }
+
         binding.etMobile.requestFocus()
         binding.etMobile.postDelayed({
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etMobile, InputMethodManager.SHOW_IMPLICIT)
-        }, 200) // 100ms 정도의 딜레이를 줍니다.
+        }, 200)
 
 
         binding.svSignIn.state
@@ -214,9 +251,38 @@ class SignInActivity : AppCompatActivity() {
 
                 Handler(Looper.getMainLooper()).postDelayed({ binding.etId.requestFocus() }, 750)
 
+                binding.pvSignIn.progress = 75f
+                binding.svSignIn.go(2, true)
                 return@setOnEditorActionListener true
             }
             false
+        }
+
+        binding.btnEmailNext.setOnSingleClickListener {
+            val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
+            alphaAnimation.duration = 750
+            binding.etId.startAnimation(alphaAnimation)
+            binding.llId.startAnimation(alphaAnimation)
+            binding.llPwCondition.startAnimation(alphaAnimation)
+            binding.etPw.startAnimation(alphaAnimation)
+            binding.llPwRepeat.startAnimation(alphaAnimation)
+            binding.etPwRepeat.startAnimation(alphaAnimation)
+            binding.btnSignIn.startAnimation(alphaAnimation)
+
+            binding.llIdCondition.visibility = View.VISIBLE
+            binding.llId.visibility = View.VISIBLE
+            binding.llPwCondition.visibility = View.VISIBLE
+            binding.etPw.visibility = View.VISIBLE
+            binding.llPwRepeat.visibility = View.VISIBLE
+            binding.etPwRepeat.visibility = View.VISIBLE
+            binding.btnSignIn.visibility = View.VISIBLE
+            val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
+            objectAnimator.duration = 1000
+            objectAnimator.start()
+
+            binding.pvSignIn.progress = 75f
+            binding.svSignIn.go(2, true)
+            Handler(Looper.getMainLooper()).postDelayed({ binding.etId.requestFocus() }, 750)
         }
 
 
@@ -264,6 +330,10 @@ class SignInActivity : AppCompatActivity() {
                                         binding.btnIdCondition.isEnabled = false
                                         binding.etId.isEnabled = false
                                         viewModel.User.value?.put("user_id", binding.etId.toString())
+                                        binding.pvSignIn.progress = 100f
+                                        binding.svSignIn.go(3, true)
+                                        binding.tvSignInGuide.text = "비밀번호를 입력해주세요"
+                                        viewModel.invalidIdCondition.value = true
                                     }
                                     setNegativeButton("아니오") { dialog, _ ->
                                         dialog.dismiss()
@@ -293,9 +363,7 @@ class SignInActivity : AppCompatActivity() {
                 val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                 objectAnimator.duration = 1000
                 objectAnimator.start()
-                binding.pvSignIn.progress = 75f
-                binding.etPw.requestFocus()
-                binding.svSignIn.go(2, true)
+
                 return@setOnEditorActionListener true
             }
             false
@@ -360,6 +428,7 @@ class SignInActivity : AppCompatActivity() {
         binding.etPw.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
+
                 viewModel.pwCondition.value = pwPatternCheck.matcher(binding.etPw.text.toString()).find()
                 if (viewModel.pwCondition.value == true) {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
@@ -377,14 +446,13 @@ class SignInActivity : AppCompatActivity() {
         binding.etPwRepeat.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
+                binding.tvSignInGuide.text = "모두 완료됐습니다. 약관을 동의해주세요 !"
                 viewModel.pwCompare.value = (binding.etPw.text.toString() == binding.etPwRepeat.text.toString())
                 if (viewModel.pwCompare.value == true) {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwRepeat.text = "일치합니다"
-                    binding.pvSignIn.progress = 100f
-                    binding.svSignIn.go(3, true)
-                    binding.tvSignInGuide.text = "하단의 완료 버튼을 눌러주세요"
-                    binding.btnSignIn.isEnabled = true
+
+
                 } else {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
                     binding.tvPwRepeat.text = "올바르지 않습니다"
@@ -425,6 +493,7 @@ class SignInActivity : AppCompatActivity() {
                         binding.tvNameGuide.visibility = View.VISIBLE
                         binding.etName.visibility = View.VISIBLE
                         binding.llEmail.visibility= View.VISIBLE
+                        binding.btnEmailNext.visibility = View.VISIBLE
                         binding.tvSignInGuide.text = "이름과 이메일을 입력해주세요"
                         val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                         objectAnimator.duration = 1000

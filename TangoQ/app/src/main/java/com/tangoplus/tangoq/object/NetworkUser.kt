@@ -53,14 +53,17 @@ object NetworkUser {
                 // ------! 토큰 저장 !------
                 val token = jo?.optString("jwt")
                 if (token != null) {
-                    saveEncryptedJwtToken(context, token)
+                    val jsonObj = JSONObject()
+                    jsonObj.put("jwt_token", jo.optString("jwt"))
+                    jsonObj.put("refresh_jwt_token", jo.optString("refresh_jwt"))
+                    saveEncryptedJwtToken(context, jsonObj)
                 }
                 callback(jo)
             }
         })
     }
 
-    // 자체 로그인
+    // Id, Pw 로그인
     suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, idPw.toString())
@@ -73,27 +76,59 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    Log.e("${ContentValues.TAG}, 응답실패", "Failed to execute request!")
+                    Log.e("자체로그인Failed", "Failed to execute request!")
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-                    Log.v("응답성공", "$responseBody")
+                    Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
 
-                    // ------! 토큰 저장 !------
+                    // ------#토큰 저장 #------
                     val jsonObj = JSONObject()
-                    jsonObj.put("jwt", jo?.optString("jwt"))
-                    jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
-                    saveEncryptedJwtToken(context, jsonObj.toString())
-
+                    jsonObj.put("jwt_token", jo?.optString("jwt"))
+                    jsonObj.put("refresh_jwt_token", jo?.optString("refresh_jwt"))
+                    saveEncryptedJwtToken(context, jsonObj)
+                    // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     callback(jo)
                 }
             })
         }
     }
 
-    //
+    // Id, Pw 자동 로그인 (토큰)
+    suspend fun rememberMeByRefreshToken(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = RequestBody.create(mediaType, idPw.toString())
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}login.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e("자체로그인Failed", "Failed to execute request!")
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    val responseBody = response.body?.string()
+                    Log.v("자체로그인Success", "$responseBody")
+                    val jo = responseBody?.let { JSONObject(it) }
+
+                    // ------#토큰 저장 #------
+                    val jsonObj = JSONObject()
+                    jsonObj.put("jwt_token", jo?.optString("jwt"))
+                    jsonObj.put("refresh_jwt_token", jo?.optString("refresh_jwt"))
+                    saveEncryptedJwtToken(context, jsonObj)
+                    // ------# 저장 후 로그인 정보는 callback으로 반환 #------
+                    callback(jo)
+                }
+            })
+        }
+    }
+
     suspend fun insertUser(myUrl: String,  idPw: JSONObject, context: Context, callback: (Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, idPw.toString())
@@ -107,7 +142,7 @@ object NetworkUser {
             try {
                 client.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
-                        Log.e("insertUser, 응답실패", "Failed to execute request!")
+                        Log.e("insertUserFailed", "Failed to execute request!")
                         callback(500) // 실패 시 에러 코드 전달
                     }
 
@@ -149,7 +184,7 @@ object NetworkUser {
                     }
                     override fun onResponse(call: Call, response: Response) {
                         callback(response.code)
-                        Log.v("중복확안로그", "${response.code}")
+                        Log.v("중복확안로그", "${response.code}, ${response.body.toString()}")
                     }
                 })
             } catch (e: Exception) {
@@ -174,12 +209,12 @@ object NetworkUser {
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("응답실패", "Failed to execute request!")
+                Log.e("마케팅Failed", "Failed to execute request!")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.e("응답성공", "$responseBody")
+                Log.e("마케팅Success", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
                 callback(jo)
             }
@@ -206,14 +241,12 @@ object NetworkUser {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("UPDATE 응답실패", "Failed to execute request!")
+                Log.e("UPDATEFailed", "Failed to execute request!")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("UPDATE 응답성공", "$responseBody")
-
-                Log.v("UPDATE 응답성공", "${response.code}")
+                Log.v("UPDATE 응답성공", "code: ${response.code} body: $responseBody")
                 callback()
             }
         })
@@ -227,16 +260,73 @@ object NetworkUser {
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("회원탈퇴 응답실패", "Failed to execute request!")
+                Log.e("회원탈퇴Failed", "Failed to execute request!")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("회원탈퇴 응답성공", "$responseBody")
+                Log.v("회원탈퇴Success", "$responseBody")
                 callback()
             }
         })
     }
+
+    fun getUserId(myUrl: String, joBody: String, callback: (String) -> Unit) {
+
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = joBody.toRequestBody(mediaType)
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}user")
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(object: Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("IDPW찾기Failed", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.v("userId", "$responseBody")
+                val jo = responseBody?.let { JSONObject(it) }
+                val id = jo?.optString("user_id")
+                if (id != null) {
+                    callback(id)
+                } else {
+                    callback("")
+                }
+            }
+        })
+    }
+    fun verifyBeforeResetPw(myUrl: String, joBody: String, callback: (Boolean) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = joBody.toRequestBody(mediaType)
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("${myUrl}user")
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(object: Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("IDPW찾기Failed", "Failed to execute request!")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.v("userId", "$responseBody")
+                val jo = responseBody?.let { JSONObject(it) }
+                if (jo != null) {
+                    if (jo.optString("status") == "1") {
+                        callback(true)
+                    } else {
+                        callback(false)
+                    }
+                }
+            }
+        })
+    }
+
+
 
     // ------! 프로필 사진 시작 !------
     suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {

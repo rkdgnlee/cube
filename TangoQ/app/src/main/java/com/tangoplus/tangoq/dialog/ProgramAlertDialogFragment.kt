@@ -1,9 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.Point
-import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -11,13 +8,12 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
-import com.tangoplus.tangoq.fragment.dialogFragmentResize
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 
 
 class ProgramAlertDialogFragment : DialogFragment() {

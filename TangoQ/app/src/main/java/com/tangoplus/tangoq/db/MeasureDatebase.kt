@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 import com.tangoplus.tangoq.function.SecurePreferencesManager.generateSecurePassphrase
 import net.sqlcipher.database.SupportFactory
 
-@Database(entities = [MeasureInfo::class, MeasureStatic::class, MeasureDynamic::class], version = 8)
+@Database(entities = [MeasureInfo::class, MeasureStatic::class, MeasureDynamic::class], version = 10)
 abstract class MeasureDatabase : RoomDatabase() {
     abstract fun measureDao(): MeasureDao
 

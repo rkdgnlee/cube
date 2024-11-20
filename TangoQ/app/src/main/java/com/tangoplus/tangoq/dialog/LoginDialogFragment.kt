@@ -26,8 +26,6 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
-import com.tangoplus.tangoq.function.SecurePreferencesManager.encryptToken
-import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedToken
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
@@ -88,6 +86,10 @@ class LoginDialogFragment : DialogFragment() {
 //            viewModel.idPwCondition.value = if (viewModel.currentidCon.value == true && (viewModel.currentPwCon.value == true)) true else false
 ////            Log.v("idpwcondition", "${viewModel.currentidCon.value}, pw: ${viewModel.currentPwCon.value}, both: ${viewModel.idPwCondition.value}")
 //        }
+
+        binding.ibtnLDIdClear.setOnClickListener { binding.etLDId.text.clear() }
+        binding.ibtnLDPwClear.setOnClickListener { binding.etLDPw.text.clear() }
+
         binding.btnLDLogin.setOnClickListener {
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
@@ -128,7 +130,7 @@ class LoginDialogFragment : DialogFragment() {
                                     } else {
                                         NetworkUser.storeUserInSingleton(requireContext(), jo)
                                         createKey(getString(R.string.SECURE_KEY_ALIAS))
-                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
+//                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
                                         lifecycleScope.launch {
                                             val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")!!
                                             val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()!!
@@ -163,7 +165,6 @@ class LoginDialogFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

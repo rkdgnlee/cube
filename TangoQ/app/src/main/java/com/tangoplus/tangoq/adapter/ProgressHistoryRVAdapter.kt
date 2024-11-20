@@ -8,32 +8,33 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ProgressUnitVO
+import com.tangoplus.tangoq.data.ProgressHistoryVO
 import com.tangoplus.tangoq.databinding.RvDashboard2ItemBinding
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class MD2RVAdpater(private val fragment: Fragment, val data: List<ProgressUnitVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<ProgressHistoryVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvD2IDate : TextView = view.findViewById(R.id.tvD2IDate)
+    inner class PHViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvD2IProgram : TextView = view.findViewById(R.id.tvD2IProgram)
         val tvD2ITitle : TextView = view.findViewById(R.id.tvD2ITitle)
-        val tvD2ICount : TextView = view.findViewById(R.id.tvD2ICount)
+        val tvD2IWeek : TextView = view.findViewById(R.id.tvD2IWeek)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = RvDashboard2ItemBinding.inflate(layoutInflater, parent, false)
-        return viewHolder(binding.root)
+        return PHViewHolder(binding.root)
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = data[position]
 
-        if (holder is viewHolder) {
-            holder.tvD2ICount.text = "현재까지 반복한 횟수: ${currentItem.currentWeek}번"
-            holder.tvD2IDate.text = "마지막 완료 일자: ${convertDateString(currentItem.currentWeek.toString())}"
+        if (holder is PHViewHolder) {
+            holder.tvD2IWeek.text = "${currentItem.weekNumber}주차 진행"
+            holder.tvD2IProgram.text = currentItem.recommendationTitle
+            holder.tvD2ITitle.text = currentItem.exerciseName
         }
     }
 

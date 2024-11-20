@@ -22,7 +22,6 @@ class PartAnimationController(
     private var currentIndex = 0
     private var isAnimating = false
     private var currentAnimation: ValueAnimator? = null
-    private val endColor = "#FFE7E4"
 
     fun startSequentialAnimation() {
         if (isAnimating) return
@@ -46,7 +45,7 @@ class PartAnimationController(
             val fadeOutAnimation = ValueAnimator.ofObject(
                 ArgbEvaluator(),
                 ContextCompat.getColor(recyclerView.context, R.color.deleteContainerColor),
-                Color.parseColor(endColor)
+                ContextCompat.getColor(recyclerView.context, R.color.deleteRippleColor),
             ).apply {
                 duration = animationDuration / 2  // 전체 시간의 절반
 
@@ -60,7 +59,7 @@ class PartAnimationController(
                         // 두 번째 애니메이션 시작 (FFFFFF -> deleteContainerColor)
                         val fadeInAnimation = ValueAnimator.ofObject(
                             ArgbEvaluator(),
-                            Color.parseColor(endColor),
+                            ContextCompat.getColor(recyclerView.context, R.color.deleteRippleColor),
                             ContextCompat.getColor(recyclerView.context, R.color.deleteContainerColor)
                         ).apply {
                             duration = animationDuration / 2  // 전체 시간의 절반
@@ -76,12 +75,12 @@ class PartAnimationController(
                                     if (currentIndex < itemCount) {
                                         Handler(Looper.getMainLooper()).postDelayed({
                                             animateNextItem()
-                                        }, 100)
+                                        }, 200)
                                     } else {
                                         currentIndex = 0
                                         Handler(Looper.getMainLooper()).postDelayed({
                                             animateNextItem()
-                                        }, 100)
+                                        }, 200)
                                     }
                                 }
                             })
