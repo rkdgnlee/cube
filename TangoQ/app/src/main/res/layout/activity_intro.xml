@@ -90,6 +90,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/effect_ibtn_20dp"
+            android:contentDescription="구글로그인버튼"
             android:src="@drawable/icon_api_google_logo" />
     </androidx.cardview.widget.CardView>
 
@@ -109,6 +110,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/effect_ibtn_20dp"
+            android:contentDescription="카카오로그인버튼"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/icon_api_kakao_logo" />
     </androidx.cardview.widget.CardView>
@@ -129,6 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/white"
+            android:contentDescription="네이버로그인버튼"
             android:src="@drawable/icon_api_naver_logo" />
     </androidx.cardview.widget.CardView>
 

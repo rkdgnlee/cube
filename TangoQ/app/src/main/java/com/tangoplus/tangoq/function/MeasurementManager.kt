@@ -23,9 +23,24 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import kotlin.coroutines.resume
+import kotlin.math.abs
 
 object MeasurementManager {
-
+    val matchedUris = mapOf(
+        "목관절" to listOf(0, 3, 4, 5, 6),
+        "좌측 어깨" to listOf(0, 3, 5, 6),
+        "우측 어깨" to listOf(0, 4, 5, 6),
+        "좌측 팔꿉" to listOf(0, 2, 3),
+        "우측 팔꿉" to listOf(0, 2, 4),
+        "좌측 손목" to listOf(0, 2, 3),
+        "우측 손목" to listOf(0, 2, 4),
+        "좌측 골반" to listOf(0, 3, 5, 6),
+        "우측 골반" to listOf(0, 4, 5, 6),
+        "좌측 무릎" to listOf(0, 5),
+        "우측 무릎" to listOf(0, 5),
+        "좌측 발목" to listOf(0, 5),
+        "우측 발목" to listOf(0, 5)
+    )
     private val errorBounds = listOf(
         mapOf(
             0 to mapOf( "front_horizontal_angle_ear" to Pair(-0.5f, 0.5f)),
@@ -141,7 +156,7 @@ object MeasurementManager {
     )
 
     private val mainPartSeqs = listOf(
-        mapOf(
+        mapOf( // 6
             0 to mapOf( "front_horizontal_angle_ear" to "양 귀 기울기"),
             3 to mapOf("side_left_vertical_angle_nose_shoulder" to "코와 좌측 어깨 기울기"),
             4 to mapOf("side_right_vertical_angle_nose_shoulder" to "코와 우측 어깨 기울기"),
@@ -149,21 +164,21 @@ object MeasurementManager {
             6 to mapOf( "back_sit_horizontal_angle_ear" to "양 귀 기울기",
                 "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to "우측 어깨-코-좌측 어깨 기울기")
         ),
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_horizontal_angle_shoulder" to "양 어깨 기울기",
                 "front_horizontal_distance_sub_shoulder" to "양 어깨 높이 차"),
             3 to mapOf("side_left_horizontal_distance_shoulder" to "중심과 어깨 거리"),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기")
         ),
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_horizontal_angle_shoulder" to "양 어깨 기울기",
                 "front_horizontal_distance_sub_shoulder" to "양 어깨 높이 차"),
             4 to mapOf("side_right_horizontal_distance_shoulder" to "중심과 어깨 거리"),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기")
         ),
-        // 좌측 팔꿉
+        // 좌측 팔꿉  // 8
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to "양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "양 팔꿉 높이 차",
@@ -174,7 +189,7 @@ object MeasurementManager {
                 "side_left_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
                 "side_left_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기")
         ),
-        mapOf(
+        mapOf( // 8
             0 to mapOf("front_horizontal_angle_elbow" to "양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "양 팔꿉 높이 차",
                 "front_vertical_angle_shoulder_elbow_right" to "우측 어깨와 팔꿉 기울기"),
@@ -185,14 +200,14 @@ object MeasurementManager {
                 "side_right_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기")
         ),
         // 좌측 손목
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_vertical_angle_elbow_wrist_left" to "좌측 팔꿉와 손목 기울기",
                 "front_horizontal_angle_wrist" to "양 손목 기울기"),
             2 to mapOf("front_elbow_align_angle_mid_index_wrist_elbow_left" to "좌측 중지-손목-팔꿉 기울기",
                 "front_elbow_align_distance_left_wrist_shoulder" to "좌측 손목과 어깨 기울기"),
             3 to mapOf("side_left_horizontal_distance_wrist" to "중심과 좌측 손목 거리")
         ),
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_vertical_angle_elbow_wrist_right" to "우측 팔꿉와 손목 기울기",
                 "front_horizontal_angle_wrist" to "양 손목 기울기"),
             2 to mapOf("front_elbow_align_angle_mid_index_wrist_elbow_right" to "우측 중지-손목-팔꿉 기울기",
@@ -200,7 +215,7 @@ object MeasurementManager {
             4 to mapOf("side_right_horizontal_distance_wrist" to "중심과 우측 손목 거리")
         ),
         // 좌측 골반
-        mapOf(
+        mapOf( // 7
             0 to mapOf("front_vertical_angle_hip_knee_left" to "좌측 골반과 무릎 기울기",
                 "front_horizontal_angle_hip" to "양 골반 기울기"),
             3 to mapOf("side_left_vertical_angle_hip_knee" to "좌측 골반과 무릎 기울기",
@@ -209,7 +224,7 @@ object MeasurementManager {
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "좌측 어깨-골반중심-우측 어깨 기울기",
                 "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",)
         ),
-        mapOf(
+        mapOf( // 7
             0 to mapOf("front_vertical_angle_hip_knee_right" to "우측 골반과 무릎 기울기",
                 "front_horizontal_angle_hip" to "양 골반 기울기"),
             4 to mapOf("side_right_vertical_angle_hip_knee" to "우측 골반과 무릎 기울기",
@@ -219,40 +234,121 @@ object MeasurementManager {
                 "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",)
         ),
         // 좌측 무릎 + 스쿼트
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_horizontal_angle_knee" to "양 무릎 기울기",
                 "front_horizontal_distance_knee_left" to "중심에서 좌측 무릎 거리",
                 "front_vertical_angle_hip_knee_ankle_left" to "좌측 골반-무릎-발목 기울기"),
             5 to mapOf("back_horizontal_angle_knee" to "양 무릎 기울기",
                 "back_horizontal_distance_knee_left" to "중심에서 좌측 무릎 거리")
         ),
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_horizontal_angle_knee" to "양 무릎 기울기",
                 "front_horizontal_distance_knee_right" to "중심에서 우측 무릎 거리",
                 "front_vertical_angle_hip_knee_ankle_right" to "우측 골반-무릎-발목 기울기"),
             5 to mapOf("back_horizontal_angle_knee" to "양 무릎 기울기",
                 "back_horizontal_distance_knee_right" to "중심에서 우측 무릎 거리")
         ),
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_vertical_angle_knee_ankle_left" to "좌측 무릎과 발목 기울기",
                 "front_horizontal_angle_ankle" to "양 발목 기울기",
                 "front_horizontal_distance_ankle_left" to "중심에서 좌측 발목 거리"),
             5 to mapOf("back_horizontal_distance_sub_ankle" to "양 발목 높이 차",
                 "back_horizontal_distance_ankle_left" to "중심에서 좌측 발목 거리")
         ),
-        mapOf(
+        mapOf( // 5
             0 to mapOf("front_vertical_angle_knee_ankle_right" to "우측 무릎과 발목 기울기",
                 "front_horizontal_angle_ankle" to "양 발목 기울기",
                 "front_horizontal_distance_ankle_right" to "중심에서 우측 발목 거리"),
             5 to mapOf("back_horizontal_distance_sub_ankle" to "양 발목 높이 차",
                 "back_horizontal_distance_ankle_right" to "중심에서 우측 발목 거리")
         )
-    )
+    ) // total 76개
 
-    fun getAnalysisUnits(part: String, currentKey: Int, measureResult: JSONArray): MutableList<AnalysisUnitVO> {
-        val matchedIndexs = listOf(
-            "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목"
+    enum class status{
+        DANGER, WARNING, NORMAL
+    }
+    val matchedIndexs = listOf(
+        "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목"
+    )
+    // 측정 완료 후 measure_info의 painpart만들기
+    fun getPairParts(motherJa: JSONArray) : MutableList<Pair<String, status>> {
+        val thresholdPercent = 1.15f
+
+        val results = mutableListOf<Pair<String, status>>()
+        matchedUris.forEach{ (part, seqList) ->
+            val tempPart = mutableListOf<Pair<String, status>>()
+            seqList.forEachIndexed { index, i ->
+                val measureResult = motherJa.getJSONObject(i)
+                val partIndex = matchedIndexs.indexOf(part)
+                val mainSeq = mainPartSeqs[partIndex]
+                val errorBound = errorBounds[partIndex]
+
+                mainSeq[i]?.forEach{ (columnName, rawDataName) ->
+                    val boundPair = errorBound[i]?.get(columnName)
+
+                    if (boundPair != null) {
+                        val boundary = abs(boundPair.first - boundPair.second)
+                        val lowerBoundWithWeight = boundPair.first - (boundary * thresholdPercent)
+                        val upperBoundWithWeight = boundPair.second + (boundary * thresholdPercent)
+                        val data = measureResult.optDouble(columnName).toFloat()
+                        when {
+                            data < lowerBoundWithWeight || data > upperBoundWithWeight -> {
+                                tempPart.add(Pair(rawDataName, status.DANGER))
+                            }
+                            data < boundPair.first || data > boundPair.second -> {
+                                tempPart.add(Pair(rawDataName, status.WARNING))
+                            }
+                            else -> {
+                                tempPart.add(Pair(rawDataName, status.NORMAL))
+                            }
+                        }
+                    }
+                }
+            }
+            val dangerCount = tempPart.count {it.second == status.DANGER}
+            val warningCount = tempPart.count { it.second == status.WARNING }
+            val totalCount = tempPart.count { it.second == status.NORMAL }
+            Log.v("부위카운트", "$part: ($dangerCount, $warningCount, $totalCount)")
+            if (warningCount + dangerCount > totalCount && dangerCount > warningCount) {
+                results.add(Pair(part, status.DANGER))
+            } else if (warningCount + dangerCount > dangerCount && dangerCount < warningCount) {
+                results.add(Pair(part, status.WARNING))
+            } else {
+                results.add(Pair(part, status.NORMAL))
+            }
+        }
+        return results
+    }
+
+    fun calculateOverall(parts: MutableList<Pair<String, status>>) : Int {
+        val scores = mapOf(
+            status.DANGER to 15,
+            status.WARNING to 65,
+            status.NORMAL to 100
         )
+        val weightScore = 1.05
+        val reverseWeightScore = 0.95
+        var weightedScoreSum = 0.0
+        var totalWeight = 0.0
+        for (part in parts) {
+            val (bodyPart, status) = part
+            val weight = when {
+                bodyPart.contains("어깨") -> weightScore
+                bodyPart.contains("골반") -> weightScore
+                bodyPart.contains("손목") -> reverseWeightScore
+                bodyPart.contains("발목") -> reverseWeightScore
+                else -> 1.0
+            }
+            weightedScoreSum += (scores[status] ?: 0) * weight
+            totalWeight += weight
+        }
+
+        return if (totalWeight > 0) (weightedScoreSum / totalWeight).toInt() else 0
+    }
+
+
+    // mainPartAnalysis에서 unit 만들기
+    fun getAnalysisUnits(part: String, currentKey: Int, measureResult: JSONArray): MutableList<AnalysisUnitVO> {
         val result = mutableListOf<AnalysisUnitVO>()
         val partIndex = matchedIndexs.indexOf(part)
 
@@ -289,68 +385,94 @@ object MeasurementManager {
     fun getDangerParts(measureInfo: MeasureInfo) : MutableList<Pair<String, Float>> {
         val dangerParts = mutableListOf<Pair<String, Float>>()
 
-        val neckRisk = measureInfo.risk_neck.toFloat()
-        if (neckRisk > 0) {
-            dangerParts.add(Pair("목관절", neckRisk))
+        val neckRisk = measureInfo.risk_neck?.toFloat()
+        if (neckRisk != null) {
+            if (neckRisk > 0) {
+                dangerParts.add(Pair("목관절", neckRisk))
+            }
         }
 
-        val shoulderLeftRisk = measureInfo.risk_shoulder_left.toFloat()
-        if (shoulderLeftRisk > 0) {
-            dangerParts.add(Pair("우측 어깨", shoulderLeftRisk))
+        val shoulderLeftRisk = measureInfo.risk_shoulder_left?.toFloat()
+        if (shoulderLeftRisk != null) {
+            if (shoulderLeftRisk > 0) {
+                dangerParts.add(Pair("우측 어깨", shoulderLeftRisk))
+            }
         }
 
-        val shoulderRightRisk = measureInfo.risk_shoulder_right.toFloat()
-        if (shoulderRightRisk > 0) {
-            dangerParts.add(Pair("좌측 어깨", shoulderRightRisk))
+        val shoulderRightRisk = measureInfo.risk_shoulder_right?.toFloat()
+        if (shoulderRightRisk != null) {
+            if (shoulderRightRisk > 0) {
+                dangerParts.add(Pair("좌측 어깨", shoulderRightRisk))
+            }
         }
 
-        val elbowLeftRisk = measureInfo.risk_elbow_left.toFloat()
-        if (elbowLeftRisk > 0) {
-            dangerParts.add(Pair("좌측 팔꿉", elbowLeftRisk))
+        val elbowLeftRisk = measureInfo.risk_elbow_left?.toFloat()
+        if (elbowLeftRisk != null) {
+            if (elbowLeftRisk > 0) {
+                dangerParts.add(Pair("좌측 팔꿉", elbowLeftRisk))
+            }
         }
-        val elbowRightRisk =  measureInfo.risk_elbow_right.toFloat()
-        if (elbowRightRisk > 0) {
-            dangerParts.add(Pair("우측 팔꿉", elbowRightRisk))
-        }
-
-        val wristLeftRisk = measureInfo.risk_wrist_left.toFloat()
-        if (wristLeftRisk > 0) {
-            dangerParts.add(Pair("좌측 손목", wristLeftRisk))
-        }
-        val wristRightRisk = measureInfo.risk_wrist_right.toFloat()
-        if (wristRightRisk > 0) {
-            dangerParts.add(Pair("우측 손목", wristRightRisk))
+        val elbowRightRisk =  measureInfo.risk_elbow_right?.toFloat()
+        if (elbowRightRisk != null) {
+            if (elbowRightRisk > 0) {
+                dangerParts.add(Pair("우측 팔꿉", elbowRightRisk))
+            }
         }
 
-        val hipLeftRisk = measureInfo.risk_hip_left.toFloat()
-        if (hipLeftRisk > 0) {
-            dangerParts.add(Pair("좌측 골반", hipLeftRisk))
+        val wristLeftRisk = measureInfo.risk_wrist_left?.toFloat()
+        if (wristLeftRisk != null) {
+            if (wristLeftRisk > 0) {
+                dangerParts.add(Pair("좌측 손목", wristLeftRisk))
+            }
         }
-        val hipRightRisk = measureInfo.risk_hip_right.toFloat()
-        if (hipRightRisk > 0) {
-            dangerParts.add(Pair("우측 골반", hipRightRisk))
-        }
-
-        val kneeLeftRisk = measureInfo.risk_knee_left.toFloat()
-        if (kneeLeftRisk > 0) {
-            dangerParts.add(Pair("좌측 무릎", kneeLeftRisk))
-        }
-        val kneeRightRisk = measureInfo.risk_knee_right.toFloat()
-        if (kneeRightRisk > 0) {
-            dangerParts.add(Pair("우측 무릎", kneeRightRisk))
+        val wristRightRisk = measureInfo.risk_wrist_right?.toFloat()
+        if (wristRightRisk != null) {
+            if (wristRightRisk > 0) {
+                dangerParts.add(Pair("우측 손목", wristRightRisk))
+            }
         }
 
-        val ankleLeftRisk = measureInfo.risk_ankle_left.toFloat()
-        if (ankleLeftRisk > 0) {
-            dangerParts.add(Pair("좌측 발목", ankleLeftRisk))
+        val hipLeftRisk = measureInfo.risk_hip_left?.toFloat()
+        if (hipLeftRisk != null) {
+            if (hipLeftRisk > 0) {
+                dangerParts.add(Pair("좌측 골반", hipLeftRisk))
+            }
         }
-        val ankleRightRisk = measureInfo.risk_ankle_right.toFloat()
-        if (ankleRightRisk > 0) {
-            dangerParts.add(Pair("우측 발목", ankleRightRisk))
+        val hipRightRisk = measureInfo.risk_hip_right?.toFloat()
+        if (hipRightRisk != null) {
+            if (hipRightRisk > 0) {
+                dangerParts.add(Pair("우측 골반", hipRightRisk))
+            }
         }
 
+        val kneeLeftRisk = measureInfo.risk_knee_left?.toFloat()
+        if (kneeLeftRisk != null) {
+            if (kneeLeftRisk > 0) {
+                dangerParts.add(Pair("좌측 무릎", kneeLeftRisk))
+            }
+        }
+        val kneeRightRisk = measureInfo.risk_knee_right?.toFloat()
+        if (kneeRightRisk != null) {
+            if (kneeRightRisk > 0) {
+                dangerParts.add(Pair("우측 무릎", kneeRightRisk))
+            }
+        }
+
+        val ankleLeftRisk = measureInfo.risk_ankle_left?.toFloat()
+        if (ankleLeftRisk != null) {
+            if (ankleLeftRisk > 0) {
+                dangerParts.add(Pair("좌측 발목", ankleLeftRisk))
+            }
+        }
+        val ankleRightRisk = measureInfo.risk_ankle_right?.toFloat()
+        if (ankleRightRisk != null) {
+            if (ankleRightRisk > 0) {
+                dangerParts.add(Pair("우측 발목", ankleRightRisk))
+            }
+        }
         return dangerParts
     }
+
     fun convertToJsonArrays(dangerParts: List<Pair<String, Float>>): Pair<JSONArray, JSONArray> {
         val partIndices = mapOf(
             "목관절" to 1,

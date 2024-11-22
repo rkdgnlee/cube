@@ -16,6 +16,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.getDangerParts
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getServerUUID
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveServerUUID
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.`object`.DeviceService.getDeviceUUID
 import com.tangoplus.tangoq.`object`.DeviceService.getSSAID
 import com.tangoplus.tangoq.`object`.NetworkMeasure.saveAllMeasureInfo
@@ -80,7 +81,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         withContext(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("측정이력")
             dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
-
+            Log.v("getEncryptedJwtToken(context)", "${getEncryptedJwtToken(context)}")
             withContext(Dispatchers.IO) {
                 saveAllMeasureInfo(context, context.getString(R.string.API_measure), userUUID) { existed ->
                     callbacks(existed)
@@ -234,7 +235,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 }
             }
 
-
+            //TODO JA 찾기 출처
             val dangerParts =  getDangerParts(info)
             val measureVO = MeasureVO(
                 deviceSn = 0,

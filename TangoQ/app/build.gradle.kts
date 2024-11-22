@@ -13,8 +13,8 @@ android {
         applicationId = "com.tangoplus.tangoq"
         minSdk = 27
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.13"
+        versionCode = 5
+        versionName = "1.14"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -81,6 +81,7 @@ dependencies {
     implementation("jp.wasabeef:blurry:4.0.1")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
+    implementation("com.arthenica:mobile-ffmpeg-full:4.4")
 
 
     // api
@@ -135,7 +136,6 @@ dependencies {
     implementation("androidx.camera:camera-extensions:$camera_version")
     implementation("androidx.camera:camera-view:$camera_version")
     implementation(libs.androidx.camera.core)
-    implementation("com.arthenica:ffmpeg-kit-full:4.5")
 
     // 내부 라이브러리
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
@@ -147,7 +147,6 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
-    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

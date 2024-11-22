@@ -29,7 +29,10 @@
 -keep class * extends com.google.gson.TypeAdapter
 -keep class net.sqlcipher.** { *; }
 -keep class net.sqlcipher.database.** { *; }
-
+-keep class com.tangoplus.tangoq.db.MeasureInfo { *; }
+-keep class com.tangoplus.tangoq.db.MeasureDynamic { *; }
+-keep class com.tangoplus.tangoq.db.MeasureStatic { *; }
+-keepattributes *Annotation*
 # https://github.com/square/okhttp/pull/6792
 -dontwarn org.bouncycastle.jsse.**
 -dontwarn org.conscrypt.*

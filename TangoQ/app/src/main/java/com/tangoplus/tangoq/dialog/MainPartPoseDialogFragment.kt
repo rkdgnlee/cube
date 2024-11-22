@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.dialog
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -142,7 +143,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
         val screenWidth = displayMetrics.widthPixels
 
         // 비디오 높이를 화면 너비에 맞게 조절
-        val aspectRatio = if (isMobile) videoWidth.toFloat() / videoHeight.toFloat() else videoHeight.toFloat() / videoWidth.toFloat()
+//        val aspectRatio = if (isMobile) videoWidth.toFloat() / videoHeight.toFloat() else videoHeight.toFloat() / videoWidth.toFloat()
+        val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
         val adjustedHeight = (screenWidth * aspectRatio).toInt()
 
         // clMA의 크기 조절
@@ -165,6 +167,9 @@ class MainPartPoseDialogFragment : DialogFragment() {
         binding.pvMPPD.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
             videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
+            Log.v("비디오URL", "$videoUrl")
+
+
             val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
             val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
                 .createMediaSource(mediaItem)
@@ -173,6 +178,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
                 simpleExoPlayer?.seekTo(0)
                 simpleExoPlayer?.playWhenReady = true
             }
+
         }
         binding.pvMPPD.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
         binding.pvMPPD.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
@@ -204,6 +210,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
         val coordinates = extractVideoCoordinates(dynamicJa)
         // 실제 mp4의 비디오 크기를 가져온다
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
+        Log.v("비디오크기", "$videoDuration, (${videoWidth}, ${videoHeight})")
+        Log.v("PlayerView 크기", "width: ${binding.pvMPPD.width}, height: ${binding.pvMPPD.height}")
         if (frameIndex in 0 until totalFrames) {
             // 해당 인덱스의 데이터를 JSON에서 추출하여 변환
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
@@ -211,8 +219,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
             requireActivity().runOnUiThread {
                 binding.ovMPPD.setResults(
                     poseLandmarkResult,
-                    videoWidth,
                     videoHeight,
+                    videoWidth,
                     OverlayView.RunningMode.VIDEO
                 )
                 binding.ovMPPD.invalidate()

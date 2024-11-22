@@ -19,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PoseLandmarkerHelper(
-
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
     var minPoseTrackingConfidence: Float = DEFAULT_POSE_TRACKING_CONFIDENCE,
     var minPosePresenceConfidence: Float = DEFAULT_POSE_PRESENCE_CONFIDENCE,
@@ -30,20 +29,6 @@ class PoseLandmarkerHelper(
     // 이 리스너는 RunningMode.LIVE_STREAM에서 실행될 때만 사용됩니다.
     val poseLandmarkerHelperListener: LandmarkerListener? = null
 ) {
-
-    companion object {
-        const val TAG = "PoseLandmarkerHelper"
-
-        const val DELEGATE_CPU = 0
-        const val DELEGATE_GPU = 1
-        const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.5F
-        const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.5F
-        const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.5F
-        const val OTHER_ERROR = 0
-        const val GPU_ERROR = 1
-        const val MODEL_POSE_LANDMARKER_FULL = 0
-    }
-
     // 이 예에서는 변경 시 재설정될 수 있도록 var여야 합니다.
     // 포즈 랜드마크가 변경되지 않으면 lazy 값이 더 좋습니다.
     private var poseLandmarker: PoseLandmarker? = null
@@ -68,12 +53,25 @@ class PoseLandmarkerHelper(
     fun setupPoseLandmarker() {
         // Set general pose landmarker options
         val baseOptionBuilder = BaseOptions.builder()
-        baseOptionBuilder.setDelegate(Delegate.GPU)
+
         // Use the specified hardware for running the model. Default to CPU
+        when (currentDelegate) {
+            DELEGATE_CPU -> {
+                baseOptionBuilder.setDelegate(Delegate.CPU)
+            }
+            DELEGATE_GPU -> {
+                baseOptionBuilder.setDelegate(Delegate.GPU)
+            }
+        }
 
         //-----------------------------------! ASSET MODEL 선택 !-----------------------------------
         // 이 모델은 Activity의 MODEL_POSE
-        val modelName = "pose_landmarker_full.task"
+        val modelName =
+            when (currentModel) {
+                MODEL_POSE_LANDMARKER_FULL -> "pose_landmarker_full.task"
+                else -> "pose_landmarker_full.task"
+            }
+
         baseOptionBuilder.setModelAssetPath(modelName)
 
         // runningMode가 poseLandmarkerHelperListener와 일치하는지 확인합니다.
@@ -209,6 +207,7 @@ class PoseLandmarkerHelper(
                 input.width
             )
         )
+
     }
 
     // 감지 중에 발생한 오류를 이 PoseLandmarkerHelper에 반환합니다.
@@ -218,7 +217,18 @@ class PoseLandmarkerHelper(
             error.message ?: "An unknown error has occurred"
         )
     }
+    companion object {
+        const val TAG = "PoseLandmarkerHelper"
 
+        const val DELEGATE_CPU = 0
+        const val DELEGATE_GPU = 1
+        const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.5F
+        const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.5F
+        const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.5F
+        const val OTHER_ERROR = 0
+        const val GPU_ERROR = 1
+        const val MODEL_POSE_LANDMARKER_FULL = 0
+    }
     data class ResultBundle(
         var results: List<PoseLandmarkerResult>,
         val inferenceTime: Long,

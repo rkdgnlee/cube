@@ -43,6 +43,8 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.SetupDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
+import com.tangoplus.tangoq.function.MeasurementManager.calculateOverall
+import com.tangoplus.tangoq.function.MeasurementManager.getPairParts
 import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
@@ -501,6 +503,7 @@ class MainFragment : Fragment() {
     }
 
     private fun existedMeasurementGuide() {
+        binding.constraintLayout2.isEnabled = false
         TooltipManager.createGuide(
             context = requireContext(),
             text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
@@ -520,6 +523,7 @@ class MainFragment : Fragment() {
                             anchor = binding.btnMProgram,
                             gravity = Gravity.BOTTOM,
                             dismiss = {
+                                binding.constraintLayout2.isEnabled = true
                             })
                     }
                 )

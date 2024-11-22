@@ -96,7 +96,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
                         params.horizontalBias = 0.5f
                         binding.ivMD1Position.layoutParams = params
-                        binding.ivMD1Position.visibility = View.GONE
+
                     }
                 } catch (e: NullPointerException) {
                     Log.e("MD1Error", "$e")

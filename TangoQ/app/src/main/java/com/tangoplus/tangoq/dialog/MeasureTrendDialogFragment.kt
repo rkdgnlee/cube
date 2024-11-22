@@ -28,6 +28,7 @@ import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
+import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
@@ -209,21 +210,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         }
         binding.textView30.setOnClickListener { it.showAlignBottom(balloon2) }
     }
-    private val matchedUris = mapOf(
-        "목관절" to listOf(0, 3, 4, 5, 6),
-        "좌측 어깨" to listOf(0, 3, 5, 6),
-        "우측 어깨" to listOf(0, 4, 5, 6),
-        "좌측 팔꿉" to listOf(0, 2, 3),
-        "우측 팔꿉" to listOf(0, 2, 4),
-        "좌측 손목" to listOf(0, 2, 3),
-        "우측 손목" to listOf(0, 2, 4),
-        "좌측 골반" to listOf(0, 3, 5, 6),
-        "우측 골반" to listOf(0, 4, 5, 6),
-        "좌측 무릎" to listOf(0, 5),
-        "우측 무릎" to listOf(0, 5),
-        "좌측 발목" to listOf(0, 5),
-        "우측 발목" to listOf(0, 5)
-    )
+
 
     private fun transformAnalysis(ja : JSONArray) : MutableList<MutableList<AnalysisVO>> {
         val analyzes = mutableListOf<MutableList<AnalysisVO>>()

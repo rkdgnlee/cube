@@ -43,4 +43,9 @@
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
+<!--    <style name="AppTheme.Splash" parent="Theme.Material3.DayNight.NoActionBar">-->
+<!--        <item name="android:statusBarColor">@android:color/white</item>-->
+<!--        <item name="android:navigationBarColor">@android:color/white</item>-->
+<!--        <item name="android:backgroundTint">@android:color/white</item>-->
+<!--    </style>-->
 </resources>

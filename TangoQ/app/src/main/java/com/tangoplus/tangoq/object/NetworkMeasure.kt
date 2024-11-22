@@ -238,10 +238,8 @@ object NetworkMeasure {
                 val mDao = md.measureDao()
 
                 val responseBody = response.body?.string()
-//                Log.w("getAllMeasures", "Success to execute request: $responseBody")
                 val bodyJo = JSONObject(responseBody.toString())
 
-                // TODO 여기서 body에 측정 결과가 없다고 한다면 빈리스트 반환
                 if (bodyJo.optInt("row_count") == 0) {
                     Log.v("getAllMeasureOut", "rowCount: ${bodyJo.optInt("row_count")}, stop the getAllMeasures")
                     return@withContext callback(false)
@@ -249,11 +247,15 @@ object NetworkMeasure {
                 val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
                 val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
                 Log.v("룸에저장된info들", "$roomInfoSns")
-
-                val getInfos = mutableListOf<MeasureInfo>()
+                Log.v("info의bodyJo", "$bodyJo")
+                Log.v("info의bodyJa", "$ja")
+                val getInfos = mutableListOf<MeasureInfo>() // info로 변환해서 넣기
                 for (i in 1 until ja.length()) {
                     val jo = ja.optJSONObject(i)
+                    Log.v("jo", "$jo")
                     getInfos.add(jo.toMeasureInfo())
+                    Log.v("info의변환getInfos", "${getInfos}")
+                    Log.v("info의변환info", "${jo.toMeasureInfo()}")
                 }
 //                val jo = ja.optJSONObject(1) // 현재 0번째 index는 7가지 동작이 없음.
 //                getInfos.add(jo.toMeasureInfo())

@@ -36,6 +36,7 @@ import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.clearEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -175,7 +176,7 @@ class SplashActivity : AppCompatActivity() {
                                     jsonObj.put("email", user.email.toString())
                                     jsonObj.put("google_login_id", user.uid)
                                     jsonObj.put("social_account", "google")
-                                    Log.v("구글Json", "${jsonObj}")
+                                    Log.v("구글Json", "$jsonObj")
                                     getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                         if (jo != null) {
                                             storeUserInSingleton(this, jo)
@@ -225,32 +226,32 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    else if (isValidToken(getEncryptedJwtToken(this@SplashActivity))) {
-                        // ------! 자체 로그인 !------
-                        try {
-                            val jsonObj = getEncryptedJwtToken(this@SplashActivity)
-                            Log.v("자체로그인Splash", "$jsonObj")
-                            lifecycleScope.launch {
-                                getUserIdentifyJson(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
-                                    if (jo != null) {
-                                        storeUserInSingleton(this@SplashActivity, jo)
-                                        Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
-                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
-
-                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-
-                                            navigateDeepLink()
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (e: AEADBadTagException) {
-                            Log.e("decryptedError", e.stackTraceToString())
-                            clearEncryptedJwtToken(this@SplashActivity)
-                            introInit()
-                        }
-                    }
+//                    else if (isValidToken(getEncryptedJwt(this@SplashActivity))) {
+//                        // ------! 자체 로그인 !------
+//                        try {
+//                            val jsonObj = getEncryptedJwtToken(this@SplashActivity)
+//                            Log.v("자체로그인Splash", "$jsonObj")
+//                            lifecycleScope.launch {
+//                                getUserIdentifyJson(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
+//                                    if (jo != null) {
+//                                        storeUserInSingleton(this@SplashActivity, jo)
+//                                        Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+//                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
+//                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+//
+//                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+//
+//                                            navigateDeepLink()
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        } catch (e: AEADBadTagException) {
+//                            Log.e("decryptedError", e.stackTraceToString())
+//                            clearEncryptedJwtToken(this@SplashActivity)
+//                            introInit()
+//                        }
+//                    }
                     else {
                         // 로그인 정보가 없을 경우
                         introInit()

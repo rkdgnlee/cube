@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
@@ -39,6 +40,7 @@ class AnalysisRVAdapter(private val fragment: Fragment, private val analysisUnit
         return analysisUnits?.size ?: 0
     }
 
+    @SuppressLint("DefaultLocale")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         if (holder is AnalysisViewHolder) {
@@ -47,7 +49,9 @@ class AnalysisRVAdapter(private val fragment: Fragment, private val analysisUnit
 
                 holder.tvMPAITitle.text = currentItem.rawDataName
                 setState(holder, currentItem.state)
-                holder.tvMPAIData.text = if (currentItem.columnName.contains("distance")) "${String.format("%.2f", currentItem.rawData)}cm" else "${String.format("%.2f", currentItem.rawData)}°"
+                holder.tvMPAIData.text = if (currentItem.columnName.contains("distance"))
+                    "${String.format("%.2f", if (currentItem.rawData.isNaN()) 0 else currentItem.rawData)}cm"
+                else "${String.format("%.2f", if (currentItem.rawData.isNaN()) 0 else currentItem.rawData)}°"
                 val spannableString = SpannableString(currentItem.summary)
                 val accentIndex =  holder.tvMPAIExplain.text.indexOf("값")
                 if (accentIndex != -1) {

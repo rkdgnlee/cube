@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 calendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             val pendingIntent = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
-            Log.v("ㅅ", "Success to Alarm $title, $time")
+            Log.v("setAlarm", "Success to Alarm $title, $time")
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
         }
 

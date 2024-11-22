@@ -27,14 +27,14 @@ class MeasureViewModel : ViewModel() {
     var selectedMeasure : MeasureVO? = null
 
     // MeasureSkeleton 담을 공간
-    var staticjo = JSONObject() // 1 7개의 자세 중 1개를 말하는 json파일
 
     // room에 저장할 static들이 담기는 곳
+    val infoResultJa = JSONArray()
     val statics = mutableListOf<MeasureStatic>() // 1, 3, 4, 5, 6, 7
+    var staticjo = JSONObject() // 1 7개의 자세 중 1개를 말하는 json파일
 
     var dynamicJa = JSONArray() // 2 비디오 프레임당 dynamicJoUnit이  들어가는 곳
     var dynamicJoUnit = JSONObject()
-
     // room에 저장할 dynamic이 담기는 곳 (1개임)
     var dynamic : MeasureDynamic? = null
 

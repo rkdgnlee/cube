@@ -126,6 +126,7 @@
         android:layout_height="32dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/effect_ibtn_20dp"
+        android:contentDescription="즐겨찾기저장버튼"
         android:scaleType="centerCrop"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/tvEIName"

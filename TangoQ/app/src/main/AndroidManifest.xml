@@ -83,7 +83,7 @@
         </activity>
         <activity
             android:name=".SplashActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter android:autoVerify="true" >
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
@@ -147,7 +147,9 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/mainColor" />
-
+        <meta-data
+            android:name="android:enableSplashScreenApi"
+            android:value="false" />
         <receiver
             android:name=".broadcastReceiver.AlarmReceiver"
             android:exported="true" />

@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,21 +37,10 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
 
-        // Dialog가 실제로 표시될 때 호출되는 Listener를 설정
-        dialog.setOnShowListener {
-            // PoseLandmarker를 일시 중지하는 코드 삽입
-            (activity as? MeasureSkeletonActivity)?.pausePoseLandmarker()
-        }
+
         return dialog
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        dialog?.setOnDismissListener {
-            (activity as? MeasureSkeletonActivity)?.resumePoseLandmarker()
-        }
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,8 +49,13 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         isPose = arguments?.getBoolean(ARG_MS_TYPE) ?: false
         seq = arguments?.getInt(ARG_MS_SEQ) ?: 0
@@ -72,8 +67,14 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
                 R.layout.measure_skeleton_caution3,)
         }
         binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq)
-        binding.btnMSDConfirm.setOnClickListener { dismiss() }
-        binding.ibtnMSDExit.setOnClickListener { dismiss() }
+        binding.btnMSDConfirm.setOnClickListener {
+            Log.v("resumePoseLandmarker", "btnMSDConfirm")
+            dismiss()
+        }
+        binding.ibtnMSDExit.setOnClickListener {
+            Log.v("resumePoseLandmarker", "ibtnMSDExit")
+            dismiss()
+        }
         setUI(isPose)
 
     }
