@@ -281,7 +281,7 @@ class StringRVAdapter(private val fragment: Fragment,
     }
 
     override fun getItemCount(): Int {
-        return stringList!!.size
+        return stringList?.size ?: 0
     }
 
     private fun updateCheckboxTextColor(checkbox: CheckBox, isChecked: Boolean = checkbox.isChecked) {

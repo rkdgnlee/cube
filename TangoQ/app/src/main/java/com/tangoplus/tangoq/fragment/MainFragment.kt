@@ -90,7 +90,10 @@ class MainFragment : Fragment() {
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
         prefsManager = PreferencesManager(requireContext())
-        prefsManager.setUserSn(Singleton_t_user.getInstance(requireContext()).jsonObject?.optInt("sn")!!)
+        val sn = Singleton_t_user.getInstance(requireContext()).jsonObject?.optInt("sn")
+        if (sn != null) {
+            prefsManager.setUserSn(sn)
+        }
 
         latestRecSn = prefsManager.getLatestRecommendation()
 
@@ -121,8 +124,8 @@ class MainFragment : Fragment() {
 
                 // ------# 초기 measure 설정 #------
                 if (!measures.isNullOrEmpty()) {
-                    mvm.selectedMeasureDate.value = measures!!.get(0).regDate
-                    mvm.selectMeasureDate.value = measures!!.get(0).regDate
+                    mvm.selectedMeasureDate.value = measures?.get(0)?.regDate
+                    mvm.selectMeasureDate.value = measures?.get(0)?.regDate
 
                     // ------# 측정결과 있을 때 도움말 툴팁 #------
                     if (isFirstRun("Tooltip_isFirstRun_existed")) {
@@ -166,7 +169,7 @@ class MainFragment : Fragment() {
         // TODO 고정으로 일단 위험부위와 점수는 넣어놓기.
 //        val dangerParts = measures?.get(index)?.dangerParts?.map { it.first }?.toMutableList()
 //        val stages = mutableListOf<MutableList<String>>()
-//        stages.add( dangerParts?.subList(0, 2)!!)
+//        stages.add( dangerParts?.subList(0, 2))
 //        stages.add( dangerParts.subList(0, 2))
 //        stages.add( dangerParts.subList(0, 2))
 //        stages.add( dangerParts.subList(2, 3))
@@ -257,30 +260,35 @@ class MainFragment : Fragment() {
 
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
                         Log.v("현재 선택된 날짜", "$selectedDate")
-                        val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate }!!)
+                        val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
 
                         // ------# 매칭 프로그램이 있는지 없는지 확인하기 #------
-                        if (dateIndex != null) {
-                            measures?.get(dateIndex)?.recommendations
-                        }
+
 
                         if (selectedDate != measures?.get(0)?.regDate) {
                             setProgramButton(false)
                         } else {
                             setProgramButton(true)
                         }
+                        if (dateIndex != null) {
+                            measures?.get(dateIndex)?.recommendations
+                            binding.tvMMeasureDate.text = measure.get(dateIndex).regDate.substring(0, 10)
+                            binding.tvMOverall.text = measure.get(dateIndex).overall.toString()
+                            setAdapter(dateIndex)
 
-                        binding.tvMMeasureDate.text = measure.get(dateIndex!!).regDate.substring(0, 10)
-                        binding.tvMOverall.text = measure.get(dateIndex).overall.toString()
-                        setAdapter(dateIndex)
+                            Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure: ${measures?.get(dateIndex)?.dangerParts}, ${measures?.get(dateIndex)?.recommendations}")
+                            val measureSize = measures?.get(dateIndex)?.dangerParts?.size
+                            if (measureSize != null) {
+                                if (measureSize > 1) {
+                                    binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
+                                    binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}이(가) 부상 위험이 있습니다."
+                                } else {
+                                    binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
+                                }
+                            }
 
-                        Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure: ${measures!![dateIndex].dangerParts}, ${measures!![dateIndex].recommendations}")
-                        if (measures?.get(dateIndex)?.dangerParts?.size!! > 1) {
-                            binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
-                            binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}이(가) 부상 위험이 있습니다."
-                        } else {
-                            binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
                         }
+
 
                         // ------# 측정 결과에 맞는 진행 프로그램 2번째 가져오기 #------
                         CoroutineScope(Dispatchers.IO).launch {
@@ -292,14 +300,15 @@ class MainFragment : Fragment() {
                                 val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
                                 val programSn = latestProgress.optInt("exercise_program_sn")  // 여기서 exception으로 나가짐.
                                 var currentPage = 0
-                                val adapter : ExerciseRVAdapter
+                                var adapter : ExerciseRVAdapter
 
                                 // -------# 최근 진행 프로그램 가져오기 #------
                                 withContext(Dispatchers.Main) {
                                     // ------# 마지막으로 시청한 정보가 없을 때 #------
+
                                     if (programSn != 0 && uvm.existedProgramData == null) {
                                         val week = latestProgress.optInt("week_number")
-                                        Log.v("프로세싱있을때week", "week: ${week}")
+                                        Log.v("프로세싱있을때week", "week: $week")
                                         uvm.existedProgramData = fetchProgram(
                                             getString(R.string.API_programs),
                                             requireContext(),
@@ -314,15 +323,10 @@ class MainFragment : Fragment() {
                                             )
                                             currentPage = findCurrentIndex(progresses)
                                             withContext(Dispatchers.Main) {
-                                                Log.w("저장안된 프로그램", "${uvm.existedProgramData?.programSn!!}")
-                                                adapter = ExerciseRVAdapter(
-                                                    this@MainFragment,
-                                                    uvm.existedProgramData?.exercises!!,
-                                                    progresses,
-                                                    Pair(currentPage, currentPage),
-                                                    null,
-                                                    "history"
-                                                )
+                                                Log.w("저장안된 프로그램", "${uvm.existedProgramData?.programSn}")
+                                                val exercises = uvm.existedProgramData?.exercises
+                                                if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
+                                                    progresses, Pair(currentPage, currentPage), null, "history")
                                             }
                                         }
                                         // ------# 마지막으로 시청한 정보가 없을 때 + 근데 프로그램 조회는 했음. #------
@@ -333,16 +337,17 @@ class MainFragment : Fragment() {
                                                 val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
                                                 currentPage = findCurrentIndex(progresses)
                                                 withContext(Dispatchers.Main) {
-                                                    Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn!!}")
-                                                    adapter = ExerciseRVAdapter(this@MainFragment, uvm.existedProgramData?.exercises!!, progresses, Pair(currentPage, currentPage), null, "history")
+                                                    val exercises = uvm.existedProgramData?.exercises
+                                                    Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn}")
+                                                    if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises, progresses, Pair(currentPage, currentPage), null, "history")
                                                 }
                                             }
                                         } else {
-
                                             uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), mvm.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
                                             withContext(Dispatchers.Main) {
-                                                Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn!!}")
-                                                adapter = ExerciseRVAdapter(this@MainFragment, uvm.existedProgramData?.exercises!!, null, null, null, "history")
+                                                Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn}")
+                                                val exercises = uvm.existedProgramData?.exercises
+                                                if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises, null, null, null, "history")
                                             }
                                         }
                                     } else {
@@ -351,17 +356,13 @@ class MainFragment : Fragment() {
                                         val randomProgramSn = mvm.selectedMeasure?.recommendations?.map { it.programSn }?.random().toString()
                                         uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), randomProgramSn)
                                         withContext(Dispatchers.Main) {
-                                            Log.w("저장안된프로그램", "${uvm.existedProgramData?.programSn!!}")
-                                            adapter = ExerciseRVAdapter(
-                                                this@MainFragment,
-                                                uvm.existedProgramData?.exercises!!,
-                                                null,
-                                                null,
-                                                null,
-                                                "history"
-                                            )
+                                            Log.w("저장안된프로그램", "${uvm.existedProgramData?.programSn}")
+                                            val exercises = uvm.existedProgramData?.exercises
+                                            if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
+                                                null, null, null, "history")
                                         }
                                     }
+                                    adapter = ExerciseRVAdapter(this@MainFragment, mutableListOf(), mutableListOf(), null, null, "history")
                                 }
                                 CoroutineScope(Dispatchers.Main).launch {
                                     // -------# 최근 진행 프로그램 뷰페이저 #------
@@ -370,6 +371,8 @@ class MainFragment : Fragment() {
                                         clipToPadding = false
                                         clipChildren = false
                                         offscreenPageLimit = 3
+
+                                        // ------# viewpager의 setAdapter fun #------
                                         setAdapter(adapter)
                                         currentItem = currentPage
                                         var dp = 5
@@ -378,8 +381,16 @@ class MainFragment : Fragment() {
                                                 true -> 28
                                                 false -> 5
                                             }
-                                        } catch (e:IllegalStateException) {
-                                            Log.e("MainFragmentError", "${e.printStackTrace()}")
+                                        } catch (e: IndexOutOfBoundsException) {
+                                            Log.e("IntroIndex", "${e.message}")
+                                        } catch (e: IllegalArgumentException) {
+                                            Log.e("IntroIllegal", "${e.message}")
+                                        } catch (e: IllegalStateException) {
+                                            Log.e("IntroIllegal", "${e.message}")
+                                        }catch (e: NullPointerException) {
+                                            Log.e("IntroNull", "${e.message}")
+                                        } catch (e: java.lang.Exception) {
+                                            Log.e("IntroException", "${e.message}")
                                         }
 
                                         (getChildAt(0) as RecyclerView).apply {
@@ -449,17 +460,39 @@ class MainFragment : Fragment() {
                                             }
                                             ProgramCustomDialogFragment.newInstance(programSn, recommendationSn)
                                                 .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                                        } catch (e: IndexOutOfBoundsException) {
+                                            Log.e("MainIndex", "${e.message}")
+                                        } catch (e: IllegalArgumentException) {
+                                            Log.e("MainIllegalA", "${e.message}")
                                         } catch (e: IllegalStateException) {
-                                            Log.e("프로그램오류", "${e.printStackTrace()}")
+                                            Log.e("MainIllegalS", "${e.message}")
+                                        }catch (e: NullPointerException) {
+                                            Log.e("MainNull", "${e.message}")
+                                        } catch (e: java.lang.Exception) {
+                                            Log.e("MainException", "${e.message}")
                                         }
                                     }
                                 }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
+                            }  catch (e: IndexOutOfBoundsException) {
                                 Handler(Looper.getMainLooper()).postDelayed({
-                                    binding.sflM.stopShimmer()
-                                                                            }, 3000)
-                                Log.e("Error>Program", "${e.message} $e")
+                                    binding.sflM.stopShimmer() }, 3000)
+                                Log.e("MainIndex", "${e.message}")
+                            } catch (e: IllegalArgumentException) {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    binding.sflM.stopShimmer() }, 3000)
+                                Log.e("MainIllegalA", "${e.message}")
+                            } catch (e: IllegalStateException) {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    binding.sflM.stopShimmer() }, 3000)
+                                Log.e("MainIllegalS", "${e.message}")
+                            }catch (e: NullPointerException) {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    binding.sflM.stopShimmer() }, 3000)
+                                Log.e("MainNull", "${e.message}")
+                            } catch (e: java.lang.Exception) {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    binding.sflM.stopShimmer() }, 3000)
+                                Log.e("MainException", "${e.message}")
                             }
                         }
                     }

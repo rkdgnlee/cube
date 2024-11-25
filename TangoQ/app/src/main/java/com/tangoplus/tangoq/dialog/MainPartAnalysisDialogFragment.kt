@@ -91,8 +91,11 @@ class MainPartAnalysisDialogFragment : DialogFragment() {
                 else -> {
                     binding.tvMPADSummary.textSize = 15f
                     setAdapter()
-                    for (uni in avm.currentAnalysis?.labels!!) {
-                        uni.summary = setLabels(uni)
+                    val labels = avm.currentAnalysis?.labels
+                    if (labels != null) {
+                        for (uni in labels) {
+                            uni.summary = setLabels(uni)
+                        }
                     }
                 }
             }

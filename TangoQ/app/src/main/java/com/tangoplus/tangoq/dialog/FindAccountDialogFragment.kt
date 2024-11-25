@@ -73,7 +73,7 @@ class FindAccountDialogFragment : DialogFragment() {
         binding.tlFAD.addOnTabSelectedListener(object : OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-                imm!!.hideSoftInputFromWindow(view.windowToken, 0)
+                imm?.hideSoftInputFromWindow(view.windowToken, 0)
                 svm.mobileCondition.value = false
                 svm.mobileAuthCondition.value = false
                 binding.etFADMobile.isEnabled = true

@@ -37,9 +37,9 @@ class ProgramSelectFragment : Fragment() {
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
         vm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
-            val dateIndex = singletonMeasure?.indexOf(singletonMeasure?.find { it.regDate == selectedDate }!!)
+            val dateIndex = singletonMeasure?.indexOf(singletonMeasure?.find { it.regDate == selectedDate })
             Log.v("dataIndex", "현재날짜 싱글턴에서 index: ${dateIndex}, vm: ${vm.selectedMeasure?.regDate}")
-            binding.tvPSMeasureDate.text = singletonMeasure?.get(dateIndex!!)?.regDate?.substring(0, 10)
+            binding.tvPSMeasureDate.text = dateIndex?.let { singletonMeasure?.get(it)?.regDate?.substring(0, 10) }
             if (dateIndex != null) {
                 setAdapter(dateIndex)
             }
@@ -76,15 +76,14 @@ class ProgramSelectFragment : Fragment() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvPSD.layoutManager = layoutManager
 
-        val categoryNums = singletonMeasure?.get(dateIndex)?.recommendations!!.map { categoryMap.entries.find { entry -> it.title.contains(entry.key) }?.value }
+        val categoryNums = singletonMeasure?.get(dateIndex)?.recommendations?.map { categoryMap.entries.find { entry -> it.title.contains(entry.key) }?.value }
 
-        singletonMeasure?.get(dateIndex)?.recommendations!!
-            .mapNotNull { rec ->
+        singletonMeasure?.get(dateIndex)?.recommendations?.mapNotNull { rec ->
                 categoryMap.entries.find { entry -> rec.title.contains(entry.key) }?.value
             }
         Log.v("categoryNums", "categoryNums: $categoryNums")
-        val adapter = RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations!!, categoryNums)
-        Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations!!}")
+        val adapter = categoryNums?.let { RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations ?: mutableListOf(), it ) }
+        Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations}")
         binding.rvPSD.adapter = adapter
     }
 }

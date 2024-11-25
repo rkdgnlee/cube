@@ -114,6 +114,7 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.net.SocketTimeoutException
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
@@ -141,8 +142,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             }
         }
     }
-    private var _binding: ActivityMeasureSkeletonBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding : ActivityMeasureSkeletonBinding
     private lateinit var poseLandmarkerHelper: PoseLandmarkerHelper
     private val viewModel: SkeletonViewModel by viewModels()
     private var preview: Preview? = null
@@ -217,7 +217,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             @RequiresApi(Build.VERSION_CODES.R)
             override fun onFinish() {
                 binding.tvMeasureSkeletonCount.textSize = if (isTablet(this@MeasureSkeletonActivity)) 32f else 28f
-                if (latestResult?.results?.first()?.landmarks()?.isNotEmpty()!!) {
+                if (latestResult?.results?.first()?.landmarks()?.isNotEmpty() == true) {
                     // ------# resultBundleToJson이 동작하는 시간으로 통일 #------
                     timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
@@ -280,8 +280,16 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                                 }
                                             }
                                         }
-                                    } catch (e: Exception) {
-                                        Log.e("MeasureSkeleton", "Error processing dynamic data", e)
+                                    } catch (e: IndexOutOfBoundsException) {
+                                        Log.e("MSIndex", "${e.message}")
+                                    } catch (e: IllegalArgumentException) {
+                                        Log.e("MSIllegal", "${e.message}")
+                                    } catch (e: IllegalStateException) {
+                                        Log.e("MSIllegal", "${e.message}")
+                                    }catch (e: NullPointerException) {
+                                        Log.e("MSNull", "${e.message}")
+                                    } catch (e: java.lang.Exception) {
+                                        Log.e("MSException", "${e.message}")
                                     }
                                 }
                             }
@@ -292,8 +300,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         hideViews(600)
                         Log.v("사진service", "isCapture: ${isCapture}, isRecording: $isRecording")
                         // ------! 종료 후 다시 세팅 !------
-                        latestResult?.let { resultBundleToJson(it, repeatCount.value!!) }
-                        captureImage(repeatCount.value!!)
+                        latestResult?.let { resultBundleToJson(it, repeatCount.value ?: -1) }
+                        if (repeatCount.value != null) {
+                            captureImage(repeatCount.value ?: -1)
+                        }
+
 
                         Log.v("캡쳐종료시점", "step: ${repeatCount.value}")
                         updateUI()
@@ -359,7 +370,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
+
         // Shut down our background executor
         backgroundExecutor.shutdown()
         backgroundExecutor.awaitTermination(
@@ -375,13 +386,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     @SuppressLint("Recycle")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = ActivityMeasureSkeletonBinding.inflate(layoutInflater)
-        setContentView(_binding!!.root)
+        binding = ActivityMeasureSkeletonBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         md = MeasureDatabase.getDatabase(this)
         mDao = md.measureDao()
         singletonUser = Singleton_t_user.getInstance(this@MeasureSkeletonActivity)
         CoroutineScope(Dispatchers.IO).launch {
-            measureInfoSn = mDao.getMaxMobileInfoSn(singletonUser.jsonObject?.optInt("user_sn")!!) + 1
+            measureInfoSn = mDao.getMaxMobileInfoSn(singletonUser.jsonObject?.optInt("user_sn") ?: -1) + 1
             Log.v("이제들어갈measureSn", "$measureInfoSn")
         }
 
@@ -495,11 +506,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val motherJo = JSONObject()
 
                     val userJson = singletonUser.jsonObject
-                    val userUUID = userJson?.getString("user_uuid")!!
+                    val userUUID = userJson?.getString("user_uuid") ?: ""
 
                     val inputFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
                     val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                    val date: Date = inputFormat.parse(timestamp)!!
+                    val date: Date = inputFormat.parse(timestamp) as Date
                     val measureDate = outputFormat.format(date)
                     val seconds = Duration.between(startTime, endTime).toMillis() / 1000.0
                     val elapsedTime = "%.3f".format(seconds)
@@ -516,8 +527,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val measureInfo = MeasureInfo(
                         user_uuid = userUUID,
                         mobile_device_uuid = getServerUUID(this@MeasureSkeletonActivity),
-                        user_sn = userJson.optString("user_sn").toInt(),
-                        user_name = userJson.optString("user_name"),
+                        user_sn = userJson?.optString("user_sn")?.toInt() ?: -1,
+                        user_name = userJson?.optString("user_name"),
                         measure_date = measureDate,
                         elapsed_time = elapsedTime,
                         t_score = calculateOverall(parts).toString(),
@@ -582,10 +593,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 //                        Log.v("static-${i+1}", "${motherJo.getJSONObject("static_${i+1}").length()}")
                     }
 
-                    val dynamicJo = JSONObject(mvm.dynamic!!.toJson())
+                    val dynamicJo = JSONObject(mvm.dynamic?.toJson().toString())
                     motherJo.put("dynamic", dynamicJo)
                     Log.v("motherJo1", "${motherJo.optJSONObject("measure_info")}")
-                    Log.v("dynamic", motherJo.optJSONObject("dynamic")?.optString("upload_date")!!)
                     Log.v("dynamic", "${motherJo.getJSONObject("dynamic").keys().asSequence().toList().filter { !it.startsWith("ohs") && !it.startsWith("ols")}}")
 
                     // ------# 멀티파트 init 하면서 data 넣기 #------
@@ -807,13 +817,21 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                     }
                                 }
                             }
-                        } catch (e: Exception) {
-                            Log.e("ErrorUploadMeasure", "${e.printStackTrace()}")
+                        } catch (e: IndexOutOfBoundsException) {
+                            Log.e("MSUploadIndex", "${e.message}")
+                        } catch (e: IllegalArgumentException) {
+                            Log.e("MSUploadIllegal", "${e.message}")
+                        } catch (e: IllegalStateException) {
+                            Log.e("MSUploadIllegal", "${e.message}")
+                        }catch (e: NullPointerException) {
+                            Log.e("MSUploadNull", "${e.message}")
+                        } catch (e: java.lang.Exception) {
+                            Log.e("MSUploadException", "${e.message}")
                         }
                     }
                 }
             } else {
-                if (latestResult?.results?.first()?.landmarks()?.isNotEmpty()!!) {
+                if (latestResult?.results?.first()?.landmarks()?.isNotEmpty() == true) {
                     startTimer()
                 }
             }
@@ -829,7 +847,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFraagment")
         }
         binding.fabtnMeasureSkeleton.setOnSingleClickListener {
-            val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value!!.toInt())
+            val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
             dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
 
@@ -915,7 +933,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     // ------# 측정 seq가 종료될 때 실행되는 함수 #------
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
-        when (repeatCount.value!!) {
+        when (repeatCount.value) {
             maxRepeats -> {
                 binding.pvMeasureSkeleton.progress = 100f
                 binding.tvMeasureSkeletonCount.text = "측정이 완료됐습니다 !"
@@ -927,14 +945,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
                 binding.tvMeasureSkeletonCount.text = "다음 동작을 준비해주세요"
-                repeatCount.value = repeatCount.value!!.plus(1)
+                repeatCount.value = repeatCount.value?.plus(1)
                 progress += 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
                 Log.v("몇단계?", "repeatCount: ${repeatCount.value}, progress: $progress")
-                binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
+                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
 
-                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value!!.toInt())
+                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
                     dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }, 1000)
             }
         }
@@ -950,7 +968,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 binding.pvMeasureSkeleton.progress -= 16  // 마지막 남은 2까지 전부 빼기
                 binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
                 binding.btnMeasureSkeletonStep.text = "측정하기"
-                binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
+                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
                 // 1 3 4 5 6 7
             }
             else -> {
@@ -958,11 +976,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 progress -= 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
                 Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
-                binding.svMeasureSkeleton.go(repeatCount.value!!.toInt(), true)
-//                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
-//                binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
+                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
                 if (repeatCount.value != 1) {
-                    mvm.statics.removeAt(repeatCount.value!!)
+                    mvm.statics.removeAt(repeatCount.value  ?: 0)
                 } else {
                     mvm.dynamic = null
                     mvm.dynamicJa = JSONArray()
@@ -1021,7 +1037,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
-        preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+        preview?.surfaceProvider = binding.viewFinder.surfaceProvider
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
 
@@ -1073,8 +1089,16 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             )
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-        } catch (exc: Exception) {
-            Log.e(TAG, "Use case binding failed", exc)
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("MSCameraIndex", "${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("MSCameraIllegal", "${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e("MSCameraIllegal", "${e.message}")
+        }catch (e: NullPointerException) {
+            Log.e("MSCameraNull", "${e.message}")
+        } catch (e: java.lang.Exception) {
+            Log.e("MSCameraException", "${e.message}")
         }
     }
 
@@ -1086,7 +1110,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             )
             if (startRecording && isRecording && latestResult != null) {
                 // 여기서 넣는데 영상이 종료되고,
-                resultBundleToJson(latestResult!!, repeatCount.value!!)
+                resultBundleToJson(latestResult, repeatCount.value?: -1)
             }
         }
         imageProxy.close()
@@ -1162,37 +1186,41 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     override fun onResults(resultBundle: PoseLandmarkerHelper.ResultBundle) {
         runOnUiThread {
-            if (_binding != null) {
-                // Pass necessary information to OverlayView for drawing on the canvas
-                val customResult = PoseLandmarkAdapter.toCustomPoseLandmarkResult(resultBundle.results.first())
+            // Pass necessary information to OverlayView for drawing on the canvas
+            val customResult = PoseLandmarkAdapter.toCustomPoseLandmarkResult(resultBundle.results.first())
 
-                // ------# scaleFactor 초기화 #------
-                binding.overlay.setResults(
-                    customResult,
-                    resultBundle.inputImageWidth,
-                    resultBundle.inputImageHeight,
-                    OverlayView.RunningMode.LIVE_STREAM
-                )
-                latestResult = resultBundle
-                binding.overlay.invalidate()
-
-            }
+            // ------# scaleFactor 초기화 #------
+            binding.overlay.setResults(
+                customResult,
+                resultBundle.inputImageWidth,
+                resultBundle.inputImageHeight,
+                OverlayView.RunningMode.LIVE_STREAM
+            )
+            latestResult = resultBundle
+            binding.overlay.invalidate()
         }
     }
 
     // override 로 resultbundle이 계속 나오는데 해당 항목을 전역변수 latest
-    fun resultBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle, step: Int) {
+    fun resultBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle?, step: Int) {
         if (scaleFactorX == null && scaleFactorY == null) {
-            scaleFactorX = binding.overlay.width * 1f / latestResult!!.inputImageWidth
-            scaleFactorY = binding.overlay.height * 1f / latestResult!!.inputImageHeight
+            val inputWidth = latestResult?.inputImageWidth
+            val inputHeight = latestResult?.inputImageHeight
+            if (inputWidth != null && inputWidth != 0 && inputHeight != null && inputHeight != 0) {
+                scaleFactorX = (binding.overlay.width / inputWidth).toFloat()
+                scaleFactorY = (binding.overlay.height / inputHeight).toFloat()
+            } else {
+                scaleFactorX = 1f
+                scaleFactorY = 1f
+            }
             Log.v("scaleFactor초기화", "(x, y) : ($scaleFactorX, $scaleFactorY)")
-            Log.v("이미지 크기", "width: ${latestResult!!.inputImageWidth}, height: ${latestResult!!.inputImageHeight}")
+            Log.v("이미지 크기", "width: ${latestResult?.inputImageWidth}, height: ${latestResult?.inputImageHeight}")
             Log.v("현재rotation", "${binding.viewFinder.display.rotation}, ${windowManager.defaultDisplay.rotation}")
         }
 
         val frameStartTime = System.nanoTime()
-        if (resultBundle.results.first().landmarks().isNotEmpty()) {
-            val plr = resultBundle.results.first().landmarks()[0]!!
+        if (resultBundle?.results?.first()?.landmarks()?.isNotEmpty() == true) {
+            val plr = resultBundle.results.first().landmarks()[0]
             plr.forEachIndexed { index, poseLandmark ->
                 val jo = JSONObject().apply {
                     put("index", index)
@@ -1438,8 +1466,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("device_sn", 0)
                         put("user_uuid", singletonUser.jsonObject?.getString("user_uuid"))
                         put("mobile_device_uuid", getServerUUID(this@MeasureSkeletonActivity))
-                        put("user_name", singletonUser.jsonObject?.getString("user_name")!! )
-                        put("user_sn", singletonUser.jsonObject?.getInt("user_sn")!!)
+                        put("user_name", singletonUser.jsonObject?.getString("user_name") ?: "" )
+                        put("user_sn", singletonUser.jsonObject?.getInt("user_sn") ?: -1)
                         put("measure_seq", 2)
                         put("measure_type", 7)
                         put("measure_start_time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
@@ -1711,8 +1739,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             put("device_sn", 0)
             put("mobile_device_uuid", decrptedUUID)
             put("user_uuid", singletonUser.jsonObject?.getString("user_uuid"))
-            put("user_name", singletonUser.jsonObject?.getString("user_name")!!)
-            put("user_sn", singletonUser.jsonObject?.getInt("user_sn")!!)
+            put("user_name", singletonUser.jsonObject?.getString("user_name") ?: "")
+            put("user_sn", singletonUser.jsonObject?.getInt("user_sn") ?: -1)
             put("measure_start_time", timestamp)
             put("measure_end_time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             put("measure_overlay_width", binding.overlay.width)
@@ -1724,7 +1752,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             put("measure_server_file_name", "${getFileName(step)}.jpg")
             put("pose_landmark", poseLandmarks)
         }
-//        Log.v("${step}_JsonStatic변환scaleFactor", "${jsonObj.getString("measure_overlay_scale_factor_x")}, ${jsonObj.getString("measure_overlay_scale_factor_y")}")
+//        Log.v("${step}_JsonStatic변환 scaleFactor", "${jsonObj.getString("measure_overlay_scale_factor_x")}, ${jsonObj.getString("measure_overlay_scale_factor_y")}")
 
         val measureStaticUnit = jsonObj.toMeasureStatic()
         mvm.statics.add(measureStaticUnit)
@@ -1945,38 +1973,23 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                 mvm.staticFiles.add(file)
             } else {
-                // 비디오일 경우 그대로 캐시에 저장
-                val tempFile = File.createTempFile("tempVideo", ".mp4", context.cacheDir)
-
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     file.outputStream().use { output ->
                         input.copyTo(output)
+                        mvm.dynamicFile = file
                     }
                 }
-                val outputFile = file
-                val cmd = arrayOf(
-                    "-i", tempFile.absolutePath, // 입력 파일
-                    "-vf", "scale=1280:720",     // 해상도 조정
-                    "-c:v", "libx264",          // 비디오 코덱
-                    "-preset", "ultrafast",     // 인코딩 속도
-                    "-crf", "28",               // 품질 설정 (낮을수록 고품질)
-                    outputFile.absolutePath     // 출력 파일
-                )
-
-                // FFmpeg 실행
-                val result = FFmpeg.execute(cmd)
-                if (result == 0) {
-                    Log.d("SaveMediaToCache", "Video resized and saved successfully")
-                    mvm.dynamicFile = outputFile
-                } else {
-                    Log.e("SaveMediaToCache", "Error resizing video: $result")
-                }
-
-                // 임시 파일 삭제
-                tempFile.delete()
             }
-        } catch (e: IOException) {
-            Log.e("MeasureViewModel", "Error saving media to cache: ${e.message}")
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("SaveMediaIndex", "${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("SaveMediaIllegal", "${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e("SaveMediaIllegal", "${e.message}")
+        }catch (e: NullPointerException) {
+            Log.e("SaveMediaNull", "${e.message}")
+        } catch (e: java.lang.Exception) {
+            Log.e("SaveMediaException", "${e.message}")
         }
     }
 
@@ -2126,11 +2139,32 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         }
                     }
                 }
-            } catch (e: Exception) {
+            } catch (e: IndexOutOfBoundsException) {
                 lastException = e
-                Log.e("RetryUpload", "Attempt $attempts failed", e)
                 delay(delayMillis)
                 attempts++
+                Log.e("SaveMediaIndex", "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                lastException = e
+                delay(delayMillis)
+                attempts++
+                Log.e("SaveMediaIllegal", "${e.message}")
+            } catch (e: IllegalStateException) {
+                lastException = e
+                delay(delayMillis)
+                attempts++
+                Log.e("SaveMediaIllegal", "${e.message}")
+            }catch (e: NullPointerException) {
+                lastException = e
+                delay(delayMillis)
+                attempts++
+
+                Log.e("SaveMediaNull", "${e.message}")
+            } catch (e: java.lang.Exception) {
+                lastException = e
+                delay(delayMillis)
+                attempts++
+                Log.e("SaveMediaException", "${e.message}")
             }
         }
         Result.failure(lastException ?: Exception("Failed after $maxRetries attempts"))
@@ -2148,6 +2182,30 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             intent.putExtra("finishedMeasure", true)
             setResult(Activity.RESULT_OK, intent)
             finish()
+        } catch (e: IllegalStateException) {
+            Log.e("MSError", "${e.message}")
+            Toast.makeText(this@MeasureSkeletonActivity, "데이터 처리 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show()
+            val intent = Intent().apply { putExtra("finishedMeasure", false) }
+            setResult(Activity.RESULT_CANCELED, intent)
+            finish()
+        }  catch (e: IndexOutOfBoundsException) {
+            Log.e("MSError", "${e.message}")
+            Toast.makeText(this@MeasureSkeletonActivity, "데이터 처리 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show()
+            val intent = Intent().apply { putExtra("finishedMeasure", false) }
+            setResult(Activity.RESULT_CANCELED, intent)
+            finish()
+        }  catch (e: NullPointerException) {
+            Log.e("MSError", "${e.message}")
+            Toast.makeText(this@MeasureSkeletonActivity, "데이터 처리 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show()
+            val intent = Intent().apply { putExtra("finishedMeasure", false) }
+            setResult(Activity.RESULT_CANCELED, intent)
+            finish()
+        } catch (e: SocketTimeoutException) {
+            Log.e("MSError", "${e.message}")
+            Toast.makeText(this@MeasureSkeletonActivity, "데이터 처리 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show()
+            val intent = Intent().apply { putExtra("finishedMeasure", false) }
+            setResult(Activity.RESULT_CANCELED, intent)
+            finish()
         } catch (e: Exception) {
             Log.e("MeasureSkeletonActivity", "Error processing measure data", e)
             // 에러 발생 시 사용자에게 알림
@@ -2158,7 +2216,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
-    private fun JSONObject.toMeasureStatic(): MeasureStatic {
+    private fun JSONObject?.toMeasureStatic(): MeasureStatic {
         return Gson().fromJson(this.toString(), MeasureStatic::class.java)
     }
 
@@ -2166,13 +2224,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         return Gson().fromJson(this.toString(), MeasureDynamic::class.java)
     }
 
-    private fun MeasureStatic.toJson(): String {
+    private fun MeasureStatic?.toJson(): String {
         return Gson().toJson(this)
     }
-    private fun MeasureDynamic.toJson(): String {
+    private fun MeasureDynamic?.toJson(): String {
         return Gson().toJson(this)
     }
-    private fun MeasureInfo.toJson(): String {
+    private fun MeasureInfo?.toJson(): String {
         return Gson().toJson(this)
     }
     private fun safePut(value: Float) : Float {

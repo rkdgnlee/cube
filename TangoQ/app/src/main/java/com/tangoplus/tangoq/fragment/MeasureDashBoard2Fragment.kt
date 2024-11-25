@@ -95,8 +95,8 @@ class MeasureDashBoard2Fragment : Fragment() {
         val weeklySets = mutableListOf<Float>()
         if (graphProgresses != null) {
             for (i in 0 until 7) {
-                if (i < graphProgresses!!.size && graphProgresses!![i].isNotEmpty()) {
-                    weeklySets.add(graphProgresses!![i].count() * 100 / 7.toFloat())
+                if (i < (graphProgresses?.size ?: 0) && graphProgresses?.get(i)?.isNotEmpty() == true) {
+                    weeklySets.add((graphProgresses?.get(i)?.count()?.times(100) ?: 0) / 7.toFloat())
                 } else {
                     weeklySets.add(1f)
                 }
@@ -214,7 +214,7 @@ class MeasureDashBoard2Fragment : Fragment() {
             }
             // ------# 월별로 운동 기록 필터링 #------
 //            val filteredExercises = viewModel.allHistorys.filter { history ->
-//                val historyDate = stringToLocalDate(history.regDate!!)
+//                val historyDate = stringToLocalDate(history.regDate)
 //                historyDate.month == currentMonth?.month && historyDate.year == currentMonth?.year
 //            }.toMutableList()
 //            setAdapter(filteredExercises)
@@ -409,7 +409,7 @@ class MeasureDashBoard2Fragment : Fragment() {
     }
 
 //    private fun getTime(id: String) : Int {
-//        return pvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second!!
+//        return pvm.currentProgram?.exerciseTimes?.find { it.first == id }?.second
 //    }
 
 

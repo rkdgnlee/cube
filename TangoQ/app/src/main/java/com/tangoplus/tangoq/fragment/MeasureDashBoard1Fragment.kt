@@ -18,8 +18,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -80,8 +78,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                 try {
                     if (measures?.isNotEmpty() == true) {
                         val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
-                        binding.tvMD1TotalScore.text = "${measures!![0].overall ?: 0}"
-                        binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${measures!![0].regDate.substring(0, 10)}"
+                        binding.tvMD1TotalScore.text = "${measures?.get(0)?.overall ?: 0}"
+                        binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)}"
                         binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMD1PredictDicease.setOnClickListener{
                             hideBadgeFunction?.invoke()
@@ -96,6 +94,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
                         params.horizontalBias = 0.5f
                         binding.ivMD1Position.layoutParams = params
+                        binding.tvMD1More1.isEnabled = false
 
                     }
                 } catch (e: NullPointerException) {
@@ -157,18 +156,23 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         val lcDataList: MutableList<Pair<String, Int>> = mutableListOf()
 
-        measures?.let { measure ->
-            if (measures?.size != 7) {
-                for (i in 0 until (7 - measures?.size!!)) {
+        measures?.let {
+            val measureSize = measures?.size
+            if (measures?.size != 7 && measureSize != null){
+                for (i in 0 until (7 -measureSize)) {
                     lcDataList.add(Pair("", 50))
                 }
             }
             if (!measures.isNullOrEmpty()) {
-                for (i in measures!!.size - 1 downTo 0) {
-                    val measure = measures!![i]
-                    lcDataList.add(Pair(measure.regDate, measure.overall?.toInt()!!))
+                for (i in (measures?.size?.minus(1) ?: 0) downTo 0) {
+                    val measureUnit = measures?.get(i)
+                    val regDate = measureUnit?.regDate
+                    val overall = measureUnit?.overall?.toInt()
+                    if (regDate != null && overall != null) {
+                        lcDataList.add(Pair(regDate, overall))
+                    }
                 }
-                Log.v("lcDataList", "${lcDataList}")
+                Log.v("lcDataList", "$lcDataList")
                 for (i in lcDataList.indices) {
                     startIndex = i
                     break
@@ -199,7 +203,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             lcXAxis.apply {
                 isEnabled = false
                 textSize = 14f
-                textColor = resources.getColor(R.color.subColor500)
+                textColor = resources.getColor(R.color.subColor500, null)
                 labelRotationAngle = 2F
                 setDrawAxisLine(false)
                 setDrawGridLines(false)
@@ -304,15 +308,13 @@ class MeasureDashBoard1Fragment : Fragment() {
 
             // ------! balloon 시작 !------
             var percentage = 0.5f
-            if (measures!!.size >= 1) {
-                val userPercentile = measures!![0].overall
-                percentage = calculatePercentage(userPercentile?.toInt()!!)
+            val measuresSize = measures?.size
+            if (measuresSize != null && measuresSize >= 1) {
+                val userPercentile = measures?.get(0)?.overall?.toInt() ?: 0
+                percentage = calculatePercentage(userPercentile)
             }
 
-//            val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-//            params.horizontalBias = percentage
-//            binding.ivMD1Position.layoutParams = params
-//            val percent = (params.horizontalBias * 100).toInt()
+
             animateArrowToPercentage(percentage)
             animateCardViewToPercentage()
             when (percentage) {
@@ -333,10 +335,10 @@ class MeasureDashBoard1Fragment : Fragment() {
             }
             createBalloon(userJson, percentage)
             binding.clMD1Percent.setOnClickListener {
-                balloon!!.dismissWithDelay(2500L)
+                balloon?.dismissWithDelay(2500L)
             }
             binding.ivMD1Position.setOnClickListener{
-                binding.ivMD1Position.showAlignTop(balloon!!)
+                balloon?.let { it1 -> binding.ivMD1Position.showAlignTop(it1) }
             }
         }
 
@@ -363,11 +365,11 @@ class MeasureDashBoard1Fragment : Fragment() {
             .build()
     }
 
-    private fun calculatePercentage(value: Int): Float {
+    private fun calculatePercentage(value: Int?): Float {
         // 70~100의 범위를 0~100%로 매핑
         val minInput = 50
         val maxInput = 100
-        val percentage = (value - minInput).toDouble() / (maxInput - minInput)
+        val percentage = ((value?.minus(minInput))?.toDouble() ?: 0.0) / (maxInput - minInput)
 
         // 소수점 두 자리까지 반올림
         return String.format("%.3f", percentage).toFloat()

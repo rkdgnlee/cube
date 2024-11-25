@@ -91,13 +91,13 @@ class MeasureAnalysisFragment : Fragment() {
 
         // ------# 데이터 필터링을 위한 사전 세팅 #------
 
-        index = arguments?.getInt(ARG_INDEX)!!
-        mr = viewModel.selectedMeasure!!.measureResult
+        index = arguments?.getInt(ARG_INDEX) ?: -1
+        mr = viewModel.selectedMeasure?.measureResult ?: JSONArray()
         avm.mafMeasureResult = JSONArray()
-        Log.v("현재측정", viewModel.selectedMeasure!!.regDate)
+        Log.v("현재측정", viewModel.selectedMeasure?.regDate.toString())
         val noticeScore = arguments?.getInt(ARG_SCORE)
         val noticeComment = arguments?.getString(ARG_COMMENT)
-        setColor(noticeScore!!)
+        setColor(noticeScore)
         binding.tvMAPredict.text = noticeComment.toString()
 
         // ------# 1차 필터링 (균형별) #------
@@ -500,8 +500,8 @@ class MeasureAnalysisFragment : Fragment() {
 
     private fun set012Adapter(allData: MutableList<Triple<String,String, String?>>) {
 
-        val dangerParts = viewModel.selectedMeasure?.dangerParts?.map { it.first }!!.map { it.replace("좌측 ", "").replace("우측 ", "") }
-        val filteredData = allData.filter { dangerParts.any { part -> it.first.contains(part) } }
+        val dangerParts = viewModel.selectedMeasure?.dangerParts?.map { it.first }?.map { it.replace("좌측 ", "").replace("우측 ", "") }
+        val filteredData = allData.filter { dangerParts?.any { part -> it.first.contains(part) } == true }
         if (filteredData.isEmpty())  binding.tvMANotice1.visibility = View.GONE else binding.tvMANotice2.visibility = View.VISIBLE
 
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -515,7 +515,7 @@ class MeasureAnalysisFragment : Fragment() {
         binding.rvMARight.adapter = rightTopAdapter
 
 
-        val notFilteredData = allData.filterNot { dangerParts.any { part -> it.first.contains(part) } }
+        val notFilteredData = allData.filterNot { dangerParts?.any { part -> it.first.contains(part) } == true }
         val linearLayoutManager3 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         val leftBottomAdapter = DataStaticRVAdapter(requireContext(), notFilteredData.filterIndexed { index, _ -> index % 2 == 0 }, false)
@@ -544,7 +544,7 @@ class MeasureAnalysisFragment : Fragment() {
     private suspend fun setImage(seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
             try {
                 val jsonData = viewModel.selectedMeasure?.measureResult?.optJSONObject(seq)
-                val coordinates = extractImageCoordinates(jsonData!!)
+                val coordinates = jsonData?.let { extractImageCoordinates(it) }
                 val imageUrls = viewModel.selectedMeasure?.fileUris?.get(seq)
 
                 Log.v("시퀀스", "seq: ${seq}, view: (${ssiv.width}, ${ssiv.height}), imageSize: (${ssiv.sWidth}, ${ssiv.sHeight})")
@@ -572,7 +572,7 @@ class MeasureAnalysisFragment : Fragment() {
                                     // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
                                     val offsetX = (imageViewWidth - sWidth * scaleFactorX) / 2f
                                     val offsetY = (imageViewHeight - sHeight * scaleFactorY) / 2f
-                                    val poseLandmarkResult = fromCoordinates(coordinates!!)
+                                    val poseLandmarkResult = fromCoordinates(coordinates)
                                     val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
                                         bitmap,
                                         poseLandmarkResult,
@@ -609,8 +609,8 @@ class MeasureAnalysisFragment : Fragment() {
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {
         lifecycleScope.launch {
-            Log.v("동적측정json", "${viewModel.selectedMeasure?.measureResult!!.getJSONArray(1)}")
-            jsonArray = viewModel.selectedMeasure?.measureResult!!.getJSONArray(1)
+            Log.v("동적측정json", "${viewModel.selectedMeasure?.measureResult?.getJSONArray(1)}")
+            jsonArray = viewModel.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
             Log.v("jsonDataLength", "${jsonArray.length()}")
             initPlayer()
 
@@ -622,7 +622,7 @@ class MeasureAnalysisFragment : Fragment() {
                         val videoDuration = simpleExoPlayer?.duration ?: 0L
                         lifecycleScope.launch {
                             while (simpleExoPlayer?.isPlaying == true) {
-                                if (!updateUI) updateVideoUI(viewModel.selectedMeasure?.isMobile!!)
+                                if (!updateUI) updateVideoUI(viewModel.selectedMeasure?.isMobile)
                                 updateFrameData(videoDuration, jsonArray.length())
                                 delay(24)
                                 Handler(Looper.getMainLooper()).postDelayed( {updateUI = true},1000)
@@ -695,7 +695,7 @@ class MeasureAnalysisFragment : Fragment() {
         }
     }
 
-    private fun updateVideoUI(isMobile: Boolean) {
+    private fun updateVideoUI(isMobile: Boolean?) {
         Log.v("업데이트", "UI")
 
 
@@ -708,7 +708,7 @@ class MeasureAnalysisFragment : Fragment() {
         val screenWidth = displayMetrics.widthPixels
 
         // 비디오 높이를 화면 너비에 맞게 조절
-        val aspectRatio = if (isMobile) videoWidth.toFloat() / videoHeight.toFloat() else videoHeight.toFloat() / videoWidth.toFloat()
+        val aspectRatio = if (isMobile == true) videoWidth.toFloat() / videoHeight.toFloat() else videoHeight.toFloat() / videoWidth.toFloat()
         val adjustedHeight = (screenWidth * aspectRatio).toInt()
 
         // clMA의 크기 조절
@@ -776,7 +776,7 @@ class MeasureAnalysisFragment : Fragment() {
         simpleExoPlayer?.playWhenReady = true
     }
 
-    private fun setColor(index: Int) {
+    private fun setColor(index: Int?) {
         when (index) {
             2 -> {
                 binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.deleteColor))

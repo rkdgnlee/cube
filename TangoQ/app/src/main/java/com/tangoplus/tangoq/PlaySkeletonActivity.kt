@@ -64,8 +64,8 @@ import kotlin.math.abs
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandmarkerHelper.LandmarkerListener {
-    private var _binding : ActivityPlaySkeletonBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding : ActivityPlaySkeletonBinding
+
     // ------! vertical sensor !------
     private var accelerometer: Sensor? = null
     private lateinit var sensorManager: SensorManager
@@ -116,8 +116,8 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = ActivityPlaySkeletonBinding.inflate(layoutInflater)
-        setContentView(_binding!!.root)
+        binding = ActivityPlaySkeletonBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -161,13 +161,13 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         if ( url_list.isNotEmpty() ) {
             playbackPosition = intent.getLongExtra("current_position", 0L)
             initPlayer(url_list)
-            simpleExoPlayer!!.addListener(object : Player.Listener {
+            simpleExoPlayer?.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     super.onPlaybackStateChanged(playbackState)
                     if (playbackState == Player.STATE_ENDED) {
-                        Log.v("currentWindowIndex", "${simpleExoPlayer!!.currentWindowIndex}")
+                        Log.v("currentWindowIndex", "${simpleExoPlayer?.currentWindowIndex}")
                         // ------! 모든 영상 종료 시 자동 이동 !------
-                        if (simpleExoPlayer!!.currentWindowIndex == url_list.size - 1) {
+                        if (simpleExoPlayer?.currentWindowIndex == url_list.size - 1) {
 
                             val elapsedMills = SystemClock.elapsedRealtime() - chronometer.base
 //                            Log.v("feedback_finish", "VM_exercise_log: ${eViewModel.exerciseLog.value}")
@@ -203,10 +203,10 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         forward5.setOnClickListener {
             val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
             if (forwardPosition != null) {
-                if (forwardPosition < simpleExoPlayer?.duration?.minus(5000)!!) {
+                if (forwardPosition < ((simpleExoPlayer?.duration?.minus(5000)) ?: 0)) {
                     simpleExoPlayer?.seekTo(forwardPosition)
                 } else {
-                    simpleExoPlayer!!.pause()
+                    simpleExoPlayer?.pause()
                 }
             }
         } // ------! 앞으로 감기 뒤로 감기 끝 !------
@@ -352,7 +352,6 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
     override fun onDestroy() {
         super.onDestroy()
         simpleExoPlayer?.release()
-        _binding = null
         backgroundExecutor.shutdown()
         backgroundExecutor.awaitTermination(
             Long.MAX_VALUE, TimeUnit.NANOSECONDS
@@ -466,8 +465,16 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
             )
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(binding.vfPS.surfaceProvider)
-        } catch (exc: Exception) {
-            Log.e(TAG, "Use case binding failed", exc)
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("MSCameraIndex", "${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("MSCameraIllegal", "${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e("MSCameraIllegal", "${e.message}")
+        }catch (e: NullPointerException) {
+            Log.e("MSCameraNull", "${e.message}")
+        } catch (e: java.lang.Exception) {
+            Log.e("MSCameraException", "${e.message}")
         }
     }
 
@@ -506,31 +513,28 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
 
     override fun onResults(resultBundle: PoseLandmarkerHelper.ResultBundle) {
         runOnUiThread {
-            if (_binding != null) {
-                // Pass necessary information to OverlayView for drawing on the canvas
-                val customResult = PoseLandmarkAdapter.toCustomPoseLandmarkResult(resultBundle.results.first())
-                binding.olPS.setResults(
-                    customResult,
-                    resultBundle.inputImageHeight,
-                    resultBundle.inputImageWidth,
-                    OverlayView.RunningMode.LIVE_STREAM
-                )
+            // Pass necessary information to OverlayView for drawing on the canvas
+            val customResult = PoseLandmarkAdapter.toCustomPoseLandmarkResult(resultBundle.results.first())
+            binding.olPS.setResults(
+                customResult,
+                resultBundle.inputImageHeight,
+                resultBundle.inputImageWidth,
+                OverlayView.RunningMode.LIVE_STREAM
+            )
 
-                // 여기에 resultbundle(poselandarkerhelper.resultbundle)이 들어감.
+            // 여기에 resultbundle(poselandarkerhelper.resultbundle)이 들어감.
 
-                binding.olPS.invalidate()
-                latestResult = resultBundle
-                if (!pvm.isDefaultPoseSet) {
-                    // 5초 후에 setDefaultPoseBundle 함수를 한 번만 실행
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        setDefaultPoseBundle(latestResult!!)
-                        pvm.isDefaultPoseSet = true
-                    }, 2500)
-                } else {
-                    // setDefaultPoseBundle이 실행된 후에는 매 프레임마다 countBundleToJson 실행
-                    countBundleToJson(latestResult!!, exerciseId)
-                }
-
+            binding.olPS.invalidate()
+            latestResult = resultBundle
+            if (!pvm.isDefaultPoseSet) {
+                // 5초 후에 setDefaultPoseBundle 함수를 한 번만 실행
+                Handler(Looper.getMainLooper()).postDelayed({
+                    setDefaultPoseBundle(latestResult)
+                    pvm.isDefaultPoseSet = true
+                }, 2500)
+            } else {
+                // setDefaultPoseBundle이 실행된 후에는 매 프레임마다 countBundleToJson 실행
+                countBundleToJson(latestResult, exerciseId)
             }
         }
     }
@@ -551,9 +555,9 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
     private val centerThreshold = 0.02f
 
 
-    private fun setDefaultPoseBundle(resultBundle: PoseLandmarkerHelper.ResultBundle) {
-        if (resultBundle.results.first().landmarks().isNotEmpty()) {
-            val plr = resultBundle.results.first().landmarks()[0]!!
+    private fun setDefaultPoseBundle(resultBundle: PoseLandmarkerHelper.ResultBundle?) {
+        if (resultBundle?.results?.first()?.landmarks()?.isNotEmpty() == true) {
+            val plr = resultBundle.results.first().landmarks()[0]
             for (i in 0 until  plr.size) {
                 when (i) {
                     0 -> pvm.normalNose = Pair(plr[0].x().toDouble(), plr[0].y().toDouble())
@@ -568,7 +572,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         }
     }
 
-    private fun countBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle, case: String) {
+    private fun countBundleToJson(resultBundle: PoseLandmarkerHelper.ResultBundle?, case: String) {
         val earData = mutableListOf<Pair<Double, Double>>() // index 0 왼 index 1 오른
         val shoulderData = mutableListOf<Pair<Double, Double>>()
         val elbowData = mutableListOf<Pair<Double, Double>>()
@@ -582,8 +586,8 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
         val heelData = mutableListOf<Pair<Double, Double>>()
         val toeData = mutableListOf<Pair<Double, Double>>()
 
-        if (resultBundle.results.first().landmarks().isNotEmpty()) {
-            val plr = resultBundle.results.first().landmarks()[0]!!
+        if (resultBundle?.results?.first()?.landmarks()?.isNotEmpty() == true) {
+            val plr = resultBundle.results.first().landmarks()[0]
             for (i in 7 until  plr.size) {
                 when (i) {
                     in 7 .. 8 -> earData.add(Pair(plr[i].x().toDouble(), plr[i].y().toDouble()))
@@ -649,9 +653,16 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
                         }
                     }
                 }
-            } catch (e:Exception) {
-                Log.e("mathError", "${e.message}, $e")
-
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("PlaySkelIndex", "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("PlaySkelIllegal", "${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("PlaySkelIllegal", "${e.message}")
+            }catch (e: NullPointerException) {
+                Log.e("PlaySkelNull", "${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("PlaySkelException", "${e.message}")
             }
         }
     }

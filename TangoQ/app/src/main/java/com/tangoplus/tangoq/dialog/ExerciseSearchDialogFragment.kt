@@ -54,7 +54,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             imm.showSoftInput(binding.etESDSearch, InputMethodManager.SHOW_IMPLICIT)
         }, 250)
         val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
         isKeyboardVisible = true
 
 
@@ -71,10 +71,12 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
 
         }
         Log.v("searchHistory", "${evm.searchHistory.value}")
-
-
-        var adapter2 = ExerciseHistoryRVAdapter(evm.searchHistory.value!!, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
-        setAdapter(adapter2, binding.rv2)
+        var adapter2 : ExerciseHistoryRVAdapter
+        val searchHistory = evm.searchHistory.value
+        if (searchHistory != null) {
+            adapter2 = ExerciseHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
+            setAdapter(adapter2, binding.rv2)
+        }
 
 
         binding.etESDSearch.addTextChangedListener(object : TextWatcher{
@@ -144,7 +146,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
     }
 
     override fun onHistoryDelete(history: Pair<Int,String>) {
-        evm.searchHistory.value?.remove(evm.searchHistory.value!!.find { it.second == history.second })
+        evm.searchHistory.value?.remove(evm.searchHistory.value?.find { it.second == history.second })
         prefsManager.deleteStoredHistory(history.first)
         binding.rv2.adapter?.notifyDataSetChanged()
     }

@@ -79,44 +79,44 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         // ------# like 있는지 판단 #------
         prefs = PreferencesManager(requireContext())
         var isLike = false
-        if (prefs.existLike(exerciseData?.exerciseId!!)) {
+        if (prefs.existLike(exerciseData?.exerciseId.toString())) {
             isLike = true
             binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
         }
 
         binding.ibtnPTDLike.setOnClickListener {
             if (isLike) {
-                prefs.deleteLike(exerciseData.exerciseId!!)
+                prefs.deleteLike(exerciseData?.exerciseId.toString())
                 binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_disabled))
                 isLike = false
             } else {
-                prefs.storeLike(exerciseData.exerciseId!!)
+                prefs.storeLike(exerciseData?.exerciseId.toString())
                 binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
                 isLike = true
             }
         }
 
         // -----! 각 설명들 textView에 넣기 !-----
-        videoUrl = exerciseData.videoFilepath.toString()
-        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData.exerciseName}")
-        binding.tvPTDName.text = exerciseData.exerciseName.toString()
-        binding.tvPTDRelatedJoint.text = exerciseData.relatedJoint.toString()
+        videoUrl = exerciseData?.videoFilepath.toString()
+        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData?.exerciseName}")
+        binding.tvPTDName.text = exerciseData?.exerciseName.toString()
+        binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
-        binding.tvPTDTime.text = "${exerciseData.videoDuration} 초"
-        binding.tvPTDStage.text = exerciseData.exerciseStage
-        binding.tvPTDFrequency.text = exerciseData.exerciseFrequency.toString()
-        binding.tvPTRelatedSymptom.text = exerciseData.relatedSymptom
+        binding.tvPTDTime.text = "${exerciseData?.videoDuration} 초"
+        binding.tvPTDStage.text = exerciseData?.exerciseStage
+        binding.tvPTDFrequency.text = exerciseData?.exerciseFrequency.toString()
+        binding.tvPTRelatedSymptom.text = exerciseData?.relatedSymptom
 //        binding.tvPTDInitialPosture.text = exerciseData?.exerciseInitialPosture.toString()
-        binding.tvPTDMethod.text = exerciseData.exerciseMethod.toString()
-        binding.tvPTDCaution.text = exerciseData.exerciseCaution.toString()
-        binding.tvPTDRelatedMuscle.text = exerciseData.relatedMuscle.toString()
+        binding.tvPTDMethod.text = exerciseData?.exerciseMethod.toString()
+        binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
+        binding.tvPTDRelatedMuscle.text = exerciseData?.relatedMuscle.toString()
 //        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
 
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
         initPlayer()
 
         // ------! 관련 관절, 근육 recyclerview 시작 !------
-        val fullmuscleList = exerciseData.relatedMuscle?.replace("(", ", ")
+        val fullmuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
             ?.replace(")", "")
             ?.split(", ")
             ?.toMutableList()
@@ -135,17 +135,20 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         binding.btnPTDPlay.setOnClickListener {
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putExtra("video_url", videoUrl)
-            intent.putExtra("exercise_id", exerciseData.exerciseId)
-            intent.putExtra("total_duration", exerciseData.videoDuration?.toInt())
+            intent.putExtra("exercise_id", exerciseData?.exerciseId)
+            intent.putExtra("total_duration", exerciseData?.videoDuration?.toInt())
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
             pvm.isDialogShown.value = false
-
-            if (exerciseData.exerciseFrequency?.length!! >= 3) {
-                setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 19)
-                Log.v("notification 완료", "Success make plan to send notification Alarm")
+            val frequencyLength = exerciseData?.exerciseFrequency
+            if (frequencyLength != null) {
+                if (frequencyLength.length >= 3) {
+                    setNotificationAlarm("Tango Q", "최근에 하신 스트레칭은 \n저녁에 하시면 효과가 더 좋답니다!", 19)
+                    Log.v("notification 완료", "Success make plan to send notification Alarm")
+                }
             }
+
         } // ------! 하단 운동 시작 버튼 끝 !------
 
 //        // ------# 전체화면 구현 로직 시작 #------
@@ -183,10 +186,10 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         forward5.setOnClickListener {
             val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
             if (forwardPosition != null) {
-                if (forwardPosition < simpleExoPlayer?.duration?.minus(5000)!!) {
+                if (forwardPosition < (simpleExoPlayer?.duration?.minus(5000) ?: 0)) {
                     simpleExoPlayer?.seekTo(forwardPosition)
                 } else {
-                    simpleExoPlayer!!.pause()
+                    simpleExoPlayer?.pause()
                 }
             }
         } // ------! 앞으로 감기 뒤로 감기 끝 !------
@@ -195,21 +198,30 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             val responseArrayList = evm.allExercises
             try {
-                val verticalDataList = responseArrayList.filter { it.relatedJoint!!.contains(
-                    exerciseData.relatedJoint!!.split(", ")[0])}.subList(0, 10).toMutableList()
+                val verticalDataList = responseArrayList.filter {
+                    it.relatedJoint?.contains(exerciseData?.relatedJoint?.split(", ")?.get(0) ?: "") == true
+                }.subList(0, 10).toMutableList()
                 val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, verticalDataList, null, null, null,"recommend")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager
-            } catch (e: Exception) {
-                Log.e(ContentValues.TAG, "Error storing exercises", e)
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("PlayIndex", "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("PlayIllegal", "${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("PlayIllegal", "${e.message}")
+            }catch (e: NullPointerException) {
+                Log.e("PlayNull", "${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("PlayException", "${e.message}")
             }
         }
 
         // ------! 관련 운동 횡 rv 끝 !------
 
         // ------! ai코칭 시작 !------
-        if (exerciseData.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
+        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
             binding.btnPTDAIPlay.visibility = View.VISIBLE
         } else {
             binding.btnPTDAIPlay.visibility = View.GONE
@@ -219,11 +231,11 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             if (isTablet(requireContext())) {
                 val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
 
-                val exerciseIds = mutableListOf(exerciseData.exerciseId)
+                val exerciseIds = mutableListOf(exerciseData?.exerciseId)
                 val videoUrls = mutableListOf(videoUrl)
                 intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
                 intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-                intent.putExtra("total_time", exerciseData.videoDuration?.toInt())
+                intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
                 startActivity(intent)
             } else {
                 context.let { Toast.makeText(it, "태블릿 기기에서 운동을 추천드립니다", Toast.LENGTH_SHORT).show() }
@@ -235,7 +247,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------# share #------
         binding.ibtnPTDShare.setOnClickListener {
-            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/1?exercise=${exerciseData.exerciseId!!}")
+            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/1?exercise=${exerciseData?.exerciseId}")
             val intent = Intent(Intent.ACTION_SEND)
             intent.putExtra(Intent.EXTRA_TEXT, url.toString())
             intent.type = "text/plain" // 공유할 데이터의 타입을 설정 (텍스트)
@@ -291,7 +303,9 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         if (requestCode == 8080 && resultCode == Activity.RESULT_OK) {
             val currentPosition = data?.getLongExtra("current_position", 0)
             videoUrl = data?.getStringExtra("video_url").toString()
-            playbackPosition = currentPosition!!
+            if (currentPosition != null) {
+                playbackPosition = currentPosition
+            }
             initPlayer()
         }
     }

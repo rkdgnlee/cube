@@ -38,7 +38,7 @@ class LoadingDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val arg = arguments?.getString(ARG_CASE)!!
+        val arg = arguments?.getString(ARG_CASE) ?: ""
 
 
         binding.tvLD.text  = when (arg) {

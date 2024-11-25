@@ -60,18 +60,20 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
 
             // 2. saveAllMeasureInfo 부분 실행
-            saveMeasureInfo(userUUID, userInfoSn) { existed2 ->
-                if (existed2) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        fetchAndFilterMeasureInfo(userUUID)
-                        // 2. Measure 정보 필터링 및 저장
-                        Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
-                        // 3. 추천 프로그램 추가
-                        addRecommendations()
+            if (userUUID != "" || userInfoSn != -1) {
+                saveMeasureInfo(userUUID, userInfoSn) { existed2 ->
+                    if (existed2) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            fetchAndFilterMeasureInfo(userUUID)
+                            // 2. Measure 정보 필터링 및 저장
+                            Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
+                            // 3. 추천 프로그램 추가
+                            addRecommendations()
+                            callbacks()
+                        }
+                    } else {
                         callbacks()
                     }
-                } else {
-                    callbacks()
                 }
             }
         }
@@ -164,26 +166,38 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         }
                         Log.v("인포목록들", "${info}, sn: ${info.sn}")
                         val dangerParts = getDangerParts(info)
-                        val measureVO = MeasureVO(
-                            deviceSn = 0,
-                            sn = currentInfoSn!!,
-                            regDate = info.measure_date.toString(),
-                            overall = info.t_score,
-                            dangerParts = dangerParts.toMutableList(),
-                            measureResult = ja,
-                            fileUris = uris,
-                            isMobile = info.device_sn == 0,
-                            recommendations = null
-                        )
-                        measures.add(measureVO)
+                        if (currentInfoSn != null) {
+                            val measureVO = MeasureVO(
+                                deviceSn = 0,
+                                sn = currentInfoSn,
+                                regDate = info.measure_date.toString(),
+                                overall = info.t_score,
+                                dangerParts = dangerParts.toMutableList(),
+                                measureResult = ja,
+                                fileUris = uris,
+                                isMobile = info.device_sn == 0,
+                                recommendations = null
+                            )
+                            measures.add(measureVO)
+                        }
                         measures.sortByDescending { it.regDate }
 
                         singletonMeasure.measures = measures.toMutableList()
                     }.await()
                 }
             }
+        } catch (e: IllegalStateException) {
+            Log.e("measureError", "fetchAndFilter: ${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("measureError", "fetchAndFilter: ${e.message}")
+        } catch (e: NullPointerException) {
+            Log.e("measureError", "fetchAndFilter: ${e.message}")
+        } catch (e: InterruptedException) {
+            Log.e("measureError", "fetchAndFilter: ${e.message}")
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("measureError", "fetchAndFilter: ${e.message}")
         } catch (e: Exception) {
-            Log.e("측정목록가져오기실패", "${e.printStackTrace()}")
+            Log.e("measureError", "fetchAndFilter: ${e.message}")
         } finally {
             withContext(Dispatchers.Main) {
                 dialog.let { it?.dismiss() }
@@ -220,8 +234,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         mediaFile = getFile(context, statics[0].measure_server_file_name)
                     }
                     1 -> {
-                        jsonFile = getFile(context, dynamic.measure_server_json_name!!)
-                        mediaFile = getFile(context, dynamic.measure_server_file_name!!)
+                        jsonFile = getFile(context, dynamic.measure_server_json_name.toString())
+                        mediaFile = getFile(context, dynamic.measure_server_file_name.toString())
                     }
                     else -> {
                         jsonFile = getFile(context, statics[i - 1].measure_server_json_name)
@@ -237,21 +251,24 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
             //TODO JA 찾기 출처
             val dangerParts =  getDangerParts(info)
-            val measureVO = MeasureVO(
-                deviceSn = 0,
-                sn = info.sn!!,
-                regDate = info.measure_date.toString(),
-                overall = info.t_score,
-                dangerParts = dangerParts.toMutableList(),
-                measureResult = ja,
-                fileUris = uris,
-                isMobile = info.device_sn == 0,
-                recommendations = null
-            )
-            singletonMeasure.measures?.add(0, measureVO)
-            Log.v("싱글턴Measure1Item", "${singletonMeasure.measures?.size}")
-            // 3. 추천 프로그램 추가
-            mergeRecommendationInOneMeasure(measureVO.sn)
+            if (info.sn != null) {
+                val measureVO = MeasureVO(
+                    deviceSn = 0,
+                    sn = info.sn,
+                    regDate = info.measure_date.toString(),
+                    overall = info.t_score,
+                    dangerParts = dangerParts.toMutableList(),
+                    measureResult = ja,
+                    fileUris = uris,
+                    isMobile = info.device_sn == 0,
+                    recommendations = null
+                )
+                singletonMeasure.measures?.add(0, measureVO)
+                Log.v("싱글턴Measure1Item", "${singletonMeasure.measures?.size}")
+                // 3. 추천 프로그램 추가
+                mergeRecommendationInOneMeasure(measureVO.sn)
+            }
+
         }
     }
 
@@ -286,13 +303,14 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             }
                             createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
                                 measure.recommendations = newRecommendations
-                                singletonMeasure.measures!![index] = measure
+                                singletonMeasure.measures?.set(index, measure)
+
                                 Log.v("recommendCreated", "New recommendations for measureSn: $newRecommendations")
                             }
                         }
                         Log.v("recommendUpdate", "MeasureSn: $measureSn, Recommendations: ${measure.recommendations}")
-
-                    }.await() // 모든 async 작업이 완료될 때까지 대기
+                    }.await()
+                    // 모든 async 작업이 완료될 때까지 대기
                     withContext(Dispatchers.Main) {
                         dialog.dismiss()
                     }
@@ -310,24 +328,26 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 val measure = singletonMeasure.measures?.find { it.sn == measureInfoSn }
                 val recommendations = getRecommendationInOneMeasure(context.getString(R.string.API_recommendation), context, measureInfoSn)
                 if (recommendations.isEmpty()) {
-                    val (types, stages) = convertToJsonArrays(measure?.dangerParts!!)
+                    val (types, stages) = convertToJsonArrays(measure?.dangerParts)
                     Log.v("types와stages", "types: $types, stages: $stages")
                     val recommendJson = JSONObject().apply {
                         put("exercise_type_id", types)
                         put("exercise_stage", stages)
-                        put("server_sn", measure.sn)
+                        put("server_sn", measure?.sn)
                     }
                     createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
-                        measure.recommendations = newRecommendations
-                        val currentMeasureIndex = singletonMeasure.measures!!.indexOfFirst { it.sn == measureInfoSn }
-                        singletonMeasure.measures!![currentMeasureIndex] = measure
+                        measure?.recommendations = newRecommendations
+                        val currentMeasureIndex = singletonMeasure.measures?.indexOfFirst { it.sn == measureInfoSn }
+                        if (currentMeasureIndex != null && measure != null) {
+                            singletonMeasure.measures?.set(currentMeasureIndex, measure)
+                        }
                         Log.v("recommendCreated", "New recommendations for measureInfoSn: $measureInfoSn")
                     }
                 } else {
                     measure?.recommendations = recommendations
-                    val currentMeasureIndex = singletonMeasure.measures!!.indexOfFirst { it.sn == measureInfoSn }
-                    if (measure != null) {
-                        singletonMeasure.measures!![currentMeasureIndex] = measure
+                    val currentMeasureIndex = singletonMeasure.measures?.indexOfFirst { it.sn == measureInfoSn }
+                    if (measure != null && currentMeasureIndex != null) {
+                        singletonMeasure.measures?.set(currentMeasureIndex, measure)
                         Log.v("recommendCreated", "existed recommendations for measureInfoSn: $measureInfoSn")
                     }
                 }
@@ -353,10 +373,10 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 }
                 // 결론적으로 4 * 21의 값만 들어와짐.
                 singletonProgress.programProgresses = organizedUnits
-                Log.v("singletonProgress", "${singletonProgress.programProgresses!!.size}")
-                for (i in 0 until singletonProgress.programProgresses?.size!!) {
-                    Log.v("singletonProgress2", "${singletonProgress.programProgresses!![i].size}")
-                }
+//                Log.v("singletonProgress", "${singletonProgress.programProgresses.size}")
+//                for (i in 0 until singletonProgress.programProgresses?.size) {
+//                    Log.v("singletonProgress2", "${singletonProgress.programProgresses[i].size}")
+//                }
 
                 continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
             } else {

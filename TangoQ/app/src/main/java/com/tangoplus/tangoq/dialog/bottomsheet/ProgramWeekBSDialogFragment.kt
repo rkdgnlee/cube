@@ -26,7 +26,7 @@ class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        totalWeek = pvm.currentProgram?.programWeek!!
+        totalWeek = pvm.currentProgram?.programWeek ?: 0
         val weeks = mutableListOf<String>()
         for (i in 0 until totalWeek) {
             val txt = "${i+1}주차"

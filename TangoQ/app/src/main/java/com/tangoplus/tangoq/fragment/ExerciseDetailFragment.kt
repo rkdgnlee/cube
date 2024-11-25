@@ -134,8 +134,16 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
 
                 updateRecyclerView(currentCateExercises.toMutableList())
             // ------! rv vertical 끝 !------
-            } catch (e: Exception) {
-                Log.e(ContentValues.TAG, "Error storing exercises", e)
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("EDetailIndex", "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("EDetailIllegal", "${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("EDetailIllegal", "${e.message}")
+            } catch (e: NullPointerException) {
+                Log.e("EDetailNull", "${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("EDetailException", "${e.message}")
             } // ------! rv all rv 끝 !------
         }
 
@@ -187,8 +195,16 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 1 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.relatedSymptom }.toMutableList())
                 2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.videoDuration }.toMutableList())
             }
-        } catch (e: Exception) {
-            Log.e("Exercise>filter", "$e")
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("EDetailIndex", "${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("EDetailIllegal", "${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e("EDetailIllegal", "${e.message}")
+        } catch (e: NullPointerException) {
+            Log.e("EDetailNull", "${e.message}")
+        } catch (e: java.lang.Exception) {
+            Log.e("EDetailException", "${e.message}")
         }
     }
 

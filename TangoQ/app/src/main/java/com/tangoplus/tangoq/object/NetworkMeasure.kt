@@ -271,7 +271,7 @@ object NetworkMeasure {
                 Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
                 newInfos.forEach{ newInfo ->
                     mDao.insertInfo(newInfo)
-                    getMeasureResult(context, myUrl, newInfo.sn!!)
+                    newInfo.sn?.let { getMeasureResult(context, myUrl, it) }
                 }
                 return@withContext callback(true)
             }
@@ -373,6 +373,4 @@ object NetworkMeasure {
     fun JSONObject.toMeasureInfo(): MeasureInfo {
         return Gson().fromJson(this.toString(), MeasureInfo::class.java)
     }
-
-
 }

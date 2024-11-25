@@ -107,7 +107,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
             binding.rvAlarm.invalidateItemDecorations()
         }
         alarmList.remove(alarmList.find { it.timeStamp == timeStamp })
-        pm.deleteAlarm(userSn, timeStamp!!)
+        pm.deleteAlarm(userSn, timeStamp ?: 0L)
 
 
         // ------! 삭제 후 스와이프 초기화 끝 !------

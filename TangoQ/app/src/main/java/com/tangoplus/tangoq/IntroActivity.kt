@@ -50,7 +50,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.io.IOException
 import java.lang.Exception
+import java.net.SocketTimeoutException
 
 
 class IntroActivity : AppCompatActivity() {
@@ -123,8 +125,14 @@ class IntroActivity : AppCompatActivity() {
                                     }
                             }
                         } ?: throw Exception()
+                    } catch (e: IndexOutOfBoundsException) {
+                        Log.e("IntroIndex", "${e.message}")
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("IntroIllegal", "${e.message}")
+                    } catch (e: NullPointerException) {
+                        Log.e("IntroNull", "${e.message}")
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.e("IntroException", "${e.message}")
                     }
                 }
             }
@@ -285,8 +293,8 @@ class IntroActivity : AppCompatActivity() {
                 storeUserInSingleton(this@IntroActivity, jo)
                 createKey(getString(R.string.SECURE_KEY_ALIAS))
                 Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid")!!
-                val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt()!!
+                val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid") ?: ""
+                val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt() ?: -1
                 ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
                     mainInit()
                 }
@@ -314,10 +322,12 @@ class IntroActivity : AppCompatActivity() {
                             storeUserInSingleton(this@IntroActivity, jo)
                             createKey(getString(R.string.SECURE_KEY_ALIAS))
                             Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                            val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")!!
-                            val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()!!
-                            ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
-                                mainInit()
+                            val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
+                            val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()
+                            if (userUUID != null && userInfoSn != null) {
+                                ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+                                    mainInit()
+                                }
                             }
 
 //                            val dialog = SetupDialogFragment()

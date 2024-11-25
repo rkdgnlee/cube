@@ -92,8 +92,16 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                             Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
                         }
 
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error: ${e.message}")
+                    } catch (e: IndexOutOfBoundsException) {
+                        Log.e("EDetailIndex", "${e.message}")
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("EDetailIllegal", "${e.message}")
+                    } catch (e: IllegalStateException) {
+                        Log.e("EDetailIllegal", "${e.message}")
+                    } catch (e: NullPointerException) {
+                        Log.e("EDetailNull", "${e.message}")
+                    } catch (e: java.lang.Exception) {
+                        Log.e("EDetailException", "${e.message}")
                     }
 
                     binding.linearLayout7.setOnClickListener{

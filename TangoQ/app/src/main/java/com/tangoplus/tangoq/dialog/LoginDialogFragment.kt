@@ -57,7 +57,7 @@ class LoginDialogFragment : DialogFragment() {
             imm.showSoftInput(binding.etLDId, InputMethodManager.SHOW_IMPLICIT)
         }, 250)
         val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
         // ------! 로그인 시작 !------
         val idPattern = "^[\\s\\S]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
         val idPatternCheck = Pattern.compile(idPattern)
@@ -132,8 +132,8 @@ class LoginDialogFragment : DialogFragment() {
                                         createKey(getString(R.string.SECURE_KEY_ALIAS))
 //                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
                                         lifecycleScope.launch {
-                                            val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")!!
-                                            val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()!!
+                                            val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid") ?: ""
+                                            val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt() ?: -1
 
                                             dialog.dismiss()
                                             ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {

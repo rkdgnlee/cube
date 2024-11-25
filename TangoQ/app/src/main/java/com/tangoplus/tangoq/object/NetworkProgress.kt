@@ -67,8 +67,21 @@ object NetworkProgress {
                         }
                     }
                     callback(progresses)
-                } catch (e: Exception) {
-                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("ProgressIndex", "Post Progress: ${e.message}")
+                    callback(mutableListOf())
+                } catch (e: IllegalArgumentException) {
+                    Log.e("ProgressIllegal", "Post Progress: ${e.message}")
+                    callback(mutableListOf())
+                } catch (e: IllegalStateException) {
+                    Log.e("ProgressIllegal", "Post Progress: ${e.message}")
+                    callback(mutableListOf())
+                }catch (e: NullPointerException) {
+                    Log.e("ProgressNull", "Post Progress: ${e.message}")
+                    callback(mutableListOf())
+                } catch (e: java.lang.Exception) {
+                    Log.e("ProgressException", "Post Progress: ${e.message}")
+                    callback(mutableListOf())
                 }
             }
         })
@@ -121,10 +134,23 @@ object NetworkProgress {
                             progresses.add(progressUnitVO)
                         }
                     }
-                    Log.v("진행길이", "${progresses.size}")
+                    Log.v("진행길이", "getRecProgress: ${progresses.size}")
                     callback(progresses)
-                } catch (e: Exception) {
-                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("ProgressIndex", "getRecProgress: ${e.message}")
+                    callback(mutableListOf())
+                } catch (e: IllegalArgumentException) {
+                    Log.e("ProgressIllegal", "getRecProgress: ${e.message}")
+                    callback(mutableListOf())
+                } catch (e: IllegalStateException) {
+                    Log.e("ProgressIllegal", "getRecProgress: ${e.message}")
+                    callback(mutableListOf())
+                }catch (e: NullPointerException) {
+                    Log.e("ProgressNull", "getRecProgress: ${e.message}")
+                    callback(mutableListOf())
+                } catch (e: java.lang.Exception) {
+                    Log.e("ProgressException", "getRecProgress: ${e.message}")
+                    callback(mutableListOf())
                 }
             }
         })
@@ -215,8 +241,16 @@ object NetworkProgress {
                     } else {
                         return@use jo
                     }
-                } catch (e: Exception) {
-                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("ProgressIndex", "latestProgress: ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("ProgressIllegal", "latestProgress: ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("ProgressIllegal", "latestProgress: ${e.message}")
+                }catch (e: NullPointerException) {
+                    Log.e("ProgressNull", "latestProgress: ${e.message}")
+                } catch (e: java.lang.Exception) {
+                    Log.e("ProgressException", "latestProgress: ${e.message}")
                 }
             } as JSONObject
         }
@@ -268,8 +302,16 @@ object NetworkProgress {
                     } else {
                         return@use progresses
                     }
-                } catch (e: Exception) {
-                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("ProgressIndex", "getWeek: ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("ProgressIllegal", "getWeek: ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("ProgressIllegal", "getWeek: ${e.message}")
+                }catch (e: NullPointerException) {
+                    Log.e("ProgressNull", "getWeek: ${e.message}")
+                } catch (e: java.lang.Exception) {
+                    Log.e("ProgressException", "getWeek: ${e.message}")
                 }
             } as MutableList<ProgressUnitVO>
         }
@@ -320,8 +362,16 @@ object NetworkProgress {
                     } else {
                         return@use progresses
                     }
-                } catch (e: Exception) {
-                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("ProgressIndex", "getDaily: ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("ProgressIllegal", "getDaily: ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("ProgressIllegal", "getDaily: ${e.message}")
+                } catch (e: NullPointerException) {
+                    Log.e("ProgressNull", "getDaily: ${e.message}")
+                } catch (e: java.lang.Exception) {
+                    Log.e("ProgressException", "getDaily: ${e.message}")
                 }
             } as MutableList<ProgressHistoryVO>
         }

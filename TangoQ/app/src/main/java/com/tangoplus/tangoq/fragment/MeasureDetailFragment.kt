@@ -38,7 +38,7 @@ import java.io.FileOutputStream
 class MeasureDetailFragment : Fragment() {
     lateinit var binding : FragmentMeasureDetailBinding
     lateinit var bodyParts : List<String>
-    private lateinit var measure : MeasureVO
+    private var measure : MeasureVO? = null
     private val viewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,7 +81,7 @@ class MeasureDetailFragment : Fragment() {
         }
 
         // ------# measure 에 맞게 UI 수정 #------
-        measure = viewModel.selectedMeasure!!
+        measure = viewModel.selectedMeasure
         updateUI()
 
         // ------# 10각형 레이더 차트 #------
@@ -91,9 +91,9 @@ class MeasureDetailFragment : Fragment() {
 
         // 먼저 모든 점수를 95로 초기화
         val scores = MutableList(bodyParts.size) { 91f }
-        Log.v("raderScores", "${ measure.dangerParts}")
+        Log.v("raderScores", "${ measure?.dangerParts}")
         // measure.dangerParts에 있는 부위들의 점수만 업데이트
-        measure.dangerParts.forEach { (part, danger) ->
+        measure?.dangerParts?.forEach { (part, danger) ->
             val index = bodyParts.indexOf(part)
             if (index != -1) {
                 scores[index] = when (danger) {
@@ -111,7 +111,7 @@ class MeasureDetailFragment : Fragment() {
         Log.v("raderScores", raderScores.toString())
 
         val entries = mutableListOf<RadarEntry>()
-        for (i in 0 until bodyParts.size) {
+        for (i in bodyParts.indices) {
             entries.add(RadarEntry(raderScores[i]))
         }
         Log.v("재조정x축", "$raderXParts")
@@ -162,7 +162,7 @@ class MeasureDetailFragment : Fragment() {
             invalidate() // 차트 갱신
         }
 
-        val dangerParts = measure.dangerParts.map { it.first }.toMutableList()
+        val dangerParts = measure?.dangerParts?.map { it.first }?.toMutableList()
         val stages = mutableListOf<MutableList<String>>()
         val balanceParts1 = mutableListOf("어깨", "골반")
         stages.add(balanceParts1)
@@ -247,8 +247,8 @@ class MeasureDetailFragment : Fragment() {
     }
 
     private fun updateUI() {
-        binding.tvMDScore.text = measure.overall.toString()
-        binding.tvMDDate.text = measure.regDate.substring(0, 10)
-        binding.tvMDParts.text = "우려부위: ${measure.dangerParts.map { it.first }.joinToString(", ")}"
+        binding.tvMDScore.text = measure?.overall.toString()
+        binding.tvMDDate.text = measure?.regDate?.substring(0, 10)
+        binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
     }
 }

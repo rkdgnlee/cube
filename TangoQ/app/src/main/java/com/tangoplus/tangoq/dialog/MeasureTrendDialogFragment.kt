@@ -83,7 +83,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 avm.rightMeasurement.value = measures[0]
                 measureResult = mvm.selectedMeasure?.measureResult ?: JSONArray()
                 // ------# 비교할 모든 analysisVO 넣기 #------
-                avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult!!)
+                avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
 
                 // ------# seq left spnr #------
                 val seqs = listOf(
@@ -133,7 +133,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                             if (position != 0) {
                                 avm.leftMeasurement.value = measures[position - 1]
-                                avm.leftAnalyzes = transformAnalysis(avm.leftMeasurement.value?.measureResult!!)
+                                avm.leftAnalyzes = transformAnalysis(avm.leftMeasurement.value?.measureResult ?: JSONArray())
                                 Log.v("왼쪽analysis", "${avm.leftMeasurement.value}")
                                 setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                                 CoroutineScope(Dispatchers.IO).launch {
@@ -155,7 +155,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                             avm.rightMeasurement.value = measures[position]
-                            avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult!!)
+                            avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
 
                             setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                             CoroutineScope(Dispatchers.IO).launch {
@@ -226,7 +226,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     "",
                     isNormal,
                     analysisUnits,
-                    mvm.selectedMeasure?.fileUris!![i]
+                    mvm.selectedMeasure?.fileUris?.get(i) ?: ""
                 )
                 relatedAnalyzes.add(analysisVO)
             }

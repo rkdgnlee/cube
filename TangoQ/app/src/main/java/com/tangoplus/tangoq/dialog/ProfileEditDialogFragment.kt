@@ -59,14 +59,14 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
         svm.snsCount = 0
         // ------! 싱글턴에서 가져오기 !------
-        svm.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject!!
+        svm.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject
 
-        svm.setHeight.value = svm.User.value!!.optInt("height")
-        svm.setWeight.value = svm.User.value!!.optInt("weight")
-        svm.setEmail.value = svm.User.value!!.optString("email")
+        svm.setHeight.value = svm.User.value?.optInt("height")
+        svm.setWeight.value = svm.User.value?.optInt("weight")
+        svm.setEmail.value = svm.User.value?.optString("email")
 
 
-        userSn = svm.User.value!!.optString("sn")
+        userSn = svm.User.value?.optString("sn").toString()
         Log.v("개인정보편집", "${svm.User.value}")
 
         // ------! 정보 목록 recyclerView 연결 시작 !------
@@ -113,18 +113,18 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         }
 
         // ------! id, pw, EmailId VM에 값 보존 시작 !------
-        svm.id.value = svm.User.value!!.optString("user_id")
+        svm.id.value = svm.User.value?.optString("user_id")
 
-        when (svm.User.value!!.optInt("sms_receive")) {
+        when (svm.User.value?.optInt("sms_receive")) {
             1 -> agreementMk1.value = true
             else -> agreementMk1.value = false
         }
-        Log.v("userJson", svm.User.value!!.optInt("sms_receive").toString())
-        when (svm.User.value!!.optInt("email_receive")) {
+        Log.v("userJson", svm.User.value?.optInt("sms_receive").toString())
+        when (svm.User.value?.optInt("email_receive")) {
             1 -> agreementMk2.value = true
             else -> agreementMk2.value = false
         }
-        Log.v("userJson", svm.User.value!!.optInt("email_receive").toString())
+        Log.v("userJson", svm.User.value?.optInt("email_receive").toString())
         // ------! 광고성 수신 동의 시작 !------
         binding.clPEDAgreement3.setOnClickListener{
             val newValue = agreement3.value?.not() ?: false
@@ -177,19 +177,20 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         }
 
         binding.btnPEDFinish.setOnClickListener {
-//            viewModel.User.value!!.put("user_id", viewModel.id.value.toString())
-//            viewModel.User.value!!.put("password", viewModel.pw.value.toString())
-            svm.User.value!!.put("sms_receive", if (agreementMk1.value!!) 1 else 0)
-            svm.User.value!!.put("email_receive", if (agreementMk2.value!!) 1 else 0)
-            svm.User.value!!.put("height", svm.setHeight.value)
-            svm.User.value!!.put("weight", svm.setWeight.value)
-            svm.User.value!!.put("email", svm.setEmail.value)
-            Log.v("userJson>receive", "${svm.User.value!!}")
+//            viewModel.User.value?.put("user_id", viewModel.id.value.toString())
+//            viewModel.User.value?.put("password", viewModel.pw.value.toString())
+            svm.User.value?.put("sms_receive", if (agreementMk1.value == true) 1 else 0)
+            svm.User.value?.put("email_receive", if (agreementMk2.value == true) 1 else 0)
+            svm.User.value?.put("height", svm.setHeight.value)
+            svm.User.value?.put("weight", svm.setWeight.value)
+            svm.User.value?.put("email", svm.setEmail.value)
+            Log.v("userJson>receive", "${svm.User.value}")
 //            val userEditEmail = userJson.optString("user_email")
 //            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
-            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), svm.User.value!!.toString(), userSn) {
-                Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value!!}")
-                Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value!!
+            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user),
+                svm.User.value?.toString().toString(), userSn) {
+                Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
+                Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
 //                requireActivity().runOnUiThread{
 //                    uViewModel.setupProgress = 34
 //                    uViewModel.setupStep = 0
@@ -212,7 +213,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     private fun setAdapter(list: MutableList<String>) {
         binding.rvPED.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val adapter = ProfileRVAdapter(this@ProfileEditDialogFragment, this@ProfileEditDialogFragment, false, "profileEdit", svm)
-        adapter.userJson = svm.User.value!!
+        adapter.userJson = svm.User.value ?: JSONObject()
         adapter.profilemenulist = list
         binding.rvPED.adapter = adapter
 

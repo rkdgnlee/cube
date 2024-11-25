@@ -150,8 +150,8 @@ class SplashActivity : AppCompatActivity() {
                                             storeUserInSingleton(this@SplashActivity, jo)
                                             Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
-                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
-                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
                                         ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                             navigateDeepLink()
                                         }
@@ -165,8 +165,8 @@ class SplashActivity : AppCompatActivity() {
                         // ------! 구글 토큰 있음 시작 !------
                     } else if (googleUserExist != null) {
                         val user = FirebaseAuth.getInstance().currentUser
-                        user!!.getIdToken(true)
-                            .addOnCompleteListener { task ->
+                        user?.getIdToken(true)
+                            ?.addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val jsonObj = JSONObject()
                                     jsonObj.put("device_sn", 0)
@@ -182,8 +182,8 @@ class SplashActivity : AppCompatActivity() {
                                             storeUserInSingleton(this, jo)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         }
-                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
-                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
                                         ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                             navigateDeepLink()
                                         }
@@ -217,8 +217,8 @@ class SplashActivity : AppCompatActivity() {
                                         storeUserInSingleton(this, jo)
                                         Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                     }
-                                    val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
-                                    val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+                                    val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                    val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: 0
                                     ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                         navigateDeepLink()
                                     }
@@ -236,8 +236,8 @@ class SplashActivity : AppCompatActivity() {
 //                                    if (jo != null) {
 //                                        storeUserInSingleton(this@SplashActivity, jo)
 //                                        Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-//                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid")!!
-//                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt()!!
+//                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+//                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
 //
 //                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
 //

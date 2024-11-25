@@ -60,8 +60,28 @@ object NetworkRecommendation {
                         callback(recommendations)
                     }
                 }
-            } catch (e: Exception) {
-                Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("RecommendIndex", "${e.message}")
+                withContext(Dispatchers.Main) {
+                    callback(mutableListOf())
+                }
+            } catch (e: IllegalArgumentException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                withContext(Dispatchers.Main) {
+                    callback(mutableListOf())
+                }
+            } catch (e: IllegalStateException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                withContext(Dispatchers.Main) {
+                    callback(mutableListOf())
+                }
+            } catch (e: NullPointerException) {
+                Log.e("RecommendNull", "${e.message}")
+                withContext(Dispatchers.Main) {
+                    callback(mutableListOf())
+                }
+            } catch (e: java.lang.Exception) {
+                Log.e("RecommendException", "${e.message}")
                 withContext(Dispatchers.Main) {
                     callback(mutableListOf())
                 }
@@ -113,8 +133,16 @@ object NetworkRecommendation {
                         return@use recommendations
                     }
 
-                } catch (e: Exception) {
-                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("RecommendIndex", "${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("RecommendIllegal", "${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("RecommendIllegal", "${e.message}")
+                } catch (e: NullPointerException) {
+                    Log.e("RecommendNull", "${e.message}")
+                } catch (e: java.lang.Exception) {
+                    Log.e("RecommendException", "${e.message}")
                 }
             } as MutableList<RecommendationVO>
         }
@@ -164,8 +192,16 @@ object NetworkRecommendation {
                         return@use recommendations
                     }
 
-                } catch (e: Exception) {
-                    Log.e("JSON Parsing Error", "Error parsing JSON: ${e.message}")
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("RecommendIndex", "${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("RecommendIllegal", "${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("RecommendIllegal", "${e.message}")
+                } catch (e: NullPointerException) {
+                    Log.e("RecommendNull", "${e.message}")
+                } catch (e: java.lang.Exception) {
+                    Log.e("RecommendException", "${e.message}")
                 }
             } as MutableList<RecommendationVO>
         }

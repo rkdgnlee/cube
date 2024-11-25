@@ -51,11 +51,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림
             // 메시지에 알림 페이로드가 포함되어 있는지 확인
             message.notification?.let {
                 sendNotification(
-                    message.notification!!.title.toString(),
-                    message.notification!!.body.toString()
+                    message.notification?.title.toString(),
+                    message.notification?.body.toString()
                 )
                 messageToStore = MessageVO(
-                    message = message.notification!!.body.toString(),
+                    message = message.notification?.body.toString(),
                     timeStamp = System.currentTimeMillis(),
                     route = "AlarmActivity"
                 )

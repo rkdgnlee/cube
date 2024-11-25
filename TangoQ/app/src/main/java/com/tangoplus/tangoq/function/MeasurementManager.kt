@@ -22,6 +22,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.io.FileNotFoundException
 import kotlin.coroutines.resume
 import kotlin.math.abs
 
@@ -473,7 +474,7 @@ object MeasurementManager {
         return dangerParts
     }
 
-    fun convertToJsonArrays(dangerParts: List<Pair<String, Float>>): Pair<JSONArray, JSONArray> {
+    fun convertToJsonArrays(dangerParts: List<Pair<String, Float>>?): Pair<JSONArray, JSONArray> {
         val partIndices = mapOf(
             "목관절" to 1,
             "어깨" to 2,
@@ -487,7 +488,7 @@ object MeasurementManager {
         val indices = mutableListOf<Int>()
         val values = mutableListOf<Float>()
 
-        dangerParts.forEach { (part, value) ->
+        dangerParts?.forEach { (part, value) ->
             val basicPart = when {
                 part.contains("목관절") -> "목관절"
                 part.contains("어깨") -> "어깨"
@@ -512,8 +513,8 @@ object MeasurementManager {
     suspend fun setImage(fragment: Fragment, measureVO: MeasureVO?, seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
         try {
             val jsonData = measureVO?.measureResult?.optJSONObject(seq)
-            val coordinates = extractImageCoordinates(jsonData!!)
-            val imageUrls = measureVO.fileUris[seq]
+            val coordinates = extractImageCoordinates(jsonData)
+            val imageUrls = measureVO?.fileUris?.get(seq)
             var isSet = false
             Log.v("시퀀스", "seq: ${seq}, view: (${ssiv.width}, ${ssiv.height}), imageSize: (${ssiv.sWidth}, ${ssiv.sHeight})")
             if (imageUrls != null) {
@@ -540,7 +541,7 @@ object MeasurementManager {
                                 // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
                                 val offsetX = (imageViewWidth - sWidth * scaleFactorX) / 2f
                                 val offsetY = (imageViewHeight - sHeight * scaleFactorY) / 2f
-                                val poseLandmarkResult = fromCoordinates(coordinates!!)
+                                val poseLandmarkResult = fromCoordinates(coordinates)
                                 val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
                                     bitmap,
                                     poseLandmarkResult,
@@ -573,7 +574,11 @@ object MeasurementManager {
                 }
             } else { continuation.resume(false) }
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("Error", "${e}")
+            Log.e("Error", "$e")
+        } catch (e: FileNotFoundException) {
+            Log.e("scalingFileNotFound", "$e")
+        } catch (e: IllegalStateException) {
+            Log.e("scalingStateError", "$e" )
         }
     }
     fun getVideoDimensions(context : Context, videoUri: Uri) : Pair<Int, Int> {
@@ -586,8 +591,8 @@ object MeasurementManager {
     }
 
     // -------# 측정 결과 MeasureVO로 변환 #------
-    private fun extractImageCoordinates(jsonData: JSONObject): List<Pair<Float, Float>>? {
-        val poseData = jsonData.optJSONArray("pose_landmark")
+    private fun extractImageCoordinates(jsonData: JSONObject?): List<Pair<Float, Float>>? {
+        val poseData = jsonData?.optJSONArray("pose_landmark")
         return if (poseData != null) {
             List(poseData.length()) { i ->
                 val landmark = poseData.getJSONObject(i)

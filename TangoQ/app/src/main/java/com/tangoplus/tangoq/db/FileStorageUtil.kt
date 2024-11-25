@@ -5,9 +5,9 @@ import android.os.Environment
 import android.util.Log
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.SecurePreferencesManager
-import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.function.SecurePreferencesManager.decryptFile
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encryptFile
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.function.SecurePreferencesManager.generateAESKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -63,8 +63,17 @@ object FileStorageUtil {
                     Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
                     false
                 }
-            } catch (e: Exception) {
-                Log.e("SaveFileFromUrl", "Error saving file from URL: ${e.message}")
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("StorageIndex", "${e.message}")
+                false
+            } catch (e: IllegalArgumentException) {
+                Log.e("StorageIllegal", "${e.message}")
+                false
+            } catch (e: NullPointerException) {
+                Log.e("StorageNull", "${e.message}")
+                false
+            } catch (e: java.lang.Exception) {
+                Log.e("StorageException", "${e.message}")
                 false
             }
         }
@@ -113,7 +122,7 @@ object FileStorageUtil {
             val cache = SecurePreferencesManager.DecryptedFileCache.getInstance()
 
             // 캐시에서 먼저 확인
-            val cachedData = cache.get(fileName)
+            val cachedData = cache?.get(fileName)
             if (cachedData != null) {
                 return@withContext createTempFileFromBytes(context, cachedData)
             }
@@ -133,12 +142,24 @@ object FileStorageUtil {
                     ?: return@withContext null
 
                 // 캐시에 저장
-                cache.put(fileName, decryptedData)
+                cache?.put(fileName, decryptedData)
 
                 // 임시 파일 생성 및 반환
                 createTempFileFromBytes(context, decryptedData)
-            } catch (e: Exception) {
-                Log.e("SecureFileManager", "File processing failed: ${e.message}")
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("StorageIndex", "${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("StorageIllegal", "${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e("StorageNull", "${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("StorageException", "${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("StorageException", "${e.message}")
                 null
             }
         }
@@ -161,8 +182,17 @@ object FileStorageUtil {
         return try {
             val jsonContent = file.readText(Charsets.UTF_8)
             JSONObject(jsonContent)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("StorageIndex", "${e.message}")
+            null
+        } catch (e: IllegalArgumentException) {
+            Log.e("StorageIllegal", "${e.message}")
+            null
+        } catch (e: NullPointerException) {
+            Log.e("StorageNull", "${e.message}")
+            null
+        } catch (e: java.lang.Exception) {
+            Log.e("StorageException", "${e.message}")
             null
         }
     }
@@ -171,8 +201,17 @@ object FileStorageUtil {
         return try {
             val jsonContent = file.readText(Charsets.UTF_8)
             JSONArray(jsonContent)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("StorageIndex", "${e.message}")
+            null
+        } catch (e: IllegalArgumentException) {
+            Log.e("StorageIllegal", "${e.message}")
+            null
+        } catch (e: NullPointerException) {
+            Log.e("StorageNull", "${e.message}")
+            null
+        } catch (e: java.lang.Exception) {
+            Log.e("StorageException", "${e.message}")
             null
         }
     }

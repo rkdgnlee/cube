@@ -4,8 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwtToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -97,86 +100,40 @@ object NetworkUser {
         }
     }
 
+
     // Id, Pw 자동 로그인 (토큰)
-//    suspend fun rememberMeByRefreshToken(myUrl: String,  refreshJwtJo: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = refreshJwtJo.toString().toRequestBody(mediaType)
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//            .url("${myUrl}auto.php")
-//            .post(body)
-//            .build()
-//        return withContext(Dispatchers.IO) {
-//            try {
-//                client.newCall(request).enqueue(object : Callback {
-//                    override fun onFailure(call: Call, e: IOException) {
-//                        Log.e("rememberMeFailed", "Failed to execute request!")
-//                    }
-//
-//                    override fun onResponse(call: Call, response: Response) {
-//                        val responseBody = response.body?.string()
-//                        Log.v("자동로그인Success", "$responseBody")
-//                        val jo = responseBody?.let { JSONObject(it) }
-//
-//                        // ------#토큰 저장 #------
-//                        val jsonObj = JSONObject()
-//                        jsonObj.put("jwt_token", jo?.optString("jwt"))
-//                        jsonObj.put("refresh_jwt_token", jo?.optString("refresh_jwt"))
-////                        saveEncryptedJwtToken(context, jsonObj)
-//                        // ------# 저장 후 로그인 정보는 callback으로 반환 #------
-//                        withContext(Dispatchers.IO) {
-//                            if (jo?.optString("s") == "") {
-//                                reassignedToken(myUrl, jsonObj, context) {
-//
-//                                }
-//                            } else {
-//                                withContext(Dispatchers.Main) {
-//                                    callback(jo)
-//                                }
-//                            }
-//                        }
-//                    }
-//                })
-//            } catch (e : Exception) {
-//                Log.e("rememberMeFailed", "Error: ${e.message}")
-//                callback(JSONObject())
-//            }
-//        }
-//    }
-//
-//    // ------# 만료됐을 때 다시 토큰 발급 받아 저장 #------
-//    suspend fun reassignedToken(myUrl: String, expiredJwt: JSONObject, context: Context, callback: () -> Unit) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = expiredJwt.toString().toRequestBody(mediaType)
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//            .url("$myUrl/")
-//            .post(body)
-//            .build()
-//        return withContext(Dispatchers.IO) {
-//            try {
-//                client.newCall(request).enqueue(object : Callback {
-//                    override fun onFailure(call: Call, e: IOException) {
-//                        Log.e("reAssignedFailed", "${e.printStackTrace()}")
-//                    }
-//
-//                    override fun onResponse(call: Call, response: Response) {
-//                        val responseBody = response.body?.string()
-//                        Log.v("자동로그인Success", "$responseBody")
-//                        val jo = responseBody?.let { JSONObject(it) }
-//
-//                        // ------#토큰 저장 #------
-//                        val jsonObj = JSONObject()
-//                        jsonObj.put("jwt_token", jo?.optString("jwt"))
-//                        jsonObj.put("refresh_jwt_token", jo?.optString("refresh_jwt"))
-//                        saveEncryptedJwtToken(context, jsonObj)
-//                    }
-//                })
-//            } catch (e: Exception) {
-//                Log.e("reAssignedFailed", "${e.printStackTrace()}")
-//            }
-//        }
-//    }
+    suspend fun rememberMeByRefreshToken(myUrl: String, context: Context, callback: (JSONObject?) -> Unit) {
+        val client = HttpClientProvider.getClient(context)
+        val request = Request.Builder()
+            .url("$myUrl/endpoint")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+                val jo = responseBody?.let { JSONObject(it) }
+                withContext(Dispatchers.Main) {
+                    callback(jo)
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("UserIndex", "refresh: ${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("UserIllegal", "refresh: ${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("UserIllegal", "refresh: ${e.message}")
+            }catch (e: NullPointerException) {
+                Log.e("UserNull", "refresh: ${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("UserException", "refresh: ${e.message}")
+            }
+
+        }
+
+    }
+
+
 
     suspend fun insertUser(myUrl: String,  idPw: JSONObject, context: Context, callback: (Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -209,8 +166,20 @@ object NetworkUser {
                         }
                     }
                 })
-            } catch (e: Exception) {
-                Log.e("insertUser", "Error: ${e.message}")
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("UserIndex", "${e.message}")
+                callback(500)
+            } catch (e: IllegalArgumentException) {
+                Log.e("UserIllegal", "${e.message}")
+                callback(500)
+            } catch (e: IllegalStateException) {
+                Log.e("UserIllegal", "${e.message}")
+                callback(500)
+            } catch (e: NullPointerException) {
+                Log.e("UserNull", "${e.message}")
+                callback(500)
+            } catch (e: java.lang.Exception) {
+                Log.e("UserException", "${e.message}")
                 callback(500)
             }
         }
@@ -236,8 +205,20 @@ object NetworkUser {
                         Log.v("중복확안로그", "${response.code}, ${response.body.toString()}")
                     }
                 })
-            } catch (e: Exception) {
-                Log.e("중복확인Error", "Error: ${e.message}")
+            }  catch (e: IndexOutOfBoundsException) {
+                Log.e("UserIndex", "${e.message}")
+                callback(500)
+            } catch (e: IllegalArgumentException) {
+                Log.e("UserIllegal", "${e.message}")
+                callback(500)
+            } catch (e: IllegalStateException) {
+                Log.e("UserIllegal", "${e.message}")
+                callback(500)
+            } catch (e: NullPointerException) {
+                Log.e("UserNull", "${e.message}")
+                callback(500)
+            } catch (e: java.lang.Exception) {
+                Log.e("UserException", "${e.message}")
                 callback(500)
             }
         }

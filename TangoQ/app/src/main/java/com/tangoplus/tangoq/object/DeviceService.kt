@@ -76,8 +76,16 @@ object DeviceService {
                         }
                     }
                 })
-            } catch (e: Exception) {
-                Log.e("SSAIDError", e.stackTraceToString())
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("SSAIDIndex", "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("SSAIDIllegal", "${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("SSAIDIllegal", "${e.message}")
+            }catch (e: NullPointerException) {
+                Log.e("SSAIDNull", "${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("SSAIDException", "${e.message}")
             }
         }
     }

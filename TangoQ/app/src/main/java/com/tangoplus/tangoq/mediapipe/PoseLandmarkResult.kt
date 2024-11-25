@@ -11,11 +11,11 @@ data class PoseLandmarkResult(
     )
 
     companion object {
-        fun fromCoordinates(coordinates: List<Pair<Float, Float>>): PoseLandmarkResult {
-            val landmarks = coordinates.map { (x, y) ->
+        fun fromCoordinates(coordinates: List<Pair<Float, Float>>?): PoseLandmarkResult {
+            val landmarks = coordinates?.map { (x, y) ->
                 PoseLandmark(x, y)
             }
-            return PoseLandmarkResult(landmarks)
+            return if ( landmarks != null ) PoseLandmarkResult(landmarks) else PoseLandmarkResult(listOf())
         }
     }
 }

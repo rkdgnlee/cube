@@ -71,7 +71,7 @@ class QRCodeDialogFragment : DialogFragment() {
         binding.ibtnLSDInfo.alpha = 0f
         binding.ibtnLSDInfo.visibility = View.GONE
         binding.ibtnLSDBack2.visibility = View.GONE
-        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
 
         // ------! balloon 시작 !------
         val balloon = Balloon.Builder(requireContext())
@@ -181,8 +181,16 @@ class QRCodeDialogFragment : DialogFragment() {
     private fun initScanner() {
         try {
             codeScanner = CodeScanner(requireContext(), binding.csvLSD)
-        } catch (e: Exception) {
-            Log.e("codeScannerError", e.message!!)
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("ProgramIndex", "${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("ProgramIllegal", "${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e("ProgramIllegal", "${e.message}")
+        } catch (e: NullPointerException) {
+            Log.e("ProgramNull", "${e.message}")
+        } catch (e: java.lang.Exception) {
+            Log.e("ProgramException", "${e.message}")
         }
         codeScanner.startPreview()
         codeScanner.formats = CodeScanner.ALL_FORMATS

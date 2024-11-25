@@ -110,8 +110,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
 
     private fun setPlayer() {
         lifecycleScope.launch {
-            Log.v("동적측정json", "${mvm.selectedMeasure?.measureResult!!.getJSONArray(1)}")
-            dynamicJa = mvm.selectedMeasure?.measureResult!!.getJSONArray(1)
+            Log.v("동적측정json", "${mvm.selectedMeasure?.measureResult?.optJSONArray(1)}")
+            dynamicJa = mvm.selectedMeasure?.measureResult?.optJSONArray(1) ?: JSONArray()
             Log.v("jsonDataLength", "${dynamicJa.length()}")
             initPlayer()
 
@@ -123,7 +123,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
                         val videoDuration = simpleExoPlayer?.duration ?: 0L
                         lifecycleScope.launch {
                             while (simpleExoPlayer?.isPlaying == true) {
-                                if (!updateUI) updateVideoUI(mvm.selectedMeasure?.isMobile!!)
+                                if (!updateUI) updateVideoUI()
                                 updateFrameData(videoDuration, dynamicJa.length())
                                 delay(24)
                                 Handler(Looper.getMainLooper()).postDelayed( {updateUI = true},1000)
@@ -134,7 +134,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
             })
         }
     }
-    private fun updateVideoUI(isMobile: Boolean) {
+    private fun updateVideoUI() {
         Log.v("업데이트", "UI")
 
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())

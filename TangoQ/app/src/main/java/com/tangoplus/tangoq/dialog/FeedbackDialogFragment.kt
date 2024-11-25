@@ -79,9 +79,13 @@ class FeedbackDialogFragment : DialogFragment() {
             Log.v("score", "${satisfactions.getIndex()}")
             val jsonObj = JSONObject()
             val parts = mutableListOf<String>()
-            for (i in 0 until mvm.feedbackParts.value?.size!!) {
-//                parts.add(mvm.feedbackParts.value!![i].name)
-            }
+            val feedbackPartSize = mvm.feedbackParts.value?.size
+//            if (feedbackPartSize != null) {
+//                for (i in 0 until feedbackPartSize) {
+////                parts.add(mvm.feedbackParts.value!![i].name)
+//                }
+//            }
+
             jsonObj.put("user_sn", userJson?.optString("user_sn"))
             jsonObj.put("intensity_score",intensitys.getIndex())
             jsonObj.put("fatigue_score",fatigues.getIndex())

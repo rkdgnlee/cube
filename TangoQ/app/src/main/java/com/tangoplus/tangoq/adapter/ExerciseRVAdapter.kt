@@ -137,7 +137,7 @@ class ExerciseRVAdapter (
 
                 // ------# 시청 기록 #------\
 //                if (currentExerciseItem.exerciseId == currentHistoryItem.exerciseId) {
-//                    holder.hpvEIHistory.progresses = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt()!!))!! * 100
+//                    holder.hpvEIHistory.progresses = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt())) * 100
 //                }
 
                 // ------# 하트 버튼 #------
@@ -156,7 +156,7 @@ class ExerciseRVAdapter (
                 // TODO MD2에 맞게 수정해야함
                 if (!progresses.isNullOrEmpty() && sequence != null ) {
 
-                    /* Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
+                    /* Pair(pvm.currentSequence, pvm.selectedSequence.value))
                     * 회차를 기준으로 나눠진거임. progresses[position] == 16개의 운동이 담긴 1회차 선택한 회차를 가져옴.
                     * selectSeq.first == currentSeq
                     * selectSeq.second == selectedSeq
@@ -204,7 +204,10 @@ class ExerciseRVAdapter (
                         1 -> { // 재생 시간 중간
                             holder.tvEIFinish.visibility = View.GONE
                             holder.hpvEI.visibility = View.VISIBLE
-                            holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toFloat()!!
+                            val duration  =currentExerciseItem.videoDuration
+                            if (duration != null) {
+                                holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
+                            }
                             Log.v("hpvprogresses", "${holder.hpvEI.progress}")
                         }
                         else -> { // 재생기록 없는 item
@@ -286,8 +289,9 @@ class ExerciseRVAdapter (
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEHIThumbnail)
-                if (currentItem != null) {
-                    holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toFloat()!!
+                val duration = currentExerciseItem.videoDuration
+                if (currentItem != null && duration != null) {
+                    holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
                 }
                 holder.tvEHISeq.text = "${position+1}/${exerciseList.size}"
             }

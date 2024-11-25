@@ -60,31 +60,36 @@ class MainPartDialogFragment : DialogFragment() {
         // 초기화 후 담기
         avm.relatedAnalyzes = mutableListOf()
         avm.selectedPart = part
-        for (i in matchedUris.get(part)!!) {
 
-            // ------# 부위와 평균값 넣기 #------
-            val analysisUnits = getAnalysisUnits(part, i, measureResult)
-            Log.v("analysisUnits", "i: $i, $analysisUnits")
-            val normalUnits = analysisUnits.filter { it.state }
-            val isNormal = if (i == 1) { true } else if (normalUnits.size > (analysisUnits.size - normalUnits.size )) true else false
+        val matchedPart = matchedUris.get(part)
+        if (matchedPart != null) {
+            for (i in matchedPart) {
 
-            Log.v("isNormal", "trueSize: ${analysisUnits.filter { it.state }.size} vs falseSize: ${analysisUnits.size} isNormal: ${isNormal}")
-            val analysisVO = AnalysisVO(
-                i,
-                createSummary(part, i, analysisUnits),
-                isNormal,
-                analysisUnits,
-                mvm.selectedMeasure?.fileUris!![i]
-            )
-            avm.relatedAnalyzes.add(analysisVO)
+                // ------# 부위와 평균값 넣기 #------
+                val analysisUnits = getAnalysisUnits(part, i, measureResult)
+                Log.v("analysisUnits", "i: $i, $analysisUnits")
+                val normalUnits = analysisUnits.filter { it.state }
+                val isNormal = if (i == 1) { true } else if (normalUnits.size > (analysisUnits.size - normalUnits.size )) true else false
+
+                Log.v("isNormal", "trueSize: ${analysisUnits.filter { it.state }.size} vs falseSize: ${analysisUnits.size} isNormal: ${isNormal}")
+                val analysisVO = AnalysisVO(
+                    i,
+                    createSummary(part, i, analysisUnits),
+                    isNormal,
+                    analysisUnits,
+                    mvm.selectedMeasure?.fileUris?.get(i).toString()
+                )
+                avm.relatedAnalyzes.add(analysisVO)
+            }
+
+            Log.v("relatedAnalyzes", "${avm.relatedAnalyzes.size}, ${avm.relatedAnalyzes.map { it.seq }}")
+            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            val adapter = MainPartRVAdapter(this@MainPartDialogFragment, avm.relatedAnalyzes)
+            adapter.avm = avm
+            binding.rvMPD.layoutManager = layoutManager
+            binding.rvMPD.adapter = adapter
         }
 
-        Log.v("relatedAnalyzes", "${avm.relatedAnalyzes.size}, ${avm.relatedAnalyzes.map { it.seq }}")
-        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val adapter = MainPartRVAdapter(this@MainPartDialogFragment, avm.relatedAnalyzes)
-        adapter.avm = avm
-        binding.rvMPD.layoutManager = layoutManager
-        binding.rvMPD.adapter = adapter
     }
 
     override fun onResume() {

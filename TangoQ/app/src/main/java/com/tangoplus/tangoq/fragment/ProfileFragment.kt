@@ -52,7 +52,7 @@ import java.util.TimeZone
 class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener {
     lateinit var binding : FragmentProfileBinding
     val viewModel : SignInViewModel by activityViewModels()
-    lateinit var userJson : JSONObject
+    private var userJson : JSONObject? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,7 +66,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         super.onViewCreated(view, savedInstanceState)
 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
-        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         Log.v("Singleton>Profile", "${userJson}")
         updateUserData()
@@ -245,7 +245,8 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                             )
                             .build()
                         CoroutineScope(Dispatchers.IO).launch {
-                            sendProfileImage(requireContext(), getString(R.string.API_user), userJson.optString("sn"), requestBody) { imageUrl ->
+                            sendProfileImage(requireContext(), getString(R.string.API_user),
+                                userJson?.optString("sn").toString(), requestBody) { imageUrl ->
                                 Log.v("수정된프로필사진URL", "$imageUrl")
                                 CoroutineScope(Dispatchers.Main).launch {
                                     Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
@@ -285,7 +286,20 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = try {
                     (c.get(Calendar.YEAR) - userJson.optString("birthday").substring(0, 4).toInt()).toString() + "세"
-                } catch (e: Exception) {
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("EDetailIndex", "${e.message}")
+                    "미설정"
+                } catch (e: IllegalArgumentException) {
+                    Log.e("EDetailIllegal", "${e.message}")
+                    "미설정"
+                } catch (e: IllegalStateException) {
+                    Log.e("EDetailIllegal", "${e.message}")
+                    "미설정"
+                } catch (e: NullPointerException) {
+                    Log.e("EDetailNull", "${e.message}")
+                    "미설정"
+                } catch (e: java.lang.Exception) {
+                    Log.e("EDetailException", "${e.message}")
                     "미설정"
                 }
 
