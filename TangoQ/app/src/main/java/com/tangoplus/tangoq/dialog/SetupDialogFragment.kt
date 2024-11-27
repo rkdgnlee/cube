@@ -20,6 +20,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.etc.SetupVPAdapter
 import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentSetupDialogBinding
+import com.tangoplus.tangoq.fragment.Setup2Fragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.listener.WeightVisibilityListener
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
@@ -100,26 +101,33 @@ class SetupDialogFragment : DialogFragment() {
                     val jsonObj = uvm.User.value
                     Log.v("JSON몸통", "$jsonObj")
 
-                    fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jsonObj.toString(), userSn.toString()) {
-                        userJson.put("height", uvm.User.value?.optString("height"))
-                        userJson.put("weight", uvm.User.value?.optString("weight"))
+                    fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jsonObj.toString(), userSn.toString()) { isSuccess ->
+                        if (isSuccess) {
+                            userJson.put("height", uvm.User.value?.optString("height"))
+                            userJson.put("weight", uvm.User.value?.optString("weight"))
 //                        userJson.put("user_goal", uvm.User.value?.optString("user_goal"))
 //                        userJson.put("user_part", uvm.User.value?.optString("user_part"))
-                        requireActivity().runOnUiThread{
-                            uvm.setupProgress = 34
-                            uvm.setupStep = 0
-                            uvm.step1.value = null
-                            uvm.step21.value = null
-                            uvm.step22.value = null
-                            uvm.step2.value = null
+                            requireActivity().runOnUiThread{
+                                uvm.setupProgress = 34
+                                uvm.setupStep = 0
+                                uvm.step1.value = null
+                                uvm.step21.value = null
+                                uvm.step22.value = null
+                                uvm.step2.value = null
 //                            uvm.step31.value = null
 //                            uvm.step32.value = null
 //                            uvm.step3.value = null
-                            uvm.User.value = null
+                                uvm.User.value = null
+                            }
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+                            dismiss()
+                        } else {
+                            context.let { Toast.makeText(it, "설정에 실패했습니다 잠시후 다시 시도해주세요", Toast.LENGTH_SHORT).show() }
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+                            dismiss()
                         }
-                        val intent = Intent(requireContext(), MainActivity::class.java)
-                        startActivity(intent)
-                        dismiss()
                     }
                 }
                 // ------! 3. 미설정된 목표, 통증부위 !------
@@ -133,8 +141,8 @@ class SetupDialogFragment : DialogFragment() {
 //            } else if (binding.btnSD.text == "다음으로" && uvm.step31.value == false) {
 //                Toast.makeText(requireContext(), "목표 설정을 올바르게 해주세요", Toast.LENGTH_SHORT).show()
 
-            } else if (binding.btnSD.text == "다음으로" && uvm.step2.value == true) {
-                setNextPage()
+//            } else if (binding.btnSD.text == "다음으로" && uvm.step2.value == true) {
+//                setNextPage()
 
             } else if (binding.btnSD.text == "다음으로" && uvm.step22.value == false) {
                 Toast.makeText(requireContext(), "정확한 몸무게를 입력해주세요 ", Toast.LENGTH_SHORT).show()
@@ -151,6 +159,9 @@ class SetupDialogFragment : DialogFragment() {
                     setNextPage()
                 }
                 // ------! 5. 개인정보 수정일 때 페이징 !------
+            }
+            uvm.step2.observe(viewLifecycleOwner) {
+                if (it == true) binding.btnSD.text = "완료" else "다음으로"
             }
         }
     }
@@ -179,10 +190,8 @@ class SetupDialogFragment : DialogFragment() {
     private fun showFragmentComponent() {
         val fragmentManager = childFragmentManager
         val currentFragment = fragmentManager.findFragmentByTag("f${binding.vpSD.currentItem}")
-
-        if (currentFragment is WeightVisibilityListener) {
+        if (currentFragment is Setup2Fragment) {
             currentFragment.visibleWeight()
-            binding.btnSD.text = "완료"
             uvm.setupStep += 1
             binding.vpSD.currentItem = uvm.setupStep
             binding.svSD.go(uvm.setupStep, true)
@@ -192,6 +201,7 @@ class SetupDialogFragment : DialogFragment() {
             Log.v("셋업2", "${uvm.setupStep}, ${binding.vpSD.currentItem}")
         }
     }
+
     override fun onResume() {
         super.onResume()
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)

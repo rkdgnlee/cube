@@ -48,11 +48,6 @@ object FileStorageUtil {
                             input.copyTo(output)
                         }
                     }
-                    // TODO 유효성 검증을 통해서 암호화전 손상된 파일들 복구.
-//                    if (isFileIntegrityValid(tempFile, "")) {
-//                        encryptFile(tempFile, file, generateAESKey(context))
-//                        tempFile.delete()
-//                    }
 
                     encryptFile(tempFile, file, generateAESKey(context))
                     tempFile.delete()

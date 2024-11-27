@@ -156,15 +156,14 @@ class SplashActivity : AppCompatActivity() {
                                         ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                             navigateDeepLink()
                                         }
-
                                     }
                                 }
                             }
                         })
                         // ------! 네이버 토큰 있음 끝 !------
 
-                        // ------! 구글 토큰 있음 시작 !------
-                    } else if (googleUserExist != null) {
+                    }  // ------! 구글 토큰 있음 시작 !------
+                    else if (googleUserExist != null) {
                         val user = FirebaseAuth.getInstance().currentUser
                         user?.getIdToken(true)
                             ?.addOnCompleteListener { task ->
@@ -188,6 +187,7 @@ class SplashActivity : AppCompatActivity() {
                                         ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
                                             navigateDeepLink()
                                         }
+
                                     }
                                 }
                             }
@@ -200,7 +200,7 @@ class SplashActivity : AppCompatActivity() {
                                 Log.e("kakaoError", "사용자 정보 요청 실패", error)
                             }
                             else if (user != null) {
-                                Log.i(ContentValues.TAG, "사용자 정보 요청 성공" + "\n회원번호: ${user.id}")
+                                Log.v("KakaoAuth요청 성공","hasSignedUp: ${user.hasSignedUp}")
                                 val jsonObj = JSONObject()
                                 val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())

@@ -54,7 +54,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
     private var count = false
     private lateinit var dynamicJa: JSONArray
     private var simpleExoPlayer: SimpleExoPlayer? = null
-    private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
+    private var videoUrl = ""
     private var updateUI = false
     private var measureResult: JSONArray? = null
     companion object {
@@ -114,7 +114,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
                 1 -> {
                     // -----# 동적 측정 setUI #------
                     binding.tvMPPDSummary.textSize = 14f
-                    binding.tvMPPDSummary.text = "스쿼트를 진행한 동안, 좌우 각 부위의 궤적을 그려 좌우를 비교합니다.\n대칭일 때 가장 이상적이고, 궤적이 좌우가 다를경우 해당 관절의 주변 근육의 긴장과 불편함이 있다는 것을 의미합니다."
+                    binding.tvMPPDSummary.text = "스쿼트 1회 동작에서 좌우 부위의 궤적을 비교합니다.\n궤적은 대칭일수록 이상적이고, 좌우의 궤적이 다를수록 해당 관절의 주변 근육의 긴장과 불편함이 있다는 것을 의미합니다."
                     binding.tvMPPDSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.secondContainerColor))
                     binding.tvMPPDSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
                     binding.ivMPPDIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.thirdColor))

@@ -7,15 +7,15 @@
     android:layout_height="42dp"
     android:layout_marginEnd="20dp"
     android:background="@drawable/bckgnd_rectangle_20"
-    android:backgroundTint="@color/white">
+    android:backgroundTint="@color/deleteContainerColor">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvPI"
         android:layout_width="36dp"
         android:layout_height="0dp"
         android:layout_margin="4dp"
-        app:cardBackgroundColor="@color/black"
-        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="@color/deleteColor"
+        app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,11 +34,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="부위"
-        android:textColor="@color/black"
+        android:text="좌측 어깨"
+        android:textColor="@color/deleteColor"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

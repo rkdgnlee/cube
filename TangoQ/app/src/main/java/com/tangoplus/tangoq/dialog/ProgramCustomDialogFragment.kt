@@ -140,7 +140,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     val selectedSeqValue = pvm.selectedSequence.value
                     if (selectedSeqValue != null) {
                         setAdapter(pvm.currentProgram, pvm.currentProgresses[selectedWeek], Pair(pvm.currentSequence, selectedSeqValue))
-                        binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/${pvm.currentProgram?.programWeek} 주차"
+                        val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
+                        binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/$tvTotalWeek 주차"
+
                         setButtonFlavor()
                     }
                 }
@@ -173,8 +175,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 //                }, 4000)
 //            }
 //        }
-
-
         binding.btnPCDRight.setOnClickListener {
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
@@ -397,8 +397,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             binding.rvPCD.layoutManager = layoutManager2
             adapter2?.notifyDataSetChanged()
         }
-
-
     }
 
     override fun customCategoryClick(sequence: Int) {
@@ -490,7 +488,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 pvm.currentSequence = minSequenceInWeek
                 pvm.selectedSequence.value = minSequenceInWeek
                 Log.v("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}, maxSeq: $maxSeq")
-                binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/${pvm.currentProgram?.programWeek} 주차"
+                val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
+                binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/$tvTotalWeek 주차"
                 break
             }
         }

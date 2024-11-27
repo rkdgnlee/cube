@@ -224,8 +224,6 @@ object NetworkUser {
         }
     }
 
-
-
     // ------# 마케팅 수신 동의 관련 insert문 #------
     fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -252,7 +250,7 @@ object NetworkUser {
     }
 
 
-    fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String, callback: () -> Unit) {
+    fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String, callback: (Boolean) -> Unit) {
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
@@ -277,7 +275,11 @@ object NetworkUser {
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 Log.v("UPDATE 응답성공", "code: ${response.code} body: $responseBody")
-                callback()
+                if (response.code == 200) {
+                    callback(true)
+                } else {
+                    callback(false)
+                }
             }
         })
     }

@@ -124,10 +124,12 @@ class LoginDialogFragment : DialogFragment() {
 
                                 // ------! 싱글턴 + 암호화 저장 시작 !------
                                 if (jo != null ) {
+                                    // ------# 최초 로그인 #------
                                     if (jo.optInt("weight") == 0 && jo.optInt("height") == 0 && jo.optString("gender") == "1") {
                                         val dialog2 = SetupDialogFragment()
                                         dialog2.show(requireActivity().supportFragmentManager, "SetupDialogFragment")
                                     } else {
+                                        // ------# 기존 로그인 #------
                                         NetworkUser.storeUserInSingleton(requireContext(), jo)
                                         createKey(getString(R.string.SECURE_KEY_ALIAS))
 //                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
