@@ -51,6 +51,7 @@ data class MeasureInfo(
     var risk_knee_right: String? = "0",
     var risk_ankle_left: String? = "0",
     var risk_ankle_right: String? = "0",
+    var risk_result_ment: String? = ""
     ) {
     companion object {
         fun getCurrentDateTime(): String =

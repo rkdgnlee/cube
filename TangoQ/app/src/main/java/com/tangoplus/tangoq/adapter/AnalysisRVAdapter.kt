@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,9 +50,12 @@ class AnalysisRVAdapter(private val fragment: Fragment, private val analysisUnit
 
                 holder.tvMPAITitle.text = currentItem.rawDataName
                 setState(holder, currentItem.state)
-                holder.tvMPAIData.text = if (currentItem.columnName.contains("distance"))
-                    "${String.format("%.2f", if (currentItem.rawData.isNaN()) 0 else currentItem.rawData)}cm"
-                else "${String.format("%.2f", if (currentItem.rawData.isNaN()) 0 else currentItem.rawData)}°"
+                val rawDataValue = currentItem.rawData.toDouble() // null인 경우 0으로 대체
+                holder.tvMPAIData.text = if (currentItem.columnName.contains("distance")) {
+                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}cm"
+                } else {
+                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}°"
+                }
                 val spannableString = SpannableString(currentItem.summary)
                 val accentIndex =  holder.tvMPAIExplain.text.indexOf("값")
                 if (accentIndex != -1) {

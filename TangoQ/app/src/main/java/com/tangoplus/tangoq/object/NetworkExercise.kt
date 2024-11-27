@@ -41,10 +41,9 @@ object  NetworkExercise {
                         exerciseInitialPosture = jo.getString("exercise_initial_posture"),
                         exerciseMethod = jo.getString("exercise_method"),
                         exerciseCaution = jo.getString("exercise_caution"),
-                        videoActualName = jo.getString("video_actual_name"),
                         videoFilepath = jo.getString("video_filepath"),
-                        videoDuration = (jo.optString("duration").toIntOrNull() ?: 0).toString(),
-                        imageFilePathReal = jo.getString("image_filepath_real")
+                        duration = (jo.optString("duration").toIntOrNull() ?: 0).toString(),
+                        imageFilePath = jo.getString("image_filepath")
                     )
                 exerciseInstance
             }
@@ -130,10 +129,9 @@ object  NetworkExercise {
                             exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
                             exerciseMethod = jsonObject.getString("exercise_method"),
                             exerciseCaution = jsonObject.getString("exercise_caution"),
-                            videoActualName = jsonObject.getString("video_actual_name"),
                             videoFilepath = jsonObject.getString("video_filepath"),
-                            videoDuration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
-                            imageFilePathReal = jsonObject.getString("image_filepath_real"),
+                            duration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
+                            imageFilePath = jsonObject.getString("image_filepath"),
                         )
                         exerciseDataList.add(exerciseData)
                     }
@@ -161,10 +159,10 @@ object  NetworkExercise {
             exerciseInitialPosture = json.getString("exercise_initial_posture"),
             exerciseMethod = json.getString("exercise_method"),
             exerciseCaution = json.getString("exercise_caution"),
-            videoActualName = json.getString("video_actual_name"),
+
             videoFilepath = json.getString("video_filepath"),
-            videoDuration = (json.optString("duration").toIntOrNull() ?: 0).toString(),
-            imageFilePathReal = json.getString("image_filepath_real"),
+            duration = (json.optString("duration").toIntOrNull() ?: 0).toString(),
+            imageFilePath = json.getString("image_filepath"),
 
         )
     }

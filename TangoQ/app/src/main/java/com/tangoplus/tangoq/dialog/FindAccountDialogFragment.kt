@@ -34,12 +34,11 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserId
-import com.tangoplus.tangoq.`object`.NetworkUser.verifyBeforeResetPw
+import com.tangoplus.tangoq.`object`.NetworkUser.findUserId
+//import com.tangoplus.tangoq.`object`.NetworkUser.verifyBeforeResetPw
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
-import kotlin.random.Random
 
 
 class FindAccountDialogFragment : DialogFragment() {
@@ -55,6 +54,17 @@ class FindAccountDialogFragment : DialogFragment() {
         binding = FragmentFindAccountDialogBinding.inflate(inflater)
         return binding.root
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        removeAuthInstance()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        removeAuthInstance()
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("SetTextI18n")
@@ -80,7 +90,11 @@ class FindAccountDialogFragment : DialogFragment() {
                 binding.etFADAuthNumber.isEnabled = false
                 binding.btnFADAuthSend.isEnabled = false
                 binding.btnFADConfirm.text = "인증 하기"
+                binding.tvFADTelecom.text = ""
+                binding.etFADMobile.setText("")
+                binding.etFADId.setText("")
 
+                removeAuthInstance() // 파이어베이스 인증 상태 제거
                 when(tab?.position) {
                     0 -> {
                         binding.clFADMobile.visibility = View.VISIBLE
@@ -193,13 +207,13 @@ class FindAccountDialogFragment : DialogFragment() {
                     signInWithPhoneAuthCredential(credential)
                 }
                 "아이디 찾기" -> {
-                    // TODO ------! 핸드폰 번호를 보내면 아이디를 알려주는 api 필요 !------
                     binding.clFADMobile.visibility = View.GONE
                     val jo = JSONObject().apply {
                         put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
+                        put("mobile_check", if (svm.mobileAuthCondition.value == true) "checked" else "nonChecked")
                     }
                     Log.v("찾기>핸드폰번호", "$jo")
-                    getUserId(getString(R.string.API_user), jo.toString()) { resultString ->
+                    findUserId(getString(R.string.API_user), jo.toString()) { resultString ->
                         if (resultString == "") {
                             requireActivity().runOnUiThread {
                                 val dialog = AlertDialog.Builder(requireContext())
@@ -212,7 +226,9 @@ class FindAccountDialogFragment : DialogFragment() {
                             }
                         } else {
                             requireActivity().runOnUiThread{
-                                binding.clFADId.visibility = View.VISIBLE
+                                binding.clFADMobile.visibility = View.GONE
+                                binding.clFADId.visibility = View.GONE
+                                binding.clFADIdResult.visibility = View.VISIBLE
                                 val length = resultString.length
                                 val targetCount = length / 2
                                 val indices = resultString.indices.toMutableList()
@@ -235,21 +251,21 @@ class FindAccountDialogFragment : DialogFragment() {
                     signInWithPhoneAuthCredential(credential)
                 }
                 "비밀번호 재설정" -> {
-                    val jo = JSONObject().apply {
-                        put("user_id", binding.etFADId.text)
-                        put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
-                    }
-                    verifyBeforeResetPw(getString(R.string.API_user), jo.toString()) { result ->
-                        when (result) {
-                            true -> {
-
-                            }
-                            false -> {
-
-                            }
-                        }
-
-                    }
+//                    val jo = JSONObject().apply {
+//                        put("user_id", binding.etFADId.text)
+//                        put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
+//                    }
+//                    verifyBeforeResetPw(getString(R.string.API_user), jo.toString()) { result ->
+//                        when (result) {
+//                            true -> {
+//
+//                            }
+//                            false -> {
+//
+//                            }
+//                        }
+//
+//                    }
 
                     // ------! 비밀번호를 찾기를 하면 아이디와 핸드폰 번호를 맞혀서 일치한다는 번호만 있으면 재설정하는 update하기.
 //                    val email = when (binding.FADSpinner.selectedItemPosition) {
@@ -270,6 +286,9 @@ class FindAccountDialogFragment : DialogFragment() {
 //                            }
 //                        }
 //                    }
+                }
+                "초기 화면으로" -> {
+                    dismiss()
                 }
             }
         }
@@ -357,7 +376,17 @@ class FindAccountDialogFragment : DialogFragment() {
         }
         return phoneEdit
     }
-
+    private fun removeAuthInstance() {
+        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseAuth.getInstance().signOut()
+                val user = FirebaseAuth.getInstance().currentUser
+                Log.v("user", "$user")
+                user?.delete()
+            }
+        }
+        auth.signOut()
+    }
     override fun onResume() {
         super.onResume()
         // full Screen code

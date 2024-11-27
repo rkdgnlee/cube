@@ -96,9 +96,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         CoroutineScope(Dispatchers.IO).launch {
                             if (avm.leftMeasurement.value != null) {
                                 if (position == 0) {
-                                    setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, 0 , binding.ssivMTDLeft)
+                                    setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, 0 , binding.ssivMTDLeft, "trend")
                                 } else {
-                                    setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, position + 1 , binding.ssivMTDLeft)
+                                    setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, position + 1 , binding.ssivMTDLeft, "trend")
                                 }
                             }
                         }
@@ -113,9 +113,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         CoroutineScope(Dispatchers.IO).launch {
                             Log.v("시퀀스들", "position: ${position}, rightMeasure: ${avm.rightMeasurement.value}")
                             if (position == 0) {
-                                setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, 0 , binding.ssivMTDRight)
+                                setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, 0 , binding.ssivMTDRight, "")
                             } else {
-                                setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, position + 1 , binding.ssivMTDRight)
+                                setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, position + 1 , binding.ssivMTDRight, "trend")
                             }
                         }
                     }
@@ -137,7 +137,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 Log.v("왼쪽analysis", "${avm.leftMeasurement.value}")
                                 setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value,0, binding.ssivMTDLeft)
+                                    setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value,0, binding.ssivMTDLeft, "trend")
                                     withContext(Dispatchers.Main) {
                                         binding.spnrMTDSeqLeft.setSelection(0)
                                     }
@@ -159,7 +159,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                             setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                             CoroutineScope(Dispatchers.IO).launch {
-                                setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value,0, binding.ssivMTDRight)
+                                setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value,0, binding.ssivMTDRight, "trend")
                                 withContext(Dispatchers.Main) {
                                     binding.spnrMTDSeqRight.setSelection(0)
                                 }

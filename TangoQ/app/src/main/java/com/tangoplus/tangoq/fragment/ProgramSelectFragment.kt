@@ -65,10 +65,13 @@ class ProgramSelectFragment : Fragment() {
         "어깨" to 2,
         "팔꿉" to 3,
         "손목" to 4,
-        "척추" to 5,
-        "골반" to 6,
-        "무릎" to 7,
-        "발목" to 8,
+        "몸통전면(복부)" to 5,
+        "몸통후면(척추)" to 6,
+        "몸통 코어" to 7,
+        "엉덩" to 8,
+        "고관절" to 8,
+        "무릎" to 9,
+        "발목" to 10,
     )
     // category의 id값들을 따로 adapter에서 매개변수로 넣어서, drawable id값 매칭.
 

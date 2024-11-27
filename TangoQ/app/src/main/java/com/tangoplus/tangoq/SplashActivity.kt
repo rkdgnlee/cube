@@ -38,6 +38,7 @@ import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.clearEncryptedJwtToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
+import com.tangoplus.tangoq.`object`.NetworkUser.rememberMeByRefreshToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -232,22 +233,20 @@ class SplashActivity : AppCompatActivity() {
 //                            val jsonObj = getEncryptedJwtToken(this@SplashActivity)
 //                            Log.v("자체로그인Splash", "$jsonObj")
 //                            lifecycleScope.launch {
-//                                getUserIdentifyJson(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
+//                                rememberMeByRefreshToken(getString(R.string.API_user), this@SplashActivity ) { jo ->
 //                                    if (jo != null) {
 //                                        storeUserInSingleton(this@SplashActivity, jo)
 //                                        Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
 //                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
 //                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-//
 //                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-//
 //                                            navigateDeepLink()
 //                                        }
 //                                    }
 //                                }
 //                            }
 //                        } catch (e: AEADBadTagException) {
-//                            Log.e("decryptedError", e.stackTraceToString())
+//                            Log.e("decryptedError", "${e.message}")
 //                            clearEncryptedJwtToken(this@SplashActivity)
 //                            introInit()
 //                        }

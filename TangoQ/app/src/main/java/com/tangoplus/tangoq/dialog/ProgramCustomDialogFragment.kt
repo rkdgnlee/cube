@@ -202,7 +202,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             exerciseIds.add(progress.exerciseId.toString())
                             uvpIds.add(progress.uvpSn.toString())
                             videoUrls.add(program.exercises?.get(i)?.videoFilepath.toString())
-                            totalDuration += program.exercises?.get(i)?.videoDuration?.toInt() ?: 0
+                            totalDuration += program.exercises?.get(i)?.duration?.toInt() ?: 0
                         }
 
                         val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
@@ -233,7 +233,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 val exerciseValue = program.exercises
                 if (program != ProgramVO() && exerciseValue != null) {
                     for (i in 0 until exerciseValue.size) {
-                        val exerciseTime = exerciseValue[i].videoDuration?.toInt()
+                        val exerciseTime = exerciseValue[i].duration?.toInt()
                         if (exerciseTime != null) {
                             times += exerciseTime
                         }
@@ -328,7 +328,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         binding.tvPCDCount.text = "총 ${currentProgram.programCount} 개"
                         setButtonFlavor()
                     } else {
-                        Log.e("Error", "Some required data is null or empty")
+                        Log.e("Error", "Some required data is null or empty, program: $currentProgram, seq: $currentSeq, size: ${currentProgresses.size}")
                         // 에러 처리 로직 추가
                     }
                     binding.sflPCD.stopShimmer()

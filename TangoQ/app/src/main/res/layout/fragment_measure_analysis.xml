@@ -44,7 +44,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clMA"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -205,6 +205,18 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
+            <TextView
+                android:id="@+id/tvMANotice1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="주요 부위"
+                android:textColor="@color/subColor800"
+                android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView31" />
+
             <LinearLayout
                 android:id="@+id/llMARV"
                 android:layout_width="0dp"
@@ -232,6 +244,18 @@
                     android:layout_weight="1"
                     android:nestedScrollingEnabled="false" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvMANotice2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="부위 데이터"
+                android:textColor="@color/subColor800"
+                android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llMARV" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -263,30 +287,6 @@
                     android:nestedScrollingEnabled="false" />
 
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvMANotice1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="주요 부위"
-                android:textColor="@color/subColor800"
-                android:textSize="20dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView31" />
-
-            <TextView
-                android:id="@+id/tvMANotice2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="부위 데이터"
-                android:textColor="@color/subColor800"
-                android:textSize="20dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llMARV" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

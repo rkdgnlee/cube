@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.tangoplus.tangoq.R
 
@@ -159,7 +160,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
 
         else { // video 일 때
-            val offsetX = ((width - imageWidth * scaleFactorX) / 2 )
+            val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
 
             landmarks.forEach { landmark ->

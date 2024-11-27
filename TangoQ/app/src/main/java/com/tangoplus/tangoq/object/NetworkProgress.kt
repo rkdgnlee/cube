@@ -337,7 +337,7 @@ object NetworkProgress {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                Log.v("Server>week>Progress", "${responseBody}")
+                Log.v("Server>Daily>Progress", "${responseBody}")
                 try {
                     val ja = JSONObject(responseBody.toString()).optJSONArray("data")
                     val progresses = mutableListOf<ProgressHistoryVO>()

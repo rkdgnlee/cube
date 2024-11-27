@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.data
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
@@ -23,16 +24,15 @@ data class ExerciseVO(
     var exerciseInitialPosture: String? = "",
     var exerciseMethod: String? = "",
     var exerciseCaution: String? = "",
-    var videoActualName: String? = "",
     var videoFilepath: String? = "",
-    var videoDuration: String? = "",
-    var imageFilePathReal: String? = "",
-
+    var duration: String? = "",
+    var imageFilePath: String? = "",
 
     var select: Boolean = false
 ) : Parcelable {
 
     //담는거
+    @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.Q)
     constructor(parcel: Parcel) : this(
         parcel.readString(),
@@ -40,21 +40,22 @@ data class ExerciseVO(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
+
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
 
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
         parcel.readBoolean()
     )
 
@@ -77,12 +78,9 @@ data class ExerciseVO(
         dest.writeString(exerciseInitialPosture)
         dest.writeString(exerciseMethod)
         dest.writeString(exerciseCaution)
-        dest.writeString(videoActualName)
         dest.writeString(videoFilepath)
-        dest.writeString(videoDuration)
-
-        dest.writeString(imageFilePathReal)
-
+        dest.writeString(duration)
+        dest.writeString(imageFilePath)
         dest.writeBoolean(select)
 
     }

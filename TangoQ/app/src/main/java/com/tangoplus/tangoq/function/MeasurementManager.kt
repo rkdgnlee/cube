@@ -144,15 +144,15 @@ object MeasurementManager {
             0 to mapOf("front_vertical_angle_knee_ankle_left" to Pair(85f, 95f),
                 "front_horizontal_angle_ankle" to Pair(-0.5f, 0.5f),
                 "front_horizontal_distance_ankle_left" to Pair(-0.5f, 0.5f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(5f, 15f),
-                "back_horizontal_distance_ankle_left" to Pair(-0.5f, 0.5f))
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(-0.5f, 0.5f),
+                "back_horizontal_distance_heel_left" to Pair(5f, 15f))
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to Pair(85f, 95f),
                 "front_horizontal_angle_ankle" to Pair(-0.5f, 0.5f),
                 "front_horizontal_distance_ankle_right" to Pair(-0.5f, 0.5f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(5f, 15f),
-                "back_horizontal_distance_ankle_right" to Pair(-0.5f, 0.5f))
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(-0.5f, 0.5f),
+                "back_horizontal_distance_heel_right" to Pair(5f, 15f))
         )
     )
 
@@ -254,14 +254,14 @@ object MeasurementManager {
                 "front_horizontal_angle_ankle" to "양 발목 기울기",
                 "front_horizontal_distance_ankle_left" to "중심에서 좌측 발목 거리"),
             5 to mapOf("back_horizontal_distance_sub_ankle" to "양 발목 높이 차",
-                "back_horizontal_distance_ankle_left" to "중심에서 좌측 발목 거리")
+                "back_horizontal_distance_heel_left" to "중심에서 좌측 발목 거리")
         ),
         mapOf( // 5
             0 to mapOf("front_vertical_angle_knee_ankle_right" to "우측 무릎과 발목 기울기",
                 "front_horizontal_angle_ankle" to "양 발목 기울기",
                 "front_horizontal_distance_ankle_right" to "중심에서 우측 발목 거리"),
             5 to mapOf("back_horizontal_distance_sub_ankle" to "양 발목 높이 차",
-                "back_horizontal_distance_ankle_right" to "중심에서 우측 발목 거리")
+                "back_horizontal_distance_heel_right" to "중심에서 우측 발목 거리")
         )
     ) // total 76개
 
@@ -271,7 +271,7 @@ object MeasurementManager {
     val matchedIndexs = listOf(
         "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목"
     )
-    // 측정 완료 후 measure_info의 painpart만들기
+    // 측정 완료 후 measure_info의 painpart만들기 - motherJa에는 dynamic포함된 값있어야함
     fun getPairParts(motherJa: JSONArray) : MutableList<Pair<String, status>> {
         val thresholdPercent = 1.15f
 
@@ -323,7 +323,7 @@ object MeasurementManager {
 
     fun calculateOverall(parts: MutableList<Pair<String, status>>) : Int {
         val scores = mapOf(
-            status.DANGER to 15,
+            status.DANGER to 30,
             status.WARNING to 65,
             status.NORMAL to 100
         )
@@ -480,15 +480,16 @@ object MeasurementManager {
             "어깨" to 2,
             "팔꿉" to 3,
             "손목" to 4,
-            "골반" to 5,
-            "무릎" to 6,
-            "발목" to 7
+            "골반" to 8,
+            "무릎" to 9,
+            "발목" to 10
         )
 
-        val indices = mutableListOf<Int>()
-        val values = mutableListOf<Float>()
+        // 필터링된 결과를 저장할 맵
+        val filteredParts = mutableMapOf<String, Float>()
 
         dangerParts?.forEach { (part, value) ->
+            // 좌측/우측 구분 제거
             val basicPart = when {
                 part.contains("목관절") -> "목관절"
                 part.contains("어깨") -> "어깨"
@@ -500,17 +501,26 @@ object MeasurementManager {
                 else -> ""
             }
 
-            // 매핑된 인덱스가 있으면 추가
-            partIndices[basicPart]?.let { index ->
+            // 같은 부위의 값 중 큰 값을 유지
+            if (basicPart.isNotEmpty()) {
+                filteredParts[basicPart] = maxOf(filteredParts[basicPart] ?: Float.MIN_VALUE, value)
+            }
+        }
+
+        val indices = mutableListOf<Int>()
+        val values = mutableListOf<Float>()
+
+        // 필터링된 부위를 JSON 배열로 변환
+        filteredParts.forEach { (part, value) ->
+            partIndices[part]?.let { index ->
                 indices.add(index)
                 values.add(value)
             }
         }
-
         return Pair(JSONArray(indices), JSONArray(values))
     }
 
-    suspend fun setImage(fragment: Fragment, measureVO: MeasureVO?, seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
+    suspend fun setImage(fragment: Fragment, measureVO: MeasureVO?, seq: Int, ssiv: SubsamplingScaleImageView, case: String): Boolean = suspendCancellableCoroutine { continuation ->
         try {
             val jsonData = measureVO?.measureResult?.optJSONObject(seq)
             val coordinates = extractImageCoordinates(jsonData)
@@ -553,13 +563,22 @@ object MeasurementManager {
                                     seq
                                 )
                                 isSet = true
-                                when (seq) {
-                                    0, 2, 3, 4 -> ssiv.setImage(
-                                        ImageSource.bitmap(
-                                            cropToPortraitRatio(combinedBitmap)
-                                        ))
-                                    else -> ssiv.setImage(ImageSource.bitmap(combinedBitmap))
+                                if (case == "mainPart") {
+                                    ssiv.setImage(ImageSource.bitmap(combinedBitmap))
+                                } else if (case == "trend") {
+                                    ssiv.setImage(ImageSource.bitmap(
+                                        cropToPortraitRatio(combinedBitmap)
+                                    ))
+                                } else {
+                                    when (seq) {
+                                        0, 2, 3, 4 -> ssiv.setImage(
+                                            ImageSource.bitmap(
+                                                cropToPortraitRatio(combinedBitmap)
+                                            ))
+                                        else -> ssiv.setImage(ImageSource.bitmap(combinedBitmap))
+                                    }
                                 }
+
                                 continuation.resume(true)
                             }
                         }

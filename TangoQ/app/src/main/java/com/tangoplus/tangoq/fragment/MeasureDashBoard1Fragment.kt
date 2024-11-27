@@ -160,7 +160,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             val measureSize = measures?.size
             if (measures?.size != 7 && measureSize != null){
                 for (i in 0 until (7 -measureSize)) {
-                    lcDataList.add(Pair("", 50))
+                    lcDataList.add(Pair("", 20))
                 }
             }
             if (!measures.isNullOrEmpty()) {
@@ -179,7 +179,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 }
             } else {
                 for (i in 6 downTo 0) {
-                    lcDataList.add(Pair("", 50))
+                    lcDataList.add(Pair("", 20))
                 }
             }
 
@@ -213,7 +213,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 axisLineWidth = 1.0f
             }
             lcYAxisLeft.apply {
-                axisMinimum = 45f
+                axisMinimum = 10f
                 axisMaximum = 100f
                 setDrawGridLines(false)
                 setDrawAxisLine(false)

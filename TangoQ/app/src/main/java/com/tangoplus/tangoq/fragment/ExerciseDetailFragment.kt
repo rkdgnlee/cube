@@ -159,7 +159,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 when (position) {
                     0 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.exerciseId }.toMutableList())
                     1 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.relatedSymptom }.toMutableList())
-                    2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.videoDuration }.toMutableList())
+                    2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.duration }.toMutableList())
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -193,7 +193,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             when (filterIndex) {
                 0 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.exerciseId }.toMutableList())
                 1 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.relatedSymptom }.toMutableList())
-                2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.videoDuration }.toMutableList())
+                2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.duration }.toMutableList())
             }
         } catch (e: IndexOutOfBoundsException) {
             Log.e("EDetailIndex", "${e.message}")
@@ -214,7 +214,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         when (filterIndex) {
             0 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.exerciseId }.toMutableList())
             1 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.relatedSymptom }.toMutableList())
-            2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.videoDuration }.toMutableList())
+            2 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.duration }.toMutableList())
         }
     }
 }

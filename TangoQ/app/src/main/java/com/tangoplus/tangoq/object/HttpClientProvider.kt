@@ -46,7 +46,6 @@ object HttpClientProvider {
                             return@addInterceptor chain.proceed(request)
                         }
                     }
-
                     response
                 }
                 .build()
@@ -73,8 +72,20 @@ object HttpClientProvider {
                 Log.e("RefreshToken", "Failed to refresh token: ${response.code}")
                 null
             }
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("RefreshTokenError", "refresh: ${e.message}")
+            null
+        } catch (e: IllegalArgumentException) {
+            Log.e("RefreshTokenError", "refresh: ${e.message}")
+            null
+        } catch (e: IllegalStateException) {
+            Log.e("RefreshTokenError", "refresh: ${e.message}")
+            null
+        }catch (e: NullPointerException) {
+            Log.e("RefreshTokenError", "refresh: ${e.message}")
+            null
         } catch (e: Exception) {
-            Log.e("RefreshTokenError", "Error refreshing token: ${e.message}")
+            Log.e("RefreshTokenError", "refresh: ${e.message}")
             null
         }
     }

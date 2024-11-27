@@ -670,7 +670,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-//                                resultString.append("양 어깨와 골반 중심의 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 굽은 등 및 거북목 스트레칭을 추천합니다.")
+                                resultString.append("양 어깨와 골반 중심의 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 굽은 등 및 거북목 스트레칭을 추천합니다.")
                             }
                         }
                     }
@@ -912,12 +912,12 @@ class MainPartDialogFragment : DialogFragment() {
 
                             }
                         }
-                        val ankleData2 = units.find { it.columnName == "back_horizontal_distance_ankle_left"}
+                        val ankleData2 = units.find { it.columnName == "back_horizontal_distance_heel_left"}
                         ankleData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
                                 angleData2 = it.rawData
 
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}cm 로 거리가 정상범위에서 벗어나 있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm 로 거리가 정상범위에서 벗어나 있습니다. ")
                             }
                         }
                     }
@@ -971,12 +971,12 @@ class MainPartDialogFragment : DialogFragment() {
 
                             }
                         }
-                        val ankleData2 = units.find { it.columnName == "back_horizontal_distance_ankle_right"}
+                        val ankleData2 = units.find { it.columnName == "back_horizontal_distance_heel_right"}
                         ankleData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
                                 angleData2 = it.rawData
 
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}cm 로 거리가 정상범위에서 벗어나 있습니다.")
+                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm 로 거리가 정상범위에서 벗어나 있습니다.")
                             }
                         }
                     }

@@ -82,7 +82,7 @@
             android:layout_marginTop="6dp"
             android:gravity="bottom|top"
             android:orientation="vertical"
-            android:paddingTop="24dp">
+            android:paddingTop="4dp">
 
 
             <LinearLayout
@@ -90,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
                 android:orientation="horizontal">
 
@@ -122,7 +122,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
                 <EditText
@@ -193,7 +193,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/bckgnd_1_sub200_12"
                 android:ems="10"
                 android:hint="비밀번호"
@@ -260,7 +260,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/effect_ibtn_12dp"

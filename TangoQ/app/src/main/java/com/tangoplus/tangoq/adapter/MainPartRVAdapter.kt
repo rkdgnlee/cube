@@ -24,7 +24,6 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.databinding.RvMainPartItemBinding
-import com.tangoplus.tangoq.dialog.MainPartAnalysisDialogFragment
 import com.tangoplus.tangoq.dialog.MainPartPoseDialogFragment
 import java.security.MessageDigest
 
@@ -70,15 +69,10 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
                 .into(holder.ivMPI)
 
 
-            holder.ivMPI.setOnClickListener{
+            holder.clMPI.setOnClickListener{
+                (avm as AnalysisViewModel).selectedSeq = currentItem.seq
                 val dialog = MainPartPoseDialogFragment.newInstance(currentItem.seq)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartPoseDialogFragment")
-            }
-
-            holder.clMPI.setOnClickListener {
-                (avm as AnalysisViewModel).selectedSeq = currentItem.seq
-                val dialog = MainPartAnalysisDialogFragment()
-                dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartAnalysisDialogFragment")
             }
 
             holder.tvMPISummary.text = currentItem.summary

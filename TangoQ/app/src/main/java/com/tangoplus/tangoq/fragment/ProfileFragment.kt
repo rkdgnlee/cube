@@ -272,20 +272,25 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 binding.tvPfName.text = userJson.optString("user_name")
 
                 val height = when (userJson.optDouble("height")) {
-                    in 0.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
+                    in 1.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
                     else -> { "미설정" }
                 }
                 binding.tvPHeight.text = height
 
                 val weight = when(userJson.optDouble("weight")) {
-                    in 0.0 .. 150.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
+                    in 1.0 .. 150.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
                     else -> { "미설정" }
                 }
                 binding.tvPWeight.text = weight
 
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = try {
-                    (c.get(Calendar.YEAR) - userJson.optString("birthday").substring(0, 4).toInt()).toString() + "세"
+                    if (userJson.optString("birthday") != "0000-00-00") {
+                        (c.get(Calendar.YEAR) - userJson.optString("birthday").substring(0, 4).toInt()).toString() + "세"
+                    } else {
+                        "미설정"
+                    }
+
                 } catch (e: IndexOutOfBoundsException) {
                     Log.e("EDetailIndex", "${e.message}")
                     "미설정"

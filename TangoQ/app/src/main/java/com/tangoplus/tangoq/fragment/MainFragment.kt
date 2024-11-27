@@ -124,8 +124,12 @@ class MainFragment : Fragment() {
 
                 // ------# 초기 measure 설정 #------
                 if (!measures.isNullOrEmpty()) {
-                    mvm.selectedMeasureDate.value = measures?.get(0)?.regDate
-                    mvm.selectMeasureDate.value = measures?.get(0)?.regDate
+                    if (mvm.selectedMeasureDate.value == null) {
+                        mvm.selectedMeasureDate.value = measures?.get(0)?.regDate
+                    }
+                    if (mvm.selectMeasureDate.value == null) {
+                        mvm.selectMeasureDate.value = measures?.get(0)?.regDate
+                    }
 
                     // ------# 측정결과 있을 때 도움말 툴팁 #------
                     if (isFirstRun("Tooltip_isFirstRun_existed")) {
@@ -210,7 +214,7 @@ class MainFragment : Fragment() {
     // 블러 유무 판단하기
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
-        Log.v("measure있는지", "${measures}")
+        Log.v("measure있는지", "${measures?.size}")
 
         if (measures.isNullOrEmpty()) {
             // ------# measure에 뭐라도 들어있으면 위 코드 #-------
@@ -300,7 +304,7 @@ class MainFragment : Fragment() {
                                 val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
                                 val programSn = latestProgress.optInt("exercise_program_sn")  // 여기서 exception으로 나가짐.
                                 var currentPage = 0
-                                var adapter : ExerciseRVAdapter
+                                var adapter =  ExerciseRVAdapter(this@MainFragment, mutableListOf(), mutableListOf(), null, null, "history")
 
                                 // -------# 최근 진행 프로그램 가져오기 #------
                                 withContext(Dispatchers.Main) {
@@ -350,8 +354,8 @@ class MainFragment : Fragment() {
                                                 if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises, null, null, null, "history")
                                             }
                                         }
+                                        // ------# 시청한 정보도 없고 새로 받아와야 함 #------
                                     } else {
-                                        Log.v("추천들", "${mvm.selectedMeasure?.recommendations}")
                                         Log.v("추천들", "${mvm.selectedMeasure?.recommendations?.map { it.programSn }}")
                                         val randomProgramSn = mvm.selectedMeasure?.recommendations?.map { it.programSn }?.random().toString()
                                         uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), randomProgramSn)
@@ -362,9 +366,7 @@ class MainFragment : Fragment() {
                                                 null, null, null, "history")
                                         }
                                     }
-                                    adapter = ExerciseRVAdapter(this@MainFragment, mutableListOf(), mutableListOf(), null, null, "history")
-                                }
-                                CoroutineScope(Dispatchers.Main).launch {
+
                                     // -------# 최근 진행 프로그램 뷰페이저 #------
                                     binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
                                     binding.vpM.apply {
@@ -427,21 +429,21 @@ class MainFragment : Fragment() {
 
 
                                     // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
-                                    context.let { context ->
-                                        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(),
-                                            ContextCompat.getColor(requireContext(), R.color.mainColor),
-                                            ContextCompat.getColor(requireContext(), R.color.mainRippleColor)).apply {
-                                            duration = 1000
-                                            repeatCount = ValueAnimator.INFINITE
-                                            repeatMode = ValueAnimator.REVERSE
-
-                                            addUpdateListener { animator ->
-                                                val color = animator.animatedValue as Int
-                                                binding.btnMProgram.backgroundTintList = ColorStateList.valueOf(color)
-                                            }
-                                        }
-                                        colorAnimation.start()
-                                    }
+//                                    context.let { context ->
+//                                        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(),
+//                                            ContextCompat.getColor(requireContext(), R.color.mainColor),
+//                                            ContextCompat.getColor(requireContext(), R.color.mainRippleColor)).apply {
+//                                            duration = 1000
+//                                            repeatCount = ValueAnimator.INFINITE
+//                                            repeatMode = ValueAnimator.REVERSE
+//
+//                                            addUpdateListener { animator ->
+//                                                val color = animator.animatedValue as Int
+//                                                binding.btnMProgram.backgroundTintList = ColorStateList.valueOf(color)
+//                                            }
+//                                        }
+//                                        colorAnimation.start()
+//                                    }
 
                                     binding.tvMProgram.setOnClickListener {
                                         try {
@@ -472,6 +474,9 @@ class MainFragment : Fragment() {
                                             Log.e("MainException", "${e.message}")
                                         }
                                     }
+                                }
+                                CoroutineScope(Dispatchers.Main).launch {
+
                                 }
                             }  catch (e: IndexOutOfBoundsException) {
                                 Handler(Looper.getMainLooper()).postDelayed({
@@ -575,7 +580,7 @@ class MainFragment : Fragment() {
 
                 TooltipManager.createGuide(
                     context = requireContext(),
-                    text = " 측정을 완료해서 운동 프로그램을 추천받으세요",
+                    text = "7가지 자세 측정을 완료하고 운동 프로그램을 추천받으세요",
                     anchor = binding.btnMProgram,
                     gravity = Gravity.BOTTOM,
                     dismiss = {

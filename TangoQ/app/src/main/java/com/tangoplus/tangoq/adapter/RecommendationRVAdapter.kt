@@ -42,7 +42,10 @@ class RecommendationRVAdapter(private val fragment: Fragment, private val data: 
                 dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             }
 
-            val drawableResId = fragment.resources.getIdentifier("drawable_joint_$typeItem", "drawable", fragment.requireContext().packageName)
+            // ------# 복부, 등,척추, 엉덩 골반으로 통합 (임시) #------
+            val partId = if (typeItem in listOf(5, 6, 7, 8)) 8 else typeItem
+            Log.v("partId", "${currentItem.title}: $partId")
+            val drawableResId = fragment.resources.getIdentifier("drawable_joint_$partId", "drawable", fragment.requireContext().packageName)
             holder.ivPIThumbnail.setImageResource(drawableResId)
 
         }

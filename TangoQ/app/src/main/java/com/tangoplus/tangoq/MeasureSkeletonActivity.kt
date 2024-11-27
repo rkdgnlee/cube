@@ -275,6 +275,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                                                     synchronized(mvm) {
                                                         mvm.dynamic = mvm.convertToMeasureDynamic(modifiedObject)
+
+                                                        mvm.toSendDynamicJo = modifiedObject
+                                                        Log.v("넣을dynamicJo", "${mvm.toSendDynamicJo}")
                                                     }
                                                     Log.v("mvmDynamic", "${mvm.dynamic}")
                                                 }
@@ -516,13 +519,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val elapsedTime = "%.3f".format(seconds)
 
                     // ------# info 넣기 #------
-                    for (i in 0 until 7) {
-                        if (i != 1) mvm.infoResultJa.put(JSONObject(mvm.statics[i].toJson())) else
-                            mvm.infoResultJa.put(mvm.dynamicJoUnit)
+                    for (i in 0 until  mvm.statics.size) {
+                        if (i == 1) { mvm.infoResultJa.put(mvm.toSendDynamicJo) }
+                        mvm.infoResultJa.put(JSONObject(mvm.statics[i].toJson()))
                     }
-                    Log.v("infoResultJa", "${mvm.infoResultJa}")
-                    val parts = getPairParts(mvm.infoResultJa)
+                    Log.v("infoResultJa", "${mvm.infoResultJa.length()}")
 
+                    val parts = getPairParts(mvm.infoResultJa)
+                    Log.v("parts결과", "${parts}")
 
                     val measureInfo = MeasureInfo(
                         user_uuid = userUUID,
@@ -550,14 +554,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         "우측 발목" to { value: String -> measureInfo.risk_ankle_right = value }
                     )
                     val statusMapping = mapOf(
-                        MeasurementManager.status.DANGER to "1",
-                        MeasurementManager.status.WARNING to "2",
-                        MeasurementManager.status.NORMAL to null // NORMAL 상태는 값 변경하지 않음
+                        MeasurementManager.status.DANGER to "2",
+                        MeasurementManager.status.WARNING to "1",
+                        MeasurementManager.status.NORMAL to "0"
                     )
                     for (part in parts) {
                         val statusValue = statusMapping[part.second]
                         if (statusValue != null) {
                             riskMapping[part.first]?.invoke(statusValue)
+                            Log.v("파트status받기", "${part}, ${statusValue}")
                         }
                     }
                     Log.v("measure빈칼럼여부", "$measureInfo")
@@ -643,13 +648,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             file.asRequestBody("video/mp4".toMediaTypeOrNull())
                         )
                     }
-
-                    Log.v("파일제외바디", "motherJo: $motherJo")
+                    val joKeys = motherJo.keys()
+                    for (key in joKeys) {
+                        Log.v("파일제외바디", "motherJo: ${key}")
+                    }
 
                     var requestBody = requestBodyBuilder.build()
                     val partCount = requestBodyBuilder.build().parts.size
                     Log.v("파트개수", "총 파트 개수: $partCount")
-
+                    Log.v("sn들집계", "info: ${mobileInfoSn},static:  ${mobileStaticSns},dynamic: ${mobileDynamicSn}")
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             sendMeasureData(this@MeasureSkeletonActivity, getString(R.string.API_results), requestBody, mobileInfoSn, mobileStaticSns, mobileDynamicSn) { jo ->
@@ -728,7 +735,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                                 )
                                             }
                                             requestBody = retryStaticRequestBodyBuilder.build()
-
+                                            Log.v("sn들집계2", "info: ${mobileInfoSn},static:  ${mobileStaticSns},dynamic: ${mobileDynamicSn}")
                                             val uploadJob = async {
                                                 resendMeasureFileWithRetry(
                                                     context = this@MeasureSkeletonActivity,
@@ -1225,18 +1232,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 val jo = JSONObject().apply {
                     put("index", index)
                     put("isActive", true)
-                    if (step == 1) {
-                        put("sx", calculateScreenX(poseLandmark.x(), false ))
-                        put("sy", calculateScreenY(poseLandmark.y(), false ))
-                    } else {
-                        put("sx", calculateScreenX(poseLandmark.x(), true ))
-                        put("sy", calculateScreenY(poseLandmark.y(), true ))
-                    }
+                    put("sx", calculateScreenX(poseLandmark.x()))
+                    put("sy", calculateScreenY(poseLandmark.y()))
                     put("wx", poseLandmark.x())
                     put("wy", poseLandmark.y())
                     put("wz", poseLandmark.z())
                 }
                 poseLandmarks.put(jo)
+                Log.v("poseLandmark값", "${poseLandmarks[0]}")
             }
             mvm.apply {
                 earData = listOf(
@@ -1972,7 +1975,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 bitmap.recycle()
 
                 mvm.staticFiles.add(file)
-            } else {
+            }  else {
+                // 비디오일 경우 그대로 캐시에 저장
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     file.outputStream().use { output ->
                         input.copyTo(output)
@@ -2044,32 +2048,18 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         setOnClickListener(OnSingleClickListener(listener))
     }
 
-    private fun calculateScreenX(xx: Float, isImage: Boolean): Int {
-        return if (isImage) {
-            val scaleFactor = binding.overlay.width * 1f / 720
-            val offsetX = (binding.overlay.width - 720 * scaleFactor) / 2
-            val x = xx * binding.overlay.width / scaleFactor + offsetX // TODO 후면 카메라 기준임 전면일 경우  1 - 제거
-            x.roundToInt()
-        } else {
-            val scaleFactor = binding.overlay.width * 1f / 1280
-            val offsetX = ((binding.overlay.width - 1280 * scaleFactor) / 2 )  // TODO 영상의 liveStream에는 이상하게 offset이 필요함
-            val x = (1 - xx) * binding.overlay.width / scaleFactor + offsetX
-            x.roundToInt()
-        }
+    private fun calculateScreenX(xx: Float): Int {
+        val scaleFactor = binding.overlay.width * 1f / 720
+        val offsetX = ((binding.overlay.width - 720 * scaleFactor) / 2 )  // TODO 영상의 liveStream에는 이상하게 offset이 필요함
+        val x = (1 - xx) * binding.overlay.width / scaleFactor + offsetX
+        return x.roundToInt()
     }
 
-    private fun calculateScreenY(yy: Float, isImage: Boolean): Int {
-        return if (isImage) {
-            val scaleFactor = binding.overlay.height * 1f / 1280
-            val offsetY = (binding.overlay.height - 1280 * scaleFactor) / 2
-            val y = yy * binding.overlay.height / scaleFactor + offsetY
-            y.roundToInt()
-        } else {
-            val scaleFactor = binding.overlay.height * 1f / 720
-            val offsetY = (binding.overlay.height - 720 * scaleFactor) / 2
-            val y = yy * binding.overlay.height / scaleFactor + offsetY
-            y.roundToInt()
-        }
+    private fun calculateScreenY(yy: Float): Int {
+        val scaleFactor = binding.overlay.height * 1f / 1280
+        val offsetY = (binding.overlay.height - 1280 * scaleFactor) / 2
+        val y = yy * binding.overlay.height / scaleFactor + offsetY
+        return y.roundToInt()
     }
 
     suspend fun findLowestYFrame(coordinates: List<Pair<Float, Float>>): Int = withContext(Dispatchers.Default) {

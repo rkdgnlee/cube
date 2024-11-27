@@ -37,7 +37,7 @@ class MeasureViewModel : ViewModel() {
     var dynamicJoUnit = JSONObject()
     // room에 저장할 dynamic이 담기는 곳 (1개임)
     var dynamic : MeasureDynamic? = null
-
+    var toSendDynamicJo :  JSONObject? = null
     val staticFiles = mutableListOf<File>()
     var dynamicFile : File? = null
 

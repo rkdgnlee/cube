@@ -36,19 +36,19 @@ object NetworkProgram {
                 try {
                     val jsonInfo = responseBody?.let { JSONObject(it) }
                     val exercises = mutableListOf<ExerciseVO>()
-//                    var exerciseTimes = 0
+                    var exerciseTimes = 0
                     val exerciseSize = jsonInfo?.optString("exercise_ids")?.split(",")?.count()
                     if (exerciseSize != null) {
                         for (i in 0 until exerciseSize) {
                             val exerciseUnit = jsonToExerciseVO((responseBody.let { JSONObject(it) }.getJSONObject("$i")))
                             exercises.add(exerciseUnit)
-//                        exerciseTimes += exerciseUnit.videoDuration?.toInt()
+                        exerciseTimes += exerciseUnit.duration?.toInt() ?: 0
                         }
 //                    Log.v("프로그램Exercises", "exerciseSize: $exerciseSize, exerciseTime: ${exerciseTimes}")
                         val programVO = ProgramVO(
                             programSn = sn.toInt(),
                             programName = jsonInfo.optString("exercise_program_title"),
-                            programTime = JSONObject(responseBody.toString()).optInt("total_video_time"),
+                            programTime = exerciseTimes,
                             programStage = jsonInfo.optInt("exercise_stage").toString(),
                             programCount = exerciseSize.toString(),
                             programFrequency = jsonInfo.optInt("exercise_frequency"),
@@ -60,19 +60,19 @@ object NetworkProgram {
                     }
                     return@use null
                 } catch (e: IndexOutOfBoundsException) {
-                    Log.e("SSAIDIndex", "${e.message}")
+                    Log.e("ProgramError", "IndexOutOfBounds: ${e.message}")
                     return@use null
                 } catch (e: IllegalArgumentException) {
-                    Log.e("SSAIDIllegal", "${e.message}")
+                    Log.e("ProgramError", "IllegalArgument: ${e.message}")
                     return@use null
                 } catch (e: IllegalStateException) {
-                    Log.e("SSAIDIllegal", "${e.message}")
+                    Log.e("ProgramError", "IllegalState: ${e.message}")
                     return@use null
                 }catch (e: NullPointerException) {
-                    Log.e("SSAIDNull", "${e.message}")
+                    Log.e("ProgramError", "NullPointer: ${e.message}")
                     return@use null
                 } catch (e: java.lang.Exception) {
-                    Log.e("SSAIDException", "${e.message}")
+                    Log.e("ProgramError", "Exception: ${e}")
                     return@use null
                 }
 

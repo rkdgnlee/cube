@@ -94,6 +94,7 @@
             android:padding="20dp"
             android:textColor="@color/black"
             android:textColorHint="@color/subColor150"
+            android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="@+id/etLDId"
             app:layout_constraintStart_toStartOf="@+id/etLDId"
             app:layout_constraintTop_toBottomOf="@+id/etLDId" />

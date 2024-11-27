@@ -102,7 +102,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         binding.tvPTDName.text = exerciseData?.exerciseName.toString()
         binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
-        binding.tvPTDTime.text = "${exerciseData?.videoDuration} 초"
+        binding.tvPTDTime.text = "${exerciseData?.duration} 초"
         binding.tvPTDStage.text = exerciseData?.exerciseStage
         binding.tvPTDFrequency.text = exerciseData?.exerciseFrequency.toString()
         binding.tvPTRelatedSymptom.text = exerciseData?.relatedSymptom
@@ -136,7 +136,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
             intent.putExtra("video_url", videoUrl)
             intent.putExtra("exercise_id", exerciseData?.exerciseId)
-            intent.putExtra("total_duration", exerciseData?.videoDuration?.toInt())
+            intent.putExtra("total_duration", exerciseData?.duration?.toInt())
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
@@ -235,7 +235,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 val videoUrls = mutableListOf(videoUrl)
                 intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
                 intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-                intent.putExtra("total_time", exerciseData?.videoDuration?.toInt())
+                intent.putExtra("total_time", exerciseData?.duration?.toInt())
                 startActivity(intent)
             } else {
                 context.let { Toast.makeText(it, "태블릿 기기에서 운동을 추천드립니다", Toast.LENGTH_SHORT).show() }

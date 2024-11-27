@@ -155,7 +155,7 @@ object NetworkMeasure {
                     val bodyJo = JSONObject(responseBody.toString())
                     val infoJo = bodyJo.optJSONObject("measure_info")
 
-                    // TODO DB에는 이미 저장됐고, 값을 받아와서 DB의 내용을 수정해야함. callback으로 나가게. false로 나가
+                    // DB에는 이미 저장됐고, 값을 받아와서 DB의 내용을 수정해야함. callback으로 나가게. false로 나가
                     val measureInfoSn = infoJo?.optInt("sn")
                     val infoUploaded = infoJo?.optString("uploaded")
                     val uploadDate = infoJo?.optString("upload_date")
@@ -247,15 +247,13 @@ object NetworkMeasure {
                 val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
                 val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
                 Log.v("룸에저장된info들", "$roomInfoSns")
-                Log.v("info의bodyJo", "$bodyJo")
-                Log.v("info의bodyJa", "$ja")
+//                Log.v("info의bodyJa", "$ja")
                 val getInfos = mutableListOf<MeasureInfo>() // info로 변환해서 넣기
-                for (i in 1 until ja.length()) {
+                for (i in 0 until ja.length()) {
                     val jo = ja.optJSONObject(i)
-                    Log.v("jo", "$jo")
+//                    Log.v("info의bodyJo", "$jo")
                     getInfos.add(jo.toMeasureInfo())
-                    Log.v("info의변환getInfos", "${getInfos}")
-                    Log.v("info의변환info", "${jo.toMeasureInfo()}")
+//                    Log.v("info의변환getInfos", "${getInfos}")
                 }
 //                val jo = ja.optJSONObject(1) // 현재 0번째 index는 7가지 동작이 없음.
 //                getInfos.add(jo.toMeasureInfo())

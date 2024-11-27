@@ -13,8 +13,8 @@ android {
         applicationId = "com.tangoplus.tangoq"
         minSdk = 27
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.14"
+        versionCode = 6
+        versionName = "1.15"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }

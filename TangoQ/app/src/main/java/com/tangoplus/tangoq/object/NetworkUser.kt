@@ -128,9 +128,7 @@ object NetworkUser {
             } catch (e: java.lang.Exception) {
                 Log.e("UserException", "refresh: ${e.message}")
             }
-
         }
-
     }
 
 
@@ -185,14 +183,13 @@ object NetworkUser {
         }
     }
 
-    suspend fun idDuplicateCheck(myUrl: String, jo: JSONObject, callback: (Int) -> Unit) {
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = RequestBody.create(mediaType, jo.toString())
+    suspend fun idDuplicateCheck(myUrl: String, userId: String, callback: (Int) -> Unit) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}register.php")
-            .post(body)
+            .url("${myUrl}check_user_id.php?user_id=$userId")
+            .get()
             .build()
+
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).enqueue(object : Callback {
@@ -201,8 +198,11 @@ object NetworkUser {
                         callback(500) // 실패 시 에러 코드 전달
                     }
                     override fun onResponse(call: Call, response: Response) {
-                        callback(response.code)
-                        Log.v("중복확안로그", "${response.code}, ${response.body.toString()}")
+                        response.body?.string()?.let { responseString ->
+                            Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
+                            val bodyJo = JSONObject(responseString)
+                            callback(bodyJo.optInt("status"))
+                        }
                     }
                 })
             }  catch (e: IndexOutOfBoundsException) {
@@ -301,13 +301,15 @@ object NetworkUser {
         })
     }
 
-    fun getUserId(myUrl: String, joBody: String, callback: (String) -> Unit) {
+
+
+    fun findUserId(myUrl: String, joBody: String, callback: (String) -> Unit) {
 
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = joBody.toRequestBody(mediaType)
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("${myUrl}user")
+            .url("${myUrl}find_user_id.php")
             .post(body)
             .build()
         client.newCall(request).enqueue(object: Callback{
@@ -328,33 +330,33 @@ object NetworkUser {
             }
         })
     }
-    fun verifyBeforeResetPw(myUrl: String, joBody: String, callback: (Boolean) -> Unit) {
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = joBody.toRequestBody(mediaType)
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("${myUrl}user")
-            .post(body)
-            .build()
-        client.newCall(request).enqueue(object: Callback{
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("IDPW찾기Failed", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.v("userId", "$responseBody")
-                val jo = responseBody?.let { JSONObject(it) }
-                if (jo != null) {
-                    if (jo.optString("status") == "1") {
-                        callback(true)
-                    } else {
-                        callback(false)
-                    }
-                }
-            }
-        })
-    }
+//    fun verifyBeforeResetPw(myUrl: String, joBody: String, callback: (Boolean) -> Unit) {
+//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+//        val body = joBody.toRequestBody(mediaType)
+//        val client = OkHttpClient()
+//        val request = Request.Builder()
+//            .url("${myUrl}user")
+//            .post(body)
+//            .build()
+//        client.newCall(request).enqueue(object: Callback{
+//            override fun onFailure(call: Call, e: IOException) {
+//                Log.e("IDPW찾기Failed", "Failed to execute request!")
+//            }
+//
+//            override fun onResponse(call: Call, response: Response) {
+//                val responseBody = response.body?.string()
+//                Log.v("userId", "$responseBody")
+//                val jo = responseBody?.let { JSONObject(it) }
+//                if (jo != null) {
+//                    if (jo.optString("status") == "1") {
+//                        callback(true)
+//                    } else {
+//                        callback(false)
+//                    }
+//                }
+//            }
+//        })
+//    }
 
 
 
@@ -388,8 +390,8 @@ object NetworkUser {
             }
         }
     }
-
     // ------! 프로필 사진 끝 !------
+
     fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
         Singleton_t_user.getInstance(context).jsonObject?.put("profile_file_path", jsonObj.optJSONObject("profile_file_path")?.optString("file_path"))

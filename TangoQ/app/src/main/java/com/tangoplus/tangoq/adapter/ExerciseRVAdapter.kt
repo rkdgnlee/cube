@@ -106,7 +106,7 @@ class ExerciseRVAdapter (
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentExerciseItem = exerciseList[position]
 
-        val second = "${currentExerciseItem.videoDuration?.toInt()?.div(60)}분 ${currentExerciseItem.videoDuration?.toInt()?.rem(60)}초"
+        val second = "${currentExerciseItem.duration?.toInt()?.div(60)}분 ${currentExerciseItem.duration?.toInt()?.rem(60)}초"
 
         when (holder) {
             is MainViewHolder -> {
@@ -130,7 +130,7 @@ class ExerciseRVAdapter (
                 }
 
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePathReal}")
+                    .load("${currentExerciseItem.imageFilePath}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEIThumbnail)
@@ -204,7 +204,7 @@ class ExerciseRVAdapter (
                         1 -> { // 재생 시간 중간
                             holder.tvEIFinish.visibility = View.GONE
                             holder.hpvEI.visibility = View.VISIBLE
-                            val duration  =currentExerciseItem.videoDuration
+                            val duration  = currentExerciseItem.duration
                             if (duration != null) {
                                 holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
                             }
@@ -252,7 +252,7 @@ class ExerciseRVAdapter (
                 holder.tvRcPStage.text = currentExerciseItem.exerciseStage
 
                 Glide.with(holder.itemView.context)
-                    .load("${currentExerciseItem.imageFilePathReal}?width=200&height=200")
+                    .load("${currentExerciseItem.imageFilePath}?width=200&height=200")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(200)
                     .into(holder.ivRcPThumbnail)
@@ -285,11 +285,11 @@ class ExerciseRVAdapter (
                     }
                 }
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePathReal}")
+                    .load("${currentExerciseItem.imageFilePath}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEHIThumbnail)
-                val duration = currentExerciseItem.videoDuration
+                val duration = currentExerciseItem.duration
                 if (currentItem != null && duration != null) {
                     holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
                 }
