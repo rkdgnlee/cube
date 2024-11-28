@@ -12,10 +12,10 @@
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/overlay"
+        app:layout_constraintEnd_toEndOf="@id/overlay"
+        app:layout_constraintStart_toStartOf="@id/overlay"
+        app:layout_constraintTop_toTopOf="@id/overlay"
         app:scaleType="fillStart">
 
     </androidx.camera.view.PreviewView>
@@ -116,7 +116,6 @@
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -139,6 +138,7 @@
             app:sv_textPadding="4dp"
             app:sv_textSize="14sp" />
 
+
         <com.skydoves.progressview.ProgressView
             android:id="@+id/pvMeasureSkeleton"
             android:layout_width="0dp"
@@ -153,7 +153,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/svMeasureSkeleton"
             app:progressView_colorBackground="@color/secondContainerColor"
-            app:progressView_colorProgress="@color/thirdColor" />
+            app:progressView_colorProgress="@color/thirdColor"
+            app:progressView_progressFromPrevious="true" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout

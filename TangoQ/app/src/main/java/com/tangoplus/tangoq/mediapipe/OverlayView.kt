@@ -9,6 +9,9 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import kotlin.math.max
+import kotlin.math.min
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
@@ -71,22 +74,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         this.imageWidth = imageWidth
         currentRunningMode = runningMode
 
-        scaleFactorX = when (runningMode) {
-            RunningMode.IMAGE, RunningMode.VIDEO -> {
-                width * 1f / imageWidth
-            }
-            RunningMode.LIVE_STREAM -> {
-                width * 1f / imageWidth
-            }
-        }
-        scaleFactorY = when (runningMode) {
-            RunningMode.IMAGE, RunningMode.VIDEO -> {
-                height * 1f / imageHeight
-            }
-            RunningMode.LIVE_STREAM -> {
-                height * 1f / imageHeight
-            }
-        }
+        scaleFactorX = min(width * 1f / imageWidth, height * 1f / imageHeight)
+        scaleFactorY = max(width * 1f / imageWidth, height * 1f / imageHeight)
         invalidate()
     }
 
@@ -95,6 +84,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         results?.let { poseLandmarkResult ->
             drawLandmarks(canvas, poseLandmarkResult.landmarks)
         }
+
     }
     enum class RunningMode {
         IMAGE, VIDEO, LIVE_STREAM
@@ -107,8 +97,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
 
         if (currentRunningMode == RunningMode.LIVE_STREAM) {
-            val offsetX = ((width - imageWidth * scaleFactorX) / 2 ) + 30
-            val offsetY = (height - imageHeight * scaleFactorY) / 2
+
+            Log.v("스케일", "scale: (${width * 1f / imageWidth}, ${height * 1f / imageHeight})")
+            val offsetX = if (isTablet(context)) ((width - imageWidth * scaleFactorX) / 2 )  else ((width - imageWidth * scaleFactorX) / 2 ) + 30
+            val offsetY = if (isTablet(context)) (height - imageHeight * scaleFactorY) / 2 + 130 else (height - imageHeight * scaleFactorY) / 2
             landmarks.forEach { landmark ->
                 canvas.drawPoint(
                     landmark.x * imageWidth * scaleFactorX + offsetX,

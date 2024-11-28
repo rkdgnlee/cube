@@ -19,6 +19,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
@@ -201,7 +203,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
-        object : CountDownTimer(1000, 1000) {
+        object : CountDownTimer(5000, 1000) {
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 runOnUiThread{
@@ -1044,7 +1046,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
-        preview?.surfaceProvider = binding.viewFinder.surfaceProvider
+        preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
 
@@ -2051,7 +2053,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private fun calculateScreenX(xx: Float): Int {
         val scaleFactor = binding.overlay.width * 1f / 720
         val offsetX = ((binding.overlay.width - 720 * scaleFactor) / 2 )  // TODO 영상의 liveStream에는 이상하게 offset이 필요함
-        val x = (1 - xx) * binding.overlay.width / scaleFactor + offsetX
+//        val x = (1 - xx) * binding.overlay.width / scaleFactor + offsetX
+        val x = xx * binding.overlay.width / scaleFactor + offsetX
         return x.roundToInt()
     }
 
