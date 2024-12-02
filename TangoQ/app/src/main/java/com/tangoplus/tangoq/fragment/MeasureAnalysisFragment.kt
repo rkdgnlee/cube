@@ -529,85 +529,6 @@ class MeasureAnalysisFragment : Fragment() {
         binding.rvMARight2.layoutManager = linearLayoutManager4
         binding.rvMARight2.adapter = rightBottomAdapter
     }
-    //---------------------------------------! imageOverlay !---------------------------------------
-    private fun extractImageCoordinates(jsonData: JSONObject): List<Pair<Float, Float>>? {
-        val poseData = jsonData.optJSONArray("pose_landmark")
-        return if (poseData != null) {
-            List(poseData.length()) { i ->
-                val landmark = poseData.getJSONObject(i)
-                Pair(
-                    landmark.getDouble("sx").toFloat(),
-                    landmark.getDouble("sy").toFloat()
-                )
-            }
-        } else null
-    }
-
-//    private suspend fun setImage(seq: Int, ssiv: SubsamplingScaleImageView): Boolean = suspendCancellableCoroutine { continuation ->
-//            try {
-//                val jsonData = viewModel.selectedMeasure?.measureResult?.optJSONObject(seq)
-//                val coordinates = jsonData?.let { extractImageCoordinates(it) }
-//                val imageUrls = viewModel.selectedMeasure?.fileUris?.get(seq)
-//
-//                Log.v("시퀀스", "seq: ${seq}, view: (${ssiv.width}, ${ssiv.height}), imageSize: (${ssiv.sWidth}, ${ssiv.sHeight})")
-//                if (imageUrls != null) {
-//                    val imageFile = imageUrls.let { File(it) }
-//                    val bitmap = BitmapFactory.decodeFile(imageUrls)
-//                    lifecycleScope.launch(Dispatchers.Main) {
-//                        ssiv.setImage(ImageSource.uri(imageFile.toUri().toString()))
-//                        ssiv.setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
-//                            override fun onReady() {
-//                                if (!count) {
-//                                    // ssiv 이미지뷰의 크기
-////                                    val jsonObject = Gson().fromJson(jsonData.toString(), JsonObject::class.java)
-////                                    val scaleFactorX = jsonObject.get("measure_overlay_scale_factor_x").asDouble
-////                                    val scaleFactorY = jsonObject.get("measure_overlay_scale_factor_y").asDouble
-//
-//                                    val imageViewWidth = ssiv.width
-//                                    val imageViewHeight = ssiv.height
-//                                    // iv에 들어간 image의 크기 같음 screenWidth
-//                                    val sWidth = ssiv.sWidth
-//                                    val sHeight = ssiv.sHeight
-//                                    // 스케일 비율 계산
-//                                    val scaleFactorX = imageViewHeight / sHeight.toFloat()
-//                                    val scaleFactorY =  imageViewHeight / sHeight.toFloat()
-//                                    // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
-//                                    val offsetX = (imageViewWidth - sWidth * scaleFactorX) / 2f
-//                                    val offsetY = (imageViewHeight - sHeight * scaleFactorY) / 2f
-//                                    val poseLandmarkResult = fromCoordinates(coordinates)
-//                                    val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
-//                                        bitmap,
-//                                        poseLandmarkResult,
-//                                        scaleFactorX,
-//                                        scaleFactorY,
-//                                        offsetX,
-//                                        offsetY,
-//
-//                                        seq
-//                                    )
-//                                    count = true
-//                                    when (seq) {
-//                                        0, 2, 3, 4 -> ssiv.setImage(ImageSource.bitmap(cropToPortraitRatio(combinedBitmap)))
-//                                        else -> ssiv.setImage(ImageSource.bitmap(combinedBitmap))
-//                                    }
-//                                    continuation.resume(true)
-//                                }
-//                            }
-//                            override fun onImageLoaded() { count = false }
-//
-//                            override fun onPreviewLoadError(e: Exception?) { continuation.resume(false) }
-//                            override fun onImageLoadError(e: Exception?) { continuation.resume(false) }
-//                            override fun onTileLoadError(e: Exception?) { continuation.resume(false) }
-//                            override fun onPreviewReleased() { continuation.resume(false) }
-//                        })
-//                        Log.v("ImageLoading", "Image loaded successfully. Width: ${bitmap.width}, Height: ${bitmap.height}")
-//                    }
-//                } else { continuation.resume(false) }
-//            } catch (e: IndexOutOfBoundsException) {
-//                Log.e("Error", "${e}")
-//            }
-//    }
-
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {
         lifecycleScope.launch {
@@ -624,11 +545,11 @@ class MeasureAnalysisFragment : Fragment() {
                         val videoDuration = simpleExoPlayer?.duration ?: 0L
                         lifecycleScope.launch {
                             while (simpleExoPlayer?.isPlaying == true) {
-                                if (!updateUI) updateVideoUI(viewModel.selectedMeasure?.isMobile)
-                                Log.v("업데이트video", "overlay: (${binding.ovMA.width}, ${binding.ovMA.height}) PlayerView: ( ${binding.pvMA.width}, ${binding.pvMA.height} )")
+                                if (!updateUI) updateVideoUI()
+//                                Log.v("업데이트video", "overlay: (${binding.ovMA.width}, ${binding.ovMA.height}) PlayerView: ( ${binding.pvMA.width}, ${binding.pvMA.height} )")
                                 updateFrameData(videoDuration, jsonArray.length())
                                 delay(24)
-                                Handler(Looper.getMainLooper()).postDelayed( {updateUI = true},1000)
+                                Handler(Looper.getMainLooper()).postDelayed( {updateUI = true},1500)
                             }
                         }
                     }
@@ -689,6 +610,7 @@ class MeasureAnalysisFragment : Fragment() {
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
             // 변환된 데이터를 화면에 그리기
             requireActivity().runOnUiThread {
+                binding.ovMA.scaleX = -1f
                 binding.ovMA.setResults(
                     poseLandmarkResult,
                     videoWidth,
@@ -700,7 +622,7 @@ class MeasureAnalysisFragment : Fragment() {
         }
     }
 
-    private fun updateVideoUI(isMobile: Boolean?) {
+    private fun updateVideoUI() {
         Log.v("업데이트", "UI")
 
 
@@ -712,10 +634,9 @@ class MeasureAnalysisFragment : Fragment() {
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenWidth = displayMetrics.widthPixels
 
-        // 비디오 높이를 화면 너비에 맞게 조절
-        val aspectRatio = if (isMobile == true) videoWidth.toFloat() / videoHeight.toFloat() else videoHeight.toFloat() / videoWidth.toFloat()
+        val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
+//        Log.v("비율", "aspectRatio: $aspectRatio, video: ($videoWidth, $videoHeight), playerView: (${binding.pvMPPD.width}, ${binding.pvMPPD.height}), overlay: (${binding.ovMPPD.width}, ${binding.ovMPPD.height})")
         val adjustedHeight = (screenWidth * aspectRatio).toInt()
-
         // clMA의 크기 조절
         val params = binding.clMA.layoutParams
         params.width = screenWidth

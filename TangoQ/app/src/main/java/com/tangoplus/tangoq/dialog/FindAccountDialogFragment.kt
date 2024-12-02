@@ -229,15 +229,8 @@ class FindAccountDialogFragment : DialogFragment() {
                                 binding.clFADMobile.visibility = View.GONE
                                 binding.clFADId.visibility = View.GONE
                                 binding.clFADIdResult.visibility = View.VISIBLE
-                                val length = resultString.length
-                                val targetCount = length / 2
-                                val indices = resultString.indices.toMutableList()
-                                repeat(targetCount) {
-                                    val randomIndex = indices.random()
-                                    indices.remove(randomIndex)
-                                }
                                 val maskedString = resultString.mapIndexed { index, char ->
-                                    if (index in indices) char else '*'
+                                    if (index % 2 == 0) '*' else char
                                 }.joinToString("")
                                 binding.tvFADIdFinded.text = maskedString
                             }

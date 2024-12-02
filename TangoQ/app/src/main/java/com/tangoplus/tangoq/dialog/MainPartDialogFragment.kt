@@ -177,6 +177,18 @@ class MainPartDialogFragment : DialogFragment() {
                             }
                         }
                     }
+                    5 -> {
+                        val backNeckData = units.find { it.columnName == "back_vertical_angle_nose_center_shoulder"}
+                        var angleData = 0f
+                        var angleDirection = ""
+                        backNeckData?.let {
+                            if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
+                                angleData = it.rawData
+                                angleDirection = getDirection(it.rawData)
+                                resultString.append("목 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 승모근, 목빗근의 스트레칭을 추천드립니다.")
+                            }
+                        }
+                    }
                     6 -> {
 
                         val frontNeckData = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_nose_left_shoulder"}
@@ -901,7 +913,7 @@ class MainPartDialogFragment : DialogFragment() {
                     5 -> {
                         var angleData1 = 0f
                         var angleDirection1 = ""
-                        var angleData2 = 0f
+                        var distanceData = 0f
                         var angleDirection2 = ""
                         val ankleData1 = units.find { it.columnName == "back_horizontal_distance_sub_ankle"}
                         ankleData1?.let {
@@ -915,9 +927,9 @@ class MainPartDialogFragment : DialogFragment() {
                         val ankleData2 = units.find { it.columnName == "back_horizontal_distance_heel_left"}
                         ankleData2?.let {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
-                                angleData2 = it.rawData
+                                distanceData = it.rawData
 
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm 로 거리가 정상범위에서 벗어나 있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", abs(distanceData))}cm 로 거리가 정상범위에서 벗어나 있습니다. ")
                             }
                         }
                     }

@@ -199,7 +199,8 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         when (holder.tvPfSettingsName.text) {
 
                             "이름" -> {
-                                holder.tvPfInfo.text = userJson.optString("user_name")
+                                val userName = userJson.optString("user_name")
+                                holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
                                 holder.ivPf.setImageResource(R.drawable.icon_profile)
                             }
                             "성별" -> {
@@ -220,7 +221,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "이메일" -> {
                                 (vm as SignInViewModel).setEmail.observe(fragment.viewLifecycleOwner) { email ->
-                                    holder.tvPfInfo.text = "$email"
+                                    holder.tvPfInfo.text = "${maskedProfileData(email)}"
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_email)
                             }
@@ -276,6 +277,31 @@ class ProfileRVAdapter(private val fragment: Fragment,
     }
     override fun getItemCount(): Int {
         return profilemenulist.size
+    }
 
+    private fun maskedProfileData(resultString: String) : String {
+        val atIndex = resultString.indexOf('@')
+        if (atIndex == -1) return resultString  // @ 기호가 없으면 원본 그대로 반환
+
+        val username = resultString.substring(0, atIndex)
+        val domain = resultString.substring(atIndex)
+        val maskedUsername = username.mapIndexed { index, char ->
+
+            when {
+                index % 4 == 0 || index % 4 == 1 -> char  // 1, 1 패턴 (그대로)
+                index % 4 == 2 || index % 4 == 3 -> '*'   // 2, 2 패턴 (가리기)
+                else -> char
+            }
+        }.joinToString("")
+
+        val maskedDomain = domain.mapIndexed { index, char ->
+            when {
+                index % 4 == 0 || index % 4 == 1 -> char  // 1, 1 패턴 (그대로)
+                index % 4 == 2 || index % 4 == 3 -> '*'   // 2, 2 패턴 (가리기)
+                else -> char
+            }
+        }.joinToString("")
+
+        return maskedUsername + maskedDomain
     }
 }

@@ -44,9 +44,9 @@ object MeasurementManager {
     )
     private val errorBounds = listOf(
         mapOf(
-            0 to mapOf( "front_horizontal_angle_ear" to Pair(-0.5f, 0.5f)),
-            3 to mapOf( "side_left_vertical_angle_nose_shoulder" to Pair(70f, 80f)),
-            4 to mapOf( "side_right_vertical_angle_nose_shoulder" to Pair(70f, 80f)),
+            0 to mapOf( "front_horizontal_angle_ear" to Pair(-0.5f, 0.4f)),
+            3 to mapOf( "side_left_vertical_angle_nose_shoulder" to Pair(60f, 75f)),
+            4 to mapOf( "side_right_vertical_angle_nose_shoulder" to Pair(60f, 75f)),
             5 to mapOf( "back_vertical_angle_nose_center_shoulder" to Pair(-5f, 5f)),
             6 to mapOf( "back_sit_horizontal_angle_ear" to Pair(-0.5f, 0.5f),
                 "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Pair(40f, 50f))
@@ -56,14 +56,14 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_shoulder" to Pair(-2f, 2f),
                 "front_horizontal_distance_sub_shoulder" to Pair(-1.5f, 1.5f)),
             3 to mapOf("side_left_horizontal_distance_shoulder" to Pair(-2f, 2f)),
-            5 to mapOf("back_vertical_angle_shoudler_center_hip" to Pair(-2f, 2f)),
+            5 to mapOf("back_vertical_angle_shoudler_center_hip" to Pair(88f, 92f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Pair(85f, 95f))
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_shoulder" to Pair(-2f, 2f),
                 "front_horizontal_distance_sub_shoulder" to Pair(-1.5f, 1.5f)),
             4 to mapOf("side_right_horizontal_distance_shoulder" to Pair(-2f, 2f)),
-            5 to mapOf("back_vertical_angle_shoudler_center_hip" to Pair(-2f, 2f)),
+            5 to mapOf("back_vertical_angle_shoudler_center_hip" to Pair(88f, 92f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Pair(85f, 95f))
         ),
         // 좌측 팔꿉
@@ -89,18 +89,18 @@ object MeasurementManager {
         ),
         // 좌측 손목
         mapOf(
-            0 to mapOf("front_vertical_angle_elbow_wrist_left" to Pair(-5f, 5f),
+            0 to mapOf("front_vertical_angle_elbow_wrist_left" to Pair(-7.5f, 7.5f),
                 "front_horizontal_angle_wrist" to Pair(-0.5f, 0.5f)),
             2 to mapOf("front_elbow_align_angle_mid_index_wrist_elbow_left" to Pair(170f, 190f),
                 "front_elbow_align_distance_left_wrist_shoulder" to Pair(-10f, 10f)),
             3 to mapOf("side_left_horizontal_distance_wrist" to Pair(-10f, 10f))
         ),
         mapOf(
-            0 to mapOf("front_vertical_angle_elbow_wrist_right" to Pair(-5f, 5f),
+            0 to mapOf("front_vertical_angle_elbow_wrist_right" to Pair(-7.5f, 7.5f),
                 "front_horizontal_angle_wrist" to Pair(-0.5f, 0.5f)),
             2 to mapOf("front_elbow_align_angle_mid_index_wrist_elbow_right" to Pair(170f, 190f),
                 "front_elbow_align_distance_right_wrist_shoulder" to Pair(-10f, 10f)),
-            4 to mapOf("side_right_horizontal_distance_wrist" to Pair(80f, 100f))
+            4 to mapOf("side_right_horizontal_distance_wrist" to  Pair(-10f, 10f))
         ),
         // 좌측 골반
         mapOf(
@@ -110,9 +110,9 @@ object MeasurementManager {
             3 to mapOf("side_left_vertical_angle_hip_knee" to Pair(85f, 95f),
                 "side_left_horizontal_distance_hip" to Pair(-0.5f, 0.5f)
             ),
-            5 to mapOf("back_horizontal_angle_hip" to Pair(-0.5f, 0.5f)),
+            5 to mapOf("back_horizontal_angle_hip" to Pair(-1f, 1f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Pair(40f, 60f),
-                "back_sit_vertical_angle_shoulder_center_hip" to Pair(-1f, 1f))
+                "back_sit_vertical_angle_shoulder_center_hip" to Pair(80f, 100f))
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_right" to Pair(85f, 95f),
@@ -120,37 +120,37 @@ object MeasurementManager {
                 "front_horizontal_angle_hip" to Pair(-2.5f, 2.5f)),
             4 to mapOf("side_right_vertical_angle_hip_knee" to Pair(40f, 50f),
                 "side_right_horizontal_distance_hip" to Pair(40f, 50f)),
-            5 to mapOf("back_horizontal_angle_hip" to Pair(-0.5f, 0.5f)),
+            5 to mapOf("back_horizontal_angle_hip" to Pair(-1f, 1f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Pair(40f, 60f),
-                "back_sit_vertical_angle_shoulder_center_hip" to Pair(-1f, 1f))
+                "back_sit_vertical_angle_shoulder_center_hip" to Pair(80f, 100f))
         ),
         // 좌측 무릎
         mapOf(
             0 to mapOf("front_horizontal_angle_knee" to Pair(-0.5f, 0.5f),
-                "front_horizontal_distance_knee_left" to Pair(-0.5f, 0.5f),
-                "front_vertical_angle_hip_knee_ankle_left" to Pair(175f, 185f)),
+                "front_horizontal_distance_knee_left" to Pair(10f, 30f),
+                "front_vertical_angle_hip_knee_ankle_left" to Pair(170f, 190f)),
             5 to mapOf("back_horizontal_angle_knee" to Pair(-0.5f, 0.5f),
-                "back_horizontal_distance_knee_left" to Pair(-0.5f, 0.5f))
+                "back_horizontal_distance_knee_left" to Pair(10f, 30f))
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_knee" to Pair(-0.5f, 0.5f),
-                "front_horizontal_distance_knee_right" to Pair(-0.5f, 0.5f),
-                "front_vertical_angle_hip_knee_ankle_right" to Pair(175f, 185f)),
+                "front_horizontal_distance_knee_right" to Pair(10f, 30f),
+                "front_vertical_angle_hip_knee_ankle_right" to Pair(170f, 190f)),
             5 to mapOf("back_horizontal_angle_knee" to Pair(-0.5f, 0.5f),
-                "back_horizontal_distance_knee_right" to Pair(-0.5f, 0.5f))
+                "back_horizontal_distance_knee_right" to Pair(10f, 30f))
         ),
         // 좌측 발목
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_left" to Pair(85f, 95f),
                 "front_horizontal_angle_ankle" to Pair(-0.5f, 0.5f),
-                "front_horizontal_distance_ankle_left" to Pair(-0.5f, 0.5f)),
+                "front_horizontal_distance_ankle_left" to Pair(10f, 30f)),
             5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(-0.5f, 0.5f),
                 "back_horizontal_distance_heel_left" to Pair(5f, 15f))
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to Pair(85f, 95f),
                 "front_horizontal_angle_ankle" to Pair(-0.5f, 0.5f),
-                "front_horizontal_distance_ankle_right" to Pair(-0.5f, 0.5f)),
+                "front_horizontal_distance_ankle_right" to Pair(10f, 30f)),
             5 to mapOf("back_horizontal_distance_sub_ankle" to Pair(-0.5f, 0.5f),
                 "back_horizontal_distance_heel_right" to Pair(5f, 15f))
         )

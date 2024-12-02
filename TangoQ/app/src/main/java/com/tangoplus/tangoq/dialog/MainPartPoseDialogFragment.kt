@@ -4,7 +4,6 @@ package com.tangoplus.tangoq.dialog
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -24,14 +23,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.AnalysisRVAdapter
+import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -45,11 +43,10 @@ import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
-import java.lang.Exception
 
 class MainPartPoseDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentMainPartPoseDialogBinding
-    val mvm : MeasureViewModel by activityViewModels()
+    private val mvm : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
     private var count = false
     private lateinit var dynamicJa: JSONArray
@@ -162,7 +159,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
 
     private fun setAdapter() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val adapter = AnalysisRVAdapter(this@MainPartPoseDialogFragment, avm.currentAnalysis?.labels)
+        val adapter = MainPartAnalysisRVAdapter(this@MainPartPoseDialogFragment, avm.currentAnalysis?.labels, avm.selectedPart)
         binding.rvMPPDLeft.layoutManager = layoutManager
         binding.rvMPPDLeft.adapter = adapter
     }
@@ -182,7 +179,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
             "front_horizontal_angle_shoulder" -> "양 어깨의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
             "front_horizontal_distance_sub_shoulder" -> "양 어깨의 높낮이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다."
             "side_left_horizontal_distance_shoulder" -> "측면에서 몸의 무게중심에서 어깨까지의 거리를 의미합니다. 멀어질 수록 라운드 숄더가 의심됩니다."
-            "back_vertical_angle_shoudler_center_hip" -> "골반 중심에서 어깨의 기울기를 의미합니다. 기울기 값 0° 기준으로 2° 오차 이내가 표준적인 기울기 입니다."
+            "back_vertical_angle_shoudler_center_hip" -> "골반 중심에서 어깨의 기울기를 의미합니다. 기울기 값 90° 기준으로 2° 오차 이내가 표준적인 기울기 입니다."
             "back_sit_vertical_angle_shoulder_center_hip" -> "양 어깨와 골반 중심의 각도입니다. 정상범위에서 벗어날 경우 골반의 평행상태와 비교한  저항 운동을 추천드립니다"
             // 우측 어깨
 //            "front_horizontal_angle_shoulder" -> "양 어깨의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
@@ -412,6 +409,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
             // 변환된 데이터를 화면에 그리기
             requireActivity().runOnUiThread {
+                binding.ovMPPD.scaleX = -1f
                 binding.ovMPPD.setResults(
                     poseLandmarkResult,
                     videoWidth,

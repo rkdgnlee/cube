@@ -393,7 +393,6 @@ class MeasureDashBoard2Fragment : Fragment() {
         binding.rvMD2.layoutManager = layoutManager
 
         // ------# 운동시청기록 + 운동 #------
-
         pvm.selectedDailyCount.value = progresses.size
         pvm.selectedDailyTime.value = progresses.sumOf { it.sn }
         Log.v("프로그레스", "${progresses}")

@@ -107,14 +107,8 @@ class LoginDialogFragment : DialogFragment() {
                         if (jo?.getString("message") == "invalid login data") { // 기존에 정보가 있을 경우 - 로그인 성공
                             requireActivity().runOnUiThread {
                                 dialog.dismiss()
-                                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                    setTitle("⚠️ 알림")
-                                    setMessage("아이디 또는 비밀번호가 올바르지 않습니다.")
-                                    setPositiveButton("확인") { _, _ ->
-                                        binding.etLDPw.text.clear()
-                                    }
-                                    create()
-                                }.show()
+                                makeMaterialDialog(0)
+                                binding.etLDPw.text.clear()
                             }
                         } else {
                             requireActivity().runOnUiThread {
@@ -172,4 +166,19 @@ class LoginDialogFragment : DialogFragment() {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
+    private fun makeMaterialDialog(case: Int) {
+        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+            setTitle("⚠️ 알림")
+            val message = when (case) {
+                0 -> "비밀번호 또는 아이디가 올바르지 않습니다."
+                1 -> "비밀번호가 5회 틀렸습니다. 1분 후 다시 시도해주세요."
+                else -> "비밀번호를 10회 틀려 계정이 잠겼습니다.\n고객센터로 문의해주세요"
+            }
+            setMessage(message)
+            setPositiveButton("확인") { _, _ ->
+
+            }
+            create()
+        }.show()
+    }
 }

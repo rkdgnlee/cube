@@ -74,8 +74,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         this.imageWidth = imageWidth
         currentRunningMode = runningMode
 
-        scaleFactorX = min(width * 1f / imageWidth, height * 1f / imageHeight)
-        scaleFactorY = max(width * 1f / imageWidth, height * 1f / imageHeight)
+//        scaleFactorX = min(width * 1f / imageWidth, height * 1f / imageHeight)
+//        scaleFactorY = max(width * 1f / imageWidth, height * 1f / imageHeight)
+        scaleFactorX = if (isTablet(context)) max(width * 1f / imageWidth, height * 1f / imageHeight) else min(width * 1f / imageWidth, height * 1f / imageHeight)
+        scaleFactorY = if (isTablet(context)) min(width * 1f / imageWidth, height * 1f / imageHeight) else max(width * 1f / imageWidth, height * 1f / imageHeight)
         invalidate()
     }
 
@@ -98,9 +100,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
         if (currentRunningMode == RunningMode.LIVE_STREAM) {
 
-            Log.v("스케일", "scale: (${width * 1f / imageWidth}, ${height * 1f / imageHeight})")
-            val offsetX = if (isTablet(context)) ((width - imageWidth * scaleFactorX) / 2 )  else ((width - imageWidth * scaleFactorX) / 2 ) + 30
-            val offsetY = if (isTablet(context)) (height - imageHeight * scaleFactorY) / 2 + 130 else (height - imageHeight * scaleFactorY) / 2
+//            Log.v("스케일", "scale: (${width * 1f / imageWidth}, ${height * 1f / imageHeight})")
+            val offsetX = (width - imageWidth * scaleFactorX) / 2
+            val offsetY = (height - imageHeight * scaleFactorY) / 2
             landmarks.forEach { landmark ->
                 canvas.drawPoint(
                     landmark.x * imageWidth * scaleFactorX + offsetX,
@@ -152,6 +154,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
 
         else { // video 일 때
+//            this.scaleX = -1f
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
 
@@ -198,9 +201,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val rightKneeY = rightKnee.y * scaleFactorY + offsetY
 
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
-                canvas.drawLine(leftIndexX - 100, leftIndexY, rightIndexX + 100, rightIndexY, axisPaint)
-                canvas.drawLine(leftHipX - 100, leftHipY, rightHipX + 100, rightHipY, axisPaint)
-                canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
+                canvas.drawLine(leftIndexX + 100, leftIndexY, rightIndexX - 100, rightIndexY, axisPaint)
+                canvas.drawLine(leftHipX + 100, leftHipY, rightHipX - 100, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX + 100, leftKneeY, rightKneeX - 100, rightKneeY, axisPaint)
             }
 
             val connections = listOf(

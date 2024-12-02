@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="@id/overlay"
         app:layout_constraintStart_toStartOf="@id/overlay"
         app:layout_constraintTop_toTopOf="@id/overlay"
-        app:scaleType="fillStart">
+        app:scaleType="fitCenter">
 
     </androidx.camera.view.PreviewView>
 

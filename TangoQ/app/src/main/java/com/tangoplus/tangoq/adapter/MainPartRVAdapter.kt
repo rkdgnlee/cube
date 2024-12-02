@@ -58,7 +58,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
 
             holder.tvMPITitle.text = matchedSeq.get(currentItem.seq)
             setState(holder, currentItem.isNormal)
-            Glide.with(fragment)
+            Glide.with(fragment.requireContext())
                 .load(currentItem.url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .apply(RequestOptions.bitmapTransform(MultiTransformation(

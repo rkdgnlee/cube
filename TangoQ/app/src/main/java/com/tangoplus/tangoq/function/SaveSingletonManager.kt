@@ -88,7 +88,9 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     callbacks(existed)
                 }
                 withContext(Dispatchers.Main) {
-                    context.let { dialog.dismiss() }
+                    if (dialog.isAdded && dialog.isVisible) {
+                        dialog.dismiss()
+                    }
                 }
             }
         }
@@ -202,7 +204,9 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             Log.e("measureError", "fetchAndFilter: ${e.message}")
         } finally {
             withContext(Dispatchers.Main) {
-                dialog.let { it?.dismiss() }
+                if (dialog?.isAdded == true && dialog.isVisible) {
+                    dialog.dismiss()
+                }
             }
         }
 
@@ -282,7 +286,9 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     private suspend fun addRecommendations() {
         withContext(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("추천")
-            dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
+            if (!activity.isFinishing && !activity.isDestroyed) {
+               dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
+            }
             withContext(Dispatchers.IO) {
                 val recommendations = getRecommendProgram(context.getString(R.string.API_recommendation), context)
                 val groupedRecs = recommendations.groupBy { it.serverSn }
@@ -312,7 +318,9 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     }.await()
                     // 모든 async 작업이 완료될 때까지 대기
                     withContext(Dispatchers.Main) {
-                        dialog.dismiss()
+                        if (dialog.isAdded && dialog.isVisible) {
+                            dialog.dismiss()
+                        }
                     }
                 }
             }

@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
 
-class AnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>?, private val selectPart: String): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class AnalysisViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPAITitle : TextView = view.findViewById(R.id.tvMPAITitle)
         val vMPAILeft : View = view.findViewById(R.id.vMPAILeft)
