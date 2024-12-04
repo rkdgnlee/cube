@@ -45,6 +45,8 @@
             android:layout_height="200dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
+            android:scrollbarFadeDuration="500"
+            android:scrollbars="vertical"
             app:layout_constraintBottom_toTopOf="@+id/btnMBSD"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

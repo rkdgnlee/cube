@@ -53,20 +53,6 @@
             app:layout_constraintStart_toStartOf="@+id/view25"
             app:layout_constraintTop_toTopOf="@+id/view25" />
 
-        <View
-            android:id="@+id/vMPAIRight"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:background="@drawable/bckgnd_both_8"
-            android:backgroundTint="@color/thirdColor"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/view25"
-            app:layout_constraintEnd_toEndOf="@+id/view25"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/view25"
-            app:layout_constraintTop_toTopOf="@+id/view25"
-            app:layout_constraintWidth_percent="0.4" />
-
         <TextView
             android:id="@+id/tvMPAILeft"
             android:layout_width="wrap_content"
@@ -79,6 +65,65 @@
             app:layout_constraintStart_toStartOf="@+id/view25"
             app:layout_constraintTop_toBottomOf="@+id/vMPAILeft" />
 
+        <View
+            android:id="@+id/view28"
+            android:layout_width="1.5dp"
+            android:layout_height="20dp"
+            android:background="@color/subColor500"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view25"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintHorizontal_bias="0.325"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <View
+            android:id="@+id/vMPAIMiddle"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:background="@drawable/bckgnd_rectangle"
+            android:backgroundTint="@color/cautionColor"
+            android:elevation="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/vMPAIRight"
+            app:layout_constraintStart_toEndOf="@+id/vMPAILeft"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <TextView
+            android:id="@+id/tvMPAIMiddle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="주의"
+            android:textColor="@color/subColor400"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toBottomOf="@+id/view25" />
+
+        <View
+            android:id="@+id/view29"
+            android:layout_width="1.5dp"
+            android:layout_height="20dp"
+            android:background="@color/subColor400"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view25"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintHorizontal_bias="0.675"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <View
+            android:id="@+id/vMPAIRight"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:background="@drawable/bckgnd_right_8"
+            android:backgroundTint="@color/thirdColor"
+            android:elevation="2dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/view25"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintStart_toEndOf="@+id/view29"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
         <TextView
             android:id="@+id/tvMPAIRight"
             android:layout_width="wrap_content"
@@ -88,20 +133,8 @@
             android:textColor="@color/subColor400"
             android:textSize="14dp"
             app:layout_constraintEnd_toEndOf="@+id/view25"
-            app:layout_constraintStart_toEndOf="@+id/view28"
+            app:layout_constraintStart_toEndOf="@+id/view29"
             app:layout_constraintTop_toBottomOf="@+id/view25" />
-
-        <View
-            android:id="@+id/view28"
-            android:layout_width="1.5dp"
-            android:layout_height="20dp"
-            android:background="@color/subColor500"
-            android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/view25"
-            app:layout_constraintEnd_toEndOf="@+id/view25"
-            app:layout_constraintHorizontal_bias="0.3"
-            app:layout_constraintStart_toStartOf="@+id/view25"
-            app:layout_constraintTop_toTopOf="@+id/view25" />
 
         <ImageView
             android:id="@+id/ivMPAIArrow"
@@ -111,7 +144,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@+id/view25"
             app:layout_constraintEnd_toEndOf="@+id/view25"
-            app:layout_constraintHorizontal_bias="0.12"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/view25"
             app:srcCompat="@drawable/icon_arrow_board" />
 
@@ -133,6 +166,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView

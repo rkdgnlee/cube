@@ -14,7 +14,7 @@ class MyApplication : Application() {
         appContext = this
         preferencesManager = PreferencesManager(appContext)
         // Singleton 초기화
-        Singleton_t_measure.getInstance(appContext)
+
     }
 
     companion object {

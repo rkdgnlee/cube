@@ -105,10 +105,10 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
         6 to "앉아 후면"
     )
 
-    private fun setState(holder: MPViewHolder, isNormal: Boolean) {
+    private fun setState(holder: MPViewHolder, isNormal: Int) {
         val params = holder.ivMPIArrow.layoutParams as ConstraintLayout.LayoutParams
         when (isNormal) {
-            false -> {
+            2, 3 -> {
 
                 holder.vMPILeft.visibility = View.VISIBLE
                 holder.vMPIRight.visibility = View.GONE
@@ -116,7 +116,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
                 holder.tvMPIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
                 params.horizontalBias = 0.125f
             }
-            true -> {
+            else -> {
                 holder.vMPILeft.visibility = View.GONE
                 holder.vMPIRight.visibility = View.VISIBLE
                 holder.tvMPILeft.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))

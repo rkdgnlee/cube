@@ -67,7 +67,7 @@ object NetworkUser {
     }
 
     // Id, Pw 로그인
-    suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
+    suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?, Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = idPw.toString().toRequestBody(mediaType)
         val client = OkHttpClient()
@@ -94,7 +94,7 @@ object NetworkUser {
 
                     saveEncryptedJwtToken(context, jsonObj)
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
-                    callback(jo)
+                    callback(jo, response.code)
                 }
             })
         }

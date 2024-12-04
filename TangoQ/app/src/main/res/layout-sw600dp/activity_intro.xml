@@ -19,7 +19,7 @@
         app:layout_constraintBottom_toTopOf="@+id/cardView19"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/tvIntroComment"
         app:srcCompat="@drawable/intro_banner" />
 
     <!--    <androidx.viewpager2.widget.ViewPager2-->
@@ -189,7 +189,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cardView19" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/ivIntroLogo"
         android:layout_width="100dp"
         android:layout_height="70dp"
         android:layout_marginTop="40dp"
@@ -199,7 +199,7 @@
         app:srcCompat="@drawable/app_logo" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/tvIntroComment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -210,5 +210,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/ivIntroLogo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

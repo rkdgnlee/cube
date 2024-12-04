@@ -73,7 +73,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                 val selectAnalysisIndex = matchedIndexs[position]
 
                 val normalCount = selectAnalysisIndex.count { indexTriple ->
-                    currentItem[indexTriple.second].labels[indexTriple.third].state
+                    currentItem[indexTriple.second].labels[indexTriple.third].state == 0
                 }
                 Log.v("선택된 항목 판단", "$selectAnalysisIndex,선택된 3개 중 normal 개수: $normalCount")
                 if (normalCount >= 2) { // 3개 중 2개 이상이 normal이면 true

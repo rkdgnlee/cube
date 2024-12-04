@@ -76,8 +76,19 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
 //        scaleFactorX = min(width * 1f / imageWidth, height * 1f / imageHeight)
 //        scaleFactorY = max(width * 1f / imageWidth, height * 1f / imageHeight)
-        scaleFactorX = if (isTablet(context)) max(width * 1f / imageWidth, height * 1f / imageHeight) else min(width * 1f / imageWidth, height * 1f / imageHeight)
-        scaleFactorY = if (isTablet(context)) min(width * 1f / imageWidth, height * 1f / imageHeight) else max(width * 1f / imageWidth, height * 1f / imageHeight)
+//        scaleFactorX = if (isTablet(context)) max(width * 1f / imageWidth, height * 1f / imageHeight) else min(width * 1f / imageWidth, height * 1f / imageHeight)
+//        scaleFactorY = if (isTablet(context)) min(width * 1f / imageWidth, height * 1f / imageHeight) else max(width * 1f / imageWidth, height * 1f / imageHeight)
+//        invalidate()
+        scaleFactorX = if (isTablet(context))
+            maxOf(width * 1f / imageWidth, height * 1f / imageHeight)
+        else
+            minOf(width * 1f / imageWidth, height * 1f / imageHeight)
+
+        scaleFactorY = if (isTablet(context))
+            minOf(width * 1f / imageWidth, height * 1f / imageHeight)
+        else
+            maxOf(width * 1f / imageWidth, height * 1f / imageHeight)
+
         invalidate()
     }
 

@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.dialog
 
+import android.app.Activity
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,9 +17,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.transition.TransitionInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.`object`.NetworkUser
@@ -47,8 +51,17 @@ class LoginDialogFragment : DialogFragment() {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        sharedElementEnterTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.fade_in_out_transition)
+        sharedElementReturnTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.fade_in_out_transition)
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         ssm = SaveSingletonManager(requireContext(), requireActivity())
         binding.etLDId.requestFocus()
@@ -87,6 +100,20 @@ class LoginDialogFragment : DialogFragment() {
 ////            Log.v("idpwcondition", "${viewModel.currentidCon.value}, pw: ${viewModel.currentPwCon.value}, both: ${viewModel.idPwCondition.value}")
 //        }
 
+        // 응답과 관계없이 로그인 시도 5회 실패시 잠금 ( 3분간 )
+        viewModel.loginTryCount.observe(viewLifecycleOwner) { count ->
+            if (count >= 5) {
+                disabledLogin()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    enabledLogin()
+                    viewModel.loginTryCount.value = 0
+                }, 60000 * 3)
+            }
+            else {
+                enabledLogin()
+            }
+
+        }
         binding.ibtnLDIdClear.setOnClickListener { binding.etLDId.text.clear() }
         binding.ibtnLDPwClear.setOnClickListener { binding.etLDPw.text.clear() }
 
@@ -95,6 +122,7 @@ class LoginDialogFragment : DialogFragment() {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
 
             if (viewModel.idPwCondition.value == true) {
+                viewModel.loginTryCount.value = viewModel.loginTryCount.value?.plus(1)
                 val jsonObject = JSONObject()
                 jsonObject.put("user_id", viewModel.id.value)
                 jsonObject.put("password", viewModel.pw.value)
@@ -102,12 +130,20 @@ class LoginDialogFragment : DialogFragment() {
                 dialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
 
                 lifecycleScope.launch {
-                    getUserIdentifyJson(getString(R.string.API_user), jsonObject, requireContext()) { jo ->
+                    getUserIdentifyJson(getString(R.string.API_user), jsonObject, requireContext()) { jo, code ->
 
                         if (jo?.getString("message") == "invalid login data") { // 기존에 정보가 있을 경우 - 로그인 성공
                             requireActivity().runOnUiThread {
                                 dialog.dismiss()
-                                makeMaterialDialog(0)
+
+                                makeMaterialDialog(
+                                    when (code) {
+                                        401 -> 0
+                                        423 -> 1
+                                        424 -> 2
+                                        else -> 0
+                                    }
+                                )
                                 binding.etLDPw.text.clear()
                             }
                         } else {
@@ -127,20 +163,21 @@ class LoginDialogFragment : DialogFragment() {
                                         NetworkUser.storeUserInSingleton(requireContext(), jo)
                                         createKey(getString(R.string.SECURE_KEY_ALIAS))
 //                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
-                                        lifecycleScope.launch {
-                                            val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid") ?: ""
-                                            val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt() ?: -1
-
+                                        val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid") ?: ""
+                                        val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt() ?: -1
+                                        val safeContext = context
+                                        if (safeContext != null) {
                                             dialog.dismiss()
                                             ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                                Log.v("자체로그인완료", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+                                                Log.v("자체로그인완료", "${Singleton_t_user.getInstance(safeContext).jsonObject}")
                                                 Handler(Looper.getMainLooper()).postDelayed({
-                                                    val intent = Intent(requireContext(), MainActivity::class.java)
-                                                    startActivity(intent)
-                                                    requireActivity().finishAffinity()
+                                                    val intent = Intent(safeContext, MainActivity::class.java)
+                                                    safeContext.startActivity(intent)
+                                                    (safeContext as? Activity)?.finishAffinity()
                                                 }, 500)
                                             }
                                         }
+
                                     }
                                 }
                                 // ------! 싱글턴 + 암호화 저장 끝 !------
@@ -167,18 +204,42 @@ class LoginDialogFragment : DialogFragment() {
     }
 
     private fun makeMaterialDialog(case: Int) {
+        val message = when (case) {
+            0 -> "비밀번호 또는 아이디가 올바르지 않습니다." + if (viewModel.loginTryCount.value!! > 2) "\n시도한 횟수: ${viewModel.loginTryCount.value}번" else ""
+            1 -> "비밀번호가 5회 틀렸습니다. 1분 후 다시 시도해주세요."
+            2 -> "비밀번호를 10회 틀려 계정이 잠겼습니다.\n고객센터로 문의해주세요"
+            else -> ""
+        }
+        when (case) {
+            1 -> {
+                binding.btnLDLogin.isEnabled = false
+                binding.tvLDAlert.visibility = View.VISIBLE
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.btnLDLogin.isEnabled = true
+                    binding.tvLDAlert.visibility = View.GONE
+                },  60000)
+            }
+            2 -> {
+                binding.btnLDLogin.isEnabled = false
+                binding.tvLDAlert.visibility = View.VISIBLE
+            }
+        }
         MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
             setTitle("⚠️ 알림")
-            val message = when (case) {
-                0 -> "비밀번호 또는 아이디가 올바르지 않습니다."
-                1 -> "비밀번호가 5회 틀렸습니다. 1분 후 다시 시도해주세요."
-                else -> "비밀번호를 10회 틀려 계정이 잠겼습니다.\n고객센터로 문의해주세요"
-            }
             setMessage(message)
-            setPositiveButton("확인") { _, _ ->
-
-            }
+            setPositiveButton("확인") { _, _ -> }
             create()
         }.show()
+    }
+
+    private fun disabledLogin() {
+        binding.btnLDLogin.isEnabled = false
+        binding.btnLDLogin.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
+        binding.tvLDAlert.visibility = View.VISIBLE
+    }
+    private fun enabledLogin() {
+        binding.btnLDLogin.isEnabled = true
+        binding.btnLDLogin.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+        binding.tvLDAlert.visibility = View.GONE
     }
 }

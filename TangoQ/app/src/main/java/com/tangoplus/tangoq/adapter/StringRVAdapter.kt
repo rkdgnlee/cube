@@ -36,12 +36,7 @@ class StringRVAdapter(private val fragment: Fragment,
         val tvMIName : TextView = view.findViewById(R.id.tvMIName)
     }
 
-    inner class PartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvPI : TextView = view.findViewById(R.id.tvPI)
-        val cvPI : CardView = view.findViewById(R.id.cvPI)
-        val ivPI : ImageView = view.findViewById(R.id.ivPI)
-        val clPI : ConstraintLayout = view.findViewById(R.id.clPI)
-    }
+
 
     inner class CbViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cbWI : CheckBox = view.findViewById(R.id.cbWI)
@@ -61,11 +56,8 @@ class StringRVAdapter(private val fragment: Fragment,
                 val binding = RvMuscleItemBinding.inflate(inflater, parent, false)
                 MuscleViewHolder(binding.root)
             }
+
             1 -> {
-                val binding = RvPartItemBinding.inflate(inflater, parent, false)
-                PartViewHolder(binding.root)
-            }
-            2 -> {
                 val binding = RvWeeklyItemBinding.inflate(inflater, parent, false)
                 CbViewHolder(binding.root)
             }
@@ -80,9 +72,9 @@ class StringRVAdapter(private val fragment: Fragment,
     override fun getItemViewType(position: Int): Int {
         return when (xmlName) {
             "muscle" -> 0
-            "part" -> 1
-            "measure" -> 2
-            "week" -> 2
+
+            "measure" -> 1
+            "week" -> 1
 //            "connect" -> 3
             else -> throw IllegalArgumentException("Invalid View Type")
         }
@@ -200,25 +192,6 @@ class StringRVAdapter(private val fragment: Fragment,
                 }
 
             }
-            is PartViewHolder -> {
-                if (currentItem != null) {
-                    holder.tvPI.text = currentItem
-//                    setPartItem(holder.clPI, holder.cvPI, holder.tvPI)
-                    when (currentItem) {
-                        "목" -> holder.ivPI.setImageResource(R.drawable.icon_part1)
-                        "우측 어깨", "좌측 어깨" -> holder.ivPI.setImageResource(R.drawable.icon_part2)
-                        "우측 팔꿉", "좌측 팔꿉" -> holder.ivPI.setImageResource(R.drawable.icon_part3)
-                        "우측 손목", "좌측 손목" -> holder.ivPI.setImageResource(R.drawable.icon_part4)
-                        "우측 골반", "좌측 골반" -> holder.ivPI.setImageResource(R.drawable.icon_part5)
-                        "우측 무릎", "좌측 무릎" -> holder.ivPI.setImageResource(R.drawable.icon_part6)
-                        "우측 발목", "좌측 발목" -> holder.ivPI.setImageResource(R.drawable.icon_part7)
-                    }
-                    holder.clPI.setOnClickListener {
-                        val dialog = MainPartDialogFragment.newInstance(currentItem)
-                        dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartDialogFragment")
-                    }
-                }
-            }
 
             is CbViewHolder -> {
                 if (xmlName == "measure") {
@@ -292,10 +265,4 @@ class StringRVAdapter(private val fragment: Fragment,
     private fun setIV(name: String, imageView: ImageView) {
         imageView.setImageResource(fragment.resources.getIdentifier("drawable_muscle_${name}", "drawable", fragment.requireActivity().packageName))
     }
-
-//    private fun setPartItem(cl: ConstraintLayout, cv: CardView, tv: TextView){
-//        cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteContainerColor)
-//        cv.setCardBackgroundColor(fragment.resources.getColor(R.color.deleteColor, null))
-//        tv.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteTextColor))
-//    }
 }

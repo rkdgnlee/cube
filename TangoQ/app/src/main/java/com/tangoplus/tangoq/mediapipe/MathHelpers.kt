@@ -6,12 +6,13 @@ import android.view.WindowManager
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
+import kotlin.math.atan
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 object MathHelpers {
-    private const val SCALE_X = 50f
-    private const val SCALE_Y = 80f
+    private const val SCALE_X = 16.67f // 클수록
+    private const val SCALE_Y = 26.67f
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
@@ -33,44 +34,50 @@ object MathHelpers {
     }
 
     // ------! 선과 점의 X 각도 !------
-    fun calculateAngleByLine(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) : Float {
-        val vector1X = x2 - x1
-        val vector1Y = y2 - y1
-        val vector2X = x3 - x1
-        val vector2Y = y3 - y1
-        val dotProduct = vector1X * vector2X + vector1Y * vector2Y
-        val magnitude1 = sqrt(vector1X.pow(2) + vector1Y.pow(2))
-        val magnitude2 = sqrt(vector2X.pow(2) + vector2Y.pow(2))
+    fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
+        val slope1 = (y2 - y1) / (x2 - x1) // 어깨 선의 기울기
+        val slope2 = (y3 - y1) / (x3 - x1) // 골반 중심의 기울기
 
-        val cosTheta = dotProduct / (magnitude1 * magnitude2)
-        val angleRad = acos(cosTheta.coerceIn(-1.0F, 1.0F))
-
+        val angleRad = atan((slope2 - slope1) / (1 + slope1 * slope2))
         return angleRad * (180f / PI.toFloat())
     }
 
-    fun calculateBoundedScore(value: Float, range: Pair<Float, Float>): Float {
-        val min = range.first
-        val max = range.second
-        val midpoint = (min + max) / 2
-        val halfRange = (max - min) / 2
+    // 0~100점의 백분위로 점수 계산하기 (하나의 raw Data를)
+    fun calculateBoundedScore(value: Float, range: Triple<Float, Float, Float>): Float {
+        val midpoint = range.first
+        val warningBoundary = range.second
+        val criticalBoundary = range.third
+        val warningMin = midpoint - warningBoundary
+        val warningMax = midpoint + warningBoundary
+        val criticalMin = midpoint - criticalBoundary
+        val criticalMax = midpoint + criticalBoundary
         val boundaryMultiplier = 3f // 범위를 벗어난 3배 거리에서 0점
 
         return when {
-            value in min..max -> {
-                // 범위 내 점수 계산 (0~100)
-                val centeredValue = value - midpoint
-                val percentage = ((halfRange - kotlin.math.abs(centeredValue)) / halfRange) * 100f
-                percentage
+            value in criticalMin..criticalMax -> {
+                // 경고 경계 내 점수 계산
+                if (value in warningMin..warningMax) {
+                    // 주의 경계 내 점수 계산 (0~100)
+                    val halfWarningRange = warningBoundary
+                    val centeredValue = value - midpoint
+                    val percentage = ((halfWarningRange - kotlin.math.abs(centeredValue)) / halfWarningRange) * 100f
+                    percentage
+                } else {
+                    // 경고 범위 (주의 범위 밖)에서 점수 감소 (0~50)
+                    val halfCriticalRange = criticalBoundary - warningBoundary
+                    val diff = if (value < warningMin) warningMin - value else value - warningMax
+                    maxOf(0f, 50f - (diff / halfCriticalRange) * 50f)
+                }
             }
-            value < min -> {
-                // 범위보다 작은 값에 대해 점수 감소
-                val diff = min - value
-                maxOf(0f, 50f - (diff / (halfRange * boundaryMultiplier)) * 50f)
+            value < criticalMin -> {
+                // 경고 경계보다 작은 값에 대해 점수 감소
+                val diff = criticalMin - value
+                maxOf(0f, 50f - (diff / (criticalBoundary * boundaryMultiplier)) * 50f)
             }
-            value > max -> {
-                // 범위보다 큰 값에 대해 점수 감소
-                val diff = value - max
-                maxOf(0f, 50f - (diff / (halfRange * boundaryMultiplier)) * 50f)
+            value > criticalMax -> {
+                // 경고 경계보다 큰 값에 대해 점수 감소
+                val diff = value - criticalMax
+                maxOf(0f, 50f - (diff / (criticalBoundary * boundaryMultiplier)) * 50f)
             }
             else -> 0f
         }

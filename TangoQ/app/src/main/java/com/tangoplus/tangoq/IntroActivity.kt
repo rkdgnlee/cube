@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentTransaction
 import androidx.security.crypto.EncryptedSharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -271,7 +272,12 @@ class IntroActivity : AppCompatActivity() {
 
         binding.btnIntroLogin.setOnSingleClickListener{
             val dialog = LoginDialogFragment()
-            dialog.show(this@IntroActivity.supportFragmentManager, "LoginDialogFragment")
+            dialog.show(this@IntroActivity.supportFragmentManager
+//                .beginTransaction()
+//                .addSharedElement(binding.ivIntroLogo, "transLogo")
+//                .addSharedElement(binding.tvIntroComment, "transComment")
+//                .setTransition(FragmentTransaction.TRANSIT_NONE)
+                , "LoginDialogFragment")
         }
 
         binding.btnIntroSignIn.setOnSingleClickListener {

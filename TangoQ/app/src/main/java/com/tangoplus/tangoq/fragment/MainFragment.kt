@@ -29,6 +29,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
+import com.tangoplus.tangoq.adapter.PartRVAdapter
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.data.MeasureVO
@@ -158,16 +159,18 @@ class MainFragment : Fragment() {
     private fun setAdapter(index: Int) {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvM1.layoutManager = layoutManager1
-        val partAdapter = StringRVAdapter(this@MainFragment, measures?.get(index)?.dangerParts?.map { it.first }?.toMutableList(), "part", mvm)
+        val filteredParts = measures?.get(index)?.dangerParts?.filter { it.second == 1f || it.second == 2f}
+        val partAdapter = PartRVAdapter(this@MainFragment, filteredParts?.toMutableList())
         binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
-        Handler(Looper.getMainLooper()).postDelayed({
-            val animationController = PartAnimationController(
-                recyclerView = binding.rvM1,
-                itemCount = partAdapter.itemCount
-            )
-            animationController.startSequentialAnimation()
-        }, 500)
+//        // ------# item 반짝이기 #------
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            val animationController = PartAnimationController(
+//                recyclerView = binding.rvM1,
+//                itemCount = partAdapter.itemCount
+//            )
+//            animationController.startSequentialAnimation()
+//        }, 500)
         // ------# balance check #------
         /* 이미 순위가 매겨진 부위들을 넣어서 index별로 각 밸런스 체크에 들어간다 */
         // TODO 고정으로 일단 위험부위와 점수는 넣어놓기.

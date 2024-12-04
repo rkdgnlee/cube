@@ -218,13 +218,18 @@ class MeasureTrendDialogFragment : DialogFragment() {
             val relatedAnalyzes = mutableListOf<AnalysisVO>()
 
             seqList.forEachIndexed { index, i ->
-                val analysisUnits = getAnalysisUnits(part, i, ja)
-                val normalUnits = analysisUnits.filter { it.state }
-                val isNormal = if (normalUnits.size > (analysisUnits.size - normalUnits.size )) true else false
+                val analysisUnits = getAnalysisUnits(requireContext(), part, i, ja)
+                val normalUnits = analysisUnits.filter { it.state == 1 }.size
+                val warningUnits = analysisUnits.filter { it.state == 2 }.size
+                val dangerUnits = analysisUnits.filter { it.state == 3 }.size
+                val state = if (normalUnits >= warningUnits && normalUnits >= dangerUnits) 1
+                else if (warningUnits >= normalUnits && warningUnits >= dangerUnits) 2
+                else if (dangerUnits >= normalUnits && dangerUnits >= warningUnits) 3
+                else 0
                 val analysisVO = AnalysisVO(
                     i,
                     "",
-                    isNormal,
+                    state,
                     analysisUnits,
                     mvm.selectedMeasure?.fileUris?.get(i) ?: ""
                 )

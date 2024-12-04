@@ -23,7 +23,7 @@ object FileStorageUtil {
     private const val IMAGE_DIR = "images"
     private const val VIDEO_DIR = "videos"
     private const val JSON_DIR = "json"
-
+    private const val TEMP_DIR_NAME = "temp_files"
     // URL에서 파일 저장
     /* 1. SHA-256을 통해 hash 값 받기
     * 2. 저장해서 hash값이 같으면 저장 -> 암호화
@@ -119,7 +119,7 @@ object FileStorageUtil {
             // 캐시에서 먼저 확인
             val cachedData = cache?.get(fileName)
             if (cachedData != null) {
-                return@withContext createTempFileFromBytes(context, cachedData)
+                return@withContext saveToInternalStorage(context, fileName, cachedData)
             }
 
             val fileType = getFileTypeFromExtension(fileName)
@@ -131,16 +131,11 @@ object FileStorageUtil {
             try {
                 // 파일을 메모리로 읽어옴
                 val encryptedData = encryptedFile.readBytes()
-
-                // 복호화
                 val decryptedData = decryptFile(encryptedData, generateAESKey(context))
                     ?: return@withContext null
 
-                // 캐시에 저장
                 cache?.put(fileName, decryptedData)
-
-                // 임시 파일 생성 및 반환
-                createTempFileFromBytes(context, decryptedData)
+                saveToInternalStorage(context, fileName, decryptedData)
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("StorageIndex", "${e.message}")
                 null
@@ -159,13 +154,19 @@ object FileStorageUtil {
             }
         }
     }
-    private fun createTempFileFromBytes(context: Context, data: ByteArray): File {
-        val tempFile = File.createTempFile("decrypted_", null, context.cacheDir)
-        tempFile.writeBytes(data)
-        tempFile.deleteOnExit() // 앱 종료 시 임시 파일 삭제
-        return tempFile
+//    private fun createTempFileFromBytes(context: Context, data: ByteArray): File {
+//        val tempFile = File.createTempFile("decrypted_", ".tmp", context.cacheDir)
+//        tempFile.writeBytes(data)
+//        tempFile.deleteOnExit() // 앱 종료 시 임시 파일 삭제
+//        Log.v("FileRetrieval", "Cached file path: ${tempFile.absolutePath}")
+//        return tempFile
+//    }
+    private fun saveToInternalStorage(context: Context, fileName: String, data: ByteArray): File {
+        val internalFile = File(context.filesDir, fileName)
+        internalFile.writeBytes(data)
+        Log.v("FileStorage", "File saved to internal storage: ${internalFile.absolutePath}")
+        return internalFile
     }
-
     fun deleteFile(context: Context, fileName: String): Boolean {
         val fileType = getFileTypeFromExtension(fileName)
         val dir = getDirectory(context, fileType)

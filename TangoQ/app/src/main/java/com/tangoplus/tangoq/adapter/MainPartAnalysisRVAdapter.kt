@@ -22,12 +22,17 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val anal
     inner class AnalysisViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPAITitle : TextView = view.findViewById(R.id.tvMPAITitle)
         val vMPAILeft : View = view.findViewById(R.id.vMPAILeft)
+        val vMPAIMiddle: View = view.findViewById(R.id.vMPAIMiddle)
         val vMPAIRight : View = view.findViewById(R.id.vMPAIRight)
+
         val tvMPAILeft : TextView = view.findViewById(R.id.tvMPAILeft)
+        val tvMPAIMiddle : TextView = view.findViewById(R.id.tvMPAIMiddle)
         val tvMPAIRight : TextView = view.findViewById(R.id.tvMPAIRight)
+
         val ivMPAIArrow : ImageView = view.findViewById(R.id.ivMPAIArrow)
         val tvMPAIExplain : TextView = view.findViewById(R.id.tvMPAIExplain)
         val tvMPAIData : TextView = view.findViewById(R.id.tvMPAIData)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -68,26 +73,41 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val anal
         }
     }
 
-    private fun setState(holder: AnalysisViewHolder, isNormal: Boolean) {
+    private fun setState(holder: AnalysisViewHolder, isNormal: Int) {
         val params = holder.ivMPAIArrow.layoutParams as ConstraintLayout.LayoutParams
         when (isNormal) {
-            false -> {
+            3 -> {
                 holder.vMPAILeft.visibility = View.VISIBLE
+                holder.vMPAIMiddle.visibility = View.INVISIBLE
                 holder.vMPAIRight.visibility = View.INVISIBLE
                 holder.tvMPAILeft.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteColor))
+                holder.tvMPAIMiddle.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
                 holder.tvMPAIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
                 holder.tvMPAIData.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
 
                 params.horizontalBias = 0.12f
             }
-            true -> {
+            2 -> {
                 holder.vMPAILeft.visibility = View.INVISIBLE
+                holder.vMPAIMiddle.visibility = View.VISIBLE
+                holder.vMPAIRight.visibility = View.INVISIBLE
+                holder.tvMPAILeft.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
+                holder.tvMPAIMiddle.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.cautionColor))
+                holder.tvMPAIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
+                holder.tvMPAIData.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))
+
+                params.horizontalBias = 0.5f
+            }
+            1 -> {
+                holder.vMPAILeft.visibility = View.INVISIBLE
+                holder.vMPAIMiddle.visibility = View.INVISIBLE
                 holder.vMPAIRight.visibility = View.VISIBLE
                 holder.tvMPAILeft.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
+                holder.tvMPAIMiddle.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
                 holder.tvMPAIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.thirdColor))
                 holder.tvMPAIData.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
-                params.horizontalBias = 0.65f
+                params.horizontalBias = 0.88f
             }
         }
     }

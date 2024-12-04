@@ -105,7 +105,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
         binding.tvMPPDTitle.text = "${avm.selectedPart} - ${avm.setSeqString(avm.currentAnalysis?.seq)}"
         binding.tvMPPDSummary.text = avm.currentAnalysis?.summary
         measureResult = mvm.selectedMeasure?.measureResult
-        setState(avm.currentAnalysis?.isNormal)
+        avm.currentAnalysis?.isNormal?.let { setState(it) }
         if (avm.currentAnalysis != null) {
             when (avm.currentAnalysis?.seq) {
                 1 -> {
@@ -158,6 +158,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
     }
 
     private fun setAdapter() {
+        Log.v("AnalysisLabel", "labels: ${avm.currentAnalysis?.labels}")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val adapter = MainPartAnalysisRVAdapter(this@MainPartPoseDialogFragment, avm.currentAnalysis?.labels, avm.selectedPart)
         binding.rvMPPDLeft.layoutManager = layoutManager
@@ -191,7 +192,6 @@ class MainPartPoseDialogFragment : DialogFragment() {
             "front_horizontal_angle_elbow" -> "양 팔꿉의 높낮이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"
             "front_horizontal_distance_sub_elbow" -> "양 팔꿉의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "front_vertical_angle_shoulder_elbow_left" -> "어깨와 팔꿉의 각도를 의미합니다. 기울기 값 일수록 어깨와 상완 근육의 긴장이 의심됩니다" // TODO 각도 추가
-            "front_vertical_angle_elbow_wrist" -> "팔꿉과 손목의 각도를 의미합니다. 기울기 값 일수록 상완 근육의 긴장이 의심됩니다" // TODO 각도 추가
             "front_elbow_align_angle_left_upper_elbow_elbow_wrist" -> "팔꿉 측정에서 상완-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             "front_elbow_align_angle_left_shoulder_elbow_wrist" -> "어깨-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             "side_left_vertical_angle_shoulder_elbow" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 커질수록 상완과 연결된 어깨 근육의 긴장이 의심됩니다"
@@ -201,54 +201,49 @@ class MainPartPoseDialogFragment : DialogFragment() {
 //            "front_horizontal_angle_elbow" -> "양 팔꿉의 높낮이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"
 //            "front_horizontal_distance_sub_elbow" -> "양 팔꿉의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "front_vertical_angle_shoulder_elbow_right" -> "어깨와 팔꿉의 각도를 의미합니다. 기울기 값 일수록 어깨와 상완 근육의 긴장이 의심됩니다"
-//            "front_vertical_angle_elbow_wrist" -> "팔꿉과 손목의 각도를 의미합니다. 기울기 값 일수록 상완 근육의 긴장이 의심됩니다"
             "front_elbow_align_angle_right_upper_elbow_elbow_wrist" -> "팔꿉 측정에서 상완-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             "front_elbow_align_angle_right_shoulder_elbow_wrist" -> "어깨-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             "side_right_vertical_angle_shoulder_elbow" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 할수록 어깨 주변 근육의 긴장이 의심됩니다"
             "side_right_vertical_angle_elbow_wrist" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 할수록 어깨 주변 근육의 긴장이 의심됩니다"
             "side_right_vertical_angle_shoulder_elbow_wrist" -> "측면에서 어깨-팔꿉-손목의 각도입니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             // 좌측 손목
-            "front_vertical_angle_elbow_wrist_left" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
+            "front_vertical_angle_elbow_wrist_left" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 90° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
             "front_horizontal_angle_wrist" -> "양 손목의 높이 차를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
-            "front_elbow_align_angle_mid_index_wrist_elbow_left" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
-            "front_elbow_align_distance_left_wrist_shoulder" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
+            "front_elbow_align_distance_left_wrist_shoulder" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
+            "front_elbow_align_distance_center_wrist_left" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
             "side_left_horizontal_distance_wrist" -> "측면에서 몸의 무게중심에서 손목까지의 거리를 의미합니다. 멀어질 수록 이두근 긴장, 전완근의 긴장 등이 의심됩니다."
             // 우측 손목
             "front_vertical_angle_elbow_wrist_right" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
 //            "front_horizontal_angle_wrist" -> ""
-            "front_elbow_align_angle_mid_index_wrist_elbow_right" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
-            "front_elbow_align_distance_right_wrist_shoulder" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
+            "front_elbow_align_distance_right_wrist_shoulder" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
+            "front_elbow_align_distance_center_wrist_right" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
             "side_right_horizontal_distance_wrist" -> "측면에서 몸의 무게중심에서 손목까지의 거리를 의미합니다. 멀어질 수록 이두근 긴장, 전완근의 긴장 등이 의심됩니다."
             // 좌측 골반
             "front_vertical_angle_hip_knee_left" -> "골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 서있는 자세를 교정해보세요"
-            "front_vertical_angle_hip_knee_ankle_left" -> "좌측 골반-무릎-발목의 기울기를 의미합니다. 기울기 값 180° 기준으로 10° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 무릎위치 및 걷는 자세를 주목해보세요."
             "front_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "side_left_vertical_angle_hip_knee" -> "측면에서 골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 햄스트링, 종아리근육의 긴장이 있을 수 있으니 스트레칭을 추천드립니다"
             "side_left_horizontal_distance_hip" -> "측면에서 몸의 무게중심에서 골반까지의 거리를 의미합니다. 멀어질 수록 몸의 무게중심 쏠림 등이 의심됩니다."
-            "side_left_vertical_angle_hip_knee_ankle" -> "측면에서 골반-무릎-발목의 기울기를 의미합니다. 기울기 값 180° 기준으로 10° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 햄스트링, 종아리근육의 긴장이 있을 수 있으니 스트레칭을 추천드립니다"
             "back_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" -> "앉은 자세에서 양 어깨와 골반 중심의 각도를 의미합니다. 각도 값 50° 기준으로 10° 이내의 범위를 표준적인 각도입니다."
-//            "back_sit_vertical_angle_shoulder_center_hip" -> "앉은 자세에서 어깨와 골반 중심의 기울기를 의미합니다. 각도 값 90° 기준으로 1° 이내의 범위를 표준적인 각도입니다."
+            "back_sit_vertical_angle_shoulder_center_hip" -> "앉은 자세에서 어깨와 골반 중심의 기울기를 의미합니다. 각도 값 90° 기준으로 1° 이내의 범위를 표준적인 각도입니다."
             // 우측 골반
             "front_vertical_angle_hip_knee_right" -> "골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 서있는 자세를 교정해보세요"
-            "front_vertical_angle_hip_knee_ankle_right" -> "우측 골반-무릎-발목의 기울기를 의미합니다. 기울기 값 180° 기준으로 10° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 무릎위치 및 걷는 자세를 주목해보세요."
 //            "front_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "side_right_vertical_angle_hip_knee" -> "측면에서 골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 햄스트링, 종아리근육의 긴장이 있을 수 있으니 스트레칭을 추천드립니다"
             "side_right_horizontal_distance_hip" -> "측면에서 몸의 무게중심에서 골반까지의 거리를 의미합니다. 멀어질 수록 몸의 무게중심 쏠림 등이 의심됩니다."
-            "side_right_vertical_angle_hip_knee_ankle" -> "측면에서 골반-무릎-발목의 기울기를 의미합니다. 기울기 값 180° 기준으로 10° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 햄스트링, 종아리근육의 긴장이 있을 수 있으니 스트레칭을 추천드립니다"
 //            "back_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
 //            "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" -> "앉은 자세에서 양 어깨와 골반 중심의 각도를 의미합니다. 각도 값 50° 기준으로 10° 이내의 범위를 표준적인 각도입니다."
 //            "back_sit_vertical_angle_shoulder_center_hip" -> ""
             // 좌측 무릎
             "front_horizontal_angle_knee" -> "양 무릎의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
             "front_horizontal_distance_knee_left" -> "몸의 중심에서 우측 무릎의 거리를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"
-//            "front_vertical_angle_hip_knee_ankle_left" -> "골반-무릎-발목의 수직각도를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 벗어날 경우 햄스트링과 오금의 근육을 이완하는 스트레칭을 추천드립니다."
+            "front_vertical_angle_hip_knee_ankle_left" -> "골반-무릎-발목의 수직각도를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 벗어날 경우 햄스트링과 오금의 근육을 이완하는 스트레칭을 추천드립니다."
             "back_horizontal_angle_knee" -> "양 무릎의 기울기를 의미합니다. 기울기 값 0° 기준으로 0.5° 오차 이내가 표준적인 기울기 입니다"
             "back_horizontal_distance_knee_left" -> "몸의 중심에서 좌측 무릎까지의 거리를 의미합니다. 기울기 값 0cm 기준으로 0.5cm 오차 이내가 표준적인 거리 입니다. 벗어날 경우 좌측 다리에 무게를 더 실어 서는 습관이 의심됩니다. 골반 교정 운동을 추천드립니다"
             // 우측 무릎
 //            "front_horizontal_angle_knee" -> "양 무릎의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
             "front_horizontal_distance_knee_right" -> "몸의 중심에서 우측 무릎의 거리를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"
-//            "front_vertical_angle_hip_knee_ankle_right" -> "골반-무릎-발목의 수직각도를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 벗어날 경우 햄스트링과 오금의 근육을 이완하는 스트레칭을 추천드립니다."
+            "front_vertical_angle_hip_knee_ankle_right" -> "골반-무릎-발목의 수직각도를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 벗어날 경우 햄스트링과 오금의 근육을 이완하는 스트레칭을 추천드립니다."
 //            "back_horizontal_angle_knee" -> "양 무릎의 기울기를 의미합니다. 기울기 값 0° 기준으로 0.5° 오차 이내가 표준적인 기울기 입니다"
             "back_horizontal_distance_knee_right" -> "몸의 중심에서 좌측 무릎까지의 거리를 의미합니다. 기울기 값 0cm 기준으로 0.5cm 오차 이내가 표준적인 거리 입니다. 벗어날 경우 좌측 다리에 무게를 더 실어 서는 습관이 의심됩니다. 골반 교정 운동을 추천드립니다"
             // 좌측 발목
@@ -267,23 +262,23 @@ class MainPartPoseDialogFragment : DialogFragment() {
         }
     }
 
-    private fun setState(isNormal: Boolean?) {
+    private fun setState(isNormal: Int) {
         when (isNormal) {
-            false -> {
+            3 -> {
                 binding.tvMPPDSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.deleteContainerColor))
                 binding.tvMPPDSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.deleteColor))
                 binding.ivMPPDIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.deleteColor))
             }
 
-            true -> {
+            1 -> {
                 binding.tvMPPDSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.secondBgContainerColor))
                 binding.tvMPPDSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
                 binding.ivMPPDIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.thirdColor))
             }
-            null -> {
-                binding.tvMPPDSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.deleteContainerColor))
-                binding.tvMPPDSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.deleteColor))
-                binding.ivMPPDIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.deleteColor))
+            2 -> {
+                binding.tvMPPDSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.cautionContainerColor))
+                binding.tvMPPDSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.cautionColor))
+                binding.ivMPPDIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.cautionColor))
             }
         }
     }

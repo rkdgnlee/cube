@@ -89,7 +89,7 @@
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="@+id/etLDPw"
             app:layout_constraintStart_toStartOf="@+id/etLDPw"
-            app:layout_constraintTop_toBottomOf="@+id/etLDPw" />
+            app:layout_constraintTop_toBottomOf="@+id/tvLDAlert" />
 
         <TextView
             android:id="@+id/tvLDFind"
@@ -140,18 +140,37 @@
             android:textColor="@color/black"
             android:textSize="26dp"
             android:textStyle="bold"
+            android:transitionName="transComment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView39" />
 
         <ImageView
             android:id="@+id/imageView39"
-            android:layout_width="64dp"
-            android:layout_height="52dp"
+            android:layout_width="58dp"
+            android:layout_height="48dp"
             android:layout_marginTop="30dp"
+            android:transitionName="transLogo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/app_logo" />
+
+        <TextView
+            android:id="@+id/tvLDAlert"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:text="로그인 시도를 5회 실패하셨습니다.\n로그인을 3분간 잠금합니다."
+            android:textColor="@color/deleteTextColor"
+            android:textSize="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLDPw" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
