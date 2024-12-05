@@ -1,14 +1,11 @@
 package com.tangoplus.tangoq.`object`
 
-import android.content.ContentValues
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -31,7 +28,7 @@ object NetworkUser {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }
@@ -50,15 +47,15 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()?.substringAfter("response: ")
-                Log.e("SDK>Server>User", "$responseBody")
+                Log.v("SDK>Server>User", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
 
                 // ------! 토큰 저장 !------
                 val token = jo?.optString("jwt")
                 if (token != null) {
                     val jsonObj = JSONObject()
-                    jsonObj.put("jwt_token", jo.optString("jwt"))
-                    jsonObj.put("refresh_jwt_token", jo.optString("refresh_jwt"))
+                    jsonObj.put("access_jwt", jo.optString("access_jwt"))
+                    jsonObj.put("refresh_jwt", jo.optString("refresh_jwt"))
                     saveEncryptedJwtToken(context, jsonObj)
                 }
                 callback(jo)
@@ -87,10 +84,10 @@ object NetworkUser {
                     Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
 
-                    // ------#토큰 저장 #------
+                    // ------# 토큰 저장 #------
                     val jsonObj = JSONObject()
-                    jsonObj.put("jwt_token", jo?.optString("jwt"))
-                    jsonObj.put("refresh_jwt_token", jo?.optString("refresh_jwt"))
+                    jsonObj.put("access_jwt", jo?.optString("access_jwt"))
+                    jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
 
                     saveEncryptedJwtToken(context, jsonObj)
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
@@ -102,20 +99,23 @@ object NetworkUser {
 
 
     // Id, Pw 자동 로그인 (토큰)
-    suspend fun rememberMeByRefreshToken(myUrl: String, context: Context, callback: (JSONObject?) -> Unit) {
+    suspend fun logoutDenyRefreshJwt(myUrl: String, context: Context, callback: (Int) -> Unit) {
+        val bodyJo = JSONObject()
+        bodyJo.put("refresh_token", getEncryptedRefreshJwt(context))
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toString().toRequestBody(mediaType)
         val client = HttpClientProvider.getClient(context)
         val request = Request.Builder()
-            .url("$myUrl/endpoint")
-            .get()
+            .url("$myUrl/logout.php")
+            .post(body)
             .build()
 
         return withContext(Dispatchers.IO) {
             try {
                 val response = client.newCall(request).execute()
-                val responseBody = response.body?.string()
-                val jo = responseBody?.let { JSONObject(it) }
                 withContext(Dispatchers.Main) {
-                    callback(jo)
+                    callback(response.code)
+                    Log.v("logout", "${response.code}")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("UserIndex", "refresh: ${e.message}")
@@ -223,31 +223,31 @@ object NetworkUser {
             }
         }
     }
-
-    // ------# 마케팅 수신 동의 관련 insert문 #------
-    fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = RequestBody.create(mediaType, idPw.toString())
-
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("${myUrl}read.php")
-            .header("user_token", userToken)
-            .post(body)
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("마케팅Failed", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.e("마케팅Success", "$responseBody")
-                val jo = responseBody?.let { JSONObject(it) }
-                callback(jo)
-            }
-        })
-    }
+//
+//    // ------# 마케팅 수신 동의 관련 insert문 #------
+//    fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
+//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+//        val body = RequestBody.create(mediaType, idPw.toString())
+//
+//        val client = OkHttpClient()
+//        val request = Request.Builder()
+//            .url("${myUrl}read.php")
+//            .header("user_token", userToken)
+//            .post(body)
+//            .build()
+//        client.newCall(request).enqueue(object : Callback {
+//            override fun onFailure(call: Call, e: IOException) {
+//                Log.e("마케팅Failed", "Failed to execute request!")
+//            }
+//
+//            override fun onResponse(call: Call, response: Response) {
+//                val responseBody = response.body?.string()
+//                Log.e("마케팅Success", "$responseBody")
+//                val jo = responseBody?.let { JSONObject(it) }
+//                callback(jo)
+//            }
+//        })
+//    }
 
 
     fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String, callback: (Boolean) -> Unit) {
@@ -255,7 +255,7 @@ object NetworkUser {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }
@@ -332,42 +332,13 @@ object NetworkUser {
             }
         })
     }
-//    fun verifyBeforeResetPw(myUrl: String, joBody: String, callback: (Boolean) -> Unit) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = joBody.toRequestBody(mediaType)
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//            .url("${myUrl}user")
-//            .post(body)
-//            .build()
-//        client.newCall(request).enqueue(object: Callback{
-//            override fun onFailure(call: Call, e: IOException) {
-//                Log.e("IDPW찾기Failed", "Failed to execute request!")
-//            }
-//
-//            override fun onResponse(call: Call, response: Response) {
-//                val responseBody = response.body?.string()
-//                Log.v("userId", "$responseBody")
-//                val jo = responseBody?.let { JSONObject(it) }
-//                if (jo != null) {
-//                    if (jo.optString("status") == "1") {
-//                        callback(true)
-//                    } else {
-//                        callback(false)
-//                    }
-//                }
-//            }
-//        })
-//    }
-
-
 
     // ------! 프로필 사진 시작 !------
     suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }

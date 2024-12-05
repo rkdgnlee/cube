@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ProgramVO
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.`object`.NetworkExercise.jsonToExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,7 +18,7 @@ object NetworkProgram {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }

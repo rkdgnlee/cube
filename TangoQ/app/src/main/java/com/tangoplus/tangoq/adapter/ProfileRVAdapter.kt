@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.ktx.auth
@@ -29,15 +30,19 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.dialog.ConnectManageDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.ProfileEditBSDialogFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.`object`.NetworkUser.logoutDenyRefreshJwt
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
 import com.tangoplus.tangoq.`object`.Singleton_t_user
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 import java.lang.IllegalArgumentException
@@ -175,17 +180,42 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                                 Log.e("로그아웃", "KAKAO Sign out successful")
                                             }
                                         }
-                                    } else if (getEncryptedJwtToken(fragment.requireContext()) != null) {
+                                    } else if (getEncryptedAccessJwt(fragment.requireContext()) != null) {
                                         saveEncryptedJwtToken(fragment.requireContext(), null)
                                     }
-                                    val intent = Intent(holder.itemView.context, IntroActivity::class.java)
-                                    holder.itemView.context.startActivity(intent)
-                                    fragment.requireActivity().finishAffinity()
+
                                     // 싱글턴에 들어갔던거 전부 비우기
                                     Singleton_t_user.getInstance(fragment.requireContext()).jsonObject = null
                                     Singleton_t_measure.getInstance(fragment.requireContext()).measures = null
                                     Singleton_t_progress.getInstance(fragment.requireContext()).programProgresses = mutableListOf()
                                     Singleton_t_progress.getInstance(fragment.requireContext()).graphProgresses = mutableListOf()
+                                    try {
+                                        fragment.lifecycleScope.launch {
+                                            logoutDenyRefreshJwt(fragment.getString(R.string.API_user), fragment.requireContext()) { code ->
+                                                if (code == 200) {
+                                                    val intent = Intent(holder.itemView.context, IntroActivity::class.java)
+                                                    holder.itemView.context.startActivity(intent)
+                                                    fragment.requireActivity().finishAffinity()
+                                                }
+                                            }
+                                        }
+                                    } catch (e: IllegalStateException) {
+                                        Log.e("logoutError", "LogoutIllegalState: ${e.message}")
+                                    } catch (e: IllegalArgumentException) {
+                                        Log.e("logoutError", "LogoutIllegalArgument: ${e.message}")
+                                    } catch (e: NullPointerException) {
+                                        Log.e("logoutError", "LogoutNullPointer: ${e.message}")
+                                    } catch (e: InterruptedException) {
+                                        Log.e("logoutError", "LogoutInterrupted: ${e.message}")
+                                    } catch (e: IndexOutOfBoundsException) {
+                                        Log.e("logoutError", "LogoutIndexOutOfBounds: ${e.message}")
+                                    } catch (e: Exception) {
+                                        Log.e("logoutError", "Logout: ${e.message}")
+                                    } finally {
+                                        val intent = Intent(holder.itemView.context, IntroActivity::class.java)
+                                        holder.itemView.context.startActivity(intent)
+                                        fragment.requireActivity().finishAffinity()
+                                    }
                                 }
                             }
                         }

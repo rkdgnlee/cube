@@ -3,7 +3,7 @@ package com.tangoplus.tangoq.`object`
 import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.data.RecommendationVO
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
@@ -20,7 +20,7 @@ object NetworkRecommendation {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }
@@ -93,7 +93,7 @@ object NetworkRecommendation {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }
@@ -152,7 +152,7 @@ object NetworkRecommendation {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }

@@ -12,14 +12,14 @@
         android:id="@+id/tvSignInGuide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="회원가입을 시작할게요"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/btnSignInBack"
-        app:layout_constraintStart_toEndOf="@+id/btnSignInBack"
-        app:layout_constraintTop_toTopOf="@+id/btnSignInBack" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.shuhart.stepview.StepView
         android:id="@+id/svSignIn"
@@ -577,17 +577,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <ImageButton
-        android:id="@+id/btnSignInBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/effect_ibtn_20dp"
-        android:backgroundTint="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon_arrow_left" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

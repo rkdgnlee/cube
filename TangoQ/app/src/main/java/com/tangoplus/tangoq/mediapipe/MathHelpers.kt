@@ -3,10 +3,12 @@ package com.tangoplus.tangoq.mediapipe
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import java.lang.Math.toDegrees
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan
+import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -16,7 +18,9 @@ object MathHelpers {
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        return (y2 - y1) / (x2 - x1)
+        val radians = atan2(y2 - y1, x2 - x1)
+        val degrees = toDegrees(radians.toDouble())
+        return degrees.toFloat()
     }
     // ------# 점 3개의 각도 계산 #------
     fun calculateAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3:Float): Float {
@@ -35,11 +39,31 @@ object MathHelpers {
 
     // ------! 선과 점의 X 각도 !------
     fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
-        val slope1 = (y2 - y1) / (x2 - x1) // 어깨 선의 기울기
-        val slope2 = (y3 - y1) / (x3 - x1) // 골반 중심의 기울기
+        // 중간값 계산
+        val x4 = (x1 + x2) / 2
+        val y4 = (y1 + y2) / 2
 
-        val angleRad = atan((slope2 - slope1) / (1 + slope1 * slope2))
-        return angleRad * (180f / PI.toFloat())
+        // 벡터1: (x1, y1) -> (x4, y4)
+        val dx1 = x4 - x1
+        val dy1 = y4 - y1
+
+        // 벡터2: (x4, y4) -> (x3, y3)
+        val dx2 = x3 - x4
+        val dy2 = y3 - y4
+
+        // 내적 계산
+        val dotProduct = dx1 * dx2 + dy1 * dy2
+
+        // 벡터 크기 계산
+        val magnitude1 = sqrt(dx1.pow(2) + dy1.pow(2))
+        val magnitude2 = sqrt(dx2.pow(2) + dy2.pow(2))
+
+        // 코사인 값 계산
+        val cosTheta = dotProduct / (magnitude1 * magnitude2)
+
+        // 라디안 -> 도 변환
+        val angleRadians = acos(cosTheta)
+        return toDegrees(angleRadians.toDouble()).toFloat()
     }
 
     // 0~100점의 백분위로 점수 계산하기 (하나의 raw Data를)

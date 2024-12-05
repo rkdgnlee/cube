@@ -221,11 +221,11 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         // ------! 관련 운동 횡 rv 끝 !------
 
         // ------! ai코칭 시작 !------
-        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
-            binding.btnPTDAIPlay.visibility = View.VISIBLE
-        } else {
+//        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
+//            binding.btnPTDAIPlay.visibility = View.VISIBLE
+//        } else {
             binding.btnPTDAIPlay.visibility = View.GONE
-        }
+//        }
         binding.btnPTDAIPlay.setOnClickListener {
 
             if (isTablet(requireContext())) {

@@ -21,17 +21,16 @@ class TrendCurveView @JvmOverloads constructor(
 
     private val paint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.thirdColor)
-        strokeWidth = 6f
+        strokeWidth = 4f
         style = Paint.Style.STROKE
     }
-
     private val path = Path()
 
     private var points = listOf<Pair<Float, Float>>()
     private var resampledPoints = listOf<Pair<Float, Float>>()
     private var margin = 20f // 기본 마진 값
     private var boundingBox = RectF()
-    private val resampleSize = 15
+    private val resampleSize = 20
 
     fun setPoints(newPoints: List<Pair<Float, Float>>, newMargin: Float = 15f) {
         points = newPoints

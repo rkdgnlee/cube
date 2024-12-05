@@ -9,7 +9,7 @@ import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -31,7 +31,7 @@ object NetworkMeasure {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }
@@ -121,7 +121,7 @@ object NetworkMeasure {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }
@@ -219,7 +219,7 @@ object NetworkMeasure {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }
@@ -282,7 +282,7 @@ object NetworkMeasure {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }

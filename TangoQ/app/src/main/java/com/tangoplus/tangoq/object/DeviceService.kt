@@ -7,7 +7,7 @@ import android.net.NetworkCapabilities
 import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -50,7 +50,7 @@ object DeviceService {
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
                 .build()
             chain.proceed(newRequest)
         }

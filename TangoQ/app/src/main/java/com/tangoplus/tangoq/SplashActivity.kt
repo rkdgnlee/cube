@@ -3,7 +3,6 @@ package com.tangoplus.tangoq
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -14,7 +13,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -29,19 +27,12 @@ import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.function.SecurePreferencesManager.clearEncryptedJwtToken
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwt
-import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
-import com.tangoplus.tangoq.`object`.NetworkUser.rememberMeByRefreshToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -49,7 +40,6 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import javax.crypto.AEADBadTagException
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {

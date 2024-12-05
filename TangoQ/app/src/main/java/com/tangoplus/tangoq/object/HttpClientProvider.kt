@@ -2,8 +2,8 @@ package com.tangoplus.tangoq.`object`
 
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtToken
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwtToken
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -19,7 +19,7 @@ object HttpClientProvider {
             client = OkHttpClient.Builder()
                 .addInterceptor { chain ->
                     var request = chain.request()
-                    val accessToken = getEncryptedJwtToken(context)
+                    val accessToken = getEncryptedAccessJwt(context)
 
                     // Access Token 추가
                     request = request.newBuilder()
@@ -33,7 +33,7 @@ object HttpClientProvider {
                         response.close() // 기존 응답 닫기
 
                         // Refresh Token으로 새 Access Token 발급
-                        val refreshToken = getEncryptedRefreshJwtToken(context)
+                        val refreshToken = getEncryptedRefreshJwt(context)
                         val newToken = refreshAccessToken(context, refreshToken.toString())
 
                         if (newToken != null) {
@@ -57,9 +57,9 @@ object HttpClientProvider {
     // ------# 만료됐을 때 다시 토큰 발급 받아 저장 #------
     private fun refreshAccessToken(context: Context, refreshToken: String): JSONObject? {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = JSONObject().put("refresh_jwt", refreshToken).toString().toRequestBody(mediaType)
+        val body = JSONObject().put("refresh_token", refreshToken).toString().toRequestBody(mediaType)
         val request = Request.Builder()
-            .url("https://your.api/refresh_token_endpoint") // TODO Refresh 토큰 요청 URL
+            .url("https://gym.tangoplus.co.kr/api/refresh.php")
             .post(body)
             .build()
 

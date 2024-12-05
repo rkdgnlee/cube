@@ -164,7 +164,7 @@ object FileStorageUtil {
     private fun saveToInternalStorage(context: Context, fileName: String, data: ByteArray): File {
         val internalFile = File(context.filesDir, fileName)
         internalFile.writeBytes(data)
-        Log.v("FileStorage", "File saved to internal storage: ${internalFile.absolutePath}")
+//        Log.v("FileStorage", "File saved to internal storage: ${internalFile.absolutePath}")
         return internalFile
     }
     fun deleteFile(context: Context, fileName: String): Boolean {

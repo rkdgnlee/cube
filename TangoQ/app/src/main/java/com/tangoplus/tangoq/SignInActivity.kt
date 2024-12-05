@@ -397,7 +397,6 @@ class SignInActivity : AppCompatActivity() {
             }
         })
 
-
         // ----- ! ID 조건 코드 ! -----
         binding.etId.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
@@ -461,10 +460,7 @@ class SignInActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }) //-----! 입력 문자 조건 끝 !-----
 
-        // -----! 뒤로 가기 버튼 시작 !-----
-        binding.btnSignInBack.setOnSingleClickListener {
-            finish()
-        }
+
     } // -----! 회원가입 입력 창 anime 끝 !-----
 
     @SuppressLint("SetTextI18n")

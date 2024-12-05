@@ -1056,10 +1056,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
                 binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
                 if (repeatCount.value != 1) {
-                    mvm.statics.removeAt(repeatCount.value  ?: 0)
+                    mvm.statics.removeAt(repeatCount.value?.minus(1) ?: 0)
+                    mvm.staticFiles.removeAt(repeatCount.value?.minus(1) ?: 0)
+                    mvm.staticJsonFiles.removeAt(repeatCount.value?.minus(1) ?: 0)
                 } else {
                     mvm.dynamic = null
                     mvm.dynamicJa = JSONArray()
+                    mvm.dynamicFile = null
+                    mvm.dynamicJsonFile = null
                 }
 
             }
@@ -1429,6 +1433,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
 
                     mvm.staticjo.apply {
+                        // 이 부분이 전부 상대좌표로 들어가는 중 그래서 값도 0.2x로 들어가는 중
                         put("front_horizontal_angle_ear", safePut(earAngle) % 180 )
                         put("front_horizontal_angle_shoulder", safePut(shoulderAngle) % 180 )
                         put("front_horizontal_angle_elbow", safePut(elbowAngle) % 180 )
@@ -1444,7 +1449,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_horizontal_distance_sub_hip", hipSubDistance)
                         put("front_horizontal_distance_sub_knee", kneeSubDistance)
                         put("front_horizontal_distance_sub_ankle", ankleSubDistance)
-
+                        // 여기까지
                         put("front_horizontal_distance_wrist_left", wristSubDistanceByX.first)
                         put("front_horizontal_distance_wrist_right", wristSubDistanceByX.second)
                         put("front_horizontal_distance_knee_left", kneeSubDistanceByX.first)
@@ -1454,25 +1459,28 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_horizontal_distance_toe_left", toeSubDistance.first)
                         put("front_horizontal_distance_toe_right", toeSubDistance.second)
 
-                        put("front_vertical_angle_shoulder_elbow_left", safePut(shoulderElbowLean.first) % 180 + 90)
-                        put("front_vertical_angle_shoulder_elbow_right", safePut(shoulderElbowLean.second) % 180 + 90)
-                        put("front_vertical_angle_elbow_wrist_left", safePut(elbowWristLean.first) % 180 + 90)
-                        put("front_vertical_angle_elbow_wrist_right",safePut(elbowWristLean.second) % 180 + 90)
-                        put("front_vertical_angle_wrist_thumb_left",safePut(wristThumbLean.first) % 180 + 90)
-                        put("front_vertical_angle_wrist_thumb_right",safePut(wristThumbLean.second) % 180 + 90)
-                        put("front_vertical_angle_hip_knee_left",safePut(hipKneeLean.first) % 180 + 90)
-                        put("front_vertical_angle_hip_knee_right",safePut(hipKneeLean.second) % 180 + 90)
-                        put("front_vertical_angle_knee_ankle_left", safePut(kneeAnkleLean.first) % 180 + 90)
-                        put("front_vertical_angle_knee_ankle_right", safePut(kneeAnkleLean.second) % 180 + 90)
-                        put("front_vertical_angle_ankle_toe_left", safePut(ankleToeLean.first) % 180 + 90)
-                        put("front_vertical_angle_ankle_toe_right", safePut( ankleToeLean.second) % 180 + 90)
+                        put("front_vertical_angle_shoulder_elbow_left", safePut(shoulderElbowLean.first) % 180 )
+                        put("front_vertical_angle_shoulder_elbow_right", safePut(shoulderElbowLean.second) % 180 )
+                        put("front_vertical_angle_elbow_wrist_left", safePut(elbowWristLean.first) % 180 )
+                        put("front_vertical_angle_elbow_wrist_right",safePut(elbowWristLean.second) % 180 )
+                        put("front_vertical_angle_wrist_thumb_left",safePut(wristThumbLean.first) % 180 )
+                        put("front_vertical_angle_wrist_thumb_right",safePut(wristThumbLean.second) % 180 )
+                        put("front_vertical_angle_hip_knee_left",safePut(hipKneeLean.first) % 180 )
+                        put("front_vertical_angle_hip_knee_right",safePut(hipKneeLean.second) % 180 )
+                        put("front_vertical_angle_knee_ankle_left", safePut(kneeAnkleLean.first) % 180 )
+                        put("front_vertical_angle_knee_ankle_right", safePut(kneeAnkleLean.second) % 180 )
+                        put("front_vertical_angle_ankle_toe_left", safePut(ankleToeLean.first) % 180 )
+                        put("front_vertical_angle_ankle_toe_right", safePut( ankleToeLean.second) % 180 )
 
                         put("front_vertical_angle_shoulder_elbow_wrist_left", safePut(shoulderElbowWristAngle.first)  % 180 )
                         put("front_vertical_angle_shoulder_elbow_wrist_right", safePut(shoulderElbowWristAngle.second)  % 180 )
                         put("front_vertical_angle_hip_knee_ankle_left", safePut(hipKneeAnkleAngle.first) % 180 )
                         put("front_vertical_angle_hip_knee_ankle_right", safePut(hipKneeAnkleAngle.second)  % 180 )
-
                     }
+                    Log.v("값들", "earAngle: ${earAngle % 180}, shoulderAngle: ${shoulderAngle % 180}, elbowAngle:  ${elbowAngle % 180 }, wristAngle: ${wristAngle % 180}, ${hipAngle % 180 },${kneeAngle % 180},${ ankleAngle % 180 },$shoulderElbowLean ,$elbowWristLean,$hipKneeLean,$kneeAnkleLean")
+                    Log.v("값들2", "front_horizontal_distance_wrist_left: ${wristSubDistanceByX}, front_horizontal_distance_wrist_right: ${kneeSubDistanceByX}, front_horizontal_distance_ankle_right: $ankleSubDistanceByX, front_horizontal_distance_toe_left: $toeSubDistance," +
+                            "earSubDistance: $earSubDistance,shoulderSubDistance: $shoulderSubDistance,elbowSubDistance:$elbowSubDistance,wristSubDistance: $wristSubDistance, front_horizontal_distance_sub_hip: $hipSubDistance, front_horizontal_distance_sub_knee: $kneeSubDistance, front_horizontal_distance_sub_ankle: $ankleSubDistance")
+
                     saveJson(mvm.staticjo, step)
                 }
                 1 -> {  // 스쿼트
@@ -1619,6 +1627,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val wristDistanceByX: Pair<Float, Float> = Pair(getRealDistanceX(mvm.wristData[0], ankleAxis), getRealDistanceX(mvm.wristData[1], ankleAxis))
 
                     mvm.staticjo.apply {
+
                         put("front_elbow_align_distance_left_wrist_shoulder", wristShoulderDistance.first)
                         put("front_elbow_align_distance_right_wrist_shoulder", wristShoulderDistance.second)
                         put("front_elbow_align_distance_wrist_height", wristsDistanceByY)
@@ -1654,11 +1663,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("side_left_horizontal_distance_pinky", sideLeftPinkyDistance)
                         put("side_left_horizontal_distance_wrist", sideLeftHipDistance)
 
-                        put("side_left_vertical_angle_shoulder_elbow", safePut(sideLeftShoulderElbowLean ) % 180 + 90)
-                        put("side_left_vertical_angle_elbow_wrist", safePut(sideLeftElbowWristLean ) % 180 + 90)
+                        put("side_left_vertical_angle_shoulder_elbow", safePut(sideLeftShoulderElbowLean ) % 180)
+                        put("side_left_vertical_angle_elbow_wrist", safePut(sideLeftElbowWristLean ) % 180)
                         put("side_left_vertical_angle_hip_knee", safePut(sideLeftHipKneeLean ) % 180)
-                        put("side_left_vertical_angle_ear_shoulder", safePut(sideLeftEarShoulderLean ) % 180 + 90)
-                        put("side_left_vertical_angle_nose_shoulder", (safePut(sideLeftNoseShoulderLean) % 180) * 100)
+                        put("side_left_vertical_angle_ear_shoulder", safePut(sideLeftEarShoulderLean ) % 180 )
+                        put("side_left_vertical_angle_nose_shoulder", (safePut(sideLeftNoseShoulderLean) % 180) )
                         put("side_left_vertical_angle_shoulder_elbow_wrist", safePut(sideLeftShoulderElbowWristAngle)  % 180)
                         put("side_left_vertical_angle_hip_knee_ankle", safePut(sideLeftHipKneeAnkleAngle ) % 180)
                     }
@@ -1685,11 +1694,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("side_right_horizontal_distance_pinky", sideRightPinkyDistance)
                         put("side_right_horizontal_distance_wrist", sideRightHipDistance)
 
-                        put("side_right_vertical_angle_shoulder_elbow", safePut(sideRightShoulderElbowLean) % 180 + 90 )
-                        put("side_right_vertical_angle_elbow_wrist", safePut(sideRightElbowWristLean) % 180 + 90)
+                        put("side_right_vertical_angle_shoulder_elbow", safePut(sideRightShoulderElbowLean) % 180 )
+                        put("side_right_vertical_angle_elbow_wrist", safePut(sideRightElbowWristLean) % 180 )
                         put("side_right_vertical_angle_hip_knee", safePut(sideRightHipKneeLean)% 180)
-                        put("side_right_vertical_angle_ear_shoulder", safePut(sideRightEarShoulderLean)  % 180 + 90) // 거북목 거의 없을 때 90언저리까지 나옴
-                        put("side_right_vertical_angle_nose_shoulder", (safePut(sideRightNoseShoulderLean)  % 180) * 100)
+                        put("side_right_vertical_angle_ear_shoulder", safePut(sideRightEarShoulderLean)  % 180 ) // 거북목 거의 없을 때 90언저리까지 나옴
+                        put("side_right_vertical_angle_nose_shoulder", (safePut(sideRightNoseShoulderLean)  % 180))
                         put("side_right_vertical_angle_shoulder_elbow_wrist", safePut(sideRightShoulderElbowWristAngle)  % 180)
                         put("side_right_vertical_angle_hip_knee_ankle", safePut(sideRightHipKneeAnkleAngle)  % 180)
                     }
@@ -1703,6 +1712,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val backHipAngle : Float = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second)
                     val backKneeAngle : Float = calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
                     val backAnkleAngle : Float = calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.ankleData[1].first, mvm.ankleData[1].second)
+
                     // ------! 후면 거리 !------
                     val backEarSubDistance : Float = getRealDistanceY(mvm.earData[0], mvm.earData[1])
                     val backShoulderSubDistance  : Float = getRealDistanceY(mvm.shoulderData[0], mvm.shoulderData[1])
@@ -1716,8 +1726,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val backHeelDistanceByX : Pair<Float, Float> = Pair(getRealDistanceX(mvm.heelData[0], ankleAxis),
                         getRealDistanceX(mvm.heelData[1], ankleAxis))
 
-                    val backNoseShoulderLean : Float = calculateSlope(nose.first, nose.second, middleShoulder.first, middleShoulder.second)
-                    val backShoulderHipLean : Float = calculateSlope(middleShoulder.first, middleShoulder.second, abs(mvm.hipData[0].first - mvm.hipData[1].first), abs(mvm.hipData[0].second - mvm.hipData[1].second))
+                    val backNoseShoulderLean : Float = calculateAngleBySlope(nose.first, nose.second, mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)
+                    val backShoulderHipLean : Float = calculateAngleBySlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.shoulderData[1].first , mvm.shoulderData[1].second, middleHip.first, middleHip.second)
                     val backNoseHipLean : Float = calculateSlope(nose.first, nose.second, mvm.hipData[0].first, abs(mvm.hipData[0].second - mvm.hipData[1].second))
                     val backKneeHeelLean : Pair<Float, Float> = Pair(calculateSlope(mvm.heelData[0].first, mvm.heelData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second), calculateSlope(mvm.heelData[1].first, mvm.heelData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second))
 
@@ -1746,16 +1756,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("back_horizontal_distance_heel_left", backHeelDistanceByX.first)
                         put("back_horizontal_distance_heel_right", backHeelDistanceByX.second)
 
-                        put("back_vertical_angle_nose_center_shoulder", safePut(backNoseShoulderLean) % 180 + 90)
-                        put("back_vertical_angle_shoudler_center_hip", safePut(backShoulderHipLean) % 180 + 90)
-                        put("back_vertical_angle_nose_center_hip", safePut(backNoseHipLean) % 180 + 90)
-                        put("back_vertical_angle_knee_heel_left", safePut(backKneeHeelLean.first) % 180 + 90)
-                        put("back_vertical_angle_knee_heel_right", safePut(backKneeHeelLean.second) % 180 + 90)
+                        put("back_vertical_angle_nose_center_shoulder", safePut(backNoseShoulderLean) % 180)
+                        put("back_vertical_angle_shoudler_center_hip", safePut(backShoulderHipLean) % 180)
+                        put("back_vertical_angle_nose_center_hip", safePut(backNoseHipLean) % 180)
+                        put("back_vertical_angle_knee_heel_left", safePut(backKneeHeelLean.first) % 180)
+                        put("back_vertical_angle_knee_heel_right", safePut(backKneeHeelLean.second) % 180)
                         put("back_horizontal_distance_wrist_left", backWristDistanceByX.first)
                         put("back_horizontal_distance_wrist_right", backWristDistanceByX.second)
                     }
 
-                    Log.v("골반중심과어깨기울기", "${safePut(backShoulderHipLean) % 180 + 90}")
                     saveJson(mvm.staticjo, step)
                 }
                 6 -> { // ------! 앉았을 때 !------
@@ -1771,10 +1780,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val sitBackHipAngle = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second)
 
                     val shoulderNoseTriangleAngle : Triple<Float, Float, Float> = Triple(calculateAngle(nose.first, nose.second, mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.shoulderData[1].first , mvm.shoulderData[1].second),
-
                         calculateAngle(mvm.shoulderData[0].first, mvm.shoulderData[0].second,  mvm.shoulderData[1].first , mvm.shoulderData[1].second, nose.first, nose.second),
-
-                        calculateAngle(mvm.shoulderData[1].first , mvm.shoulderData[1].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second , nose.first, nose.second))
+                        calculateAngle(mvm.shoulderData[1].first , mvm.shoulderData[1].second, nose.first, nose.second, mvm.shoulderData[0].first, mvm.shoulderData[0].second ))
                     val shoulderHipTriangleAngle : Triple<Float, Float, Float> = Triple(calculateAngle(mvm.shoulderData[0].first, mvm.shoulderData[0].second, middleHip.first ,middleHip.second, mvm.shoulderData[1].first , mvm.shoulderData[1].second),
 
                         calculateAngle(middleHip.first ,middleHip.second, mvm.shoulderData[1].first , mvm.shoulderData[1].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second),
@@ -1793,7 +1800,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                         put("back_sit_vertical_angle_nose_left_shoulder_right_shoulder", shoulderNoseTriangleAngle.first)
                         put("back_sit_vertical_angle_left_shoulder_right_shoulder_nose", shoulderNoseTriangleAngle.second)
-                        put("back_sit_vertical_angle_right_shoulder_left_shoulder_nose", shoulderNoseTriangleAngle.third)
+                        put("back_sit_vertical_angle_right_shoulder_nose_left_shoulder", shoulderNoseTriangleAngle.third)
                         put("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder", shoulderHipTriangleAngle.first)
                         put("back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder", shoulderHipTriangleAngle.second)
                         put("back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip", shoulderHipTriangleAngle.third)
