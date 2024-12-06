@@ -7,14 +7,12 @@ import android.net.NetworkCapabilities
 import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
@@ -47,16 +45,7 @@ object DeviceService {
     suspend fun getDeviceUUID(myUrl: String, context: Context, jo : JSONObject, callback: (String) -> Unit) {
         val mediaType = "application/json; chartset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, jo.toString())
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}users")
             .post(body)

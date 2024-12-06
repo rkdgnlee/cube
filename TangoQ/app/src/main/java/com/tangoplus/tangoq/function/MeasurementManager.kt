@@ -113,8 +113,7 @@ object MeasurementManager {
         // 좌측 골반
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_left" to Triple(90f,1.6f, 5.1f),
-                "front_vertical_angle_hip_knee_ankle_left" to Triple(180f,5f, 10f),
-                "front_horizontal_angle_hip" to Triple(0f, 2.5f, 5f)),
+                "front_horizontal_angle_hip" to Triple(180f, 2.5f, 5f)),
             3 to mapOf("side_left_vertical_angle_hip_knee" to Triple(90f,2.5f, 5f),
                 "side_left_horizontal_distance_hip" to Triple(0f, 0.5f, 1f)
             ),
@@ -125,8 +124,7 @@ object MeasurementManager {
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_right" to Triple(90f,1.6f, 5.1f),
-                "front_vertical_angle_hip_knee_ankle_right" to Triple(180f, 2.5f, 5f),
-                "front_horizontal_angle_hip" to Triple(0f, 2.5f, 5f)),
+                "front_horizontal_angle_hip" to Triple(180f, 2.5f, 5f)),
             4 to mapOf("side_right_vertical_angle_hip_knee" to Triple(90f,2.5f, 5f),
                 "side_right_horizontal_distance_hip" to Triple(0f, 0.5f, 1f)
             ),
@@ -516,7 +514,8 @@ object MeasurementManager {
 
                 if (boundPair != null) {
                     val rawData = jo.optDouble(columnName).toFloat()
-                    val data = if (rawData == 180f) 0f else rawData
+//                    val data = if (rawData == 180f) 0f else rawData
+                    val data = rawData
                     val state  = when {
                         abs(data) < (boundPair.first - boundPair.third) || abs(data) > (boundPair.first + boundPair.third) -> 3
                         abs(data) < (boundPair.first - boundPair.second) ||  abs(data) > (boundPair.first + boundPair.second) -> 2

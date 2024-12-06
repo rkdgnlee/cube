@@ -5,6 +5,8 @@ import android.util.Log
 import com.tangoplus.tangoq.data.ProgressHistoryVO
 import com.tangoplus.tangoq.data.ProgressUnitVO
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
+import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -23,83 +25,58 @@ object NetworkProgress {
     fun postProgressInCurrentProgram(myUrl: String, bodySn : JSONObject, context: Context, callback: (MutableList<ProgressUnitVO>) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, bodySn.toString())
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url(myUrl)
             .post(body)
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("Token응답실패", "Failed to execute request")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.v("Post>Progress>inserOrSelect", "${responseBody}")
-                try {
-                    val ja = JSONObject(responseBody.toString()).optJSONArray("data")
-                    val progresses = mutableListOf<ProgressUnitVO>()
-                    if (ja != null) {
-                        for (i in 0 until ja.length()) {
-                            val progressUnitVO = ProgressUnitVO(
-                                uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
-                                exerciseId = ja.optJSONObject(i).optInt("content_sn"),
-                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                currentWeek = ja.optJSONObject(i).optInt("week_number"),
-                                currentSequence = ja.optJSONObject(i).optInt("count_set"),
-                                requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-                                videoDuration = ja.optJSONObject(i).optInt("duration"),
-                                lastProgress = ja.optJSONObject(i).optInt("progress"),
-                                isCompleted = ja.optJSONObject(i).optInt("completed"),
-                                updateDate = ja.optJSONObject(i).optString("updated_at")
-                            )
-                            progresses.add(progressUnitVO)
-                        }
+        client.newCall(request).execute().use { response ->
+            val responseBody = response.body?.string()
+            Log.v("Post>Progress>inserOrSelect", "${responseBody}")
+            try {
+                val ja = JSONObject(responseBody.toString()).optJSONArray("data")
+                val progresses = mutableListOf<ProgressUnitVO>()
+                if (ja != null) {
+                    for (i in 0 until ja.length()) {
+                        val progressUnitVO = ProgressUnitVO(
+                            uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
+                            exerciseId = ja.optJSONObject(i).optInt("content_sn"),
+                            recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                            currentWeek = ja.optJSONObject(i).optInt("week_number"),
+                            currentSequence = ja.optJSONObject(i).optInt("count_set"),
+                            requiredSequence = ja.optJSONObject(i).optInt("required_set"),
+                            videoDuration = ja.optJSONObject(i).optInt("duration"),
+                            lastProgress = ja.optJSONObject(i).optInt("progress"),
+                            isCompleted = ja.optJSONObject(i).optInt("completed"),
+                            updateDate = ja.optJSONObject(i).optString("updated_at")
+                        )
+                        progresses.add(progressUnitVO)
                     }
-                    callback(progresses)
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("ProgressIndex", "Post Progress: ${e.message}")
-                    callback(mutableListOf())
-                } catch (e: IllegalArgumentException) {
-                    Log.e("ProgressIllegal", "Post Progress: ${e.message}")
-                    callback(mutableListOf())
-                } catch (e: IllegalStateException) {
-                    Log.e("ProgressIllegal", "Post Progress: ${e.message}")
-                    callback(mutableListOf())
-                }catch (e: NullPointerException) {
-                    Log.e("ProgressNull", "Post Progress: ${e.message}")
-                    callback(mutableListOf())
-                } catch (e: java.lang.Exception) {
-                    Log.e("ProgressException", "Post Progress: ${e.message}")
-                    callback(mutableListOf())
                 }
+                callback(progresses)
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ProgressIndex", "Post Progress: ${e.message}")
+                callback(mutableListOf())
+            } catch (e: IllegalArgumentException) {
+                Log.e("ProgressIllegal", "Post Progress: ${e.message}")
+                callback(mutableListOf())
+            } catch (e: IllegalStateException) {
+                Log.e("ProgressIllegal", "Post Progress: ${e.message}")
+                callback(mutableListOf())
+            }catch (e: NullPointerException) {
+                Log.e("ProgressNull", "Post Progress: ${e.message}")
+                callback(mutableListOf())
+            } catch (e: java.lang.Exception) {
+                Log.e("ProgressException", "Post Progress: ${e.message}")
+                callback(mutableListOf())
             }
-        })
+        }
     }
 
     // ------# 현재 프로그램 프로그레스만 가져오기 #------
     fun getRecProgresses(myUrl: String, context: Context, recSn: Int, callback: (MutableList<ProgressUnitVO>) -> Unit) {
-
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?recommendation_sn=$recSn")
             .get()
@@ -160,16 +137,7 @@ object NetworkProgress {
     fun patchProgress1Item(myUrl: String, uvpSn: Int, body: JSONObject, context: Context, callback: (ProgressUnitVO) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, body.toString())
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl/$uvpSn")
             .patch(body)
@@ -204,16 +172,7 @@ object NetworkProgress {
     }
     // 가장 최신 정보를 가져오는게 좋다.
     suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : JSONObject {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?recommendation_sn=$recSn&latest_progress")
             .get()
@@ -257,17 +216,7 @@ object NetworkProgress {
     }
 
     suspend fun getWeekProgress(myUrl: String, recSn: Int, week: Int,context: Context) : MutableList<ProgressUnitVO> {
-
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?recommendation_sn=$recSn&weeks=$week")
             .get()
@@ -319,16 +268,7 @@ object NetworkProgress {
 
     // TODO ------# 달력 함수에 맞게 수정 해야함 #------
     suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressHistoryVO> {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?date=$date")
             .get()

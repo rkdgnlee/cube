@@ -350,7 +350,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             } catch (e: NullPointerException) {
                 Log.e("ProgramNull", "${e.message}")
             } catch (e: java.lang.Exception) {
-                Log.e("ProgramException", "${e.message}")
+                Log.e("ProgramException", "${e}")
             }
         }
 

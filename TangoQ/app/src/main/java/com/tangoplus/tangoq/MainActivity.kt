@@ -27,7 +27,6 @@ import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
-import com.tangoplus.tangoq.dialog.GuideDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
@@ -211,7 +210,6 @@ class MainActivity : AppCompatActivity() {
                     backPressHandler.postDelayed(backPressRunnable, 1000)
                 }
             } else {
-
                 fragmentManager.popBackStack()
             }
         }
@@ -221,13 +219,17 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // 핸들러의 콜백을 제거하여 메모리 누수를 방지
         backPressHandler.removeCallbacks(backPressRunnable)
-        clearCache()
+        clearDir()
     }
 
-    private fun clearCache() {
+    private fun clearDir() {
         val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
-        cacheDir?.let {
-            deleteDir(it)
+        val interalDir = filesDir
+        if (cacheDir != null && cacheDir.isDirectory) {
+            deleteDir(cacheDir)
+        }
+        interalDir?.let {
+            deleteInternalDir(it)
         }
     }
 
@@ -237,11 +239,32 @@ class MainActivity : AppCompatActivity() {
             children?.forEach { child ->
                 val success = deleteDir(File(dir, child))
                 if (!success) {
+                    Log.e("FileDelete", "Failed to delete file: ${File(dir, child).absolutePath}")
                     return false
                 }
             }
         }
         return dir?.delete() ?: false
+    }
+
+    private fun deleteInternalDir(dir: File?): Boolean {
+        if (dir != null && dir.isDirectory) {
+            val children = dir.list()
+            children?.forEach { child ->
+                val success = deleteDir(File(dir, child))
+                if (!success) {
+                    Log.e("FileDelete", "Failed to delete file: ${File(dir, child).absolutePath}")
+                    return false
+                }
+            }
+        }
+        val deleted = dir?.delete() ?: false
+        if (deleted) {
+            Log.d("FileDelete", "Deleted: ${dir?.absolutePath}")
+        } else {
+            Log.e("FileDelete", "Failed to delete: ${dir?.absolutePath}")
+        }
+        return deleted
     }
 
     private fun handleIntent(intent: Intent) {

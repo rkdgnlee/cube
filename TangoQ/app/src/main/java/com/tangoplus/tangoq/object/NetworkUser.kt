@@ -22,6 +22,7 @@ import java.io.IOException
 object NetworkUser {
 
     // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------
+    // (각 플랫폼 sdk를 통해서 자동 로그인까지 동작)
     fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = userJsonObject.toString().toRequestBody(mediaType)
@@ -104,7 +105,7 @@ object NetworkUser {
         bodyJo.put("refresh_token", getEncryptedRefreshJwt(context))
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodyJo.toString().toRequestBody(mediaType)
-        val client = HttpClientProvider.getClient(context)
+        val client = OkHttpClient()
         val request = Request.Builder()
             .url("$myUrl/logout.php")
             .post(body)

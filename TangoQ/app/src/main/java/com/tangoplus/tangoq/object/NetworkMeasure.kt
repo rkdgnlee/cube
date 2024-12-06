@@ -9,35 +9,23 @@ import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.util.concurrent.TimeUnit
 
 object NetworkMeasure {
 
     // ------# 전송 실패된 항목 POST #------
     suspend fun resendMeasureFile(context: Context, myUrl: String, requestBody: RequestBody, isStatic: Boolean, serverMeasureSn: Int, mobileDbSn: Int,  callback: (Pair<String,String>?) -> Unit) : Result<Unit> {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl/$serverMeasureSn")
             .post(requestBody)
@@ -118,16 +106,7 @@ object NetworkMeasure {
 
     // ------# 측정 완료 후 최초 전송 #------
     suspend fun sendMeasureData(context: Context, myUrl: String, requestBody: RequestBody, infoSn: Int, staticSns: MutableList<Int>, dynamicSn: Int, callback: (JSONObject) -> Unit) : Result<Unit> {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url(myUrl)
             .post(requestBody)
@@ -216,16 +195,7 @@ object NetworkMeasure {
     }
 
     suspend fun saveAllMeasureInfo(context: Context, myUrl: String, userUUID: String,  callback : (Boolean) -> Unit) { // 1845가 들어감.
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url(myUrl)
             .get()
@@ -275,23 +245,10 @@ object NetworkMeasure {
             }
         }
     }
-    // -------------# TODO 전제: 측정 결과 모바일에서 업로드할 때 무조건 sn을 저장해야함 #------------------
 
-    // 측정 결과 1개 sequence 전체 가져오기
+    // ------# 측정 결과 1개 sequence 전체 가져오기 #------
     private suspend fun getMeasureResult(context: Context, myUrl: String, measureInfoSn: Int) : Result<Unit> {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .connectTimeout(10, TimeUnit.SECONDS) // 연결 타임아웃
-            .readTimeout(30, TimeUnit.SECONDS)    // 읽기 타임아웃
-            .writeTimeout(30, TimeUnit.SECONDS)   // 쓰기 타임아웃
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}/$measureInfoSn")
             .get()
@@ -303,7 +260,6 @@ object NetworkMeasure {
                         // 서버 응답이 성공하지 않았을 경우 처리
                         return@withContext Result.failure(Exception("Failed to fetch data: ${response.code}"))
                     }
-
                     // ------# db 초기화 #------
                     val md = MeasureDatabase.getDatabase(context)
                     val mDao = md.measureDao()

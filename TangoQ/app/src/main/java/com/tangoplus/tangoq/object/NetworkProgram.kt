@@ -5,6 +5,7 @@ import android.util.Log
 import com.tangoplus.tangoq.data.ExerciseVO
 import com.tangoplus.tangoq.data.ProgramVO
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
 import com.tangoplus.tangoq.`object`.NetworkExercise.jsonToExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,9 +23,7 @@ object NetworkProgram {
                 .build()
             chain.proceed(newRequest)
         }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl$sn")
             .get()

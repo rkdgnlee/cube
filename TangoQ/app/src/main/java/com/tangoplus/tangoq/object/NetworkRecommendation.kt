@@ -4,11 +4,11 @@ import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.data.RecommendationVO
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -24,9 +24,7 @@ object NetworkRecommendation {
                 .build()
             chain.proceed(newRequest)
         }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url(myUrl)
             .post(body)
@@ -97,9 +95,7 @@ object NetworkRecommendation {
                 .build()
             chain.proceed(newRequest)
         }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url(myUrl)
             .get()
@@ -156,9 +152,7 @@ object NetworkRecommendation {
                 .build()
             chain.proceed(newRequest)
         }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}?measure_sn=$measureInfoSn")
             .get()

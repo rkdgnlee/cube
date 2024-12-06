@@ -41,7 +41,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:lineSpacingExtra="8dp"
-        android:text="기기와 간격을 벌려주세요\n화면의 실루엣에 몸 전체를 맞추는게 좋습니다 !"
+        android:text="카메라를 배꼽 높이에 위치시켜주세요(약 1m - 1.5m)\n화면에 가리는부분 없이 몸 전체가 나오게 위치해 주세요  (약 2m)"
         android:textColor="@color/subColor800"
         android:textSize="24dp"
         android:textStyle="bold"
