@@ -29,6 +29,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             app:srcCompat="@color/mainContainerColor" />
+
     </androidx.cardview.widget.CardView>
 
     <TextView
@@ -44,112 +45,45 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/view31"
-        android:layout_width="0dp"
-        android:layout_height="10dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/bckgnd_rectangle_8"
-        android:backgroundTint="@color/subColor200"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cardView27"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.6" />
-
-    <View
-        android:id="@+id/vMPILeft"
-        android:layout_width="0dp"
-        android:layout_height="10dp"
-        android:background="@drawable/bckgnd_left_delete_8"
-        android:elevation="4dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/view31"
-        app:layout_constraintEnd_toStartOf="@+id/view32"
-        app:layout_constraintStart_toStartOf="@+id/view31"
-        app:layout_constraintTop_toTopOf="@+id/view31" />
-
-    <View
-        android:id="@+id/vMPIRight"
-        android:layout_width="0dp"
-        android:layout_height="10dp"
-        android:background="@drawable/bckgnd_both_8"
-        android:backgroundTint="@color/thirdColor"
-        android:elevation="2dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/view31"
-        app:layout_constraintEnd_toEndOf="@+id/view31"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/view31"
-        app:layout_constraintTop_toTopOf="@+id/view31"
-        app:layout_constraintWidth_percent="0.4" />
-
-    <View
-        android:id="@+id/view32"
-        android:layout_width="1.5dp"
-        android:layout_height="20dp"
-        android:background="@color/subColor500"
-        android:elevation="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view31"
-        app:layout_constraintEnd_toEndOf="@+id/view31"
-        app:layout_constraintHorizontal_bias="0.3"
-        app:layout_constraintStart_toStartOf="@+id/view31"
-        app:layout_constraintTop_toTopOf="@+id/view31" />
-
-    <TextView
-        android:id="@+id/tvMPILeft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="표준이하"
-        android:textColor="@color/deleteColor"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/view32"
-        app:layout_constraintStart_toStartOf="@+id/view31"
-        app:layout_constraintTop_toBottomOf="@+id/view31" />
-
-    <TextView
-        android:id="@+id/tvMPIRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="표준"
-        android:textColor="@color/subColor400"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/view31"
-        app:layout_constraintStart_toEndOf="@+id/view32"
-        app:layout_constraintTop_toBottomOf="@+id/view31" />
-
-    <ImageView
-        android:id="@+id/ivMPIArrow"
-        android:layout_width="20dp"
-        android:layout_height="16dp"
-        android:layout_marginBottom="2dp"
-        android:padding="4dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/view31"
-        app:layout_constraintEnd_toEndOf="@+id/view31"
-        app:layout_constraintHorizontal_bias="0.125"
-        app:layout_constraintStart_toStartOf="@+id/view31"
-        app:srcCompat="@drawable/icon_arrow_board" />
-
     <TextView
         android:id="@+id/tvMPISummary"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="15dp"
+        android:layout_marginBottom="5dp"
         android:breakStrategy="simple"
         android:gravity="center_vertical"
         android:maxLines="2"
         android:textColor="@color/subColor800"
         android:textSize="14dp"
-        app:layout_constraintBottom_toTopOf="@+id/ivMPIArrow"
+        app:layout_constraintBottom_toTopOf="@+id/tvMPIState"
         app:layout_constraintEnd_toStartOf="@+id/cardView27"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvMPITitle" />
+
+    <TextView
+        android:id="@+id/tvMPIState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/bckgnd_rectangle_8"
+        android:backgroundTint="@color/deleteColor"
+        android:drawableEnd="@drawable/icon_arrow_right_small"
+        android:drawableTint="@color/white"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="4dp"
+        android:text="평균 수치"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

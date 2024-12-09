@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bckgnd_top_16"
+    tools:context=".dialog.ProfileEditChangeDialogFragment">
+
+    <TextView
+        android:id="@+id/tvPCD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="비밀번호 재설정"
+        android:textColor="@color/subColor800"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPCD1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="현재 비밀번호"
+        android:textColor="@color/subColor800"
+        android:textSize="22dp"
+        app:layout_constraintStart_toStartOf="@+id/etPCD1"
+        app:layout_constraintTop_toBottomOf="@+id/tvPCD" />
+
+    <EditText
+        android:id="@+id/etPCD1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bckgnd_1_sub150_12"
+        android:ems="10"
+        android:hint="입력해주세요"
+        android:inputType="text|textPassword"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPCD1" />
+
+    <TextView
+        android:id="@+id/tvPCD2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="새 비밀번호"
+        android:textColor="@color/subColor800"
+        android:textSize="22dp"
+        app:layout_constraintStart_toStartOf="@+id/etPCD2"
+        app:layout_constraintTop_toBottomOf="@+id/etPCD1" />
+
+    <EditText
+        android:id="@+id/etPCD2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bckgnd_1_sub150_12"
+        android:ems="10"
+        android:hint="새로운 비밀번호"
+        android:inputType="text|textPassword"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPCD2" />
+
+    <TextView
+        android:id="@+id/tvPCD3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="새 비밀번호 확인"
+        android:textColor="@color/subColor800"
+        android:textSize="22dp"
+        app:layout_constraintStart_toStartOf="@+id/etPCD3"
+        app:layout_constraintTop_toBottomOf="@+id/etPCD2" />
+
+    <EditText
+        android:id="@+id/etPCD3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bckgnd_1_sub150_12"
+        android:ems="10"
+        android:hint="새로운 비밀번호 확인"
+        android:inputType="text|textPassword"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPCD3" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnPCDFinish"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:backgroundTint="@color/mainColor"
+        android:padding="20dp"
+        android:stateListAnimator="@null"
+        android:text="수정 완료"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPCDPWCondition"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="20dp"
+        android:text="_"
+        android:textColor="@color/subColor800"
+        android:textSize="13dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvPCD2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/tvPCD2"
+        app:layout_constraintTop_toTopOf="@+id/tvPCD2" />
+
+    <TextView
+        android:id="@+id/tvPCDPWVerifyCondition"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="20dp"
+        android:text="_"
+        android:textColor="@color/subColor800"
+        android:textSize="13dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvPCD3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvPCD3"
+        app:layout_constraintTop_toTopOf="@+id/tvPCD3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

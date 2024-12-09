@@ -369,7 +369,7 @@ class SignInActivity : AppCompatActivity() {
         }
         val mobilePattern = "^010-\\d{4}-\\d{4}\$"
         val mobilePatternCheck = Pattern.compile(mobilePattern)
-        val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&.^])[A-Za-z[0-9]$@$!%*#?&.^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
+        val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&^])[A-Za-z[0-9]$@$!%*#?&^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
         val idPattern = "^[a-zA-Z0-9]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
         val idPatternCheck = Pattern.compile(idPattern)
         val pwPatternCheck = Pattern.compile(pwPattern)
@@ -426,7 +426,7 @@ class SignInActivity : AppCompatActivity() {
                     binding.tvPwCondition.text = "사용 가능합니다"
                 } else {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                    binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ? .)를 모두 포함해서\n8~20자리를 입력해주세요"
+                    binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ?)를 모두 포함해서\n8~20자리를 입력해주세요"
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -437,13 +437,11 @@ class SignInActivity : AppCompatActivity() {
         binding.etPwRepeat.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
-                binding.tvSignInGuide.text = "모두 완료됐습니다 약관을"
+                binding.tvSignInGuide.text = "모두 완료됐습니다."
                 viewModel.pwCompare.value = (binding.etPw.text.toString() == binding.etPwRepeat.text.toString())
                 if (viewModel.pwCompare.value == true) {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwRepeat.text = "일치합니다"
-                    binding.btnSignIn.isEnabled = true
-
                     binding.btnSignIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.mainColor))
 
                 } else {
@@ -460,7 +458,9 @@ class SignInActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }) //-----! 입력 문자 조건 끝 !-----
 
-
+        viewModel.pwBothTrue.observe(this) { pwBothCondition ->
+            binding.btnSignIn.isEnabled = pwBothCondition
+        }
     } // -----! 회원가입 입력 창 anime 끝 !-----
 
     @SuppressLint("SetTextI18n")

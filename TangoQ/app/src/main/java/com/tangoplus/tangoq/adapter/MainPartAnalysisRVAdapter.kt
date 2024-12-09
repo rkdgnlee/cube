@@ -18,7 +18,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisUnitVO
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
 
-class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>?, private val selectPart: String): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class AnalysisViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPAITitle : TextView = view.findViewById(R.id.tvMPAITitle)
         val vMPAILeft : View = view.findViewById(R.id.vMPAILeft)
@@ -32,7 +32,6 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val anal
         val ivMPAIArrow : ImageView = view.findViewById(R.id.ivMPAIArrow)
         val tvMPAIExplain : TextView = view.findViewById(R.id.tvMPAIExplain)
         val tvMPAIData : TextView = view.findViewById(R.id.tvMPAIData)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

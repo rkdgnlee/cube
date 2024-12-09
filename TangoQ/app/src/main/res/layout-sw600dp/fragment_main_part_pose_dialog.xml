@@ -116,7 +116,7 @@
                     android:paddingBottom="20dp"
                     android:text="앉은 자세에 비해 어깨중앙이 왼쪽으로 2도 치우쳐져 있습니다"
                     android:textColor="@color/deleteTextColor"
-                    android:textSize="18dp"
+                    android:textSize="24dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

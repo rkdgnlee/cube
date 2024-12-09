@@ -45,6 +45,7 @@ class MeasureViewModel : ViewModel() {
     var dynamicJsonFile : File? = null
 
     // ------# 각 부위 데이터들 #------
+    var noseData : Pair<Float, Float> = Pair(0f, 0f)
     var earData = listOf<Pair<Float, Float>>()
     var shoulderData = listOf<Pair<Float, Float>>()
     var elbowData = listOf<Pair<Float, Float>>()

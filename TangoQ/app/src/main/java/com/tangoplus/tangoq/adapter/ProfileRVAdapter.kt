@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,36 +12,21 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.kakao.sdk.auth.AuthApiClient
-import com.kakao.sdk.user.UserApiClient
-import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditDialogFragment
-import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
-import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
-import com.tangoplus.tangoq.dialog.ConnectManageDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.dialog.bottomsheet.ProfileEditBSDialogFragment
+import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
 import com.tangoplus.tangoq.fragment.ProfileFragment
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
-import com.tangoplus.tangoq.`object`.NetworkUser.logoutDenyRefreshJwt
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
-import com.tangoplus.tangoq.`object`.Singleton_t_user
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import org.json.JSONObject
 
 import java.lang.IllegalArgumentException
@@ -166,55 +150,13 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
                                 }
                                 "로그아웃" -> {
-                                    if (Firebase.auth.currentUser != null) {
-                                        Firebase.auth.signOut()
-                                        Log.d("로그아웃", "Firebase sign out successful")
-                                    } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
-                                        NaverIdLoginSDK.logout()
-                                        Log.d("로그아웃", "Naver sign out successful")
-                                    } else if (AuthApiClient.instance.hasToken()) {
-                                        UserApiClient.instance.logout { error->
-                                            if (error != null) {
-                                                Log.e("로그아웃", "KAKAO Sign out failed", error)
-                                            } else {
-                                                Log.e("로그아웃", "KAKAO Sign out successful")
-                                            }
+                                    MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                        setTitle("로그아웃")
+                                        setMessage("로그아웃 하시겠습니까?")
+                                        setPositiveButton("예") { _, _ ->
+                                            logout(fragment.requireActivity())
                                         }
-                                    } else if (getEncryptedAccessJwt(fragment.requireContext()) != null) {
-                                        saveEncryptedJwtToken(fragment.requireContext(), null)
-                                    }
-
-                                    // 싱글턴에 들어갔던거 전부 비우기
-                                    Singleton_t_user.getInstance(fragment.requireContext()).jsonObject = null
-                                    Singleton_t_measure.getInstance(fragment.requireContext()).measures = null
-                                    Singleton_t_progress.getInstance(fragment.requireContext()).programProgresses = mutableListOf()
-                                    Singleton_t_progress.getInstance(fragment.requireContext()).graphProgresses = mutableListOf()
-                                    try {
-                                        fragment.lifecycleScope.launch {
-                                            logoutDenyRefreshJwt(fragment.getString(R.string.API_user), fragment.requireContext()) { code ->
-                                                if (code == 200) {
-                                                    val intent = Intent(holder.itemView.context, IntroActivity::class.java)
-                                                    holder.itemView.context.startActivity(intent)
-                                                    fragment.requireActivity().finishAffinity()
-                                                }
-                                            }
-                                        }
-                                    } catch (e: IllegalStateException) {
-                                        Log.e("logoutError", "LogoutIllegalState: ${e.message}")
-                                    } catch (e: IllegalArgumentException) {
-                                        Log.e("logoutError", "LogoutIllegalArgument: ${e.message}")
-                                    } catch (e: NullPointerException) {
-                                        Log.e("logoutError", "LogoutNullPointer: ${e.message}")
-                                    } catch (e: InterruptedException) {
-                                        Log.e("logoutError", "LogoutInterrupted: ${e.message}")
-                                    } catch (e: IndexOutOfBoundsException) {
-                                        Log.e("logoutError", "LogoutIndexOutOfBounds: ${e.message}")
-                                    } catch (e: Exception) {
-                                        Log.e("logoutError", "Logout: ${e.message}")
-                                    } finally {
-                                        val intent = Intent(holder.itemView.context, IntroActivity::class.java)
-                                        holder.itemView.context.startActivity(intent)
-                                        fragment.requireActivity().finishAffinity()
+                                        setNegativeButton("아니오") { _, _ -> }
                                     }
                                 }
                             }
@@ -230,7 +172,9 @@ class ProfileRVAdapter(private val fragment: Fragment,
 
                             "이름" -> {
                                 val userName = userJson.optString("user_name")
-                                holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
+                                if (isKorean(userName)) holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
+                                else holder.tvPfInfo.text = maskedProfileData(userName)
+
                                 holder.ivPf.setImageResource(R.drawable.icon_profile)
                             }
                             "성별" -> {
@@ -261,15 +205,15 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         holder.cltvPfSettings.setOnClickListener {
                             when (holder.tvPfSettingsName.text) {
                                 "몸무게" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("몸무게", (vm as SignInViewModel).setWeight.value.toString())
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("몸무게", (vm as SignInViewModel).setWeight.value.toString())
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "신장" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("신장", (vm as SignInViewModel).setHeight.value.toString())
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("신장", (vm as SignInViewModel).setHeight.value.toString())
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "이메일" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
 
@@ -311,7 +255,17 @@ class ProfileRVAdapter(private val fragment: Fragment,
 
     private fun maskedProfileData(resultString: String) : String {
         val atIndex = resultString.indexOf('@')
-        if (atIndex == -1) return resultString  // @ 기호가 없으면 원본 그대로 반환
+        if (atIndex == -1) {
+            val maskedString = resultString.mapIndexed{ index, char ->
+                when {
+                    index % 4 == 0 || index % 4 == 1 -> char  // 1, 1 패턴 (그대로)
+                    index % 4 == 2 || index % 4 == 3 -> '*'   // 2, 2 패턴 (가리기)
+                    else -> char
+                }
+            }.joinToString("")
+
+            return maskedString
+        }  // @ 기호가 없으면 원본 그대로 반환
 
         val username = resultString.substring(0, atIndex)
         val domain = resultString.substring(atIndex)

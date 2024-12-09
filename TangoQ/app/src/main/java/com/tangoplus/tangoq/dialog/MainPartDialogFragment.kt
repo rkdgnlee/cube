@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartDialogBinding
+import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import org.json.JSONArray
 import kotlin.math.abs
@@ -29,7 +31,7 @@ class MainPartDialogFragment : DialogFragment() {
     val mvm : MeasureViewModel by activityViewModels()
     private lateinit var part: String
     private lateinit var measureResult : JSONArray
-
+    private lateinit var biometricManager : BiometricManager
     companion object {
         private const val ARG_PART = "arg_part"
         fun newInstance(part: String): MainPartDialogFragment {
@@ -52,54 +54,63 @@ class MainPartDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        part = arguments?.getString(ARG_PART) ?: ""
-        Log.v("파트", "part: $part")
-        binding.tvMPD.text = "$part 부위 분석"
-        measureResult = mvm.selectedMeasure?.measureResult ?: JSONArray()
-        // ------# 이번 part에서 쓸 column값들 가져오기 #------
-        // 초기화 후 담기
-        avm.relatedAnalyzes = mutableListOf()
-        avm.selectedPart = part
+        biometricManager = BiometricManager(this)
+        biometricManager.authenticate(
 
-        val matchedPart = matchedUris.get(part)
-        if (matchedPart != null) {
-            for (i in matchedPart) {
+            // 생체 인증 성공 시 !
+            onSuccess = {
+                part = arguments?.getString(ARG_PART) ?: ""
+                Log.v("파트", "part: $part")
+                binding.tvMPD.text = "$part 부위 분석"
+                measureResult = mvm.selectedMeasure?.measureResult ?: JSONArray()
+                // ------# 이번 part에서 쓸 column값들 가져오기 #------
+                // 초기화 후 담기
+                avm.relatedAnalyzes = mutableListOf()
+                avm.selectedPart = part
 
-                // ------# 부위와 평균값 넣기 #------
-                val analysisUnits = getAnalysisUnits(requireContext(), part, i, measureResult)
-                Log.v("통analysis", "${analysisUnits}")
-                val normalUnits = analysisUnits.count { it.state == 1 }
-                val warningUnits = analysisUnits.count { it.state == 2 }
-                val dangerUnits = analysisUnits.count { it.state == 3 }
+                val matchedPart = matchedUris.get(part)
+                if (matchedPart != null) {
+                    for (i in matchedPart) {
+
+                        // ------# 부위와 평균값 넣기 #------
+                        val analysisUnits = getAnalysisUnits(requireContext(), part, i, measureResult)
+                        Log.v("통analysis", "${analysisUnits}")
+                        val normalUnits = analysisUnits.count { it.state == 1 }
+                        val warningUnits = analysisUnits.count { it.state == 2 }
+                        val dangerUnits = analysisUnits.count { it.state == 3 }
 
 
-                val states = when {
-                    normalUnits == 0 && warningUnits == 0 && dangerUnits == 0 -> 1
-                    dangerUnits >= warningUnits && dangerUnits >= normalUnits -> 3 // 위험이 가장 많을 때
-                    warningUnits >= normalUnits && warningUnits >= dangerUnits -> 2 // 주의가 가장 많을 때
-                    normalUnits >= warningUnits && normalUnits >= dangerUnits -> 1 // 정상 상태가 가장 많거나 같은 경우
-                    else -> 1 // 기본값
+                        val states = when {
+                            normalUnits == 0 && warningUnits == 0 && dangerUnits == 0 -> 1
+                            dangerUnits >= warningUnits && dangerUnits >= normalUnits -> 3 // 위험이 가장 많을 때
+                            warningUnits >= normalUnits && warningUnits >= dangerUnits -> 2 // 주의가 가장 많을 때
+                            normalUnits >= warningUnits && normalUnits >= dangerUnits -> 1 // 정상 상태가 가장 많거나 같은 경우
+                            else -> 1 // 기본값
+                        }
+                        Log.v("analysisUnits", "통states: $states, normalUnits: $normalUnits, warningUnits: $warningUnits, dangerUnits: $dangerUnits")
+
+                        val analysisVO = AnalysisVO(
+                            i,
+                            createSummary(part, i, analysisUnits),
+                            states,
+                            analysisUnits,
+                            mvm.selectedMeasure?.fileUris?.get(i).toString()
+                        )
+                        avm.relatedAnalyzes.add(analysisVO)
+                    }
+
+                    Log.v("relatedAnalyzes", "${avm.relatedAnalyzes}, ${avm.relatedAnalyzes.map { it.seq }}")
+                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                    val adapter = MainPartRVAdapter(this@MainPartDialogFragment, avm.relatedAnalyzes)
+                    adapter.avm = avm
+                    binding.rvMPD.layoutManager = layoutManager
+                    binding.rvMPD.adapter = adapter
                 }
-                Log.v("analysisUnits", "통states: $states, normalUnits: $normalUnits, warningUnits: $warningUnits, dangerUnits: $dangerUnits")
-
-                val analysisVO = AnalysisVO(
-                    i,
-                    createSummary(part, i, analysisUnits),
-                    states,
-                    analysisUnits,
-                    mvm.selectedMeasure?.fileUris?.get(i).toString()
-                )
-                avm.relatedAnalyzes.add(analysisVO)
+            },
+            onError = {
+                Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
-
-            Log.v("relatedAnalyzes", "${avm.relatedAnalyzes}, ${avm.relatedAnalyzes.map { it.seq }}")
-            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            val adapter = MainPartRVAdapter(this@MainPartDialogFragment, avm.relatedAnalyzes)
-            adapter.avm = avm
-            binding.rvMPD.layoutManager = layoutManager
-            binding.rvMPD.adapter = adapter
-        }
-
+        )
     }
 
     override fun onResume() {
@@ -215,7 +226,7 @@ class MainPartDialogFragment : DialogFragment() {
                         }
                     }
                     6 -> {
-                        val frontNeckData = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" }
+                        val frontNeckData = units.find { it.columnName == "back_sit_horizontal_angle_ear" }
                         var angleData = 0f
                         var angleDirection = ""
                         frontNeckData?.let {
@@ -225,6 +236,19 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
+                                resultString.append("앉은 뒷면 자세가 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
+                            }
+                        }
+                        val backSitNeckData = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" }
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        backSitNeckData?.let {
+                            val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
+                            val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
+
+                            if (it.rawData !in boundRange) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
                                 resultString.append("선자세와 비교했을 때, 앉았을 때 목이 약 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
                             }
                         }

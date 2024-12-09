@@ -41,21 +41,16 @@ class CalculateOverallTest {
         val result = calculateAngleBySlope(590f, 362f, 699f, 365f, (612+668)/ 2f, (527+525)/2f)
         assertEquals(90, result) // 예상 결과를 넣어줌 (74는 예시)
     }
-//    fun calculateAngleBetweenLines(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
-//        // 어깨 선분의 기울기
-//        val shoulderSlope = (y2 - y1) / (x2 - x1)
-//
-//        // 골반 선분의 기울기
-//        val pelvisSlope = (y3 - y1) / (x3 - x1)
-//
-//        // 각도 계산 (더 정확한 방식)
-//        val angleRad = atan(abs((pelvisSlope - shoulderSlope) / (1 + shoulderSlope * pelvisSlope)))
-//
-//        // 라디안을 도로 변환
-//        val angleDeg = Math.toDegrees(angleRad.toDouble())
-//
-//        return angleDeg.toFloat()
-//    }
+
+    @Test
+    fun noseCenterShoulderSlope() {
+        val result = calculateAngleBySlope(262f, 395f, 460f, 402f, 372f, 284f)
+        println(result)
+        assertEquals(90, result) // 예상 결과를 넣어줌 (74는 예시)
+    }
+
+
+
 fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
     // 중간값 계산
     val x4 = (x1 + x2) / 2

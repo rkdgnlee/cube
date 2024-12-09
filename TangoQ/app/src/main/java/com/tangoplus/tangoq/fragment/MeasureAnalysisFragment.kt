@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
@@ -33,6 +34,7 @@ import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
+import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
@@ -63,6 +65,7 @@ class MeasureAnalysisFragment : Fragment() {
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
     private lateinit var jsonArray: JSONArray
+    private lateinit var biometricManager : BiometricManager
 
     companion object {
         private const val ARG_INDEX = "index_analysis"
@@ -93,90 +96,98 @@ class MeasureAnalysisFragment : Fragment() {
 
         // ------# 데이터 필터링을 위한 사전 세팅 #------
 
-        index = arguments?.getInt(ARG_INDEX) ?: -1
-        mr = viewModel.selectedMeasure?.measureResult ?: JSONArray()
-        avm.mafMeasureResult = JSONArray()
-        Log.v("현재측정", viewModel.selectedMeasure?.regDate.toString())
-        val noticeScore = arguments?.getInt(ARG_SCORE)
-        val noticeComment = arguments?.getString(ARG_COMMENT)
-        setColor(noticeScore)
-        binding.tvMAPredict.text = noticeComment.toString()
+        biometricManager = BiometricManager(this)
+        biometricManager.authenticate(
+            onSuccess = {
+                index = arguments?.getInt(ARG_INDEX) ?: -1
+                mr = viewModel.selectedMeasure?.measureResult ?: JSONArray()
+                avm.mafMeasureResult = JSONArray()
+                Log.v("현재측정", viewModel.selectedMeasure?.regDate.toString())
+                val noticeScore = arguments?.getInt(ARG_SCORE)
+                val noticeComment = arguments?.getString(ARG_COMMENT)
+                setColor(noticeScore)
+                binding.tvMAPredict.text = noticeComment.toString()
 
-        // ------# 1차 필터링 (균형별) #------
-        // 0, 1, 2, 3으로 3가지.
-        when (index) {
-            0 -> { // 정면 균형
-                binding.tvMPTitle.text = "정면 균형"
-                binding.tvMAName.text = "정면 균형"
-                binding.tvMAPart1.text = "정면 측정"
-                binding.tvMAPart2.text = "팔꿉 측정"
-                avm.mafMeasureResult.put(mr.optJSONObject(0))
-                avm.mafMeasureResult.put(mr.optJSONObject(2))
-                setDynamicUI(false)
-                setStaticSplitUi(true)
-                binding.flMA.visibility = View.GONE
-                lifecycleScope.launch {
-                    setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 0, binding.ssivMA1, "")
-                    setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 2, binding.ssivMA2, "")
+                // ------# 1차 필터링 (균형별) #------
+                // 0, 1, 2, 3으로 3가지.
+                when (index) {
+                    0 -> { // 정면 균형
+                        binding.tvMPTitle.text = "정면 균형"
+                        binding.tvMAName.text = "정면 균형"
+                        binding.tvMAPart1.text = "정면 측정"
+                        binding.tvMAPart2.text = "팔꿉 측정"
+                        avm.mafMeasureResult.put(mr.optJSONObject(0))
+                        avm.mafMeasureResult.put(mr.optJSONObject(2))
+                        setDynamicUI(false)
+                        setStaticSplitUi(true)
+                        binding.flMA.visibility = View.GONE
+                        lifecycleScope.launch {
+                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 0, binding.ssivMA1, "")
+                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 2, binding.ssivMA2, "")
+                        }
+                        setScreenRawData(avm.mafMeasureResult, 0)
+                        binding.ivMA.setImageResource(R.drawable.drawable_front)
+
+                    }
+                    1 -> { // 측면 균형
+                        binding.tvMPTitle.text = "측면 균형"
+                        binding.tvMAName.text = "측면 균형"
+                        binding.tvMAPart1.text = "좌측 측정"
+                        binding.tvMAPart2.text = "우측 측정"
+                        avm.mafMeasureResult.put(mr.optJSONObject(3))
+                        avm.mafMeasureResult.put(mr.optJSONObject(4))
+                        setDynamicUI(false)
+                        setStaticSplitUi(true)
+                        lifecycleScope.launch {
+                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 3, binding.ssivMA1, "")
+                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 4, binding.ssivMA2, "")
+                        }
+                        setScreenRawData(avm.mafMeasureResult,  3)
+                        binding.ivMA.setImageResource(R.drawable.drawable_side)
+
+                    }
+                    2 -> { // 후면 균형
+                        binding.tvMPTitle.text = "후면 균형"
+                        binding.tvMAName.text = "후면 균형"
+                        binding.tvMAPart1.text = "후면 측정"
+                        avm.mafMeasureResult.put(mr.optJSONObject(5))
+                        setDynamicUI(false)
+                        setStaticSplitUi(false)
+                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 5, binding.ssivMA1, "") }
+                        binding.flMA.visibility = View.GONE
+                        setScreenRawData(avm.mafMeasureResult,  5)
+                        binding.ivMA.setImageResource(R.drawable.drawable_back)
+
+
+                    }
+                    3 -> {
+                        binding.tvMPTitle.text = "앉은 후면"
+                        binding.tvMAName.text = "앉은 후면"
+                        binding.tvMAPart1.text = "앉은 후면"
+                        avm.mafMeasureResult.put(mr.optJSONObject(6))
+                        setDynamicUI(false)
+                        setStaticSplitUi(false)
+                        binding.tvMPTitle.visibility = View.VISIBLE
+                        binding.flMA.visibility = View.GONE
+                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA1, "") }
+                        binding.ssivMA2.visibility = View.GONE
+                        setScreenRawData(avm.mafMeasureResult,  6)
+                        binding.ivMA.setImageResource(R.drawable.drawable_back)
+
+
+                    }
+                    4 -> { // 동적 균형
+                        binding.tvMPTitle.text = "동적 측정"
+                        avm.mafMeasureResult.put(mr.optJSONArray(1))
+                        setDynamicUI(true)
+                        setPlayer()
+                    }
                 }
-                setScreenRawData(avm.mafMeasureResult, 0)
-                binding.ivMA.setImageResource(R.drawable.drawable_front)
-
+            },
+            onError = {
+                Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
-            1 -> { // 측면 균형
-                binding.tvMPTitle.text = "측면 균형"
-                binding.tvMAName.text = "측면 균형"
-                binding.tvMAPart1.text = "좌측 측정"
-                binding.tvMAPart2.text = "우측 측정"
-                avm.mafMeasureResult.put(mr.optJSONObject(3))
-                avm.mafMeasureResult.put(mr.optJSONObject(4))
-                setDynamicUI(false)
-                setStaticSplitUi(true)
-                lifecycleScope.launch {
-                    setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 3, binding.ssivMA1, "")
-                    setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 4, binding.ssivMA2, "")
-                }
-                setScreenRawData(avm.mafMeasureResult,  3)
-                binding.ivMA.setImageResource(R.drawable.drawable_side)
-
-            }
-            2 -> { // 후면 균형
-                binding.tvMPTitle.text = "후면 균형"
-                binding.tvMAName.text = "후면 균형"
-                binding.tvMAPart1.text = "후면 측정"
-                avm.mafMeasureResult.put(mr.optJSONObject(5))
-                setDynamicUI(false)
-                setStaticSplitUi(false)
-                lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 5, binding.ssivMA1, "") }
-                binding.flMA.visibility = View.GONE
-                setScreenRawData(avm.mafMeasureResult,  5)
-                binding.ivMA.setImageResource(R.drawable.drawable_back)
-
-
-            }
-            3 -> {
-                binding.tvMPTitle.text = "앉은 후면"
-                binding.tvMAName.text = "앉은 후면"
-                binding.tvMAPart1.text = "앉은 후면"
-                avm.mafMeasureResult.put(mr.optJSONObject(6))
-                setDynamicUI(false)
-                setStaticSplitUi(false)
-                binding.tvMPTitle.visibility = View.VISIBLE
-                binding.flMA.visibility = View.GONE
-                lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA1, "") }
-                binding.ssivMA2.visibility = View.GONE
-                setScreenRawData(avm.mafMeasureResult,  6)
-                binding.ivMA.setImageResource(R.drawable.drawable_back)
-
-
-            }
-            4 -> { // 동적 균형
-                binding.tvMPTitle.text = "동적 측정"
-                avm.mafMeasureResult.put(mr.optJSONArray(1))
-                setDynamicUI(true)
-                setPlayer()
-            }
-        }
+        )
     }
 
     // 고정적으로

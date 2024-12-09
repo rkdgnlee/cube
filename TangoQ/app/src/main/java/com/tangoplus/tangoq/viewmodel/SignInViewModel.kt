@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.viewmodel
 
 import android.net.Uri
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.json.JSONObject
@@ -50,6 +51,17 @@ class SignInViewModel: ViewModel() {
     val mobileCondition = MutableLiveData(false)
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
+    val pwBothTrue = MediatorLiveData<Boolean>().apply {
+
+        value = false
+        addSource(pwCondition) { condition ->
+            value = condition && (pwCompare.value ?: false)
+        }
+        addSource(pwCompare) { compare ->
+            value = (pwCondition.value ?: false) && compare
+        }
+    }
+
     val mobileAuthCondition = MutableLiveData(false)
 
     override fun onCleared() {

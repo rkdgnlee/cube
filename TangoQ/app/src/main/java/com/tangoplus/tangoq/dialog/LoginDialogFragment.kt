@@ -29,6 +29,7 @@ import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.function.SaveSingletonManager
@@ -42,7 +43,7 @@ class LoginDialogFragment : DialogFragment() {
     lateinit var binding: FragmentLoginDialogBinding
     val viewModel : SignInViewModel by activityViewModels()
     private lateinit var ssm : SaveSingletonManager
-
+    private lateinit var prefs : PreferencesManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,15 +63,17 @@ class LoginDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        // ------# 로그인 count 저장 #------
+        prefs = PreferencesManager(requireContext())
+        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         ssm = SaveSingletonManager(requireContext(), requireActivity())
         binding.etLDId.requestFocus()
         binding.etLDId.postDelayed({
-            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etLDId, InputMethodManager.SHOW_IMPLICIT)
         }, 250)
-        val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.hideSoftInputFromWindow(view.windowToken, 0)
+
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+
         // ------! 로그인 시작 !------
         val idPattern = "^[\\s\\S]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
         val idPatternCheck = Pattern.compile(idPattern)
@@ -101,26 +104,18 @@ class LoginDialogFragment : DialogFragment() {
 //        }
 
         // 응답과 관계없이 로그인 시도 5회 실패시 잠금 ( 3분간 )
-        viewModel.loginTryCount.observe(viewLifecycleOwner) { count ->
-            if (count >= 5) {
-                disabledLogin()
-                Handler(Looper.getMainLooper()).postDelayed({
-                    enabledLogin()
-                    viewModel.loginTryCount.value = 0
-                }, 60000 * 3)
-            }
-            else {
-                enabledLogin()
-            }
+        // 5회 동안 이렇게 세고, 6회 시도 시 실패 -> 5분 7회 -> 10 8회 -> 20 9회 30분 10회 -> 이제 추가함
 
+
+        viewModel.loginTryCount.observe(viewLifecycleOwner) { count ->
+            loginStop()
+            if (count >= 5) disabledLogin()
         }
         binding.ibtnLDIdClear.setOnClickListener { binding.etLDId.text.clear() }
         binding.ibtnLDPwClear.setOnClickListener { binding.etLDPw.text.clear() }
 
         binding.btnLDLogin.setOnClickListener {
-            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
-
             if (viewModel.idPwCondition.value == true) {
                 viewModel.loginTryCount.value = viewModel.loginTryCount.value?.plus(1)
                 val jsonObject = JSONObject()
@@ -145,6 +140,12 @@ class LoginDialogFragment : DialogFragment() {
                                     }
                                 )
                                 binding.etLDPw.text.clear()
+                                val loginId = viewModel.id.value.toString() // 한 번만 호출
+                                var currentIdTryCount = prefs.getLoginCount(loginId)
+                                currentIdTryCount++
+                                prefs.storeLoginId(loginId, currentIdTryCount)
+                                viewModel.loginTryCount.value = currentIdTryCount
+                                Log.v("카운트올라감", "${viewModel.loginTryCount.value}")
                             }
                         } else {
                             requireActivity().runOnUiThread {
@@ -174,7 +175,7 @@ class LoginDialogFragment : DialogFragment() {
                                                     val intent = Intent(safeContext, MainActivity::class.java)
                                                     safeContext.startActivity(intent)
                                                     (safeContext as? Activity)?.finishAffinity()
-                                                }, 500)
+                                                }, 250)
                                             }
                                         }
 
@@ -206,23 +207,9 @@ class LoginDialogFragment : DialogFragment() {
     private fun makeMaterialDialog(case: Int) {
         val message = when (case) {
             0 -> "비밀번호 또는 아이디가 올바르지 않습니다." + if (viewModel.loginTryCount.value!! > 2) "\n시도한 횟수: ${viewModel.loginTryCount.value}번" else ""
-            1 -> "비밀번호가 5회 틀렸습니다. 1분 후 다시 시도해주세요."
+            1 -> "비밀번호가 ${viewModel.loginTryCount.value}회 틀렸습니다. ${limitMinutes.get(viewModel.loginTryCount.value)}분 후 다시 시도해주세요."
             2 -> "비밀번호를 10회 틀려 계정이 잠겼습니다.\n고객센터로 문의해주세요"
             else -> ""
-        }
-        when (case) {
-            1 -> {
-                binding.btnLDLogin.isEnabled = false
-                binding.tvLDAlert.visibility = View.VISIBLE
-                Handler(Looper.getMainLooper()).postDelayed({
-                    binding.btnLDLogin.isEnabled = true
-                    binding.tvLDAlert.visibility = View.GONE
-                },  60000)
-            }
-            2 -> {
-                binding.btnLDLogin.isEnabled = false
-                binding.tvLDAlert.visibility = View.VISIBLE
-            }
         }
         MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
             setTitle("⚠️ 알림")
@@ -232,14 +219,30 @@ class LoginDialogFragment : DialogFragment() {
         }.show()
     }
 
+    private val limitMinutes = mapOf(
+        5 to 3,
+        6 to 5,
+        7 to 10,
+        8 to 20,
+        9 to 30
+    )
+
     private fun disabledLogin() {
         binding.btnLDLogin.isEnabled = false
         binding.btnLDLogin.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
         binding.tvLDAlert.visibility = View.VISIBLE
+        binding.tvLDAlert.text = "로그인 시도를 ${viewModel.loginTryCount.value}회 실패하셨습니다.\n${limitMinutes.get(viewModel.loginTryCount.value)}분 이후 다시 시도해주세요."
     }
     private fun enabledLogin() {
         binding.btnLDLogin.isEnabled = true
         binding.btnLDLogin.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
         binding.tvLDAlert.visibility = View.GONE
+    }
+
+    private fun loginStop() {
+        val stopMinutes = limitMinutes[viewModel.loginTryCount.value] ?: 3 // 기본값 3분
+        Handler(Looper.getMainLooper()).postDelayed({
+            enabledLogin()
+        }, (60000 * stopMinutes).toLong())
     }
 }

@@ -2,7 +2,9 @@ package com.tangoplus.tangoq
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.lang.Math.toDegrees
 import kotlin.math.acos
+import kotlin.math.atan2
 import kotlin.math.sqrt
 
 class MathTest {
@@ -47,5 +49,77 @@ class MathTest {
         println("오른어깨, 34.07: $result5")
         println("코, 115.36 :$result6")
         assertEquals(90, 40 + 40) // 예상 결과를 넣어줌 (74는 예시)
+    }
+
+    @Test
+    fun getAngle() {
+
+        // 앉아 후면 어깨 코 삼각형의 기울기 만들기
+        val result1 = calculateSlope( 316f, 317f, 380f, 386f,)
+        val result2 = calculateSlope(616f, 217f, 634f, 265f)
+        val result3 = calculateSlope( 297f, 332f, 349f, 416f,)
+        println("1205, 52.13: $result1")
+        println("1030, 69.44: $result2")
+        println("1204, 69.44: $result3")
+        assertEquals(90, 40 + 40) // 예상 결과를 넣어줌 (74는 예시)
+    }
+
+    fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
+        val radians = atan2(y2 - y1, x2 - x1)
+        val degrees = toDegrees(radians.toDouble())
+        return degrees.toFloat()
+    }
+
+
+    @Test
+    fun backSitTriangleHip() {
+        val results1 = calculateAngle(699f, 365f, 590f, 362f, (612 + 668) / 2f, (527 + 525) /2f)
+        val results2 = calculateAngle(590f, 362f, (612 + 668) / 2f, (527 + 525) /2f, 699f, 365f)
+        val results3 = calculateAngle((612 + 668) / 2f, (527 + 525) / 2f,699f, 365f, 590f, 362f)
+        println("1030 left: $results1")
+        println("1030 hip: $results2")
+        println("1030 right: $results3")
+
+        val results4 = calculateAngle(452f, 612f, 266f, 609f, (300 + 413) / 2f, (844 + 845) /2f)
+        val results5 = calculateAngle(266f, 609f, (300 + 413) / 2f, (844 + 845) /2f , 452f, 612f,)
+        val results6 = calculateAngle((300 + 413) / 2f, (844 + 845) /2f,452f, 612f, 266f, 609f,)
+        println("1205 left: $results4")
+        println("1205 hip: $results5")
+        println("1205 right: $results6")
+    }
+
+    @Test
+    fun backSitTriangleHip2() {
+        val results1 = calculateAngle(0.5978397f,  0.3127404f, 0.3711682f, 0.29385933f, 0.4426213f, 0.46341354f)
+        val results2 = calculateAngle(0.3711682f, 0.29385933f, 0.4426213f, 0.46341354f, 0.5978397f,  0.3127404f,)
+        val results3 = calculateAngle(0.4426213f, 0.46341354f, 0.5978397f,  0.3127404f, 0.3711682f, 0.29385933f,)
+        println("1030 left: $results1")
+        println("1030 hip: $results2")
+        println("1030 right: $results3")
+
+        val results4 = calculateAngle(452f, 612f, 266f, 609f, (300 + 413) / 2f, (844 + 845) /2f)
+        val results5 = calculateAngle(266f, 609f, (300 + 413) / 2f, (844 + 845) /2f , 452f, 612f,)
+        val results6 = calculateAngle((300 + 413) / 2f, (844 + 845) /2f,452f, 612f, 266f, 609f,)
+        println("1205 left: $results4")
+        println("1205 hip: $results5")
+        println("1205 right: $results6")
+
+    }
+
+    @Test
+    fun ShoulderElbowWrist() {
+//        val results1 = calculateAngle(0.5978397f,  0.3127404f, 0.3711682f, 0.29385933f, 0.4426213f, 0.46341354f)
+//        val results2 = calculateAngle(0.3711682f, 0.29385933f, 0.4426213f, 0.46341354f, 0.5978397f,  0.3127404f,)
+//        val results3 = calculateAngle(0.4426213f, 0.46341354f, 0.5978397f,  0.3127404f, 0.3711682f, 0.29385933f,)
+//        println("1030 left: $results1")
+//        println("1030 hip: $results2")
+//        println("1030 right: $results3")
+
+        val results4 = calculateAngle(380f, 386f, 360f, 536f, 333f, 675f)
+//        val results5 = calculateAngle(266f, 609f, (300 + 413) / 2f, (844 + 845) /2f , 452f, 612f,)
+//        val results6 = calculateAngle((300 + 413) / 2f, (844 + 845) /2f,452f, 612f, 266f, 609f,)
+        println("1205 left: $results4")
+//        println("1205 hip: $results5")
+//        println("1205 right: $results6")
     }
 }

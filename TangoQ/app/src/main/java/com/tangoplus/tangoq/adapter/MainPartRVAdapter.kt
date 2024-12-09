@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.view.LayoutInflater
@@ -34,12 +35,9 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
         val ivMPI: ImageView = view.findViewById(R.id.ivMPI)
         val tvMPITitle: TextView = view.findViewById(R.id.tvMPITitle)
         val tvMPISummary: TextView = view.findViewById(R.id.tvMPISummary)
-        val vMPILeft : View = view.findViewById(R.id.vMPILeft)
-        val vMPIRight : View = view.findViewById(R.id.vMPIRight)
-        val tvMPILeft : TextView = view.findViewById(R.id.tvMPILeft)
-        val tvMPIRight : TextView = view.findViewById(R.id.tvMPIRight)
-        val ivMPIArrow : ImageView = view.findViewById(R.id.ivMPIArrow)
+        val tvMPIState : TextView = view.findViewById(R.id.tvMPIState)
     }
+
     var avm : ViewModel? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -106,22 +104,18 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
     )
 
     private fun setState(holder: MPViewHolder, isNormal: Int) {
-        val params = holder.ivMPIArrow.layoutParams as ConstraintLayout.LayoutParams
         when (isNormal) {
             2, 3 -> {
-
-                holder.vMPILeft.visibility = View.VISIBLE
-                holder.vMPIRight.visibility = View.GONE
-                holder.tvMPILeft.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteColor))
-                holder.tvMPIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
-                params.horizontalBias = 0.125f
+                holder.tvMPIState.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.white))
+                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.white))
+                holder.tvMPIState.text = "확인 필요"
             }
             else -> {
-                holder.vMPILeft.visibility = View.GONE
-                holder.vMPIRight.visibility = View.VISIBLE
-                holder.tvMPILeft.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
-                holder.tvMPIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.thirdColor))
-                params.horizontalBias = 0.65f
+                holder.tvMPIState.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
+                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
+                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
+                holder.tvMPIState.text = "평균 수치"
             }
         }
     }

@@ -80,4 +80,8 @@ object ExtendedFunctions {
             window?.setLayout(x, y)
         }
     }
+    fun isKorean(str: String): Boolean {
+        val koreanRegex = Regex("[ㄱ-ㅎㅏ-ㅣ가-힣]+")
+        return koreanRegex.containsMatchIn(str)
+    }
 }

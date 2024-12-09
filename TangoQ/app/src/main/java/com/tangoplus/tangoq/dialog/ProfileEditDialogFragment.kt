@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -19,6 +20,7 @@ import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileEditDialogBinding
+import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
@@ -35,6 +37,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     lateinit var userSn : String
     private var profilemenulist = mutableListOf<String>()
     private var profileUpdateListener: ProfileUpdateListener? = null
+    private lateinit var biometricManager : BiometricManager
 
     fun setProfileUpdateListener(listener: ProfileUpdateListener) {
         this.profileUpdateListener = listener
@@ -57,140 +60,145 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AppTheme_DialogFragment)
 
-        svm.snsCount = 0
-        // ------! 싱글턴에서 가져오기 !------
-        svm.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject
+        // ------# 초기 생체인증 init #------
+        biometricManager = BiometricManager(this)
+        biometricManager.authenticate(
+            onSuccess = {
+                binding.sflPED.startShimmer()
+                svm.snsCount = 0
+                // ------! 싱글턴에서 가져오기 !------
+                svm.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject
 
-        svm.setHeight.value = svm.User.value?.optInt("height")
-        svm.setWeight.value = svm.User.value?.optInt("weight")
-        svm.setEmail.value = svm.User.value?.optString("email")
+                svm.setHeight.value = svm.User.value?.optInt("height")
+                svm.setWeight.value = svm.User.value?.optInt("weight")
+                svm.setEmail.value = svm.User.value?.optString("email")
 
 
-        userSn = svm.User.value?.optString("sn").toString()
-        Log.v("개인정보편집", "${svm.User.value}")
+                userSn = svm.User.value?.optString("sn").toString()
+                Log.v("개인정보편집", "${svm.User.value}")
 
-        // ------! 정보 목록 recyclerView 연결 시작 !------
-        profilemenulist = mutableListOf(
-            "이름",
-            "이메일",
-            "몸무게",
-            "신장",
-            "성별"
-        )
-        setAdapter(profilemenulist)
+                // ------! 정보 목록 recyclerView 연결 시작 !------
+                profilemenulist = mutableListOf(
+                    "이름",
+                    "이메일",
+                    "몸무게",
+                    "신장",
+                    "성별"
+                )
+                setAdapter(profilemenulist)
 
-        // ------! 정보 목록 recyclerView 연결 끝 !------
-        // ------! 개인정보수정 rv 연결 끝 !------
+                // ------! 정보 목록 recyclerView 연결 끝 !------
+                // ------! 개인정보수정 rv 연결 끝 !------
 
-        // ------! 이름, 전화번호 세팅 !------
+                // ------! 이름, 전화번호 세팅 !------
 //        binding.tvPEDMobile.text = userJson.optString("user_mobile")
 //        binding.tvPEDName.text = userJson.optString("user_name")
 
 
 //        // ------! 소셜 계정 로그인 연동 시작 !------
-        val snsIntegrations = checkSNSLogin(svm.User.value)
+                val snsIntegrations = checkSNSLogin(svm.User.value)
 
-        if (snsIntegrations.first) {
-            binding.tvGoogleInteCheck.text = "계정연동"
-            binding.tvGoogleInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
-            binding.clGoogle.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            svm.snsCount += 1
-            Log.v("snsCount", "${svm.snsCount}")
-        }
-        if (snsIntegrations.second) {
-            binding.tvKakaoIntecheck.text = "계정연동"
-            binding.tvKakaoIntecheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
-            binding.clKakao.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            svm.snsCount += 1
-            Log.v("snsCount", "${svm.snsCount}")
-        }
-        if (snsIntegrations.third) {
-            binding.tvNaverInteCheck.text = "계정연동"
-            binding.tvNaverInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
-            binding.clNaver.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            svm.snsCount += 1
-            Log.v("snsCount", "${svm.snsCount}")
-        }
+                if (snsIntegrations.first) {
+                    binding.tvGoogleInteCheck.text = "계정연동"
+                    binding.tvGoogleInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
+                    binding.clGoogle.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    svm.snsCount += 1
+                    Log.v("snsCount", "${svm.snsCount}")
+                }
+                if (snsIntegrations.second) {
+                    binding.tvKakaoIntecheck.text = "계정연동"
+                    binding.tvKakaoIntecheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
+                    binding.clKakao.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    svm.snsCount += 1
+                    Log.v("snsCount", "${svm.snsCount}")
+                }
+                if (snsIntegrations.third) {
+                    binding.tvNaverInteCheck.text = "계정연동"
+                    binding.tvNaverInteCheck.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
+                    binding.clNaver.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    svm.snsCount += 1
+                    Log.v("snsCount", "${svm.snsCount}")
+                }
 
-        // ------! id, pw, EmailId VM에 값 보존 시작 !------
-        svm.id.value = svm.User.value?.optString("user_id")
+                // ------! id, pw, EmailId VM에 값 보존 시작 !------
+                svm.id.value = svm.User.value?.optString("user_id")
 
-        when (svm.User.value?.optInt("sms_receive")) {
-            1 -> agreementMk1.value = true
-            else -> agreementMk1.value = false
-        }
-        Log.v("userJson", svm.User.value?.optInt("sms_receive").toString())
-        when (svm.User.value?.optInt("email_receive")) {
-            1 -> agreementMk2.value = true
-            else -> agreementMk2.value = false
-        }
-        Log.v("userJson", svm.User.value?.optInt("email_receive").toString())
-        // ------! 광고성 수신 동의 시작 !------
-        binding.clPEDAgreement3.setOnClickListener{
-            val newValue = agreement3.value?.not() ?: false
-            binding.ivPEDAgreement3.setImageResource(
-                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
-            )
+                when (svm.User.value?.optInt("sms_receive")) {
+                    1 -> agreementMk1.value = true
+                    else -> agreementMk1.value = false
+                }
+                Log.v("userJson", svm.User.value?.optInt("sms_receive").toString())
+                when (svm.User.value?.optInt("email_receive")) {
+                    1 -> agreementMk2.value = true
+                    else -> agreementMk2.value = false
+                }
+                Log.v("userJson", svm.User.value?.optInt("email_receive").toString())
+                // ------! 광고성 수신 동의 시작 !------
+                binding.clPEDAgreement3.setOnClickListener{
+                    val newValue = agreement3.value?.not() ?: false
+                    binding.ivPEDAgreement3.setImageResource(
+                        if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+                    )
 
-            binding.ivPEDAgreementMk1.setImageResource(
-                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
-            )
-            binding.ivPEDAgreementMk2.setImageResource(
-                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
-            )
-            agreement3.value = newValue
-            agreementMk1.value = newValue
-            agreementMk2.value = newValue
-        }
-        binding.ibtnPEDAgreement3.setOnClickListener {
-            val dialog = AgreementDetailDialogFragment.newInstance("agreement3")
-            dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
-        }
-        binding.clPEDAgreementMk1.setOnClickListener {
-            val newValue = agreementMk1.value?.not() ?: false
-            binding.ivPEDAgreementMk1.setImageResource(
-                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
-            )
-            agreementMk1.value = newValue
-        }
-        binding.clPEDAgreementMk2.setOnClickListener {
-            val newValue = agreementMk2.value?.not() ?: false
-            binding.ivPEDAgreementMk2.setImageResource(
-                if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
-            )
-            agreementMk2.value = newValue
-        }
-        agreement3.observe(viewLifecycleOwner) {
-            updateAgreeMarketingAllState()
-        }
+                    binding.ivPEDAgreementMk1.setImageResource(
+                        if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+                    )
+                    binding.ivPEDAgreementMk2.setImageResource(
+                        if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+                    )
+                    agreement3.value = newValue
+                    agreementMk1.value = newValue
+                    agreementMk2.value = newValue
+                }
+                binding.ibtnPEDAgreement3.setOnClickListener {
+                    val dialog = AgreementDetailDialogFragment.newInstance("agreement3")
+                    dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+                }
+                binding.clPEDAgreementMk1.setOnClickListener {
+                    val newValue = agreementMk1.value?.not() ?: false
+                    binding.ivPEDAgreementMk1.setImageResource(
+                        if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+                    )
+                    agreementMk1.value = newValue
+                }
+                binding.clPEDAgreementMk2.setOnClickListener {
+                    val newValue = agreementMk2.value?.not() ?: false
+                    binding.ivPEDAgreementMk2.setImageResource(
+                        if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
+                    )
+                    agreementMk2.value = newValue
+                }
+                agreement3.observe(viewLifecycleOwner) {
+                    updateAgreeMarketingAllState()
+                }
 
 
-        agreementMk1.observe(viewLifecycleOwner) {
-            Log.v("광고성1", "${agreementMk1.value}")
-            updateAgreeMarketingAllState()
-        }
+                agreementMk1.observe(viewLifecycleOwner) {
+                    Log.v("광고성1", "${agreementMk1.value}")
+                    updateAgreeMarketingAllState()
+                }
 
-        agreementMk2.observe(viewLifecycleOwner) {
-            updateAgreeMarketingAllState()
-            Log.v("광고성2", "${agreementMk2.value}")
+                agreementMk2.observe(viewLifecycleOwner) {
+                    updateAgreeMarketingAllState()
+                    Log.v("광고성2", "${agreementMk2.value}")
 
-        }
+                }
 
-        binding.btnPEDFinish.setOnClickListener {
+                binding.btnPEDFinish.setOnClickListener {
 //            viewModel.User.value?.put("user_id", viewModel.id.value.toString())
 //            viewModel.User.value?.put("password", viewModel.pw.value.toString())
-            svm.User.value?.put("sms_receive", if (agreementMk1.value == true) 1 else 0)
-            svm.User.value?.put("email_receive", if (agreementMk2.value == true) 1 else 0)
-            svm.User.value?.put("height", svm.setHeight.value)
-            svm.User.value?.put("weight", svm.setWeight.value)
-            svm.User.value?.put("email", svm.setEmail.value)
-            Log.v("userJson>receive", "${svm.User.value}")
+                    svm.User.value?.put("sms_receive", if (agreementMk1.value == true) 1 else 0)
+                    svm.User.value?.put("email_receive", if (agreementMk2.value == true) 1 else 0)
+                    svm.User.value?.put("height", svm.setHeight.value)
+                    svm.User.value?.put("weight", svm.setWeight.value)
+                    svm.User.value?.put("email", svm.setEmail.value)
+                    Log.v("userJson>receive", "${svm.User.value}")
 //            val userEditEmail = userJson.optString("user_email")
 //            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
-            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user),
-                svm.User.value?.toString().toString(), userSn) {
-                Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-                Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
+                    fetchUserUPDATEJson(requireContext(), getString(R.string.API_user),
+                        svm.User.value?.toString().toString(), userSn) {
+                        Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
+                        Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
 //                requireActivity().runOnUiThread{
 //                    uViewModel.setupProgress = 34
 //                    uViewModel.setupStep = 0
@@ -204,10 +212,14 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 //                    uViewModel.User.value = null
 //                    uViewModel.User.value = null
 //                }
-                onEditComplete()
+                        onEditComplete()
+                    }
+                }
+            },
+            onError = {
+                Toast.makeText(requireContext(), "인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_LONG).show()
             }
-        }
-//        b
+        )
     }
 
     private fun setAdapter(list: MutableList<String>) {
@@ -216,7 +228,8 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         adapter.userJson = svm.User.value ?: JSONObject()
         adapter.profilemenulist = list
         binding.rvPED.adapter = adapter
-
+        binding.sflPED.visibility = View.GONE
+        binding.sflPED.stopShimmer()
         adapter.notifyDataSetChanged()
 
     }
@@ -267,6 +280,5 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
             )
         }
     }
-
     override fun onSwitchChanged(isChecked: Boolean) { }
 }

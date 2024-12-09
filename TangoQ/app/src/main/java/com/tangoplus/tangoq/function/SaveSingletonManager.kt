@@ -26,7 +26,6 @@ import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendProgram
 import com.tangoplus.tangoq.`object`.NetworkRecommendation.getRecommendationInOneMeasure
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_progress
-import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -98,7 +97,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
     // static과 dynamic에서는 column을 쓰지를 않음. 그냥 json파일에 있는 값들을 내가 쓰지,
     private suspend fun fetchAndFilterMeasureInfo(userUUID: String) {
-        val currentActivity = activity ?: return
+        val currentActivity = activity
         val dialog = withContext(Dispatchers.Main) {
             if (!currentActivity.isFinishing && !currentActivity.isDestroyed) {
                 LoadingDialogFragment.newInstance("측정파일").apply {
@@ -270,6 +269,10 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     recommendations = null
                 )
                 Log.v("싱글턴Measure넣기전 다른 값", "t_score: ${info.t_score},ja:  ${ja},uris: ${uris}, ${info.device_sn}")
+                // ------# 초기 측정 상태일 때 null 예외 처리 #------
+                if (singletonMeasure.measures == null) {
+                    singletonMeasure.measures = mutableListOf()
+                }
                 singletonMeasure.measures?.add(0, measureVO)
                 Log.v("싱글턴Measure넣기전", "${singletonMeasure.measures}")
                 Log.v("싱글턴Measure1Item", "${singletonMeasure.measures?.size}")

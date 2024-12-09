@@ -32,18 +32,18 @@ object ImageProcessingUtil {
         val canvas = Canvas(resultBitmap)
         val axisPaint = Paint().apply {
             color = Color.parseColor("#FF5449")
-            strokeWidth = 4f
+            strokeWidth = 3f
             style = Paint.Style.STROKE
         }
         val axisSubPaint = Paint().apply {
             color = Color.parseColor("#2EE88B")
-            strokeWidth = 4f
+            strokeWidth = 3f
             style = Paint.Style.STROKE
         }
 
         val paint = Paint().apply {
             color = 0xFFFFFFFF.toInt()
-            strokeWidth = 4f
+            strokeWidth = 3f
             style = Paint.Style.STROKE
         }
 

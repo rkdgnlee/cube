@@ -78,11 +78,10 @@ dependencies {
     implementation("com.github.skydoves:progressview:1.1.3")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
-    implementation("jp.wasabeef:blurry:4.0.1")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
     implementation("com.arthenica:mobile-ffmpeg-full:4.4")
-
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // api
     implementation("com.navercorp.nid:oauth:5.9.1")

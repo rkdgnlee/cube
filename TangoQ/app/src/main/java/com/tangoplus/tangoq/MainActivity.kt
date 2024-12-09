@@ -17,7 +17,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.kakao.sdk.auth.AuthApiClient
+import com.kakao.sdk.user.UserApiClient
+import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
@@ -31,8 +38,15 @@ import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
+import com.tangoplus.tangoq.function.WifiSecurityManager
 import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
+import com.tangoplus.tangoq.`object`.NetworkUser.logoutDenyRefreshJwt
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.`object`.Singleton_t_progress
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
-
+    private lateinit var wifiSecurityManager: WifiSecurityManager
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         // 새로운 인텐트가 들어왔을 때 딥링크 처리
@@ -62,6 +76,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        wifiSecurityManager = WifiSecurityManager(this)
+        val securityType = wifiSecurityManager.checkWifiSecurity()
+        when (securityType) {
+            "OPEN","WEP" -> {
+                Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_SHORT).show()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    logout(this@MainActivity)
+                },  3 * 60000)
+            }
+        }
+        if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
+            Toast.makeText(this, "올바르지 않은 접근입니다. 다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
+            logout(this@MainActivity)
+        }
+
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -219,52 +249,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // 핸들러의 콜백을 제거하여 메모리 누수를 방지
         backPressHandler.removeCallbacks(backPressRunnable)
-        clearDir()
-    }
-
-    private fun clearDir() {
-        val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
-        val interalDir = filesDir
-        if (cacheDir != null && cacheDir.isDirectory) {
-            deleteDir(cacheDir)
-        }
-        interalDir?.let {
-            deleteInternalDir(it)
-        }
-    }
-
-    private fun deleteDir(dir: File?): Boolean {
-        if (dir != null && dir.isDirectory) {
-            val children = dir.list()
-            children?.forEach { child ->
-                val success = deleteDir(File(dir, child))
-                if (!success) {
-                    Log.e("FileDelete", "Failed to delete file: ${File(dir, child).absolutePath}")
-                    return false
-                }
-            }
-        }
-        return dir?.delete() ?: false
-    }
-
-    private fun deleteInternalDir(dir: File?): Boolean {
-        if (dir != null && dir.isDirectory) {
-            val children = dir.list()
-            children?.forEach { child ->
-                val success = deleteDir(File(dir, child))
-                if (!success) {
-                    Log.e("FileDelete", "Failed to delete file: ${File(dir, child).absolutePath}")
-                    return false
-                }
-            }
-        }
-        val deleted = dir?.delete() ?: false
-        if (deleted) {
-            Log.d("FileDelete", "Deleted: ${dir?.absolutePath}")
-        } else {
-            Log.e("FileDelete", "Failed to delete: ${dir?.absolutePath}")
-        }
-        return deleted
     }
 
     private fun handleIntent(intent: Intent) {

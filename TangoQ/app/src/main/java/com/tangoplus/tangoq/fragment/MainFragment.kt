@@ -97,7 +97,6 @@ class MainFragment : Fragment() {
         }
 
         latestRecSn = prefsManager.getLatestRecommendation()
-
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
         // ------# 알람 intent #------
