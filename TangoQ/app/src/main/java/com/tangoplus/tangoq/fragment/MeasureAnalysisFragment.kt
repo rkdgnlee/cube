@@ -186,6 +186,11 @@ class MeasureAnalysisFragment : Fragment() {
             },
             onError = {
                 Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flMain, MainFragment())
+                    addToBackStack(null)
+                    commit()
+                }
             }
         )
     }

@@ -5,6 +5,7 @@ import android.util.Log
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
+import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -253,16 +254,7 @@ object NetworkUser {
 
     fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String, callback: (Boolean) -> Unit) {
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}users/$sn")
             .patch(body)
@@ -285,8 +277,8 @@ object NetworkUser {
         })
     }
 
-    fun fetchUserDeleteJson(myUrl : String, sn:String, callback: () -> Unit) {
-        val client = OkHttpClient()
+    fun fetchUserDeleteJson(context : Context, myUrl : String, sn:String, callback: () -> Unit) {
+        val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}user/$sn")
             .delete()
@@ -306,11 +298,11 @@ object NetworkUser {
 
 
 
-    fun findUserId(myUrl: String, joBody: String, callback: (String) -> Unit) {
+    fun findUserId(context: Context, myUrl: String, joBody: String, callback: (String) -> Unit) {
 
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = joBody.toRequestBody(mediaType)
-        val client = OkHttpClient()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}find_user_id.php")
             .post(body)
@@ -336,16 +328,7 @@ object NetworkUser {
 
     // ------! 프로필 사진 시작 !------
     suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         Log.d("sendProfileImage", "myUrl: $myUrl, sn: $sn")
         val request = Request.Builder()
             .url("${myUrl}users/$sn")

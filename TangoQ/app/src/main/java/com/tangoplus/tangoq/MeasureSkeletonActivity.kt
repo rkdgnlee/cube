@@ -1030,6 +1030,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                 Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
                     dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }, 1000)
+
+                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
+                }, 1100)
             }
         }
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")

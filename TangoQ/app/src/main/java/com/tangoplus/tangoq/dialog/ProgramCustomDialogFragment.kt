@@ -115,7 +115,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
 
         pvm.selectedWeek.observe(viewLifecycleOwner) { selectedWeek ->
-
             if (pvm.currentProgram != null && pvm.selectedSequence.value != null) {
                 val maxSeq = pvm.currentProgram?.programFrequency
                 val selectedWeekValue = pvm.selectedWeek.value
@@ -497,9 +496,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     private fun showBalloon() {
         val balloon2 = Balloon.Builder(requireContext())
-            .setWidthRatio(0.5f)
+            .setWidthRatio(0.8f)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("주차 요일에 맞추어 운동을 진행합니다.")
+            .setText("주차 요일에 맞추어 운동을 진행합니다.\n프로그램을 한 주동안 원하는 날짜에 진행해보세요")
             .setTextColorResource(R.color.white)
             .setTextSize(15f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)

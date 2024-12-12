@@ -23,15 +23,26 @@ class SignInViewModel: ViewModel() {
     // ------# 약관 동의 #------
     val agreementMk1 = MutableLiveData(false)
     val agreementMk2 = MutableLiveData(false)
-    val marketingAgree = MutableLiveData(false)
 
+    val marketingAgree = MutableLiveData(false)
+    val agreementAll3 = MediatorLiveData<Boolean>().apply {
+        // 중복되는 MediatorLiveData를 하나로 통합
+        addSource(agreementMk1) { updateAgreementAll3State() }
+        addSource(agreementMk2) { updateAgreementAll3State() }
+    }
+    private fun updateAgreementAll3State() {
+        // switch2와 switch3 중 하나라도 켜져 있으면 switch1 유지
+        agreementAll3.value = agreementMk1.value == true || agreementMk2.value == true
+    }
     // ------# profile edit #------
     val ivProfile = MutableLiveData<Uri>()
     var snsCount = 0
     val setWeight = MutableLiveData<Int>()
     val setHeight = MutableLiveData<Int>()
     val setEmail = MutableLiveData<String>()
-
+    val setBirthday = MutableLiveData<String>()
+    val setMobile = MutableLiveData<String>()
+    var verificationId = ""
     init {
         User.value = JSONObject()
         currentIdCon.observeForever{ updateIdPwCondition() }

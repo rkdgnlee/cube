@@ -171,7 +171,7 @@ object MeasurementManager {
             4 to mapOf( "side_right_vertical_angle_nose_shoulder" to Triple(80.75f,10.74f, 32.21f)),
             5 to mapOf( "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 6f)),
             6 to mapOf( "back_sit_horizontal_angle_ear" to Triple(0f,1.09f, 3.29f),
-                "back_sit_vertical_angㅅㄷle_right_shoulder_nose_left_shoulder" to Triple(84.23f,3.07f, 9.19f))
+                "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Triple(84.23f,3.07f, 9.19f))
         ),
         // 어깨
         mapOf(

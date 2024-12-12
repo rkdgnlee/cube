@@ -108,8 +108,11 @@ class LoginDialogFragment : DialogFragment() {
 
 
         viewModel.loginTryCount.observe(viewLifecycleOwner) { count ->
-            loginStop()
-            if (count >= 5) disabledLogin()
+
+            if (count >= 5) {
+                disabledLogin()
+                loginStop()
+            }
         }
         binding.ibtnLDIdClear.setOnClickListener { binding.etLDId.text.clear() }
         binding.ibtnLDPwClear.setOnClickListener { binding.etLDPw.text.clear() }

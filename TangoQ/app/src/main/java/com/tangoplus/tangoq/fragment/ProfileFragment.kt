@@ -129,31 +129,23 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "내정보",
             "다크 모드",
             "QR코드 핀번호 로그인",
+
 //            "연동 관리",
             "푸쉬 알림 설정",
             "자주 묻는 질문",
             "문의하기",
+
             "공지사항",
             "앱 버전",
             "개인정보 처리방침",
             "서비스 이용약관",
             "로그아웃",
+            "회원탈퇴"
         )
         setAdapter(profilemenulist.subList(0,3), binding.rvPNormal,0)
         setAdapter(profilemenulist.subList(3,6), binding.rvPHelp, 1)
         setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
-
-        // ------# 회원탈퇴 #------
-        binding.tvWithDrawal.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                replace(R.id.flMain, WithdrawalFragment())
-                addToBackStack(null)
-                commit()
-            }
-        }
-
     }
 
     // ------! 프로필 사진 관찰 끝 !------

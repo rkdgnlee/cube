@@ -367,7 +367,7 @@ class MeasureDashBoard1Fragment : Fragment() {
 
     private fun calculatePercentage(value: Int?): Float {
         // 70~100의 범위를 0~100%로 매핑
-        val minInput = 50
+        val minInput = 40
         val maxInput = 100
         val percentage = ((value?.minus(minInput))?.toDouble() ?: 0.0) / (maxInput - minInput)
 
@@ -392,7 +392,6 @@ class MeasureDashBoard1Fragment : Fragment() {
                 binding.ivMD1Position.layoutParams = params
             }
         }
-
         animator.start()
     }
 

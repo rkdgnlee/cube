@@ -13,8 +13,9 @@ import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
@@ -44,7 +45,7 @@ object DeviceService {
     // ------# device UUID 받는 API #------
     suspend fun getDeviceUUID(myUrl: String, context: Context, jo : JSONObject, callback: (String) -> Unit) {
         val mediaType = "application/json; chartset=utf-8".toMediaTypeOrNull()
-        val body = RequestBody.create(mediaType, jo.toString())
+        val body = jo.toString().toRequestBody(mediaType)
         val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}users")
@@ -82,4 +83,26 @@ object DeviceService {
         val regex = """"mobile_device_uuid":\s*"([^"]+)"""".toRegex()
         return regex.find(jsonString)?.groupValues?.get(1) ?: ""
     }
+
+    fun playIntegrityVerify(myUrl: String, token: String, callback: (JSONObject) -> Unit){
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = token.toRequestBody(mediaType)
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(myUrl)
+            .post(body)
+            .build()
+        client.newCall(request).execute().use { response ->
+            val responseBody = response.body?.string()
+            if (responseBody != null) {
+                val bodyJo = JSONObject(responseBody)
+                Log.v("verifyIntegrity", "Success to execute request: $responseBody")
+                callback(bodyJo)
+            }
+            return@use response.code
+        }
+    }
+
+
+
 }

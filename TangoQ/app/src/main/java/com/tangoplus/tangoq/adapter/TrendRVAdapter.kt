@@ -16,6 +16,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.data.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
+import kotlin.math.abs
 
 class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: MutableList<MutableList<AnalysisVO>>?, private val analyzes2: MutableList<MutableList<AnalysisVO>>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class TrendViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -51,12 +52,13 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrendViewHolder) {
-            if (analyzes2 != null) {
-                val currentItem = analyzes2.get(position) // analysisVO가 들어가있는 부위 별임.
+            if (analyzes2?.isNotEmpty() == true) {
+                val currentItem = analyzes2[position] // analysisVO가 들어가있는 부위 별임.
                 holder.tvMTIPart.text = matchedParts[position]
 
                 val jointIndex = if (position == 0) 1 else (position + 1) / 2 + 1
 
+                // ------# 부위 drawable 좌우 반전 #------
                 val resourceName = "@drawable/icon_part$jointIndex"
                 val resourceId = holder.ivMTI.context.resources.getIdentifier(
                     resourceName, "drawable", holder.ivMTI.context.packageName
@@ -70,11 +72,13 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                     holder.ivMTI.scaleX = 1f // 원래 상태
                 }
 
+                // -------# 부위 선택 #------
                 val selectAnalysisIndex = matchedIndexs[position]
 
                 val normalCount = selectAnalysisIndex.count { indexTriple ->
-                    currentItem[indexTriple.second].labels[indexTriple.third].state == 0
+                    currentItem[indexTriple.second].labels[indexTriple.third].state == 0 || currentItem[indexTriple.second].labels[indexTriple.third].state == 1
                 }
+
                 Log.v("선택된 항목 판단", "$selectAnalysisIndex,선택된 3개 중 normal 개수: $normalCount")
                 if (normalCount >= 2) { // 3개 중 2개 이상이 normal이면 true
                     setPartState(holder, true)
@@ -86,7 +90,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                     holder.tvSeqs[index].text = setSeqString(indexTriple.first)
 
                     val unit = currentItem.get(indexTriple.second).labels.get(indexTriple.third)
-                    val score = calculateBoundedScore(unit.rawData, unit.rawDataBound)
+                    val score = calculateBoundedScore(abs(unit.rawData), unit.rawDataBound)
                     holder.pvs[index][1].progress = score
 
                     holder.tvPoses[index].text = unit.rawDataName
@@ -117,8 +121,10 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
     val matchedParts = listOf(
         "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목")
 
+    // first: seq / second: matchedUris의 index / third: 가장 작은 index
+
     val matchedIndexs = listOf(
-        listOf(Triple(3,1,0), Triple(6, 4, 0), Triple(6, 4, 1)),
+        listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
         // 어깨
         listOf(Triple(0,0,0), Triple(3, 1, 0), Triple(6, 3, 0)),
         listOf(Triple(0,0,0), Triple(4, 1, 0), Triple(6, 3, 0)),
@@ -129,8 +135,8 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
         // 골반
-        listOf(Triple(3,1,1), Triple(5, 2, 0), Triple(6, 3, 1)),
-        listOf(Triple(4,1,1), Triple(5, 2, 0), Triple(6, 3, 1)),
+        listOf(Triple(0, 0, 1), Triple(3,1,1), Triple(5, 2, 0)),
+        listOf( Triple(0, 0, 1), Triple(4,1,1), Triple(5, 2, 0)),
         // 무릎
         listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),
         listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),

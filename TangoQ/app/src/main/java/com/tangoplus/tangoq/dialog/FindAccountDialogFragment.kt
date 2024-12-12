@@ -213,7 +213,7 @@ class FindAccountDialogFragment : DialogFragment() {
                         put("mobile_check", if (svm.mobileAuthCondition.value == true) "checked" else "nonChecked")
                     }
                     Log.v("찾기>핸드폰번호", "$jo")
-                    findUserId(getString(R.string.API_user), jo.toString()) { resultString ->
+                    findUserId(requireContext(), getString(R.string.API_user), jo.toString()) { resultString ->
                         if (resultString == "") {
                             requireActivity().runOnUiThread {
                                 val dialog = AlertDialog.Builder(requireContext())

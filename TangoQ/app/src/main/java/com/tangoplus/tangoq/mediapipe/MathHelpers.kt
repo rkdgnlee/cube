@@ -147,4 +147,18 @@ object MathHelpers {
         val widthDp = metrics.widthPixels / metrics.density
         return widthDp >= 600
     }
+    fun phoneNumber82(msg: String) : String {
+        val firstNumber: String = msg.substring(0,3)
+
+        var phoneEdit = msg.substring(3)
+        when (firstNumber) {
+            "010" -> phoneEdit = "+82 10$phoneEdit"
+            "011" -> phoneEdit = "+82 11$phoneEdit"
+            "016" -> phoneEdit = "+82 16$phoneEdit"
+            "017" -> phoneEdit = "+82 17$phoneEdit"
+            "018" -> phoneEdit = "+82 18$phoneEdit"
+            "019" -> phoneEdit = "+82 19$phoneEdit"
+        }
+        return phoneEdit
+    }
 }

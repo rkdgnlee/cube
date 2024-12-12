@@ -6,36 +6,48 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import java.io.File
 
 class MyApplication : Application() {
     lateinit var preferencesManager: PreferencesManager
-    private var activityCount = 0
+    private var startedActivities  = 0
+    private var isAppInBackground = false
     override fun onCreate() {
         super.onCreate()
         // 전역 Context 초기화
         appContext = this
         preferencesManager = PreferencesManager(appContext)
 
-
         // activity들의 시작, 종료 갯수를 카운트해서 앱이 종료되는 시점 가져오기
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
             override fun onActivityStarted(activity: Activity) {
-                activityCount++
+                startedActivities++
+                if (isAppInBackground) {
+                    isAppInBackground = false
+                    // 앱이 포그라운드로 돌아왔을 때의 로직
+                }
             }
             override fun onActivityResumed(activity: Activity) {}
             override fun onActivityPaused(activity: Activity) {}
             override fun onActivityStopped(activity: Activity) {
-                activityCount--
-                if (activityCount == 0) {
-                    clearDir()
+                startedActivities--
+                if (startedActivities == 0) {
+                    isAppInBackground = true
+                    // 앱이 백그라운드로 갔을 때
                 }
             }
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-            override fun onActivityDestroyed(activity: Activity) {}
+            override fun onActivityDestroyed(activity: Activity) {
+                if (startedActivities == 0 && isAppInBackground) {
+                    // 앱이 완전히 종료되는 시점
+                    clearDir()
+                }
+            }
         })
     }
     companion object {

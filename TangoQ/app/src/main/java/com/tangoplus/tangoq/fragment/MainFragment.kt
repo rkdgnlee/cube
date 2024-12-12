@@ -43,6 +43,7 @@ import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.SetupDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
+import com.tangoplus.tangoq.dialog.etc.MarketingDialog
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.MeasurementManager.calculateOverall
 import com.tangoplus.tangoq.function.MeasurementManager.getPairParts
@@ -60,9 +61,8 @@ import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
-    val uvm by activityViewModels<UserViewModel>()
-    val mvm by activityViewModels<MeasureViewModel>()
-
+    private val uvm by activityViewModels<UserViewModel>()
+    private val mvm : MeasureViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
@@ -536,9 +536,9 @@ class MainFragment : Fragment() {
         if (isEnabled) {
             binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.mainColor)
             binding.btnMProgram.text = "프로그램 선택하기"
-        } else {
-            binding.btnMProgram.text = "프로그램 완료, 재측정을 진행해 주세요"
-            binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.subColor150)
+//        } else {
+//            binding.btnMProgram.text = "프로그램 완료, 재측정을 진행해 주세요"
+//            binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.subColor150)
         }
     }
 

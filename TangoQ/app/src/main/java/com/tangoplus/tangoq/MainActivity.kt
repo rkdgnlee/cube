@@ -81,10 +81,11 @@ class MainActivity : AppCompatActivity() {
         val securityType = wifiSecurityManager.checkWifiSecurity()
         when (securityType) {
             "OPEN","WEP" -> {
-                Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_SHORT).show()
+                Log.v("securityNOotice", "securityType: $securityType")
+                Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_LONG).show()
                 Handler(Looper.getMainLooper()).postDelayed({
                     logout(this@MainActivity)
-                },  3 * 60000)
+                },   3 * 60000) //
             }
         }
         if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
@@ -115,6 +116,24 @@ class MainActivity : AppCompatActivity() {
             val pendingIntent = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
             Log.v("setAlarm", "Success to Alarm $title, $time")
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
+            val time2 = Triple(19, 30, 0)
+            val intent2 = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
+                putExtra("title", title)
+                putExtra("text", "운동을 시작할 때 입니다")
+            }
+            val calendar2 = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, time.first)
+            calendar.set(Calendar.MINUTE, time.second)
+            calendar.set(Calendar.SECOND, time.third)
+
+            if (calendar2.timeInMillis <= System.currentTimeMillis()) {
+                calendar2.add(Calendar.DAY_OF_MONTH, 1)
+            }
+            val pendingIntent2 = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
+            Log.v("setAlarm", "Success to Alarm $title, $time")
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent2)
+
         }
 
         // -----# 초기 화면 설정 #-----

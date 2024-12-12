@@ -5,15 +5,24 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
+import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityToken
+import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenProvider
+import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -24,13 +33,14 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.`object`.DeviceService.playIntegrityVerify
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
-import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.`object`.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
@@ -40,32 +50,57 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.security.KeyFactory
+import java.security.PublicKey
+import java.security.spec.X509EncodedKeySpec
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
+
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private lateinit var ssm : SaveSingletonManager
+    private var integrityTokenProvider: StandardIntegrityTokenProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        Log.v("keyhash", Utility.getKeyHash(this))
-//        val md = MeasureDatabase.getDatabase(this@SplashActivity)
-//        val dao = md.measureDao()
-//        val info = MeasureInfo(
-//            user_uuid = "",
-//            user_sn =  321,
-//            user_name =  "123",
-//            measure_date =  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-//            elapsed_time = "",
-//            measure_seq =  0
+//        // ------! integrity API 시작 !------
+//        val standardIntegrityManager = IntegrityManagerFactory.createStandard(applicationContext)
+//        val cloudProjectNumber = 196772683133
+//        standardIntegrityManager.prepareIntegrityToken(
+//            PrepareIntegrityTokenRequest.builder()
+//                .setCloudProjectNumber(cloudProjectNumber)
+//                .build()
 //        )
-//        CoroutineScope(Dispatchers.IO).launch {
-//            dao.insertInfo(info)
-//        }
+//            .addOnSuccessListener { tokenProvider ->
+//                integrityTokenProvider = tokenProvider
+//                val requestHash = getString(R.string.integrityHashKey)
+//                val integrityTokenResponse: Task<StandardIntegrityToken> =
+//                    integrityTokenProvider!!.request(
+//                        StandardIntegrityTokenRequest.builder()
+//                            .setRequestHash(requestHash)
+//                            .build()
+//                    )
+//                integrityTokenResponse
+//                    .addOnSuccessListener { response ->
+////                        response.showDialog(this@SplashActivity, 1)
+//                        Log.v("integrityToken", response.token())
+//                        playIntegrityVerify(getString(R.string.API_integrity), response.token()) { payload ->
+//                            verifyIntegrityResult(payload)
+//                        }
+//                    }
+//                    .addOnFailureListener { exception ->
+//                        Log.e("TokenException", "${exception.message}")
+//                    }
+//            }
+//            .addOnFailureListener { exception -> Log.e("integrityError", "$exception") }
+//        // ------! integrity API 끝 !------
+
         // ------! API 초기화 시작 !------
         NaverIdLoginSDK.initialize(this, getString(R.string.naver_client_id), getString(R.string.naver_client_secret), "TangoQ")
         KakaoSdk.init(this, getString(R.string.kakao_client_id))
@@ -292,5 +327,54 @@ class SplashActivity : AppCompatActivity() {
         } else {
             mainInit()
         }
+    }
+
+    private fun verifyIntegrityResult(jo: JSONObject) : Boolean {
+        val requestDetails = jo.getJSONObject("requestDetails")
+
+        val requestPackageName = requestDetails.getString("requestPackageName")
+        val requestHash = requestDetails.getString("requestHash")
+        val timestampMillis = requestDetails.getLong("timestampMillis")
+
+        val requestIntegrity = jo.getJSONObject("appIntegrity")
+        val appRecognitionVerdict = requestIntegrity.optString("appRecognitionVerdict")
+
+        val deviceIntegrity = jo.getJSONObject("deviceIntegrity")
+        val deviceRecognitionVerdict = if (deviceIntegrity.has("deviceRecognitionVerdict")) {
+            deviceIntegrity.getJSONArray("deviceRecognitionVerdict").toString()
+        } else {
+            ""
+        }
+        val accountDetails = jo.getJSONObject("accountDetails")
+        val appLicensingVerdict = accountDetails.getString("appLicensingVerdict")
+
+        val environmentDetails = jo.getJSONObject("environmentDetails")
+        val appAccessRiskVerdict = environmentDetails.getJSONObject("appAccessRiskVerdict")
+        // 패키지나 hash키가 다를 때
+        if (!requestPackageName.equals("com.tangoplus.tangoq") || !requestHash.equals(getString(R.string.integrityHashKey))) {
+            return false
+        }
+
+        // 앱 무결성 에 대한 값들 찾기
+        if (!appRecognitionVerdict.equals("PLAY_RECOGNIZSED")) {
+            return false
+        }
+
+        // 기기 무결성
+        if (!deviceRecognitionVerdict.contains("MEETS_DEVICE_INTEGRITY")) {
+            return false
+        }
+
+        if (!appLicensingVerdict.equals("LICENSED")) {
+            return false
+        }
+
+        if (appAccessRiskVerdict.has("appsDetected")) {
+            val appsDetected = appAccessRiskVerdict.getJSONArray("appsDetected").toString()
+            if (!appsDetected.contains("CAPTURING") && !appsDetected.contains("CONTROLLING")) {
+                return false
+            }
+        }
+        return true
     }
 }

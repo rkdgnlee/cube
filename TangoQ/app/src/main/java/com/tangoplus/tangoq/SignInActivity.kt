@@ -46,6 +46,7 @@ import com.tangoplus.tangoq.databinding.ActivitySignInBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.`object`.NetworkUser.idDuplicateCheck
 import com.tangoplus.tangoq.`object`.NetworkUser.insertUser
 import com.tangoplus.tangoq.transition.SignInTransition
@@ -173,10 +174,10 @@ class SignInActivity : AppCompatActivity() {
 
         binding.btnAuthSend.setOnSingleClickListener {
             var transformMobile = phoneNumber82(binding.etMobile.text.toString())
-            val dialog = AlertDialog.Builder(this)
-                .setTitle("📩 문자 인증 ")
-                .setMessage("${transformMobile}로 인증 하시겠습니까?")
-                .setPositiveButton("예") { _, _ ->
+            MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Material_Dialog_Alert).apply {
+                setTitle("📩 문자 인증 ")
+                setMessage("${transformMobile}로 인증 하시겠습니까?")
+                setPositiveButton("예") { _, _ ->
                     transformMobile = transformMobile.replace("-", "").replace(" ", "")
                     Log.w("전화번호", transformMobile)
 
@@ -200,12 +201,9 @@ class SignInActivity : AppCompatActivity() {
                     objectAnimator.start()
                     binding.etAuthNumber.requestFocus()
                 }
-                .setNegativeButton("아니오", null)
-                .show()
-
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
-
+                setNegativeButton("아니오", null)
+                show()
+            }
         }
         // -----! 휴대폰 인증 끝 !-----
 
@@ -365,8 +363,8 @@ class SignInActivity : AppCompatActivity() {
 
         binding.btnSignIn.setOnSingleClickListener {
             showAgreementBottomSheetDialog(this)
-
         }
+
         val mobilePattern = "^010-\\d{4}-\\d{4}\$"
         val mobilePatternCheck = Pattern.compile(mobilePattern)
         val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&^])[A-Za-z[0-9]$@$!%*#?&^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
@@ -503,6 +501,8 @@ class SignInActivity : AppCompatActivity() {
                         binding.btnAuthConfirm.isEnabled = false
 
                         if (viewModel.mobileCondition.value == true) {
+
+                            // 전화번호 "-" 표시 전부 없애기
                             val mobile = binding.etMobile.text.toString().replace("-", "").replace(" ", "")
                             Log.v("모바일인증완료", mobile)
                             viewModel.User.value?.put("mobile", mobile)
@@ -515,20 +515,7 @@ class SignInActivity : AppCompatActivity() {
                 }
             }
     }
-    private fun phoneNumber82(msg: String) : String {
-        val firstNumber: String = msg.substring(0,3)
 
-        var phoneEdit = msg.substring(3)
-        when (firstNumber) {
-            "010" -> phoneEdit = "+82 10$phoneEdit"
-            "011" -> phoneEdit = "+82 11$phoneEdit"
-            "016" -> phoneEdit = "+82 16$phoneEdit"
-            "017" -> phoneEdit = "+82 17$phoneEdit"
-            "018" -> phoneEdit = "+82 18$phoneEdit"
-            "019" -> phoneEdit = "+82 19$phoneEdit"
-        }
-        return phoneEdit
-    }
     private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
         val bottomsheetfragment = SignInBSDialogFragment()
         bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.OnTelecomSelectedListener {

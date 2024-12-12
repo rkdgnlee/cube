@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter.etc
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -88,6 +89,7 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
         holder?.cvMSC12?.visibility = View.GONE
         val imageResource = context.resources.getIdentifier("drawable_measure_$seq", "drawable", context.packageName)
         holder?.ivMSC1Frame?.setImageResource(imageResource)
+        holder?.ivMSC1Frame?.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black))
 
     }
 
