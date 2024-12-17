@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
-import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.vo.MessageVO
 
 class PreferencesManager(private val context: Context) {
     private val LAST_SN_KEY = "last_sn"

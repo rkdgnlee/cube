@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.ContentValues
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -36,12 +35,12 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.function.PreferencesManager
-import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar

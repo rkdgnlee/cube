@@ -161,7 +161,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                         setTitle("로그아웃")
                                         setMessage("로그아웃 하시겠습니까?")
                                         setPositiveButton("예") { _, _ ->
-                                            logout(fragment.requireActivity())
+                                            logout(fragment.requireActivity(), 0)
                                         }
                                         setNegativeButton("아니오") { _, _ -> }
                                     }.show()

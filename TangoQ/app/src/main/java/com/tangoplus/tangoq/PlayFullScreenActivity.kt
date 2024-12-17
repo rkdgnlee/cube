@@ -34,7 +34,7 @@ import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
-import com.tangoplus.tangoq.`object`.NetworkProgress.patchProgress1Item
+import com.tangoplus.tangoq.api.NetworkProgress.patchProgress1Item
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

@@ -1,8 +1,4 @@
-package com.tangoplus.tangoq.data
-
-import android.os.Parcel
-import android.os.Parcelable
-import org.json.JSONArray
+package com.tangoplus.tangoq.vo
 
 data class AnalysisVO(
     val seq : Int = 0,

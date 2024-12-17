@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.data
+package com.tangoplus.tangoq.vo
 
 import org.json.JSONArray
 

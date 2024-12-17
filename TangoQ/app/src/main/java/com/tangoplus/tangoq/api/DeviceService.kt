@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.api
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,7 +8,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
+import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call

@@ -22,7 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.AnalysisVO
+import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.databinding.RvMainPartItemBinding
 import com.tangoplus.tangoq.dialog.MainPartPoseDialogFragment
@@ -113,8 +113,8 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
             }
             else -> {
                 holder.tvMPIState.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
-                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor400))
+                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor700))
+                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor700))
                 holder.tvMPIState.text = "평균 수치"
             }
         }

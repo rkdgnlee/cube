@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,7 +12,6 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.viewpager2.widget.ViewPager2
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
@@ -22,9 +20,8 @@ import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentSetupDialogBinding
 import com.tangoplus.tangoq.fragment.Setup2Fragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.listener.WeightVisibilityListener
-import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.db.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

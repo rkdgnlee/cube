@@ -1,10 +1,8 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.db
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.tangoplus.tangoq.data.MeasureVO
-import org.json.JSONArray
-import org.json.JSONObject
+import com.tangoplus.tangoq.vo.MeasureVO
 
 class Singleton_t_measure private constructor(context: Context){
     var measures : MutableList<MeasureVO>? = null

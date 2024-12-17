@@ -13,8 +13,8 @@ android {
         applicationId = "com.tangoplus.tangoq"
         minSdk = 27
         targetSdk = 34
-        versionCode = 16
-        versionName = "1.25"
+        versionCode = 17
+        versionName = "1.26"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -103,9 +103,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("com.android.volley:volley:1.2.1")
+//    implementation("com.android.volley:volley:1.2.1")
     implementation("com.github.yuriy-budiyev:code-scanner:2.3.0")
-
+    implementation("androidx.work:work-runtime:2.9.0")
 
     // room
     val roomVersion = "2.6.1"
@@ -140,6 +140,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation("com.google.protobuf:protobuf-javalite:3.19.1")
 
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")

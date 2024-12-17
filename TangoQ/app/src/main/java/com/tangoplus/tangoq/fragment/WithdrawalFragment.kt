@@ -21,9 +21,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
-import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserDeleteJson
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
+import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.db.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

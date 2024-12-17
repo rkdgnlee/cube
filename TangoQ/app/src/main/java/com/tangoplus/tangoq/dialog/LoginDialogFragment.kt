@@ -24,14 +24,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.MainActivity
-import com.tangoplus.tangoq.`object`.NetworkUser
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkUser
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
+import com.tangoplus.tangoq.api.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import kotlinx.coroutines.CoroutineScope

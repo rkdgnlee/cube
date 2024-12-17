@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.AnalysisVO
+import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
 import kotlin.math.abs

@@ -10,14 +10,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import com.tangoplus.tangoq.data.AnalysisUnitVO
-import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine

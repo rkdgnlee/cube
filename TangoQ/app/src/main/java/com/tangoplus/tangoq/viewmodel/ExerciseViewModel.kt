@@ -2,9 +2,7 @@ package com.tangoplus.tangoq.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tangoplus.tangoq.PlaySkeletonActivity
-import com.tangoplus.tangoq.PlaySkeletonActivity.horizontalPosition
-import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.vo.ExerciseVO
 
 class ExerciseViewModel : ViewModel() {
 

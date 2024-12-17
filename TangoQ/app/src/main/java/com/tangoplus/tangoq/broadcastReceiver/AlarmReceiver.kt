@@ -9,9 +9,9 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.vo.MessageVO
 import com.tangoplus.tangoq.function.PreferencesManager
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 
 class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
     override fun onReceive(context: Context?, intent: Intent?) {

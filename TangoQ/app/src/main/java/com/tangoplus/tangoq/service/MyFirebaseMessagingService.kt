@@ -13,7 +13,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.vo.MessageVO
 import com.tangoplus.tangoq.function.PreferencesManager
 
 class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림 채널.

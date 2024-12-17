@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
@@ -9,11 +9,8 @@ import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
-import kotlinx.coroutines.Deferred
+import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import okhttp3.RequestBody

@@ -6,16 +6,14 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.tangoplus.tangoq.function.PreferencesManager
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import java.io.File
 
 class MyApplication : Application() {
     lateinit var preferencesManager: PreferencesManager
     private var startedActivities  = 0
     private var isAppInBackground = false
+
     override fun onCreate() {
         super.onCreate()
         // 전역 Context 초기화
@@ -27,8 +25,10 @@ class MyApplication : Application() {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
             override fun onActivityStarted(activity: Activity) {
                 startedActivities++
+                Log.v("액티비티start", "startedActivities: $startedActivities, isAppInBackGround: $isAppInBackground")
                 if (isAppInBackground) {
                     isAppInBackground = false
+
                     // 앱이 포그라운드로 돌아왔을 때의 로직
                 }
             }
@@ -36,16 +36,25 @@ class MyApplication : Application() {
             override fun onActivityPaused(activity: Activity) {}
             override fun onActivityStopped(activity: Activity) {
                 startedActivities--
+                Log.v("액티비티stopped", "startedActivities: $startedActivities, isAppInBackGround: $isAppInBackground")
                 if (startedActivities == 0) {
                     isAppInBackground = true
+
+
                     // 앱이 백그라운드로 갔을 때
                 }
             }
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
             override fun onActivityDestroyed(activity: Activity) {
+                Log.v("액티비티destroy", "startedActivities: $startedActivities, isAppInBackGround: $isAppInBackground")
+                if (activity.isChangingConfigurations) {
+                    return // configuration change로 인한 destroy일 경우 무시 ( 다크 모드 변경 등 )
+                }
                 if (startedActivities == 0 && isAppInBackground) {
                     // 앱이 완전히 종료되는 시점
                     clearDir()
+
+
                 }
             }
         })

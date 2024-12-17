@@ -88,13 +88,13 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateSlope
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
-import com.tangoplus.tangoq.`object`.NetworkMeasure.resendMeasureFile
-import com.tangoplus.tangoq.`object`.NetworkMeasure.sendMeasureData
+import com.tangoplus.tangoq.api.NetworkMeasure.resendMeasureFile
+import com.tangoplus.tangoq.api.NetworkMeasure.sendMeasureData
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateAngleBySlope
 import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceX
 import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceY
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers

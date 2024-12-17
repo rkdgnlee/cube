@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.data
+package com.tangoplus.tangoq.vo
 
 data class UrlTuple(
     val measure_seq: Int,

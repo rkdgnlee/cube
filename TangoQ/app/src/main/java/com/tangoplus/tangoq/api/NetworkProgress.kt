@@ -1,19 +1,15 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.data.ProgressHistoryVO
-import com.tangoplus.tangoq.data.ProgressUnitVO
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
-import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
+import com.tangoplus.tangoq.vo.ProgressHistoryVO
+import com.tangoplus.tangoq.vo.ProgressUnitVO
+import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response

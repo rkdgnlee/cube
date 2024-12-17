@@ -31,7 +31,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
-import com.tangoplus.tangoq.data.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartPoseDialogBinding
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates

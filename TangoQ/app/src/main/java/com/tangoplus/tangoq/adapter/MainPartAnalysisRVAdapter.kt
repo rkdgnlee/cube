@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
 
 class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -68,7 +68,6 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val anal
                 }
                 holder.tvMPAIExplain.text = spannableString
             }
-
         }
     }
 

@@ -1,11 +1,12 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
-import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
+import com.tangoplus.tangoq.api.HttpClientProvider.getClient
+import com.tangoplus.tangoq.db.Singleton_t_user
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -27,16 +28,7 @@ object NetworkUser {
     fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = userJsonObject.toString().toRequestBody(mediaType)
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}oauth.php")
             .post(body)
@@ -50,17 +42,21 @@ object NetworkUser {
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()?.substringAfter("response: ")
                 Log.v("SDK>Server>User", "$responseBody")
-                val jo = responseBody?.let { JSONObject(it) }
 
-                // ------! 토큰 저장 !------
-                val token = jo?.optString("jwt")
-                if (token != null) {
-                    val jsonObj = JSONObject()
-                    jsonObj.put("access_jwt", jo.optString("access_jwt"))
-                    jsonObj.put("refresh_jwt", jo.optString("refresh_jwt"))
-                    saveEncryptedJwtToken(context, jsonObj)
+                if (response.code == 401) {
+                    callback(null)
+                } else {
+                    val jo = responseBody?.let { JSONObject(it) }
+                    // ------! 토큰 저장 !------
+                    val token = jo?.optString("jwt")
+                    if (token != null) {
+                        val jsonObj = JSONObject()
+                        jsonObj.put("access_jwt", jo.optString("access_jwt"))
+                        jsonObj.put("refresh_jwt", jo.optString("refresh_jwt"))
+                        saveEncryptedJwtToken(context, jsonObj)
+                    }
+                    callback(jo)
                 }
-                callback(jo)
             }
         })
     }

@@ -1,8 +1,8 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.db
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.tangoplus.tangoq.data.ProgressUnitVO
+import com.tangoplus.tangoq.vo.ProgressUnitVO
 
 class Singleton_t_progress private constructor(context: Context){
     var graphProgresses : MutableList<MutableList<ProgressUnitVO>>? = null

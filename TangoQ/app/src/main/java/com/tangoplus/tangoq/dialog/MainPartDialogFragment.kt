@@ -14,8 +14,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.MainPartRVAdapter
-import com.tangoplus.tangoq.data.AnalysisUnitVO
-import com.tangoplus.tangoq.data.AnalysisVO
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartDialogBinding

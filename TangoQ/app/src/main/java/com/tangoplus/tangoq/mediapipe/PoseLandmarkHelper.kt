@@ -3,7 +3,6 @@ package com.tangoplus.tangoq.mediapipe
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.nfc.Tag
 import android.os.Build
 import android.os.SystemClock
 import android.util.Log
@@ -16,7 +15,7 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
-import com.tangoplus.tangoq.`object`.DeviceService.isEmulator
+import com.tangoplus.tangoq.api.DeviceService.isEmulator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

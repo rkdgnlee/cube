@@ -2,8 +2,8 @@ package com.tangoplus.tangoq.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tangoplus.tangoq.data.AnalysisVO
-import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.vo.AnalysisVO
+import com.tangoplus.tangoq.vo.MeasureVO
 import org.json.JSONArray
 
 class AnalysisViewModel : ViewModel() {

@@ -143,6 +143,9 @@
         <meta-data
             android:name="android:enableSplashScreenApi"
             android:value="false" />
+        <meta-data
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:value="true" />
         <receiver
             android:name=".broadcastReceiver.AlarmReceiver"
             android:exported="true" />

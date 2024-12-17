@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.data
+package com.tangoplus.tangoq.vo
 
 import android.os.Parcel
 import android.os.Parcelable

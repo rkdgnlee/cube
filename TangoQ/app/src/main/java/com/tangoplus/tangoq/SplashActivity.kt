@@ -5,24 +5,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.google.android.play.core.integrity.IntegrityManagerFactory
-import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
-import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityToken
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenProvider
-import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -36,11 +28,11 @@ import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.DeviceService.playIntegrityVerify
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
-import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
+import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Call
@@ -50,11 +42,6 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import java.security.KeyFactory
-import java.security.PublicKey
-import java.security.spec.X509EncodedKeySpec
-import javax.crypto.SecretKey
-import javax.crypto.spec.SecretKeySpec
 
 
 @SuppressLint("CustomSplashScreen")
@@ -175,11 +162,13 @@ class SplashActivity : AppCompatActivity() {
                                         if (jo != null) {
                                             storeUserInSingleton(this@SplashActivity, jo)
                                             Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                        }
-                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                            navigateDeepLink()
+                                            val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                            val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
+                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                                                navigateDeepLink()
+                                            }
+                                        } else {
+                                            logout(this@SplashActivity, 0)
                                         }
                                     }
                                 }
@@ -206,13 +195,14 @@ class SplashActivity : AppCompatActivity() {
                                         if (jo != null) {
                                             storeUserInSingleton(this, jo)
                                             Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+                                            val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                            val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
+                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                                                navigateDeepLink()
+                                            }
+                                        } else {
+                                            logout(this@SplashActivity, 0)
                                         }
-                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                            navigateDeepLink()
-                                        }
-
                                     }
                                 }
                             }
@@ -242,11 +232,13 @@ class SplashActivity : AppCompatActivity() {
                                     if (jo != null) {
                                         storeUserInSingleton(this, jo)
                                         Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                    }
-                                    val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                    val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: 0
-                                    ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                        navigateDeepLink()
+                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: 0
+                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                                            navigateDeepLink()
+                                        }
+                                    } else {
+                                        logout(this@SplashActivity, 0)
                                     }
                                 }
                             }

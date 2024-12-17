@@ -28,7 +28,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -38,12 +37,13 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProfileChangeDialogBinding
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
-import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -332,13 +332,35 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
             CoroutineScope(Dispatchers.IO).launch {
                 val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
                 if (isUpdateFinished == true) {
-                    userJson.apply {
-                        when (arg) {
-                            "몸무게" -> put("weight", updatedItem)
-                            "전화번호" -> put("mobile", binding.etPCDMobile.text.toString())
-                            "신장" -> put("height", updatedItem)
-                            "이메일" -> put("email", updatedItem)
-                            "생년월일" -> put("birthday", updatedItem)
+                    when (arg) {
+                        "몸무게" -> {
+                            userJson.put("weight", updatedItem)
+                            withContext(Dispatchers.Main) {
+                                svm.setWeight.value = updatedItem.toInt()
+                            }
+                        }
+                        "전화번호" -> {
+                            userJson.put("mobile", binding.etPCDMobile.text.toString())
+                            withContext(Dispatchers.Main) {
+                                svm.setMobile.value = updatedItem
+                            }                        }
+                        "신장" -> {
+                            userJson.put("height", updatedItem)
+                            withContext(Dispatchers.Main) {
+                                svm.setHeight.value = updatedItem.toInt()
+                            }
+                        }
+                        "이메일" -> {
+                            userJson.put("email", updatedItem)
+                            withContext(Dispatchers.Main) {
+                                svm.setEmail.value = updatedItem
+                            }
+                        }
+                        "생년월일" -> {
+                            userJson.put("birthday", updatedItem)
+                            withContext(Dispatchers.Main) {
+                                svm.setBirthday.value = updatedItem
+                            }
                         }
                     }
                     dismiss()

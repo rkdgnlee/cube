@@ -1,9 +1,8 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.db
 
 import android.annotation.SuppressLint
 import android.content.Context
 import org.json.JSONObject
-import javax.crypto.spec.SecretKeySpec
 
 class Singleton_t_user private constructor(context: Context) {
     var jsonObject: JSONObject? = null

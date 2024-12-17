@@ -31,11 +31,11 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.listener.BooleanClickListener
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
-import com.tangoplus.tangoq.`object`.NetworkUser.sendProfileImage
+import com.tangoplus.tangoq.api.NetworkUser.sendProfileImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -299,7 +299,6 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                     Log.e("EDetailException", "${e.message}")
                     "미설정"
                 }
-
 
                 // ----- 이미지 로드 시작 -----
                 val imageUri = userJson.optString("profile_file_path")

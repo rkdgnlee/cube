@@ -9,13 +9,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.RecommendationRVAdapter
-import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramSelectBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.db.Singleton_t_measure
 
 class ProgramSelectFragment : Fragment() {
    lateinit var binding : FragmentProgramSelectBinding

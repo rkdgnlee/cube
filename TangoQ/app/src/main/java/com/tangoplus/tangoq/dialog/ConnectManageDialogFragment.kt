@@ -1,21 +1,11 @@
 package com.tangoplus.tangoq.dialog
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.tangoplus.tangoq.adapter.StringRVAdapter
-import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentConnectManageDialogBinding
-import com.tangoplus.tangoq.listener.OnDisconnectListener
-import com.tangoplus.tangoq.`object`.Singleton_t_user
-import org.json.JSONObject
 
 
 class ConnectManageDialogFragment : DialogFragment()  { // , OnDisconnectListener

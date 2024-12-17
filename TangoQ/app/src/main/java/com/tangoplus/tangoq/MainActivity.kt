@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -17,14 +19,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.kakao.sdk.auth.AuthApiClient
-import com.kakao.sdk.user.UserApiClient
-import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.oauth.NidOAuthLoginState
+import com.tangoplus.tangoq.api.HttpClientProvider.scheduleTokenCheck
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
@@ -38,21 +37,20 @@ import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
-import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.function.WifiSecurityManager
-import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
-import com.tangoplus.tangoq.`object`.NetworkUser.logoutDenyRefreshJwt
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
+import com.tangoplus.tangoq.api.TokenCheckWorker
+import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.dialog.AlertDialogFragment
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
+import org.json.JSONObject
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -77,22 +75,35 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ------! activity 사전 설정 시작 !------
+        // 로그인 완료 시 2분마다 토큰 갱신
+        val workManager = WorkManager.getInstance(this)
+        scheduleTokenCheck(this)
+        workManager.getWorkInfosForUniqueWorkLiveData("TokenCheckWork").observe(this) { workInfos ->
+            if (workInfos.isNullOrEmpty()) return@observe
+            val workInfo = workInfos[0]
+            if (workInfo.state == WorkInfo.State.FAILED) {
+                // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
+                val dialog = AlertDialogFragment.newInstance("logout")
+                dialog.show(supportFragmentManager, "AlertDialogFragment")
+            }
+        }
+
         wifiSecurityManager = WifiSecurityManager(this)
-        val securityType = wifiSecurityManager.checkWifiSecurity()
-        when (securityType) {
+        // ------! activity 사전 설정 끝 !------
+        when (val securityType = wifiSecurityManager.checkWifiSecurity()) {
             "OPEN","WEP" -> {
-                Log.v("securityNOotice", "securityType: $securityType")
+                Log.v("securityNotice", "securityType: $securityType")
                 Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_LONG).show()
                 Handler(Looper.getMainLooper()).postDelayed({
-                    logout(this@MainActivity)
+                    logout(this@MainActivity, 0)
                 },   3 * 60000) //
             }
         }
         if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
             Toast.makeText(this, "올바르지 않은 접근입니다. 다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
-            logout(this@MainActivity)
+            logout(this@MainActivity, 0)
         }
-
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -120,24 +131,22 @@ class MainActivity : AppCompatActivity() {
             val time2 = Triple(19, 30, 0)
             val intent2 = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
                 putExtra("title", title)
-                putExtra("text", "운동을 시작할 때 입니다")
+                putExtra("text", "더 나은 내일을 위해 운동을 시작할 때 입니다")
             }
             val calendar2 = Calendar.getInstance()
-            calendar.set(Calendar.HOUR_OF_DAY, time.first)
-            calendar.set(Calendar.MINUTE, time.second)
-            calendar.set(Calendar.SECOND, time.third)
+            calendar.set(Calendar.HOUR_OF_DAY, time2.first)
+            calendar.set(Calendar.MINUTE, time2.second)
+            calendar.set(Calendar.SECOND, time2.third)
 
             if (calendar2.timeInMillis <= System.currentTimeMillis()) {
                 calendar2.add(Calendar.DAY_OF_MONTH, 1)
             }
-            val pendingIntent2 = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
-            Log.v("setAlarm", "Success to Alarm $title, $time")
+            val pendingIntent2 = PendingIntent.getBroadcast(this@MainActivity, 8080, intent2, PendingIntent.FLAG_IMMUTABLE)
+            Log.v("setAlarm", "Success to Alarm $title, $time2")
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent2)
-
         }
 
         // -----# 초기 화면 설정 #-----
-//        handlePendingDeepLink()
 
         singletonMeasure = Singleton_t_measure.getInstance(this)
         setCurrentFragment(selectedTabId)
@@ -268,6 +277,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // 핸들러의 콜백을 제거하여 메모리 누수를 방지
         backPressHandler.removeCallbacks(backPressRunnable)
+        WorkManager.getInstance(this).cancelUniqueWork("TokenCheckWork")
     }
 
     private fun handleIntent(intent: Intent) {

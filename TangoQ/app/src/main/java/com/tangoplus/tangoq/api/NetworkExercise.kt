@@ -1,8 +1,6 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.api
 
-import com.tangoplus.tangoq.data.ExerciseVO
-import android.util.Log
-import android.widget.Toast
+import com.tangoplus.tangoq.vo.ExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient

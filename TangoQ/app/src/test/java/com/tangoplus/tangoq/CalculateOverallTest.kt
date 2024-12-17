@@ -1,23 +1,12 @@
 package com.tangoplus.tangoq
 
-import android.content.Context
-import android.util.Log
-import com.tangoplus.tangoq.function.MeasurementManager.femaleErrorBounds
-import com.tangoplus.tangoq.function.MeasurementManager.mainPartSeqs
-import com.tangoplus.tangoq.function.MeasurementManager.maleErrorBounds
-import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
-import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.status
-import com.tangoplus.tangoq.`object`.Singleton_t_user
-import org.json.JSONArray
 import org.junit.Test
 
 import org.junit.Assert.*
 import java.lang.Math.toDegrees
-import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
-import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt

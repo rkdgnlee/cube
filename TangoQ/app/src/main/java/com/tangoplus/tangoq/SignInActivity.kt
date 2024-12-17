@@ -3,7 +3,6 @@ package com.tangoplus.tangoq
 import android.R
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -28,7 +27,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -37,8 +35,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -47,13 +43,12 @@ import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
-import com.tangoplus.tangoq.`object`.NetworkUser.idDuplicateCheck
-import com.tangoplus.tangoq.`object`.NetworkUser.insertUser
+import com.tangoplus.tangoq.api.NetworkUser.idDuplicateCheck
+import com.tangoplus.tangoq.api.NetworkUser.insertUser
 import com.tangoplus.tangoq.transition.SignInTransition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 

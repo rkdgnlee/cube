@@ -17,8 +17,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ProgressUnitVO
+import com.tangoplus.tangoq.vo.ExerciseVO
+import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.databinding.RvExerciseHistoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding

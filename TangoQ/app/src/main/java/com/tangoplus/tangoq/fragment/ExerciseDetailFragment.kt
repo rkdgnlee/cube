@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,7 +15,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
-import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
 import com.tangoplus.tangoq.function.PreferencesManager

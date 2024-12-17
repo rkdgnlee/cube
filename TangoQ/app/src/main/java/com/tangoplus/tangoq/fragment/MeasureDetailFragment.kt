@@ -27,7 +27,7 @@ import com.skydoves.balloon.BalloonSizeSpec
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
-import com.tangoplus.tangoq.data.MeasureVO
+import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment

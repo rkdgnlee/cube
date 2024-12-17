@@ -1,7 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -31,19 +29,19 @@ import com.tangoplus.tangoq.adapter.ProgramCustomRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
-import com.tangoplus.tangoq.data.ProgressUnitVO
+import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
-import com.tangoplus.tangoq.data.ProgramVO
+import com.tangoplus.tangoq.vo.ProgramVO
 import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramCustomDialogBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.ProgramWeekBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
-import com.tangoplus.tangoq.`object`.NetworkProgram.fetchProgram
+import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
 import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_progress
+import com.tangoplus.tangoq.db.Singleton_t_user
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

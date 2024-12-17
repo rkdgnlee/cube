@@ -34,7 +34,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
-import com.tangoplus.tangoq.`object`.NetworkUser.findUserId
+import com.tangoplus.tangoq.api.NetworkUser.findUserId
 //import com.tangoplus.tangoq.`object`.NetworkUser.verifyBeforeResetPw
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit

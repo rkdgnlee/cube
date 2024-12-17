@@ -14,20 +14,17 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.databinding.FragmentProfileEditDialogBinding
-import com.tangoplus.tangoq.dialog.etc.MarketingDialog
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
-import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,9 +42,10 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     fun setProfileUpdateListener(listener: ProfileUpdateListener) {
         this.profileUpdateListener = listener
     }
-    private fun onEditComplete() {
+
+    override fun onDestroy() {
+        super.onDestroy()
         profileUpdateListener?.onProfileUpdated()
-        dismiss()
     }
 
     override fun onCreateView(
@@ -95,11 +93,6 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
                 // ------! 정보 목록 recyclerView 연결 끝 !------
                 // ------! 개인정보수정 rv 연결 끝 !------
-
-                // ------! 이름, 전화번호 세팅 !------
-//        binding.tvPEDMobile.text = userJson.optString("user_mobile")
-//        binding.tvPEDName.text = userJson.optString("user_name")
-
 
                 // ------! 소셜 계정 로그인 연동 시작 !------
                 val snsIntegrations = checkSNSLogin(svm.User.value)
@@ -160,8 +153,8 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                                     Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
                                     Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
                                     requireActivity().runOnUiThread {
-                                        val dialog = MarketingDialog(requireContext(), true)
-                                        dialog.show()
+                                        val dialog = AlertDialogFragment.newInstance("agree")
+                                        dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
                                     }
                                 }
                             }
@@ -304,8 +297,8 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                         Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
                         Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
                         requireActivity().runOnUiThread {
-                            val dialog = MarketingDialog(requireContext(), true)
-                            dialog.show()
+                            val dialog = AlertDialogFragment.newInstance("disagree")
+                            dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
                         }
                     }
                 }

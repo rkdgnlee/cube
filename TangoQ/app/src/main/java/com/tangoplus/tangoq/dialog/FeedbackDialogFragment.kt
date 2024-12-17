@@ -15,11 +15,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackDialogBinding
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import org.json.JSONObject
 

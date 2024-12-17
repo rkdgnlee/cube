@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.adapter.AlarmRVAdapter
 import com.tangoplus.tangoq.callback.SwipeHelperCallback
-import com.tangoplus.tangoq.data.MessageVO
+import com.tangoplus.tangoq.vo.MessageVO
 import com.tangoplus.tangoq.databinding.FragmentAlarmDialogBinding
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

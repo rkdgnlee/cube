@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.adapter.ExerciseHistoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.data.ExerciseVO
+import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseSearchDialogBinding
 import com.tangoplus.tangoq.function.PreferencesManager

@@ -291,7 +291,7 @@
             android:padding="16dp"
             android:text="90일 이후에 변경하기"
             android:textColor="@color/mainDeepColor"
-            android:textSize="16dp" />
+            android:textSize="15dp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnPCDFinish"

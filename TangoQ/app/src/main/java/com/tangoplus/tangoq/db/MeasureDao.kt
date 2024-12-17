@@ -2,14 +2,11 @@ package com.tangoplus.tangoq.db
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.google.gson.Gson
-import com.tangoplus.tangoq.data.UrlTuple
+import com.tangoplus.tangoq.vo.UrlTuple
 import org.json.JSONObject
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Dao
 interface MeasureDao {

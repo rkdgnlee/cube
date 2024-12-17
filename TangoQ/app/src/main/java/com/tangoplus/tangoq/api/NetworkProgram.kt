@@ -1,16 +1,15 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ProgramVO
+import com.tangoplus.tangoq.vo.ExerciseVO
+import com.tangoplus.tangoq.vo.ProgramVO
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
-import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
-import com.tangoplus.tangoq.`object`.NetworkExercise.jsonToExerciseVO
+import com.tangoplus.tangoq.api.HttpClientProvider.getClient
+import com.tangoplus.tangoq.api.NetworkExercise.jsonToExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 

@@ -3,7 +3,7 @@ package com.tangoplus.tangoq.viewmodel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tangoplus.tangoq.data.ProgramVO
+import com.tangoplus.tangoq.vo.ProgramVO
 import org.json.JSONObject
 
 class UserViewModel: ViewModel() {

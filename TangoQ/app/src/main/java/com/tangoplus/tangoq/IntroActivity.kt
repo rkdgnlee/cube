@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.FragmentTransaction
 import androidx.security.crypto.EncryptedSharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -37,23 +36,21 @@ import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import com.tangoplus.tangoq.dialog.LoginDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
 import com.tangoplus.tangoq.function.SecurePreferencesManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
-import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.io.IOException
 import java.lang.Exception
-import java.net.SocketTimeoutException
 
 
 class IntroActivity : AppCompatActivity() {
@@ -97,7 +94,6 @@ class IntroActivity : AppCompatActivity() {
                                 val credential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
                                 firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
                                         if (firebaseAuth.currentUser != null) {
-                                            Log.v("google", "4, firebaseAuth.currentUser: ${firebaseAuth.currentUser?.displayName}입니다.")
                                             // ---- Google 토큰에서 가져오기 시작 ----
                                             val user: FirebaseUser = firebaseAuth.currentUser!!
                                             Log.v("user", "${user.phoneNumber}")

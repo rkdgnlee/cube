@@ -1,10 +1,10 @@
-package com.tangoplus.tangoq.`object`
+package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.data.RecommendationVO
+import com.tangoplus.tangoq.vo.RecommendationVO
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
-import com.tangoplus.tangoq.`object`.HttpClientProvider.getClient
+import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor

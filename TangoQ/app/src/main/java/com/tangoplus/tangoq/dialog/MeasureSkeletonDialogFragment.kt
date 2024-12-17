@@ -36,8 +36,6 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-
-
         return dialog
     }
 
@@ -49,10 +47,6 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
         return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
