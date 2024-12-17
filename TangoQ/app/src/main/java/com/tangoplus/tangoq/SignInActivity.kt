@@ -165,7 +165,7 @@ class SignInActivity : AppCompatActivity() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 this@SignInActivity.verificationId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
+                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSignIn), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 binding.btnAuthConfirm.isEnabled = true
@@ -174,7 +174,7 @@ class SignInActivity : AppCompatActivity() {
 
         binding.btnAuthSend.setOnSingleClickListener {
             var transformMobile = phoneNumber82(binding.etMobile.text.toString())
-            MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Material_Dialog_Alert).apply {
+            MaterialAlertDialogBuilder(this, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("📩 문자 인증 ")
                 setMessage("${transformMobile}로 인증 하시겠습니까?")
                 setPositiveButton("예") { _, _ ->
@@ -310,40 +310,38 @@ class SignInActivity : AppCompatActivity() {
         binding.btnIdCondition.setOnClickListener {
             val id = binding.etId.text.toString()
             CoroutineScope(Dispatchers.IO).launch {
-                idDuplicateCheck(getString(com.tangoplus.tangoq.R.string.API_user), id) { responseCode ->
-                    CoroutineScope(Dispatchers.Main).launch {
-                        when (responseCode) {
-                            201 -> {
-                                MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                    setTitle("알림")
-                                    setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
-                                    setPositiveButton("예") { dialog, _ ->
-                                        binding.btnIdCondition.isEnabled = false
-                                        binding.etId.isEnabled = false
-                                        viewModel.User.value?.put("user_id", id)
-                                        Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
-                                        binding.pvSignIn.progress = 100f
-                                        binding.svSignIn.go(3, true)
-                                        binding.tvSignInGuide.text = "비밀번호를 입력해주세요"
-                                        viewModel.invalidIdCondition.value = true
-                                    }
-                                    setNegativeButton("아니오") { dialog, _ ->
-                                        dialog.dismiss()
-                                    }
-                                }.show()
+                val responseCode = idDuplicateCheck(getString(com.tangoplus.tangoq.R.string.API_user), id)
+                when (responseCode) {
+                    201 -> {
+                        MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                            setTitle("알림")
+                            setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
+                            setPositiveButton("예") { dialog, _ ->
+                                binding.btnIdCondition.isEnabled = false
+                                binding.etId.isEnabled = false
+                                viewModel.User.value?.put("user_id", id)
+                                Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
+                                binding.pvSignIn.progress = 100f
+                                binding.svSignIn.go(3, true)
+                                binding.tvSignInGuide.text = "비밀번호를 입력해주세요"
+                                viewModel.invalidIdCondition.value = true
                             }
-                            else -> {
-                                MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                    setTitle("알림")
-                                    setMessage("이미 사용중인 아이디입니다.")
-                                    setNeutralButton("확인") { dialog, _ ->
-                                        dialog.dismiss()
-                                    }
-                                }.show()
+                            setNegativeButton("아니오") { dialog, _ ->
+                                dialog.dismiss()
                             }
-                        }
+                        }.show()
+                    }
+                    else -> {
+                        MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                            setTitle("알림")
+                            setMessage("이미 사용중인 아이디입니다.")
+                            setNeutralButton("확인") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                        }.show()
                     }
                 }
+
             }
         }
 

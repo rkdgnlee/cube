@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
@@ -103,6 +104,22 @@ object DeviceService {
         }
     }
 
-
+    fun isEmulator(): Boolean {
+        return Build.PRODUCT.contains("sdk") ||
+                Build.PRODUCT.contains("emulator") ||
+                Build.PRODUCT.contains("android_x86") ||
+                Build.HARDWARE.contains("goldfish") ||
+                Build.HARDWARE.contains("ranchu") ||
+                Build.MODEL.contains("sdk") ||
+                Build.MODEL.contains("emulator") ||
+                Build.MANUFACTURER.contains("Genymotion") ||
+                Build.MANUFACTURER == "Google" ||
+                Build.BRAND.contains("generic") ||
+                Build.DEVICE.contains("generic") ||
+                Build.FINGERPRINT.contains("generic") ||
+                Build.FINGERPRINT.contains("unknown") ||
+                Build.FINGERPRINT.startsWith("generic") ||
+                Build.FINGERPRINT.startsWith("unknown")
+    }
 
 }

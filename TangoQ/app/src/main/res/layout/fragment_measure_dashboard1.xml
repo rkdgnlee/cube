@@ -196,6 +196,7 @@
                         android:id="@+id/ivMD1Position"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="showBalloon"
                         android:padding="4dp"
                         android:src="@drawable/icon_arrow_board"
                         app:layout_constraintBottom_toTopOf="@+id/vMD1Percent"
@@ -358,8 +359,8 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageButton
-                        android:id="@+id/ibtnMD1Detail"
+                    <ImageView
+                        android:id="@+id/ivMD1Detail"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginTop="8dp"
@@ -440,6 +441,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/white"
+                android:contentDescription="shareGraph"
                 android:padding="4dp"
                 android:src="@drawable/icon_share"
                 app:layout_constraintBottom_toBottomOf="@+id/textView66"

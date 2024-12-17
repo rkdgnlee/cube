@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
@@ -50,16 +51,23 @@ class LoadingDialogFragment : DialogFragment() {
             else -> "로딩중입니다"
         }
     }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
 
+        dialog.window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            setDimAmount(0.6f)
+        }
+
+        return dialog
+    }
     override fun onResume() {
         super.onResume()
         isCancelable = false
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-        dialog?.window?.setDimAmount(0.6f) // 원하는 만큼의 어둠 설정
         dialogFragmentResize()
     }
+
     private fun dialogFragmentResize() {
         val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 

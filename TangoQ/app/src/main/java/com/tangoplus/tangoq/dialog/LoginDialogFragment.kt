@@ -33,6 +33,7 @@ import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.`object`.NetworkUser.getUserIdentifyJson
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -128,34 +129,18 @@ class LoginDialogFragment : DialogFragment() {
                 dialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
 
                 lifecycleScope.launch {
-                    getUserIdentifyJson(getString(R.string.API_user), jsonObject, requireContext()) { jo, code ->
+                    getUserIdentifyJson(getString(R.string.API_user), jsonObject) { jo ->
+                        val statusCode = jo?.optInt("status") ?: 0
+                        Log.v("코드", "$statusCode")
+                        if (statusCode == 0) {
+                            val jsonObj = JSONObject()
+                            jsonObj.put("access_jwt", jo?.optString("access_jwt"))
+                            jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
+                            saveEncryptedJwtToken(requireContext(), jsonObj)
 
-                        if (jo?.getString("message") == "invalid login data") { // 기존에 정보가 있을 경우 - 로그인 성공
                             requireActivity().runOnUiThread {
-                                dialog.dismiss()
-
-                                makeMaterialDialog(
-                                    when (code) {
-                                        401 -> 0
-                                        423 -> 1
-                                        424 -> 2
-                                        else -> 0
-                                    }
-                                )
-                                binding.etLDPw.text.clear()
-                                val loginId = viewModel.id.value.toString() // 한 번만 호출
-                                var currentIdTryCount = prefs.getLoginCount(loginId)
-                                currentIdTryCount++
-                                prefs.storeLoginId(loginId, currentIdTryCount)
-                                viewModel.loginTryCount.value = currentIdTryCount
-                                Log.v("카운트올라감", "${viewModel.loginTryCount.value}")
-                            }
-                        } else {
-                            requireActivity().runOnUiThread {
-
                                 binding.btnLDLogin.isEnabled = false
                                 viewModel.User.value = null
-
                                 // ------! 싱글턴 + 암호화 저장 시작 !------
                                 if (jo != null ) {
                                     // ------# 최초 로그인 #------
@@ -186,7 +171,26 @@ class LoginDialogFragment : DialogFragment() {
                                 }
                                 // ------! 싱글턴 + 암호화 저장 끝 !------
                             }
-                        } // else 끝
+                        } else {
+                            requireActivity().runOnUiThread {
+                                dialog.dismiss()
+                                makeMaterialDialog(
+                                    when (statusCode) {
+                                        404 -> 0
+                                        423 -> 1
+                                        424 -> 2
+                                        else -> 0
+                                    }
+                                )
+                                binding.etLDPw.text.clear()
+                                val loginId = viewModel.id.value.toString() // 한 번만 호출
+                                var currentIdTryCount = prefs.getLoginCount(loginId)
+                                currentIdTryCount++
+                                prefs.storeLoginId(loginId, currentIdTryCount)
+                                viewModel.loginTryCount.value = currentIdTryCount
+                                Log.v("카운트올라감", "${viewModel.loginTryCount.value}")
+                            }
+                        }
                     }
                 }
             }

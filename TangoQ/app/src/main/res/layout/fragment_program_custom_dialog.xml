@@ -157,6 +157,7 @@
                         android:layout_height="24dp"
                         android:layout_marginStart="20dp"
                         android:background="@drawable/effect_ibtn_12dp"
+                        android:contentDescription="showBalloon"
                         android:scaleType="centerCrop"
                         android:src="@drawable/icon_info_800"
                         app:layout_constraintBottom_toBottomOf="@+id/etPCDTitle"

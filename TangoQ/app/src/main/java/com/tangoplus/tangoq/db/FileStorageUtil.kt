@@ -23,7 +23,6 @@ object FileStorageUtil {
     private const val IMAGE_DIR = "images"
     private const val VIDEO_DIR = "videos"
     private const val JSON_DIR = "json"
-    private const val TEMP_DIR_NAME = "temp_files"
     // URL에서 파일 저장
     /* 1. SHA-256을 통해 hash 값 받기
     * 2. 저장해서 hash값이 같으면 저장 -> 암호화
@@ -32,11 +31,16 @@ object FileStorageUtil {
     * */
     suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
         return withContext(Dispatchers.IO) {
-            val url = context.getString(R.string.file_url) + fileName  // 수정된 부분
+            val url = context.getString(R.string.file_url) + fileName  // url 형식 + 파일 이름
             Log.v("url에서파일저장", url)
             val dir = getDirectory(context, fileType)
             val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 
+            // 파일있으면 다운로드 생략
+            if (file.exists()) {
+                Log.v("SaveFileFromUrl", "File already exists: ${file.absolutePath}")
+                return@withContext true
+            }
             try {
                 val connection = URL(url).openConnection() as HttpURLConnection
                 connection.connect()
@@ -103,19 +107,10 @@ object FileStorageUtil {
             false
         }
     }
-
-//    fun getCacheFile(context: Context, fileName: String): File? {
-//        val dir = context.cacheDir
-//        val file = File(dir, fileName)
-//        Log.v("file가져오기", "파라미터이름: ${fileName}, 주소: ${file.absolutePath}")
-//        return if (file.exists()) file else null
-//    }
-
-    // 개선된 getFile 함수
+    // 자동으로 복호화해서 가져오기.
     suspend fun getFile(context: Context, fileName: String): File? {
         return withContext(Dispatchers.IO) {
             val cache = SecurePreferencesManager.DecryptedFileCache.getInstance()
-
             // 캐시에서 먼저 확인
             val cachedData = cache?.get(fileName)
             if (cachedData != null) {
@@ -154,19 +149,13 @@ object FileStorageUtil {
             }
         }
     }
-//    private fun createTempFileFromBytes(context: Context, data: ByteArray): File {
-//        val tempFile = File.createTempFile("decrypted_", ".tmp", context.cacheDir)
-//        tempFile.writeBytes(data)
-//        tempFile.deleteOnExit() // 앱 종료 시 임시 파일 삭제
-//        Log.v("FileRetrieval", "Cached file path: ${tempFile.absolutePath}")
-//        return tempFile
-//    }
     private fun saveToInternalStorage(context: Context, fileName: String, data: ByteArray): File {
         val internalFile = File(context.filesDir, fileName)
         internalFile.writeBytes(data)
 //        Log.v("FileStorage", "File saved to internal storage: ${internalFile.absolutePath}")
         return internalFile
     }
+
     fun deleteFile(context: Context, fileName: String): Boolean {
         val fileType = getFileTypeFromExtension(fileName)
         val dir = getDirectory(context, fileType)
@@ -259,5 +248,11 @@ object FileStorageUtil {
 
     fun isFileIntegrityValid(file: File, expectedHash: String): Boolean {
         return calculateFileHash(file) == expectedHash
+    }
+
+
+
+    fun checkFileExisted() {
+
     }
 }

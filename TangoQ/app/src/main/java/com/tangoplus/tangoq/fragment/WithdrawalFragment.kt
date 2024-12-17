@@ -24,6 +24,9 @@ import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserDeleteJson
 import com.tangoplus.tangoq.`object`.Singleton_t_measure
 import com.tangoplus.tangoq.`object`.Singleton_t_user
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class WithdrawalFragment : Fragment() {
@@ -91,24 +94,26 @@ class WithdrawalFragment : Fragment() {
         }
     }
     private fun deleteAccount() {
-        fetchUserDeleteJson(requireContext(), getString(R.string.API_user),
-            singletonUserInstance.jsonObject?.optJSONObject("data")?.optString("user_email").toString()
-        ) {
-            requireActivity().runOnUiThread {
-                MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                    setMessage("탈퇴가 완료됐습니다.")
-                    setPositiveButton("예") { dialog, _ ->
-                        val intent = Intent(requireContext(), IntroActivity::class.java)
-                        singletonUserInstance.jsonObject = null
-                        singletonMeasureInstance.measures = null
-                        startActivity(intent)
-                        requireActivity().finishAffinity()
-                    }
-                    create()
-                }.show()
+        CoroutineScope(Dispatchers.IO).launch {
+            val responseCode = fetchUserDeleteJson(requireContext(), getString(R.string.API_user),
+                singletonUserInstance.jsonObject?.optInt("sn").toString()
+            )
+            if (responseCode == 200) {
+                requireActivity().runOnUiThread {
+                    MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                        setMessage("탈퇴가 완료됐습니다.")
+                        setPositiveButton("예") { dialog, _ ->
+                            val intent = Intent(requireContext(), IntroActivity::class.java)
+                            singletonUserInstance.jsonObject = null
+                            singletonMeasureInstance.measures = null
+                            startActivity(intent)
+                            requireActivity().finishAffinity()
+                        }
+                        create()
+                    }.show()
+                }
             }
         }
-
     }
     private fun setBtnUI(isChecked: Boolean) {
         val states = arrayOf(

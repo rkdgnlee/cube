@@ -28,6 +28,9 @@ import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
@@ -151,14 +154,18 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                                 put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
                                 put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
                             }
-                            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn) {
-                                Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-                                Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
-                                requireActivity().runOnUiThread {
-                                    val dialog = MarketingDialog(requireContext(), true)
-                                    dialog.show()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
+                                if (isUpdateFinished == true) {
+                                    Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
+                                    Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
+                                    requireActivity().runOnUiThread {
+                                        val dialog = MarketingDialog(requireContext(), true)
+                                        dialog.show()
+                                    }
                                 }
                             }
+
                         }
                         false -> {
                             createDialog(3)
@@ -291,12 +298,15 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                         bodyJo.put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
                     }
                 }
-                fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn) {
-                    Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-                    Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
-                    requireActivity().runOnUiThread {
-                        val dialog = MarketingDialog(requireContext(), false)
-                        dialog.show()
+                CoroutineScope(Dispatchers.IO).launch {
+                    val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
+                    if (isUpdateFinished == true) {
+                        Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
+                        Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
+                        requireActivity().runOnUiThread {
+                            val dialog = MarketingDialog(requireContext(), true)
+                            dialog.show()
+                        }
                     }
                 }
             }

@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
 
 class ProgramAlertDialogFragment : DialogFragment() {
@@ -54,6 +55,9 @@ class ProgramAlertDialogFragment : DialogFragment() {
         val colorSpan = ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.mainColor))
         spannableString.setSpan(colorSpan, 0, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.tvPAD2.text = spannableString
+
+        binding.tvPAD1.textSize = if (isTablet(requireContext())) 22f else 16f
+        binding.tvPAD2.textSize = if (isTablet(requireContext())) 22f else 16f
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -63,7 +67,10 @@ class ProgramAlertDialogFragment : DialogFragment() {
         dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
-        dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment)
+        if (isTablet(requireContext())) {
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f ,height = 0.4f)
+        } else {
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.475f)
+        }
     }
-
 }

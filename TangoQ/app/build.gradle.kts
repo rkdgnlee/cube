@@ -13,8 +13,8 @@ android {
         applicationId = "com.tangoplus.tangoq"
         minSdk = 27
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.18"
+        versionCode = 16
+        versionName = "1.25"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -125,7 +125,7 @@ dependencies {
 
 
     // 미디어
-    val camera_version = "1.4.0"
+    val camera_version = "1.4.1"
     implementation("androidx.camera:camera-core:$camera_version")
     implementation("androidx.camera:camera-camera2:$camera_version")
     implementation("androidx.camera:camera-lifecycle:$camera_version")

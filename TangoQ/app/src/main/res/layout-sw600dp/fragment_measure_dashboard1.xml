@@ -199,6 +199,7 @@
                         android:id="@+id/ivMD1Position"
                         android:layout_width="32dp"
                         android:layout_height="48dp"
+                        android:contentDescription="showBalloon"
                         android:padding="4dp"
                         android:src="@drawable/icon_arrow_board"
                         app:layout_constraintBottom_toTopOf="@+id/vMD1Percent"
@@ -363,7 +364,7 @@
                         app:layout_constraintBottom_toTopOf="@+id/tvMD1MeasureHistory"
                         app:layout_constraintStart_toStartOf="parent" />
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/ibtnMD1Detail"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -446,6 +447,7 @@
                 android:layout_height="48dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/white"
+                android:contentDescription="shareGraph"
                 android:padding="4dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_share"

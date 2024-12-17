@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.google.gson.Gson
+import com.tangoplus.tangoq.data.UrlTuple
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -115,7 +116,8 @@ interface MeasureDao {
     @Query("SELECT * FROM t_measure_static WHERE mobile_sn = :mobileSn")
     fun getStaticByMobileSn(mobileSn: Int): MeasureStatic
 
-
+    @Query("SELECT measure_seq, measure_server_json_name, measure_server_file_name FROM t_measure_static WHERE server_sn = :serverSn")
+    fun getStaticUrl(serverSn: Int) : List<UrlTuple> // 조회하고 나서 꼭 데이터  정렬해야함 measure_seq로 1, 3, 4, 5, 6, 7 임.
     // -------------------------------# MeasureDynamic #-------------------------------
     @Insert
     suspend fun insertByDynamic(entity: MeasureDynamic)  : Long
@@ -175,6 +177,9 @@ interface MeasureDao {
 
     @Query("SELECT * FROM t_measure_dynamic WHERE mobile_sn = :mobileSn")
     fun getDynamicByMobileSn(mobileSn: Int): MeasureDynamic
+
+    @Query("SELECT measure_seq, measure_server_json_name, measure_server_file_name FROM t_measure_dynamic WHERE server_sn = :serverSn")
+    fun getDynamicUrl(serverSn: Int) : List<UrlTuple>
     // -----------------------------------------# sn 관리 #------------------------------------------
 
     fun MeasureStatic.toJson(): String {

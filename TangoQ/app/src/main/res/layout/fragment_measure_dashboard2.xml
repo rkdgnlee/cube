@@ -250,6 +250,7 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:background="@color/subColor100"
+                            android:contentDescription="minus1MonthInCalendar"
                             android:scaleType="center"
                             android:src="@drawable/icon_arrow_calendar_left" />
 
@@ -270,6 +271,7 @@
                             android:layout_height="48dp"
                             android:layout_weight="1"
                             android:background="@color/subColor100"
+                            android:contentDescription="plus1MonthInCalendar"
                             android:scaleType="center"
                             android:src="@drawable/icon_arrow_calendar_right" />
                     </LinearLayout>

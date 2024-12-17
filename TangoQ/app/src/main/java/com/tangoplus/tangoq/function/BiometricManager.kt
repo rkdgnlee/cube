@@ -75,58 +75,6 @@ class BiometricManager(private val fragment: Fragment) {
         }
     }
 
-
-    // 생체 인증 요청
-    private fun promptBiometric(onSuccess: () -> Unit, onError: (String) -> Unit, fallbackToDeviceCredential: Boolean) {
-        val executor = ContextCompat.getMainExecutor(fragment.requireContext())
-
-        val biometricPrompt = BiometricPrompt(
-            fragment, // Context를 FragmentActivity로 캐스팅
-            executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    Log.v("인증실패", "promptBiometric - onAuthenticationSucceeded")
-                    onSuccess()
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    if (fallbackToDeviceCredential) {
-                        promptDeviceCredential(onSuccess, onError)
-                    } else {
-                        Log.v("인증실패", "promptBiometric - onAuthenticationFailed")
-                        onError("인증에 실패했습니다.")
-                    }
-                }
-
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    super.onAuthenticationError(errorCode, errString)
-                    if (fallbackToDeviceCredential) {
-                        promptDeviceCredential(onSuccess, onError)
-                    } else {
-                        Log.v("인증실패", "promptBiometric - onAuthenticationError")
-                        onError("인증에 실패했습니다.")
-                    }
-                }
-            }
-        )
-        val promptInfoBuilder = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("생체 인증")
-            .setSubtitle("앱 보안을 위해 생체 인증을 진행해 주세요")
-            .setNegativeButtonText("취소")
-
-        // 디바이스 자격 증명(PIN/패턴/비밀번호) 허용
-        if (fallbackToDeviceCredential) {
-            promptInfoBuilder.setAllowedAuthenticators(
-                BiometricManager.Authenticators.BIOMETRIC_STRONG or
-                        BiometricManager.Authenticators.DEVICE_CREDENTIAL
-            )
-        }
-        val promptInfo = promptInfoBuilder.build()
-        biometricPrompt.authenticate(promptInfo)
-    }
-
     private fun promptDeviceCredential(onSuccess: () -> Unit, onError: (String) -> Unit) {
         Log.v("BiometricAuth", "Prompting device credential")
 

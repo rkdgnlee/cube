@@ -39,6 +39,7 @@ import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.GuideDialogFragment
+import com.tangoplus.tangoq.dialog.ProgramAlertDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.SetupDialogFragment
@@ -327,7 +328,8 @@ class MainFragment : Fragment() {
                                                 week,
                                                 requireContext()
                                             )
-                                            currentPage = findCurrentIndex(progresses)
+
+
                                             withContext(Dispatchers.Main) {
                                                 Log.w("저장안된 프로그램", "${uvm.existedProgramData?.programSn}")
                                                 val exercises = uvm.existedProgramData?.exercises
@@ -341,7 +343,9 @@ class MainFragment : Fragment() {
                                             val week = latestProgress.optInt("week_number")
                                             withContext(Dispatchers.IO) {
                                                 val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
-                                                currentPage = findCurrentIndex(progresses)
+                                                if (progresses != null) {
+                                                    currentPage = findCurrentIndex(progresses)
+                                                }
                                                 withContext(Dispatchers.Main) {
                                                     val exercises = uvm.existedProgramData?.exercises
                                                     Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn}")
@@ -425,6 +429,7 @@ class MainFragment : Fragment() {
                                             }
                                         }
                                     }
+                                    // ------# 측정 날짜 바뀌면서 padding많이 먹으면서
                                     binding.vpM.addItemDecoration(itemDecoration)
                                     binding.llM.visibility = View.GONE
                                     binding.sflM.stopShimmer()
@@ -570,7 +575,6 @@ class MainFragment : Fragment() {
             }
         )
     }
-
 
     private fun notExistedMeasurementGuide() {
         TooltipManager.createGuide(

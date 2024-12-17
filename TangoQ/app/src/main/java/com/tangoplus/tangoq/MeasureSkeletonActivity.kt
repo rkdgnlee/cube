@@ -30,6 +30,7 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
+import android.view.Surface
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
@@ -199,7 +200,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
-        object : CountDownTimer(3000, 1000) {
+        object : CountDownTimer(4000, 1000) {
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 runOnUiThread{
@@ -1045,22 +1046,32 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private fun setPreviousStep() {
         when (repeatCount.value) {
             maxRepeats -> {
-                mvm.statics.removeAt(repeatCount.value  ?: 0)
+                mvm.statics.removeAt(repeatCount.value?.minus(1)  ?: 0)
                 binding.pvMeasureSkeleton.progress -= 16  // 마지막 남은 2까지 전부 빼기
                 binding.tvMeasureSkeletonCount.text = "프레임에 맞춰 서주세요"
                 binding.btnMeasureSkeletonStep.text = "측정하기"
                 binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
                 // 1 3 4 5 6 7
             }
-            else -> {
+            1 -> {
+                repeatCount.value = repeatCount.value?.minus(1)
+                progress -= 14
+                binding.pvMeasureSkeleton.progress = progress.toFloat()
+                Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
+                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
+                mvm.statics.removeAt(repeatCount.value ?: 0) // static을
+                mvm.staticFiles.removeAt(repeatCount.value ?: 0)
+                mvm.staticJsonFiles.removeAt(repeatCount.value ?: 0)
+            }
+            2, 3, 4, 5, 6 -> {
                 repeatCount.value = repeatCount.value?.minus(1)
                 progress -= 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
                 Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value}, progress: $progress")
                 binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
                 if (repeatCount.value != 1) {
-                    mvm.statics.removeAt(repeatCount.value?.minus(1) ?: 0)
-                    mvm.staticFiles.removeAt(repeatCount.value?.minus(1) ?: 0)
+                    mvm.statics.removeAt(repeatCount.value?.minus(1) ?: 0) // static을
+                    mvm.staticFiles.removeAt(repeatCount.value?.minus(1)?: 0)
                     mvm.staticJsonFiles.removeAt(repeatCount.value?.minus(1) ?: 0)
                 } else {
                     mvm.dynamic = null
@@ -1068,9 +1079,10 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     mvm.dynamicFile = null
                     mvm.dynamicJsonFile = null
                 }
-
             }
         }
+        val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+        binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
         Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}, staticsSize: ${mvm.statics.size}")
     }
 
@@ -1140,10 +1152,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         } ?: run {
             Log.e(TAG, "Display is null")
         }
+        val rotation = binding.viewFinder.display?.rotation
+            ?: Surface.ROTATION_0
         // 이미지 분석. RGBA 8888을 사용하여 모델 작동 방식 일치
         imageAnalyzer =
             ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9)
-                .setTargetRotation(binding.viewFinder.display.rotation)
+                .setTargetRotation(rotation)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()

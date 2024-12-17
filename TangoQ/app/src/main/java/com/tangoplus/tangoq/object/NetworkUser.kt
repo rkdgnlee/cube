@@ -21,7 +21,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 object NetworkUser {
-
+    val TAG = "NetworkUser"
     // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------
     // (각 플랫폼 sdk를 통해서 자동 로그인까지 동작)
     fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
@@ -66,7 +66,7 @@ object NetworkUser {
     }
 
     // Id, Pw 로그인
-    suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, context: Context, callback: (JSONObject?, Int) -> Unit) {
+    suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = idPw.toString().toRequestBody(mediaType)
         val client = OkHttpClient()
@@ -85,15 +85,8 @@ object NetworkUser {
                     val responseBody = response.body?.string()
                     Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
-
-                    // ------# 토큰 저장 #------
-                    val jsonObj = JSONObject()
-                    jsonObj.put("access_jwt", jo?.optString("access_jwt"))
-                    jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
-
-                    saveEncryptedJwtToken(context, jsonObj)
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
-                    callback(jo, response.code)
+                    callback(jo)
                 }
             })
         }
@@ -185,7 +178,7 @@ object NetworkUser {
         }
     }
 
-    suspend fun idDuplicateCheck(myUrl: String, userId: String, callback: (Int) -> Unit) {
+    suspend fun idDuplicateCheck(myUrl: String, userId: String) : Int? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}check_user_id.php?user_id=$userId")
@@ -194,65 +187,39 @@ object NetworkUser {
 
         return withContext(Dispatchers.IO) {
             try {
-                client.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        Log.e("중복확인, 응답실패", "Failed to execute request!")
-                        callback(500) // 실패 시 에러 코드 전달
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("회원update", "ResponseCode: ${response.code}")
+                        return@withContext null
                     }
-                    override fun onResponse(call: Call, response: Response) {
-                        response.body?.string()?.let { responseString ->
-                            Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
-                            val bodyJo = JSONObject(responseString)
-                            callback(bodyJo.optInt("status"))
-                        }
+
+                    response.body?.string()?.let { responseString ->
+                        Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
+                        val bodyJo = JSONObject(responseString)
+                        return@withContext bodyJo.optInt("status")
                     }
-                })
-            }  catch (e: IndexOutOfBoundsException) {
+                }
+            } catch (e: IndexOutOfBoundsException) {
                 Log.e("UserIndex", "${e.message}")
-                callback(500)
+                500
             } catch (e: IllegalArgumentException) {
                 Log.e("UserIllegal", "${e.message}")
-                callback(500)
+                500
             } catch (e: IllegalStateException) {
                 Log.e("UserIllegal", "${e.message}")
-                callback(500)
+                500
             } catch (e: NullPointerException) {
                 Log.e("UserNull", "${e.message}")
-                callback(500)
+                500
             } catch (e: java.lang.Exception) {
                 Log.e("UserException", "${e.message}")
-                callback(500)
+                500
             }
         }
     }
-//
-//    // ------# 마케팅 수신 동의 관련 insert문 #------
-//    fun insertMarketingBySn(myUrl: String,  idPw: JSONObject, userToken: String, callback: (JSONObject?) -> Unit) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = RequestBody.create(mediaType, idPw.toString())
-//
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//            .url("${myUrl}read.php")
-//            .header("user_token", userToken)
-//            .post(body)
-//            .build()
-//        client.newCall(request).enqueue(object : Callback {
-//            override fun onFailure(call: Call, e: IOException) {
-//                Log.e("마케팅Failed", "Failed to execute request!")
-//            }
-//
-//            override fun onResponse(call: Call, response: Response) {
-//                val responseBody = response.body?.string()
-//                Log.e("마케팅Success", "$responseBody")
-//                val jo = responseBody?.let { JSONObject(it) }
-//                callback(jo)
-//            }
-//        })
-//    }
 
 
-    fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String, callback: (Boolean) -> Unit) {
+    suspend fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String) : Boolean? {
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val client = getClient(context)
         val request = Request.Builder()
@@ -260,43 +227,72 @@ object NetworkUser {
             .patch(body)
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("UPDATEFailed", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.v("UPDATE 응답성공", "code: ${response.code} body: $responseBody")
-                if (response.code == 200) {
-                    callback(true)
-                } else {
-                    callback(false)
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                try {
+                    if (!response.isSuccessful) {
+                        Log.e("회원update", "ResponseCode: ${response.code}")
+                        return@withContext null
+                    }
+                    val responseBody = response.body?.string()
+                    Log.v("회원update", "$responseBody")
+                    return@withContext true
+                } catch (e: IllegalStateException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: IllegalArgumentException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: NullPointerException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: ArrayIndexOutOfBoundsException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: Exception) {
+                    Log.e(TAG, "${e.message}")
+                    null
                 }
-            }
-        })
+             }
+        }
+
     }
 
-    fun fetchUserDeleteJson(context : Context, myUrl : String, sn:String, callback: () -> Unit) {
+    suspend fun fetchUserDeleteJson(context : Context, myUrl : String, sn:String) : Int? {
         val client = getClient(context)
         val request = Request.Builder()
-            .url("${myUrl}user/$sn")
+            .url("${myUrl}users/$sn")
             .delete()
             .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("회원탈퇴Failed", "Failed to execute request!")
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                try {
+                    if (!response.isSuccessful) {
+                        Log.e("회원탈퇴Error", "ResponseCode: ${response.code}")
+                        return@withContext null
+                    }
+                    val responseCode = response.code
+                    Log.v("회원탈퇴Success", "$responseCode")
+                    return@withContext responseCode
+                } catch (e: IllegalStateException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: IllegalArgumentException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: NullPointerException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: ArrayIndexOutOfBoundsException) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                } catch (e: Exception) {
+                    Log.e(TAG, "${e.message}")
+                    null
+                }
             }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                Log.v("회원탈퇴Success", "$responseBody")
-                callback()
-            }
-        })
+        }
     }
-
-
 
     fun findUserId(context: Context, myUrl: String, joBody: String, callback: (String) -> Unit) {
 

@@ -25,6 +25,9 @@ import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.listener.WeightVisibilityListener
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SetupDialogFragment : DialogFragment() {
     lateinit var binding: FragmentSetupDialogBinding
@@ -100,9 +103,9 @@ class SetupDialogFragment : DialogFragment() {
                     // ------! 1. 초기 설정 완료 !------
                     val jsonObj = uvm.User.value
                     Log.v("JSON몸통", "$jsonObj")
-
-                    fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jsonObj.toString(), userSn.toString()) { isSuccess ->
-                        if (isSuccess) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jsonObj.toString(), userSn.toString())
+                        if (isUpdateFinished == true) {
                             userJson.put("height", uvm.User.value?.optString("height"))
                             userJson.put("weight", uvm.User.value?.optString("weight"))
 //                        userJson.put("user_goal", uvm.User.value?.optString("user_goal"))

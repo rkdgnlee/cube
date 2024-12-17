@@ -97,7 +97,7 @@ class IntroActivity : AppCompatActivity() {
                                 val credential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
                                 firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
                                         if (firebaseAuth.currentUser != null) {
-
+                                            Log.v("google", "4, firebaseAuth.currentUser: ${firebaseAuth.currentUser?.displayName}입니다.")
                                             // ---- Google 토큰에서 가져오기 시작 ----
                                             val user: FirebaseUser = firebaseAuth.currentUser!!
                                             Log.v("user", "${user.phoneNumber}")
@@ -127,14 +127,20 @@ class IntroActivity : AppCompatActivity() {
                             }
                         } ?: throw Exception()
                     } catch (e: IndexOutOfBoundsException) {
+                        enabledAllLoginBtn()
                         Log.e("IntroIndex", "${e.message}")
                     } catch (e: IllegalArgumentException) {
+                        enabledAllLoginBtn()
                         Log.e("IntroIllegal", "${e.message}")
                     } catch (e: NullPointerException) {
+                        enabledAllLoginBtn()
                         Log.e("IntroNull", "${e.message}")
                     } catch (e: Exception) {
+                        enabledAllLoginBtn()
                         Log.e("IntroException", "${e.message}")
                     }
+                } else {
+                    enabledAllLoginBtn()
                 }
             }
         } else {
@@ -145,7 +151,7 @@ class IntroActivity : AppCompatActivity() {
 
         // ---- 구글 로그인 시작 ----
         binding.ibtnGoogleLogin.setOnClickListener {
-
+            disabledSNSLogin(0)
             CoroutineScope(Dispatchers.IO).launch {
                 val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.firebase_client_id))
@@ -161,18 +167,20 @@ class IntroActivity : AppCompatActivity() {
         val oauthLoginCallback = object : OAuthLoginCallback {
             override fun onError(errorCode: Int, message: String) {
                 onFailure(errorCode, message)
+                enabledAllLoginBtn()
             }
             override fun onFailure(httpStatus: Int, message: String) {
                 val errorCode = NaverIdLoginSDK.getLastErrorCode().code
                 val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
                 Toast.makeText(this@IntroActivity, "로그인에 실패했습니다.\n다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("failed Login to NAVER", "errorCode: $errorCode, errorDesc: $errorDescription")
+                enabledAllLoginBtn()
             }
             override fun onSuccess() {
                 // ---- 네이버 로그인 성공 동작 시작 ----
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
-                    override fun onError(errorCode: Int, message: String) {}
-                    override fun onFailure(httpStatus: Int, message: String) {}
+                    override fun onError(errorCode: Int, message: String) { enabledAllLoginBtn() }
+                    override fun onFailure(httpStatus: Int, message: String) { enabledAllLoginBtn() }
                     override fun onSuccess(result: NidProfileResponse) {
                         val jsonObj = JSONObject()
                         val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
@@ -205,6 +213,7 @@ class IntroActivity : AppCompatActivity() {
             }
         }
         binding.btnOAuthLoginImg.setOnClickListener {
+            disabledSNSLogin(2)
             NaverIdLoginSDK.authenticate(this, oauthLoginCallback)
         }
 
@@ -212,8 +221,10 @@ class IntroActivity : AppCompatActivity() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("카카오톡", "카카오톡 로그인 실패 $error")
+                enabledAllLoginBtn()
                 when {
                     error.toString() == AuthErrorCause.AccessDenied.toString() -> {
+                        enabledAllLoginBtn()
                         Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
                     }
                 }
@@ -221,11 +232,13 @@ class IntroActivity : AppCompatActivity() {
                 Log.e("카카오톡", "로그인에 성공하였습니다.")
                 UserApiClient.instance.accessTokenInfo { tokenInfo, error1 ->
                     if (error1 != null) {
+                        enabledAllLoginBtn()
                         Log.e(TAG, "토큰 정보 보기 실패", error1)
                     }
                     else if (tokenInfo != null) {
                         UserApiClient.instance.me { user, error2 ->
                             if (error2 != null) {
+                                enabledAllLoginBtn()
                                 Log.e(TAG, "사용자 정보 요청 실패", error2)
                             }
                             else if (user != null) {
@@ -262,6 +275,7 @@ class IntroActivity : AppCompatActivity() {
             }
         }
         binding.ibtnKakaoLogin.setOnClickListener {
+            disabledSNSLogin(1)
             if (UserApiClient.instance.isKakaoTalkLoginAvailable(this@IntroActivity)) {
                 UserApiClient.instance.loginWithKakaoTalk(this@IntroActivity, callback = callback)
             }  else {
@@ -403,5 +417,38 @@ class IntroActivity : AppCompatActivity() {
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
+    }
+
+    private fun disabledSNSLogin(case : Int) {
+        when (case) {
+            0 -> {
+                binding.ibtnGoogleLogin.isEnabled = true
+                binding.ibtnKakaoLogin.isEnabled = false
+                binding.btnOAuthLoginImg.isEnabled = false
+                binding.btnIntroLogin.isEnabled = false
+                binding.btnIntroSignIn.isEnabled = false
+            }
+            1 -> {
+                binding.ibtnGoogleLogin.isEnabled = false
+                binding.ibtnKakaoLogin.isEnabled = true
+                binding.btnOAuthLoginImg.isEnabled = false
+                binding.btnIntroLogin.isEnabled = false
+                binding.btnIntroSignIn.isEnabled = false
+            }
+            2 -> {
+                binding.ibtnGoogleLogin.isEnabled = false
+                binding.ibtnKakaoLogin.isEnabled = false
+                binding.btnOAuthLoginImg.isEnabled = true
+                binding.btnIntroLogin.isEnabled = false
+                binding.btnIntroSignIn.isEnabled = false
+            }
+        }
+    }
+    private fun enabledAllLoginBtn() {
+        binding.ibtnGoogleLogin.isEnabled = true
+        binding.ibtnKakaoLogin.isEnabled = true
+        binding.btnOAuthLoginImg.isEnabled = true
+        binding.btnIntroLogin.isEnabled = true
+        binding.btnIntroSignIn.isEnabled = true
     }
 }

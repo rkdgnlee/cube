@@ -93,7 +93,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         if (isResume) {
             updateUI()
         }
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -473,12 +472,18 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     private fun calculateInitialWeekAndSequence() {
         val maxSeq = pvm.currentProgram?.programFrequency
-
+        val maxWeek = pvm.currentProgram?.programWeek
         for (weekIndex in pvm.currentProgresses.indices) {
             val weekProgress = pvm.currentProgresses[weekIndex]
             val minSequenceInWeek = weekProgress.minOfOrNull { it.currentSequence } ?: 0
-
-            if (minSequenceInWeek == maxSeq) {
+//            val minSequenceInWeek = 3
+            // 현재 주차도 알아내서 -> 주차도 maxWeek에 맞는지 확인하고 나가게 하더낙 계속 돌아가게 하면 됨?
+            if (weekIndex == maxWeek && minSequenceInWeek == maxSeq) {
+                // 위크까지 반복문이 왔는데 minSequence까지 max 였다?
+                val dialog = ProgramAlertDialogFragment.newInstance(this)
+                dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+                break
+            } else if (weekIndex != maxWeek && minSequenceInWeek == maxSeq) {
                 continue
             } else {
                 pvm.selectWeek.value = weekIndex
@@ -486,7 +491,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 pvm.currentWeek = weekIndex
                 pvm.currentSequence = minSequenceInWeek
                 pvm.selectedSequence.value = minSequenceInWeek
-                Log.v("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}, maxSeq: $maxSeq")
+                Log.v("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}, maxWeek: $maxWeek, maxSeq: $maxSeq")
                 val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
                 binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/$tvTotalWeek 주차"
                 break

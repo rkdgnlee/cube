@@ -215,7 +215,7 @@ object NetworkProgress {
         }
     }
 
-    suspend fun getWeekProgress(myUrl: String, recSn: Int, week: Int,context: Context) : MutableList<ProgressUnitVO> {
+    suspend fun getWeekProgress(myUrl: String, recSn: Int, week: Int,context: Context) : MutableList<ProgressUnitVO>? {
         val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?recommendation_sn=$recSn&weeks=$week")
@@ -224,9 +224,13 @@ object NetworkProgress {
 
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                Log.v("Server>week>Progress", "${responseBody}")
+
                 try {
+                    val responseBody = response.body?.string()
+                    Log.v("Server>week>Progress", "${responseBody}")
+                    if (!response.isSuccessful) {
+                        return@withContext null
+                    }
                     val ja = JSONObject(responseBody.toString()).optJSONArray("data")
                     val progresses = mutableListOf<ProgressUnitVO>()
                     if (ja != null) {
@@ -253,21 +257,26 @@ object NetworkProgress {
                     }
                 } catch (e: IndexOutOfBoundsException) {
                     Log.e("ProgressIndex", "getWeek: ${e.message}")
+                    null
                 } catch (e: IllegalArgumentException) {
                     Log.e("ProgressIllegal", "getWeek: ${e.message}")
+                    null
                 } catch (e: IllegalStateException) {
                     Log.e("ProgressIllegal", "getWeek: ${e.message}")
+                    null
                 }catch (e: NullPointerException) {
                     Log.e("ProgressNull", "getWeek: ${e.message}")
+                    null
                 } catch (e: java.lang.Exception) {
                     Log.e("ProgressException", "getWeek: ${e.message}")
+                    null
                 }
-            } as MutableList<ProgressUnitVO>
+            }
         }
     }
 
     // TODO ------# 달력 함수에 맞게 수정 해야함 #------
-    suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressHistoryVO> {
+    suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressHistoryVO>? {
         val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?date=$date")
@@ -276,44 +285,52 @@ object NetworkProgress {
 
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                Log.v("Server>Daily>Progress", "${responseBody}")
                 try {
-                    val ja = JSONObject(responseBody.toString()).optJSONArray("data")
+                    if (!response.isSuccessful) {
+                        return@withContext null
+                    }
+                    val responseBody = response.body?.string()
+                    Log.v("Server>Daily>Progress", "${responseBody}")
+
+                    val ja = JSONObject(responseBody).optJSONArray("data")
                     val progresses = mutableListOf<ProgressHistoryVO>()
                     if (ja != null) {
                         for (i in 0 until ja.length()) {
+                            val item = ja.optJSONObject(i)
                             val progressHistory = ProgressHistoryVO(
-                                sn = ja.optJSONObject(i).optInt("progress_history_sn"),
-                                userSn = ja.optJSONObject(i).optInt("user_sn"),
-                                uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
-                                exerciseName = ja.optJSONObject(i).optString("exercise_name"),
-                                recommendationTitle = ja.optJSONObject(i).optString("recommendation_title"),
-                                weekNumber = ja.optJSONObject(i).optInt("week_number"),
-                                executionDate = ja.optJSONObject(i).optString("execution_date"),
-                                countSet = ja.optJSONObject(i).optInt("count_set"),
-                                completed = ja.optJSONObject(i).optInt("completed"),
-                                expired = ja.optJSONObject(i).optInt("expired"),
+                                sn = item.optInt("progress_history_sn"),
+                                userSn = item.optInt("user_sn"),
+                                uvpSn = item.optInt("uvp_sn"),
+                                exerciseName = item.optString("exercise_name"),
+                                recommendationTitle = item.optString("recommendation_title"),
+                                weekNumber = item.optInt("week_number"),
+                                executionDate = item.optString("execution_date"),
+                                countSet = item.optInt("count_set"),
+                                completed = item.optInt("completed"),
+                                expired = item.optInt("expired"),
                             )
                             progresses.add(progressHistory)
                         }
                         Log.v("진행길이", "${progresses.size}")
-                        return@use progresses
-                    } else {
-                        return@use progresses
                     }
+                    progresses
                 } catch (e: IndexOutOfBoundsException) {
                     Log.e("ProgressIndex", "getDaily: ${e.message}")
+                    null
                 } catch (e: IllegalArgumentException) {
                     Log.e("ProgressIllegal", "getDaily: ${e.message}")
+                    null
                 } catch (e: IllegalStateException) {
                     Log.e("ProgressIllegal", "getDaily: ${e.message}")
+                    null
                 } catch (e: NullPointerException) {
                     Log.e("ProgressNull", "getDaily: ${e.message}")
+                    null
                 } catch (e: java.lang.Exception) {
                     Log.e("ProgressException", "getDaily: ${e.message}")
+                    null
                 }
-            } as MutableList<ProgressHistoryVO>
+            }
         }
     }
 }

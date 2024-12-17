@@ -57,6 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:background="@drawable/effect_ibtn_12dp"
+            android:contentDescription="exitBSDialog"
             android:padding="4dp"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_exit"

@@ -268,36 +268,35 @@ object NetworkMeasure {
 
                     val motherJo = responseBody?.let { JSONObject(it) }
                     if (motherJo != null) {
-                        val saveJobs = mutableListOf<Deferred<Boolean>>()
+//                        val saveJobs = mutableListOf<Deferred<Boolean>>()
 
                         for (i in 0 until motherJo.optString("count").toInt() - 1) {
                             val staticJo = motherJo.optJSONObject("static_${i+1}")
                             if (staticJo != null) {
                                 Log.v("스태틱조1~6", "${staticJo.optInt("measure_seq")}")
                                 mDao.insertByStatic(staticJo.toMeasureStatic())
-                                val fileName = staticJo.optString("measure_server_file_name")
-                                val jsonName = staticJo.optString("measure_server_json_name")
-
-                                saveJobs.add(async {
-                                    saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
-                                })
-                                saveJobs.add(async {
-                                    saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
-                                })
+//                                val fileName = staticJo.optString("measure_server_file_name")
+//                                val jsonName = staticJo.optString("measure_server_json_name")
+//
+//                                saveJobs.add(async {
+//                                    saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
+//                                })
+//                                saveJobs.add(async {
+//                                    saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
+//                                })
                             }
                         }
                         val dynamicJo = motherJo.optJSONObject("dynamic")
                         if (dynamicJo != null) {
                             Log.v("다이나믹", "${dynamicJo.optInt("measure_seq")}")
                             mDao.insertByDynamic(dynamicJo.toMeasureDynamic())
-                            val fileName = dynamicJo.optString("measure_server_file_name")
-                            val jsonName = dynamicJo.optString("measure_server_json_name")
-
-                            saveJobs.add(async { saveFileFromUrl(context, fileName, FileStorageUtil.FileType.VIDEO) })
-                            saveJobs.add(async { saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON) })
-
+//                            val fileName = dynamicJo.optString("measure_server_file_name")
+//                            val jsonName = dynamicJo.optString("measure_server_json_name")
+//
+//                            saveJobs.add(async { saveFileFromUrl(context, fileName, FileStorageUtil.FileType.VIDEO) })
+//                            saveJobs.add(async { saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON) })
                         }
-                        saveJobs.awaitAll()
+//                        saveJobs.awaitAll()
                     }
                     return@withContext Result.success(Unit)
                 }

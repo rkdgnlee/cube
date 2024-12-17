@@ -275,11 +275,11 @@ class MeasureDashBoard2Fragment : Fragment() {
                         text = day.date.dayOfMonth.toString()
                         textSize = if (isTablet(requireContext())) 24f else 20f
                         when (day.date.dayOfMonth) {
-                            in 2 .. 9 -> {
-                                setPadding(32, 17, 32, 17)
+                            in 1 .. 9 -> {
+                                setPadding(36, 14, 36, 14)
                             }
                             in 12 .. 19 -> {
-                                setPadding(26, 22, 26, 22)
+                                setPadding(32, 22, 32, 22)
                             }
                             in 22 .. 29 -> {
                                 setPadding(26, 23, 26, 23)
@@ -290,9 +290,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                             11, 21, 31 -> {
                                 setPadding(30, 24, 30, 24)
                             }
-                            1 -> {
-                                setPadding(30, 12, 30, 12)
-                            }
+
                             else -> {
                                 setPadding(24)
                             }
@@ -303,7 +301,6 @@ class MeasureDashBoard2Fragment : Fragment() {
                             // 선택된 날짜를 업데이트 + UI 갱신
                             if (day.date <= LocalDate.now() ) {
                                 val oldDate = selectedDate
-
                                 selectedDate = day.date
                                 oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
                                 selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
@@ -312,18 +309,11 @@ class MeasureDashBoard2Fragment : Fragment() {
                                         val date = selectedDate.format(formatter)
                                         val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
                                         withContext(Dispatchers.Main) {
-                                            setAdapter(currentProgresses)
+                                            if (currentProgresses != null) {
+                                                setAdapter(currentProgresses)
+                                            }
+                                            binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
                                         }
-
-//                                    pvm.currentProgressItem =
-//                                    val filteredExercises = pvm.allHistorys.filter { history ->
-//                                        history.regDate?.let { regDateString ->
-//                                            val historyDate = stringToLocalDate(regDateString)
-//                                            historyDate.isEqual(selectedDate)
-//                                        } ?: false
-//                                    }.toHistorySummaries()
-//                                    setAdapter(filteredExercises)
-                                    binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
                                     } ?: run {
                                         Log.e("DateSelection", "Selected date is null")
                                     }

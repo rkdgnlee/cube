@@ -7,8 +7,11 @@ import android.content.ContentValues
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
@@ -17,6 +20,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -37,6 +41,9 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.`object`.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -47,6 +54,15 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
     val svm : SignInViewModel by activityViewModels()
     private lateinit var userJson : JSONObject
     private lateinit var auth : FirebaseAuth
+
+    override fun onResume() {
+        super.onResume()
+        // full Screen code
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+//        setAdapter(profilemenulist, binding.rvPED)
+    }
 
     companion object {
         private const val ARG_EDIT_BS_TITLE = "profileEditTitle"
@@ -83,11 +99,14 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 
         // ------# 키보드 #------
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        binding.etPCD1.requestFocus()
-        binding.etPCD1.postDelayed({
-            imm.showSoftInput(binding.etPCD1, InputMethodManager.SHOW_IMPLICIT)
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.etPCD1.requestFocus()
+            binding.etPCD1.postDelayed({
+                imm.showSoftInput(binding.etPCD1, InputMethodManager.SHOW_IMPLICIT)
+            }, 0)
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }, 250)
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+
 
         when (arg) {
             "비밀번호" -> {
@@ -310,20 +329,28 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 
                 }
             }
-            fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString()
-            ) {
-                userJson.apply {
-                    when (arg) {
-                        "몸무게" -> put("weight", updatedItem)
-                        "전화번호" -> put("mobile", binding.etPCDMobile.text.toString())
-                        "신장" -> put("height", updatedItem)
-                        "이메일" -> put("email", updatedItem)
-                        "생년월일" -> put("birthday", updatedItem)
+            CoroutineScope(Dispatchers.IO).launch {
+                val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
+                if (isUpdateFinished == true) {
+                    userJson.apply {
+                        when (arg) {
+                            "몸무게" -> put("weight", updatedItem)
+                            "전화번호" -> put("mobile", binding.etPCDMobile.text.toString())
+                            "신장" -> put("height", updatedItem)
+                            "이메일" -> put("email", updatedItem)
+                            "생년월일" -> put("birthday", updatedItem)
+                        }
                     }
+                    dismiss()
                 }
-                dismiss()
             }
         }
+
+        // ------# clear listener #------
+        binding.ibtnPCD1Clear.setOnClickListener{ binding.etPCD1.setText("") }
+        binding.ibtnPCD2Clear.setOnClickListener{ binding.etPCD2.setText("") }
+        binding.ibtnPCD3Clear.setOnClickListener{ binding.etPCD3.setText("") }
+
     }
 
     private fun enabledButton() {
@@ -341,6 +368,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 
     private fun setUIVisibility(case: Int) {
         when (case) {
+            // 0 -> 비밀번호 1 -> 그 외 수정 2 -> 휴대폰 인증
             0 -> {
                 binding.etPCD1.visibility = View.VISIBLE
                 binding.etPCD2.visibility = View.VISIBLE
@@ -352,6 +380,8 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCDPWVerifyCondition.visibility = View.VISIBLE
                 binding.tvPCDSkip.visibility = View.VISIBLE
                 binding.clPCDMobile.visibility = View.GONE
+                binding.ibtnPCD2Clear.visibility = View.VISIBLE
+                binding.ibtnPCD3Clear.visibility = View.VISIBLE
             }
             1 -> {
                 binding.etPCD1.visibility = View.VISIBLE
@@ -364,6 +394,8 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCDPWVerifyCondition.visibility = View.GONE
                 binding.tvPCDSkip.visibility = View.GONE
                 binding.clPCDMobile.visibility = View.GONE
+                binding.ibtnPCD2Clear.visibility = View.GONE
+                binding.ibtnPCD3Clear.visibility = View.GONE
             }
             2 -> {
                 binding.etPCD1.visibility = View.GONE
@@ -376,6 +408,8 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCDPWVerifyCondition.visibility = View.GONE
                 binding.tvPCDSkip.visibility = View.GONE
                 binding.clPCDMobile.visibility = View.VISIBLE
+                binding.ibtnPCD2Clear.visibility = View.GONE
+                binding.ibtnPCD3Clear.visibility = View.GONE
                 binding.etPCDMobile.isEnabled = true
                 binding.btnPCDAuthSend.isEnabled = false
                 binding.btnPCDAuthConfirm.isEnabled = false
