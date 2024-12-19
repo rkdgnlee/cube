@@ -15,23 +15,16 @@ import org.json.JSONObject
 
 object NetworkProgram {
     suspend fun fetchProgram(myUrl: String, context: Context, sn: String): ProgramVO? {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
         val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl$sn")
             .get()
             .build()
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                Log.v("responseBody", "$responseBody")
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.v("responseBody", "$responseBody")
                     val jsonInfo = responseBody?.let { JSONObject(it) }
                     val exercises = mutableListOf<ExerciseVO>()
                     var exerciseTimes = 0
@@ -40,7 +33,7 @@ object NetworkProgram {
                         for (i in 0 until exerciseSize) {
                             val exerciseUnit = jsonToExerciseVO((responseBody.let { JSONObject(it) }.getJSONObject("$i")))
                             exercises.add(exerciseUnit)
-                        exerciseTimes += exerciseUnit.duration?.toInt() ?: 0
+                            exerciseTimes += exerciseUnit.duration?.toInt() ?: 0
                         }
 //                    Log.v("프로그램Exercises", "exerciseSize: $exerciseSize, exerciseTime: ${exerciseTimes}")
                         val programVO = ProgramVO(
@@ -57,23 +50,22 @@ object NetworkProgram {
                         return@use programVO
                     }
                     return@use null
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("ProgramError", "IndexOutOfBounds: ${e.message}")
-                    return@use null
-                } catch (e: IllegalArgumentException) {
-                    Log.e("ProgramError", "IllegalArgument: ${e.message}")
-                    return@use null
-                } catch (e: IllegalStateException) {
-                    Log.e("ProgramError", "IllegalState: ${e.message}")
-                    return@use null
-                }catch (e: NullPointerException) {
-                    Log.e("ProgramError", "NullPointer: ${e.message}")
-                    return@use null
-                } catch (e: java.lang.Exception) {
-                    Log.e("ProgramError", "Exception: ${e}")
-                    return@use null
                 }
-
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ProgramError", "IndexOutOfBounds: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("ProgramError", "IllegalArgument: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("ProgramError", "IllegalState: ${e.message}")
+                null
+            }catch (e: NullPointerException) {
+                Log.e("ProgramError", "NullPointer: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("ProgramError", "Exception: ${e}")
+                null
             }
         }
     }

@@ -224,8 +224,8 @@ object NetworkUser {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
                         Log.e("회원update", "ResponseCode: ${response.code}")
                         return@withContext null
@@ -233,23 +233,24 @@ object NetworkUser {
                     val responseBody = response.body?.string()
                     Log.v("회원update", "$responseBody")
                     return@withContext true
-                } catch (e: IllegalStateException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: IllegalArgumentException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: NullPointerException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: ArrayIndexOutOfBoundsException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: Exception) {
-                    Log.e(TAG, "${e.message}")
-                    null
                 }
-             }
+            } catch (e: IllegalStateException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.message}")
+                null
+            }
+
         }
 
     }
@@ -261,8 +262,8 @@ object NetworkUser {
             .delete()
             .build()
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
                         Log.e("회원탈퇴Error", "ResponseCode: ${response.code}")
                         return@withContext null
@@ -270,23 +271,24 @@ object NetworkUser {
                     val responseCode = response.code
                     Log.v("회원탈퇴Success", "$responseCode")
                     return@withContext responseCode
-                } catch (e: IllegalStateException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: IllegalArgumentException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: NullPointerException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: ArrayIndexOutOfBoundsException) {
-                    Log.e(TAG, "${e.message}")
-                    null
-                } catch (e: Exception) {
-                    Log.e(TAG, "${e.message}")
-                    null
                 }
+            } catch (e: IllegalStateException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                Log.e(TAG, "${e.message}")
+                null
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.message}")
+                null
             }
+
         }
     }
 
@@ -328,14 +330,24 @@ object NetworkUser {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                if (responseBody != null) {
-
-                    Log.w("profileImage", "Success to execute request: $responseBody")
-                    callback(extractProfileImageUrl(responseBody))
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    if (responseBody != null) {
+                        Log.w("profileImage", "Success to execute request: $responseBody")
+                        callback(extractProfileImageUrl(responseBody))
+                    }
                 }
-
+            } catch (e: IllegalStateException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: NullPointerException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.message}")
             }
         }
     }

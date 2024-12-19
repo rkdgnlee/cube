@@ -31,6 +31,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +45,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private val avm : AnalysisViewModel by activityViewModels()
     private val mvm : MeasureViewModel by activityViewModels()
     private lateinit var measures : MutableList<MeasureVO>
-
+    private lateinit var singletonMeasure : Singleton_t_measure
+    private lateinit var ssm : SaveSingletonManager
 
     private lateinit var measureResult : JSONArray
     companion object{
@@ -74,7 +76,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
         trend1 = arguments?.getString(ARG_COMPARE1) ?: ""
         trend2 = arguments?. getString(ARG_COMPARE2) ?: ""
         measures = Singleton_t_measure.getInstance(requireContext()).measures ?: mutableListOf()
-
+        ssm = SaveSingletonManager(requireContext(), requireActivity())
+        singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         try {
             if (measures.isNotEmpty()) {
                 showBalloon()
@@ -89,6 +92,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 val seqs = listOf(
                     "정면 측정", "팔꿉 측정", "좌측 측정", "우측 측정", "후면 측정", "앉아 후면"
                 )
+
+                // ------# 측정 내 seq 고르는 spinner left #------
                 binding.spnrMTDSeqLeft.setPopupBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.color.white))
                 binding.spnrMTDSeqLeft.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, seqs, 2)
                 binding.spnrMTDSeqLeft.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -105,7 +110,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     }
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
-
+                // ------# 측정 내 seq 고르는 spinner right #------
                 binding.spnrMTDSeqRight.setPopupBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.color.white))
                 binding.spnrMTDSeqRight.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, seqs, 2)
                 binding.spnrMTDSeqRight.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -123,7 +128,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 }
 
 
-                // ------# left spinner 연결 #------
+                // -------# 측정 고르는 spinnner left #-------
                 val measureDates = measures.map { it.regDate.substring(0, 11) }.toMutableList()
                 measureDates.add(0, "선택")
 
@@ -131,14 +136,18 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 binding.spnrMTDLeft.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, measureDates, 0)
                 binding.spnrMTDLeft.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                            Log.v("leftPosition", "$position")
                             if (position != 0) {
-                                avm.leftMeasurement.value = measures[position - 1]
-                                avm.leftAnalyzes = transformAnalysis(avm.leftMeasurement.value?.measureResult ?: JSONArray())
-                                Log.v("왼쪽analysis", "${avm.leftMeasurement.value}")
-                                setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value,0, binding.ssivMTDLeft, "trend")
+                                    // 측정파일 없으면 다운로드
+                                    setMeasureFiles(measures[position - 1].regDate)
                                     withContext(Dispatchers.Main) {
+                                        avm.leftMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.get(position - 1)
+                                        avm.leftAnalyzes = transformAnalysis(avm.leftMeasurement.value?.measureResult ?: JSONArray())
+                                        // 다운로드한 jpg 파일 drawing
+                                        setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value,0, binding.ssivMTDLeft, "trend")
+
+                                        setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
                                         binding.spnrMTDSeqLeft.setSelection(0)
                                     }
                                 }
@@ -147,13 +156,14 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         override fun onNothingSelected(parent: AdapterView<*>?) {}
                     }
 
-                // ------# right spinner 연결 #------
+                // ------# 측정 고르는 spinner right #------
                 val measureDatesRight = measures.map { it.regDate.substring(0, 11) }.toMutableList()
                 binding.spnrMTDRight.setPopupBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.color.white))
                 binding.spnrMTDRight.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, measureDatesRight, 0)
-                binding.spnrMTDRight.onItemSelectedListener =
-                    object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                binding.spnrMTDRight.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        Log.v("rightPosition", "$position")
+                        if (position == 0) {
                             avm.rightMeasurement.value = measures[position]
                             avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
 
@@ -164,9 +174,24 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                     binding.spnrMTDSeqRight.setSelection(0)
                                 }
                             }
+                        } else {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                // 측정파일 없으면 다운로드
+                                setMeasureFiles(measures[position].regDate)
+                                withContext(Dispatchers.Main) {
+                                    avm.rightMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.get(position)
+                                    avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
+                                    // 다운로드한 jpg 파일 drawing
+                                    setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value,0, binding.ssivMTDRight, "trend")
+
+                                    setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
+                                    binding.spnrMTDSeqRight.setSelection(0)
+                                }
+                            }
                         }
-                        override fun onNothingSelected(parent: AdapterView<*>?) {}
                     }
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
             }
             Log.v("AVM>Trend", "$avm")
         } catch (e: IllegalArgumentException) {
@@ -238,5 +263,62 @@ class MeasureTrendDialogFragment : DialogFragment() {
             analyzes.add(relatedAnalyzes)
         }
         return analyzes
+    }
+
+    private suspend fun setMeasureFiles(inputRegDate: String?) {
+        val dialog = LoadingDialogFragment.newInstance("측정파일")
+        dialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
+
+        // ------# 로딩을 통해 파일 가져오기 #------
+        withContext(Dispatchers.IO) {
+            try {
+                val currentMeasure = singletonMeasure.measures?.find { it.regDate == inputRegDate }
+                val uriTuples = currentMeasure?.sn?.let { it1 -> ssm.get1MeasureUrls(it1) }
+                if (uriTuples != null) {
+                    Log.v("리스너1", "$uriTuples")
+                    ssm.downloadFiles(uriTuples)
+                    val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
+                    Log.v("리스너2", "$editedMeasure")
+
+                    // singleton의 인덱스 찾아서 ja와 값 넣기
+                    val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == inputRegDate }
+                    if (singletonIndex != null && singletonIndex >= 0) {
+                        singletonMeasure.measures?.set(singletonIndex, editedMeasure)
+                        mvm.selectedMeasure = editedMeasure
+                        Log.v("수정완료", "index: $singletonIndex, VO: $editedMeasure")
+                        withContext(Dispatchers.Main) {
+                            dialog.dismiss()
+                        }
+                    } else {
+
+                    }
+                } else {
+
+                }
+            } catch (e: IllegalStateException) {
+                Log.e("measureSelectError", "MeasureBSIllegalState: ${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("measureSelectError", "MeasureBSIllegalArgument: ${e.message}")
+            } catch (e: NullPointerException) {
+                Log.e("measureSelectError", "MeasureBSNullPointer: ${e.message}")
+            } catch (e: InterruptedException) {
+                Log.e("measureSelectError", "MeasureBSInterrupted: ${e.message}")
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("measureSelectError", "MeasureBSIndexOutOfBounds: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("measureSelectError", "MeasureBS: ${e.message}")
+            }
+//            finally {
+//                withContext(Dispatchers.Main) {
+//                    if (dialog.isAdded && dialog.isVisible) {
+//                        dialog.dismiss()
+//                    }
+//                }
+//            }
+
+        }
+        Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
+        Log.w("selectedMeasure", "${mvm.selectedMeasure}")
+        dialog.dismiss()
     }
 }

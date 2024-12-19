@@ -91,6 +91,8 @@ class MainActivity : AppCompatActivity() {
 
         wifiSecurityManager = WifiSecurityManager(this)
         // ------! activity 사전 설정 끝 !------
+
+        // ------# 접근 방지 #------
         when (val securityType = wifiSecurityManager.checkWifiSecurity()) {
             "OPEN","WEP" -> {
                 Log.v("securityNotice", "securityType: $securityType")
@@ -101,9 +103,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
         if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
-            Toast.makeText(this, "올바르지 않은 접근입니다. 다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "올바르지 않은 접근입니다.\n다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
             logout(this@MainActivity, 0)
         }
+        // ------# 접근 방지 #------
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)

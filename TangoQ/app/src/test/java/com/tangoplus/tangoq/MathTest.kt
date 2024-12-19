@@ -1,8 +1,10 @@
 package com.tangoplus.tangoq
 
+import com.tangoplus.tangoq.mediapipe.MathHelpers
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.Math.toDegrees
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -122,4 +124,97 @@ class MathTest {
 //        println("1205 hip: $results5")
 //        println("1205 right: $results6")
     }
+
+    @Test
+    fun noseShoulderAngle() {
+        val result1 = calculateSlope(0.46419087f, 0.356189f, 0.5406032f, 0.27794185f)
+//        val result2 = calculateSlope(0.5406032f, 0.27794185f,0.46419087f, 0.356189f)
+        val result3 = calculateSlope(0.5776725f, 0.3514558f, 0.47300097f, 0.28842056f)
+        val result4 = calculateSlope(0.47300097f, 0.28842056f,0.5776725f, 0.3514558f)
+
+        println("왼쪽 정상 ${90f - abs(result1)}")
+//        println("왼쪽 인자 바꿈 ${90f - abs(result2)}")
+//        println("오른쪽 정상 ${90f - abs(result3)}")
+//        println("오른쪽 인자 바꿈 ${90f - abs(result4)}")
+    }
+
+    @Test
+    fun distanceTest() {
+        val leftAnkle = Pair(603f, 647f)
+        val rightAnkle = Pair(691f, 647f)
+        val middleAxis = Pair((leftAnkle.first + rightAnkle.first) / 2, (leftAnkle.second + rightAnkle.second) / 2 )
+        val backLeftKnee = Pair(610f, 531f)
+        val backRightKnee = Pair(687f, 527f)
+        val result1 = getRealDistanceX(backLeftKnee, middleAxis)
+        val result2 = getRealDistanceX(backRightKnee, middleAxis)
+        println("중심축: ${middleAxis}")
+        println("후면 좌우무릎거리 : ($result1, $result2)")
+        val leftShoulder = Pair(697f, 233f)
+        val rightShoulder = Pair(579f, 229f)
+
+        val frontLeftKnee = Pair(674f, 528f)
+        val frontRightKnee = Pair(608f, 529f)
+
+        val result3 = getRealDistanceY(leftShoulder, rightShoulder)
+        val result4 = getRealDistanceY(frontLeftKnee, frontRightKnee)
+
+        println("정면 어깨 높이 차 : $result3")
+        println("정면 무릎 차 : $result4")
+
+
+    }
+    @Test
+    fun normalizeDistanceTest() {
+        val leftAnkle = Pair(0.5525175f, 0.813164f)
+        val rightAnkle = Pair(0.4303736f, 0.80704653f)
+        val middleAxis = Pair((leftAnkle.first + rightAnkle.first) / 2, (leftAnkle.second + rightAnkle.second) / 2 )
+
+        val frontLeftKnee = Pair(0.56156546f, 0.6885132f)
+        val frontRightKnee = Pair(0.4333853f, 0.6901068f)
+        val result1 = getRealDistanceX(frontLeftKnee, middleAxis)
+        val result2 = getRealDistanceX(frontRightKnee, middleAxis)
+
+        println("정면면 좌우무릎거리 : ($result1, $result2)")
+        val leftEar = Pair(0.51878434f, 0.27997386f)
+        val rightEar = Pair(0.43368146f, 0.28384587f)
+        val leftShoulder = Pair(0.5950577f, 0.3600761f)
+        val rightShoulder = Pair(0.3719578f, 0.36289346f)
+
+        val result3 = getRealDistanceY(leftEar, rightEar)
+        val result4 = getRealDistanceY(leftShoulder, rightShoulder)
+
+        println("정면 귀 높이차 : $result3")
+        println("정면면 어깨 높이차 : $result4")
+    }
+
+
+    private val SCALE_X = 200f
+    private val SCALE_Y = 300f
+    fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
+        return abs(point2.first - point1.first)
+    }
+    fun getDistanceY(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
+        return abs(point2.second - point1.second)
+    }
+
+    fun getRealDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>) : Float {
+        val normalizedDistance = getDistanceX(point1, point2)
+        return normalizedToRealDistance(normalizedDistance, true)
+    }
+    fun getRealDistanceY(point1: Pair<Float, Float>, point2: Pair<Float, Float>) : Float {
+        val normalizedDistance = getDistanceY(point1, point2)
+        return normalizedToRealDistance(normalizedDistance, false)
+    }
+    // 정규화 좌표면 곱하기, 스케일링 좌표면 나누기
+    private fun normalizedToRealDistance(
+        normalizedDistance: Float,
+        isXAxis: Boolean = true
+    ): Float {
+        return if (isXAxis) {
+            normalizedDistance * SCALE_X
+        } else {
+            normalizedDistance * SCALE_Y
+        }
+    }
+
 }

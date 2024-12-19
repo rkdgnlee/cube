@@ -862,7 +862,7 @@ class MainPartDialogFragment : DialogFragment() {
                         var angleDirection1 = ""
                         var angleData2 = 0f
                         var angleDirection2 = ""
-                        val hipData1 = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip"}
+                        val hipData1 = units.find { it.columnName == "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder"}
                         hipData1?.let {
                             val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
                             val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
@@ -966,7 +966,7 @@ class MainPartDialogFragment : DialogFragment() {
                         var angleDirection1 = ""
                         var angleData2 = 0f
                         var angleDirection2 = ""
-                        val hipData1 = units.find { it.columnName == "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder"}
+                        val hipData1 = units.find { it.columnName == "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder"}
                         hipData1?.let {
                             val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
                             val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)

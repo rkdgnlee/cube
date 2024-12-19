@@ -88,31 +88,20 @@ object NetworkRecommendation {
     }
 
     suspend fun getRecommendProgram(myUrl: String, context: Context) : MutableList<RecommendationVO> {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
         val client = getClient(context)
         val request = Request.Builder()
             .url(myUrl)
             .get()
             .build()
-
-
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                Log.v("Get>Recommendation", "$responseBody")
-
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.v("Get>Recommendation", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
                     val ja = dataJson.optJSONArray("data")
                     val recommendations = mutableListOf<RecommendationVO>()
                     if (ja != null) {
-
                         for (i in 0 until ja.length()) {
                             val recommendationVO = RecommendationVO(
                                 recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
@@ -128,30 +117,28 @@ object NetworkRecommendation {
                     } else {
                         return@use recommendations
                     }
-
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("RecommendIndex", "${e.message}")
-                } catch (e: IllegalArgumentException) {
-                    Log.e("RecommendIllegal", "${e.message}")
-                } catch (e: IllegalStateException) {
-                    Log.e("RecommendIllegal", "${e.message}")
-                } catch (e: NullPointerException) {
-                    Log.e("RecommendNull", "${e.message}")
-                } catch (e: java.lang.Exception) {
-                    Log.e("RecommendException", "${e.message}")
                 }
-            } as MutableList<RecommendationVO>
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("RecommendIndex", "${e.message}")
+                mutableListOf()
+            } catch (e: IllegalArgumentException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            } catch (e: IllegalStateException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            } catch (e: NullPointerException) {
+                Log.e("RecommendNull", "${e.message}")
+                mutableListOf()
+            } catch (e: java.lang.Exception) {
+                Log.e("RecommendException", "${e.message}")
+                mutableListOf()
+            }
+
         }
     }
 
     suspend fun getRecommendationInOneMeasure(myUrl: String, context: Context, measureInfoSn: Int) : MutableList<RecommendationVO> {
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
         val client = getClient(context)
         val request = Request.Builder()
             .url("${myUrl}?measure_sn=$measureInfoSn")
@@ -159,16 +146,14 @@ object NetworkRecommendation {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                Log.v("Get>Recommendation", "$responseBody")
-
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.v("Get>Recommendation", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
                     val ja = dataJson.optJSONArray("data")
                     val recommendations = mutableListOf<RecommendationVO>()
                     if (ja != null) {
-
                         for (i in 0 until ja.length()) {
                             val recommendationVO = RecommendationVO(
                                 recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
@@ -185,19 +170,24 @@ object NetworkRecommendation {
                     } else {
                         return@use recommendations
                     }
-
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("RecommendIndex", "${e.message}")
-                } catch (e: IllegalArgumentException) {
-                    Log.e("RecommendIllegal", "${e.message}")
-                } catch (e: IllegalStateException) {
-                    Log.e("RecommendIllegal", "${e.message}")
-                } catch (e: NullPointerException) {
-                    Log.e("RecommendNull", "${e.message}")
-                } catch (e: java.lang.Exception) {
-                    Log.e("RecommendException", "${e.message}")
                 }
-            } as MutableList<RecommendationVO>
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("RecommendIndex", "${e.message}")
+                mutableListOf()
+            } catch (e: IllegalArgumentException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            } catch (e: IllegalStateException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            } catch (e: NullPointerException) {
+                Log.e("RecommendNull", "${e.message}")
+                mutableListOf()
+            } catch (e: java.lang.Exception) {
+                Log.e("RecommendException", "${e.message}")
+                mutableListOf()
+            }
+
         }
     }
 

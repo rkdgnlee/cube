@@ -294,7 +294,7 @@ class MainFragment : Fragment() {
                              * */
                             try {
                                 val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
-                                val programSn = latestProgress.optInt("exercise_program_sn")  // 여기서 exception으로 나가짐.
+                                val programSn = latestProgress?.optInt("exercise_program_sn")  // 여기서 exception으로 나가짐.
                                 var currentPage = 0
                                 var adapter =  ExerciseRVAdapter(this@MainFragment, mutableListOf(), mutableListOf(), null, null, "history")
 
@@ -303,42 +303,37 @@ class MainFragment : Fragment() {
                                     // ------# 마지막으로 시청한 정보가 없을 때 #------
 
                                     if (programSn != 0 && uvm.existedProgramData == null) {
-                                        val week = latestProgress.optInt("week_number")
+                                        val week = latestProgress?.optInt("week_number")
                                         Log.v("프로세싱있을때week", "week: $week")
-                                        uvm.existedProgramData = fetchProgram(
-                                            getString(R.string.API_programs),
-                                            requireContext(),
-                                            programSn.toString()
-                                        )
+                                        uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), programSn.toString())
+
                                         withContext(Dispatchers.IO) {
-                                            val progresses = getWeekProgress(
-                                                getString(R.string.API_progress),
-                                                latestRecSn,
-                                                week,
-                                                requireContext()
-                                            )
-
-
-                                            withContext(Dispatchers.Main) {
-                                                Log.w("저장안된 프로그램", "${uvm.existedProgramData?.programSn}")
-                                                val exercises = uvm.existedProgramData?.exercises
-                                                if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
-                                                    progresses, Pair(currentPage, currentPage), null, "history")
+                                            if (week != null) {
+                                                val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
+                                                withContext(Dispatchers.Main) {
+                                                    Log.w("저장안된 프로그램", "${uvm.existedProgramData?.programSn}")
+                                                    val exercises = uvm.existedProgramData?.exercises
+                                                    if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
+                                                        progresses, Pair(currentPage, currentPage), null, "history")
+                                                }
                                             }
+
                                         }
                                         // ------# 마지막으로 시청한 정보가 없을 때 + 근데 프로그램 조회는 했음. #------
                                     } else if (uvm.existedProgramData != null) {
                                         if (programSn != 0) {
-                                            val week = latestProgress.optInt("week_number")
+                                            val week = latestProgress?.optInt("week_number")
                                             withContext(Dispatchers.IO) {
-                                                val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
-                                                if (progresses != null) {
-                                                    currentPage = findCurrentIndex(progresses)
-                                                }
-                                                withContext(Dispatchers.Main) {
-                                                    val exercises = uvm.existedProgramData?.exercises
-                                                    Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn}")
-                                                    if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises, progresses, Pair(currentPage, currentPage), null, "history")
+                                                if (week != null) {
+                                                    val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
+                                                    if (progresses != null) {
+                                                        currentPage = findCurrentIndex(progresses)
+                                                    }
+                                                    withContext(Dispatchers.Main) {
+                                                        val exercises = uvm.existedProgramData?.exercises
+                                                        Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn}")
+                                                        if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises, progresses, Pair(currentPage, currentPage), null, "history")
+                                                    }
                                                 }
                                             }
                                         } else {

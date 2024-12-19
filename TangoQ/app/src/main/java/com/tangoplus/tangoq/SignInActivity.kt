@@ -49,6 +49,7 @@ import com.tangoplus.tangoq.transition.SignInTransition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -308,23 +309,26 @@ class SignInActivity : AppCompatActivity() {
                 val responseCode = idDuplicateCheck(getString(com.tangoplus.tangoq.R.string.API_user), id)
                 when (responseCode) {
                     201 -> {
-                        MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                            setTitle("알림")
-                            setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
-                            setPositiveButton("예") { dialog, _ ->
-                                binding.btnIdCondition.isEnabled = false
-                                binding.etId.isEnabled = false
-                                viewModel.User.value?.put("user_id", id)
-                                Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
-                                binding.pvSignIn.progress = 100f
-                                binding.svSignIn.go(3, true)
-                                binding.tvSignInGuide.text = "비밀번호를 입력해주세요"
-                                viewModel.invalidIdCondition.value = true
-                            }
-                            setNegativeButton("아니오") { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                        }.show()
+                        withContext(Dispatchers.Main) {
+                            MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                setTitle("알림")
+                                setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
+                                setPositiveButton("예") { dialog, _ ->
+                                    binding.btnIdCondition.isEnabled = false
+                                    binding.etId.isEnabled = false
+                                    viewModel.User.value?.put("user_id", id)
+                                    Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
+                                    binding.pvSignIn.progress = 100f
+                                    binding.svSignIn.go(3, true)
+                                    binding.tvSignInGuide.text = "비밀번호를 입력해주세요"
+                                    viewModel.invalidIdCondition.value = true
+                                }
+                                setNegativeButton("아니오") { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                            }.show()
+                        }
+
                     }
                     else -> {
                         MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {

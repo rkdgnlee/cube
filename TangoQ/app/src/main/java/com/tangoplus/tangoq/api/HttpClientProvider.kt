@@ -71,7 +71,7 @@ object HttpClientProvider {
                     code
                 } else if (response.isSuccessful) {
                     val responseBody = response.body?.string()
-                    Log.v("토큰갱신", "Success to refresh Access Token")
+                    Log.v("토큰갱신", "Success to refresh Access Token: $responseBody")
                     val newToken = responseBody?.let { JSONObject(it) }
                     saveEncryptedJwtToken(context, newToken)
                     200

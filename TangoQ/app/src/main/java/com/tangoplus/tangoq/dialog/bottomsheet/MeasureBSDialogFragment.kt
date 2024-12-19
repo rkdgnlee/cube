@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 
 class MeasureBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding: FragmentMeasureBSDialogBinding
-    lateinit var singletonMeasure : Singleton_t_measure
+    private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var ssm : SaveSingletonManager
     val mvm : MeasureViewModel by activityViewModels()
 

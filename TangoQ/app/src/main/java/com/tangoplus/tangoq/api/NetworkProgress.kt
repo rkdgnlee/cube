@@ -167,7 +167,7 @@ object NetworkProgress {
         })
     }
     // 가장 최신 정보를 가져오는게 좋다.
-    suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : JSONObject {
+    suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : JSONObject? {
         val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?recommendation_sn=$recSn&latest_progress")
@@ -175,11 +175,10 @@ object NetworkProgress {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
-                Log.v("Get>Recommend+Progress", "$responseBody")
-
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.v("Get>Recommend+Progress", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
                     val progressJo = dataJson.optJSONObject("progress_data")
                     val programJo = dataJson.optJSONObject("program_data")
@@ -196,18 +195,23 @@ object NetworkProgress {
                     } else {
                         return@use jo
                     }
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("ProgressIndex", "latestProgress: ${e.message}")
-                } catch (e: IllegalArgumentException) {
-                    Log.e("ProgressIllegal", "latestProgress: ${e.message}")
-                } catch (e: IllegalStateException) {
-                    Log.e("ProgressIllegal", "latestProgress: ${e.message}")
-                }catch (e: NullPointerException) {
-                    Log.e("ProgressNull", "latestProgress: ${e.message}")
-                } catch (e: java.lang.Exception) {
-                    Log.e("ProgressException", "latestProgress: ${e.message}")
-                }
-            } as JSONObject
+                } as JSONObject
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ProgressIndex", "latestProgress: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("ProgressIllegal", "latestProgress: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("ProgressIllegal", "latestProgress: ${e.message}")
+                null
+            }catch (e: NullPointerException) {
+                Log.e("ProgressNull", "latestProgress: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("ProgressException", "latestProgress: ${e.message}")
+                null
+            }
         }
     }
 
@@ -219,9 +223,8 @@ object NetworkProgress {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     Log.v("Server>week>Progress", "${responseBody}")
                     if (!response.isSuccessful) {
@@ -242,7 +245,6 @@ object NetworkProgress {
                                 lastProgress = ja.optJSONObject(i).optInt("progress"),
                                 isCompleted = ja.optJSONObject(i).optInt("completed"),
                                 updateDate = ja.optJSONObject(i).optString("updated_at")
-
                             )
                             progresses.add(progressUnitVO)
                         }
@@ -251,22 +253,22 @@ object NetworkProgress {
                     } else {
                         return@use progresses
                     }
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("ProgressIndex", "getWeek: ${e.message}")
-                    null
-                } catch (e: IllegalArgumentException) {
-                    Log.e("ProgressIllegal", "getWeek: ${e.message}")
-                    null
-                } catch (e: IllegalStateException) {
-                    Log.e("ProgressIllegal", "getWeek: ${e.message}")
-                    null
-                }catch (e: NullPointerException) {
-                    Log.e("ProgressNull", "getWeek: ${e.message}")
-                    null
-                } catch (e: java.lang.Exception) {
-                    Log.e("ProgressException", "getWeek: ${e.message}")
-                    null
                 }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ProgressIndex", "getWeek: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("ProgressIllegal", "getWeek: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("ProgressIllegal", "getWeek: ${e.message}")
+                null
+            }catch (e: NullPointerException) {
+                Log.e("ProgressNull", "getWeek: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("ProgressException", "getWeek: ${e.message}")
+                null
             }
         }
     }
@@ -280,9 +282,11 @@ object NetworkProgress {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
+
                     if (!response.isSuccessful) {
+                        Log.e("DailyProgressFailed" ,"response is Null")
                         return@withContext null
                     }
                     val responseBody = response.body?.string()
@@ -310,22 +314,22 @@ object NetworkProgress {
                         Log.v("진행길이", "${progresses.size}")
                     }
                     progresses
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("ProgressIndex", "getDaily: ${e.message}")
-                    null
-                } catch (e: IllegalArgumentException) {
-                    Log.e("ProgressIllegal", "getDaily: ${e.message}")
-                    null
-                } catch (e: IllegalStateException) {
-                    Log.e("ProgressIllegal", "getDaily: ${e.message}")
-                    null
-                } catch (e: NullPointerException) {
-                    Log.e("ProgressNull", "getDaily: ${e.message}")
-                    null
-                } catch (e: java.lang.Exception) {
-                    Log.e("ProgressException", "getDaily: ${e.message}")
-                    null
                 }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ProgressIndex", "getDaily: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("ProgressIllegal", "getDaily: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("ProgressIllegal", "getDaily: ${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e("ProgressNull", "getDaily: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("ProgressException", "getDaily: ${e.message}")
+                null
             }
         }
     }

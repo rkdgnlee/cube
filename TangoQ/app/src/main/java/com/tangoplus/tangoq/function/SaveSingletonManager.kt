@@ -133,21 +133,23 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 //                val groupedInfos = allInfos.groupBy { entity -> entity.sn }
                 val groupedStatics = allStatics.groupBy { entity -> entity.server_sn }
                 val groupedDynamics = allDynamics.groupBy { entity -> entity.server_sn }
-
+                Log.v("allStatics", "${groupedStatics}")
+                Log.v("allDynamics", "${groupedDynamics}")
                 val measures = mutableListOf<MeasureVO>()
-                Log.v("인포리스트", "${allInfos.size}")
+
                 allInfos.mapIndexed { index, info ->
                     async {
                         val currentInfoSn = info.sn
 
-                        val statics = groupedStatics[info.sn]?.sortedBy { it.measure_seq } ?: emptyList()
-                        val dynamic = groupedDynamics[info.sn] ?: emptyList()
-
+                        val statics = groupedStatics[currentInfoSn]?.sortedBy { it.measure_seq } ?: emptyList()
+                        val dynamic = groupedDynamics[currentInfoSn] ?: emptyList()
+                        Log.v("groupedStatics", "${statics.size}")
+                        Log.v("groupedDynamics", "${dynamic}")
                         if (statics.size < 6 || dynamic.isEmpty()) {
-                            Log.v("건너뜀", "statics size: ${statics.size}, dynamic size: ${dynamic.size}")
+                            Log.v("건너뜀", "현재 measure: $currentInfoSn, statics size: ${statics.size}, dynamic size: ${dynamic.size}")
                             return@async // 현재 info 처리 건너뜀
                         }
-                        Log.v("인포목록들", "${info}, sn: ${info.sn}")
+//                        Log.v("인포목록들", "${info}, sn: ${info.sn}")
                         val dangerParts = getDangerParts(info)
 
                         // 마지막 index만 지금 즉시 uris와 함꼐 넣기

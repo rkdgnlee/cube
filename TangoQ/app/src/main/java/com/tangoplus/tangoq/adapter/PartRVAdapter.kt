@@ -39,7 +39,7 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
             setPartItem(state, holder.clPI, holder.cvPI, holder.tvPI)
 
             when (currentItem?.first) {
-                "목" -> holder.ivPI.setImageResource(R.drawable.icon_part1)
+                "목관절" -> holder.ivPI.setImageResource(R.drawable.icon_part1)
                 "우측 어깨", "좌측 어깨" -> holder.ivPI.setImageResource(R.drawable.icon_part2)
                 "우측 팔꿉", "좌측 팔꿉" -> holder.ivPI.setImageResource(R.drawable.icon_part3)
                 "우측 손목", "좌측 손목" -> holder.ivPI.setImageResource(R.drawable.icon_part4)

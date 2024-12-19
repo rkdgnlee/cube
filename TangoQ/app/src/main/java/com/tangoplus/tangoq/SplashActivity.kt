@@ -244,30 +244,6 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }
                     }
-//                    else if (isValidToken(getEncryptedJwt(this@SplashActivity))) {
-//                        // ------! 자체 로그인 !------
-//                        try {
-//                            val jsonObj = getEncryptedJwtToken(this@SplashActivity)
-//                            Log.v("자체로그인Splash", "$jsonObj")
-//                            lifecycleScope.launch {
-//                                rememberMeByRefreshToken(getString(R.string.API_user), this@SplashActivity ) { jo ->
-//                                    if (jo != null) {
-//                                        storeUserInSingleton(this@SplashActivity, jo)
-//                                        Log.v("자체로그인>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-//                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-//                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-//                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-//                                            navigateDeepLink()
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        } catch (e: AEADBadTagException) {
-//                            Log.e("decryptedError", "${e.message}")
-//                            clearEncryptedJwtToken(this@SplashActivity)
-//                            introInit()
-//                        }
-//                    }
                     else {
                         // 로그인 정보가 없을 경우
                         introInit()
@@ -277,6 +253,7 @@ class SplashActivity : AppCompatActivity() {
                 // ------! 카카오 토큰 있음 끝 !------
                 // ------! 화면 경로 설정 끝 !------
             }
+            // ------# 인터넷 연결이 없을 때 #------
             false -> {
                 Toast.makeText(this, "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show()
                 Handler(Looper.getMainLooper()).postDelayed({

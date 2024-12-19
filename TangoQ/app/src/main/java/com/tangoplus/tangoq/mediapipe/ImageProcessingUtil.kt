@@ -8,6 +8,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.media.ExifInterface
 import android.util.Log
+import androidx.core.graphics.scale
 
 object ImageProcessingUtil {
 
@@ -25,7 +26,7 @@ object ImageProcessingUtil {
 
 
         val matrix = Matrix().apply {
-            preScale(-1f, 1f)
+            preScale(1f, 1f)
         } // 전면카메라로 찍었을 경우 걍 원래대로 돌려야 함.
         val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
         val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
@@ -260,6 +261,7 @@ object ImageProcessingUtil {
                 canvas.drawLine(startX, startY, endX, endY, paint)
             }
         }
+        resultBitmap.scale(-1, 1)
         return resultBitmap
     }
 

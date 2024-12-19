@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -275,11 +276,11 @@ class MeasureDashBoard2Fragment : Fragment() {
                         text = day.date.dayOfMonth.toString()
                         textSize = if (isTablet(requireContext())) 24f else 20f
                         when (day.date.dayOfMonth) {
-                            in 1 .. 9 -> {
-                                setPadding(36, 14, 36, 14)
+                            in 2 .. 9 -> {
+                                setPadding(32, 14, 32, 14)
                             }
                             in 12 .. 19 -> {
-                                setPadding(32, 22, 32, 22)
+                                setPadding(30, 20, 30, 20)
                             }
                             in 22 .. 29 -> {
                                 setPadding(26, 23, 26, 23)
@@ -288,7 +289,10 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 setPadding(24, 24, 24, 24)
                             }
                             11, 21, 31 -> {
-                                setPadding(30, 24, 30, 24)
+                                setPadding(30, 22, 30, 22)
+                            }
+                            1 -> {
+                                setPadding(36, 14, 36, 14)
                             }
 
                             else -> {
@@ -304,18 +308,22 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 selectedDate = day.date
                                 oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
                                 selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    selectedDate?.let { selectedDate ->
-                                        val date = selectedDate.format(formatter)
-                                        val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
-                                        withContext(Dispatchers.Main) {
-                                            if (currentProgresses != null) {
-                                                setAdapter(currentProgresses)
+                                lifecycleScope.launch {
+                                    withContext(Dispatchers.IO) {
+                                        Log.v("selectedDate", "$selectedDate")
+                                        selectedDate?.let { selectedDate ->
+                                            val date = selectedDate.format(formatter)
+                                            Log.v("date", date)
+                                            val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
+                                            withContext(Dispatchers.Main) {
+                                                if (currentProgresses != null) {
+                                                    setAdapter(currentProgresses)
+                                                }
+                                                binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
                                             }
-                                            binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
+                                        } ?: run {
+                                            Log.e("DateSelection", "Selected date is null")
                                         }
-                                    } ?: run {
-                                        Log.e("DateSelection", "Selected date is null")
                                     }
                                 }
                             }

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
@@ -63,54 +64,46 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
+        CoroutineScope(Dispatchers.Main).launch {
 
-        when (isNetworkAvailable(requireContext())) {
-            true -> {
-                CoroutineScope(Dispatchers.Main).launch {
+            val categoryArrayList = mutableListOf<Pair<Int, String>>()
+            categoryArrayList.add(Pair(1, "기본 밸런스 운동프로그램"))
+            categoryArrayList.add(Pair(2, "기본 스트레칭 운동"))
+            categoryArrayList.add(Pair(3, "근육중심 운동프로그램"))
+            categoryArrayList.add(Pair(4, "운동기구 활용 스트레칭 프로그램"))
+            categoryArrayList.add(Pair(5, "운동기구 활용 운동프로그램"))
+            val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
 
-                    val categoryArrayList = mutableListOf<Pair<Int, String>>()
-                    categoryArrayList.add(Pair(1, "기본 밸런스 운동프로그램"))
-                    categoryArrayList.add(Pair(2, "기본 스트레칭 운동"))
-                    categoryArrayList.add(Pair(3, "근육중심 운동프로그램"))
-                    categoryArrayList.add(Pair(4, "운동기구 활용 스트레칭 프로그램"))
-                    categoryArrayList.add(Pair(5, "운동기구 활용 운동프로그램"))
-                    val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
+            try { // ------! rv vertical 시작 !------
 
-                    try { // ------! rv vertical 시작 !------
+                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment,  sn, "mainCategory" )
 
-                        val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment,  sn, "mainCategory" )
+                binding.rvEMainCategory.adapter = adapter
+                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding.rvEMainCategory.layoutManager = linearLayoutManager
+                // ------! rv vertical 끝 !------
 
-                        binding.rvEMainCategory.adapter = adapter
-                        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                        binding.rvEMainCategory.layoutManager = linearLayoutManager
-                        // ------! rv vertical 끝 !------
-
-                        // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
-                        if (viewModel.allExercises.isEmpty()) {
-                            viewModel.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
-                            Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
-                        }
-
-                    } catch (e: IndexOutOfBoundsException) {
-                        Log.e("EDetailIndex", "${e.message}")
-                    } catch (e: IllegalArgumentException) {
-                        Log.e("EDetailIllegal", "${e.message}")
-                    } catch (e: IllegalStateException) {
-                        Log.e("EDetailIllegal", "${e.message}")
-                    } catch (e: NullPointerException) {
-                        Log.e("EDetailNull", "${e.message}")
-                    } catch (e: java.lang.Exception) {
-                        Log.e("EDetailException", "${e.message}")
-                    }
-
-                    binding.linearLayout7.setOnClickListener{
-                        val dialog = ExerciseSearchDialogFragment()
-                        dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
-                    }
+                // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
+                if (viewModel.allExercises.isEmpty()) {
+                    viewModel.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
+                    Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
                 }
-            }
-            false -> {
 
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("EDetailIndex", "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("EDetailIllegal", "${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("EDetailIllegal", "${e.message}")
+            } catch (e: NullPointerException) {
+                Log.e("EDetailNull", "${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("EDetailException", "${e.message}")
+            }
+
+            binding.linearLayout7.setOnClickListener{
+                val dialog = ExerciseSearchDialogFragment()
+                dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
             }
         }
     }

@@ -84,22 +84,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/icon_info" />
-
-        <TextView
-            android:id="@+id/tvMeasureSkeletonCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:text="프레임에 맞춰 서주세요"
-            android:textColor="@color/black"
-            android:textSize="27sp"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/ibtnMeasureSkeletonBack"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/ibtnMeasureSkeletonBack" />
+            app:srcCompat="@drawable/icon_setting_gear" />
 
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonBack"
@@ -250,4 +235,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop"
         app:srcCompat="@drawable/drawable_measure_0" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMeasureSkeletonCount"
+        android:layout_width="320dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bckgnd_rectangle_12"
+        android:backgroundTint="@color/white_overlay"
+        android:elevation="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop">
+
+        <TextView
+            android:id="@+id/tvMeasureSkeletonGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="자세를 따라해주세요"
+            android:textColor="@color/subColor700"
+            android:textSize="22dp"
+            app:layout_constraintBottom_toTopOf="@+id/tvMeasureSkeletonCount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/tvMeasureSkeletonCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:gravity="center_horizontal"
+            android:text="3"
+            android:textColor="@color/black"
+            android:textSize="110dp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.7" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

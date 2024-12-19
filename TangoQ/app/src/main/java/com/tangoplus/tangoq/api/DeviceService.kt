@@ -103,7 +103,7 @@ object DeviceService {
             return@use response.code
         }
     }
-
+    // pose landmark build용 (null 처리) emulator 확인 함수
     fun isEmulator(): Boolean {
         return Build.PRODUCT.contains("sdk") ||
                 Build.PRODUCT.contains("emulator") ||
@@ -121,5 +121,4 @@ object DeviceService {
                 Build.FINGERPRINT.startsWith("generic") ||
                 Build.FINGERPRINT.startsWith("unknown")
     }
-
 }

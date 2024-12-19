@@ -22,7 +22,7 @@
     <color name="deleteContainerColor">#12181E</color>
     <color name="deleteTextColor">#AEAEAE</color>
     <color name="cautionColor">#FF981D</color>
-    <color name="cautionContainerColor">#FFEFDC</color>
+    <color name="cautionContainerColor">#503D24</color>
 
     <color name="subColor100">#47484C</color>
     <color name="subColor150">#757575</color>
@@ -38,7 +38,7 @@
     <color name="opacityColor">#4D000000</color>
     <color name="opacitySubColor">#25959595</color>
     <color name="transparentColor">#00000000</color>
-
+    <color name="white_overlay">#F5000000</color>
 
     <color name="deleteRippleColor">#27313D</color>
     <color name="mainRippleColor">#42ED97</color>

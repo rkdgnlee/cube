@@ -30,7 +30,6 @@ object NetworkMeasure {
         Log.v("sendMeasureData", "Try to send MultipartBody")
 
         return withContext(Dispatchers.IO) {
-
             try {
                 client.newCall(request).execute().use { response ->
                     if (response.code == 500) {
@@ -199,47 +198,65 @@ object NetworkMeasure {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                // ------# db 초기화 #------
-                val md = MeasureDatabase.getDatabase(context)
-                val mDao = md.measureDao()
+            try {
+                client.newCall(request).execute().use { response ->
+                    // ------# db 초기화 #------
+                    val md = MeasureDatabase.getDatabase(context)
+                    val mDao = md.measureDao()
 
-                val responseBody = response.body?.string()
-                val bodyJo = JSONObject(responseBody.toString())
+                    val responseBody = response.body?.string()
+                    val bodyJo = JSONObject(responseBody.toString())
 
-                if (bodyJo.optInt("row_count") == 0) {
-                    Log.v("getAllMeasureOut", "rowCount: ${bodyJo.optInt("row_count")}, stop the getAllMeasures")
-                    return@withContext callback(false)
-                }
-                val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
-                val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
-                Log.v("룸에저장된info들", "$roomInfoSns")
+                    if (bodyJo.optInt("row_count") == 0) {
+                        Log.v("getAllMeasureOut", "rowCount: ${bodyJo.optInt("row_count")}, stop the getAllMeasures")
+                        return@withContext callback(false)
+                    }
+                    val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
+                    val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
+                    Log.v("룸에저장된info들", "$roomInfoSns")
 //                Log.v("info의bodyJa", "$ja")
-                val getInfos = mutableListOf<MeasureInfo>() // info로 변환해서 넣기
-                for (i in 0 until ja.length()) {
-                    val jo = ja.optJSONObject(i)
+                    val getInfos = mutableListOf<MeasureInfo>() // info로 변환해서 넣기
+                    for (i in 0 until ja.length()) {
+                        val jo = ja.optJSONObject(i)
 //                    Log.v("info의bodyJo", "$jo")
-                    getInfos.add(jo.toMeasureInfo())
+                        getInfos.add(jo.toMeasureInfo())
 //                    Log.v("info의변환getInfos", "${getInfos}")
-                }
+                    }
 //                val jo = ja.optJSONObject(1) // 현재 0번째 index는 7가지 동작이 없음.
 //                getInfos.add(jo.toMeasureInfo())
-                Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID)}")
+                    Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID)}")
 
-                val newInfos = getInfos.filter { apiInfo ->
-                    apiInfo.sn !in roomInfoSns
+                    val newInfos = getInfos.filter { apiInfo ->
+                        apiInfo.sn !in roomInfoSns
+                    }
+
+                    // ------# 없는 것들만 필터링 #------
+                    Log.v("db없는infoSn", "newInfos: $newInfos")
+
+                    Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
+                    newInfos.forEach{ newInfo ->
+                        mDao.insertInfo(newInfo)
+                        newInfo.sn?.let { getMeasureResult(context, myUrl, it) }
+                    }
+                    return@withContext callback(true)
                 }
-
-                // ------# 없는 것들만 필터링 #------
-                Log.v("db없는infoSn", "newInfos: $newInfos")
-
-                Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
-                newInfos.forEach{ newInfo ->
-                    mDao.insertInfo(newInfo)
-                    newInfo.sn?.let { getMeasureResult(context, myUrl, it) }
-                }
-                return@withContext callback(true)
+            } catch (e: IllegalStateException) {
+                Log.e("saveAllInfo", "Error IllegalStateException SaveAllMeasureInfo : ${e.message}")
+                return@withContext callback(false)
+            } catch (e: IllegalArgumentException) {
+                Log.e("saveAllInfo", "Error IllegalArgumentException SaveAllMeasureInfo : ${e.message}")
+                return@withContext callback(false)
+            } catch (e: IOException) {
+                Log.e("saveAllInfo", "Error IOException SaveAllMeasureInfo : ${e.message}")
+                return@withContext callback(false)
+            }  catch (e: SocketTimeoutException) {
+                Log.e("saveAllInfo", "Error SocketTimeoutException SaveAllMeasureInfo : ${e.message}")
+                return@withContext callback(false)
+            } catch (e: Exception) {
+                Log.e("saveAllInfo", "Error Exception SaveAllMeasureInfo : ${e.message}")
+                return@withContext callback(false)
             }
+
         }
     }
 
@@ -270,7 +287,7 @@ object NetworkMeasure {
                         for (i in 0 until motherJo.optString("count").toInt() - 1) {
                             val staticJo = motherJo.optJSONObject("static_${i+1}")
                             if (staticJo != null) {
-                                Log.v("스태틱조1~6", "${staticJo.optInt("measure_seq")}")
+                                Log.v("스태틱조1~6", staticJo.optString("measure_server_json_name"))
                                 mDao.insertByStatic(staticJo.toMeasureStatic())
 //                                val fileName = staticJo.optString("measure_server_file_name")
 //                                val jsonName = staticJo.optString("measure_server_json_name")
@@ -285,7 +302,7 @@ object NetworkMeasure {
                         }
                         val dynamicJo = motherJo.optJSONObject("dynamic")
                         if (dynamicJo != null) {
-                            Log.v("다이나믹", "${dynamicJo.optInt("measure_seq")}")
+                            Log.v("다이나믹", dynamicJo.optString("measure_server_json_name"))
                             mDao.insertByDynamic(dynamicJo.toMeasureDynamic())
 //                            val fileName = dynamicJo.optString("measure_server_file_name")
 //                            val jsonName = dynamicJo.optString("measure_server_json_name")
