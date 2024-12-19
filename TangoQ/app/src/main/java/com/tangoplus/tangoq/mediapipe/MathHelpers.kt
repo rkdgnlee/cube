@@ -13,8 +13,8 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 object MathHelpers {
-    private const val SCALE_X = 200f //
-    private const val SCALE_Y = 300f
+    private val SCALE_X = 180f
+    private val SCALE_Y = 210f
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {

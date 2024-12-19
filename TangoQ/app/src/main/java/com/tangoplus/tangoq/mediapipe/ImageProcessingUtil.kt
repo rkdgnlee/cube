@@ -26,7 +26,7 @@ object ImageProcessingUtil {
 
 
         val matrix = Matrix().apply {
-            preScale(1f, 1f)
+            preScale(-1f, 1f)
         } // 전면카메라로 찍었을 경우 걍 원래대로 돌려야 함.
         val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
         val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
@@ -111,8 +111,6 @@ object ImageProcessingUtil {
                     canvas.drawLine(leftFoot.x, leftHip.y, leftHip.x, leftHip.y, axisSubPaint)
                     canvas.drawLine(leftFoot.x, leftKnee.y, leftKnee.x, leftKnee.y, axisSubPaint)
                 }
-
-
             }
             4 -> {
                 val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
@@ -237,7 +235,6 @@ object ImageProcessingUtil {
                 Pair(12, 24), Pair(24, 26), Pair(26, 28),
                 Pair(28, 32), Pair(28, 30)
             )
-
             5 -> listOf(
                 Pair(7, 8), Pair(11, 12), // 귀
                 Pair(15, 17), Pair(15, 19), Pair(15, 21), // 왼팔

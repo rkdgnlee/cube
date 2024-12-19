@@ -62,7 +62,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
                 .apply(RequestOptions.bitmapTransform(MultiTransformation(
                     CenterCrop(),
                     RoundedCorners(20),
-                    FlipHorizontalTransformation()
+//                    FlipHorizontalTransformation()
                 )))
                 .into(holder.ivMPI)
 

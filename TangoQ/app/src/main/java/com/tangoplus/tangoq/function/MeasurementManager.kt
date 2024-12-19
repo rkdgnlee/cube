@@ -163,9 +163,10 @@ object MeasurementManager {
                 "back_horizontal_distance_heel_right" to Triple(9f,3f, 5f))
         )
     )
-    val maleErrorBounds = listOf(
+    // ------# 남자 점수 bound #------
+    private val maleErrorBounds = listOf(
         mapOf(
-            0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 0.12f, 0.57f)),
+            0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 0.24f, 1.14f)),
             3 to mapOf( "side_left_vertical_angle_nose_shoulder" to Triple(70.75f,10.74f, 22.21f)),
             4 to mapOf( "side_right_vertical_angle_nose_shoulder" to Triple(70.75f,10.74f, 22.21f)),
             5 to mapOf( "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 6f)),
@@ -195,17 +196,17 @@ object MeasurementManager {
         ),
         // 좌측 팔꿉
         mapOf(
-            0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 0.59f, 1.7f),
+            0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1.7f, 2.9f),
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 0.89f, 1.1f),
                 "front_vertical_angle_shoulder_elbow_left" to Triple(78f, 2.4f, 7.6f)),
-            2 to mapOf("front_elbow_align_angle_left_upper_elbow_elbow_wrist" to Triple(2f,5f, 10f),
-                "front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(2f,5f, 10f)),
+            2 to mapOf("front_elbow_align_angle_left_upper_elbow_elbow_wrist" to Triple(8f,5f, 10f),
+                "front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(12f,5f, 10f)),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to Triple(90f,2.7f, 8.1f),
                 "side_left_vertical_angle_elbow_wrist" to Triple(85f,6f, 12f),
                 "side_left_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 8f, 14f))
         ),
         mapOf(
-            0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 0.59f, 1.7f),
+            0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1.7f, 2.9f),
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 0.89f, 1.1f),
                 "front_vertical_angle_shoulder_elbow_right" to Triple(78f, 2.4f, 7.6f)),
             2 to mapOf("front_elbow_align_angle_right_upper_elbow_elbow_wrist" to Triple(8f,5f, 10f),
@@ -257,15 +258,15 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_knee" to Triple(180f, 1.2f, 3.6f),
                 "front_horizontal_distance_knee_left" to Triple(13f, 2f, 4f),
                 "front_vertical_angle_hip_knee_ankle_left" to Triple(175f,2.5f, 5f)),
-            5 to mapOf("back_horizontal_angle_knee" to Triple(0f, 0.5f, 1f),
-                "back_horizontal_distance_knee_left" to Triple(4f, 2.4f, 4.5f))
+            5 to mapOf("back_horizontal_angle_knee" to Triple(180f, 0.5f, 1f),
+                "back_horizontal_distance_knee_left" to Triple(12f, 2.4f, 4.5f))
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_knee" to Triple(180f, 1.2f, 3.6f),
                 "front_horizontal_distance_knee_right" to Triple(13f, 2f, 4f),
                 "front_vertical_angle_hip_knee_ankle_right" to Triple(175f,2.5f, 5f)),
-            5 to mapOf("back_horizontal_angle_knee" to Triple(0f, 0.5f, 1f),
-                "back_horizontal_distance_knee_right" to Triple(4f, 2.4f, 4.5f))
+            5 to mapOf("back_horizontal_angle_knee" to Triple(180f, 0.5f, 1f),
+                "back_horizontal_distance_knee_right" to Triple(12f, 2.4f, 4.5f))
         ),
         // 좌측 발목
         mapOf(
@@ -450,14 +451,27 @@ object MeasurementManager {
                     }
                 }
             }
-            val dangerCount = tempPart.count {it.second == status.DANGER }
+            val dangerCount = tempPart.count { it.second == status.DANGER }
             val warningCount = tempPart.count { it.second == status.WARNING }
             val normalCount = tempPart.count { it.second == status.NORMAL }
             Log.v("부위카운트", "$part: ($dangerCount, $warningCount, $normalCount)")
-            if (warningCount + dangerCount > normalCount && dangerCount > warningCount) {
-                results.add(Pair(part, status.DANGER))
-            } else if (warningCount + dangerCount > dangerCount && dangerCount < warningCount) {
-                results.add(Pair(part, status.WARNING))
+
+            if (warningCount + dangerCount > normalCount) {
+                // danger와 normal 개수가 같은 경우
+                if (dangerCount == normalCount) {
+                    results.add(Pair(part, status.WARNING))
+                }
+                // danger/normal 비율 계산
+                else if (normalCount > 0 && dangerCount.toFloat() / normalCount <= 1.5) {
+                    results.add(Pair(part, status.WARNING))
+                }
+                // danger가 warning보다 많은 경우
+                else if (dangerCount > warningCount) {
+                    results.add(Pair(part, status.DANGER))
+                }
+                else if (warningCount >= dangerCount) {
+                    results.add(Pair(part, status.WARNING))
+                }
             } else {
                 results.add(Pair(part, status.NORMAL))
             }
@@ -467,22 +481,22 @@ object MeasurementManager {
 
     fun calculateOverall(parts: MutableList<Pair<String, status>>) : Int {
         val scores = mapOf(
-            status.DANGER to 25,
-            status.WARNING to 65,
-            status.NORMAL to 90
+            status.DANGER to 35,
+            status.WARNING to 63,
+            status.NORMAL to 93
         )
-        val weightScore = 2.6
-        val reverseWeightScore = 0.8
+        val weightScore = 1.8
+        val reverseWeightScore = 0.9
         var weightedScoreSum = 0.0
         var totalWeight = 0.0
         for (part in parts) {
             val (bodyPart, status) = part
             val weight = when {
-                bodyPart.contains("목관절") -> weightScore
+//                bodyPart.contains("목관절") -> weightScore
 //                bodyPart.contains("어깨") -> weightScore
-                bodyPart.contains("골반") -> weightScore
-                bodyPart.contains("팔꿉") -> reverseWeightScore
-                bodyPart.contains("손목") -> weightScore
+//                bodyPart.contains("골반") -> weightScore
+                bodyPart.contains("팔꿉") -> weightScore
+//                bodyPart.contains("손목") -> weightScore
                 bodyPart.contains("무릎") -> weightScore
 //                bodyPart.contains("발목") -> reverseWeightScore
                 else -> 1.0

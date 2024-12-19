@@ -179,7 +179,7 @@ class IntroActivity : AppCompatActivity() {
                     override fun onFailure(httpStatus: Int, message: String) { enabledAllLoginBtn() }
                     override fun onSuccess(result: NidProfileResponse) {
                         val jsonObj = JSONObject()
-                        val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
+                        val naverMobile = result.profile?.mobile.toString().replaceFirst("-", "")
                         val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
                         jsonObj.put("device_sn" ,0)
                         jsonObj.put("user_sn", 0)
@@ -239,7 +239,7 @@ class IntroActivity : AppCompatActivity() {
                             }
                             else if (user != null) {
                                 val jsonObj = JSONObject()
-                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
+                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("-", "")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
                                 jsonObj.put("device_sn" ,0)

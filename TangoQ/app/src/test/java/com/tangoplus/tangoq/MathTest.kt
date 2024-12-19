@@ -127,15 +127,15 @@ class MathTest {
 
     @Test
     fun noseShoulderAngle() {
-        val result1 = calculateSlope(0.46419087f, 0.356189f, 0.5406032f, 0.27794185f)
-//        val result2 = calculateSlope(0.5406032f, 0.27794185f,0.46419087f, 0.356189f)
-        val result3 = calculateSlope(0.5776725f, 0.3514558f, 0.47300097f, 0.28842056f)
-        val result4 = calculateSlope(0.47300097f, 0.28842056f,0.5776725f, 0.3514558f)
+        val result1 = calculateSlope(0.3907014f, 0.32702205f, 0.48875982f, 0.26673737f)
+//        val result2 = calculateSlope(0.48875982f, 0.26673737f,0.3907014f, 0.32702205f)
+//        val result3 = calculateSlope(0.48815367f, 0.3326003f,0.39255288f, 0.27046937f)
+        val result4 = calculateSlope(0.39255288f, 0.27046937f, 0.48815367f, 0.3326003f)
 
-        println("왼쪽 정상 ${90f - abs(result1)}")
-//        println("왼쪽 인자 바꿈 ${90f - abs(result2)}")
-//        println("오른쪽 정상 ${90f - abs(result3)}")
-//        println("오른쪽 인자 바꿈 ${90f - abs(result4)}")
+        println("왼쪽 정상 ${result1}")
+//        println("왼쪽 인자 바꿈 ${result2}")
+//        println("오른쪽 정상 ${result3}")
+        println("오른쪽 인자 바꿈 ${result4}")
     }
 
     @Test
@@ -165,31 +165,53 @@ class MathTest {
     }
     @Test
     fun normalizeDistanceTest() {
-        val leftAnkle = Pair(0.5525175f, 0.813164f)
-        val rightAnkle = Pair(0.4303736f, 0.80704653f)
-        val middleAxis = Pair((leftAnkle.first + rightAnkle.first) / 2, (leftAnkle.second + rightAnkle.second) / 2 )
+        val leftAnkle = Pair(0.5524446f, 0.77244884f)
+        val rightAnkle = Pair(0.6713135f, 0.7785636f)
+        val axisX = Pair((leftAnkle.first + rightAnkle.first) / 2, (leftAnkle.second + rightAnkle.second) / 2 )
 
-        val frontLeftKnee = Pair(0.56156546f, 0.6885132f)
-        val frontRightKnee = Pair(0.4333853f, 0.6901068f)
-        val result1 = getRealDistanceX(frontLeftKnee, middleAxis)
-        val result2 = getRealDistanceX(frontRightKnee, middleAxis)
+        val leftKnee = Pair(0.5334982f, 0.6657309f)
+        val rightKnee = Pair(0.6614827f, 0.67373633f)
 
-        println("정면면 좌우무릎거리 : ($result1, $result2)")
-        val leftEar = Pair(0.51878434f, 0.27997386f)
-        val rightEar = Pair(0.43368146f, 0.28384587f)
-        val leftShoulder = Pair(0.5950577f, 0.3600761f)
-        val rightShoulder = Pair(0.3719578f, 0.36289346f)
+        val leftKneeResult = getRealDistanceX(leftKnee, axisX)
+        val rightKneeResult = getRealDistanceX(rightKnee, axisX)
+        val leftAnkleResult = getRealDistanceX(leftAnkle, axisX)
+        val rightAnkleResult = getRealDistanceX(rightAnkle, axisX)
+        println("양 무릎 거리 (왼, 오): ($leftKneeResult, $rightKneeResult)")
+        println("양 발목 거리 (왼, 오): ($leftAnkleResult, $rightAnkleResult)")
+    }
 
-        val result3 = getRealDistanceY(leftEar, rightEar)
-        val result4 = getRealDistanceY(leftShoulder, rightShoulder)
+    @Test
+    fun normalizeDistanceTest2() {
+        val leftAnkle = Pair(0.5556974f, 0.79296726f)
+        val rightAnkle = Pair(0.45331466f, 0.7848047f)
+        val axisX = Pair((leftAnkle.first + rightAnkle.first) / 2, (leftAnkle.second + rightAnkle.second) / 2 )
 
-        println("정면 귀 높이차 : $result3")
-        println("정면면 어깨 높이차 : $result4")
+        val leftKnee = Pair(0.56929255f, 0.6615991f)
+        val rightKnee = Pair(0.43928188f, 0.66419697f)
+
+        val leftEar = Pair(0.5089976f, 0.22771695f)
+        val rightEar =Pair(0.41771114f, 0.23255113f)
+        val leftShoulder = Pair(0.5959488f, 0.3162927f)
+        val rightShoulder =Pair(0.35642296f, 0.3219477f)
+        val leftKneeResult = getRealDistanceX(leftKnee, axisX)
+        val rightKneeResult = getRealDistanceX(rightKnee, axisX)
+        val leftAnkleResult = getRealDistanceX(leftAnkle, axisX)
+        val rightAnkleResult = getRealDistanceX(rightAnkle, axisX)
+
+        val leftEarYResult = getRealDistanceY(leftEar, rightEar)
+        val leftShoulderYResult = getRealDistanceY(leftShoulder, rightShoulder)
+        println("축: $axisX")
+        println("양 무릎 거리 (왼, 오): ($leftKneeResult, $rightKneeResult)")
+        println("양 발목 거리 (왼, 오): ($leftAnkleResult, $rightAnkleResult)")
+        println("귀 높이 차 : $leftEarYResult")
+        println("어깨 높이 차 : $leftShoulderYResult")
+
     }
 
 
-    private val SCALE_X = 200f
-    private val SCALE_Y = 300f
+
+    private val SCALE_X = 180f
+    private val SCALE_Y = 240f
     fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
         return abs(point2.first - point1.first)
     }
