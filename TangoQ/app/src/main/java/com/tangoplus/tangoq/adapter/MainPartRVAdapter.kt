@@ -1,8 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -26,7 +23,6 @@ import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.databinding.RvMainPartItemBinding
 import com.tangoplus.tangoq.dialog.MainPartPoseDialogFragment
-import java.security.MessageDigest
 
 class MainPartRVAdapter(private val fragment: Fragment, private val analysizes : MutableList<AnalysisVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -54,7 +50,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
 
         if (holder is MPViewHolder) {
 
-            holder.tvMPITitle.text = matchedSeq.get(currentItem.seq)
+            holder.tvMPITitle.text = matchedSeq[currentItem.seq]
             setState(holder, currentItem.isNormal)
             Glide.with(fragment.requireContext())
                 .load(currentItem.url)
@@ -78,20 +74,20 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
     }
 
     // ------# 좌우 반전 #------
-    inner class FlipHorizontalTransformation : BitmapTransformation() {
-        override fun updateDiskCacheKey(messageDigest: MessageDigest) {
-            messageDigest.update("flip_horizontal".toByteArray())
-        }
-        override fun transform(
-            pool: BitmapPool,
-            toTransform: Bitmap,
-            outWidth: Int,
-            outHeight: Int
-        ): Bitmap {
-            val matrix = Matrix().apply { postScale(-1f, 1f, toTransform.width / 2f, toTransform.height / 2f) }
-            return Bitmap.createBitmap(toTransform, 0, 0, toTransform.width, toTransform.height, matrix, true)
-        }
-    }
+//    inner class FlipHorizontalTransformation : BitmapTransformation() {
+//        override fun updateDiskCacheKey(messageDigest: MessageDigest) {
+//            messageDigest.update("flip_horizontal".toByteArray())
+//        }
+//        override fun transform(
+//            pool: BitmapPool,
+//            toTransform: Bitmap,
+//            outWidth: Int,
+//            outHeight: Int
+//        ): Bitmap {
+//            val matrix = Matrix().apply { postScale(-1f, 1f, toTransform.width / 2f, toTransform.height / 2f) }
+//            return Bitmap.createBitmap(toTransform, 0, 0, toTransform.width, toTransform.height, matrix, true)
+//        }
+//    }
 
     private val matchedSeq = mapOf(
         0 to "정면 측정",
@@ -103,6 +99,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
         6 to "앉아 후면"
     )
 
+    @SuppressLint("UseCompatTextViewDrawableApis")
     private fun setState(holder: MPViewHolder, isNormal: Int) {
         when (isNormal) {
             2, 3 -> {

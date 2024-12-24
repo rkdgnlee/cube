@@ -395,7 +395,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         pvm.selectedDailyTime.value = progresses.sumOf { it.sn }
         Log.v("프로그레스", "${progresses}")
 //        val adapter = ExerciseRVAdapter(this@MeasureDashBoard2Fragment, mutableListOf(), null, null, null, "main")
-        val adapter = ProgressHistoryRVAdapter(this@MeasureDashBoard2Fragment, progresses)
+        val adapter = ProgressHistoryRVAdapter(progresses)
         binding.rvMD2.adapter = adapter
 
         if (progresses.isEmpty()) {

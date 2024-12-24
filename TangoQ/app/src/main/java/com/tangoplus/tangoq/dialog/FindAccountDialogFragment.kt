@@ -134,7 +134,7 @@ class FindAccountDialogFragment : DialogFragment() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 verifyId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
+                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId ,token: $token")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireView(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                 binding.btnFADConfirm.isEnabled = true

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,23 +29,18 @@ import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import org.json.JSONObject
-
 import java.lang.IllegalArgumentException
-import java.time.LocalDate
-import java.time.Period
-import java.time.Year
-import java.time.format.DateTimeFormatter
 
 class ProfileRVAdapter(private val fragment: Fragment,
                        private val booleanClickListener: BooleanClickListener,
                        val first: Boolean,
                        val case: String,
-                       val vm: ViewModel
+                       private val vm: ViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
-    var profilemenulist = mutableListOf<String>()
+    var profileMenuList = mutableListOf<String>()
 
-    private val VIEW_TYPE_NORMAL = 0
-    private val VIEW_TYPE_SPECIAL_ITEM = 1
+    private val viewTypeNormal = 0
+    private val viewTypeSpecial = 1
     var userJson = JSONObject()
 
     inner class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
@@ -62,12 +56,12 @@ class ProfileRVAdapter(private val fragment: Fragment,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            VIEW_TYPE_NORMAL -> {
+            viewTypeNormal -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = RvProfileItemBinding.inflate(inflater, parent, false)
                 ViewHolder(binding.root)
             }
-            VIEW_TYPE_SPECIAL_ITEM -> {
+            viewTypeSpecial -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = RvProfileSpecialItemBinding.inflate(inflater, parent, false)
                 SpecialItemViewHolder(binding.root)
@@ -78,9 +72,9 @@ class ProfileRVAdapter(private val fragment: Fragment,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = profilemenulist[position]
+        val currentItem = profileMenuList[position]
         when (holder.itemViewType) {
-            VIEW_TYPE_NORMAL -> {
+            viewTypeNormal -> {
                 val ViewHolder = holder as ViewHolder
                 when (case) {
                     "profile" -> {
@@ -101,8 +95,8 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         ViewHolder.tvPfSettingsName.text = currentItem
                         if (ViewHolder.tvPfSettingsName.text == "앱 버전") {
                             val packageInfo = fragment.requireContext().packageManager.getPackageInfo(fragment.requireContext().packageName, 0)
-                            val versionName = packageInfo.versionName
-                            ViewHolder.tvPfInfo.text = "v$versionName"
+                            val versionName =  "v" + packageInfo.versionName
+                            ViewHolder.tvPfInfo.text = versionName
                         } else
                             ViewHolder.tvPfInfo.text = ""
                         // ------! 앱 버전 text 설정 끝 !------
@@ -193,7 +187,8 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "이메일" -> {
                                 (vm as SignInViewModel).setEmail.observe(fragment.viewLifecycleOwner) { email ->
-                                    holder.tvPfInfo.text = "${maskedProfileData(email)}"
+                                    val maskingEmail = maskedProfileData(email)
+                                    holder.tvPfInfo.text = maskingEmail
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_email)
                             }
@@ -266,7 +261,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                     }
                 }
             } // -----! 다크모드 시작 !-----
-            VIEW_TYPE_SPECIAL_ITEM -> {
+            viewTypeSpecial -> {
                 val myViewHolder = holder as SpecialItemViewHolder
                 when (currentItem) {
                     "다크 모드" -> {
@@ -287,13 +282,13 @@ class ProfileRVAdapter(private val fragment: Fragment,
 
     override fun getItemViewType(position: Int): Int {
         return if (position == 1 && first) {
-            VIEW_TYPE_SPECIAL_ITEM
+            viewTypeSpecial
         } else {
-            VIEW_TYPE_NORMAL
+            viewTypeNormal
         }
     }
     override fun getItemCount(): Int {
-        return profilemenulist.size
+        return profileMenuList.size
     }
 
     private fun maskedProfileData(resultString: String) : String {

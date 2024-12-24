@@ -4,12 +4,10 @@ import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.vo.ProgramVO
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import com.tangoplus.tangoq.api.NetworkExercise.jsonToExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Interceptor
 import okhttp3.Request
 import org.json.JSONObject
 
@@ -31,7 +29,7 @@ object NetworkProgram {
                     val exerciseSize = jsonInfo?.optString("exercise_ids")?.split(",")?.count()
                     if (exerciseSize != null) {
                         for (i in 0 until exerciseSize) {
-                            val exerciseUnit = jsonToExerciseVO((responseBody.let { JSONObject(it) }.getJSONObject("$i")))
+                            val exerciseUnit = jsonToExerciseVO((JSONObject(responseBody).getJSONObject("$i")))
                             exercises.add(exerciseUnit)
                             exerciseTimes += exerciseUnit.duration?.toInt() ?: 0
                         }
@@ -64,7 +62,7 @@ object NetworkProgram {
                 Log.e("ProgramError", "NullPointer: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
-                Log.e("ProgramError", "Exception: ${e}")
+                Log.e("ProgramError", "Exception: ${e.message}")
                 null
             }
         }

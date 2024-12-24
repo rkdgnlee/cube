@@ -4,17 +4,15 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import java.lang.Math.toDegrees
-import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
-import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 object MathHelpers {
-    private val SCALE_X = 180f
-    private val SCALE_Y = 210f
+    private const val SCALE_X = 180f
+    private const val SCALE_Y = 210f
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
@@ -34,7 +32,7 @@ object MathHelpers {
 
         val cosTheta = dotProduct / (magnitude1 * magnitude2)
         val angleRadians = acos(cosTheta)
-        return Math.toDegrees(angleRadians.toDouble()).toFloat()
+        return toDegrees(angleRadians.toDouble()).toFloat()
     }
 
     // ------! 선과 점의 X 각도 !------
@@ -84,7 +82,7 @@ object MathHelpers {
                     // 주의 경계 내 점수 계산 (0~100)
                     val halfWarningRange = warningBoundary
                     val centeredValue = value - midpoint
-                    val percentage = ((halfWarningRange - kotlin.math.abs(centeredValue)) / halfWarningRange) * 100f
+                    val percentage = ((halfWarningRange - abs(centeredValue)) / halfWarningRange) * 100f
                     percentage
                 } else {
                     // 경고 범위 (주의 범위 밖)에서 점수 감소 (0~50)
@@ -109,12 +107,12 @@ object MathHelpers {
     // ------# 점과 점사이의 거리 #------
 
 
-    fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
+    private fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
         return abs(point2.first - point1.first)
     }
 
     // Y축 거리 계산
-    fun getDistanceY(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
+    private fun getDistanceY(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
         return abs(point2.second - point1.second)
     }
 

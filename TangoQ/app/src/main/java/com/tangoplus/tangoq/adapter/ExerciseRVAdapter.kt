@@ -33,7 +33,7 @@ class ExerciseRVAdapter (
     private val progresses : MutableList<ProgressUnitVO>?,
     private val sequence : Pair<Int, Int>?,
     private val history : MutableList<String>?,
-    var xmlname: String,
+    private var xmlName: String,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var dialogClosedListener: OnDialogClosedListener? = null
@@ -71,7 +71,7 @@ class ExerciseRVAdapter (
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (xmlname) {
+        return when (xmlName) {
             "main" -> 0
             "recommend" -> 1
             "history" -> 2

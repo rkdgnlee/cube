@@ -2,17 +2,20 @@ package com.tangoplus.tangoq.function
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.widget.Toast
 
 @Suppress("DEPRECATION")
-class WifiSecurityManager(private val context: Context) {
+class WifiManager(private val context: Context) {
 
     private val wifiManager: WifiManager =
         context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-
+    private val connectivityManager: ConnectivityManager =
+        context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     // 현재 연결된 Wi-Fi의 보안 수준을 확인
     @SuppressLint("MissingPermission")
     fun checkWifiSecurity(): String {
@@ -41,4 +44,18 @@ class WifiSecurityManager(private val context: Context) {
             else -> "UNKNOWN"
         }
     }
+    fun checkNetworkType(): String {
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+
+        return when {
+            networkCapabilities == null -> "NONE" // 네트워크가 연결되지 않음
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "CELLULAR"
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
+            else -> "OTHER"
+        }
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.annotation.SuppressLint
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.Color
 import android.graphics.Rect
@@ -88,9 +89,9 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
                 val query = s.toString()
                 val filteredList = mutableListOf<ExerciseVO>()
                 if (query.isNotEmpty()) {
-                    val filteredPattern = query.toLowerCase(Locale.getDefault()).trim()
+                    val filteredPattern = query.lowercase(Locale.getDefault()).trim()
                     for (indices in evm.allExercises) {
-                        if (indices.exerciseName?.toLowerCase(Locale.getDefault())?.contains(filteredPattern) == true) {
+                        if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
                             filteredList.add(indices)
                         }
                     }
@@ -145,6 +146,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         rv.adapter = adapter
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onHistoryDelete(history: Pair<Int,String>) {
         evm.searchHistory.value?.remove(evm.searchHistory.value?.find { it.second == history.second })
         prefsManager.deleteStoredHistory(history.first)

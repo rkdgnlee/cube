@@ -24,7 +24,7 @@ class PoseLandmarkerHelper(
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
     var minPoseTrackingConfidence: Float = DEFAULT_POSE_TRACKING_CONFIDENCE,
     var minPosePresenceConfidence: Float = DEFAULT_POSE_PRESENCE_CONFIDENCE,
-    var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
+    private var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
     var currentDelegate: Int = DELEGATE_GPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
@@ -123,7 +123,7 @@ class PoseLandmarkerHelper(
                         Log.d("PoseLandmarkerDebug", "Build.FINGERPRINT: ${Build.FINGERPRINT}")
 
                         // 옵션 생성 전 옵션 객체 세부 정보 로깅
-                        Log.d("PoseLandmarkerDebug", "Options: ${options.toString()}")
+                        Log.d("PoseLandmarkerDebug", "Options: $options")
 
 
                         poseLandmarker = PoseLandmarker.createFromOptions(context, options)

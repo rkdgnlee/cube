@@ -6,12 +6,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
-import kotlin.math.max
-import kotlin.math.min
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
@@ -31,13 +28,13 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     init {
         initPaints()
     }
-    fun clear() {
-        results = null
-        pointPaint.reset()
-        linePaint.reset()
-        invalidate()
-        initPaints()
-    }
+//    fun clear() {
+//        results = null
+//        pointPaint.reset()
+//        linePaint.reset()
+//        invalidate()
+//        initPaints()
+//    }
 
     @SuppressLint("ResourceAsColor")
     private fun initPaints() {
@@ -60,8 +57,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             style = Paint.Style.STROKE
         }
     }
-
-
 
     fun setResults(
         poseLandmarkResult: PoseLandmarkResult,
@@ -104,14 +99,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     }
 
     private fun drawLandmarks(canvas: Canvas, landmarks: List<PoseLandmarkResult.PoseLandmark>) {
-
         if (landmarks.isEmpty()) {
             return
         }
 
         if (currentRunningMode == RunningMode.LIVE_STREAM) {
-
-//            Log.v("스케일", "scale: (${width * 1f / imageWidth}, ${height * 1f / imageHeight})")
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
             landmarks.forEach { landmark ->
@@ -212,9 +204,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val rightKneeY = rightKnee.y * scaleFactorY + offsetY
 
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
-                canvas.drawLine(leftIndexX + 100, leftIndexY, rightIndexX - 100, rightIndexY, axisPaint)
-                canvas.drawLine(leftHipX + 100, leftHipY, rightHipX - 100, rightHipY, axisPaint)
-                canvas.drawLine(leftKneeX + 100, leftKneeY, rightKneeX - 100, rightKneeY, axisPaint)
+                canvas.drawLine(leftIndexX - 100, leftIndexY, rightIndexX + 100, rightIndexY, axisPaint)
+                canvas.drawLine(leftHipX - 100, leftHipY, rightHipX + 100, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
             }
 
             val connections = listOf(
@@ -239,7 +231,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                         landmarks[end].y * scaleFactorY + offsetY,
                         linePaint
                     )
-
                 }
             }
         }

@@ -17,7 +17,7 @@ import com.tangoplus.tangoq.databinding.RvBalanceItemBinding
 import com.tangoplus.tangoq.fragment.MeasureAnalysisFragment
 
 class BalanceRVAdapter(private val fragment: Fragment, private val stages:MutableList<MutableList<String>>, private val degree: MutableList<Pair<Int, Int>>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    inner class balanceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class BalanceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvBIName: TextView = view.findViewById(R.id.tvBIName)
         val ivBI: ImageView = view.findViewById(R.id.ivBI)
         val ivBIicon: ImageView = view.findViewById(R.id.ivBIicon)
@@ -28,7 +28,7 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvBalanceItemBinding.inflate(inflater, parent, false)
-        return balanceViewHolder(binding.root)
+        return BalanceViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int {
@@ -38,7 +38,7 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = stages[position]
-        if (holder is balanceViewHolder) {
+        if (holder is BalanceViewHolder) {
             setItem(position, holder.ivBI, holder.tvBIName)
             setColor(degree[position].first, holder.tvBIPredict, holder.ivBIicon)
             var currentComment = ""

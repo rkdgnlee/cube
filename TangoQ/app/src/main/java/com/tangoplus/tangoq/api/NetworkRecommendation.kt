@@ -3,27 +3,18 @@ package com.tangoplus.tangoq.api
 import android.content.Context
 import android.util.Log
 import com.tangoplus.tangoq.vo.RecommendationVO
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 object NetworkRecommendation {
     suspend fun createRecommendProgram(myUrl: String, jo: String, context: Context, callback: (MutableList<RecommendationVO>) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = RequestBody.create(mediaType, jo)
-        val authInterceptor = Interceptor { chain ->
-            val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${getEncryptedAccessJwt(context)}")
-                .build()
-            chain.proceed(newRequest)
-        }
+        val body = jo.toRequestBody(mediaType)
         val client = getClient(context)
         val request = Request.Builder()
             .url(myUrl)

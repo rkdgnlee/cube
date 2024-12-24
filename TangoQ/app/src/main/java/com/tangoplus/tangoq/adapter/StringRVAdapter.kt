@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -7,23 +8,15 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
-import com.tangoplus.tangoq.viewmodel.UserViewModel
-import com.tangoplus.tangoq.databinding.RvConnectItemBinding
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
-import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
-import com.tangoplus.tangoq.dialog.MainPartDialogFragment
 import com.tangoplus.tangoq.listener.OnDisconnectListener
 
 class StringRVAdapter(private val fragment: Fragment,
@@ -36,18 +29,9 @@ class StringRVAdapter(private val fragment: Fragment,
         val tvMIName : TextView = view.findViewById(R.id.tvMIName)
     }
 
-
-
     inner class CbViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cbWI : CheckBox = view.findViewById(R.id.cbWI)
     }
-
-//    inner class ConnectViewHolder(view:View) : RecyclerView.ViewHolder(view) {
-//        val tvCIName : TextView = view.findViewById(R.id.tvCIName)
-//        val tvCIDate : TextView = view.findViewById(R.id.tvCIDate)
-//        val btnCI : AppCompatButton = view.findViewById(R.id.btnCI)
-//    }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -61,10 +45,7 @@ class StringRVAdapter(private val fragment: Fragment,
                 val binding = RvWeeklyItemBinding.inflate(inflater, parent, false)
                 CbViewHolder(binding.root)
             }
-//            3 -> {
-//                val binding = RvConnectItemBinding.inflate(inflater, parent, false)
-//                ConnectViewHolder(binding.root)
-//            }
+
             else -> throw IllegalArgumentException("Invaild View Type")
         }
     }
@@ -195,7 +176,7 @@ class StringRVAdapter(private val fragment: Fragment,
 
             is CbViewHolder -> {
                 if (xmlName == "measure") {
-                    holder.cbWI.setText("${currentItem?.substring(0, 10)}")
+                    holder.cbWI.text = "${currentItem?.substring(0, 10)}"
                     val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
                     holder.cbWI.isChecked = isInitiallyChecked
                     updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
@@ -262,6 +243,7 @@ class StringRVAdapter(private val fragment: Fragment,
         checkbox.setTextColor(ContextCompat.getColor(fragment.requireContext(), colorResId))
     }
 
+    @SuppressLint("DiscouragedApi")
     private fun setIV(name: String, imageView: ImageView) {
         imageView.setImageResource(fragment.resources.getIdentifier("drawable_muscle_${name}", "drawable", fragment.requireActivity().packageName))
     }

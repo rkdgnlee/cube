@@ -54,7 +54,7 @@ class MainFragment : Fragment() {
     private val uvm by activityViewModels<UserViewModel>()
     private val mvm : MeasureViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
-    lateinit var prefsManager : PreferencesManager
+    private lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
     private var singletonMeasure : MutableList<MeasureVO>? = null
     private var latestRecSn = -1
@@ -232,7 +232,7 @@ class MainFragment : Fragment() {
             }
         } else {
             measures?.let { measure ->
-                Log.v("measure있는지", "${measure}")
+                Log.v("measure있는지", "$measure")
                 if (measure.size > 0) {
 
                     binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secondBgContainerColor))
@@ -268,8 +268,8 @@ class MainFragment : Fragment() {
                         }
                         if (dateIndex != null) {
                             measures?.get(dateIndex)?.recommendations
-                            binding.tvMMeasureDate.text = measure.get(dateIndex).regDate.substring(0, 10)
-                            binding.tvMOverall.text = measure.get(dateIndex).overall.toString()
+                            binding.tvMMeasureDate.text = measure[dateIndex].regDate.substring(0, 10)
+                            binding.tvMOverall.text = measure[dateIndex].overall.toString()
                             setAdapter(dateIndex)
 
                             Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure: ${measures?.get(dateIndex)?.dangerParts}, ${measures?.get(dateIndex)?.recommendations}")
@@ -504,7 +504,7 @@ class MainFragment : Fragment() {
     private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
         val progressIndex = progresses.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
         if (progressIndex != -1) {
-            Log.v("progressIndex", "${progressIndex}")
+            Log.v("progressIndex", "$progressIndex")
             return progressIndex
         }
 
@@ -517,7 +517,7 @@ class MainFragment : Fragment() {
                 return i
             }
         }
-        Log.v("progressIndex", "${progressIndex}")
+        Log.v("progressIndex", "$progressIndex")
         return 0
     }
 

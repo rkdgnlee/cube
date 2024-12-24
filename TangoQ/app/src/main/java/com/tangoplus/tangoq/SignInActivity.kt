@@ -313,7 +313,7 @@ class SignInActivity : AppCompatActivity() {
                             MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                                 setTitle("알림")
                                 setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
-                                setPositiveButton("예") { dialog, _ ->
+                                setPositiveButton("예") { _, _ ->
                                     binding.btnIdCondition.isEnabled = false
                                     binding.etId.isEnabled = false
                                     viewModel.User.value?.put("user_id", id)
@@ -400,7 +400,7 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.idCondition.value == true) {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvIdCondition.text = "사용 가능합니다"
-                    Log.v("아이디", "${binding.etId.text.toString()}")
+                    Log.v("아이디", "${binding.etId.text}")
                 } else {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
                     binding.tvIdCondition.text = "영문, 숫자를 포함해서 4자리 이상 입력해주세요"
@@ -551,7 +551,7 @@ class SignInActivity : AppCompatActivity() {
                     if (jsonObj != null) {
                         lifecycleScope.launch {
                             CoroutineScope(Dispatchers.IO).launch {
-                                insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj, this@SignInActivity) { responseCode ->
+                                insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj ) { _ ->
                                     CoroutineScope(Dispatchers.Main).launch {
                                         val intent = Intent(this@SignInActivity, IntroActivity::class.java)
                                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

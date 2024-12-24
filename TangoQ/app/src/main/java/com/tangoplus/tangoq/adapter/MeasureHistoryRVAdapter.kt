@@ -17,7 +17,7 @@ import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 
 class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>, private val viewModel : MeasureViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class MHViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMIName: TextView = view.findViewById(R.id.tvMIName)
         val tvMIScore : TextView = view.findViewById(R.id.tvMIScore)
         val clMI : ConstraintLayout = view.findViewById(R.id.clMI)
@@ -26,7 +26,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = RvMeasureItemBinding.inflate(layoutInflater, parent, false)
-        return viewHolder(binding.root)
+        return MHViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int {
@@ -35,7 +35,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = measures[position]
-        if (holder is viewHolder) {
+        if (holder is MHViewHolder) {
             holder.tvMIName.text = "${currentItem.regDate.substring(0, 10)} 측정 기록"
             holder.tvMIScore.text = currentItem.overall.toString()
             val hideBadgeFunction = fragment.hideBadgeOnClick(holder.tvMIName, holder.clMI, "${holder.tvMIName.text}", ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))

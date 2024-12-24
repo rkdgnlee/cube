@@ -65,7 +65,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
             // 2. saveAllMeasureInfo 부분 실행
             if (userUUID != "" || userInfoSn != -1) {
-                saveMeasureInfo(userUUID, userInfoSn) { existed2 ->
+                saveMeasureInfo(userUUID) { existed2 ->
                     if (existed2) {
                         CoroutineScope(Dispatchers.IO).launch {
 
@@ -84,7 +84,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         }
     }
 
-    private suspend fun saveMeasureInfo(userUUID: String, userInfoSn: Int, callbacks: (Boolean) -> Unit) {
+    private suspend fun saveMeasureInfo(userUUID: String, callbacks: (Boolean) -> Unit) {
         val currentActivity = activity
         val dialog = withContext(Dispatchers.Main) {
             if (!currentActivity.isFinishing && !currentActivity.isDestroyed) {
@@ -93,7 +93,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 }
             } else null
         }
-        Log.v("getEncryptedJwt", "save Access Token: ${if (getEncryptedAccessJwt(context) != "") true else false }")
+        Log.v("getEncryptedJwt", "save Access Token: ${getEncryptedAccessJwt(context) != ""}")
         withContext(Dispatchers.IO) {
             saveAllMeasureInfo(context, context.getString(R.string.API_measure), userUUID) { existed ->
                 callbacks(existed)
@@ -133,8 +133,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 //                val groupedInfos = allInfos.groupBy { entity -> entity.sn }
                 val groupedStatics = allStatics.groupBy { entity -> entity.server_sn }
                 val groupedDynamics = allDynamics.groupBy { entity -> entity.server_sn }
-                Log.v("allStatics", "${groupedStatics}")
-                Log.v("allDynamics", "${groupedDynamics}")
+
                 val measures = mutableListOf<MeasureVO>()
 
                 allInfos.mapIndexed { index, info ->
@@ -144,7 +143,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         val statics = groupedStatics[currentInfoSn]?.sortedBy { it.measure_seq } ?: emptyList()
                         val dynamic = groupedDynamics[currentInfoSn] ?: emptyList()
                         Log.v("groupedStatics", "${statics.size}")
-                        Log.v("groupedDynamics", "${dynamic}")
+
                         if (statics.size < 6 || dynamic.isEmpty()) {
                             Log.v("건너뜀", "현재 measure: $currentInfoSn, statics size: ${statics.size}, dynamic size: ${dynamic.size}")
                             return@async // 현재 info 처리 건너뜀
@@ -228,7 +227,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         if (dynamic.isNotEmpty()) {
             statics.add(1, dynamic[0])
         }
-        Log.v("url가져오기", "${statics}")
+        Log.v("url가져오기", "$statics")
         return statics
     }
     // ------# 저장된 measure에다가 파일 다운로드 및 암호화 하기 (1개의 measure만) #-------
@@ -241,7 +240,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     if (index == 1) {
                         val fileName2 = urlTuples[index].measure_server_file_name
                         val jsonName2 = urlTuples[index].measure_server_json_name
-                        Log.v("urlTuples", "mp4: ${fileName2}, json: ${jsonName2}")
+                        Log.v("urlTuples", "mp4: ${fileName2}, json: $jsonName2")
                         saveJobs.add(async {
                             try {
                                 saveFileFromUrl(context, fileName2, FileStorageUtil.FileType.VIDEO)
@@ -261,7 +260,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     } else {
                         val fileName = urlTuples[index].measure_server_file_name
                         val jsonName = urlTuples[index].measure_server_json_name
-                        Log.v("urlTuples", "jpg: ${fileName}, json: ${jsonName}")
+                        Log.v("urlTuples", "jpg: ${fileName}, json: $jsonName")
                         saveJobs.add(async {
                             try {
                                 saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
@@ -296,10 +295,10 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
         }
     }
+
     // ------# 다운로드 파일을 암호화 MeasureVO에 넣기 #------
     // TODO 이 함수에서는 파일 복화하면서 가져오면서 jsonArray를 가져와서 매개변수 measureVO에 넣기 해야 함.
-    suspend fun insertUrlToMeasureVO(uriTuples: List<UrlTuple>, measureVO: MeasureVO) : MeasureVO {
-        val tempMeasure = measureVO
+    suspend fun insertUrlToMeasureVO(uriTuples: List<UrlTuple>, measureVO: MeasureVO): MeasureVO {
         val ja = JSONArray()
         val uris = mutableListOf<String>()
         // 1. 복호화 부터
@@ -308,7 +307,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             val mediaFile = getFile(context, uriTuples[i].measure_server_file_name)
 
             if (jsonFile != null && mediaFile != null) {
-                Triple(i,
+                Triple(
+                    i,
                     if (i == 1) readJsonArrayFile(jsonFile) else readJsonFile(jsonFile),
                     mediaFile.absolutePath
                 )
@@ -319,11 +319,11 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             ja.put(json)
             uris.add(uri)
         }
-        tempMeasure.measureResult = ja
-        tempMeasure.fileUris = uris
+        measureVO.measureResult = ja
+        measureVO.fileUris = uris
         // 3. 전부 가져왔으면 measureVO에 넣고
-        Log.v("파일담은 MeasureVO", "${tempMeasure}")
-        return tempMeasure
+        Log.v("파일담은 MeasureVO", "$measureVO")
+        return measureVO
     }
 
     // ------# measure 1개 기존 싱글턴에 추가 #-------
@@ -446,7 +446,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     }
 
     // -------# measure 1개에 1번의 recommendation 넣기 (조회 후 없으면 생성) #------
-    suspend fun mergeRecommendationInOneMeasure(measureInfoSn: Int) {
+    private suspend fun mergeRecommendationInOneMeasure(measureInfoSn: Int) {
         withContext(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("추천")
             dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")

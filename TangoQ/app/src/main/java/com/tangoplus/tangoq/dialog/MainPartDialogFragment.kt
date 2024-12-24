@@ -83,8 +83,8 @@ class MainPartDialogFragment : DialogFragment() {
                         val states = when {
                             normalUnits == 0 && warningUnits == 0 && dangerUnits == 0 -> 1
                             dangerUnits >= warningUnits && dangerUnits >= normalUnits -> 3 // 위험이 가장 많을 때
-                            warningUnits >= normalUnits && warningUnits >= dangerUnits -> 2 // 주의가 가장 많을 때
-                            normalUnits >= warningUnits && normalUnits >= dangerUnits -> 1 // 정상 상태가 가장 많거나 같은 경우
+                            warningUnits >= normalUnits -> 2 // 주의가 가장 많을 때
+//                            normalUnits >= warningUnits && normalUnits >= dangerUnits -> 1 // 정상 상태가 가장 많거나 같은 경우
                             else -> 1 // 기본값
                         }
                         Log.v("analysisUnits", "통states: $states, normalUnits: $normalUnits, warningUnits: $warningUnits, dangerUnits: $dangerUnits")
@@ -161,6 +161,7 @@ class MainPartDialogFragment : DialogFragment() {
             resultString.append("스쿼트 정보를 확인하세요")
         }
         when (part) {
+            // TODO angle Direction 수정하기
             "목관절" -> {
                 when (seq) {
                     0 -> {

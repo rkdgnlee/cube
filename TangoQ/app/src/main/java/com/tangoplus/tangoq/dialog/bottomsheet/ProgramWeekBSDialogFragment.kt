@@ -13,8 +13,8 @@ import com.tangoplus.tangoq.databinding.FragmentProgramWeekBSDialogBinding
 
 class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentProgramWeekBSDialogBinding
-    val pvm : ProgressViewModel by activityViewModels()
-    var totalWeek = 0
+    private val pvm : ProgressViewModel by activityViewModels()
+    private var totalWeek = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

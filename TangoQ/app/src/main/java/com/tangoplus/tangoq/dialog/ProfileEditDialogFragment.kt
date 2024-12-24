@@ -33,7 +33,7 @@ import org.json.JSONObject
 
 class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     lateinit var binding : FragmentProfileEditDialogBinding
-    val svm : SignInViewModel by activityViewModels()
+    private val svm : SignInViewModel by activityViewModels()
     lateinit var userSn : String
     private var profilemenulist = mutableListOf<String>()
     private var profileUpdateListener: ProfileUpdateListener? = null
@@ -69,7 +69,6 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                 svm.snsCount = 0
                 // ------! 싱글턴에서 가져오기 !------
                 svm.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject
-
                 svm.setHeight.value = svm.User.value?.optInt("height")
                 svm.setWeight.value = svm.User.value?.optInt("weight")
                 svm.setEmail.value = svm.User.value?.optString("email")
@@ -158,7 +157,6 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                                     }
                                 }
                             }
-
                         }
                         false -> {
                             createDialog(3)
@@ -166,13 +164,11 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                         null -> {}
                     }
                 }
-                binding.schPEDAgreementMk3.setOnCheckedChangeListener { view, isChecked ->
-
+                binding.schPEDAgreementMk3.setOnCheckedChangeListener { _, isChecked ->
                     disabledMkUnit(isChecked)
                     svm.agreementMk1.value = isChecked
                     svm.agreementMk2.value = isChecked
                 }
-
 //                binding.btnPEDFinish.setOnClickListener {
 ////            viewModel.User.value?.put("user_id", viewModel.id.value.toString())
 ////            viewModel.User.value?.put("password", viewModel.pw.value.toString())
@@ -215,12 +211,10 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         binding.rvPED.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val adapter = ProfileRVAdapter(this@ProfileEditDialogFragment, this@ProfileEditDialogFragment, false, "profileEdit", svm)
         adapter.userJson = svm.User.value ?: JSONObject()
-        adapter.profilemenulist = list
+        adapter.profileMenuList = list
         binding.rvPED.adapter = adapter
         binding.sflPED.visibility = View.GONE
         binding.sflPED.stopShimmer()
-        adapter.notifyDataSetChanged()
-
     }
 
     override fun onResume() {

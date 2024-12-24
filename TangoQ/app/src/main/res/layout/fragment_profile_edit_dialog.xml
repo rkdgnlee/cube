@@ -384,7 +384,6 @@
                     android:text="문자메시지(SMS, LMS 등) 동의"
                     android:textColor="@color/subColor800"
                     android:textSize="18dp"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/tvPEDMk1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

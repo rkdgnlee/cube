@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.PlaySkeletonActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
@@ -41,18 +43,20 @@ import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class PlayThumbnailDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
-    private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
+    private var videoUrl = ""
     val evm: ExerciseViewModel by activityViewModels()
     val pvm: PlayViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var prefs : PreferencesManager
+    private lateinit var wm : WifiManager
 
     interface DialogCloseListener {
         fun onDialogClose()
@@ -74,6 +78,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
+        wm = WifiManager(requireContext())
 
         // ------# like 있는지 판단 #------
         prefs = PreferencesManager(requireContext())
@@ -112,8 +117,25 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 //        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
 
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
-        initPlayer()
+        val networkType = wm.checkNetworkType()
+        Log.v("networkType", networkType)
+        when (networkType) {
+            "WIFI", "ETERNET" -> {
+                initPlayer()
+            }
+            else -> {
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("데이터 사용 알림")
+                    setMessage("셀룰러 네트워크 데이터를 사용하면 추가 요금이 부과될 수 있습니다.")
+                    setPositiveButton("재생") { _, _ ->
+                        initPlayer()
+                    }
+                    setNegativeButton("취소") { _, _ ->
 
+                    }
+                }.show()
+            }
+        }
         // ------! 관련 관절, 근육 recyclerview 시작 !------
         val fullmuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
             ?.replace(")", "")

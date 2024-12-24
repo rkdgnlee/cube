@@ -36,8 +36,8 @@ import java.io.FileOutputStream
 
 
 class MeasureDetailFragment : Fragment() {
-    lateinit var binding : FragmentMeasureDetailBinding
-    lateinit var bodyParts : List<String>
+    private lateinit var binding : FragmentMeasureDetailBinding
+
     private var measure : MeasureVO? = null
     private val viewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
@@ -162,7 +162,7 @@ class MeasureDetailFragment : Fragment() {
             invalidate() // 차트 갱신
         }
 
-        val dangerParts = measure?.dangerParts?.map { it.first }?.toMutableList()
+//        val dangerParts = measure?.dangerParts?.map { it.first }?.toMutableList()
         val stages = mutableListOf<MutableList<String>>()
         val balanceParts1 = mutableListOf("어깨", "골반")
         stages.add(balanceParts1)
@@ -232,19 +232,19 @@ class MeasureDetailFragment : Fragment() {
         binding.rvMD.adapter = balanceAdapter
     }
 
-    private fun calculateBalanceScore(angle: Float, case: String): Int {
-        val normalRange = when (case) {
-            "목" -> 0.5
-            "우측어깨", "좌측어깨","우측무릎", "좌측무릎" -> 1.0
-            else -> 3.0
-        }
-        val deviationFromNormal = Math.abs(angle) - normalRange
-
-        return when {
-            deviationFromNormal <= 0 -> 100
-            else -> (100 - (deviationFromNormal * 10)).toInt().coerceAtLeast(0)
-        }
-    }
+//    private fun calculateBalanceScore(angle: Float, case: String): Int {
+//        val normalRange = when (case) {
+//            "목" -> 0.5
+//            "우측어깨", "좌측어깨","우측무릎", "좌측무릎" -> 1.0
+//            else -> 3.0
+//        }
+//        val deviationFromNormal = Math.abs(angle) - normalRange
+//
+//        return when {
+//            deviationFromNormal <= 0 -> 100
+//            else -> (100 - (deviationFromNormal * 10)).toInt().coerceAtLeast(0)
+//        }
+//    }
 
     private fun updateUI() {
         binding.tvMDScore.text = measure?.overall.toString()

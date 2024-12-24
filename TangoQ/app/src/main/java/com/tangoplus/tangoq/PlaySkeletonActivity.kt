@@ -84,15 +84,12 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
 
     // ------! mediapipe !------
     companion object {
-        private const val TAG = "Pose Landmarker"
         private const val REQUEST_CODE_PERMISSIONS = 1001
-        private const val REQUEST_CODE = 1000
         private val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         fun hasPermissions(context: Context) = REQUIRED_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
                 context,
@@ -100,6 +97,7 @@ class PlaySkeletonActivity : AppCompatActivity(), SensorEventListener, PoseLandm
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
+
     private lateinit var poseLandmarkerHelper: PoseLandmarkerHelper
     private val viewModel: SkeletonViewModel by viewModels()
     private var preview: Preview? = null

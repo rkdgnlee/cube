@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,18 +23,18 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
     inner class TrendViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMTIPart : TextView = view.findViewById(R.id.tvMTIPart)
         val ivMTI : ImageView = view.findViewById(R.id.ivMTI)
-        val tvMTI1 : TextView = view.findViewById(R.id.tvMTI1)
-        val tvMTI2 : TextView = view.findViewById(R.id.tvMTI2)
-        val tvMTI3 : TextView = view.findViewById(R.id.tvMTI3)
-        val tvMTISeq1 : TextView = view.findViewById(R.id.tvMTISeq1)
-        val tvMTISeq2 : TextView = view.findViewById(R.id.tvMTISeq2)
-        val tvMTISeq3 : TextView = view.findViewById(R.id.tvMTISeq3)
-        val pvMTI1Left : ProgressView = view.findViewById(R.id.pvMTI1Left)
-        val pvMTI1Right : ProgressView = view.findViewById(R.id.pvMTI1Right)
-        val pvMTI2Left : ProgressView = view.findViewById(R.id.pvMTI2Left)
-        val pvMTI2Right : ProgressView = view.findViewById(R.id.pvMTI2Right)
-        val pvMTI3Left : ProgressView = view.findViewById(R.id.pvMTI3Left)
-        val pvMTI3Right : ProgressView = view.findViewById(R.id.pvMTI3Right)
+        private val tvMTI1 : TextView = view.findViewById(R.id.tvMTI1)
+        private val tvMTI2 : TextView = view.findViewById(R.id.tvMTI2)
+        private val tvMTI3 : TextView = view.findViewById(R.id.tvMTI3)
+        private val tvMTISeq1 : TextView = view.findViewById(R.id.tvMTISeq1)
+        private val tvMTISeq2 : TextView = view.findViewById(R.id.tvMTISeq2)
+        private val tvMTISeq3 : TextView = view.findViewById(R.id.tvMTISeq3)
+        private val pvMTI1Left : ProgressView = view.findViewById(R.id.pvMTI1Left)
+        private val pvMTI1Right : ProgressView = view.findViewById(R.id.pvMTI1Right)
+        private val pvMTI2Left : ProgressView = view.findViewById(R.id.pvMTI2Left)
+        private val pvMTI2Right : ProgressView = view.findViewById(R.id.pvMTI2Right)
+        private val pvMTI3Left : ProgressView = view.findViewById(R.id.pvMTI3Left)
+        private val pvMTI3Right : ProgressView = view.findViewById(R.id.pvMTI3Right)
         val cvMTI : CardView = view.findViewById(R.id.cvMTI)
         val tvSeqs = listOf(tvMTISeq1, tvMTISeq2, tvMTISeq3)
         val pvs = listOf(listOf(pvMTI1Left, pvMTI1Right), listOf(pvMTI2Left, pvMTI2Right), listOf(pvMTI3Left, pvMTI3Right))
@@ -50,6 +51,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         return analyzes2?.size ?: 0
     }
 
+    @SuppressLint("DiscouragedApi")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrendViewHolder) {
             if (analyzes2?.isNotEmpty() == true) {
@@ -89,7 +91,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                 selectAnalysisIndex.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
                     holder.tvSeqs[index].text = setSeqString(indexTriple.first)
 
-                    val unit = currentItem.get(indexTriple.second).labels.get(indexTriple.third)
+                    val unit = currentItem[indexTriple.second].labels[indexTriple.third]
                     val score = calculateBoundedScore(abs(unit.rawData), unit.rawDataBound)
                     holder.pvs[index][1].progress = score
 
@@ -106,10 +108,10 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
 
             }
             if (analyzes1 != null) {
-                val currentItem = analyzes1.get(position) // analysisVO가 들어가있는 부위 별임.
+                val currentItem = analyzes1[position] // analysisVO가 들어가있는 부위 별임.
                 val selectAnalysisIndex = matchedIndexs[position]
                 selectAnalysisIndex.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
-                    val unit = currentItem.get(indexTriple.second).labels.get(indexTriple.third)
+                    val unit = currentItem[indexTriple.second].labels[indexTriple.third]
                     Log.v("각 점수들", "측정명: ${unit.rawDataName}, 값: ${unit.rawData}, 범위: ${unit.rawDataBound}")
                     val score = calculateBoundedScore(unit.rawData, unit.rawDataBound)
                     holder.pvs[index][0].progress = score
@@ -118,12 +120,12 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         }
     }
 
-    val matchedParts = listOf(
+    private val matchedParts = listOf(
         "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목")
 
     // first: seq / second: matchedUris의 index / third: 가장 작은 index
 
-    val matchedIndexs = listOf(
+    private val matchedIndexs = listOf(
         listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
         // 어깨
         listOf(Triple(0,0,0), Triple(3, 1, 0), Triple(6, 3, 0)),

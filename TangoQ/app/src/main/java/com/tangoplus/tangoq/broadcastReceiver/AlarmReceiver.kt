@@ -43,8 +43,5 @@ class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
 
 
         notificationManager.notify(0, notification)
-
-
-        notification
     }
 }

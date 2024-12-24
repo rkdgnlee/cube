@@ -30,8 +30,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
-
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
 import com.tangoplus.tangoq.api.NetworkProgress.patchProgress1Item
@@ -43,7 +41,6 @@ import kotlin.math.roundToInt
 
 class PlayFullScreenActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayFullScreenBinding
-    val evm: ExerciseViewModel by viewModels()
     val pvm : PlayViewModel by viewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L

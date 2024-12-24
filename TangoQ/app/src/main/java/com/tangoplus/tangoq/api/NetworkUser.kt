@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
@@ -11,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,7 +20,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 object NetworkUser {
-    val TAG = "NetworkUser"
+    const val TAG = "NetworkUser"
     // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------
     // (각 플랫폼 sdk를 통해서 자동 로그인까지 동작)
     fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
@@ -36,7 +34,7 @@ object NetworkUser {
 
         client.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("Token응답실패", "Failed to execute request")
+                Log.e("Tokenise", "Failed to execute request")
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -124,7 +122,7 @@ object NetworkUser {
 
 
 
-    suspend fun insertUser(myUrl: String,  idPw: JSONObject, context: Context, callback: (Int) -> Unit) {
+    suspend fun insertUser(myUrl: String,  idPw: JSONObject, callback: (Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = idPw.toString().toRequestBody(mediaType)
         val client = OkHttpClient()
@@ -147,7 +145,6 @@ object NetworkUser {
 
                         if (response.isSuccessful) {
                             Log.v("회원가입로그", "${response.code}")
-                            val jo = responseBody?.let { JSONObject(it) }
                             callback(response.code)
                         } else {
                             callback(response.code) // 에러 코드 전달

@@ -15,7 +15,7 @@ import com.tangoplus.tangoq.databinding.RvDataStaticItemBinding
 
 class DataStaticRVAdapter(private val context: Context, private val data: List<Triple<String, String, String?>>, private val isDangerParts: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class StaticViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvDSITitle : TextView = view.findViewById(R.id.tvDSITitle)
         val tvDSI1 : TextView = view.findViewById(R.id.tvDSI1)
         val tvDSI2 : TextView = view.findViewById(R.id.tvDSI2)
@@ -26,7 +26,7 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvDataStaticItemBinding.inflate(inflater, parent, false)
-        return viewHolder(binding.root)
+        return StaticViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int {
@@ -35,7 +35,7 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = data[position]
-        if (holder is viewHolder) {
+        if (holder is StaticViewHolder) {
             if (isDangerParts) {
                 setBackgroundDrawable(holder.clDSI)
                 holder.ivDSI.visibility = View.VISIBLE

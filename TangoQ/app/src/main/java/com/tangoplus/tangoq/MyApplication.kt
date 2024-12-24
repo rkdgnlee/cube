@@ -25,7 +25,6 @@ class MyApplication : Application() {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
             override fun onActivityStarted(activity: Activity) {
                 startedActivities++
-                Log.v("액티비티start", "startedActivities: $startedActivities, isAppInBackGround: $isAppInBackground")
                 if (isAppInBackground) {
                     isAppInBackground = false
 
@@ -36,7 +35,6 @@ class MyApplication : Application() {
             override fun onActivityPaused(activity: Activity) {}
             override fun onActivityStopped(activity: Activity) {
                 startedActivities--
-                Log.v("액티비티stopped", "startedActivities: $startedActivities, isAppInBackGround: $isAppInBackground")
                 if (startedActivities == 0) {
                     isAppInBackground = true
 
@@ -46,7 +44,6 @@ class MyApplication : Application() {
             }
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
             override fun onActivityDestroyed(activity: Activity) {
-                Log.v("액티비티destroy", "startedActivities: $startedActivities, isAppInBackGround: $isAppInBackground")
                 if (activity.isChangingConfigurations) {
                     return // configuration change로 인한 destroy일 경우 무시 ( 다크 모드 변경 등 )
                 }

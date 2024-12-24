@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.dialog
 
 import android.Manifest
 import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,19 +17,13 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity.ALARM_SERVICE
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.databinding.FragmentGuideDialogBinding
-import java.util.Calendar
 
 class GuideDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentGuideDialogBinding
     companion object {
-        private const val TAG = "Pose Landmarker"
-        private const val REQUEST_CODE_PERMISSIONS = 1001
         // 버전별 필요 권한 정의
         fun getRequiredPermissions(): Array<String> {
             return when {
@@ -129,7 +122,7 @@ class GuideDialogFragment : DialogFragment() {
         return true // API 31 미만은 권한 필요 없음
     }
 
-    fun requestExactAlarmPermission(context: Context) {
+    private fun requestExactAlarmPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
             context.startActivity(intent)

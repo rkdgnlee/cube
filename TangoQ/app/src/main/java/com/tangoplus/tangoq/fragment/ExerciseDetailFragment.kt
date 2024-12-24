@@ -70,7 +70,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
 
         // ------# 선택 카테고리 & 타입 가져오기 시작 #------
         categoryId = arguments?.getInt(ARG_CATEGORY_ID)
-        val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
+//        val categoryName = arguments?.getString(ARG_CATEGORY_NAME)
         val sn = arguments?.getInt(ARG_SN)
         prefs = PreferencesManager(requireContext())
         // ------# 선택 카테고리 & 타입 가져오기  #------
@@ -120,7 +120,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             filteredDataList  = evm.allExercises.filter { it.exerciseCategoryId == categoryId.toString() }.toMutableList()
 
             // ------! 자동완성 시작 !------
-            val exerciseNames = filteredDataList.map { it.exerciseName }.distinct()
+//            val exerciseNames = filteredDataList.map { it.exerciseName }.distinct()
             binding.linearLayout3.setOnClickListener{
                 val dialog = ExerciseSearchDialogFragment()
                 dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
@@ -128,7 +128,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             try {
                 binding.sflED.stopShimmer()
                 binding.sflED.visibility= View.GONE
-                currentCateExercises = filteredDataList.filter {  it.exerciseTypeId == categoryMap.get("목관절").toString() }.sortedBy { it.exerciseId }.toMutableList()
+                currentCateExercises = filteredDataList.filter {  it.exerciseTypeId == categoryMap["목관절"].toString() }.sortedBy { it.exerciseId }.toMutableList()
                 filteredDataList = filteredDataList.toMutableList()
 
                 updateRecyclerView(currentCateExercises.toMutableList())
@@ -187,7 +187,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     override fun onCategoryClick(category: String) {
         Log.v("category,search", "1categoryId: ${categoryId}, searchId: ${categoryMap[category]}")
         try {
-            currentCateExercises = filteredDataList.filter { it.exerciseTypeId == categoryMap.get(category).toString() }.sortedBy { it.exerciseId }.toMutableList()
+            currentCateExercises = filteredDataList.filter { it.exerciseTypeId == categoryMap[category].toString() }.sortedBy { it.exerciseId }.toMutableList()
             val filterIndex = binding.spnrED.selectedItemPosition
             when (filterIndex) {
                 0 -> updateRecyclerView(currentCateExercises.sortedByDescending { it.exerciseId }.toMutableList())

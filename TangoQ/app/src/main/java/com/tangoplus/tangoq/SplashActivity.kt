@@ -49,7 +49,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private lateinit var ssm : SaveSingletonManager
-    private var integrityTokenProvider: StandardIntegrityTokenProvider? = null
+//    private var integrityTokenProvider: StandardIntegrityTokenProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,8 +126,8 @@ class SplashActivity : AppCompatActivity() {
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
 
-                val Handler = Handler(Looper.getMainLooper())
-                Handler.postDelayed({
+                val handler = Handler(Looper.getMainLooper())
+                handler.postDelayed({
 
                     // ------! 네이버 토큰 있음 시작 !------
                     if (naverTokenExist == NidOAuthLoginState.OK) {
@@ -289,7 +289,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun navigateDeepLink() {
         val data: Uri? = intent?.data
-        Log.v("splash>deeplink", "data: ${data}")
+        Log.v("splash>deeplink", "data: $data")
         if (data != null) {
             // 딥링크 처리
             DeepLinkManager.handleDeepLink(this, data)
@@ -298,52 +298,52 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun verifyIntegrityResult(jo: JSONObject) : Boolean {
-        val requestDetails = jo.getJSONObject("requestDetails")
-
-        val requestPackageName = requestDetails.getString("requestPackageName")
-        val requestHash = requestDetails.getString("requestHash")
-        val timestampMillis = requestDetails.getLong("timestampMillis")
-
-        val requestIntegrity = jo.getJSONObject("appIntegrity")
-        val appRecognitionVerdict = requestIntegrity.optString("appRecognitionVerdict")
-
-        val deviceIntegrity = jo.getJSONObject("deviceIntegrity")
-        val deviceRecognitionVerdict = if (deviceIntegrity.has("deviceRecognitionVerdict")) {
-            deviceIntegrity.getJSONArray("deviceRecognitionVerdict").toString()
-        } else {
-            ""
-        }
-        val accountDetails = jo.getJSONObject("accountDetails")
-        val appLicensingVerdict = accountDetails.getString("appLicensingVerdict")
-
-        val environmentDetails = jo.getJSONObject("environmentDetails")
-        val appAccessRiskVerdict = environmentDetails.getJSONObject("appAccessRiskVerdict")
-        // 패키지나 hash키가 다를 때
-        if (!requestPackageName.equals("com.tangoplus.tangoq") || !requestHash.equals(getString(R.string.integrityHashKey))) {
-            return false
-        }
-
-        // 앱 무결성 에 대한 값들 찾기
-        if (!appRecognitionVerdict.equals("PLAY_RECOGNIZSED")) {
-            return false
-        }
-
-        // 기기 무결성
-        if (!deviceRecognitionVerdict.contains("MEETS_DEVICE_INTEGRITY")) {
-            return false
-        }
-
-        if (!appLicensingVerdict.equals("LICENSED")) {
-            return false
-        }
-
-        if (appAccessRiskVerdict.has("appsDetected")) {
-            val appsDetected = appAccessRiskVerdict.getJSONArray("appsDetected").toString()
-            if (!appsDetected.contains("CAPTURING") && !appsDetected.contains("CONTROLLING")) {
-                return false
-            }
-        }
-        return true
-    }
+//    private fun verifyIntegrityResult(jo: JSONObject) : Boolean {
+//        val requestDetails = jo.getJSONObject("requestDetails")
+//
+//        val requestPackageName = requestDetails.getString("requestPackageName")
+//        val requestHash = requestDetails.getString("requestHash")
+//        val timestampMillis = requestDetails.getLong("timestampMillis")
+//
+//        val requestIntegrity = jo.getJSONObject("appIntegrity")
+//        val appRecognitionVerdict = requestIntegrity.optString("appRecognitionVerdict")
+//
+//        val deviceIntegrity = jo.getJSONObject("deviceIntegrity")
+//        val deviceRecognitionVerdict = if (deviceIntegrity.has("deviceRecognitionVerdict")) {
+//            deviceIntegrity.getJSONArray("deviceRecognitionVerdict").toString()
+//        } else {
+//            ""
+//        }
+//        val accountDetails = jo.getJSONObject("accountDetails")
+//        val appLicensingVerdict = accountDetails.getString("appLicensingVerdict")
+//
+//        val environmentDetails = jo.getJSONObject("environmentDetails")
+//        val appAccessRiskVerdict = environmentDetails.getJSONObject("appAccessRiskVerdict")
+//        // 패키지나 hash키가 다를 때
+//        if (!requestPackageName.equals("com.tangoplus.tangoq") || !requestHash.equals(getString(R.string.integrityHashKey))) {
+//            return false
+//        }
+//
+//        // 앱 무결성 에 대한 값들 찾기
+//        if (!appRecognitionVerdict.equals("PLAY_RECOGNIZSED")) {
+//            return false
+//        }
+//
+//        // 기기 무결성
+//        if (!deviceRecognitionVerdict.contains("MEETS_DEVICE_INTEGRITY")) {
+//            return false
+//        }
+//
+//        if (!appLicensingVerdict.equals("LICENSED")) {
+//            return false
+//        }
+//
+//        if (appAccessRiskVerdict.has("appsDetected")) {
+//            val appsDetected = appAccessRiskVerdict.getJSONArray("appsDetected").toString()
+//            if (!appsDetected.contains("CAPTURING") && !appsDetected.contains("CONTROLLING")) {
+//                return false
+//            }
+//        }
+//        return true
+//    }
 }

@@ -16,14 +16,14 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                              private val week: Pair<Int, Int>,
                              private val onCustomCategoryClickListener: OnCustomCategoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // frequency 는 총 들어가는 회차, progresses는 같이 들어가는 시청 기록, sequencdState는 현재 회차와 선택한회차
-    inner class viewHolder(view: View) : RecyclerView.ViewHolder(view){
+    inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val tvPSIName : TextView = view.findViewById(R.id.tvPSIName)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvProgramSeqItemBinding.inflate(inflater, parent, false)
-        return viewHolder(binding.root)
+        return CustomViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int {
@@ -38,9 +38,9 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         // episode는 첫 번째가 선택된 회차, 두 번째가 진행되는 회차임.
-        if (holder is viewHolder) {
-
-            holder.tvPSIName.text = "Day ${position+1}"
+        if (holder is CustomViewHolder) {
+            val currentDays = "Day ${position+1}"
+            holder.tvPSIName.text = currentDays
 
             // seqState.first == 현재 회차 seqState.second == 선택한 회차
 

@@ -10,8 +10,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.tangoplus.tangoq.R
-import org.apache.commons.math3.fitting.PolynomialCurveFitter
-import org.apache.commons.math3.fitting.WeightedObservedPoints
 
 class TrendCurveView @JvmOverloads constructor(
     context: Context,
@@ -36,7 +34,7 @@ class TrendCurveView @JvmOverloads constructor(
         points = newPoints
         margin = newMargin
         calculateBoundingBox()
-        resamplePoints(resampleSize)
+        resamplePoints()
         invalidate()
     }
 
@@ -48,7 +46,7 @@ class TrendCurveView @JvmOverloads constructor(
         boundingBox.set(minX, minY, maxX, maxY)
     }
 
-    private fun resamplePoints(resampleSize: Int) {
+    private fun resamplePoints() {
         val chunkedPoints = points.chunked(points.size / resampleSize)
         resampledPoints = chunkedPoints.map { chunk ->
             val avgX = chunk.map { it.first }.average().toFloat()
@@ -70,7 +68,7 @@ class TrendCurveView @JvmOverloads constructor(
         path.moveTo(scaledPoints[0].first, scaledPoints[0].second)
 
         for (i in 1 until scaledPoints.size) {
-            val p0 = if (i > 1) scaledPoints[i - 2] else scaledPoints[i - 1]
+            val p0 = if (i > 1) scaledPoints[i - 2] else scaledPoints[0]
             val p1 = scaledPoints[i - 1]
             val p2 = scaledPoints[i]
             val p3 = if (i < scaledPoints.size - 1) scaledPoints[i + 1] else p2

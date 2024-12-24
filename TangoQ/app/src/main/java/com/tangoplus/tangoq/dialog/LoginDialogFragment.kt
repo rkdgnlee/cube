@@ -144,29 +144,23 @@ class LoginDialogFragment : DialogFragment() {
                                 // ------! 싱글턴 + 암호화 저장 시작 !------
                                 if (jo != null ) {
                                     // ------# 최초 로그인 #------
-                                    if (jo.optInt("weight") == 0 && jo.optInt("height") == 0 && jo.optString("gender") == "1") {
-                                        val dialog2 = SetupDialogFragment()
-                                        dialog2.show(requireActivity().supportFragmentManager, "SetupDialogFragment")
-                                    } else {
-                                        // ------# 기존 로그인 #------
-                                        NetworkUser.storeUserInSingleton(requireContext(), jo)
-                                        createKey(getString(R.string.SECURE_KEY_ALIAS))
+                                    // ------# 기존 로그인 #------
+                                    NetworkUser.storeUserInSingleton(requireContext(), jo)
+                                    createKey(getString(R.string.SECURE_KEY_ALIAS))
 //                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
-                                        val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid") ?: ""
-                                        val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt() ?: -1
-                                        val safeContext = context
-                                        if (safeContext != null) {
-                                            dialog.dismiss()
-                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                                Log.v("자체로그인완료", "${Singleton_t_user.getInstance(safeContext).jsonObject}")
-                                                Handler(Looper.getMainLooper()).postDelayed({
-                                                    val intent = Intent(safeContext, MainActivity::class.java)
-                                                    safeContext.startActivity(intent)
-                                                    (safeContext as? Activity)?.finishAffinity()
-                                                }, 250)
-                                            }
+                                    val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid") ?: ""
+                                    val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt() ?: -1
+                                    val safeContext = context
+                                    if (safeContext != null) {
+                                        dialog.dismiss()
+                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                                            Log.v("자체로그인완료", "${Singleton_t_user.getInstance(safeContext).jsonObject}")
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                val intent = Intent(safeContext, MainActivity::class.java)
+                                                safeContext.startActivity(intent)
+                                                (safeContext as? Activity)?.finishAffinity()
+                                            }, 250)
                                         }
-
                                     }
                                 }
                                 // ------! 싱글턴 + 암호화 저장 끝 !------

@@ -150,10 +150,10 @@ object ImageProcessingUtil {
                     && leftHip != null && rightHip != null) {
                     val midFootX = (leftFoot.x + rightFoot.x) / 2
                     canvas.drawLine(midFootX, leftFoot.y + 100, midFootX, nose.y - 100, axisPaint)
-                    canvas.drawLine(leftShoulder.x - 100, leftShoulder.y, rightShoulder.x + 100, rightShoulder.y , axisSubPaint)
-                    canvas.drawLine(leftHip.x - 100, leftHip.y, rightHip.x + 100, rightHip.y , axisSubPaint)
-                    canvas.drawLine(leftShoulder.x - 100, leftShoulder.y, rightShoulder.x + 100, rightShoulder.y , axisSubPaint)
-                    canvas.drawLine(leftKnee.x - 100, leftKnee.y, rightKnee.x + 100, rightKnee.y , axisSubPaint)
+                    canvas.drawLine(leftShoulder.x + 100, leftShoulder.y, rightShoulder.x - 100, rightShoulder.y , axisSubPaint)
+                    canvas.drawLine(leftHip.x + 100, leftHip.y, rightHip.x - 100, rightHip.y , axisSubPaint)
+                    canvas.drawLine(leftShoulder.x + 100, leftShoulder.y, rightShoulder.x - 100, rightShoulder.y , axisSubPaint)
+                    canvas.drawLine(leftKnee.x + 100, leftKnee.y, rightKnee.x - 100, rightKnee.y , axisSubPaint)
 
                     val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2
                     val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2
@@ -262,22 +262,22 @@ object ImageProcessingUtil {
         return resultBitmap
     }
 
-    fun decodeSampledBitmapFromFile(filePath: String, reqWidth: Int, reqHeight: Int) : Bitmap {
-        val options = BitmapFactory.Options().apply {
-            inJustDecodeBounds = true
-        }
-        BitmapFactory.decodeFile(filePath, options)
+//    fun decodeSampledBitmapFromFile(filePath: String, reqWidth: Int, reqHeight: Int) : Bitmap {
+//        val options = BitmapFactory.Options().apply {
+//            inJustDecodeBounds = true
+//        }
+//        BitmapFactory.decodeFile(filePath, options)
+//
+//        options.inSampleSize = calcuateSampleSize(options, reqWidth, reqHeight)
+//        options.inJustDecodeBounds = false
+//        var bitmap = BitmapFactory.decodeFile(filePath, options)
+//
+//        bitmap = rotateImageIfRequired(filePath, bitmap)
+//        bitmap = Bitmap.createScaledBitmap(bitmap, reqWidth, reqHeight, true)
+//        return bitmap
+//    }
 
-        options.inSampleSize = calcuateSampleSize(options, reqWidth, reqHeight)
-        options.inJustDecodeBounds = false
-        var bitmap = BitmapFactory.decodeFile(filePath, options)
-
-        bitmap = rotateImageIfRequired(filePath, bitmap)
-        bitmap = Bitmap.createScaledBitmap(bitmap, reqWidth, reqHeight, true)
-        return bitmap
-    }
-
-    fun calcuateSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+    private fun calcuateSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
         val (height: Int, width: Int) = options.run { outHeight to outWidth }
         var inSampleSize = 1
 
@@ -293,22 +293,22 @@ object ImageProcessingUtil {
         return inSampleSize
     }
 
-    private fun rotateImageIfRequired(filePath: String, bitmap: Bitmap): Bitmap {
-        val ei = ExifInterface(filePath)
-        val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-
-        return when {
-            orientation == ExifInterface.ORIENTATION_ROTATE_90 ||
-                    (bitmap.width < bitmap.height && orientation == ExifInterface.ORIENTATION_NORMAL) -> rotateImage(bitmap, 90f)
-
-            else -> bitmap
-        }
-    }
-    private fun rotateImage(bitmap: Bitmap, degree: Float): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(degree)
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
+//    private fun rotateImageIfRequired(filePath: String, bitmap: Bitmap): Bitmap {
+//        val ei = ExifInterface(filePath)
+//        val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+//
+//        return when {
+//            orientation == ExifInterface.ORIENTATION_ROTATE_90 ||
+//                    (bitmap.width < bitmap.height && orientation == ExifInterface.ORIENTATION_NORMAL) -> rotateImage(bitmap, 90f)
+//
+//            else -> bitmap
+//        }
+//    }
+//    private fun rotateImage(bitmap: Bitmap, degree: Float): Bitmap {
+//        val matrix = Matrix()
+//        matrix.postRotate(degree)
+//        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+//    }
 
 
     fun cropToPortraitRatio(original: Bitmap): Bitmap {

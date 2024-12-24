@@ -68,7 +68,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
-        Log.v("Singleton>Profile", "${userJson}")
+        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
 
         binding.ibtnPAlarm.setOnClickListener {
@@ -149,7 +149,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
     }
 
     // ------! 프로필 사진 관찰 끝 !------
-    fun hasPermission(permission: String): Boolean {
+    private fun hasPermission(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
             permission
@@ -157,7 +157,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
     }
 
     // 여러 권한 체크 헬퍼 함수
-    fun hasPermissions(vararg permissions: String): Boolean {
+    private fun hasPermissions(vararg permissions: String): Boolean {
         return permissions.all { permission ->
             ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -188,12 +188,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
     private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
             val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", viewModel)
-            adapter.profilemenulist = list
+            adapter.profileMenuList = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         } else {
             val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", viewModel)
-            adapter.profilemenulist = list
+            adapter.profileMenuList = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
@@ -239,7 +239,6 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                         CoroutineScope(Dispatchers.IO).launch {
                             sendProfileImage(requireContext(), getString(R.string.API_user),
                                 userJson?.optString("sn").toString(), requestBody) { imageUrl ->
-                                Log.v("수정된프로필사진URL", "$imageUrl")
                                 CoroutineScope(Dispatchers.Main).launch {
                                     Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
                                 }

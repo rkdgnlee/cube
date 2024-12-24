@@ -52,7 +52,6 @@ object HttpClientProvider {
         return client
     }
 
-
     // ------# 만료됐을 때 다시 토큰 발급 받아 저장 #------
     fun refreshAccessToken(context: Context, refreshToken: String) : Int {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -67,7 +66,7 @@ object HttpClientProvider {
             try {
                 if (!response.isSuccessful) {
                     val code = response.code
-                    Log.e("RefreshToken", "Failed to refresh token: ${code}")
+                    Log.e("RefreshToken", "Failed to refresh token: $code")
                     code
                 } else if (response.isSuccessful) {
                     val responseBody = response.body?.string()

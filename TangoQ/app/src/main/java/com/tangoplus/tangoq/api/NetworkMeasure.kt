@@ -63,7 +63,7 @@ object NetworkMeasure {
                     if (fileSuccess == "1") {
                         when (isStatic) {
                             true -> {
-                                mDao.updateAndGetStatic(mobileDbSn, uploadedFile = fileSuccess,serverFileName = serverFileName)
+                                mDao.updateAndGetStatic(mobileDbSn, uploadedFile = fileSuccess, serverFileName = serverFileName)
                                 saveFileFromUrl(context, serverFileName, FileStorageUtil.FileType.IMAGE)
                             }
                             false -> {
@@ -167,10 +167,8 @@ object NetworkMeasure {
                         saveFileFromUrl(context, dynamicServerFileName, FileStorageUtil.FileType.VIDEO)
                     }
                     callback(bodyJo)
-
                     return@withContext Result.success(Unit)
                 }
-
             } catch (e: SocketTimeoutException) {
                 // 타임아웃 처리
                 Log.e("getMeasureResultError", "Request timed out", e)
@@ -214,16 +212,12 @@ object NetworkMeasure {
                     val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
                     val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
                     Log.v("룸에저장된info들", "$roomInfoSns")
-//                Log.v("info의bodyJa", "$ja")
+
                     val getInfos = mutableListOf<MeasureInfo>() // info로 변환해서 넣기
                     for (i in 0 until ja.length()) {
                         val jo = ja.optJSONObject(i)
-//                    Log.v("info의bodyJo", "$jo")
                         getInfos.add(jo.toMeasureInfo())
-//                    Log.v("info의변환getInfos", "${getInfos}")
                     }
-//                val jo = ja.optJSONObject(1) // 현재 0번째 index는 7가지 동작이 없음.
-//                getInfos.add(jo.toMeasureInfo())
                     Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID)}")
 
                     val newInfos = getInfos.filter { apiInfo ->
@@ -282,35 +276,18 @@ object NetworkMeasure {
 
                     val motherJo = responseBody?.let { JSONObject(it) }
                     if (motherJo != null) {
-//                        val saveJobs = mutableListOf<Deferred<Boolean>>()
-
                         for (i in 0 until motherJo.optString("count").toInt() - 1) {
                             val staticJo = motherJo.optJSONObject("static_${i+1}")
                             if (staticJo != null) {
                                 Log.v("스태틱조1~6", staticJo.optString("measure_server_json_name"))
                                 mDao.insertByStatic(staticJo.toMeasureStatic())
-//                                val fileName = staticJo.optString("measure_server_file_name")
-//                                val jsonName = staticJo.optString("measure_server_json_name")
-//
-//                                saveJobs.add(async {
-//                                    saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
-//                                })
-//                                saveJobs.add(async {
-//                                    saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
-//                                })
                             }
                         }
                         val dynamicJo = motherJo.optJSONObject("dynamic")
                         if (dynamicJo != null) {
                             Log.v("다이나믹", dynamicJo.optString("measure_server_json_name"))
                             mDao.insertByDynamic(dynamicJo.toMeasureDynamic())
-//                            val fileName = dynamicJo.optString("measure_server_file_name")
-//                            val jsonName = dynamicJo.optString("measure_server_json_name")
-//
-//                            saveJobs.add(async { saveFileFromUrl(context, fileName, FileStorageUtil.FileType.VIDEO) })
-//                            saveJobs.add(async { saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON) })
                         }
-//                        saveJobs.awaitAll()
                     }
                     return@withContext Result.success(Unit)
                 }

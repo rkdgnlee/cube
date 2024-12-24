@@ -107,6 +107,7 @@ object FileStorageUtil {
             false
         }
     }
+
     // 자동으로 복호화해서 가져오기.
     suspend fun getFile(context: Context, fileName: String): File? {
         return withContext(Dispatchers.IO) {
@@ -156,12 +157,12 @@ object FileStorageUtil {
         return internalFile
     }
 
-    fun deleteFile(context: Context, fileName: String): Boolean {
-        val fileType = getFileTypeFromExtension(fileName)
-        val dir = getDirectory(context, fileType)
-        val file = File(dir, fileName)
-        return file.delete()
-    }
+//    fun deleteFile(context: Context, fileName: String): Boolean {
+//        val fileType = getFileTypeFromExtension(fileName)
+//        val dir = getDirectory(context, fileType)
+//        val file = File(dir, fileName)
+//        return file.delete()
+//    }
 
     fun readJsonFile(file: File): JSONObject? {
         return try {
@@ -246,13 +247,7 @@ object FileStorageUtil {
         return digest.digest().joinToString("") { "%02x".format(it) }
     }
 
-    fun isFileIntegrityValid(file: File, expectedHash: String): Boolean {
-        return calculateFileHash(file) == expectedHash
-    }
-
-
-
-    fun checkFileExisted() {
-
-    }
+//    fun isFileIntegrityValid(file: File, expectedHash: String): Boolean {
+//        return calculateFileHash(file) == expectedHash
+//    }
 }

@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.etc.CautionVPAdapter
 import com.tangoplus.tangoq.databinding.FragmentMeasureSkeletonDialogBinding
@@ -89,9 +88,9 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.9f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20))
-        dialogFragmentResize(0.9f, 0.85f)
+        dialogFragmentResize()
     }
-    private fun dialogFragmentResize(width: Float, height: Float) {
+    private fun dialogFragmentResize() {
         val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         if (Build.VERSION.SDK_INT < 30) {
@@ -102,16 +101,16 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
 
             val window = dialog?.window
 
-            val x = (size.x * width).toInt()
-            val y = (size.y * height).toInt()
+            val x = (size.x * 0.9f).toInt()
+            val y = (size.y * 0.85f).toInt()
             window?.setLayout(x, y)
         } else {
             val rect = windowManager.currentWindowMetrics.bounds
 
             val window = dialog?.window
 
-            val x = (rect.width() * width).toInt()
-            val y = (rect.height() * height).toInt()
+            val x = (rect.width()* 0.9f).toInt()
+            val y = (rect.height() * 0.85f).toInt()
 
             window?.setLayout(x, y)
         }

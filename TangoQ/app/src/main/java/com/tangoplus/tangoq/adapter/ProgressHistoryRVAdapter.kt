@@ -5,15 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.databinding.RvDashboard2ItemBinding
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
-class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<ProgressHistoryVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ProgressHistoryRVAdapter(val data: List<ProgressHistoryVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class PHViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvD2IProgram : TextView = view.findViewById(R.id.tvD2IProgram)
@@ -42,11 +39,11 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
         return data.size
     }
 
-    fun convertDateString(input: String): String {
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-        val dateTime = LocalDateTime.parse(input, inputFormatter)
-
-        return dateTime.format(outputFormatter)
-    }
+//    fun convertDateString(input: String): String {
+//        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+//        val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+//        val dateTime = LocalDateTime.parse(input, inputFormatter)
+//
+//        return dateTime.format(outputFormatter)
+//    }
 }

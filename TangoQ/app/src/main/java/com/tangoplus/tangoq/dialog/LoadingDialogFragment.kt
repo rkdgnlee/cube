@@ -14,6 +14,7 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.databinding.FragmentLoadingDialogBinding
 
+@Suppress("DEPRECATION")
 class LoadingDialogFragment : DialogFragment() {
     lateinit var binding : FragmentLoadingDialogBinding
 

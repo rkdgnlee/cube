@@ -93,7 +93,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/tvAlarmMessage"
@@ -103,7 +104,8 @@
                     android:text="아이디"
                     android:textColor="@color/subColor800"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvIdCondition"
@@ -114,7 +116,8 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/conditionSuccessColor"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <LinearLayout
@@ -124,7 +127,8 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="10dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <EditText
                     android:id="@+id/etId"
@@ -142,7 +146,8 @@
                     android:paddingBottom="16dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/subColor100"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnIdCondition"
@@ -155,7 +160,8 @@
                     android:stateListAnimator="@null"
                     android:text="중복 확인"
                     android:textColor="@color/white"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <LinearLayout
@@ -164,7 +170,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/textView2"
@@ -174,7 +181,8 @@
                     android:text="비밀번호 설정"
                     android:textColor="@color/subColor800"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwCondition"
@@ -185,7 +193,8 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <EditText
@@ -205,7 +214,8 @@
                 android:paddingBottom="16dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/subColor100"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/llPwRepeat"
@@ -213,7 +223,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/tvMDDate"
@@ -223,7 +234,8 @@
                     android:text="비밀번호 확인"
                     android:textColor="@color/subColor800"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwRepeat"
@@ -233,7 +245,8 @@
                     android:layout_marginBottom="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:visibility="visible" />
 
             </LinearLayout>
 
@@ -253,7 +266,8 @@
                 android:paddingBottom="16dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/subColor100"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSignIn"
@@ -274,6 +288,7 @@
                 android:text="회원가입 완료하기"
                 android:textColor="@color/white"
                 android:textSize="18sp"
+                android:visibility="visible"
                 app:cornerRadius="12dp" />
 
             <TextView
@@ -287,7 +302,8 @@
                 android:text="이름"
                 android:textColor="@color/subColor800"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="visible" />
 
             <EditText
                 android:id="@+id/etName"
@@ -308,7 +324,8 @@
                 android:paddingBottom="16dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/subColor100"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/llEmail"
@@ -317,7 +334,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <EditText
                     android:id="@+id/etEmailId"
@@ -337,7 +355,8 @@
                     android:paddingBottom="16dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/subColor100"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:visibility="visible" />
 
                 <ImageView
                     android:id="@+id/ssivMDI"
@@ -345,6 +364,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1.9"
+                    android:visibility="visible"
                     app:srcCompat="@drawable/icon_at" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -352,13 +372,15 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_1_sub150_12">
+                    android:background="@drawable/bckgnd_1_sub150_12"
+                    android:visibility="visible">
 
                     <ImageView
                         android:id="@+id/ivSpinner"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -377,6 +399,7 @@
                         android:maxLength="15"
                         android:textColor="@color/black"
                         android:textSize="18sp"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/ivSpinner"
                         app:layout_constraintStart_toStartOf="parent"
@@ -392,6 +415,7 @@
                         android:layout_marginBottom="4dp"
                         android:background="@color/white"
                         android:popupBackground="@color/white"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/ivSpinner"
                         app:layout_constraintStart_toStartOf="parent"
@@ -414,7 +438,8 @@
                 android:stateListAnimator="@null"
                 android:text="다음으로"
                 android:textColor="@color/white"
-                android:textSize="18dp" />
+                android:textSize="18dp"
+                android:visibility="visible" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clMobile"
@@ -493,6 +518,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/bckgnd_1_sub150_12"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvMobile">
@@ -511,7 +537,7 @@
                         android:textColor="@color/black"
                         android:textColorHint="@color/subColor100"
                         android:textSize="18sp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/imageView2"
                         app:layout_constraintStart_toStartOf="parent"

@@ -1,26 +1,15 @@
 package com.tangoplus.tangoq.dialog
 
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
+
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentReportDiseaseDialogBinding
-import com.tangoplus.tangoq.fragment.ExerciseFragment
-import java.io.File
-import java.io.FileOutputStream
-
 
 class ReportDiseaseDialogFragment : DialogFragment() {
     lateinit var binding : FragmentReportDiseaseDialogBinding

@@ -111,7 +111,7 @@ class FeedbackDialogFragment : DialogFragment() {
         private val defaultColor: Int = Color.BLACK,
         private val mainColor: Int = Color.BLUE
     ) {
-        var selectedIndex: Int = -1
+        private var selectedIndex: Int = -1
 
         init {
             textViews.forEachIndexed { index, textView ->

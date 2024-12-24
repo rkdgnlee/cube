@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -19,7 +17,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -38,19 +35,16 @@ import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
-import com.tangoplus.tangoq.function.WifiSecurityManager
+import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
-import com.tangoplus.tangoq.api.TokenCheckWorker
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
-import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -60,7 +54,8 @@ class MainActivity : AppCompatActivity() {
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
-    private lateinit var wifiSecurityManager: WifiSecurityManager
+    private lateinit var wifiManager: WifiManager
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         // 새로운 인텐트가 들어왔을 때 딥링크 처리
@@ -89,11 +84,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        wifiSecurityManager = WifiSecurityManager(this)
+        wifiManager = WifiManager(this)
         // ------! activity 사전 설정 끝 !------
 
         // ------# 접근 방지 #------
-        when (val securityType = wifiSecurityManager.checkWifiSecurity()) {
+        when (val securityType = wifiManager.checkWifiSecurity()) {
             "OPEN","WEP" -> {
                 Log.v("securityNotice", "securityType: $securityType")
                 Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_LONG).show()
@@ -160,7 +155,6 @@ class MainActivity : AppCompatActivity() {
             mvm.selectedMeasure = singletonMeasure.measures?.get(0)
             mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
         }
-
         handleIntent(intent)
 
         // -------# 버튼 시작 #------
@@ -297,7 +291,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToFragment(path: String, exerciseId : String?) {
-        Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: ${exerciseId}")
+        Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: $exerciseId")
         when (path) {
             "PT" -> {
                 if (exerciseId != null) {
@@ -346,7 +340,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MeasureSkeletonActivity::class.java)
         measureSkeletonLauncher.launch(intent)
     }
-    fun hasExactAlarmPermission(context: Context): Boolean {
+    private fun hasExactAlarmPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.canScheduleExactAlarms()

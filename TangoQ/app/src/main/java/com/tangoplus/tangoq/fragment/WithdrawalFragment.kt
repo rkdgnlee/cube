@@ -68,7 +68,7 @@ class WithdrawalFragment : Fragment() {
         })
 
 
-        binding.cbW.setOnCheckedChangeListener{compoundButton, isChecked ->
+        binding.cbW.setOnCheckedChangeListener{ _, isChecked ->
             setBtnUI(isChecked)
         }
 
@@ -87,7 +87,7 @@ class WithdrawalFragment : Fragment() {
                     dialog.dismiss()
                     deleteAccount()
                 }
-                setNegativeButton("아니오") { dialog, _ ->
+                setNegativeButton("아니오") { _, _ ->
                 }
                 create()
             }.show()
@@ -102,7 +102,7 @@ class WithdrawalFragment : Fragment() {
                 requireActivity().runOnUiThread {
                     MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                         setMessage("탈퇴가 완료됐습니다.")
-                        setPositiveButton("예") { dialog, _ ->
+                        setPositiveButton("예") { _, _ ->
                             val intent = Intent(requireContext(), IntroActivity::class.java)
                             singletonUserInstance.jsonObject = null
                             singletonMeasureInstance.measures = null
