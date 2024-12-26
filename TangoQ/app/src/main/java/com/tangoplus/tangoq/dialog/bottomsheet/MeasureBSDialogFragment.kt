@@ -61,7 +61,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val currentMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectedMeasureDate.value }
-                    val uriTuples = currentMeasure?.sn?.let { it1 -> ssm.get1MeasureUrls(it1) }
+                    val uriTuples = currentMeasure?.sn?.let { it -> ssm.get1MeasureUrls(it) }
                     if (uriTuples != null) {
                         Log.v("리스너1", "$uriTuples")
                         ssm.downloadFiles(uriTuples)

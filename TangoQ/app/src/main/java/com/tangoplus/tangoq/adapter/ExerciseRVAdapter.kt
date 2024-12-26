@@ -29,7 +29,7 @@ import java.lang.IllegalArgumentException
 
 class ExerciseRVAdapter (
     private val fragment: Fragment,
-    var exerciseList: MutableList<ExerciseVO>,
+    var exerciseList: MutableList<ExerciseVO>?,
     private val progresses : MutableList<ProgressUnitVO>?,
     private val sequence : Pair<Int, Int>?,
     private val history : MutableList<String>?,
@@ -99,22 +99,22 @@ class ExerciseRVAdapter (
     }
 
     override fun getItemCount(): Int {
-        return exerciseList.size
+        return exerciseList?.size ?: 0
     }
 
     @SuppressLint("ClickableViewAccessibility", "MissingInflatedId", "InflateParams", "SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentExerciseItem = exerciseList[position]
+        val currentExerciseItem = exerciseList?.get(position)
 
-        val second = "${currentExerciseItem.duration?.toInt()?.div(60)}분 ${currentExerciseItem.duration?.toInt()?.rem(60)}초"
+        val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
 
         when (holder) {
             is MainViewHolder -> {
                 // -----! recyclerview에서 운동군 보여주기 !------
-                holder.tvEISymptom.text = currentExerciseItem.relatedSymptom.toString()
-                holder.tvEIName.text = currentExerciseItem.exerciseName
+                holder.tvEISymptom.text = currentExerciseItem?.relatedSymptom.toString()
+                holder.tvEIName.text = currentExerciseItem?.exerciseName
                 holder.tvEITime.text = second
-                when (currentExerciseItem.exerciseStage) {
+                when (currentExerciseItem?.exerciseStage) {
                     "초급" -> {
                         holder.ivEIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
                         holder.tvEIStage.text = "초급자"
@@ -130,7 +130,7 @@ class ExerciseRVAdapter (
                 }
 
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePath}")
+                    .load("${currentExerciseItem?.imageFilePath}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEIThumbnail)
@@ -141,16 +141,16 @@ class ExerciseRVAdapter (
 //                }
 
                 // ------# 하트 버튼 #------
-                updateLikeButtonState(currentExerciseItem.exerciseId.toString(), holder.ibtnEILike)
+                updateLikeButtonState(currentExerciseItem?.exerciseId.toString(), holder.ibtnEILike)
                 holder.ibtnEILike.setOnClickListener {
-                    val currentLikeState = prefs.existLike(currentExerciseItem.exerciseId.toString())
+                    val currentLikeState = prefs.existLike(currentExerciseItem?.exerciseId.toString())
                     if (currentLikeState) {
-                        prefs.deleteLike(currentExerciseItem.exerciseId.toString())
+                        prefs.deleteLike(currentExerciseItem?.exerciseId.toString())
                     } else {
-                        prefs.storeLike(currentExerciseItem.exerciseId.toString())
+                        prefs.storeLike(currentExerciseItem?.exerciseId.toString())
                     }
                     // 상태 변경 후 즉시 UI 업데이트
-                    updateLikeButtonState(currentExerciseItem.exerciseId.toString(), holder.ibtnEILike)
+                    updateLikeButtonState(currentExerciseItem?.exerciseId.toString(), holder.ibtnEILike)
                 }
 
                 // TODO MD2에 맞게 수정해야함
@@ -204,7 +204,7 @@ class ExerciseRVAdapter (
                         1 -> { // 재생 시간 중간
                             holder.tvEIFinish.visibility = View.GONE
                             holder.hpvEI.visibility = View.VISIBLE
-                            val duration  = currentExerciseItem.duration
+                            val duration  = currentExerciseItem?.duration
                             if (duration != null) {
                                 holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
                             }
@@ -247,12 +247,12 @@ class ExerciseRVAdapter (
             }
             // ------! play thumbnail 추천 운동 시작 !------
             is RecommendViewHolder -> {
-                holder.tvRcPName.text = currentExerciseItem.exerciseName
+                holder.tvRcPName.text = currentExerciseItem?.exerciseName
                 holder.tvRcPTime.text = second
-                holder.tvRcPStage.text = currentExerciseItem.exerciseStage
+                holder.tvRcPStage.text = currentExerciseItem?.exerciseStage
 
                 Glide.with(holder.itemView.context)
-                    .load("${currentExerciseItem.imageFilePath}?width=200&height=200")
+                    .load("${currentExerciseItem?.imageFilePath}?width=200&height=200")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(200)
                     .into(holder.ivRcPThumbnail)
@@ -268,9 +268,9 @@ class ExerciseRVAdapter (
 
             is HistoryViewHolder -> {
                 val currentItem = progresses?.get(position)
-                holder.tvEHIName.text = currentExerciseItem.exerciseName
+                holder.tvEHIName.text = currentExerciseItem?.exerciseName
                 holder.tvEHITime.text = second
-                when (currentExerciseItem.exerciseStage) {
+                when (currentExerciseItem?.exerciseStage) {
                     "초급" -> {
                         holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
                         holder.tvEHIStage.text = "초급자"
@@ -285,15 +285,15 @@ class ExerciseRVAdapter (
                     }
                 }
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePath}")
+                    .load("${currentExerciseItem?.imageFilePath}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEHIThumbnail)
-                val duration = currentExerciseItem.duration
+                val duration = currentExerciseItem?.duration
                 if (currentItem != null && duration != null) {
                     holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
                 }
-                holder.tvEHISeq.text = "${position+1}/${exerciseList.size}"
+                holder.tvEHISeq.text = "${position+1}/${exerciseList?.size}"
             }
         }
     }

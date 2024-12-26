@@ -11,13 +11,7 @@ class ExerciseViewModel : ViewModel() {
     // 운동 검색 기록 임시로 담아두는 곳.
     var searchHistory = MutableLiveData(mutableListOf<Pair<Int, String>>()) // 운동 검색 history
 
-
-
-
-
     init {
-
         allExercises = mutableListOf()
-
     }
 }

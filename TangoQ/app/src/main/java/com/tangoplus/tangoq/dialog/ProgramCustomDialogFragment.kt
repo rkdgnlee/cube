@@ -441,8 +441,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             }
         }
     }
-
-
     fun dismissThisFragment() {
         dismiss()
     }
@@ -475,7 +473,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             val weekProgress = pvm.currentProgresses[weekIndex]
             val minSequenceInWeek = weekProgress.minOfOrNull { it.currentSequence } ?: 0
 //            val minSequenceInWeek = 3
-            // 현재 주차도 알아내서 -> 주차도 maxWeek에 맞는지 확인하고 나가게 하더낙 계속 돌아가게 하면 됨?
+            // 현재 주차도 알아내서 -> 주차도 maxWeek에 맞는지 확인하고 나가게 하거나 계속 돌아가게 하면 됨.
             if (weekIndex == maxWeek && minSequenceInWeek == maxSeq) {
                 // 위크까지 반복문이 왔는데 minSequence까지 max 였다?
                 val dialog = ProgramAlertDialogFragment.newInstance(this)

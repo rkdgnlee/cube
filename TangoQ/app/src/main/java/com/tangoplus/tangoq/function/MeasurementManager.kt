@@ -60,7 +60,7 @@ object MeasurementManager {
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 2f, 4f),
                 "back_horizontal_angle_shoulder" to Triple(180f, 0.7f,1.8f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 5f, 8f),
-                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(37f, 5f, 10f)
+                "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" to Triple(37f, 5f, 10f)
             )
         ),
         mapOf(
@@ -70,7 +70,7 @@ object MeasurementManager {
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 2f, 4f),
                 "back_horizontal_angle_shoulder" to Triple(180f, 0.7f,1.8f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 5f, 8f),
-                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(37f, 5f, 10f)
+                "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to Triple(37f, 5f, 10f)
             )
         ),
         // 좌측 팔꿉
@@ -78,21 +78,19 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1f, 2f), // -178인데 이게 반대쪽이 높아지면 2도가 됨. 이 부분포함해야함 오른쪽이 높이있다는 거지.
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 0.43f, 0.86f), // 179인데 이 부분 그냥 180에서 뺀 절대값으로 계산해야할듯? 근데?
                 "front_vertical_angle_shoulder_elbow_left" to Triple(82f, 2f, 6f)),
-            2 to mapOf("front_elbow_align_angle_left_upper_elbow_elbow_wrist" to Triple(30f,5f, 9f),
-                "front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(12f,4f, 8f)),
+            2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(12f,4f, 8f)),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to Triple(90f,2.5f, 5f),
                 "side_left_vertical_angle_elbow_wrist" to Triple(85f,5f, 10f),
-                "side_left_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 6f, 12f))
+                "side_left_vertical_angle_shoulder_elbow_wrist" to Triple(175f, 6f, 12f))
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1f, 2f), // 179 면 거의 평행한데
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 0.23f, 0.76f),
                 "front_vertical_angle_shoulder_elbow_right" to Triple(82f, 2f, 6f)),
-            2 to mapOf("front_elbow_align_angle_right_upper_elbow_elbow_wrist" to Triple(30f,5f, 9f),
-                "front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(12f,4f, 8f)),
+            2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(12f,4f, 8f)),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to Triple(90f,2.5f, 5f),
                 "side_right_vertical_angle_elbow_wrist" to Triple(95f,5f, 10f),
-                "side_right_vertical_angle_shoulder_elbow_wrist" to Triple(180f, 6f, 12f))
+                "side_right_vertical_angle_shoulder_elbow_wrist" to Triple(175f, 6f, 12f))
         ),
         // 좌측 손목
         mapOf(
@@ -124,8 +122,8 @@ object MeasurementManager {
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_right" to Triple(90f,1.6f, 5.1f),
                 "front_horizontal_angle_hip" to Triple(180f, 2.5f, 5f)),
-            4 to mapOf("side_right_vertical_angle_hip_knee" to Triple(90f,2.5f, 5f),
-                "side_right_horizontal_distance_hip" to Triple(0f, 0.5f, 1f)
+            4 to mapOf("side_right_vertical_angle_hip_knee" to Triple(89f,2f, 5f),
+                "side_right_horizontal_distance_hip" to Triple(4f, 0.5f, 1f)
             ),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 0.5f, 1f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
@@ -143,7 +141,7 @@ object MeasurementManager {
         mapOf(
             0 to mapOf("front_horizontal_angle_knee" to Triple(180f, 1.2f, 3.6f),
                 "front_horizontal_distance_knee_right" to Triple(9f, 1.4f, 2.7f),
-                "front_vertical_angle_hip_knee_ankle_right" to Triple(180f,2.5f, 5f)),
+                "front_vertical_angle_hip_knee_ankle_right" to Triple(175f,2.5f, 5f)),
             5 to mapOf("back_horizontal_angle_knee" to Triple(0f, 0.25f, 0.5f),
                 "back_horizontal_distance_knee_right" to Triple(4.5f, 1.9f, 3f))
         ),
@@ -181,7 +179,7 @@ object MeasurementManager {
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 3f, 5f),
                 "back_horizontal_angle_shoulder" to Triple(180f, 0.7f,1.8f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 6f, 10f),
-                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(37f, 5f, 10f)
+                "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" to Triple(37f, 5f, 10f)
             )
         ),
         mapOf(
@@ -191,7 +189,7 @@ object MeasurementManager {
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 3f, 5f),
                 "back_horizontal_angle_shoulder" to Triple(180f, 0.7f,1.8f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 6f, 10f),
-                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(37f, 5f, 10f)
+                "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to Triple(37f, 5f, 10f)
             )
         ),
         // 좌측 팔꿉
@@ -199,21 +197,19 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1.7f, 2.9f),
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 0.89f, 1.1f),
                 "front_vertical_angle_shoulder_elbow_left" to Triple(78f, 2.4f, 7.6f)),
-            2 to mapOf("front_elbow_align_angle_left_upper_elbow_elbow_wrist" to Triple(8f,5f, 10f),
-                "front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(12f,5f, 10f)),
+            2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(12f,5f, 10f)),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to Triple(90f,2.7f, 8.1f),
                 "side_left_vertical_angle_elbow_wrist" to Triple(85f,6f, 12f),
-                "side_left_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 8f, 14f))
+                "side_left_vertical_angle_shoulder_elbow_wrist" to Triple(165f, 8f, 14f))
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1.7f, 2.9f),
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 0.89f, 1.1f),
                 "front_vertical_angle_shoulder_elbow_right" to Triple(78f, 2.4f, 7.6f)),
-            2 to mapOf("front_elbow_align_angle_right_upper_elbow_elbow_wrist" to Triple(8f,5f, 10f),
-                "front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(12f,5f, 10f)),
+            2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(12f,5f, 10f)),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to Triple(90f,2.7f, 8.1f),
-                "side_right_vertical_angle_elbow_wrist" to Triple(95f,6f, 12f),
-                "side_right_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 8f, 14f))
+                "side_right_vertical_angle_elbow_wrist" to Triple(85f,6f, 12f),
+                "side_right_vertical_angle_shoulder_elbow_wrist" to Triple(165f, 8f, 14f))
         ),
         // 좌측 손목
         mapOf(
@@ -234,23 +230,21 @@ object MeasurementManager {
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_left" to Triple(90f,2.4f, 7f),
                 "front_horizontal_angle_hip" to Triple(180f, 0.6f, 2.8f)),
-            3 to mapOf("side_left_vertical_angle_hip_knee" to Triple(88f,2f, 5.8f),
+            3 to mapOf("side_left_vertical_angle_hip_knee" to Triple(88f,4f, 6.8f),
                 "side_left_horizontal_distance_hip" to Triple(8f, 1.2f, 2.2f)
             ),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 0.7f, 2.3f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
-//                "back_sit_vertical_angle_shoulder_center_hip" to Triple(90f,5f, 10f)
             )
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_right" to Triple(90f,2.4f, 7f),
                 "front_horizontal_angle_hip" to Triple(180f, 0.6f, 2.8f)),
-            4 to mapOf("side_right_vertical_angle_hip_knee" to Triple(88f,2f, 5.8f),
-                "side_right_horizontal_distance_hip" to Triple(3f, 1.2f, 2.2f)
+            4 to mapOf("side_right_vertical_angle_hip_knee" to Triple(88f,4f, 6.8f),
+                "side_right_horizontal_distance_hip" to Triple(8f, 1.2f, 2.2f)
             ),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 0.7f, 2.3f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
-//                "back_sit_vertical_angle_shoulder_center_hip" to Triple(90f,5f, 10f)
             )
         ),
 // 좌측 무릎
@@ -278,14 +272,14 @@ object MeasurementManager {
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to Triple(88f,2.5f, 3.4f),
-                "front_horizontal_angle_ankle" to Triple(0f, 1.1f, 3.2f),
+                "front_horizontal_angle_ankle" to Triple(180f, 1.1f, 3.2f),
                 "front_horizontal_distance_ankle_right" to Triple(10f,1.9f, 4.1f)),
             5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.2f, 0.6f),
                 "back_horizontal_distance_heel_right" to Triple(11f, 3f, 5f),)
         )
     )
 
-    val mainPartSeqs = listOf(
+    private val mainPartSeqs = listOf(
         mapOf( // 6
             0 to mapOf( "front_horizontal_angle_ear" to "양 귀 기울기"),
             3 to mapOf("side_left_vertical_angle_nose_shoulder" to "코와 좌측 어깨 기울기"),
@@ -300,7 +294,7 @@ object MeasurementManager {
             3 to mapOf("side_left_horizontal_distance_shoulder" to "중심과 어깨 거리"),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
-                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "양 어깨-골반 중심 기울기")
+                "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" to "우측 어깨-좌측 어깨-골반중심 기울기")
         ),
         mapOf( // 5
             0 to mapOf("front_horizontal_angle_shoulder" to "양 어깨 기울기",
@@ -308,15 +302,14 @@ object MeasurementManager {
             4 to mapOf("side_right_horizontal_distance_shoulder" to "중심과 어깨 거리"),
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
-            "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "양 어깨-골반 중심 기울기")
+            "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to "골반중심-우측 어깨-좌측 어깨 기울기")
         ),
         // 좌측 팔꿉  // 8
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to "양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "양 팔꿉 높이 차",
                 "front_vertical_angle_shoulder_elbow_left" to "좌측 어깨와 팔꿉 기울기"),
-            2 to mapOf("front_elbow_align_angle_left_upper_elbow_elbow_wrist" to "좌측 상완-팔꿉-손목 기울기",
-                "front_elbow_align_angle_left_shoulder_elbow_wrist" to "좌측 어깨-팔꿈치-손목 기울기"),
+            2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to "좌측 어깨-팔꿈치-손목 기울기"),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
                 "side_left_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
                 "side_left_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기")
@@ -325,8 +318,7 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_elbow" to "양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "양 팔꿉 높이 차",
                 "front_vertical_angle_shoulder_elbow_right" to "우측 어깨와 팔꿉 기울기"),
-            2 to mapOf("front_elbow_align_angle_right_upper_elbow_elbow_wrist" to "우측 상완-팔꿉-손목 기울기",
-                "front_elbow_align_angle_right_shoulder_elbow_wrist" to "우측 어깨-팔꿈치-손목 기울기"),
+            2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to "우측 어깨-팔꿈치-손목 기울기"),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
                 "side_right_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
                 "side_right_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기")
@@ -353,7 +345,7 @@ object MeasurementManager {
             3 to mapOf("side_left_vertical_angle_hip_knee" to "좌측 골반과 무릎 기울기",
                 "side_left_horizontal_distance_hip" to "중심과 좌측 골반 거리"),
             5 to mapOf("back_horizontal_angle_hip" to "양 골반 기울기"),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "우측 어깨-좌측 어깨-골반중심 기울기",
+            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "우측 어깨-골반중심-좌측 어깨 기울기",
 //                "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
                 )
         ),
@@ -363,7 +355,7 @@ object MeasurementManager {
             4 to mapOf("side_right_vertical_angle_hip_knee" to "우측 골반과 무릎 기울기",
                 "side_right_horizontal_distance_hip" to "중심과 우측 골반 거리"),
             5 to mapOf("back_horizontal_angle_hip" to "양 골반 기울기"),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "골반중심-우측 어깨-좌측 어깨 기울기",
+            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "우측 어깨-골반중심-좌측 어깨 기울기",
 //                "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
                 )
         ),
@@ -492,13 +484,8 @@ object MeasurementManager {
         for (part in parts) {
             val (bodyPart, status) = part
             val weight = when {
-//                bodyPart.contains("목관절") -> weightScore
-//                bodyPart.contains("어깨") -> weightScore
-//                bodyPart.contains("골반") -> weightScore
-                bodyPart.contains("팔꿉") -> weightScore
-//                bodyPart.contains("손목") -> weightScore
+                bodyPart.contains("팔꿉") -> reverseWeightScore
                 bodyPart.contains("무릎") -> weightScore
-//                bodyPart.contains("발목") -> reverseWeightScore
                 else -> 1.0
             }
             weightedScoreSum += (scores[status] ?: 0) * weight
@@ -704,10 +691,6 @@ object MeasurementManager {
                     ssiv.setOnImageEventListener(object : SubsamplingScaleImageView.OnImageEventListener {
                         override fun onReady() {
                             if (!isSet) {
-                                // ssiv 이미지뷰의 크기
-//                                    val jsonObject = Gson().fromJson(jsonData.toString(), JsonObject::class.java)
-//                                    val scaleFactorX = jsonObject.get("measure_overlay_scale_factor_x").asDouble
-//                                    val scaleFactorY = jsonObject.get("measure_overlay_scale_factor_y").asDouble
 
                                 val imageViewWidth = ssiv.width
                                 val imageViewHeight = ssiv.height

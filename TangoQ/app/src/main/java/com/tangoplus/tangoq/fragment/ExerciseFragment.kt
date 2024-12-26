@@ -64,18 +64,15 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         }
         CoroutineScope(Dispatchers.Main).launch {
 
-            val categoryArrayList = mutableListOf<Pair<Int, String>>()
-            categoryArrayList.add(Pair(1, "기본 밸런스 운동프로그램"))
-            categoryArrayList.add(Pair(2, "기본 스트레칭 운동"))
-            categoryArrayList.add(Pair(3, "근육중심 운동프로그램"))
-            categoryArrayList.add(Pair(4, "운동기구 활용 스트레칭 프로그램"))
-            categoryArrayList.add(Pair(5, "운동기구 활용 운동프로그램"))
-            val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
+            val categoryArrayList = mutableListOf<ArrayList<Int>>()
+            categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 스트레칭
+            categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 밸런스, 스트레칭, 운동기구 활용 스트레칭, 운동기구 활용 운동
+            categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 기본 밸런스, 스트레칭
+            categoryArrayList.add(arrayListOf(10, 11)) // 기본 밸런스, 스트레칭
+            categoryArrayList.add(arrayListOf(12)) // 기본 밸런스, 스트레칭
 
             try { // ------! rv vertical 시작 !------
-
-                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment,  sn, "mainCategory" )
-
+                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, listOf(),this@ExerciseFragment,  sn, "mainCategory" )
                 binding.rvEMainCategory.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 binding.rvEMainCategory.layoutManager = linearLayoutManager

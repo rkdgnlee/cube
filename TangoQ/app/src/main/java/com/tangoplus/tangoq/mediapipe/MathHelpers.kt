@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 
 object MathHelpers {
     private const val SCALE_X = 180f
-    private const val SCALE_Y = 210f
+    private const val SCALE_Y = 160f
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
@@ -20,6 +20,15 @@ object MathHelpers {
         val degrees = toDegrees(radians.toDouble())
         return degrees.toFloat()
     }
+    // ------# 수평  초기화 기울기 계산 #------
+    fun calculateSlope180(x1: Float, y1: Float, x2: Float, y2: Float): Float {
+        val radians = atan2(y2 - y1, x2 - x1)
+        val degrees = toDegrees(radians.toDouble())
+        return abs(180 - degrees.toFloat())
+    }
+
+
+
     // ------# 점 3개의 각도 계산 #------
     fun calculateAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3:Float): Float {
         val v1x = x1 - x2

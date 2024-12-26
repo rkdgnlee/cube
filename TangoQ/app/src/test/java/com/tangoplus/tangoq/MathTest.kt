@@ -211,7 +211,7 @@ class MathTest {
 
 
     private val SCALE_X = 180f
-    private val SCALE_Y = 240f
+    private val SCALE_Y = 160f
     fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
         return abs(point2.first - point1.first)
     }

@@ -18,7 +18,7 @@ import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 
-class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int, String>>,
+class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                                 private val subCategorys: List<String>,
                                 private val fragment: Fragment,
                                 private val sn : Int,
@@ -26,6 +26,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onCategoryClickListener: OnCategoryClickListener? = null
     private var selectedPosition = 0
+
     inner class MainCategoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
         val ivMCThumbnail : ImageView = view.findViewById(R.id.ivMCThumbnail)
     }
@@ -75,17 +76,13 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
             // ------! 대분류 item 시작 !------
             is MainCategoryViewHolder -> {
                 val currentItemMain = mainCategorys[position]
-
                 Glide.with(fragment)
                     .load(fragment.resources.getIdentifier("drawable_main_category_${position}", "drawable", fragment.requireActivity().packageName))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
-
                     .into(holder.ivMCThumbnail)
-
                 holder.ivMCThumbnail.setOnClickListener{
                     goExerciseDetail(currentItemMain)
-
                 }
             }
             is SubCategoryViewHolder -> {
@@ -112,11 +109,10 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: MutableList<Pair<Int,
         }
     }
 
-    private fun goExerciseDetail(category : Pair<Int, String>) {
+    private fun goExerciseDetail(category : ArrayList<Int>) {
         Log.v("ClickIndex", "category: $category")
         Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-
             replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
             addToBackStack(null)
             commit()

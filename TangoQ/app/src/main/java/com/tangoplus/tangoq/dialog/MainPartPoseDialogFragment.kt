@@ -78,7 +78,6 @@ class MainPartPoseDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         avm.currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
-//        setStyle(STYLE_NO_TITLE, R.style.DialogTheme)
         val seq = arguments?.getInt(ARG_SEQ)
         if (seq != null) {
             lifecycleScope.launch {
@@ -172,8 +171,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
 
             // 목관절
             "front_horizontal_angle_ear" -> "양 귀의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
-            "side_left_vertical_angle_nose_shoulder" -> "측면에서 코와 어꺠의 위치의 기울기를 의미합니다. 기울기 값 70° 미만이면 거북목이 의심됩니다."
-            "side_right_vertical_angle_nose_shoulder" -> "측면에서 코와 어꺠의 위치의 기울기를 의미합니다. 기울기 값 70° 미만이면 거북목이 의심됩니다."
+            "side_left_vertical_angle_nose_shoulder" -> "측면에서 코와 어깨간 기울기를 의미합니다. 기울기 값 70° 미만이면 거북목이 의심됩니다."
+            "side_right_vertical_angle_nose_shoulder" -> "측면에서 코와 어깨간 기울기를 의미합니다. 기울기 값 70° 미만이면 거북목이 의심됩니다."
             "back_vertical_angle_nose_center_shoulder" -> "양 어깨의 중심과 코의 기울기를 의미합니다.  기울기 값 90°를 기준으로 5° 오차를 넘어가면 목관절 틀어짐이 의심됩니다."
             "back_sit_horizontal_angle_ear" -> "양 귀의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
             "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" -> "앉은 자세에서 코를 기준으로 양 어깨의 각도를 의미합니다. 값이 클수록 심한 거북목으로 예측할 수 있습니다."
@@ -182,21 +181,23 @@ class MainPartPoseDialogFragment : DialogFragment() {
             "front_horizontal_distance_sub_shoulder" -> "양 어깨의 높낮이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다."
             "side_left_horizontal_distance_shoulder" -> "측면에서 몸의 무게중심에서 어깨까지의 거리를 의미합니다. 멀어질 수록 라운드 숄더가 의심됩니다."
             "back_vertical_angle_shoudler_center_hip" -> "골반 중심에서 어깨의 기울기를 의미합니다. 기울기 값 90° 기준으로 2° 오차 이내가 표준적인 기울기 입니다."
+            "back_horizontal_angle_shoulder" -> "후면에서 양 어깨를 이은 선의 각도입니다. 기울기가 180°에서 멀어질 수록 몸의 측면 틀어짐이 의심됩니다."
             "back_sit_vertical_angle_shoulder_center_hip" -> "어깨선과 골반 중심의 각도입니다. 정상범위에서 벗어날 경우 골반의 평행과 어깨 틀어짐을 교정하는 운동을 추천드립니다"
-            "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" -> "양 어깨와 골반 중심의 각도입니다. 각이 좁을 수록, 등이 굽은 상태로 앉은 자세를 취할 수 있습니다."
+            "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" -> "양 어깨와 골반 중심의 각도에서 왼쪽 어깨의 각도를 의미합니다. 앉은 자세에서 몸의 쏠림을 다른 부위의 각도와 함께 분석해보세요."
             // 우측 어깨
 //            "front_horizontal_angle_shoulder" -> "양 어깨의 위치를 비교한 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
 //            "front_horizontal_distance_sub_shoulder" -> "양 어깨의 높낮이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다."
             "side_right_horizontal_distance_shoulder" -> "측면에서 몸의 무게중심에서 어깨까지의 거리를 의미합니다. 멀어질 수록 라운드 숄더가 의심됩니다."
 //            "back_vertical_angle_shoudler_center_hip" -> "양 골반 중심에서 어깨의 기울기를 의미합니다. 값 "
 //            "back_sit_vertical_angle_shoulder_center_hip" -> "코와 양 어깨 중 좌측 어깨의 각이 더 넓습니다. 좌측 승모근 긴장이 의심됩니다."
+            "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" -> "양 어깨와 골반 중심의 각도에서 왼쪽 어깨의 각도를 의미합니다. 앉은 자세에서 몸의 쏠림을 다른 부위의 각도와 함께 분석해보세요."
             // 좌측 팔꿉
             "front_horizontal_angle_elbow" -> "양 팔꿉의 위치를 비교한 기울기를 의미합니다. 기울기 값 180° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "front_horizontal_distance_sub_elbow" -> "양 팔꿉의 높낮이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"
-            "front_vertical_angle_shoulder_elbow_left" -> "어깨와 팔꿉의 각도를 의미합니다. 기울기 78° 기준으로 값이 좁아질 수록 어깨와 상완 근육의 긴장이 의심됩니다" // TODO 각도 추가
-            "front_elbow_align_angle_left_upper_elbow_elbow_wrist" -> "팔꿉 측정에서 상완-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
-            "front_elbow_align_angle_left_shoulder_elbow_wrist" -> "어깨-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
-            "side_left_vertical_angle_shoulder_elbow" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 커질수록 상완과 연결된 어깨 근육의 긴장이 의심됩니다"
+            "front_vertical_angle_shoulder_elbow_left" -> "어깨와 팔꿉의 각도를 의미합니다. 기울기 78° 기준으로 값이 좁아질 수록 어깨와 상완 근육의 긴장이 의심됩니다"
+            "front_elbow_align_angle_left_upper_elbow_elbow_wrist" -> "팔꿉 측정에서 상완-팔꿉-손목의 각도를 의미합니다. 값이 작을수록 이두 근육의 긴장이 의심됩니다"
+            "front_elbow_align_angle_left_shoulder_elbow_wrist" -> "어깨-팔꿉-손목의 각도를 의미합니다. 값이 작을수록 이두 근육의 긴장이 의심됩니다"
+            "side_left_vertical_angle_shoulder_elbow" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 클수록 상완과 연결된 어깨 근육의 긴장이 의심됩니다"
             "side_left_vertical_angle_elbow_wrist" -> "측면에서 팔꿉과 손목의 각도입니다. 값이 클수록 이두근 및 전완근의 긴장이 의심됩니다."
             "side_left_vertical_angle_shoulder_elbow_wrist" -> "측면에서 어깨-팔꿉-손목의 각도입니다. 이 팔꿉 각도가 작을수록 이두 근육의 긴장이 의심됩니다. 이완 운동을 추천드립니다"
             // 우측 팔꿉
@@ -206,28 +207,27 @@ class MainPartPoseDialogFragment : DialogFragment() {
             "front_elbow_align_angle_right_upper_elbow_elbow_wrist" -> "팔꿉 측정에서 상완-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             "front_elbow_align_angle_right_shoulder_elbow_wrist" -> "어깨-팔꿉-손목의 각도를 의미합니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             "side_right_vertical_angle_shoulder_elbow" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 할수록 어깨 주변 근육의 긴장이 의심됩니다"
-            "side_right_vertical_angle_elbow_wrist" -> "측면에서 어깨와 팔꿉의 각도입니다. 값이 할수록 어깨 주변 근육의 긴장이 의심됩니다"
+            "side_right_vertical_angle_elbow_wrist" -> "측면에서 어깨와 팔꿉의 각도입니다. 90°를 기준으로 값이 멀어질수록 어깨 주변 근육의 긴장이 의심됩니다"
             "side_right_vertical_angle_shoulder_elbow_wrist" -> "측면에서 어깨-팔꿉-손목의 각도입니다. 값이 할수록 이두 근육의 긴장이 의심됩니다"
             // 좌측 손목
-            "front_vertical_angle_elbow_wrist_left" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 85° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
+            "front_vertical_angle_elbow_wrist_left" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 85° 기준으로 5° 오차 이내가 표준적인 기울기 입니다"
             "front_horizontal_angle_wrist" -> "양 손목의 기울기를 의미합니다. 기울기 값 180° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
             "front_elbow_align_distance_left_wrist_shoulder" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
             "front_elbow_align_distance_center_wrist_left" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
             "side_left_horizontal_distance_wrist" -> "측면에서 몸의 무게중심에서 손목까지의 거리를 의미합니다. 멀어질 수록 이두근 긴장, 전완근의 긴장 등이 의심됩니다."
             // 우측 손목
-            "front_vertical_angle_elbow_wrist_right" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
+            "front_vertical_angle_elbow_wrist_right" -> "팔꿉-손목의 기울기를 의미합니다. 85°에서 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
 //            "front_horizontal_angle_wrist" -> ""
             "front_elbow_align_distance_right_wrist_shoulder" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
             "front_elbow_align_distance_center_wrist_right" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
             "side_right_horizontal_distance_wrist" -> "측면에서 몸의 무게중심에서 손목까지의 거리를 의미합니다. 멀어질 수록 이두근 긴장, 전완근의 긴장 등이 의심됩니다."
             // 좌측 골반
             "front_vertical_angle_hip_knee_left" -> "골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 서있는 자세를 교정해보세요"
-            "front_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
+            "front_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 180° 기준으로 2° 오차 이내가 표준적인 기울기 입니다"
             "side_left_vertical_angle_hip_knee" -> "측면에서 골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 햄스트링, 종아리근육의 긴장이 있을 수 있으니 스트레칭을 추천드립니다"
             "side_left_horizontal_distance_hip" -> "측면에서 몸의 무게중심에서 골반까지의 거리를 의미합니다. 멀어질 수록 몸의 무게중심 쏠림 등이 의심됩니다."
             "back_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
-            "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" -> "앉은 자세에서 양 어깨와 골반 중심의 각도를 의미합니다. 각도 값 50° 기준으로 10° 이내의 범위를 표준적인 각도입니다."
-            "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" -> "앉은 자세에서 골반 중심-양 어깨를 이은 삼각형의 왼쪽 어깨 각도입니다. 각도 값이 높을 수록 굽은 등을 교정해주세요"
+            "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" -> "앉은 자세에서 골반 중심-양 어깨를 이은 삼각형의 왼쪽 어깨 각도입니다. 각도 값이 높을 수록 굽은 등을 교정해주세요"
             // 우측 골반
             "front_vertical_angle_hip_knee_right" -> "골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다. 벗어날 경우, 서있는 자세를 교정해보세요"
 //            "front_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
@@ -235,7 +235,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
             "side_right_horizontal_distance_hip" -> "측면에서 몸의 무게중심에서 골반까지의 거리를 의미합니다. 멀어질 수록 몸의 무게중심 쏠림 등이 의심됩니다."
 //            "back_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
 //            "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" -> "앉은 자세에서 양 어깨와 골반 중심의 각도를 의미합니다. 각도 값 50° 기준으로 10° 이내의 범위를 표준적인 각도입니다."
-            "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" -> "앉은 자세에서 골반 중심-양 어깨를 이은 삼각형의 오른쪽 어깨 각도입니다. 각도 값이 높을 수록 굽은 등을 교정해주세요"
+//            "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" -> "앉은 자세에서 골반 중심-양 어깨를 이은 삼각형의 오른쪽 어깨 각도입니다. 각도 값이 높을 수록 굽은 등을 교정해주세요"
             // 좌측 무릎
             "front_horizontal_angle_knee" -> "양 무릎의 위치를 비교한 기울기를 의미합니다. 기울기 값 180° 기준으로 1° 오차 이내가 표준적인 기울기 입니다."
             "front_horizontal_distance_knee_left" -> "몸의 중심에서 우측 무릎의 거리를 의미합니다. 값 8cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다"

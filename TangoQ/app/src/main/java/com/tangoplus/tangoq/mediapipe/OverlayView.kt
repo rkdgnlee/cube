@@ -45,7 +45,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             style = Paint.Style.STROKE
         }
 
-        // -----! 꼭짓점 색 !-----
+        // ------! 꼭짓점 색 !------
         pointPaint.apply {
             color = R.color.mainColor
             strokeWidth = LANDMARK_STROKE_WIDTH
@@ -127,7 +127,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * imageHeight * scaleFactorY + offsetY
 
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
-
             }
 
             val connections = listOf(
@@ -157,7 +156,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
 
         else { // video 일 때
-//            this.scaleX = -1f
+            canvas.scale(-1f, 1f, width / 2f, 0f)
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
 
@@ -204,9 +203,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val rightKneeY = rightKnee.y * scaleFactorY + offsetY
 
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
-                canvas.drawLine(leftIndexX - 100, leftIndexY, rightIndexX + 100, rightIndexY, axisPaint)
-                canvas.drawLine(leftHipX - 100, leftHipY, rightHipX + 100, rightHipY, axisPaint)
-                canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
+                canvas.drawLine(leftIndexX + 100, leftIndexY, rightIndexX - 100, rightIndexY, axisPaint)
+                canvas.drawLine(leftHipX + 100, leftHipY, rightHipX - 100, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX + 100, leftKneeY, rightKneeX - 100, rightKneeY, axisPaint)
             }
 
             val connections = listOf(

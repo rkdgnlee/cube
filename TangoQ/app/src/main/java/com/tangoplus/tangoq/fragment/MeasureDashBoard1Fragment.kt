@@ -158,11 +158,13 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         measures?.let {
             val measureSize = measures?.size
-            if (measures?.size != 7 && measureSize != null){
+
+            if (measureSize != null && measureSize <= 7 ){
                 for (i in 0 until (7 -measureSize)) {
                     lcDataList.add(Pair("", 20))
                 }
             }
+
             if (!measures.isNullOrEmpty()) {
                 for (i in (measures?.size?.minus(1) ?: 0) downTo 0) {
                     val measureUnit = measures?.get(i)
