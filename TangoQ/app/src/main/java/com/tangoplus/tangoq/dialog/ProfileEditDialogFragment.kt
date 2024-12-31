@@ -25,6 +25,7 @@ import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.db.Singleton_t_measure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     private var profilemenulist = mutableListOf<String>()
     private var profileUpdateListener: ProfileUpdateListener? = null
     private lateinit var biometricManager : BiometricManager
-
+    private lateinit var singletonUser : Singleton_t_user
     fun setProfileUpdateListener(listener: ProfileUpdateListener) {
         this.profileUpdateListener = listener
     }
@@ -60,6 +61,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AppTheme_DialogFragment)
+        singletonUser = Singleton_t_user.getInstance(requireContext())
 
         // ------# 초기 생체인증 init #------
         biometricManager = BiometricManager(this)
@@ -68,7 +70,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                 binding.sflPED.startShimmer()
                 svm.snsCount = 0
                 // ------! 싱글턴에서 가져오기 !------
-                svm.User.value = Singleton_t_user.getInstance(requireContext()).jsonObject
+                svm.User.value = singletonUser.jsonObject
                 svm.setHeight.value = svm.User.value?.optInt("height")
                 svm.setWeight.value = svm.User.value?.optInt("weight")
                 svm.setEmail.value = svm.User.value?.optString("email")
@@ -150,7 +152,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                                 val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
                                 if (isUpdateFinished == true) {
                                     Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-                                    Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
+                                    singletonUser.jsonObject = svm.User.value
                                     requireActivity().runOnUiThread {
                                         val dialog = AlertDialogFragment.newInstance("agree")
                                         dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
@@ -182,7 +184,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 ////            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
 //                    fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), svm.User.value?.toString().toString(), userSn) {
 //                        Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-//                        Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
+//                        singletonUser.jsonObject = svm.User.value
 ////                requireActivity().runOnUiThread{
 ////                    uViewModel.setupProgress = 34
 ////                    uViewModel.setupStep = 0
@@ -289,7 +291,8 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                     val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
                     if (isUpdateFinished == true) {
                         Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-                        Singleton_t_user.getInstance(requireContext()).jsonObject = svm.User.value
+                        singletonUser.jsonObject = svm.User.value
+
                         requireActivity().runOnUiThread {
                             val dialog = AlertDialogFragment.newInstance("disagree")
                             dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")

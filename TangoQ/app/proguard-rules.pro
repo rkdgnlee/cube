@@ -43,3 +43,8 @@
 -dontwarn javax.lang.model.type.TypeMirror
 -dontwarn javax.lang.model.type.TypeVisitor
 -dontwarn javax.lang.model.util.SimpleTypeVisitor8
+
+# 난독화 예외
+-keep class com.tangoplus.tangoq.listener.* { *; }
+-keep class com.tangoplus.tangoq.db.* { *; }
+# 난독화

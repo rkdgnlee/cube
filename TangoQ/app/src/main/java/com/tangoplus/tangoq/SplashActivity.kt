@@ -32,6 +32,8 @@ import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
+import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -243,9 +245,10 @@ class SplashActivity : AppCompatActivity() {
                                 }
                             }
                         }
-                    }
+//                    } else if (isValidToken(getEncryptedRefreshJwt(this@SplashActivity))) {
+
+                    } // 로그인 정보가 없을 경우
                     else {
-                        // 로그인 정보가 없을 경우
                         introInit()
                     }
                 }, 1500)

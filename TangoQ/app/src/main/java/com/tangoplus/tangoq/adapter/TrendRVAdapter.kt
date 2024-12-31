@@ -128,21 +128,21 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
     private val matchedIndexs = listOf(
         listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
         // 어깨
-        listOf(Triple(0,0,0), Triple(3, 1, 0), Triple(6, 3, 0)),
-        listOf(Triple(0,0,0), Triple(4, 1, 0), Triple(6, 3, 0)),
+        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
+        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
         // 팔꿉
-        listOf(Triple(0,0,0), Triple(2, 1, 1), Triple(3, 2, 2)),
-        listOf(Triple(0,0,0), Triple(2, 1, 1), Triple(4, 2, 2)),
+        listOf(Triple(0,0,0), Triple(2, 1, 0), Triple(3, 2, 2)),
+        listOf(Triple(0,0,0), Triple(2, 1, 0), Triple(4, 2, 2)),
         // 손목
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
         // 골반
         listOf(Triple(0, 0, 1), Triple(3,1,1), Triple(5, 2, 0)),
-        listOf( Triple(0, 0, 1), Triple(4,1,1), Triple(5, 2, 0)),
+        listOf(Triple(0, 0, 1), Triple(4,1,1), Triple(5, 2, 0)),
         // 무릎
         listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),
         listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),
-
+        // 발목
         listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
         listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
     )
@@ -162,7 +162,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
 
     private fun splitState(score : Float) : Boolean {
         return when {
-            score in 50f .. 100f -> true
+            score in 66f .. 100f -> true
             else -> false
         }
     }
@@ -193,4 +193,24 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
             }
         }
     }
+
+//    private fun setPartState(holder: TrendViewHolder, state: Int) {
+//        when (state) {
+//            0 -> {
+//                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
+//                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)))
+//                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor500)))
+//            }
+//            1 -> {
+//                holder.tvMTIPart.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.cautionContainerColor)
+//                holder.tvMTIPart.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))
+//                holder.cvMTI.setCardBackgroundColor(fragment.resources.getColor(R.color.cautionColor, null))
+//            }
+//            2 -> {
+//                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteContainerColor))
+//                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
+//                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
+//            }
+//        }
+//    }
 }

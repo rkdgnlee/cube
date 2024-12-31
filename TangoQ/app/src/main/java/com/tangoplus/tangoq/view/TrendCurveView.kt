@@ -82,14 +82,12 @@ class TrendCurveView @JvmOverloads constructor(
                 p2.first - (p3.first - p1.first) / 4,
                 p2.second - (p3.second - p1.second) / 4
             )
-
             path.cubicTo(
                 controlPoint1.first, controlPoint1.second,
                 controlPoint2.first, controlPoint2.second,
                 p2.first, p2.second
             )
         }
-
         canvas.drawPath(path, paint)
     }
 

@@ -42,6 +42,9 @@ class SignInViewModel: ViewModel() {
     val setEmail = MutableLiveData<String>()
     val setBirthday = MutableLiveData<String>()
     val setMobile = MutableLiveData<String>()
+
+    val editChangeCondition = MutableLiveData(false)
+
     var verificationId = ""
     init {
         User.value = JSONObject()

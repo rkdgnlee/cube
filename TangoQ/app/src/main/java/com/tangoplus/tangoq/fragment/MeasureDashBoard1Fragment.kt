@@ -156,34 +156,36 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         val lcDataList: MutableList<Pair<String, Int>> = mutableListOf()
 
+        // measures 꺾은선 그래프 
         measures?.let {
             val measureSize = measures?.size
-
-            if (measureSize != null && measureSize <= 7 ){
-                for (i in 0 until (7 -measureSize)) {
-                    lcDataList.add(Pair("", 20))
-                }
-            }
-
             if (!measures.isNullOrEmpty()) {
-                for (i in (measures?.size?.minus(1) ?: 0) downTo 0) {
-                    val measureUnit = measures?.get(i)
-                    val regDate = measureUnit?.regDate
-                    val overall = measureUnit?.overall?.toInt()
-                    if (regDate != null && overall != null) {
-                        lcDataList.add(Pair(regDate, overall))
+                // 조건 처리 1 총 measures가 7 이하.
+               if (measureSize == 0){
+                    for (i in 6 downTo 0) {
+                        lcDataList.add(Pair("", 20))
+                    }
+               } else if (measureSize != null && measureSize <= 7 ){
+                    for (i in 0 until (7 - measureSize)) {
+                        lcDataList.add(Pair("", 20))
+                    }
+               } else {
+                    for (i in 6 downTo 0) {
+                        val measureUnit = measures?.get(i)
+                        val regDate = measureUnit?.regDate
+                        val overall = measureUnit?.overall?.toInt()
+                        if (regDate != null && overall != null) {
+                            lcDataList.add(Pair(regDate, overall))
+                        }
+                    }
+                    Log.v("lcDataList", "$lcDataList")
+                    for (i in lcDataList.indices) {
+                        startIndex = i
+                        break
                     }
                 }
-                Log.v("lcDataList", "$lcDataList")
-                for (i in lcDataList.indices) {
-                    startIndex = i
-                    break
-                }
-            } else {
-                for (i in 6 downTo 0) {
-                    lcDataList.add(Pair("", 20))
-                }
             }
+
 
             val lcEntries: MutableList<Entry> = mutableListOf()
             for (i in startIndex until lcDataList.size) {

@@ -99,7 +99,7 @@ object HttpClientProvider {
 
     fun scheduleTokenCheck(context: Context) {
         val tokenCheckRequest = PeriodicWorkRequestBuilder<TokenCheckWorker>(
-            50, TimeUnit.SECONDS // 5분마다 실행
+            50, TimeUnit.SECONDS
         ).build()
         Log.v("worker실행", "scheduleTokenCheck")
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(

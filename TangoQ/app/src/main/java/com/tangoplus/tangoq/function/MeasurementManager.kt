@@ -231,7 +231,7 @@ object MeasurementManager {
             0 to mapOf("front_vertical_angle_hip_knee_left" to Triple(90f,2.4f, 7f),
                 "front_horizontal_angle_hip" to Triple(180f, 0.6f, 2.8f)),
             3 to mapOf("side_left_vertical_angle_hip_knee" to Triple(88f,4f, 6.8f),
-                "side_left_horizontal_distance_hip" to Triple(8f, 1.2f, 2.2f)
+                "side_left_horizontal_distance_hip" to Triple(6f, 2.2f, 4.2f)
             ),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 0.7f, 2.3f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
@@ -267,14 +267,14 @@ object MeasurementManager {
             0 to mapOf("front_vertical_angle_knee_ankle_left" to Triple(88f,2.5f, 3.4f),
                 "front_horizontal_angle_ankle" to Triple(180f, 1.1f, 3.2f),
                 "front_horizontal_distance_ankle_left" to Triple(10f,1.9f, 4.1f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to  Triple(0f, 0.2f, 0.6f),
+            5 to mapOf("back_horizontal_distance_sub_ankle" to  Triple(0f, 0.6f, 1.0f),
                 "back_horizontal_distance_heel_left" to Triple(11f, 3f, 5f),)
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to Triple(88f,2.5f, 3.4f),
                 "front_horizontal_angle_ankle" to Triple(180f, 1.1f, 3.2f),
                 "front_horizontal_distance_ankle_right" to Triple(10f,1.9f, 4.1f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.2f, 0.6f),
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.6f, 1.0f),
                 "back_horizontal_distance_heel_right" to Triple(11f, 3f, 5f),)
         )
     )
@@ -292,7 +292,8 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_shoulder" to "양 어깨 기울기",
                 "front_horizontal_distance_sub_shoulder" to "양 어깨 높이 차"),
             3 to mapOf("side_left_horizontal_distance_shoulder" to "중심과 어깨 거리"),
-            5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
+            5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기",
+                "back_horizontal_angle_shoulder" to "양 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
                 "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" to "우측 어깨-좌측 어깨-골반중심 기울기")
         ),
@@ -300,7 +301,8 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_shoulder" to "양 어깨 기울기",
                 "front_horizontal_distance_sub_shoulder" to "양 어깨 높이 차"),
             4 to mapOf("side_right_horizontal_distance_shoulder" to "중심과 어깨 거리"),
-            5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기"),
+            5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기",
+                "back_horizontal_angle_shoulder" to "양 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
             "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to "골반중심-우측 어깨-좌측 어깨 기울기")
         ),

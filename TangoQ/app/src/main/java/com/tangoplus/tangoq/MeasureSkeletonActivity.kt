@@ -995,6 +995,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 binding.clMeasureSkeletonCount.visibility = View.VISIBLE
 
                 binding.tvMeasureSkeletonGuide.text = "측정이 완료됐습니다 !"
+                binding.tvMeasureSkeletonCount.visibility = View.INVISIBLE
                 binding.btnMeasureSkeletonStep.text = "완료하기"
                 mCountDown.cancel()
                 Log.v("몇단계?", "Max repeats reached, stopping the loop")
@@ -1404,15 +1405,10 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val earAngle : Float = calculateSlope180(mvm.earData[0].first, mvm.earData[0].second, mvm.earData[1].first, mvm.earData[1].second)
 
                     val shoulderAngle : Float = calculateSlope180(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)
-
                     val elbowAngle : Float = calculateSlope180(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.elbowData[1].first, mvm.elbowData[1].second)
-
-                    val wristAngle : Float = calculateSlope180(mvm.wristData[0].first, mvm.wristData[0].second, mvm.wristData[1].first, mvm.wristData[1].second)
-
+                    val wristAngle : Float = calculateSlope(mvm.wristData[0].first, mvm.wristData[0].second, mvm.wristData[1].first, mvm.wristData[1].second)
                     val hipAngle : Float = calculateSlope180(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second)
-
                     val kneeAngle : Float = calculateSlope180(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
-
                     val ankleAngle : Float = calculateSlope180(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.ankleData[1].first, mvm.ankleData[1].second)
                     // 부위 양 높이 차이
                     val earSubDistance : Float = getRealDistanceY(mvm.earData[0], mvm.earData[1])
@@ -1737,7 +1733,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val backShoulderAngle : Float = calculateSlope180(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)
                     val backElbowAngle : Float = calculateSlope180(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.elbowData[1].first, mvm.elbowData[1].second)
                     val backWristAngle : Float = calculateSlope180(mvm.wristData[0].first, mvm.wristData[0].second, mvm.wristData[1].first, mvm.wristData[1].second)
-                    val backHipAngle : Float = calculateSlope180(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second)
+                    val backHipAngle : Float = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second)
                     val backKneeAngle : Float = calculateSlope180(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.kneeData[1].first, mvm.kneeData[1].second)
                     val backAnkleAngle : Float = calculateSlope180(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.ankleData[1].first, mvm.ankleData[1].second)
 
@@ -2074,7 +2070,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 val matrix = Matrix()
 
                 // 좌우반전 적용
-                matrix.postScale(1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
+                matrix.postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
 
                 // 회전 적용
                 when (orientation) {

@@ -193,7 +193,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
             }
-            Log.v("AVM>Trend", "$avm")
+//            Log.v("AVM>Trend", "$avm")
         } catch (e: IllegalArgumentException) {
             Log.e("TrendError", "${e.printStackTrace()}")
         }

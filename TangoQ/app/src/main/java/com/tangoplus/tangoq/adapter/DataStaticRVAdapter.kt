@@ -36,10 +36,10 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = data[position]
         if (holder is StaticViewHolder) {
-            if (isDangerParts) {
-                setBackgroundDrawable(holder.clDSI)
-                holder.ivDSI.visibility = View.VISIBLE
-            }
+            // state 관리
+            setDrawableState(holder.clDSI, holder.ivDSI, isDangerParts)
+
+
             holder.tvDSITitle.text = currentItem.first
             if (currentItem.third == null) {
                 holder.tvDSI1.text = currentItem.second
@@ -50,8 +50,18 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
             }
         }
     }
-    private fun setBackgroundDrawable(cl : ConstraintLayout) {
-        cl.setBackgroundResource(R.drawable.bckgnd_rectangle_12)
-        cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.subColor100))
+    private fun setDrawableState(cl : ConstraintLayout, iv: ImageView, isNormal : Boolean) {
+        when (isNormal) {
+            true -> {
+                cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.subColor100))
+                iv.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_caution_circle))
+            }
+            false -> {
+                cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.white))
+                iv.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_normal_circle))
+            }
+        }
+//        cl.setBackgroundResource(R.drawable.bckgnd_rectangle_12)
+
     }
 }

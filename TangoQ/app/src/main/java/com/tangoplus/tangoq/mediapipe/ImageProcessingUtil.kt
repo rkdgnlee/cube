@@ -1,12 +1,10 @@
 package com.tangoplus.tangoq.mediapipe
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
-import android.media.ExifInterface
 import android.util.Log
 import androidx.core.graphics.scale
 
@@ -24,7 +22,6 @@ object ImageProcessingUtil {
     ): Bitmap {
         Log.v("스케일과오프셋", "scaleFactor: (${scaleFactorX}, ${scaleFactorY}), offset: ($offSetX, $offSetY)")
 
-
         val matrix = Matrix().apply {
             preScale(-1f, 1f)
         } // 전면카메라로 찍었을 경우 걍 원래대로 돌려야 함.
@@ -33,34 +30,34 @@ object ImageProcessingUtil {
         val canvas = Canvas(resultBitmap)
         val axisPaint = Paint().apply {
             color = Color.parseColor("#FF5449")
-            strokeWidth = 3f
+            strokeWidth = 4f
             style = Paint.Style.STROKE
         }
         val axisSubPaint = Paint().apply {
-            color = Color.parseColor("#2EE88B")
-            strokeWidth = 3f
+            color = Color.parseColor("#FF981D")
+            strokeWidth = 4f
             style = Paint.Style.STROKE
         }
 
         val paint = Paint().apply {
-            color = 0xFFFFFFFF.toInt()
-            strokeWidth = 3f
+            color = Color.parseColor("#2EE88B")
+            strokeWidth = 4f
             style = Paint.Style.STROKE
         }
 
-        val pointPaint = Paint().apply {
-            color = Color.TRANSPARENT
-            strokeWidth = 3f
-            style = Paint.Style.FILL
-        }
-        // 랜드마크 및 연결선을 그리기
-        poseLandmarkResult.landmarks.forEach { landmark ->
-            val x = resultBitmap.width - (landmark.x)
-            val y = landmark.y
-            canvas.drawPoint(x, y, pointPaint)
+        val borderPaint = Paint().apply {
+            color = Color.parseColor("#2EE88B") // 테두리 색
+            strokeWidth = 4f
+            style = Paint.Style.STROKE // 테두리만 그리기
+            isAntiAlias = true
+            setShadowLayer(10f, 0f, 0f, Color.parseColor("#1A2EE88B")) // 반지름, x-offset, y-offset, 그림자 색상
         }
 
-
+        // 내부 흰색 Paint
+        val fillPaint = Paint().apply {
+            color = Color.parseColor("#FFFFFF") // 내부 색
+            style = Paint.Style.FILL // 내부만 채우기
+        }
         val nose = poseLandmarkResult.landmarks.getOrNull(0)
 
         // ------# 수칙  & 수평 축 넣기 #------
@@ -150,10 +147,10 @@ object ImageProcessingUtil {
                     && leftHip != null && rightHip != null) {
                     val midFootX = (leftFoot.x + rightFoot.x) / 2
                     canvas.drawLine(midFootX, leftFoot.y + 100, midFootX, nose.y - 100, axisPaint)
-                    canvas.drawLine(leftShoulder.x + 100, leftShoulder.y, rightShoulder.x - 100, rightShoulder.y , axisSubPaint)
-                    canvas.drawLine(leftHip.x + 100, leftHip.y, rightHip.x - 100, rightHip.y , axisSubPaint)
-                    canvas.drawLine(leftShoulder.x + 100, leftShoulder.y, rightShoulder.x - 100, rightShoulder.y , axisSubPaint)
-                    canvas.drawLine(leftKnee.x + 100, leftKnee.y, rightKnee.x - 100, rightKnee.y , axisSubPaint)
+                    canvas.drawLine(leftShoulder.x, leftShoulder.y, rightShoulder.x, rightShoulder.y , axisSubPaint)
+                    canvas.drawLine(leftHip.x, leftHip.y, rightHip.x, rightHip.y , axisSubPaint)
+                    canvas.drawLine(leftShoulder.x, leftShoulder.y, rightShoulder.x, rightShoulder.y , axisSubPaint)
+                    canvas.drawLine(leftKnee.x, leftKnee.y, rightKnee.x, rightKnee.y , axisSubPaint)
 
                     val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2
                     val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2
@@ -211,42 +208,36 @@ object ImageProcessingUtil {
         }
         val connections = when (sequence) {
             0 -> listOf(
-                Pair(7, 8), // Pair(11, 12), // 귀
-                Pair(15, 17), Pair(15, 19), Pair(15, 21), // 왼팔
-                Pair(16, 18), Pair(16, 20), Pair(16, 22), // 오른팔
                 Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
                 Pair(23, 24), Pair(11, 23), Pair(23, 25), Pair(25, 27), // 왼쪽 다리
                 Pair(12, 24), Pair(24, 26), Pair(26, 28),
-//                Pair(27, 31), Pair(28, 32)
+                Pair(27, 31), Pair(27, 29), Pair(29, 31),
+                Pair(28, 32), Pair(28, 30), Pair(30, 32),
             )
             2 -> listOf(
-                Pair(7, 8), Pair(11, 12), // 귀
-                Pair(15, 17), Pair(15, 19), Pair(15, 21), // 왼팔
-                Pair(16, 18), Pair(16, 20), Pair(16, 22), // 오른팔
+                Pair(11, 12), // 귀
+                Pair(15, 21), // 왼팔
+                Pair(16, 22), // 오른팔
                 Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
             )
             3 -> listOf(
-                Pair(15, 17), Pair(15, 19), Pair(15, 21), Pair(11, 13), Pair(13, 15),
+                Pair(15, 19), Pair(11, 13), Pair(13, 15),
                 Pair(11, 23), Pair(23, 25), Pair(25, 27),
-                Pair(27, 31), Pair(27, 29)
+                Pair(27, 31), Pair(27, 29),
             )
             4 -> listOf(
-                Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(12, 14), Pair(14, 16),
+                Pair(16, 20), Pair(12, 14), Pair(14, 16),
                 Pair(12, 24), Pair(24, 26), Pair(26, 28),
                 Pair(28, 32), Pair(28, 30)
             )
             5 -> listOf(
-                Pair(7, 8), Pair(11, 12), // 귀
-                Pair(15, 17), Pair(15, 19), Pair(15, 21), // 왼팔
-                Pair(16, 18), Pair(16, 20), Pair(16, 22), // 오른팔
                 Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
-                Pair(23, 24), Pair(11, 23), Pair(23, 25), Pair(25, 27), // 왼쪽 다리
+                Pair(11, 23), Pair(23, 25), Pair(25, 27), // 왼쪽 다리
                 Pair(12, 24), Pair(24, 26), Pair(26, 28),  // 오른쪽 다리
                 Pair(27, 31), Pair(28, 32), Pair(27, 31), Pair(28, 32)
             )
             else -> listOf()
         }
-
         connections.forEach { (start, end) ->
             val startLandmark = poseLandmarkResult.landmarks.getOrNull(start)
             val endLandmark = poseLandmarkResult.landmarks.getOrNull(end)
@@ -258,58 +249,57 @@ object ImageProcessingUtil {
                 canvas.drawLine(startX, startY, endX, endY, paint)
             }
         }
+        if (sequence !in 3 .. 4) {
+            val leftShoulderX = poseLandmarkResult.landmarks.getOrNull(11)?.x
+            val leftShoulderY = poseLandmarkResult.landmarks.getOrNull(11)?.y
+            val rightShoulderX = poseLandmarkResult.landmarks.getOrNull(12)?.x
+            val rightShoulderY = poseLandmarkResult.landmarks.getOrNull(12)?.y
+            if (nose != null && leftShoulderX != null && leftShoulderY != null &&  rightShoulderX != null &&  rightShoulderY != null) {
+                val midX = (leftShoulderX + rightShoulderX) / 2
+                val midY = (leftShoulderY + rightShoulderY) / 2
+                canvas.drawLine(nose.x, nose.y, midX, midY, paint)
+                canvas.drawCircle(midX, midY, 5f, fillPaint)
+            }
+        }
+        val pointAccentRange = when (sequence) {
+            0 -> listOf(0, 11, 12, 23, 24, 25, 26)
+            2 -> listOf(0, 11, 12)
+            3 -> listOf(0, 11, 23, 25)
+            4 -> listOf(0, 12, 24, 26)
+            5 -> listOf(0, 11, 12, 23, 24, 25, 26)
+            6 -> listOf(11, 12, 23, 24)
+            else -> listOf()
+        }
+        val pointRange = when (sequence) {
+            0 -> listOf(13, 14, 15, 16, 27, 28)
+            2 -> listOf(13, 14, 15, 16)
+            3 -> listOf(13, 15, 27)
+            4 -> listOf(14, 16, 28)
+            5 -> listOf(13, 14, 15, 16, 27, 28)
+            6 -> listOf(0)
+            else -> listOf()
+        }
+        // 부위의 더 큰 점
+        pointAccentRange.forEach { index ->
+            val x = poseLandmarkResult.landmarks.getOrNull(index)?.x
+            val y = poseLandmarkResult.landmarks.getOrNull(index)?.y
+            if (x != null && y != null) {
+                canvas.drawCircle(x, y, 7f, borderPaint)
+                canvas.drawCircle(x, y, 7f, fillPaint)
+            }
+        }
+        pointRange.forEach { index ->
+            val x = poseLandmarkResult.landmarks.getOrNull(index)?.x
+            val y = poseLandmarkResult.landmarks.getOrNull(index)?.y
+            if (x != null && y != null) {
+                canvas.drawCircle(x, y, 5f, borderPaint)
+                canvas.drawCircle(x, y, 5f, fillPaint)
+            }
+        }
+
         resultBitmap.scale(-1, 1)
         return resultBitmap
     }
-
-//    fun decodeSampledBitmapFromFile(filePath: String, reqWidth: Int, reqHeight: Int) : Bitmap {
-//        val options = BitmapFactory.Options().apply {
-//            inJustDecodeBounds = true
-//        }
-//        BitmapFactory.decodeFile(filePath, options)
-//
-//        options.inSampleSize = calcuateSampleSize(options, reqWidth, reqHeight)
-//        options.inJustDecodeBounds = false
-//        var bitmap = BitmapFactory.decodeFile(filePath, options)
-//
-//        bitmap = rotateImageIfRequired(filePath, bitmap)
-//        bitmap = Bitmap.createScaledBitmap(bitmap, reqWidth, reqHeight, true)
-//        return bitmap
-//    }
-
-    private fun calcuateSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        val (height: Int, width: Int) = options.run { outHeight to outWidth }
-        var inSampleSize = 1
-
-        if (height > reqHeight || width > reqWidth) {
-            val halfHeight: Int = height / 2
-            val hlafWidth : Int = width / 2
-
-            while (halfHeight / inSampleSize >= reqHeight && hlafWidth / inSampleSize >= reqHeight) {
-                inSampleSize *=2
-
-            }
-        }
-        return inSampleSize
-    }
-
-//    private fun rotateImageIfRequired(filePath: String, bitmap: Bitmap): Bitmap {
-//        val ei = ExifInterface(filePath)
-//        val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-//
-//        return when {
-//            orientation == ExifInterface.ORIENTATION_ROTATE_90 ||
-//                    (bitmap.width < bitmap.height && orientation == ExifInterface.ORIENTATION_NORMAL) -> rotateImage(bitmap, 90f)
-//
-//            else -> bitmap
-//        }
-//    }
-//    private fun rotateImage(bitmap: Bitmap, degree: Float): Bitmap {
-//        val matrix = Matrix()
-//        matrix.postRotate(degree)
-//        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-//    }
-
 
     fun cropToPortraitRatio(original: Bitmap): Bitmap {
         val width = original.width

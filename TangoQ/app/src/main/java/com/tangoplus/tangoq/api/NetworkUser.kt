@@ -112,7 +112,7 @@ object NetworkUser {
                 Log.e("UserIllegal", "refresh: ${e.message}")
             } catch (e: IllegalStateException) {
                 Log.e("UserIllegal", "refresh: ${e.message}")
-            }catch (e: NullPointerException) {
+            } catch (e: NullPointerException) {
                 Log.e("UserNull", "refresh: ${e.message}")
             } catch (e: java.lang.Exception) {
                 Log.e("UserException", "refresh: ${e.message}")

@@ -130,7 +130,7 @@ class MeasureAnalysisFragment : Fragment() {
                         lifecycleScope.launch {
                             setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 3, binding.ssivMA1, "")
                             setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 4, binding.ssivMA2, "")
-                        }
+                         }
                         setScreenRawData(avm.mafMeasureResult,  3)
                         binding.ivMA.setImageResource(R.drawable.drawable_side)
 
@@ -167,6 +167,7 @@ class MeasureAnalysisFragment : Fragment() {
                     }
                     4 -> { // 동적 균형
                         binding.tvMPTitle.text = "동적 측정"
+                        binding.tvMAName.text = "동적 균형"
                         avm.mafMeasureResult.put(mr.optJSONArray(1))
                         setDynamicUI(true)
                         setPlayer()
@@ -186,10 +187,10 @@ class MeasureAnalysisFragment : Fragment() {
 
     // 고정적으로
     // big은 자세 , small은 수직 수평 분석임
-    private fun setScreenRawData(measureResult: JSONArray, sequence: Int) {
+    private fun setScreenRawData(measureResult: JSONArray, seq: Int) {
         // 정면은 필터링 됨. 수직부터 필터링
         var minResultData = mutableListOf<Triple<String, String, String?>>()
-        when (sequence) {
+        when (seq) {
             0 -> {
                 // ------# 수직 값 #------
                 val keyPairs = mapOf(
@@ -225,15 +226,16 @@ class MeasureAnalysisFragment : Fragment() {
                     Triple("중심에서 양 발목 거리", "front_horizontal_distance_ankle_left", "front_horizontal_distance_ankle_right")
                 )
                 anglePairs.forEach { (description, angleKey, distanceKey) ->
-                    val angleValue = measureResult.optJSONObject(1).optDouble(angleKey)
-                    val distanceValue = measureResult.optJSONObject(1).optDouble(distanceKey)
+                    val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
+                    val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
                     if (!angleValue.isNaN() && !distanceValue.isNaN()) {
+
                         minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
                     }
                 }
                 distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                    val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
-                    val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
+                    val leftValue = measureResult.optJSONObject(0).optDouble(leftKey)
+                    val rightValue = measureResult.optJSONObject(0).optDouble(rightKey)
                     if (!leftValue.isNaN() && !rightValue.isNaN()) {
                         minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.2f", leftValue)}cm", "오른쪽: ${String.format("%.2f", rightValue)}cm"))
                     }
@@ -256,30 +258,9 @@ class MeasureAnalysisFragment : Fragment() {
                     }
                 }
                 val distanceAlignPairs = listOf(
-                    Triple("검지관절과 새끼관절 거리", "front_hand_distance_index_pinky_mcp_left", "front_hand_distance_index_pinky_mcp_right"),
-                    Triple("어깨와 중지 거리", "front_elbow_align_distance_shoulder_mid_index_left", "front_elbow_align_distance_shoulder_mid_index_right"),
                     Triple("중심과 중지 거리", "front_elbow_align_distance_center_mid_finger_left", "front_elbow_align_distance_center_mid_finger_right"),
                     Triple("중심과 손목 거리", "front_elbow_align_distance_center_wrist_left", "front_elbow_align_distance_center_wrist_right"),
-                    Triple("중심에서 양 엄지 거리", "front_horizontal_distance_thumb_left", "front_horizontal_distance_thumb_right")
                 )
-
-                val angleAlignPairs = listOf(
-                    "thumb" to "엄지"
-                ).map { (part, description) ->
-                    Triple(
-                        "양 $description 기울기 높이 차",
-                        "front_horizontal_angle_$part",
-                        "front_horizontal_distance_sub_$part"
-                    )
-                }
-
-                angleAlignPairs.forEach { (description, angleKey, distanceKey) ->
-                    val angleValue = measureResult.optJSONObject(1).optDouble(angleKey)
-                    val distanceValue = measureResult.optJSONObject(1).optDouble(distanceKey)
-                    if (!angleValue.isNaN() && !distanceValue.isNaN()) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
-                    }
-                }
                 distanceAlignPairs.forEach{ (descrption, leftKey, rightKey) ->
                     val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
                     val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
@@ -309,68 +290,70 @@ class MeasureAnalysisFragment : Fragment() {
             }
             3 -> {
                 val keyAnglePairs = mapOf(
-                    "side_left_vertical_angle_shoulder_elbow" to "왼쪽 어깨와 팔꿉 기울기",
-                    "side_left_vertical_angle_elbow_wrist" to "왼쪽 팔꿉와 손목 기울기",
-                    "side_left_vertical_angle_hip_knee" to "왼쪽 골반과 무릎 기울기",
-                    "side_left_vertical_angle_ear_shoulder" to "왼쪽 귀와 어깨 기울기",
-                    "side_left_vertical_angle_nose_shoulder" to "왼쪽 코와 어깨 기울기",
-                    "side_left_vertical_angle_shoulder_elbow_wrist" to "왼쪽 어깨-팔꿉-손목 기울기",
-                    "side_left_vertical_angle_hip_knee_ankle" to "왼쪽 골반-무릎-발목 기울기"
+                    "vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
+                    "vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
+                    "vertical_angle_hip_knee" to "골반과 무릎 기울기",
+                    "vertical_angle_ear_shoulder" to "귀와 어깨 기울기",
+                    "vertical_angle_nose_shoulder" to "코와 어깨 기울기",
+                    "vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기",
+                    "vertical_angle_hip_knee_ankle" to "골반-무릎-발목 기울기"
                 )
                 keyAnglePairs.forEach { (key, description) ->
-                    val angleValue = measureResult.optJSONObject(0).optDouble(key)
-                    if (!angleValue.isNaN() ) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
+                    val leftAngleValue = measureResult.optJSONObject(0).optDouble("side_left_$key")
+                    val rightAngleValue = measureResult.optJSONObject(1).optDouble("side_right_$key")
+
+                    if (!leftAngleValue.isNaN() && !rightAngleValue.isNaN() ) {
+                        minResultData.add(Triple(description, "왼쪽 기울기: ${String.format("%.2f", leftAngleValue)}°", "오른쪽 기울기: ${String.format("%.2f", rightAngleValue)}°"))
                     }
                 }
-                set012Adapter(minResultData)
+
                 val keyDistancePairs = mapOf(
-                    "side_left_horizontal_distance_shoulder" to "중심과 왼쪽 어깨 거리",
-                    "side_left_horizontal_distance_hip" to "중심과 왼쪽 골반 거리",
-                    "side_left_horizontal_distance_pinky" to "중심과 왼쪽 새끼 거리",
-                    "side_left_horizontal_distance_wrist" to "중심과 왼쪽 손목 거리",
-
-                    )
-                keyDistancePairs.forEach { (key, description) ->
-                    val angleValue = measureResult.optJSONObject(0).optDouble(key)
-
-                    if (!angleValue.isNaN()) {
-                        minResultData.add(Triple(description, "거리: ${String.format("%.2f", angleValue)}cm", null))
-                    }
-                }
-
-                // ------# 우측 #------
-                val keyRightAnglePairs = mapOf(
-                    "side_right_vertical_angle_shoulder_elbow" to "오른쪽 어깨와 팔꿉 기울기",
-                    "side_right_vertical_angle_elbow_wrist" to "오른쪽 팔꿉와 손목 기울기",
-                    "side_right_vertical_angle_hip_knee" to "오른쪽 골반과 무릎 기울기",
-                    "side_right_vertical_angle_ear_shoulder" to "오른쪽 귀와 어깨 기울기",
-                    "side_right_vertical_angle_nose_shoulder" to "오른쪽 코와 어깨 기울기",
-                    "side_right_vertical_angle_shoulder_elbow_wrist" to "오른쪽 어깨-팔꿉-손목 기울기",
-                    "side_right_vertical_angle_hip_knee_ankle" to "오른쪽 골반-무릎-발목 기울기"
+                    "horizontal_distance_shoulder" to "중심에서 어깨 거리",
+                    "horizontal_distance_hip" to "중심에서 골반 거리",
+                    "horizontal_distance_pinky" to "중심에서 새끼 거리",
+                    "horizontal_distance_wrist" to "중심에서 손목 거리"
                 )
-                keyRightAnglePairs.forEach { (key, description) ->
-                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
+                keyDistancePairs.forEach { (key, description) ->
+                    val leftDistanceValue = measureResult.optJSONObject(0).optDouble("side_left_$key")
+                    val rightDistanceValue = measureResult.optJSONObject(1).optDouble("side_right_$key")
 
-                    if (!angleValue.isNaN()) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
-                    }
-                }
-                val keyRightDistancePairs = mapOf(
-                    "side_right_horizontal_distance_shoulder" to "중심과 오른쪽 어깨 거리",
-                    "side_right_horizontal_distance_hip" to "중심과 오른쪽 골반 거리",
-                    "side_right_horizontal_distance_pinky" to "중심과 오른쪽 새끼 거리",
-                    "side_right_horizontal_distance_wrist" to "중심과 오른쪽 손목 거리",
-
-                    )
-                keyRightDistancePairs.forEach { (key, description) ->
-                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
-
-                    if (!angleValue.isNaN() ) {
-                        minResultData.add(Triple(description, "거리: ${String.format("%.2f", angleValue)}cm", null))
+                    if (!leftDistanceValue.isNaN() && !rightDistanceValue.isNaN()) {
+                        Log.v("angle들", "side_left_$key: $leftDistanceValue, side_right_$key: $rightDistanceValue")
+                        minResultData.add(Triple(description, "왼쪽 거리: ${String.format("%.2f", leftDistanceValue)}cm", "오른쪽 거리: ${String.format("%.2f", rightDistanceValue)}cm"))
                     }
                 }
                 set012Adapter(minResultData)
+//                // ------# 우측 #------
+//                val keyRightAnglePairs = mapOf(
+//                    "side_right_vertical_angle_shoulder_elbow" to "오른쪽 어깨와 팔꿉 기울기",
+//                    "side_right_vertical_angle_elbow_wrist" to "오른쪽 팔꿉와 손목 기울기",
+//                    "side_right_vertical_angle_hip_knee" to "오른쪽 골반과 무릎 기울기",
+//                    "side_right_vertical_angle_ear_shoulder" to "오른쪽 귀와 어깨 기울기",
+//                    "side_right_vertical_angle_nose_shoulder" to "오른쪽 코와 어깨 기울기",
+//                    "side_right_vertical_angle_shoulder_elbow_wrist" to "오른쪽 어깨-팔꿉-손목 기울기",
+//                    "side_right_vertical_angle_hip_knee_ankle" to "오른쪽 골반-무릎-발목 기울기"
+//                )
+//                keyRightAnglePairs.forEach { (key, description) ->
+//                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
+//                    if (!angleValue.isNaN()) {
+//                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
+//                    }
+//                }
+//                val keyRightDistancePairs = mapOf(
+//                    "side_right_horizontal_distance_shoulder" to "중심과 오른쪽 어깨 거리",
+//                    "side_right_horizontal_distance_hip" to "중심과 오른쪽 골반 거리",
+//                    "side_right_horizontal_distance_pinky" to "중심과 오른쪽 새끼 거리",
+//                    "side_right_horizontal_distance_wrist" to "중심과 오른쪽 손목 거리",
+//
+//                    )
+//                keyRightDistancePairs.forEach { (key, description) ->
+//                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
+//
+//                    if (!angleValue.isNaN() ) {
+//                        minResultData.add(Triple(description, "거리: ${String.format("%.2f", angleValue)}cm", null))
+//                    }
+//                }
+//                set012Adapter(minResultData)
             }
             5 -> {
                 // ------# 수직 #------
@@ -384,7 +367,6 @@ class MeasureAnalysisFragment : Fragment() {
                 )
                 verticalKeyPairs.forEach { (key, description) ->
                     val angleValue = measureResult.optJSONObject(0).optDouble(key)
-
                     if (!angleValue.isNaN() ) {
                         minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
                     }
@@ -473,14 +455,10 @@ class MeasureAnalysisFragment : Fragment() {
             binding.ssivMA1.visibility = View.GONE
             binding.ssivMA2.visibility = View.GONE
             binding.flMA.visibility = View.VISIBLE
-            binding.tvMANotice1.visibility = View.GONE
-            binding.tvMANotice2.visibility = View.GONE
         } else {
             binding.ssivMA1.visibility = View.VISIBLE
             binding.ssivMA2.visibility = View.VISIBLE
             binding.flMA.visibility = View.GONE
-            binding.tvMANotice1.visibility = View.VISIBLE
-            binding.tvMANotice2.visibility = View.VISIBLE
         }
     }
 
@@ -506,33 +484,20 @@ class MeasureAnalysisFragment : Fragment() {
     }
 
     private fun set012Adapter(allData: MutableList<Triple<String,String, String?>>) {
-
         val dangerParts = viewModel.selectedMeasure?.dangerParts?.map { it.first }?.map { it.replace("좌측 ", "").replace("우측 ", "") }
         val filteredData = allData.filter { dangerParts?.any { part -> it.first.contains(part) } == true }
-        if (filteredData.isEmpty())  binding.tvMANotice1.visibility = View.GONE else binding.tvMANotice2.visibility = View.VISIBLE
-
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val leftTopAdapter = DataStaticRVAdapter(requireContext(), filteredData.filterIndexed { index, _ -> index % 2 == 0 }, true)
+        val topAdapter = DataStaticRVAdapter(requireContext(), filteredData, true)
         binding.rvMALeft.layoutManager = linearLayoutManager1
-        binding.rvMALeft.adapter = leftTopAdapter
-
-        val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val rightTopAdapter = DataStaticRVAdapter(requireContext(), filteredData.filterIndexed { index, _ -> index % 2 == 1 }, true)
-        binding.rvMARight.layoutManager = linearLayoutManager2
-        binding.rvMARight.adapter = rightTopAdapter
-
+        binding.rvMALeft.adapter = topAdapter
 
         val notFilteredData = allData.filterNot { dangerParts?.any { part -> it.first.contains(part) } == true }
         val linearLayoutManager3 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-        val leftBottomAdapter = DataStaticRVAdapter(requireContext(), notFilteredData.filterIndexed { index, _ -> index % 2 == 0 }, false)
+        val bottomAdapter = DataStaticRVAdapter(requireContext(), notFilteredData, false)
         binding.rvMALeft2.layoutManager = linearLayoutManager3
-        binding.rvMALeft2.adapter = leftBottomAdapter
+        binding.rvMALeft2.adapter = bottomAdapter
 
-        val linearLayoutManager4 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val rightBottomAdapter = DataStaticRVAdapter(requireContext(), notFilteredData.filterIndexed { index, _ -> index % 2 == 1 }, false)
-        binding.rvMARight2.layoutManager = linearLayoutManager4
-        binding.rvMARight2.adapter = rightBottomAdapter
     }
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {
@@ -667,20 +632,10 @@ class MeasureAnalysisFragment : Fragment() {
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
         val titles = listOf("좌측 손", "우측 손", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
-
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val leftData = data.filterIndexed { index, _ -> index % 2 == 0 }.toMutableList()
-        val leftTitle = titles.filterIndexed{ index, _ -> index % 2 == 0}
-        val leftadapter = DataDynamicRVAdapter(leftData, leftTitle, 0)
+        val dynamicAdapter = DataDynamicRVAdapter(data, titles, 0)
         binding.rvMALeft.layoutManager = linearLayoutManager1
-        binding.rvMALeft.adapter = leftadapter
-
-        val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val rightData = data.filterIndexed { index, _ -> index % 2 == 1 }.toMutableList()
-        val rightTitle = titles.filterIndexed{ index, _ -> index % 2 == 1}
-        val rightadapter = DataDynamicRVAdapter(rightData, rightTitle, 0)
-        binding.rvMARight.layoutManager = linearLayoutManager2
-        binding.rvMARight.adapter = rightadapter
+        binding.rvMALeft.adapter = dynamicAdapter
     }
 
     override fun onStop() {

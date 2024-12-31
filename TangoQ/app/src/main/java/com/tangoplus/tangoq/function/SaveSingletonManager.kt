@@ -142,7 +142,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                         val statics = groupedStatics[currentInfoSn]?.sortedBy { it.measure_seq } ?: emptyList()
                         val dynamic = groupedDynamics[currentInfoSn] ?: emptyList()
-                        Log.v("groupedStatics", "${statics.size}")
+//                        Log.v("groupedStatics", "${statics.size}")
 
                         if (statics.size < 6 || dynamic.isEmpty()) {
                             Log.v("건너뜀", "현재 measure: $currentInfoSn, statics size: ${statics.size}, dynamic size: ${dynamic.size}")
@@ -153,7 +153,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                         // 마지막 index만 지금 즉시 uris와 함꼐 넣기
                         if (currentInfoSn != null ) {
-                            Log.v("현재index", "$index")
+//                            Log.v("현재index", "$index")
                             if (index == allInfos.size - 1) {
 
                                 val measureVO = MeasureVO(

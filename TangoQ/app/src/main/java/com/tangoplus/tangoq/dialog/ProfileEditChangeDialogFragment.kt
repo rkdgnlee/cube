@@ -185,6 +185,23 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     inputType = InputType.TYPE_CLASS_TEXT
                     filters = arrayOf(InputFilter.LengthFilter(25))
                 }
+
+                val emailPattern = "^[\\w.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$"
+                val emailPatternCheck = Pattern.compile(emailPattern)
+                binding.etPCD1.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int, ) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int, ) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        svm.editChangeCondition.value = emailPatternCheck.matcher(s.toString()).find()
+                        if (svm.editChangeCondition.value == true) {
+                            binding.tvPCD1Condition.text = "올바른 이메일 형식입니다"
+                            binding.btnPCDFinish.isEnabled = true
+                        } else {
+                            binding.tvPCD1Condition.text = "올바르지 않은 이메일 형식입니다. 다시 확인해 주세요"
+                            binding.btnPCDFinish.isEnabled = false
+                        }
+                    }
+                })
             }
             "생년월일" -> {
                 setUIVisibility(1)
@@ -363,7 +380,11 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                             }
                         }
                     }
-                    dismiss()
+                    withContext(Dispatchers.Main) {
+                        if (isAdded) {
+                            dismiss()
+                        }
+                    }
                 }
             }
         }
@@ -438,6 +459,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.btnPCDFinish.isEnabled = false
             }
         }
+        binding.tvPCD1Condition.text = ""
     }
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)

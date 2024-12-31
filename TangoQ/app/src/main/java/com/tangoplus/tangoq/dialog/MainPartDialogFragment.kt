@@ -390,16 +390,26 @@ class MainPartDialogFragment : DialogFragment() {
                         }
                     }
                     5 -> {
-                        val shoulderData = units.find { it.columnName == "back_vertical_angle_shoudler_center_hip"}
-                        var angleData = 0f
-                        shoulderData?.let {
+                        val shoulderData1 = units.find { it.columnName == "back_vertical_angle_shoudler_center_hip"}
+                        var angleData1 = 0f
+                        shoulderData1?.let {
                             val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
                             val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
 
                             if (it.rawData !in boundRange) {
-                                angleData = it.rawData
+                                angleData1 = it.rawData
+                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", abs(angleData1))}°입니다. 90°에 가까울수록 정상 체형입니다. ")
+                            }
+                        }
+                        val shoulderData2 = units.find { it.columnName == "back_horizontal_angle_shoulder"}
+                        var angleData2 = 0f
+                        shoulderData2?.let {
+                            val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
+                            val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
 
-                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", abs(angleData))}°입니다. 90°에 가까울수록 정상 체형입니다. ")
+                            if (it.rawData !in boundRange) {
+                                angleData2 = it.rawData
+                                resultString.append("후면의 어깨 기울기가 ${String.format("%.2f", abs(angleData2))}°입니다. 0°에 가까울 수록 바른 어깨 기울기입니다. ")
                             }
                         }
                     }

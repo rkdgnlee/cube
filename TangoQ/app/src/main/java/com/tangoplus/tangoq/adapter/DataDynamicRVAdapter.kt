@@ -15,8 +15,10 @@ import java.lang.IllegalArgumentException
 class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, private val titles: List<String>, private val case: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val distinctTitles = titles.map { it.replace("좌측 ", "").replace("우측 ", "") }.distinct()
     inner class MAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvDDI : TextView = view.findViewById(R.id.tvDDI)
-        val cvDDI : TrendCurveView = view.findViewById(R.id.cvDDI)
+        val tvDDI1 : TextView = view.findViewById(R.id.tvDDI1)
+        val cvDDI1 : TrendCurveView = view.findViewById(R.id.cvDDI1)
+        val tvDDI2 : TextView = view.findViewById(R.id.tvDDI2)
+        val cvDDI2 : TrendCurveView = view.findViewById(R.id.cvDDI2)
     }
     inner class MPAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvDDAITitle : TextView = view.findViewById(R.id.tvDDAITitle)
@@ -54,10 +56,16 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = data[position]
         if (holder is MAViewHolder) {
-            holder.tvDDI.text = titles[position]
-            holder.cvDDI.setPoints(currentItem)
+            val leftData = data[position]
+            val rightData = data[position + 1]
+            val leftTitle = titles[position]
+            val rightTitle = titles[position + 1]
+            holder.tvDDI1.text = leftTitle
+            holder.cvDDI1.setPoints( leftData )
+
+            holder.tvDDI2.text = rightTitle
+            holder.cvDDI2.setPoints( rightData )
 
         } else if (holder is MPAViewHolder){
             holder.tvDDAITitle.text = "${distinctTitles[position]} 이동 안정성"

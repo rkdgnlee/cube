@@ -41,7 +41,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/bckgnd_1_sub150_12"
         android:ems="10"
@@ -53,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPCDGuide" />
+        app:layout_constraintTop_toBottomOf="@+id/tvPCD1Condition" />
 
     <TextView
         android:id="@+id/tvPCD2"
@@ -353,5 +352,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/etPCD3"
         app:layout_constraintEnd_toEndOf="@+id/etPCD3"
         app:layout_constraintTop_toTopOf="@+id/etPCD3" />
+
+    <TextView
+        android:id="@+id/tvPCD1Condition"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/subColor800"
+        android:textSize="13dp"
+        app:layout_constraintEnd_toEndOf="@+id/etPCD1"
+        app:layout_constraintStart_toStartOf="@+id/etPCD1"
+        app:layout_constraintTop_toBottomOf="@+id/tvPCDGuide" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
