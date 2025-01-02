@@ -60,7 +60,7 @@ object ImageProcessingUtil {
         }
         val nose = poseLandmarkResult.landmarks.getOrNull(0)
 
-        // ------# 수칙  & 수평 축 넣기 #------
+        // ------# 수칙  & 수평 보조 축 넣기 #------
         when (sequence) {
             0 -> {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
@@ -89,9 +89,6 @@ object ImageProcessingUtil {
                     canvas.drawLine(leftKnee.x ,leftKnee.y, rightKnee.x, rightKnee.y, axisSubPaint)
                     canvas.drawLine(leftAnkle.x ,leftAnkle.y, rightAnkle.x, rightAnkle.y, axisSubPaint)
                 }
-            }
-            2 -> {
-
             }
             3 -> {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
@@ -206,6 +203,8 @@ object ImageProcessingUtil {
 
             }
         }
+
+        // 관절 연결 선
         val connections = when (sequence) {
             0 -> listOf(
                 Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결

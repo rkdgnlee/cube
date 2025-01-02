@@ -18,16 +18,41 @@ object MathHelpers {
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
         val radians = atan2(y2 - y1, x2 - x1)
         val degrees = toDegrees(radians.toDouble())
-        return degrees.toFloat()
+        return degrees.toFloat() // 0도 기준으로 정규화
     }
-    // ------# 수평  초기화 기울기 계산 #------
+
+    fun calculateSlope0(x1: Float, y1: Float, x2: Float, y2: Float): Float {
+        val radians = atan2(y2 - y1, x2 - x1)
+        val degrees = toDegrees(radians.toDouble())
+        return normalizeToZero(degrees.toFloat()) // 0도 기준으로 정규화
+    }
+    // ------# 수평 초기화 기울기 계산 #------
     fun calculateSlope180(x1: Float, y1: Float, x2: Float, y2: Float): Float {
         val radians = atan2(y2 - y1, x2 - x1)
         val degrees = toDegrees(radians.toDouble())
-        return abs(180 - degrees.toFloat())
+        return normalizeTo180(degrees.toFloat()) // 180도 기준으로 정규화
     }
 
+    // 180도 기준으로 정규화하는 함수
+    private fun normalizeTo180(angle: Float): Float {
+        var normalized = angle
+        while (normalized < 0) normalized += 360
+        while (normalized >= 360) normalized -= 360
 
+        if (normalized > 180) {
+            return normalized
+        } else {
+            return abs(180 - normalized)
+        }
+    }
+
+    // 0도 기준으로 정규화하는 함수
+    fun normalizeToZero(angle: Float): Float {
+        var normalized = angle
+        while (normalized <= -180) normalized += 360
+        while (normalized > 180) normalized -= 360
+        return normalized
+    }
 
     // ------# 점 3개의 각도 계산 #------
     fun calculateAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3:Float): Float {

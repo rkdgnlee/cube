@@ -28,6 +28,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -40,7 +41,6 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,7 +61,6 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-//        setAdapter(profilemenulist, binding.rvPED)
     }
 
     companion object {
@@ -346,7 +345,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 
                 }
             }
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
                 if (isUpdateFinished == true) {
                     when (arg) {

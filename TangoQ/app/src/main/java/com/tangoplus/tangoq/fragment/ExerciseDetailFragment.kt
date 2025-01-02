@@ -84,8 +84,8 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         Log.v("categoryId", "$categoryId, $sn")
         binding.tvEDMainCategoryName.text = when (categoryId?.get(0)) {
             1 -> "기본 밸런스 및 스트레칭"
-            3 -> "도구 활용 운동"
-            6 -> "상지·하지 근육 운동"
+            3 -> "의자 활용 및 기초 강화 운동"
+            6 -> "상지·하지 전신 근육 운동"
             10 -> "근골격계 질환 운동"
             else -> "TangoQ 기구 활용"
         }

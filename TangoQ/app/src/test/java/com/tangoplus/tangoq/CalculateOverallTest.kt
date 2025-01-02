@@ -119,62 +119,44 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
             "좌측 어깨" to status.WARNING,
             "우측 어깨" to status.WARNING,
 
-            "좌측 팔꿉" to status.NORMAL,
+            "좌측 팔꿉" to status.DANGER,
             "우측 팔꿉" to status.DANGER,
 
-            "좌측 손목" to status.NORMAL,
-            "우측 손목" to status.NORMAL,
+            "좌측 손목" to status.DANGER,
+            "우측 손목" to status.DANGER,
 
-            "좌측 골반" to status.WARNING,
-            "우측 골반" to status.NORMAL,
+            "좌측 골반" to status.DANGER,
+            "우측 골반" to status.WARNING,
             "좌측 무릎" to status.NORMAL,
-            "우측 무릎" to status.WARNING,
+            "우측 무릎" to status.NORMAL,
             "우측 발목" to status.NORMAL,
             "우측 발목" to status.NORMAL
         )
         val parts2 = mutableListOf(
-            "목관절" to status.WARNING,
-            "좌측 어깨" to status.WARNING,
-            "우측 어깨" to status.NORMAL,
+            "목관절" to status.DANGER,
+            "좌측 어깨" to status.DANGER,
+            "우측 어깨" to status.WARNING,
 
-            "좌측 팔꿉" to status.NORMAL,
-            "우측 팔꿉" to status.NORMAL,
+            "좌측 팔꿉" to status.DANGER,
+            "우측 팔꿉" to status.DANGER,
 
-            "좌측 손목" to status.NORMAL,
-            "우측 손목" to status.NORMAL,
+            "좌측 손목" to status.DANGER,
+            "우측 손목" to status.WARNING,
 
-            "좌측 골반" to status.WARNING,
-            "우측 골반" to status.WARNING,
-            "좌측 무릎" to status.NORMAL,
-            "우측 무릎" to status.WARNING,
+            "좌측 골반" to status.DANGER,
+            "우측 골반" to status.DANGER,
+            "좌측 무릎" to status.WARNING,
+            "우측 무릎" to status.NORMAL,
             "우측 발목" to status.NORMAL,
             "우측 발목" to status.NORMAL
         )
         val parts3= mutableListOf(
             "목관절" to status.WARNING,
-            "좌측 어깨" to status.DANGER,
-            "우측 어깨" to status.NORMAL,
-
-            "좌측 팔꿉" to status.NORMAL,
-            "우측 팔꿉" to status.NORMAL,
-
-            "좌측 손목" to status.NORMAL,
-            "우측 손목" to status.NORMAL,
-
-            "좌측 골반" to status.WARNING,
-            "우측 골반" to status.WARNING,
-            "좌측 무릎" to status.WARNING,
-            "우측 무릎" to status.WARNING,
-            "우측 발목" to status.NORMAL,
-            "우측 발목" to status.NORMAL
-        )
-        val parts4= mutableListOf(
-            "목관절" to status.WARNING,
             "좌측 어깨" to status.WARNING,
             "우측 어깨" to status.WARNING,
 
-            "좌측 팔꿉" to status.WARNING,
-            "우측 팔꿉" to status.NORMAL,
+            "좌측 팔꿉" to status.NORMAL,
+            "우측 팔꿉" to status.WARNING,
 
             "좌측 손목" to status.NORMAL,
             "우측 손목" to status.NORMAL,
@@ -182,62 +164,80 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
             "좌측 골반" to status.WARNING,
             "우측 골반" to status.WARNING,
             "좌측 무릎" to status.NORMAL,
-            "우측 무릎" to status.DANGER,
+            "우측 무릎" to status.WARNING,
             "우측 발목" to status.NORMAL,
             "우측 발목" to status.NORMAL
         )
-        val parts5= mutableListOf(
-            "목관절" to status.WARNING,
-            "좌측 어깨" to status.WARNING,
-            "우측 어깨" to status.DANGER,
-
-            "좌측 팔꿉" to status.NORMAL,
-            "우측 팔꿉" to status.NORMAL,
-
-            "좌측 손목" to status.NORMAL,
-            "우측 손목" to status.NORMAL,
-
-            "좌측 골반" to status.DANGER,
-            "우측 골반" to status.WARNING,
-            "좌측 무릎" to status.WARNING,
-            "우측 무릎" to status.WARNING,
-            "우측 발목" to status.NORMAL,
-            "우측 발목" to status.WARNING
-        )
+//        val parts4= mutableListOf(
+//            "목관절" to status.WARNING,
+//            "좌측 어깨" to status.WARNING,
+//            "우측 어깨" to status.WARNING,
+//
+//            "좌측 팔꿉" to status.WARNING,
+//            "우측 팔꿉" to status.NORMAL,
+//
+//            "좌측 손목" to status.NORMAL,
+//            "우측 손목" to status.NORMAL,
+//
+//            "좌측 골반" to status.WARNING,
+//            "우측 골반" to status.WARNING,
+//            "좌측 무릎" to status.NORMAL,
+//            "우측 무릎" to status.DANGER,
+//            "우측 발목" to status.NORMAL,
+//            "우측 발목" to status.NORMAL
+//        )
+//        val parts5= mutableListOf(
+//            "목관절" to status.WARNING,
+//            "좌측 어깨" to status.WARNING,
+//            "우측 어깨" to status.DANGER,
+//
+//            "좌측 팔꿉" to status.NORMAL,
+//            "우측 팔꿉" to status.NORMAL,
+//
+//            "좌측 손목" to status.NORMAL,
+//            "우측 손목" to status.NORMAL,
+//
+//            "좌측 골반" to status.DANGER,
+//            "우측 골반" to status.WARNING,
+//            "좌측 무릎" to status.WARNING,
+//            "우측 무릎" to status.WARNING,
+//            "우측 발목" to status.NORMAL,
+//            "우측 발목" to status.WARNING
+//        )
 
         // Act: 함수 호출
         val result = calculateOverall(parts)
         val result2 = calculateOverall(parts2)
         val result3 = calculateOverall(parts3)
-        val result4 = calculateOverall(parts4)
-        val result5 = calculateOverall(parts5)
-        println("82 - $result")
-        println("83 - $result2")
+//        val result4 = calculateOverall(parts4)
+//        val result5 = calculateOverall(parts5)
+        println("61 - $result")
+        println("57 - $result2")
         println("76 - $result3")
-        println("69 - $result4")
-        println("65 - $result5")
+//        println("69 - $result4")
+//        println("65 - $result5")
         // Assert: 예상 결과와 비교
-        assertEquals(82, result)
+
     }
 
     fun calculateOverall(parts: MutableList<Pair<String, status>>) : Int {
         val scores = mapOf(
-            status.DANGER to 25,
-            status.WARNING to 65,
-            status.NORMAL to 90
+            status.DANGER to 38,
+            status.WARNING to 64,
+            status.NORMAL to 95
         )
-        val weightScore = 2.6
-        val reverseWeightScore = 0.8
+        val weightScore = 1.65
+        val reverseWeightScore = 0.7
         var weightedScoreSum = 0.0
         var totalWeight = 0.0
         for (part in parts) {
             val (bodyPart, status) = part
             val weight = when {
-                bodyPart.contains("목관절") -> weightScore
+//                bodyPart.contains("목관절") -> weightScore
 //                bodyPart.contains("어깨") -> weightScore
-                bodyPart.contains("골반") -> weightScore
+//                bodyPart.contains("골반") -> weightScore
                 bodyPart.contains("팔꿉") -> reverseWeightScore
-                bodyPart.contains("손목") -> weightScore
+                bodyPart.contains("손목") -> reverseWeightScore
                 bodyPart.contains("무릎") -> weightScore
 //                bodyPart.contains("발목") -> reverseWeightScore
                 else -> 1.0

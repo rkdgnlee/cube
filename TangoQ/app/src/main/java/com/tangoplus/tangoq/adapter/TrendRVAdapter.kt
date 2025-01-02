@@ -83,9 +83,11 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
 
                 Log.v("선택된 항목 판단", "$selectAnalysisIndex,선택된 3개 중 normal 개수: $normalCount")
                 if (normalCount >= 2) { // 3개 중 2개 이상이 normal이면 true
-                    setPartState(holder, true)
+                    setPartState(holder, 1)
+                } else if (normalCount == 1) {
+                    setPartState(holder, 2)
                 } else {
-                    setPartState(holder, false)
+                    setPartState(holder, 3)
                 }
 
                 selectAnalysisIndex.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
@@ -179,18 +181,11 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
             }
         }
     }
-    private fun setPartState(holder: TrendViewHolder, state: Boolean) {
+    private fun setPartState(holder: TrendViewHolder, state: Int) {
         when (state) {
-            true -> {
-                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)))
-                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor500)))
-            }
-            else -> {
-                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteContainerColor))
-                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
-                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
-            }
+            1 -> { holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor500))) }
+            2 -> { holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))) }
+            3 -> { holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))) }
         }
     }
 

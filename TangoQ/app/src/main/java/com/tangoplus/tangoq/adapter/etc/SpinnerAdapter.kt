@@ -2,16 +2,15 @@ package com.tangoplus.tangoq.adapter.etc
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.ItemSpinnerBinding
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
 
 @Suppress("UNREACHABLE_CODE")
@@ -39,7 +38,6 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
                 binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.transparentColor))
                 binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.white))
             }
-
         }
         binding.tvSpinner.text = list[position]
         binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
@@ -76,12 +74,4 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
         return list.size
     }
 
-    private fun isTablet(context: Context): Boolean {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val metrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(metrics)
-
-        val widthDp = metrics.widthPixels / metrics.density
-        return widthDp >= 600
-    }
 }

@@ -66,9 +66,9 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
             val categoryArrayList = mutableListOf<ArrayList<Int>>()
             categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 스트레칭
-            categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 밸런스, 스트레칭, 운동기구 활용 스트레칭, 운동기구 활용 운동
-            categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 기본 밸런스, 스트레칭
-            categoryArrayList.add(arrayListOf(10, 11)) // 기본 밸런스, 스트레칭
+            categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 하지근육 강화, 기본 스트레칭 의자 활용, 기본 유산소 운동
+            categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 상지 하지 스트레칭 근육 운동
+            categoryArrayList.add(arrayListOf(10, 11)) // 근골격계질환 개선 위한 스트레칭 운동
             categoryArrayList.add(arrayListOf(12)) // 기본 밸런스, 스트레칭
 
             try { // ------! rv vertical 시작 !------

@@ -59,14 +59,12 @@ class MeasureAnalysisFragment : Fragment() {
     companion object {
         private const val ARG_INDEX = "index_analysis"
         private const val ARG_SCORE = "index_score"
-        private const val ARG_COMMENT = "index_comment"
-        fun newInstance(indexx: Int, balance: Pair<Int, String>): MeasureAnalysisFragment {
+
+        fun newInstance(indexx: Int, balance: Int): MeasureAnalysisFragment {
             val fragment = MeasureAnalysisFragment()
             val args = Bundle()
             args.putInt(ARG_INDEX, indexx)
-            args.putInt(ARG_SCORE, balance.first)
-            args.putString(ARG_COMMENT, balance.second)
-
+            args.putInt(ARG_SCORE, balance)
             fragment.arguments = args
             return fragment
         }
@@ -92,10 +90,6 @@ class MeasureAnalysisFragment : Fragment() {
                 mr = viewModel.selectedMeasure?.measureResult ?: JSONArray()
                 avm.mafMeasureResult = JSONArray()
                 Log.v("현재측정", viewModel.selectedMeasure?.regDate.toString())
-                val noticeScore = arguments?.getInt(ARG_SCORE)
-                val noticeComment = arguments?.getString(ARG_COMMENT)
-                setColor(noticeScore)
-                binding.tvMAPredict.text = noticeComment.toString()
 
                 // ------# 1차 필터링 (균형별) #------
                 // 0, 1, 2, 3으로 3가지.
@@ -116,7 +110,6 @@ class MeasureAnalysisFragment : Fragment() {
                         }
                         setScreenRawData(avm.mafMeasureResult, 0)
                         binding.ivMA.setImageResource(R.drawable.drawable_front)
-
                     }
                     1 -> { // 측면 균형
                         binding.tvMPTitle.text = "측면 균형"
@@ -133,7 +126,6 @@ class MeasureAnalysisFragment : Fragment() {
                          }
                         setScreenRawData(avm.mafMeasureResult,  3)
                         binding.ivMA.setImageResource(R.drawable.drawable_side)
-
                     }
                     2 -> { // 후면 균형
                         binding.tvMPTitle.text = "후면 균형"
@@ -146,8 +138,6 @@ class MeasureAnalysisFragment : Fragment() {
                         binding.flMA.visibility = View.GONE
                         setScreenRawData(avm.mafMeasureResult,  5)
                         binding.ivMA.setImageResource(R.drawable.drawable_back)
-
-
                     }
                     3 -> {
                         binding.tvMPTitle.text = "앉은 후면"
@@ -162,8 +152,6 @@ class MeasureAnalysisFragment : Fragment() {
                         binding.ssivMA2.visibility = View.GONE
                         setScreenRawData(avm.mafMeasureResult,  6)
                         binding.ivMA.setImageResource(R.drawable.drawable_back)
-
-
                     }
                     4 -> { // 동적 균형
                         binding.tvMPTitle.text = "동적 측정"
@@ -652,22 +640,5 @@ class MeasureAnalysisFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true
-    }
-
-    private fun setColor(index: Int?) {
-        when (index) {
-            2 -> {
-                binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.deleteColor))
-                binding.ivMAicon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_caution))
-            }
-            1 -> {
-                binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.cautionColor))
-                binding.ivMAicon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_warning))
-            }
-            0 -> {
-                binding.tvMAPredict.setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
-                binding.ivMAicon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_ball))
-            }
-        }
     }
 }

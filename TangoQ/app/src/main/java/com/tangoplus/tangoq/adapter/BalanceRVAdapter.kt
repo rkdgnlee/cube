@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +19,8 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
     inner class BalanceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvBIName: TextView = view.findViewById(R.id.tvBIName)
         val ivBI: ImageView = view.findViewById(R.id.ivBI)
-        val ivBIicon: ImageView = view.findViewById(R.id.ivBIicon)
-        val tvBIPredict: TextView = view.findViewById(R.id.tvBIPredict)
         val clBI : ConstraintLayout = view.findViewById(R.id.clBI)
+        val tvBIExplain : TextView = view.findViewById(R.id.tvBIExplain)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -39,23 +37,22 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = stages[position]
         if (holder is BalanceViewHolder) {
-            setItem(position, holder.ivBI, holder.tvBIName)
-            setColor(degree[position].first, holder.tvBIPredict, holder.ivBIicon)
-            var currentComment = ""
-            if (currentItem.size < 2) {
-                currentComment = "${currentItem[0]} ${transferDegree(degree[position])}"
+            setItem(position, holder.ivBI, holder.tvBIName, holder.tvBIExplain)
 
-            } else if (degree[position].second > 3 || degree[position].second < -2) {
-                currentComment = "전체적인 균형이 잘 잡혀 있습니다."
 
-            } else {
-                currentComment = "${currentItem[0]}와 ${currentItem[1]}${transferDegree(degree[position])}"
-            }
-            holder.tvBIPredict.text = currentComment
+//            var currentComment = ""
+//            if (currentItem.size < 2) {
+//                currentComment = "${currentItem[0]} ${transferDegree(degree[position])}"
+//            } else if (degree[position].second > 3 || degree[position].second < -2) {
+//                currentComment = "전체적인 균형이 잘 잡혀 있습니다."
+//            } else {
+//                currentComment = "${currentItem[0]}, ${currentItem[1]}${transferDegree(degree[position])}"
+//            }
+//            holder.tvBIPredict.text = currentComment
 
             holder.clBI.setOnClickListener{
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position, Pair(degree[position].first, currentComment)))
+                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position, degree[position].first))
                     addToBackStack(null)
                     commit()
                 }
@@ -93,27 +90,32 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
         }
     }
 
-    private fun setItem(index: Int, iv: ImageView, tvName: TextView) {
+    private fun setItem(index: Int, iv: ImageView, tvName: TextView, tvExplain: TextView) {
         when (index) {
             0 -> {
                 iv.setImageResource(R.drawable.drawable_front)
                 tvName.text = "정면 균형"
+                tvExplain.text = "정면 선 자세와 팔꿈치 정렬 자세에 대해 체크할 수 있습니다. 몸의 균형과 손목과 팔꿈치의 각도를 확인하세요"
             }
             1 -> {
                 iv.setImageResource(R.drawable.drawable_side)
                 tvName.text = "측면 균형"
+                tvExplain.text = "양 측면 자세를 비교해서 좌우 불균형을 확인할 수 있습니다. 몸의 중심을 기준으로 각 부위의 위치를 중점적으로 확인하세요"
             }
             2 -> {
                 iv.setImageResource(R.drawable.drawable_back)
                 tvName.text = "후면 균형"
+                tvExplain.text = "후면 선 자세에 대해 체크할 수 있습니다. 정면 자세에서 알 수 없었던 다리, 발 뒷꿈치의 위치를 통해 서 있는 자세를 확인하세요"
             }
             3 -> {
-                iv.setImageResource(R.drawable.drawable_back)
+                iv.setImageResource(R.drawable.drawable_sit_back)
                 tvName.text = "앉은 후면"
+                tvExplain.text = "의자에 앉은 자세를 체크할 수 있습니다. 후면 선 자세와 비교해서 골반 틀어짐, 어깨 쏠림 등을 체크해 보세요"
             }
             4 -> {
                 iv.setImageResource(R.drawable.drawable_dynamic)
                 tvName.text = "동적 균형"
+                tvExplain.text = "오버헤드 스쿼트 자세를 통해 손끝, 골반, 무릎의 궤적에서 흔들림을 체크해 보세요"
             }
         }
     }

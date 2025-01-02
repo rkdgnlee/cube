@@ -273,7 +273,7 @@ object NetworkProgress {
         }
     }
 
-    // TODO ------# 달력 함수에 맞게 수정 해야함 #------
+    //  ------# 달력 함수에 맞게 수정 해야함 #------
     suspend fun getDailyProgress(myUrl: String, date: String, context: Context) : MutableList<ProgressHistoryVO>? {
         val client = getClient(context)
         val request = Request.Builder()

@@ -9,4 +9,5 @@
     <dimen name="top_space_height_qr_code">680dp</dimen>
 
     <dimen name="main_margin">20dp</dimen>
+
 </resources>

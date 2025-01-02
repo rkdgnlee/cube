@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.R
@@ -25,10 +26,9 @@ import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
-import com.tangoplus.tangoq.db.Singleton_t_measure
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 
@@ -148,7 +148,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                                 put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
                                 put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
                             }
-                            CoroutineScope(Dispatchers.IO).launch {
+                            lifecycleScope.launch(Dispatchers.IO) {
                                 val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
                                 if (isUpdateFinished == true) {
                                     Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
@@ -287,18 +287,18 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                         bodyJo.put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
                     }
                 }
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
                     if (isUpdateFinished == true) {
                         Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
                         singletonUser.jsonObject = svm.User.value
-
-                        requireActivity().runOnUiThread {
+                        withContext(Dispatchers.Main) {
                             val dialog = AlertDialogFragment.newInstance("disagree")
                             dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
                         }
                     }
                 }
+
             }
             setNegativeButton("아니오") { _, _ ->
                 when (case) {

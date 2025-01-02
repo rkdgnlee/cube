@@ -445,23 +445,27 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         dismiss()
     }
 
-    // 해당 회차에서 가장
+    // 해당 회차에서 가장 최근 운동의 index찾아오기 ( 한 seq의 묶음만 들어옴 )
     private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
-        // Case 1 초기상태
-        if (progresses.all { it.lastProgress == 0 }) {
-            Log.v("progressIndex", "0")
-            return 0
-        }
+        // Case 1 시청 중간 기록이 있을 경우
         val progressIndex1 = progresses.indexOfLast { it.lastProgress in 1 until it.videoDuration }
         if (progressIndex1 != -1) {
             return progressIndex1
         }
 
-        val progressIndex = progresses.indexOfLast { it.lastProgress == it.videoDuration }
+        // Case 2 다 보고 난 뒤 완료 처리가 된 후 (currentSequence가 1이 됐을 때) 그 다음 index 반환
+        val progressIndex = progresses.indexOfLast { it.currentSequence - 1 == pvm.currentSequence }
+        Log.v("프로그레스", "$progressIndex, currentSeq: ${pvm.currentSequence}")
         if (progressIndex != progresses.size) {
-            Log.v("progressIndex", "${progressIndex +  1}")
+            Log.v("가장 최근Index", "${progressIndex +  1}")
             return progressIndex + 1
-        } else {
+        }
+
+        // Case 3 초기상태
+        if (progresses.all { it.lastProgress == 0 }) {
+            Log.v("가장 최근Index", "0")
+            return 0
+        }  else {
             return -1
         }
     }

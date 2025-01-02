@@ -255,12 +255,11 @@
             android:layout_height="wrap_content"
             android:text="자세를 따라해주세요"
             android:textColor="@color/subColor700"
-            android:textSize="22dp"
+            android:textSize="23dp"
             app:layout_constraintBottom_toTopOf="@+id/tvMeasureSkeletonCount"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvMeasureSkeletonCount"
@@ -270,13 +269,11 @@
             android:gravity="center_horizontal"
             android:text="3"
             android:textColor="@color/black"
-            android:textSize="110dp"
+            android:textSize="120dp"
             android:textStyle="bold"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.7" />
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

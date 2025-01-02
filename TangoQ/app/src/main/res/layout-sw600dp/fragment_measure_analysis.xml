@@ -167,40 +167,13 @@
                         android:id="@+id/tvMAName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
                         android:text="정면 균형"
                         android:textColor="@color/subColor800"
                         android:textSize="18dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/ivMA"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/ivMAicon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/tvMAName"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/icon_caution" />
-
-                    <TextView
-                        android:id="@+id/tvMAPredict"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_margin="8dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:maxLength="58"
-                        android:maxLines="3"
-                        android:singleLine="false"
-                        android:text="_"
-                        android:textColor="@color/subColor800"
-                        android:textSize="14dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/ivMAicon"
+                        app:layout_constraintHorizontal_bias="0.2"
+                        app:layout_constraintStart_toEndOf="@+id/ivMA"
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
