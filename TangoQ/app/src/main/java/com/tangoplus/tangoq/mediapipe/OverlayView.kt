@@ -230,7 +230,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             val connections = listOf(
                 Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
                 Pair(15, 21), Pair(15, 17), Pair(17, 19), Pair(15, 19),
-                Pair(14, 22), Pair(16, 18), Pair(18, 20), Pair(16, 20),
+                Pair(16, 22), Pair(16, 18), Pair(18, 20), Pair(16, 20),
                 Pair(11, 23), Pair(12, 24), Pair(23, 25), Pair(24, 26), Pair(25, 27), Pair(26, 28),
                 Pair(27, 31), Pair(28, 32), Pair(27, 29), Pair(28, 30),
             )

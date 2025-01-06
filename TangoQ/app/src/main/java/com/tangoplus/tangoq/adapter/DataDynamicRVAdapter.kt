@@ -11,7 +11,6 @@ import com.tangoplus.tangoq.databinding.RvDataDynamicItemBinding
 import com.tangoplus.tangoq.view.TrendCurveView
 import java.lang.IllegalArgumentException
 
-// data는 부위는 총 6개 -> 한 부위의 219프레임 동안의 x, y값인 data임
 class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, private val titles: List<String>, private val case: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val distinctTitles = titles.map { it.replace("좌측 ", "").replace("우측 ", "") }.distinct()
     inner class MAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -57,27 +56,28 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is MAViewHolder) {
-            val leftData = data[position]
-            val rightData = data[position + 1]
-            val leftTitle = titles[position]
-            val rightTitle = titles[position + 1]
-            holder.tvDDI1.text = leftTitle
-            holder.cvDDI1.setPoints( leftData )
+            val pairStartIndex = (position * 2)
+            val leftIndex = pairStartIndex + 1
 
-            holder.tvDDI2.text = rightTitle
-            holder.cvDDI2.setPoints( rightData )
+            if (leftIndex < data.size) {
+                holder.cvDDI1.setPoints(data[leftIndex])
+                holder.tvDDI1.text = titles[leftIndex]
+            }
 
+            if (pairStartIndex < data.size) {
+                holder.cvDDI2.setPoints(data[pairStartIndex])
+                holder.tvDDI2.text = titles[pairStartIndex]
+            }
         } else if (holder is MPAViewHolder){
             holder.tvDDAITitle.text = "${distinctTitles[position]} 이동 안정성"
 
             val pairStartIndex = (position * 2)
-            val leftIndex = pairStartIndex
             val rightIndex = pairStartIndex + 1
 
             // 인덱스가 유효한지 확인
-            if (leftIndex < data.size) {
-                holder.cvDDAILeft.setPoints(data[leftIndex])
-                holder.tvDDAILeft.text = titles[leftIndex]
+            if (pairStartIndex < data.size) {
+                holder.cvDDAILeft.setPoints(data[pairStartIndex])
+                holder.tvDDAILeft.text = titles[pairStartIndex]
             }
 
             if (rightIndex < data.size) {

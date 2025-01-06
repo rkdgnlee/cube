@@ -20,12 +20,6 @@ object MathHelpers {
         val degrees = toDegrees(radians.toDouble())
         return degrees.toFloat() // 0도 기준으로 정규화
     }
-
-    fun calculateSlope0(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y2 - y1, x2 - x1)
-        val degrees = toDegrees(radians.toDouble())
-        return normalizeToZero(degrees.toFloat()) // 0도 기준으로 정규화
-    }
     // ------# 수평 초기화 기울기 계산 #------
     fun calculateSlope180(x1: Float, y1: Float, x2: Float, y2: Float): Float {
         val radians = atan2(y2 - y1, x2 - x1)

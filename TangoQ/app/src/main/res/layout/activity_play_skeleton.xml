@@ -45,7 +45,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cvMSC11"
+            android:id="@+id/cvSC11"
             android:layout_width="16dp"
             android:layout_height="0dp"
             app:cardBackgroundColor="@color/subColor800"
@@ -61,10 +61,10 @@
             android:layout_height="48dp"
             app:cardBackgroundColor="@color/subColor100"
             app:cardCornerRadius="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/cvMSC11"
-            app:layout_constraintEnd_toEndOf="@+id/cvMSC11"
-            app:layout_constraintStart_toStartOf="@+id/cvMSC11"
-            app:layout_constraintTop_toTopOf="@+id/cvMSC11" />
+            app:layout_constraintBottom_toBottomOf="@+id/cvSC11"
+            app:layout_constraintEnd_toEndOf="@+id/cvSC11"
+            app:layout_constraintStart_toStartOf="@+id/cvSC11"
+            app:layout_constraintTop_toTopOf="@+id/cvSC11" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

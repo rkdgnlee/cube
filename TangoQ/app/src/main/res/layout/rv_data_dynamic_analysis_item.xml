@@ -71,9 +71,9 @@
 
             <com.tangoplus.tangoq.view.TrendCurveView
                 android:id="@+id/cvDDAILeft"
-                android:layout_width="60dp"
-                android:layout_height="57dp"
-                android:layout_margin="10dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -125,9 +125,9 @@
 
             <com.tangoplus.tangoq.view.TrendCurveView
                 android:id="@+id/cvDDAIRight"
-                android:layout_width="61dp"
-                android:layout_height="63dp"
-                android:layout_margin="10dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"

@@ -53,6 +53,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="15dp"
         android:gravity="center_vertical"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView48"
         app:layout_constraintStart_toEndOf="@+id/tvBIName"

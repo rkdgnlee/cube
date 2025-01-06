@@ -68,7 +68,7 @@ class MeasureDashBoard1Fragment : Fragment() {
         // ------# 싱글턴 패턴 객체 가져오기 #------
         val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         measures = singletonMeasure.measures ?: mutableListOf()
-//        measures = mutableListOf()
+
 
         // ------!  이름 + 통증 부위 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
@@ -199,6 +199,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 lineWidth = 4F
                 valueTextSize = 0F
                 setCircleColors(resources.getColor(R.color.thirdColor, null))
+                circleRadius = 5f
                 setDrawCircleHole(false)
                 setDrawFilled(false)
                 mode = LineDataSet.Mode.CUBIC_BEZIER

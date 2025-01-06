@@ -27,7 +27,7 @@ class AnalysisViewModel : ViewModel() {
 
     var mafMeasureResult = JSONArray()
 
-    val DynamicTitles = listOf("좌측 손", "우측 손", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
+    val dynamicTitles = listOf("좌측 손", "우측 손", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
 
     fun setSeqString(seq: Int?) :String {
         return when (seq) {

@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -263,7 +262,7 @@ class MeasureAnalysisFragment : Fragment() {
                     val connections = listOf(
                         15, 16, 23, 24, 25, 26
                     )
-                    val coordinates = extractVideoCoordinates(measureResult.optJSONArray(0))
+                    val coordinates = extractVideoCoordinates(avm.mafMeasureResult.getJSONArray(0))
                     val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
 
                     for (connection in connections) {
@@ -619,9 +618,8 @@ class MeasureAnalysisFragment : Fragment() {
     }
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
-        val titles = listOf("좌측 손", "우측 손", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val dynamicAdapter = DataDynamicRVAdapter(data, titles, 0)
+        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, 0)
         binding.rvMALeft.layoutManager = linearLayoutManager1
         binding.rvMALeft.adapter = dynamicAdapter
     }

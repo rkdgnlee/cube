@@ -32,7 +32,6 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             return fragment
         }
     }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         return dialog
