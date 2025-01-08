@@ -15,39 +15,12 @@ object MathHelpers {
     private const val SCALE_Y = 160f
 
     // ------# 기울기 계산 #------
+    // TODO 1번 스케일링된 좌표로 각도를 계산할건지.. 그러면 거리 계산도 다 바꿔야함..
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y2 - y1, x2 - x1)
-        val degrees = toDegrees(radians.toDouble())
-        return degrees.toFloat() // 0도 기준으로 정규화
+        val radians = atan2(y2 -  y1, x2  - x1)
+        val degrees = toDegrees(radians.toDouble()).toFloat()
+        return  if (degrees > 180) degrees % 180 else degrees
     }
-    // ------# 수평 초기화 기울기 계산 #------
-    fun calculateSlope180(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y2 - y1, x2 - x1)
-        val degrees = toDegrees(radians.toDouble())
-        return normalizeTo180(degrees.toFloat()) // 180도 기준으로 정규화
-    }
-
-    // 180도 기준으로 정규화하는 함수
-    private fun normalizeTo180(angle: Float): Float {
-        var normalized = angle
-        while (normalized < 0) normalized += 360
-        while (normalized >= 360) normalized -= 360
-
-        if (normalized > 180) {
-            return normalized
-        } else {
-            return abs(180 - normalized)
-        }
-    }
-
-    // 0도 기준으로 정규화하는 함수
-    fun normalizeToZero(angle: Float): Float {
-        var normalized = angle
-        while (normalized <= -180) normalized += 360
-        while (normalized > 180) normalized -= 360
-        return normalized
-    }
-
     // ------# 점 3개의 각도 계산 #------
     fun calculateAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3:Float): Float {
         val v1x = x1 - x2
@@ -179,6 +152,7 @@ object MathHelpers {
         val widthDp = metrics.widthPixels / metrics.density
         return widthDp >= 600
     }
+
     fun phoneNumber82(msg: String) : String {
         val firstNumber: String = msg.substring(0,3)
 

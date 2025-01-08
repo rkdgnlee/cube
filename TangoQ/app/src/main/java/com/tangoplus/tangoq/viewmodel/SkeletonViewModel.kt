@@ -6,7 +6,7 @@ import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 class SkeletonViewModel : ViewModel() {
 
     private var _model = PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_FULL
-    private var _delegate: Int = PoseLandmarkerHelper.DELEGATE_CPU
+    private var _delegate: Int = PoseLandmarkerHelper.DELEGATE_GPU
     private var _minPoseDetectionConfidence: Float = 0.8f
     private var _minPoseTrackingConfidence: Float = 0.8f
     private var _minPosePresenceConfidence: Float = 0.8f

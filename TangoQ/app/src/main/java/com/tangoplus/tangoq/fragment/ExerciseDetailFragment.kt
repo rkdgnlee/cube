@@ -89,7 +89,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             10 -> "근골격계 질환 운동"
             else -> "TangoQ 기구 활용"
         }
-        binding.tvEDMainCategoryName.textSize = 24f
+        binding.tvEDMainCategoryName.textSize = 23f
 
         // -----! 카테고리  시작 !-----
         categoryList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")

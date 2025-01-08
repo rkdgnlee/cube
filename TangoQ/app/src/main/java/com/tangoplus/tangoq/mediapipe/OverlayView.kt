@@ -115,19 +115,22 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         if (currentRunningMode == RunningMode.LIVE_STREAM) {
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
+
             landmarks.forEach { landmark ->
-                canvas.drawCircle(
-                    landmark.x * imageWidth * scaleFactorX + offsetX,
-                    landmark.y * imageHeight * scaleFactorY + offsetY,
-                    5f,
-                    borderPaint
-                )
-                canvas.drawCircle(
-                    landmark.x * imageWidth * scaleFactorX + offsetX,
-                    landmark.y * imageHeight * scaleFactorY + offsetY,
-                    5f,
-                    fillPaint
-                )
+                if (landmarks.indexOf(landmark) > 10 || landmarks.indexOf(landmark) == 0) {
+                    canvas.drawCircle(
+                        landmark.x * imageWidth * scaleFactorX + offsetX,
+                        landmark.y * imageHeight * scaleFactorY + offsetY,
+                        5f,
+                        borderPaint
+                    )
+                    canvas.drawCircle(
+                        landmark.x * imageWidth * scaleFactorX + offsetX,
+                        landmark.y * imageHeight * scaleFactorY + offsetY,
+                        5f,
+                        fillPaint
+                    )
+                }
             }
 
             // 안전하게 특정 랜드마크 접근
@@ -146,8 +149,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             }
 
             val connections = listOf(
-                // 얼굴
-                Pair(0, 1), Pair(0, 4), Pair(1, 2), Pair(2, 3), Pair(3, 7), Pair(4, 5), Pair(5, 6), Pair(6, 8),
                 // 손
                 Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(15, 17), Pair(15, 19), Pair(15, 21),
                 // 몸통 + 팔

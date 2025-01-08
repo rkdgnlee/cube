@@ -63,8 +63,8 @@ object ImageProcessingUtil {
         // ------# 수칙  & 수평 보조 축 넣기 #------
         when (sequence) {
             0 -> {
-                val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
-                val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
+                val leftEar = poseLandmarkResult.landmarks.getOrNull(7)
+                val rightEar = poseLandmarkResult.landmarks.getOrNull(8)
                 val leftShoulder = poseLandmarkResult.landmarks.getOrNull(11)
                 val rightShoulder = poseLandmarkResult.landmarks.getOrNull(12)
                 val leftElbow = poseLandmarkResult.landmarks.getOrNull(13)
@@ -75,14 +75,17 @@ object ImageProcessingUtil {
                 val rightKnee = poseLandmarkResult.landmarks.getOrNull(26)
                 val leftAnkle = poseLandmarkResult.landmarks.getOrNull(27)
                 val rightAnkle = poseLandmarkResult.landmarks.getOrNull(28)
+                val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
+                val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
 
-                if ( nose != null
+                if ( nose != null && leftEar != null && rightEar != null
                     && leftFoot != null && rightFoot != null  && leftShoulder != null && rightShoulder != null
                     && leftElbow != null && rightElbow != null && leftWrist != null && rightWrist != null
                     && leftKnee != null && rightKnee != null && leftAnkle != null && rightAnkle != null ) {
                     val midFootX = (leftFoot.x + rightFoot.x) / 2
-                    canvas.drawLine(midFootX, leftFoot.y + 100, midFootX, nose.y - 100, axisPaint)
 
+                    canvas.drawLine(leftEar.x, leftEar.y, rightEar.x, rightEar.y, axisSubPaint)
+                    canvas.drawLine(midFootX, leftFoot.y + 100, midFootX, nose.y - 100, axisPaint)
                     canvas.drawLine(leftShoulder.x ,leftShoulder.y, rightShoulder.x, rightShoulder.y, axisSubPaint)
                     canvas.drawLine(leftElbow.x ,leftElbow.y, rightElbow.x, rightElbow.y, axisSubPaint)
                     canvas.drawLine(leftWrist.x ,leftWrist.y, rightWrist.x, rightWrist.y, axisSubPaint)
@@ -270,7 +273,7 @@ object ImageProcessingUtil {
             else -> listOf()
         }
         val pointRange = when (sequence) {
-            0 -> listOf(13, 14, 15, 16, 27, 28)
+            0 -> listOf(7, 8, 13, 14, 15, 16, 27, 28)
             2 -> listOf(13, 14, 15, 16)
             3 -> listOf(13, 15, 27)
             4 -> listOf(14, 16, 28)

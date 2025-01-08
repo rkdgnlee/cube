@@ -56,9 +56,9 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val anal
                 setState(holder, currentItem.state)
                 val rawDataValue = currentItem.rawData.toDouble() // null인 경우 0으로 대체
                 holder.tvMPAIData.text = if (currentItem.columnName.contains("distance")) {
-                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else abs(rawDataValue))}cm"
+                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}cm"
                 } else {
-                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else abs(rawDataValue))}°"
+                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}°"
                 }
                 val spannableString = SpannableString(currentItem.summary)
                 val accentIndex =  holder.tvMPAIExplain.text.indexOf("값")

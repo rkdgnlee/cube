@@ -51,7 +51,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="20dp"
         android:lineSpacingExtra="8sp"
-        android:text="측정 도중에는 움직이지 마시고\n편안한 상태로 지시를 따라해주세요"
+        android:text="7가지 단계별 자세를 확인하신 후 \n편안한 상태로 지시를 따라해주세요"
         android:textColor="@color/subColor800"
         android:textSize="24dp"
         android:textStyle="bold"

@@ -48,10 +48,9 @@ class MeasureAnalysisFragment : Fragment() {
     private var index = -1
 
     private var updateUI = false
-    private var count = false
     // 영상재생
     private var simpleExoPlayer: SimpleExoPlayer? = null
-    private var videoUrl = "http://gym.tangostar.co.kr/data/contents/videos/걷기.mp4"
+    private var videoUrl = ""
     private lateinit var jsonArray: JSONArray
     private lateinit var biometricManager : BiometricManager
 
@@ -230,7 +229,6 @@ class MeasureAnalysisFragment : Fragment() {
 
                 // ------# 팔꿉 #------
                 val valueAlignPairs = listOf(
-                    Triple("엄지와 엄지관절 기울기", "front_hand_angle_thumb_cmc_tip_left", "front_hand_angle_thumb_cmc_tip_right"),
                     Triple("팔꿉-손목-중지관절 기울기", "front_hand_angle_elbow_wrist_mid_finger_mcp_left", "front_hand_angle_elbow_wrist_mid_finger_mcp_right"),
                     Triple("상완-팔꿉-손목 기울기", "front_elbow_align_angle_left_upper_elbow_elbow_wrist", "front_elbow_align_angle_right_upper_elbow_elbow_wrist"),
                     Triple("양 손목과 어깨 기울기", "front_elbow_align_distance_left_wrist_shoulder", "front_elbow_align_distance_right_wrist_shoulder"),
@@ -310,37 +308,6 @@ class MeasureAnalysisFragment : Fragment() {
                     }
                 }
                 set012Adapter(minResultData)
-//                // ------# 우측 #------
-//                val keyRightAnglePairs = mapOf(
-//                    "side_right_vertical_angle_shoulder_elbow" to "오른쪽 어깨와 팔꿉 기울기",
-//                    "side_right_vertical_angle_elbow_wrist" to "오른쪽 팔꿉와 손목 기울기",
-//                    "side_right_vertical_angle_hip_knee" to "오른쪽 골반과 무릎 기울기",
-//                    "side_right_vertical_angle_ear_shoulder" to "오른쪽 귀와 어깨 기울기",
-//                    "side_right_vertical_angle_nose_shoulder" to "오른쪽 코와 어깨 기울기",
-//                    "side_right_vertical_angle_shoulder_elbow_wrist" to "오른쪽 어깨-팔꿉-손목 기울기",
-//                    "side_right_vertical_angle_hip_knee_ankle" to "오른쪽 골반-무릎-발목 기울기"
-//                )
-//                keyRightAnglePairs.forEach { (key, description) ->
-//                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
-//                    if (!angleValue.isNaN()) {
-//                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
-//                    }
-//                }
-//                val keyRightDistancePairs = mapOf(
-//                    "side_right_horizontal_distance_shoulder" to "중심과 오른쪽 어깨 거리",
-//                    "side_right_horizontal_distance_hip" to "중심과 오른쪽 골반 거리",
-//                    "side_right_horizontal_distance_pinky" to "중심과 오른쪽 새끼 거리",
-//                    "side_right_horizontal_distance_wrist" to "중심과 오른쪽 손목 거리",
-//
-//                    )
-//                keyRightDistancePairs.forEach { (key, description) ->
-//                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
-//
-//                    if (!angleValue.isNaN() ) {
-//                        minResultData.add(Triple(description, "거리: ${String.format("%.2f", angleValue)}cm", null))
-//                    }
-//                }
-//                set012Adapter(minResultData)
             }
             5 -> {
                 // ------# 수직 #------
@@ -484,8 +451,8 @@ class MeasureAnalysisFragment : Fragment() {
         val bottomAdapter = DataStaticRVAdapter(requireContext(), notFilteredData, false)
         binding.rvMALeft2.layoutManager = linearLayoutManager3
         binding.rvMALeft2.adapter = bottomAdapter
-
     }
+
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {
         lifecycleScope.launch {
@@ -560,8 +527,6 @@ class MeasureAnalysisFragment : Fragment() {
         val coordinates = extractVideoCoordinates(jsonArray)
         // 실제 mp4의 비디오 크기를 가져온다
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
-//        Log.v("PlayerView,비디오 크기", "overlay: (${binding.ovMA.width}, ${binding.ovMA.height}), videoWidth,Height: (${videoWidth}, ${videoHeight}) width: ${binding.pvMA.width}, height: ${binding.pvMA.height}")
-
         if (frameIndex in 0 until totalFrames) {
             // 해당 인덱스의 데이터를 JSON에서 추출하여 변환
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
@@ -580,9 +545,6 @@ class MeasureAnalysisFragment : Fragment() {
     }
 
     private fun updateVideoUI() {
-        Log.v("업데이트", "UI")
-
-
         binding.tvMPTitle.text = "동적 측정"
         binding.ssivMA1.visibility = View.GONE
         binding.ssivMA2.visibility = View.GONE

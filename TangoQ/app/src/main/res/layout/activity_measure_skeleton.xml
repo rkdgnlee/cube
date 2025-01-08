@@ -42,7 +42,6 @@
             android:id="@+id/ibtnMeasureSkeletonInfo"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
             android:backgroundTint="#00FFFFFF"
             android:contentDescription="showCautionDialog"
@@ -57,7 +56,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="2dp"
             android:background="#00FFFFFF"
             android:contentDescription="exitActivity"
             android:padding="4dp"
@@ -70,9 +68,9 @@
             android:id="@+id/svMeasureSkeleton"
             android:layout_width="0dp"
             android:layout_height="64dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="-2dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="-10dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ibtnMeasureSkeletonBack"
@@ -89,10 +87,10 @@
             app:sv_nextTextColor="@color/subColor100"
             app:sv_selectedCircleColor="@color/thirdColor"
             app:sv_selectedStepNumberColor="@color/subColor100"
-            app:sv_selectedTextColor="@color/thirdColor"
+            app:sv_selectedTextColor="@color/secondaryColor"
             app:sv_stepsNumber="7"
             app:sv_textPadding="4dp"
-            app:sv_textSize="14sp" />
+            app:sv_textSize="14dp" />
 
 
         <com.skydoves.progressview.ProgressView
@@ -100,6 +98,7 @@
             android:layout_width="0dp"
             android:layout_height="4dp"
             android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="12dp"
             android:background="#00FFFFFF"
             android:orientation="horizontal"
@@ -236,39 +235,52 @@
 
     </FrameLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/fabtnMeasureSkeleton"
+    <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="15dp"
-        android:background="@drawable/effect_ibtn_28dp"
-        android:gravity="center|center_vertical"
-        android:padding="16dp"
-        android:stateListAnimator="@null"
-        android:text="자세 다시 확인"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:backgroundTint="@color/mainColor"
-        app:elevation="0dp"
-        app:extendStrategy="wrap_content"
-        app:iconTint="@color/black"
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="40dp"
         app:layout_constraintBottom_toTopOf="@+id/llMeasureSkeletonBottom"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/fabtnMeasureSkeleton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/effect_ibtn_28dp"
+            android:paddingStart="16dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="6dp"
+            app:srcCompat="@drawable/icon_question" />
+    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/ivMeasureSkeletonFrame"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="40dp"
-        android:scaleType="center"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/llMeasureSkeletonBottom"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.65"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop"
+        app:layout_constraintVertical_bias="0.65"
         app:srcCompat="@drawable/drawable_measure_0" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvMeasureSkeletonLine"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="2dp"
+        app:cardBackgroundColor="@color/mainColor"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivMeasureSkeletonFrame"
+        app:layout_constraintWidth_percent="0.575" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clMeasureSkeletonCount"

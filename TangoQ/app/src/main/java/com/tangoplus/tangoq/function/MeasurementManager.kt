@@ -94,17 +94,17 @@ object MeasurementManager {
         ),
         // 좌측 손목
         mapOf(
-            0 to mapOf("front_vertical_angle_elbow_wrist_left" to Triple(82f, 3f, 5f),
-                "front_horizontal_angle_wrist" to Triple(180f, 1.2f, 3.46f)),
+            0 to mapOf("front_vertical_angle_elbow_wrist_left" to Triple(86f, 3f, 5f),
+                "front_horizontal_angle_wrist" to Triple(180f, 1.8f, 3.46f)),
             2 to mapOf("front_elbow_align_distance_left_wrist_shoulder" to Triple(0f, 1.1f, 2f),
-                "front_elbow_align_distance_center_wrist_left" to Triple(22f, 4f, 8f)),
+                "front_elbow_align_distance_center_wrist_left" to Triple(15f, 4f, 8f)),
             3 to mapOf("side_left_horizontal_distance_wrist" to Triple(12f, 5.1f, 8.28f))
         ),
         mapOf(
-            0 to mapOf("front_vertical_angle_elbow_wrist_right" to Triple(82f, 3f, 5f),
-                "front_horizontal_angle_wrist" to Triple(180f, 1.2f, 3.46f)),
+            0 to mapOf("front_vertical_angle_elbow_wrist_right" to Triple(92f, 3f, 5f),
+                "front_horizontal_angle_wrist" to Triple(180f, 1.8f, 3.46f)),
             2 to mapOf("front_elbow_align_distance_right_wrist_shoulder" to Triple(0f, 1.1f, 2f),
-                "front_elbow_align_distance_center_wrist_right" to Triple(22f, 4f, 8f)),
+                "front_elbow_align_distance_center_wrist_right" to Triple(15f, 4f, 8f)),
             4 to mapOf("side_right_horizontal_distance_wrist" to Triple(12f, 5.1f, 8.28f))
         ),
         // 좌측 골반
@@ -150,18 +150,22 @@ object MeasurementManager {
             0 to mapOf("front_vertical_angle_knee_ankle_left" to Triple(88f,2.5f, 3.4f),
                 "front_horizontal_angle_ankle" to Triple(180f, 1.1f, 3.2f),
                 "front_horizontal_distance_ankle_left" to Triple(9f,1.6f, 2.5f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.2f, 0.6f),
-                "back_horizontal_distance_heel_left" to Triple(9f,3f, 5f))
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.6f, 0.9f),
+                "back_horizontal_distance_heel_left" to Triple(9f,8f, 10f))
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to Triple(88f,2.5f, 3.4f),
                 "front_horizontal_angle_ankle" to Triple(0f, 1.1f, 3.2f),
                 "front_horizontal_distance_ankle_right" to Triple(9f,1.6f, 2.5f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.2f, 0.6f),
-                "back_horizontal_distance_heel_right" to Triple(9f,3f, 5f))
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.6f, 0.9f),
+                "back_horizontal_distance_heel_right" to Triple(9f,8f, 10f))
         )
     )
     // ------# 남자 점수 bound #------
+    // 값이 올라갔을 경우
+    // 정면 정상 부위: +179 오른쪽이 정상 // -179 -> 왼쪽이 정상
+    // 후면 안좋은 부위: -179 오른쪽이 정상  // +179 -> 왼쪽이 정상
+
     private val maleErrorBounds = listOf(
         mapOf(
             0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 0.24f, 1.14f)),
@@ -267,15 +271,15 @@ object MeasurementManager {
             0 to mapOf("front_vertical_angle_knee_ankle_left" to Triple(88f,2.5f, 3.4f),
                 "front_horizontal_angle_ankle" to Triple(180f, 1.1f, 3.2f),
                 "front_horizontal_distance_ankle_left" to Triple(10f,1.9f, 4.1f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to  Triple(0f, 0.6f, 1.0f),
-                "back_horizontal_distance_heel_left" to Triple(11f, 3f, 5f),)
+            5 to mapOf("back_horizontal_distance_sub_ankle" to  Triple(0f, 0.8f, 1.2f),
+                "back_horizontal_distance_heel_left" to Triple(11f, 8f, 12f),)
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_knee_ankle_right" to Triple(88f,2.5f, 3.4f),
                 "front_horizontal_angle_ankle" to Triple(180f, 1.1f, 3.2f),
                 "front_horizontal_distance_ankle_right" to Triple(10f,1.9f, 4.1f)),
-            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.6f, 1.0f),
-                "back_horizontal_distance_heel_right" to Triple(11f, 3f, 5f),)
+            5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.8f, 1.2f),
+                "back_horizontal_distance_heel_right" to Triple(11f, 8f, 12f),)
         )
     )
 
@@ -336,8 +340,8 @@ object MeasurementManager {
         mapOf( // 5
             0 to mapOf("front_vertical_angle_elbow_wrist_right" to "우측 팔꿉과 손목 기울기",
                 "front_horizontal_angle_wrist" to "양 손목 기울기"),
-            2 to mapOf("front_elbow_align_distance_right_wrist_shoulder" to "좌측 손목-어깨 거리",
-                "front_elbow_align_distance_center_wrist_right" to "중심과 좌측 손목 거리"),
+            2 to mapOf("front_elbow_align_distance_right_wrist_shoulder" to "우측 손목-어깨 거리",
+                "front_elbow_align_distance_center_wrist_right" to "중심과 우측 손목 거리"),
             4 to mapOf("side_right_horizontal_distance_wrist" to "중심과 우측 손목 거리")
         ),
         // 좌측 골반
@@ -475,8 +479,8 @@ object MeasurementManager {
 
     fun calculateOverall(parts: MutableList<Pair<String, status>>) : Int {
         val scores = mapOf(
-            status.DANGER to 36,
-            status.WARNING to 62,
+            status.DANGER to 38,
+            status.WARNING to 64,
             status.NORMAL to 95
         )
         val weightScore = 1.65

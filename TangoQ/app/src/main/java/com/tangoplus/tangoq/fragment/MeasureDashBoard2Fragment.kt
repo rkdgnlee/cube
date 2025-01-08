@@ -277,10 +277,10 @@ class MeasureDashBoard2Fragment : Fragment() {
                         textSize = if (isTablet(requireContext())) 24f else 20f
                         when (day.date.dayOfMonth) {
                             in 2 .. 9 -> {
-                                setPadding(32, 14, 32, 14)
+                                setPadding(26, 14, 26, 14)
                             }
                             in 12 .. 19 -> {
-                                setPadding(30, 20, 30, 20)
+                                setPadding(26, 20, 26, 20)
                             }
                             in 22 .. 29 -> {
                                 setPadding(26, 23, 26, 23)
@@ -292,7 +292,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 setPadding(30, 22, 30, 22)
                             }
                             1 -> {
-                                setPadding(36, 14, 36, 14)
+                                setPadding(28, 14, 28, 14)
                             }
 
                             else -> {

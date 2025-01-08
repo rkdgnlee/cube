@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq
 
-import com.tangoplus.tangoq.mediapipe.MathHelpers.normalizeToZero
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.Math.toDegrees
@@ -8,20 +7,8 @@ import kotlin.math.abs
 import kotlin.math.atan2
 
 class MathTest {
-
-    @Test
-    fun getBack0Angle() {
-        val result1 = calculateSlope0(0.43276635f, 0.28003475f, 0.5174259f, 0.27613425f)
-        print("귀: $result1")
-        val result2 = calculateSlope0(0.37508744f, 0.3669743f, 0.6012284f, 0.3628323f)
-        print("어깨: $result2")
-    }
-
-
-
     @Test
     fun getAngle() {
-
         // 앉아 후면 어깨 코 삼각형의 기울기 만들기
         val result1 = calculateSlope( 316f, 317f, 380f, 386f,)
         val result2 = calculateSlope(616f, 217f, 634f, 265f)
@@ -34,15 +21,10 @@ class MathTest {
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y2 - y1, x2 - x1)
-        val degrees = toDegrees(radians.toDouble())
-        return degrees.toFloat() // 0도 기준으로 정규화
-    }
-
-    fun calculateSlope0(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y2 - y1, x2 - x1)
-        val degrees = toDegrees(radians.toDouble())
-        return normalizeToZero(degrees.toFloat()) // 0도 기준으로 정규화
+        val radians = atan2(y2 -  y1, x2  - x1)
+        val degrees = toDegrees(radians.toDouble()).toFloat()
+        println("$degrees")
+        return  if (degrees > 180) degrees % 180 else degrees
     }
     // ------# 수평 초기화 기울기 계산 #------
     fun calculateSlope180(x1: Float, y1: Float, x2: Float, y2: Float): Float {
@@ -51,6 +33,7 @@ class MathTest {
         return normalizeTo180(degrees.toFloat()) // 180도 기준으로 정규화
     }
 
+    // 180도 기준으로 정규화하는 함수
     private fun normalizeTo180(angle: Float): Float {
         var normalized = angle
         while (normalized < 0) normalized += 360
@@ -62,34 +45,77 @@ class MathTest {
             return abs(180 - normalized)
         }
     }
-
     @Test
     fun getKneeDistance() {
-//        val resultLeft =
-//            getRealDistanceX(Pair(0.44432667f, 0.69172835f), Pair(0.50995743f, 0.8116318f))
-//        val resultRight =
-//            getRealDistanceX(Pair(0.5788526f, 0.696052f), Pair(0.50995743f, 0.8116318f))
-//        print("left: $resultLeft, right: $resultRight")
-//
-//
-//        val frontWristAngle = calculateSlope(0.4431353f, 0.24797726f, 0.5396624f, 0.2456446f)
-//        val frontWristAngle0 = calculateSlope0(0.4431353f, 0.24797726f, 0.5396624f, 0.2456446f)
-//        val frontWristAngle180 = calculateSlope180(0.4431353f, 0.24797726f, 0.5396624f, 0.2456446f)
-//        print(" 원시: $frontWristAngle, 0: $frontWristAngle0, 180: ${frontWristAngle180 % 180}")
-//
-//        val seq2wristDistanceLeft = getRealDistanceX(Pair(0.34403014f, 0.33611208f), Pair(0.53042406f, 0.81937426f))
-//        val seq2wristDistanceRight = getRealDistanceX( Pair(0.6469915f, 0.3353093f),Pair(0.53042406f, 0.81937426f))
-//        println("왼쪽손목거리: $seq2wristDistanceLeft, 오른쪽손목거리: $seq2wristDistanceRight")
 
-        val backShoulderAngle = calculateSlope(0.6290523f, 0.34049463f,0.37341383f, 0.34746212f )
-        val backShoulderAngle0 = calculateSlope0(0.6290523f, 0.34049463f,0.37341383f, 0.34746212f )
-        val backShoulderAngle180 = calculateSlope180(0.6290523f, 0.34049463f,0.37341383f, 0.34746212f )
+        val prevFrontShoulder = calculateSlope(0.3800059f, 0.33592227f, 0.62224734f, 0.33485872f)
+        val prevFrontShoulder180 = calculateSlope180(0.3800059f, 0.33592227f, 0.62224734f, 0.33485872f)
+        println("어깨 원시: $prevFrontShoulder, 180: ${prevFrontShoulder180}")
+        val prevFrontHip = calculateSlope(0.42858624f, 0.5420497f, 0.5741844f, 0.54563606f)
+        val prevFrontHip180 = calculateSlope180(0.42858624f, 0.5420497f, 0.5741844f, 0.54563606f)
+        println("골반 원시: $prevFrontHip, 180: $prevFrontHip180")
+        val prevFrontKnee = calculateSlope(0.43309414f, 0.69748914f, 0.55954874f, 0.69440746f)
+        val prevFrontKnee180 = calculateSlope180(0.43309414f, 0.69748914f, 0.55954874f, 0.69440746f)
+        println("무릎 원시: $prevFrontKnee, 180: $prevFrontKnee180")
+        val prevFrontAnkle = calculateSlope(0.44268543f, 0.8084885f, 0.53620124f, 0.80681765f)
+        val prevFrontAnkle180 = calculateSlope180(0.44268543f, 0.8084885f, 0.53620124f, 0.80681765f)
+        println("발목 원시: $prevFrontAnkle, 180: $prevFrontAnkle180")
 
-        val backKneeAngle = calculateSlope(0.5895234f, 0.69777566f,0.4451991f, 0.70162326f )
-        val backKneeAngle0 = calculateSlope0(0.5895234f, 0.69777566f,0.4451991f, 0.70162326f )
-        val backKneeAngle180 = calculateSlope180(0.5895234f, 0.69777566f,0.4451991f, 0.70162326f )
-        println("어깨 원시 ${backShoulderAngle}, 0: ${backShoulderAngle0}, 180: ${backShoulderAngle180}")
-        println("무릎 원시 ${backKneeAngle}, 0: ${backKneeAngle0}, 180: ${backKneeAngle180}")
+        println("후면 데이터")
+        val backShoulderAngle = calculateSlope( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
+        val backShoulderAngle180 = calculateSlope180( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
+        println("어깨 원시: $backShoulderAngle, 180: ${backShoulderAngle180}")
+        val backWristAngle = calculateSlope( 0.6474066f, 0.53509456f, 0.3499326f, 0.53832406f)
+        val backWristAngle180 = calculateSlope180( 0.5396624f, 0.2456446f, 0.4431353f, 0.24797726f)
+        println("손목 원시: $backWristAngle, 180: ${backWristAngle180}")
+        val backKneeAngle = calculateSlope( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
+        val backKneeAngle180 = calculateSlope180( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
+        println("무릎 원시: $backKneeAngle, 180: ${backKneeAngle180}")
+
+    }
+
+    @Test
+    fun getScalingAngle() {
+
+//        val FrontShoulder = calculateSlope(697f, 233f, 579f, 229f)
+//        println("스케일링 어깨: $FrontShoulder")
+//        val FrontHip = calculateSlope(671f, 408f, 605f, 407f)
+//        println("스케일링 골반: $FrontHip")
+//        val FrontKnee = calculateSlope(674f, 528f, 608f, 529f)
+//        println("스케일링 무릎: $FrontKnee")
+//        val FrontAnkle = calculateSlope(668f, 638f, 610f, 639f)
+//        println("스케일링 발목: $FrontAnkle")
+
+        println("최신 스케일링 전면")
+        val frontShoulderScale = calculateSlope(452f, 430f, 278f, 432f)
+        println("스케일링 어깨: $frontShoulderScale ")
+        val frontHipScale = calculateSlope(416f, 694f, 315f, 702f)
+        println("스케일링 골반: $frontHipScale ")
+        val frontKneeScale = calculateSlope(418f, 889f, 326f, 889f)
+        println("스케일링 무릎: $frontKneeScale ")
+        val frontAnkleScale = calculateSlope(404f, 1029f, 335f, 1029f)
+        println("스케일링 발목: $frontAnkleScale ")
+        println("최신 전면")
+        val frontShoulder = calculateSlope(444.7351f, 425.71603f, 269.59814f, 426.30432f)
+        println("어깨 원시: $frontShoulder")
+        val frontHip = calculateSlope(411.57208f, 702.4302f, 306.54706f, 703.8306f)
+        println("골반 원시: $frontHip")
+        val frontKnee = calculateSlope(395.34055f, 893.276f, 304.78033f, 885.38055f)
+        println("무릎 원시: $frontKnee")
+        val frontAnkle = calculateSlope(379.52997f, 1032.6945f, 321.5162f, 1040.9277f)
+        println("발목 원시: $frontAnkle")
+
+//        println("후면 데이터")
+//        val backShoulderAngle = calculateSlope( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
+//        val backShoulderAngle180 = calculateSlope180( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
+//        println("어깨 원시: $backShoulderAngle, 180: ${backShoulderAngle180}")
+//        val backWristAngle = calculateSlope( 0.6474066f, 0.53509456f, 0.3499326f, 0.53832406f)
+//        val backWristAngle180 = calculateSlope180( 0.5396624f, 0.2456446f, 0.4431353f, 0.24797726f)
+//        println("손목 원시: $backWristAngle, 180: ${backWristAngle180}")
+//        val backKneeAngle = calculateSlope( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
+//        val backKneeAngle180 = calculateSlope180( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
+//        println("무릎 원시: $backKneeAngle, 180: ${backKneeAngle180}")
+
     }
 
     private val SCALE_X = 180f
@@ -120,5 +146,65 @@ class MathTest {
             normalizedDistance * SCALE_Y
         }
     }
+
+//    @Test
+//    fun leftRightJudge() {
+//        val leftFrontShoulder = judgeState(0, 178f, Triple(-180f, 0.64f, 2.34f))
+//        val rightFrontShoulder = judgeState(0, 178f, Triple(180f, 0.64f, 2.34f))
+//        val leftBackShoulder = judgeState(5, -3.32f, Triple(0f, 0.9f,1.8f))
+//        val rightBackShoulder = judgeState(5, -3.32f, Triple(0f, -0.9f,-1.8f))
+//
+//
+//        println("[front]left: $leftFrontShoulder, right: $rightFrontShoulder")
+//        println("[back]left: $leftBackShoulder, right: $rightBackShoulder")
+//    }
+//
+//    fun judgeState(i : Int, data: Float, boundTriple: Triple<Float, Float, Float>) : String {
+//        val (center, warning, danger) = boundTriple
+//        // 어느 쪽이 안좋은지 판단한 후, 주의 위험은 절대값으로 판단
+//        return if (i == 5) {
+//            val warningBound = center + warning
+//            val dangerBound = center + danger
+//            when {
+//                warningBound > 0 -> {
+//                    when {
+//                        data > dangerBound -> {  "status.DANGER" }
+//                        data > warningBound -> { "status.WARNING" }
+//                        else -> { "status.NORMAL" }
+//                    }
+//                }
+//                warningBound < 0 -> {
+//                    when {
+//                        data < dangerBound  -> { "status.DANGER" }
+//                        data < warningBound -> { "status.WARNING" }
+//                        else -> { "status.NORMAL" }
+//                    }
+//                }
+//
+//                else -> { ""}
+//            }
+//        } else {
+//            val absCenter = abs(center)
+//            val lowerWarning = absCenter - warning
+//            val upperWarning = absCenter + warning
+//            val lowerDanger = absCenter - danger
+//            val upperDanger = absCenter + danger
+//
+//            when {
+//                data < lowerDanger || data > upperDanger -> {
+//                    // 위험
+//                    "status.DANGER"
+//                }
+//                data < lowerWarning || data > upperWarning -> {
+//                    // 주의
+//                    "status.WARNING"
+//                }
+//                else -> {
+//                    // 정상
+//                    "status.NORMAL"
+//                }
+//            }
+//        }
+//    }
 
 }

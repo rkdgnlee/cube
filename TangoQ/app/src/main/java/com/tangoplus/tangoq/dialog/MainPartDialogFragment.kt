@@ -22,8 +22,6 @@ import com.tangoplus.tangoq.databinding.FragmentMainPartDialogBinding
 import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import org.json.JSONArray
-import kotlin.math.abs
-
 
 class MainPartDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMainPartDialogBinding
@@ -176,7 +174,7 @@ class MainPartDialogFragment : DialogFragment() {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
                                 resultString.append(
-                                    "머리가 $angleDirection 방향으로 ${String.format("%.2f", abs(angleData))}° 치우쳐 있습니다. 바른 자세와 목 근육의 긴장을 수시로 이완해주세요. "
+                                    "머리가 $angleDirection 방향으로 ${String.format("%.2f", angleData)}° 치우쳐 있습니다. 바른 자세와 목 근육의 긴장을 수시로 이완해주세요. "
                                 )
                             }
                         }
@@ -192,7 +190,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
-                                resultString.append("거북목 의심 - 목이 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다.")
+                                resultString.append("거북목 의심 - 목이 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다.")
                             }
                         }
                     }
@@ -207,7 +205,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
-                                resultString.append("거북목 의심 - 목이 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다.")
+                                resultString.append("거북목 의심 - 목이 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다.")
                             }
                         }
                     }
@@ -222,7 +220,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
-                                resultString.append("목 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 승모근, 목빗근의 스트레칭을 추천드립니다.")
+                                resultString.append("목 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다. 승모근, 목빗근의 스트레칭을 추천드립니다.")
                             }
                         }
                     }
@@ -237,7 +235,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
-                                resultString.append("앉은 뒷면 자세가 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
+                                resultString.append("앉은 뒷면 자세가 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val backSitNeckData = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" }
@@ -250,7 +248,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("선자세와 비교했을 때, 앉았을 때 목이 약 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
+                                resultString.append("선자세와 비교했을 때, 앉았을 때 목이 약 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다. ")
                             }
                         }
                     }
@@ -271,7 +269,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
-                                resultString.append("어깨가 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 후면자세와 비교해서 골반의 틀어짐을 확인해야 합니다. ")
+                                resultString.append("어깨가 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다. 후면자세와 비교해서 골반의 틀어짐을 확인해야 합니다. ")
                             }
                         }
                         val shoulderData2 = units.find { it.columnName == "front_horizontal_distance_sub_shoulder"}
@@ -282,7 +280,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("양 어깨의 높낮이가 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 차이가 있습니다. ")
+                                resultString.append("양 어깨의 높낮이가 ${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 차이가 있습니다. ")
                             }
                         }
                     }
@@ -297,7 +295,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getForwardDirection(it.rawData)
-                                resultString.append("중심에서 좌측 어깨까지 ${String.format("%.2f", abs(subDistanceData))}cm 차이가 있습니다. 중심보다 앞에 있을 경우 라운드 숄더가 의심됩니다. ")
+                                resultString.append("중심에서 좌측 어깨까지 ${String.format("%.2f", subDistanceData)}cm 차이가 있습니다. 중심보다 앞에 있을 경우 라운드 숄더가 의심됩니다. ")
                             }
                         }
                     }
@@ -311,7 +309,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
 
-                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", abs(angleData))}°입니다. 90°에 가까울수록 정상 체형입니다. ")
+                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", angleData)}°입니다. 90°에 가까울수록 정상 체형입니다. ")
                             }
                         }
                     }
@@ -326,7 +324,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", angleData1)}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val shoulderData2 = units.find { it.columnName == "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip"}
@@ -339,7 +337,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 틀어져 있습니다. ")
+                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", angleData2)}° ${angleDirection2}방향으로 틀어져 있습니다. ")
                             }
                         }
                     }
@@ -360,7 +358,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
-                                resultString.append("어깨는 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. 골반 교정운동을 추천드립니다. ")
+                                resultString.append("어깨는 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다. 골반 교정운동을 추천드립니다. ")
 
                             }
                         }
@@ -369,7 +367,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in it.rawDataBound.first..it.rawDataBound.second) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("또한 양 어깨가 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("또한 양 어깨가 ${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
 
@@ -385,7 +383,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getForwardDirection(it.rawData)
-                                resultString.append("중심에서 우측 어깨까지 ${String.format("%.2f", abs(subDistanceData))}cm 차이가 있습니다. 라운드 숄더를 조심하세요. ")
+                                resultString.append("중심에서 우측 어깨까지 ${String.format("%.2f", subDistanceData)}cm 차이가 있습니다. 라운드 숄더를 조심하세요. ")
                             }
                         }
                     }
@@ -398,7 +396,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
-                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", abs(angleData1))}°입니다. 90°에 가까울수록 정상 체형입니다. ")
+                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", angleData1)}°입니다. 90°에 가까울수록 정상 체형입니다. ")
                             }
                         }
                         val shoulderData2 = units.find { it.columnName == "back_horizontal_angle_shoulder"}
@@ -409,7 +407,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
-                                resultString.append("후면의 어깨 기울기가 ${String.format("%.2f", abs(angleData2))}°입니다. 0°에 가까울 수록 바른 어깨 기울기입니다. ")
+                                resultString.append("후면의 어깨 기울기가 ${String.format("%.2f", angleData2)}°입니다. 0°에 가까울 수록 바른 어깨 기울기입니다. ")
                             }
                         }
                     }
@@ -425,7 +423,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
-                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", abs(angleData))}° ${angleDirection}방향으로 틀어져 있습니다. ")
+                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val shoulderData2 = units.find { it.columnName == "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder"}
@@ -438,7 +436,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 틀어져 있습니다. ")
+                                resultString.append("양 어깨와 허리 중심을 이었을 때 ${String.format("%.2f", angleData2)}° ${angleDirection2}방향으로 틀어져 있습니다. ")
                             }
                         }
                     }
@@ -461,7 +459,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("팔꿉은 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 기울어져 있습니다. ")
+                                resultString.append("팔꿉은 ${String.format("%.2f", angleData1)}° ${angleDirection1}방향으로 기울어져 있습니다. ")
                             }
                         }
                         val frontElbowData2 = units.find { it.columnName == "front_horizontal_distance_sub_elbow"}
@@ -472,7 +470,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                         val frontElbowData3 = units.find { it.columnName == "front_vertical_angle_shoulder_elbow_left"}
@@ -483,7 +481,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("어깨-팔꿉의 각도가 ${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("어깨-팔꿉의 각도가 ${String.format("%.2f", angleData2)}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                     }
@@ -497,7 +495,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 정상범위보다 팔이 겹치지 않습니다. ")
+                                resultString.append("${String.format("%.2f", angleData2)}° 로 정상범위보다 팔이 겹치지 않습니다. ")
                             }
                         }
                     }
@@ -516,7 +514,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", angleData1)}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val sideElbowData2 = units.find { it.columnName == "side_left_vertical_angle_elbow_wrist"}
@@ -527,7 +525,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("좌측 팔꿉-손목의 각도가 ${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("좌측 팔꿉-손목의 각도가 ${String.format("%.2f", angleData2)}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                         val sideElbowData3 = units.find { it.columnName == "side_left_vertical_angle_shoulder_elbow_wrist"}
@@ -537,7 +535,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 angleData3 = it.rawData
-                                resultString.append("좌측 어깨-팔꿉-손목 각도는 ${String.format("%.2f", abs(angleData2))}°로 팔이 바깥쪽으로 벌어져 주변 근육 긴장이 의심됩니다. ")
+                                resultString.append("좌측 어깨-팔꿉-손목 각도는 ${String.format("%.2f", angleData2)}°로 팔이 바깥쪽으로 벌어져 주변 근육 긴장이 의심됩니다. ")
                             }
                         }
                     }
@@ -560,7 +558,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("어깨는 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                                resultString.append("어깨는 ${String.format("%.2f", angleData1)}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val frontElbowData2 = units.find { it.columnName == "front_horizontal_distance_sub_elbow"}
@@ -571,7 +569,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                         val frontElbowData3 = units.find { it.columnName == "front_vertical_angle_shoulder_elbow_right"}
@@ -582,7 +580,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("어깨-팔꿉의 각도가 ${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("어깨-팔꿉의 각도가 ${String.format("%.2f", angleData2)}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                     }
@@ -597,7 +595,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 정상범위보다 팔이 겹쳐지지 않습니다. ")
+                                resultString.append("${String.format("%.2f", angleData2)}° 로 정상범위보다 팔이 겹쳐지지 않습니다. ")
                             }
                         }
                     }
@@ -615,7 +613,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("어깨-팔꿉이 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                                resultString.append("어깨-팔꿉이 ${String.format("%.2f", angleData1)}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val sideElbowData2 = units.find { it.columnName == "side_right_vertical_angle_elbow_wrist"}
@@ -626,7 +624,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("${String.format("%.2f", angleData2)}° ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                         val sideElbowData3 = units.find { it.columnName == "side_right_vertical_angle_shoulder_elbow_wrist"}
@@ -636,7 +634,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
-                                resultString.append("좌측 어깨-팔꿉 각도는 ${String.format("%.2f", abs(angleData2))}°로 팔이 바깥쪽으로 벌어져 주변 근육 긴장이 의심됩니다. ")
+                                resultString.append("좌측 어깨-팔꿉 각도는 ${String.format("%.2f", angleData2)}°로 팔이 바깥쪽으로 벌어져 주변 근육 긴장이 의심됩니다. ")
                             }
                         }
                     }
@@ -656,7 +654,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
 
-                                resultString.append("손목이 ${String.format("%.2f", abs(angleData1))}°로 기울어져 정상범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
+                                resultString.append("손목이 ${String.format("%.2f", angleData1)}°로 기울어져 정상범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
 
                             }
                         }
@@ -668,7 +666,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("${String.format("%.2f", angleData2)}° 로 ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                     }
@@ -684,7 +682,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
 
-                                resultString.append(" ${String.format("%.2f", abs(angleData1))}cm 로 정상범위에서 벗어났습니다. 과부하된 손목의 근육을 확인하세요. ")
+                                resultString.append(" ${String.format("%.2f", angleData1)}cm 로 정상범위에서 벗어났습니다. 과부하된 손목의 근육을 확인하세요. ")
 
                             }
                         }
@@ -696,7 +694,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 정상범위에서 벗어났습니다. ")
+                                resultString.append("${String.format("%.2f", angleData2)}° 로 ${angleDirection2}방향으로 정상범위에서 벗어났습니다. ")
                             }
                         }
                     }
@@ -711,7 +709,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getForwardDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm로 벗어나있습니다. 이두근, 손목 긴장을 체크하세요. ")
+                                resultString.append("중심에서 ${String.format("%.2f", subDistanceData)}cm로 벗어나있습니다. 이두근, 손목 긴장을 체크하세요. ")
 
                             }
                         }
@@ -731,7 +729,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
-                                resultString.append("손목의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상 범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
+                                resultString.append("손목의 기울기가 ${String.format("%.2f", angleData1)}° 로 정상 범위에서 벗어나 주변 근육이 긴장돼 있는 상태입니다. ")
 
                             }
                         }
@@ -743,7 +741,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("${String.format("%.2f", angleData2)}° 로 ${angleDirection2}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                     }
@@ -758,7 +756,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 distanceData1 = it.rawData
-                                resultString.append("손목-어깨간의 거리가  ${String.format("%.2f", abs(distanceData1))}cm 로 정상범위에서 벗어났습니다. 과부하된 손목의 근육을 확인하세요. ")
+                                resultString.append("손목-어깨간의 거리가  ${String.format("%.2f", distanceData1)}cm 로 정상범위에서 벗어났습니다. 과부하된 손목의 근육을 확인하세요. ")
                             }
                         }
                         val wristData2 = units.find { it.columnName == "front_elbow_align_distance_center_wrist_right"}
@@ -769,7 +767,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}° 로 ${angleDirection2}방향으로 정상범위에서 벗어났습니다. ")
+                                resultString.append("${String.format("%.2f", angleData2)}° 로 ${angleDirection2}방향으로 정상범위에서 벗어났습니다. ")
                             }
                         }
                     }
@@ -784,7 +782,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getForwardDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm로 벗어나있습니다. 이두근, 손목 긴장을 체크하세요. ")
+                                resultString.append("중심에서 ${String.format("%.2f", subDistanceData)}cm로 벗어나있습니다. 이두근, 손목 긴장을 체크하세요. ")
 
                             }
                         }
@@ -806,7 +804,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("무릎과의 기울기 ${String.format("%.2f", abs(angleData1))}° 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                                resultString.append("무릎과의 기울기 ${String.format("%.2f", angleData1)}° 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
                             }
                         }
                         val hipData2 = units.find { it.columnName == "front_horizontal_angle_hip"}
@@ -817,7 +815,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("양 골반의 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 치우쳐져 있습니다. ")
+                                resultString.append("양 골반의 기울기가 ${String.format("%.2f", angleData2)}°로 ${angleDirection2}방향으로 치우쳐져 있습니다. ")
                             }
                         }
                     }
@@ -834,7 +832,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("골반-무릎 측면 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                                resultString.append("골반-무릎 측면 기울기가 ${String.format("%.2f", angleData1)}°로 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
                             }
                         }
                         val hipData2 = units.find { it.columnName == "side_left_horizontal_distance_hip"}
@@ -846,7 +844,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                                 subDistanceData = it.rawData
                                 distanceDirection = getForwardDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 나와있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 나와있습니다. ")
                             }
                         }
                     }
@@ -860,7 +858,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("후면 측정 시 ${String.format("%.2f", abs(angleData1))}°로 ${angleDirection1}방향으로 틀어져 있습니다. 골반 틀어짐 교정 운동을 추천드립니다. ")
+                                resultString.append("후면 측정 시 ${String.format("%.2f", angleData1)}°로 ${angleDirection1}방향으로 틀어져 있습니다. 골반 틀어짐 교정 운동을 추천드립니다. ")
                             }
                         }
                     }
@@ -877,7 +875,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("골반중심과-좌측 어깨 기울기가 ${String.format("%.2f", abs(angleData1))}°로 굽은 등으로 앉아 있을수록 값이 클 수 있습니다.")
+                                resultString.append("골반중심과-좌측 어깨 기울기가 ${String.format("%.2f", angleData1)}°로 굽은 등으로 앉아 있을수록 값이 클 수 있습니다.")
                             }
                         }
                     }
@@ -898,7 +896,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("무릎과의 기울기 ${String.format("%.2f", abs(angleData1))}° 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                                resultString.append("무릎과의 기울기 ${String.format("%.2f", angleData1)}° 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
                             }
                         }
                         val hipData2 = units.find { it.columnName == "front_horizontal_angle_hip"}
@@ -909,7 +907,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("양 골반의 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 치우쳐져 있습니다. ")
+                                resultString.append("양 골반의 기울기가 ${String.format("%.2f", angleData2)}°로 ${angleDirection2}방향으로 치우쳐져 있습니다. ")
                             }
                         }
                     }
@@ -926,7 +924,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("골반-무릎간 측면 기울기가 ${String.format("%.2f", abs(angleData1))}°로 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
+                                resultString.append("골반-무릎간 측면 기울기가 ${String.format("%.2f", angleData1)}°로 정상범위에서 벗어났습니다. 고관절 스트레칭을 추천합니다. ")
                             }
                         }
                         val hipData2 = units.find { it.columnName == "side_left_horizontal_distance_hip"}
@@ -938,7 +936,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                                 subDistanceData = it.rawData
                                 distanceDirection = getForwardDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 나와있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 나와있습니다. ")
                             }
                         }
                     }
@@ -953,7 +951,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("후면 측정 시 ${String.format("%.2f", abs(angleData1))}°로 ${angleDirection1}방향으로 틀어져 있습니다. 골반 틀어짐 교정 운동을 추천드립니다. ")
+                                resultString.append("후면 측정 시 ${String.format("%.2f", angleData1)}°로 ${angleDirection1}방향으로 틀어져 있습니다. 골반 틀어짐 교정 운동을 추천드립니다. ")
                             }
                         }
                     }
@@ -970,7 +968,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("양 어깨와 골반 중심의 기울기가 ${String.format("%.2f", abs(angleData1))}°로 굽은 등으로 앉아 있을수록 값이 클 수 있습니다.")
+                                resultString.append("양 어깨와 골반 중심의 기울기가 ${String.format("%.2f", angleData1)}°로 굽은 등으로 앉아 있을수록 값이 클 수 있습니다.")
                             }
                         }
                     }
@@ -993,7 +991,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", angleData1)}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val kneeData2 = units.find { it.columnName == "front_horizontal_distance_knee_left"}
@@ -1004,7 +1002,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                         val kneeData3 = units.find { it.columnName == "front_vertical_angle_hip_knee_ankle_left"}
@@ -1014,7 +1012,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
-                                resultString.append("좌측 골반-무릎-발목 각도는 ${String.format("%.2f", abs(angleData2))}°로  팔이 바깥쪽으로 벌어져 있습니다. 주변 근육이 긴장된 상태입니다. ")
+                                resultString.append("좌측 골반-무릎-발목 각도는 ${String.format("%.2f", angleData2)}°로  팔이 바깥쪽으로 벌어져 있습니다. 주변 근육이 긴장된 상태입니다. ")
                             }
                         }
                     }
@@ -1031,7 +1029,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("양 무릎의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어났습니다. ")
+                                resultString.append("양 무릎의 기울기가 ${String.format("%.2f", angleData1)}° 로 정상범위에서 벗어났습니다. ")
 
                             }
                         }
@@ -1043,7 +1041,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}cm 로 중심에서 더 멉니다. 골반 틀어짐이나 허벅지 근육 긴장을 확인하세요. ")
+                                resultString.append("${String.format("%.2f", angleData2)}cm 로 중심에서 더 멉니다. 골반 틀어짐이나 허벅지 근육 긴장을 확인하세요. ")
                             }
                         }
                     }
@@ -1065,7 +1063,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData1))}° ${angleDirection1}방향으로 틀어져 있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", angleData1)}° ${angleDirection1}방향으로 틀어져 있습니다. ")
                             }
                         }
                         val kneeData2 = units.find { it.columnName == "front_horizontal_distance_knee_right"}
@@ -1076,7 +1074,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(subDistanceData))}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
+                                resultString.append("${String.format("%.2f", subDistanceData)}cm ${distanceDirection}방향으로 높이 차이가 있습니다. ")
                             }
                         }
                         val kneeData3 = units.find { it.columnName == "front_vertical_angle_hip_knee_ankle_right"}
@@ -1086,7 +1084,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
-                                resultString.append("좌측 골반-무릎-발목 각도는 ${String.format("%.2f", abs(angleData2))}°로 다리가 평소 접혀있습니다. 햄스트링 스트레칭을 권장합니다.")
+                                resultString.append("좌측 골반-무릎-발목 각도는 ${String.format("%.2f", angleData2)}°로 다리가 평소 접혀있습니다. 햄스트링 스트레칭을 권장합니다.")
                             }
                         }
                     }
@@ -1103,7 +1101,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("양 무릎의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상범위에서 벗어났습니다. ")
+                                resultString.append("양 무릎의 기울기가 ${String.format("%.2f", angleData1)}° 로 정상범위에서 벗어났습니다. ")
 
                             }
                         }
@@ -1115,7 +1113,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("${String.format("%.2f", abs(angleData2))}cm 로 중심에서 더 멉니다. 골반 틀어짐이나 허벅지 근육 긴장을 확인하세요. ")
+                                resultString.append("${String.format("%.2f", angleData2)}cm 로 중심에서 더 멉니다. 골반 틀어짐이나 허벅지 근육 긴장을 확인하세요. ")
                             }
                         }
                     }
@@ -1138,7 +1136,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("무릎과의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상 범위에서 벗어나 있습니다. ")
+                                resultString.append("무릎과의 기울기가 ${String.format("%.2f", angleData1)}° 로 정상 범위에서 벗어나 있습니다. ")
                             }
                         }
                         val ankleData2 = units.find { it.columnName == "front_horizontal_angle_ankle"}
@@ -1149,7 +1147,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("양 발목간 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 기울어져 있습니다. ")
+                                resultString.append("양 발목간 기울기가 ${String.format("%.2f", angleData2)}°로 ${angleDirection2}방향으로 기울어져 있습니다. ")
                             }
                         }
                         val ankleData3 = units.find { it.columnName == "front_horizontal_distance_ankle_left"}
@@ -1160,7 +1158,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm로 발목이 바깥쪽으로 벌어져 있습니다. 골반부터 서있는 자세를 확인하세요. ")
+                                resultString.append("중심에서 ${String.format("%.2f", angleData2)}cm로 발목이 바깥쪽으로 벌어져 있습니다. 골반부터 서있는 자세를 확인하세요. ")
                             }
                         }
                     }
@@ -1177,7 +1175,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("양 발목의 높이차가 ${String.format("%.2f", abs(angleData1))}cm 로 ${angleDirection1}방향으로 높이가 다릅니다. ")
+                                resultString.append("양 발목의 높이차가 ${String.format("%.2f", angleData1)}cm 로 ${angleDirection1}방향으로 높이가 다릅니다. ")
 
                             }
                         }
@@ -1189,7 +1187,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 distanceData = it.rawData
 
-                                resultString.append("중심에서 ${String.format("%.2f", abs(distanceData))}cm 로 거리가 정상범위에서 벗어나 있습니다. ")
+                                resultString.append("중심에서 ${String.format("%.2f", distanceData)}cm 로 거리가 정상범위에서 벗어나 있습니다. ")
                             }
                         }
                     }
@@ -1212,7 +1210,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("무릎과의 기울기가 ${String.format("%.2f", abs(angleData1))}° 로 정상 범위에서 벗어나 있습니다. ")
+                                resultString.append("무릎과의 기울기가 ${String.format("%.2f", angleData1)}° 로 정상 범위에서 벗어나 있습니다. ")
                             }
                         }
                         val ankleData2 = units.find { it.columnName == "front_horizontal_angle_ankle"}
@@ -1223,7 +1221,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
                                 angleDirection2 = getDirection(it.rawData)
-                                resultString.append("양 발목간 기울기가 ${String.format("%.2f", abs(angleData2))}°로 ${angleDirection2}방향으로 기울어져 있습니다. ")
+                                resultString.append("양 발목간 기울기가 ${String.format("%.2f", angleData2)}°로 ${angleDirection2}방향으로 기울어져 있습니다. ")
                             }
                         }
                         val ankleData3 = units.find { it.columnName == "front_horizontal_distance_ankle_right"}
@@ -1234,7 +1232,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 subDistanceData = it.rawData
                                 distanceDirection = getDirection(it.rawData)
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm로 발목이 바깥쪽으로 벌어져 있습니다. 골반부터 서있는 자세를 확인하세요. ")
+                                resultString.append("중심에서 ${String.format("%.2f", angleData2)}cm로 발목이 바깥쪽으로 벌어져 있습니다. 골반부터 서있는 자세를 확인하세요. ")
                             }
                         }
                     }
@@ -1251,7 +1249,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData1 = it.rawData
                                 angleDirection1 = getDirection(it.rawData)
-                                resultString.append("양 발목의 높이차가 ${String.format("%.2f", abs(angleData1))}cm 로 ${angleDirection1}방향으로 높이가 다릅니다. ")
+                                resultString.append("양 발목의 높이차가 ${String.format("%.2f", angleData1)}cm 로 ${angleDirection1}방향으로 높이가 다릅니다. ")
 
                             }
                         }
@@ -1263,7 +1261,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
 
-                                resultString.append("중심에서 ${String.format("%.2f", abs(angleData2))}cm 로 거리가 정상범위에서 벗어나 있습니다.")
+                                resultString.append("중심에서 ${String.format("%.2f", angleData2)}cm 로 거리가 정상범위에서 벗어나 있습니다.")
                             }
                         }
                     }

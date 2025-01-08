@@ -212,13 +212,13 @@ class MainPartPoseDialogFragment : DialogFragment() {
             // 좌측 손목
             "front_vertical_angle_elbow_wrist_left" -> "팔꿉-손목의 기울기를 의미합니다. 각도가 수직과 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 85° 기준으로 5° 오차 이내가 표준적인 기울기 입니다"
             "front_horizontal_angle_wrist" -> "양 손목의 기울기를 의미합니다. 기울기 값 180° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
-            "front_elbow_align_distance_left_wrist_shoulder" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
+            "front_elbow_align_distance_left_wrist_shoulder" -> "손목과 어깨간의 수평 거리입니다. 거리가 멀어질 수록, 하완(전완근)과 손목의 긴장이 의심됩니다."
             "front_elbow_align_distance_center_wrist_left" -> "팔꿉 자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
             "side_left_horizontal_distance_wrist" -> "측면에서 몸의 무게중심에서 손목까지의 거리를 의미합니다. 멀어질 수록 이두근 긴장, 전완근의 긴장 등이 의심됩니다."
             // 우측 손목
             "front_vertical_angle_elbow_wrist_right" -> "팔꿉-손목의 기울기를 의미합니다. 85°에서 멀어질수록 전완, 상완 근육의 긴장이 의심됩니다. 기울기 값 0° 기준으로 10° 오차 이내가 표준적인 기울기 입니다"
 //            "front_horizontal_angle_wrist" -> ""
-            "front_elbow_align_distance_right_wrist_shoulder" -> "중지-손목-팔꿉의 기울기를 의미합니다. 몸쪽으로 가파를 수록 손목의 과부하가 의심됩니다. 짧은 손바닥근과 새끼벌림근 등을 마사지 해주세요 "
+            "front_elbow_align_distance_right_wrist_shoulder" -> "손목과 어깨간의 수평 거리입니다. 거리가 멀어질 수록, 하완(전완근)과 손목의 긴장이 의심됩니다."
             "front_elbow_align_distance_center_wrist_right" -> "팔꿉자세에서 손목과 어깨 위치의 거리를 나타냅니다. 값이 0cm에 가까울수록 정상입니다. 멀어질수록 주관증후군이 의심되니 테니스 엘보 주변을 마사지해주세요"
             "side_right_horizontal_distance_wrist" -> "측면에서 몸의 무게중심에서 손목까지의 거리를 의미합니다. 멀어질 수록 이두근 긴장, 전완근의 긴장 등이 의심됩니다."
             // 좌측 골반
