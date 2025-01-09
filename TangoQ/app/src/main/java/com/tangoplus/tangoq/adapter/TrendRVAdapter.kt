@@ -139,11 +139,11 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
         // 골반
-        listOf(Triple(0, 0, 1), Triple(3,1,1), Triple(5, 2, 0)),
-        listOf(Triple(0, 0, 1), Triple(4,1,1), Triple(5, 2, 0)),
+        listOf(Triple(0, 0, 1), Triple(3,1,0), Triple(5, 2, 0)),
+        listOf(Triple(0, 0, 1), Triple(4,1,0), Triple(5, 2, 0)),
         // 무릎
-        listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),
-        listOf(Triple(0,0,0), Triple(0, 0, 1), Triple(5, 1, 1)),
+        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 1, 1)),
+        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 1, 1)),
         // 발목
         listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
         listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),

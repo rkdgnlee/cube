@@ -29,6 +29,7 @@
             android:layout_height="48dp"
             android:backgroundTint="#00FFFFFF"
             android:contentDescription="playVideo"
+            android:focusableInTouchMode="true"
             android:visibility="gone"
             app:srcCompat="@drawable/media_play_button" />
 

@@ -97,13 +97,23 @@ class MathTest {
         println("스케일링 발목: $frontAnkleScale ")
         println("최신 전면")
         val frontShoulder = calculateSlope(444.7351f, 425.71603f, 269.59814f, 426.30432f)
-        println("어깨 원시: $frontShoulder")
+        println("어깨 전면: $frontShoulder")
         val frontHip = calculateSlope(411.57208f, 702.4302f, 306.54706f, 703.8306f)
-        println("골반 원시: $frontHip")
+        println("골반 전면: $frontHip")
         val frontKnee = calculateSlope(395.34055f, 893.276f, 304.78033f, 885.38055f)
-        println("무릎 원시: $frontKnee")
+        println("무릎 전면: $frontKnee")
         val frontAnkle = calculateSlope(379.52997f, 1032.6945f, 321.5162f, 1040.9277f)
-        println("발목 원시: $frontAnkle")
+        println("발목 전면: $frontAnkle")
+
+
+        val backShoulder = calculateSlope(269.59814f, 426.30432f,444.7351f, 425.71603f)
+        println("어깨 후면: $backShoulder")
+        val backHip = calculateSlope(306.54706f, 703.8306f,411.57208f, 702.4302f, )
+        println("골반 후면: $backHip")
+        val backKnee = calculateSlope( 304.78033f, 885.38055f,395.34055f, 893.276f)
+        println("무릎 후면: $backKnee")
+        val backAnkle = calculateSlope(321.5162f, 1040.9277f, 379.52997f, 1032.6945f)
+        println("발목 후면: $backAnkle")
 
 //        println("후면 데이터")
 //        val backShoulderAngle = calculateSlope( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
@@ -115,11 +125,94 @@ class MathTest {
 //        val backKneeAngle = calculateSlope( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
 //        val backKneeAngle180 = calculateSlope180( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
 //        println("무릎 원시: $backKneeAngle, 180: ${backKneeAngle180}")
-
     }
 
-    private val SCALE_X = 180f
-    private val SCALE_Y = 160f
+    @Test
+    fun noseAngle() {
+        val seq3Nose = calculateSlope(394f, 435f,  317f, 344f)
+        val seq4Nose = calculateSlope(354f, 422f, 406f, 328f)
+        println("왼쪽코기울기: ${seq3Nose} 오른쪽 코기울기: ${seq4Nose}")
+    }
+
+    @Test
+    fun distanceXTest() {
+        val halfAxis = Pair((390f + 327f) / 2, (1035f + 1043f) / 2)
+
+        val leftShoulder = Pair(439f, 447f)
+        val rightShoulder = Pair(269f, 447f)
+        val leftWrist = Pair(489f, 676f)
+        val rightWrist = Pair(239f, 684f)
+        val leftKnee = Pair(395f, 885f)
+        val rightKnee = Pair(310f, 888f)
+
+        val shoulderLeftDis = getRealDistanceX(leftShoulder, halfAxis)
+        val shoulderRightDis = getRealDistanceX(rightShoulder, halfAxis)
+        val wristLeftDis = getRealDistanceX(leftWrist, halfAxis)
+        val wristRightDis = getRealDistanceX(rightWrist, halfAxis)
+        val kneeLeftDis = getRealDistanceX(leftKnee, halfAxis)
+        val kneeRightDis = getRealDistanceX(rightKnee, halfAxis)
+        println("어깨 좌우: (${shoulderLeftDis}, ${shoulderRightDis})")
+        println("손목 좌우: (${wristLeftDis}, ${wristRightDis})")
+        println("무릎 좌우: (${kneeLeftDis}, ${kneeRightDis})")
+    }
+
+    @Test
+    fun distanceYTest() {
+//        val halfAxis = Pair((390f + 327f) / 2, (1035f + 1043f) / 2)
+        val leftShoulder = Pair(439f, 447f)
+        val rightShoulder = Pair(269f, 447f)
+        val leftWrist = Pair(489f, 676f)
+        val rightWrist = Pair(239f, 684f)
+        val leftKnee = Pair(395f, 885f)
+        val rightKnee = Pair(310f, 888f)
+
+        val shoulderLeftDis = getRealDistanceY(leftShoulder, rightShoulder)
+
+        val wristLeftDis = getRealDistanceY(leftWrist, rightWrist)
+
+        val kneeLeftDis = getRealDistanceY(leftKnee, rightKnee)
+
+        println("어깨: ${shoulderLeftDis}")
+        println("손목: ${wristLeftDis}")
+        println("무릎: ${kneeLeftDis}")
+    }
+
+    @Test
+    fun seq2Wrist() {
+        val halfAxis = Pair((453f + 283f) / 2, (432f + 432f) / 2)
+        val leftShoulder = Pair(453f, 432f)
+        val rightShoulder = Pair(283f, 432f)
+        val leftWrist = Pair(477f, 440f)
+        val rightWrist = Pair(251f, 426f)
+        val shoulderLeftDis = getRealDistanceX(leftShoulder, halfAxis)
+        val shoulderRightDis = getRealDistanceX(rightShoulder, halfAxis)
+        val wristLeftDis = getRealDistanceX(leftWrist, halfAxis)
+        val wristRightDis = getRealDistanceX(rightWrist, halfAxis)
+        println("어깨 양 거리: ($shoulderLeftDis, $shoulderRightDis)")
+        println("손목 양 거리: ($wristLeftDis, $wristRightDis)")
+
+        val halfAxis2 = Pair((687f + 582f) / 2, (224f + 227f) / 2)
+        val leftShoulder2 = Pair(687f, 224f)
+        val rightShoulder2 = Pair(582f, 227f)
+        val leftWrist2 = Pair(695f, 234f)
+        val rightWrist2 = Pair(564f, 242f)
+        val shoulderLeftDis2 = getRealDistanceX(leftShoulder2, halfAxis2)
+        val shoulderRightDis2 = getRealDistanceX(rightShoulder2, halfAxis2)
+        val wristLeftDis2 = getRealDistanceX(leftWrist2, halfAxis2)
+        val wristRightDis2 = getRealDistanceX(rightWrist2, halfAxis2)
+        println("어깨 양 거리: ($shoulderLeftDis2, $shoulderRightDis2)")
+        println("손목 양 거리: ($wristLeftDis2, $wristRightDis2)")
+    }
+
+    @Test
+    fun seq34angle() {
+        val leftNoseShoulder = calculateSlope(306.4f, 335.7f, 371.5f, 429f)
+        println("목기울기: $leftNoseShoulder")
+    }
+
+
+    private val SCALE_X = 0.25f
+    private val SCALE_Y = 0.3f
     fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
         return abs(point2.first - point1.first)
     }

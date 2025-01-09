@@ -229,10 +229,7 @@ class MeasureAnalysisFragment : Fragment() {
 
                 // ------# 팔꿉 #------
                 val valueAlignPairs = listOf(
-                    Triple("팔꿉-손목-중지관절 기울기", "front_hand_angle_elbow_wrist_mid_finger_mcp_left", "front_hand_angle_elbow_wrist_mid_finger_mcp_right"),
-                    Triple("상완-팔꿉-손목 기울기", "front_elbow_align_angle_left_upper_elbow_elbow_wrist", "front_elbow_align_angle_right_upper_elbow_elbow_wrist"),
                     Triple("양 손목과 어깨 기울기", "front_elbow_align_distance_left_wrist_shoulder", "front_elbow_align_distance_right_wrist_shoulder"),
-                    Triple("중지-손목-팔꿉 기울기", "front_elbow_align_angle_mid_index_wrist_elbow_left", "front_elbow_align_angle_mid_index_wrist_elbow_right"),
                     Triple("어깨-팔꿉-손목 기울기", "front_elbow_align_angle_left_shoulder_elbow_wrist", "front_elbow_align_angle_right_shoulder_elbow_wrist")
                 )
                 valueAlignPairs.forEach{ (descrption, leftKey, rightKey) ->
@@ -243,7 +240,6 @@ class MeasureAnalysisFragment : Fragment() {
                     }
                 }
                 val distanceAlignPairs = listOf(
-                    Triple("중심과 중지 거리", "front_elbow_align_distance_center_mid_finger_left", "front_elbow_align_distance_center_mid_finger_right"),
                     Triple("중심과 손목 거리", "front_elbow_align_distance_center_wrist_left", "front_elbow_align_distance_center_wrist_right"),
                 )
                 distanceAlignPairs.forEach{ (descrption, leftKey, rightKey) ->
@@ -476,6 +472,11 @@ class MeasureAnalysisFragment : Fragment() {
                                 Handler(Looper.getMainLooper()).postDelayed( {updateUI = true},1500)
                             }
                         }
+                    } else if (playbackState == Player.STATE_ENDED) {
+                        val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
+                        exoPlay.visibility = View.VISIBLE
+                        exoPlay.bringToFront()
+
                     }
                 }
             })
@@ -500,20 +501,14 @@ class MeasureAnalysisFragment : Fragment() {
         binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
-
         val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
         val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
-        exoPause?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == true) {
-                simpleExoPlayer?.pause()
-                exoPause.visibility = View.GONE
-                exoPlay.visibility = View.VISIBLE
-            }
-        }
+        exoPause.visibility = View.GONE
         exoPlay?.setOnClickListener {
+            Log.d("ButtonClick", "Play button clicked")
             if (simpleExoPlayer?.isPlaying == false) {
+                simpleExoPlayer?.seekTo(0)
                 simpleExoPlayer?.play()
-                exoPause.visibility = View.VISIBLE
                 exoPlay.visibility = View.GONE
             }
         }

@@ -11,8 +11,8 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 object MathHelpers {
-    private const val SCALE_X = 180f
-    private const val SCALE_Y = 160f
+    private const val SCALE_X = 0.25f
+    private const val SCALE_Y = 0.3f
 
     // ------# 기울기 계산 #------
     // TODO 1번 스케일링된 좌표로 각도를 계산할건지.. 그러면 거리 계산도 다 바꿔야함..

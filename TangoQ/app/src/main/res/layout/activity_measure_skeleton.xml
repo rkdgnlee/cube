@@ -38,6 +38,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/tvMeasureSkeletonDefault"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="버튼을 누르고 편하게 자세를 취해주세요"
+            android:textColor="@color/subColor800"
+            android:textSize="19dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnMeasureSkeletonBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ibtnMeasureSkeletonBack" />
+
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonInfo"
             android:layout_width="40dp"

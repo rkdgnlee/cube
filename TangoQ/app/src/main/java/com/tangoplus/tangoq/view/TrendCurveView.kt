@@ -28,7 +28,7 @@ class TrendCurveView @JvmOverloads constructor(
     private var resampledPoints = listOf<Pair<Float, Float>>()
     private var margin = 20f // 기본 마진 값
     private var boundingBox = RectF()
-    private val resampleSize = 20
+    private val resampleSize = 35
 
     fun setPoints(newPoints: List<Pair<Float, Float>>, newMargin: Float = 15f) {
         points = newPoints

@@ -40,6 +40,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/tvMeasureSkeletonDefault"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="버튼을 누르고 편하게 자세를 취해주세요"
+            android:textColor="@color/subColor800"
+            android:textSize="28dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnMeasureSkeletonBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ibtnMeasureSkeletonBack" />
+
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonInfo"
             android:layout_width="48dp"
@@ -113,11 +127,12 @@
             app:progressView_progressFromPrevious="true" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clCautionAngleVerti"
-        android:layout_width="40dp"
-        android:layout_height="300dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="60dp"
+        android:layout_height="350dp"
+        android:layout_marginStart="20dp"
         android:contentDescription="showVerticalSensing"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,10 +140,10 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView21"
-            android:layout_width="16dp"
+            android:layout_width="20dp"
             android:layout_height="0dp"
             app:cardBackgroundColor="@color/subColor800"
-            app:cardCornerRadius="6dp"
+            app:cardCornerRadius="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -136,10 +151,10 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cvCautionVerti"
-            android:layout_width="36dp"
-            android:layout_height="48dp"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
             app:cardBackgroundColor="@color/subColor100"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView21"
             app:layout_constraintEnd_toEndOf="@+id/cardView21"
             app:layout_constraintStart_toStartOf="@+id/cardView21"
@@ -149,8 +164,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clCautionAngleHorizon"
-        android:layout_width="300dp"
-        android:layout_height="40dp"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:contentDescription="showVerticalSensing"
         app:layout_constraintEnd_toEndOf="parent"
@@ -160,9 +175,9 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView36"
             android:layout_width="0dp"
-            android:layout_height="16dp"
+            android:layout_height="20dp"
             app:cardBackgroundColor="@color/subColor800"
-            app:cardCornerRadius="6dp"
+            app:cardCornerRadius="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -170,10 +185,10 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cvCautionHorizon"
-            android:layout_width="48dp"
-            android:layout_height="36dp"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
             app:cardBackgroundColor="@color/subColor100"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView36"
             app:layout_constraintEnd_toEndOf="@+id/cardView36"
             app:layout_constraintStart_toStartOf="@+id/cardView36"

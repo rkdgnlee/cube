@@ -117,7 +117,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             val offsetY = (height - imageHeight * scaleFactorY) / 2
 
             landmarks.forEach { landmark ->
-                if (landmarks.indexOf(landmark) > 10 || landmarks.indexOf(landmark) == 0) {
+                if (landmarks.indexOf(landmark) == 0 ||
+                    landmarks.indexOf(landmark) in 11 .. 16 ||
+                    landmarks.indexOf(landmark) in 23 .. 28
+                    ) {
                     canvas.drawCircle(
                         landmark.x * imageWidth * scaleFactorX + offsetX,
                         landmark.y * imageHeight * scaleFactorY + offsetY,
@@ -149,8 +152,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             }
 
             val connections = listOf(
-                // 손
-                Pair(16, 18), Pair(16, 20), Pair(16, 22), Pair(15, 17), Pair(15, 19), Pair(15, 21),
                 // 몸통 + 팔
                 Pair(11, 12), Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
                 // Legs

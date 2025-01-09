@@ -71,6 +71,8 @@ object ImageProcessingUtil {
                 val rightElbow = poseLandmarkResult.landmarks.getOrNull(14)
                 val leftWrist = poseLandmarkResult.landmarks.getOrNull(15)
                 val rightWrist = poseLandmarkResult.landmarks.getOrNull(16)
+                val leftHip = poseLandmarkResult.landmarks.getOrNull(23)
+                val rightHip = poseLandmarkResult.landmarks.getOrNull(24)
                 val leftKnee = poseLandmarkResult.landmarks.getOrNull(25)
                 val rightKnee = poseLandmarkResult.landmarks.getOrNull(26)
                 val leftAnkle = poseLandmarkResult.landmarks.getOrNull(27)
@@ -78,10 +80,10 @@ object ImageProcessingUtil {
                 val leftFoot = poseLandmarkResult.landmarks.getOrNull(27) // 왼발 좌표
                 val rightFoot = poseLandmarkResult.landmarks.getOrNull(28) // 오른발 좌표
 
-                if ( nose != null && leftEar != null && rightEar != null
-                    && leftFoot != null && rightFoot != null  && leftShoulder != null && rightShoulder != null
-                    && leftElbow != null && rightElbow != null && leftWrist != null && rightWrist != null
-                    && leftKnee != null && rightKnee != null && leftAnkle != null && rightAnkle != null ) {
+                if ( nose != null && leftEar != null && rightEar != null && leftShoulder != null && rightShoulder != null
+                    && leftElbow != null && rightElbow != null && leftWrist != null && rightWrist != null && leftHip != null && rightHip != null
+                    && leftKnee != null && rightKnee != null && leftAnkle != null && rightAnkle != null && leftFoot != null && rightFoot != null
+                    ) {
                     val midFootX = (leftFoot.x + rightFoot.x) / 2
 
                     canvas.drawLine(leftEar.x, leftEar.y, rightEar.x, rightEar.y, axisSubPaint)
@@ -91,6 +93,13 @@ object ImageProcessingUtil {
                     canvas.drawLine(leftWrist.x ,leftWrist.y, rightWrist.x, rightWrist.y, axisSubPaint)
                     canvas.drawLine(leftKnee.x ,leftKnee.y, rightKnee.x, rightKnee.y, axisSubPaint)
                     canvas.drawLine(leftAnkle.x ,leftAnkle.y, rightAnkle.x, rightAnkle.y, axisSubPaint)
+
+                    val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2
+                    val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2
+                    val midHipX = (leftHip.x + rightHip.x) / 2
+                    val midHipY = (leftHip.y + rightHip.y) / 2
+                    canvas.drawLine(midShoulderX, midShoulderY, midHipX, midHipY , axisSubPaint)
+                    canvas.drawLine(midShoulderX, midShoulderY, nose.x, nose.y , axisSubPaint)
                 }
             }
             3 -> {

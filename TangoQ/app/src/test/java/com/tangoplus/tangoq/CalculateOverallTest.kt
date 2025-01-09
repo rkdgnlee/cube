@@ -1,8 +1,8 @@
 package com.tangoplus.tangoq
 
-import com.tangoplus.tangoq.function.MeasurementManager.status
+import com.tangoplus.tangoq.function.MeasurementManager
+import com.tangoplus.tangoq.function.MeasurementManager.Status
 import org.junit.Test
-
 import org.junit.Assert.*
 import java.lang.Math.toDegrees
 import kotlin.math.abs
@@ -11,11 +11,6 @@ import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class CalculateOverallTest {
 
 
@@ -115,116 +110,34 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
     fun testCalculateOverall() {
         // Arrange: 테스트 입력 값 준비
         val parts = mutableListOf(
-            "목관절" to status.WARNING,
-            "좌측 어깨" to status.WARNING,
-            "우측 어깨" to status.WARNING,
+            "목관절" to Status.WARNING,
+            "좌측 어깨" to Status.NORMAL,
+            "우측 어깨" to Status.WARNING,
 
-            "좌측 팔꿉" to status.DANGER,
-            "우측 팔꿉" to status.DANGER,
+            "좌측 팔꿉" to Status.NORMAL,
+            "우측 팔꿉" to Status.NORMAL,
 
-            "좌측 손목" to status.DANGER,
-            "우측 손목" to status.DANGER,
+            "좌측 손목" to Status.NORMAL,
+            "우측 손목" to Status.DANGER,
 
-            "좌측 골반" to status.DANGER,
-            "우측 골반" to status.WARNING,
-            "좌측 무릎" to status.NORMAL,
-            "우측 무릎" to status.NORMAL,
-            "우측 발목" to status.NORMAL,
-            "우측 발목" to status.NORMAL
+            "좌측 골반" to Status.NORMAL,
+            "우측 골반" to Status.WARNING,
+            "좌측 무릎" to Status.WARNING,
+            "우측 무릎" to Status.NORMAL,
+            "우측 발목" to Status.NORMAL,
+            "우측 발목" to Status.NORMAL
         )
-        val parts2 = mutableListOf(
-            "목관절" to status.DANGER,
-            "좌측 어깨" to status.DANGER,
-            "우측 어깨" to status.WARNING,
-
-            "좌측 팔꿉" to status.DANGER,
-            "우측 팔꿉" to status.DANGER,
-
-            "좌측 손목" to status.DANGER,
-            "우측 손목" to status.WARNING,
-
-            "좌측 골반" to status.DANGER,
-            "우측 골반" to status.DANGER,
-            "좌측 무릎" to status.WARNING,
-            "우측 무릎" to status.NORMAL,
-            "우측 발목" to status.NORMAL,
-            "우측 발목" to status.NORMAL
-        )
-        val parts3= mutableListOf(
-            "목관절" to status.WARNING,
-            "좌측 어깨" to status.WARNING,
-            "우측 어깨" to status.WARNING,
-
-            "좌측 팔꿉" to status.NORMAL,
-            "우측 팔꿉" to status.WARNING,
-
-            "좌측 손목" to status.NORMAL,
-            "우측 손목" to status.NORMAL,
-
-            "좌측 골반" to status.WARNING,
-            "우측 골반" to status.WARNING,
-            "좌측 무릎" to status.NORMAL,
-            "우측 무릎" to status.WARNING,
-            "우측 발목" to status.NORMAL,
-            "우측 발목" to status.NORMAL
-        )
-//        val parts4= mutableListOf(
-//            "목관절" to status.WARNING,
-//            "좌측 어깨" to status.WARNING,
-//            "우측 어깨" to status.WARNING,
-//
-//            "좌측 팔꿉" to status.WARNING,
-//            "우측 팔꿉" to status.NORMAL,
-//
-//            "좌측 손목" to status.NORMAL,
-//            "우측 손목" to status.NORMAL,
-//
-//            "좌측 골반" to status.WARNING,
-//            "우측 골반" to status.WARNING,
-//            "좌측 무릎" to status.NORMAL,
-//            "우측 무릎" to status.DANGER,
-//            "우측 발목" to status.NORMAL,
-//            "우측 발목" to status.NORMAL
-//        )
-//        val parts5= mutableListOf(
-//            "목관절" to status.WARNING,
-//            "좌측 어깨" to status.WARNING,
-//            "우측 어깨" to status.DANGER,
-//
-//            "좌측 팔꿉" to status.NORMAL,
-//            "우측 팔꿉" to status.NORMAL,
-//
-//            "좌측 손목" to status.NORMAL,
-//            "우측 손목" to status.NORMAL,
-//
-//            "좌측 골반" to status.DANGER,
-//            "우측 골반" to status.WARNING,
-//            "좌측 무릎" to status.WARNING,
-//            "우측 무릎" to status.WARNING,
-//            "우측 발목" to status.NORMAL,
-//            "우측 발목" to status.WARNING
-//        )
 
         // Act: 함수 호출
         val result = calculateOverall(parts)
-        val result2 = calculateOverall(parts2)
-        val result3 = calculateOverall(parts3)
-//        val result4 = calculateOverall(parts4)
-//        val result5 = calculateOverall(parts5)
         println("61 - $result")
-        println("57 - $result2")
-        println("76 - $result3")
-//        println("69 - $result4")
-//        println("65 - $result5")
-        // Assert: 예상 결과와 비교
-
     }
 
-    fun calculateOverall(parts: MutableList<Pair<String, status>>) : Int {
+    fun calculateOverall(parts: MutableList<Pair<String, Status>>) : Int {
         val scores = mapOf(
-            status.DANGER to 38,
-            status.WARNING to 64,
-            status.NORMAL to 95
+            Status.DANGER to 35,
+            Status.WARNING to 61,
+            Status.NORMAL to 93
         )
         val weightScore = 1.65
         val reverseWeightScore = 0.7
@@ -233,13 +146,9 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
         for (part in parts) {
             val (bodyPart, status) = part
             val weight = when {
-//                bodyPart.contains("목관절") -> weightScore
-//                bodyPart.contains("어깨") -> weightScore
-//                bodyPart.contains("골반") -> weightScore
                 bodyPart.contains("팔꿉") -> reverseWeightScore
                 bodyPart.contains("손목") -> reverseWeightScore
                 bodyPart.contains("무릎") -> weightScore
-//                bodyPart.contains("발목") -> reverseWeightScore
                 else -> 1.0
             }
             weightedScoreSum += (scores[status] ?: 0) * weight
@@ -247,4 +156,53 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
         }
         return if (totalWeight > 0) (weightedScoreSum / totalWeight).toInt() else 0
     }
+
+    fun determineStatus(dangerCount: Int, warningCount: Int, normalCount: Int): Status {
+        val total = dangerCount + warningCount + normalCount
+
+        // Case 1: 어떤 상태가 과반수 이상인 경우
+        if (dangerCount > total / 2) return Status.DANGER
+        if (warningCount > total / 2) return Status.WARNING
+        if (normalCount > total / 2) return Status.NORMAL
+
+        // Case 2: danger가 warning과 normal의 합보다 큰 경우
+        if (dangerCount > warningCount + normalCount) return Status.DANGER
+
+        // Case 3: 동률 처리 (수정된 규칙)
+        when {
+            // danger와 warning이 같은 경우 -> DANGER
+            dangerCount == warningCount && dangerCount > normalCount -> return Status.DANGER
+
+            // warning과 normal이 같은 경우 -> NORMAL
+            warningCount == normalCount && warningCount > dangerCount -> return Status.NORMAL
+
+            // danger와 normal이 같고 warning보다 많은 경우
+            dangerCount == normalCount && dangerCount > warningCount -> return Status.WARNING
+        }
+
+        // Case 4: warning + danger가 normal보다 많은 경우
+        if (warningCount + dangerCount > normalCount) {
+            return if (dangerCount > warningCount) Status.DANGER else Status.WARNING
+        }
+
+        // 나머지 경우는 NORMAL
+        return Status.NORMAL
+    }
+
+    @Test
+    fun calculatePart() {
+        val ear = determineStatus(2, 2 ,2)
+        val leftShoulder = determineStatus(2, 1 ,4)
+        val rightShoulder = determineStatus(3, 1 ,3)
+        val leftElbow = determineStatus(3, 0,4)
+        val rightElbow = determineStatus(2, 1 ,4)
+        val leftWrist = determineStatus(2, 1 ,3)
+        val rightWrist = determineStatus(4, 2 ,1)
+        val rightHip = determineStatus(2, 1 ,2)
+        val leftKnee = determineStatus(3, 2 ,3)
+
+        print("ear: $ear, shoulder: ($leftShoulder, $rightShoulder), elbow: ($leftElbow, $rightElbow), wrist: ($leftWrist, $rightWrist), rightHip: $rightHip, leftKnee: $leftKnee")
+    }
+
+
 }
