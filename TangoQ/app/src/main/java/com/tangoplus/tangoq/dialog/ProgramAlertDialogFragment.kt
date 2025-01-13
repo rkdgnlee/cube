@@ -20,10 +20,16 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 class ProgramAlertDialogFragment : DialogFragment() {
     lateinit var binding : FragmentProgramAlertDialogBinding
     private lateinit var parentDialog: ProgramCustomDialogFragment
+    private var case = 0
+    private var alertMessage = ""
     companion object {
-        fun newInstance (parentDialog : ProgramCustomDialogFragment) : ProgramAlertDialogFragment {
+        const val ALERT_KEY_CASE = "a"
+        fun newInstance (parentDialog : ProgramCustomDialogFragment, case: Int) : ProgramAlertDialogFragment {
             val fragment = ProgramAlertDialogFragment()
             fragment.parentDialog = parentDialog
+            val args = Bundle()
+            args.putInt(ALERT_KEY_CASE, case)
+            fragment.arguments = args
             return fragment
         }
     }
@@ -39,11 +45,33 @@ class ProgramAlertDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        case = arguments?.getInt(ALERT_KEY_CASE) ?: 0
+
+        when (case) {
+            2 -> {
+                alertMessage = "프로그램이 완료되었습니다.\n정확한 운동 추천을 위하여\n키오스크, 모바일 앱으로 측정을 진행한 후\n운동 프로그램을 다시 진행해 주시기 바랍니다."
+                val spannableString = SpannableString(alertMessage)
+                val accentIndex = spannableString.indexOf("키오스크, 모바일 앱")
+                val colorSpan = ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.mainColor))
+                spannableString.setSpan(colorSpan, accentIndex, accentIndex + 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                binding.tvPAD.text = spannableString
+                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_program_alert))
+            }
+            1 -> {
+                binding.btnPAD2.text = "결과 보기"
+                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_program_alert))
+                alertMessage = "오늘 필요한 운동을 다 마쳤습니다!\n휴식을 가진 후, 다른 부위 운동 프로그램을 시작해보세요 !"
+                binding.tvPAD.text = alertMessage
+            }
+            0 -> {
+
+            }
+        }
+        binding.tvPAD.textSize = if (isTablet(requireContext())) 22f else 16f
         binding.btnPAD1.setOnClickListener {
             dismiss()
             parentDialog.dismissThisFragment()
         }
-
         binding.btnPAD2.setOnClickListener {
             dismiss()
             parentDialog.dismissThisFragment()
@@ -51,13 +79,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
             bnb.selectedItemId = R.id.measure
         }
 
-        val spannableString = SpannableString(binding.tvPAD2.text)
-        val colorSpan = ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.mainColor))
-        spannableString.setSpan(colorSpan, 0, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        binding.tvPAD2.text = spannableString
-
-        binding.tvPAD1.textSize = if (isTablet(requireContext())) 22f else 16f
-        binding.tvPAD2.textSize = if (isTablet(requireContext())) 22f else 16f
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

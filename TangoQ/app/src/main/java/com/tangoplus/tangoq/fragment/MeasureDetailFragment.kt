@@ -228,7 +228,7 @@ class MeasureDetailFragment : Fragment() {
     private fun setAdapter(stages: MutableList<MutableList<String>>, degrees: MutableList<Pair<Int,Int>>) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMD.layoutManager = layoutManager
-        val balanceAdapter = BalanceRVAdapter(this@MeasureDetailFragment, stages, degrees)
+        val balanceAdapter = BalanceRVAdapter(this@MeasureDetailFragment)
         binding.rvMD.adapter = balanceAdapter
     }
 

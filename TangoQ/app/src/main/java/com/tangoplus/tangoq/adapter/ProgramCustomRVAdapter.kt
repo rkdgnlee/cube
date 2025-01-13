@@ -46,9 +46,9 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
 
             if (week.second <= week.first) {
                 if (position == seq.third) {
-                    setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.white)
+                    setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
                 } else if (position <= seq.second) {
-                    setTextView(holder.tvPSIName, R.color.secondHalfColor, R.color.white)
+                    setTextView(holder.tvPSIName, R.color.secondHalfColor, R.color.whiteText)
                 }
             } else {
                 setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)

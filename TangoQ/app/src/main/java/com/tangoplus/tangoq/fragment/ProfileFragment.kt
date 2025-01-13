@@ -68,7 +68,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
-        Log.v("Singleton>Profile", "$userJson")
+//        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
 
         binding.ibtnPAlarm.setOnClickListener {

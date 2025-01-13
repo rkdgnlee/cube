@@ -132,7 +132,7 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         // ------# 자세히 보기 #------
         binding.tvMD1More1.setOnClickListener {
-            val dialog = MeasureTrendDialogFragment.newInstance("", "")
+            val dialog = MeasureTrendDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
         }
 
@@ -354,7 +354,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             .setWidthRatio(0.6f)
             .setHeight(BalloonSizeSpec.WRAP)
             .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 0.5f) "상위 ${((1.0f - percent) * 100).toInt()}" else "하위 ${(percent * 100).toInt()}"}%에 위치합니다.")
-            .setTextColorResource(R.color.white)
+            .setTextColorResource(R.color.whiteText)
             .setTextSize(15f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
             .setArrowSize(0)

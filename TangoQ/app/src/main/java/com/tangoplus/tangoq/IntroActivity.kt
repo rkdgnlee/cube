@@ -326,7 +326,7 @@ class IntroActivity : AppCompatActivity() {
                     override fun onFinish(agree: Boolean) {
                         if (agree) {
 
-                            // TODO 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
+                            // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
                             jsonObj.put("device_sn" ,0)
                             jsonObj.put("user_sn", 0)
                             jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
@@ -373,9 +373,9 @@ class IntroActivity : AppCompatActivity() {
             }
         }
     }
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        val code = intent?.getIntExtra("SignInFinished", 0) ?: 0
+        val code = intent.getIntExtra("SignInFinished", 0) ?: 0
         handleSignInResult(code)
     }
 

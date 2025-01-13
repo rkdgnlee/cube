@@ -30,7 +30,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
@@ -38,12 +37,7 @@ import com.tangoplus.tangoq.api.NetworkProgress.patchProgress1Item
 import com.tangoplus.tangoq.function.EventBusManager
 import com.tangoplus.tangoq.service.ForcedTerminationService
 import com.tangoplus.tangoq.service.TerminationEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 
@@ -65,6 +59,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private var uvpSns : MutableList<String>? = null
 
     private val playbackPositions = mutableMapOf<Int, Long>()
+
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
         object : CountDownTimer(3000, 1000) {
@@ -106,7 +101,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
         totalDuration = intent.getIntExtra("total_duration", 0)
         uvpSns = intent.getStringArrayListExtra("uvp_sns")
-
+        pvm.isUnit = intent.getBooleanExtra("isUnit", false)
         Log.v("url들", "videoUrl: $exerciseIds, urls: $videoUrls, uvpSns: $uvpSns")
 
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
@@ -225,7 +220,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     Player.STATE_ENDED -> {
                         Log.v("PlaybackState", "Player.STATE_ENDED")
 
-                        if (baseUrls.size > 1) {
+                        if (!pvm.isUnit) {
                             sendData(true) {
                                 val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
                                 val elapsedSeconds = elapsedMillis / 1000
@@ -296,7 +291,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         Log.v("미디어소스인덱스", "${uvpSns?.get(currentMediaSourceIndex)?.toInt()}, jo: $jo, totalDuration: $totalDurationMs")
         val currentUvpSns = uvpSns?.get(currentMediaSourceIndex)?.toInt()
         if (uvpSns?.isNotEmpty() == true && currentUvpSns != null) {
-            patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { progressUnitVO -> }
+            patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { }
             Log.v("progress완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
             callback()
         }
@@ -344,14 +339,13 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setTitle("알림")
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
-                if (baseUrls.size > 1) {
+                if (!pvm.isUnit) {
                     sendData(false) {
                         val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         startActivity(intent)
                         finish()
                     }
-
                 } else {
                     val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                     startActivity(intent)
@@ -386,24 +380,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }, delay)
     }
 
-
-    // 특정 동작이 완료되었을 때 호출되는 함수
-    private fun getCurrentDateTimeAsString(): String {
-        // 현재 날짜와 시간을 가져옴
-        val currentDateTime = LocalDateTime.now()
-
-        // 원하는 형식으로 날짜와 시간을 포맷
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        return currentDateTime.format(formatter)
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-//        pViewModel.currentPlaybackPosition.value = simpleExoPlayer!!.currentPosition
-//        pViewModel.currentWindowIndex.value = simpleExoPlayer!!.currentWindowIndex
-    }
-    // 일시중지
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true

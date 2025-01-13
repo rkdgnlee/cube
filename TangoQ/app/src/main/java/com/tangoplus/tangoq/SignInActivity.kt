@@ -529,7 +529,7 @@ class SignInActivity : AppCompatActivity() {
         bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
             override fun onFinish(agree: Boolean) {
                 if (agree) {
-                    // TODO 동의 간주 후, 연락처 보내기
+
                     viewModel.User.value?.put("user_name", binding.etName.text)
                     when (binding.spinner.selectedItemPosition) {
                         0, 1, 2 -> {

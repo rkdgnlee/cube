@@ -27,8 +27,20 @@ class BiometricManager(private val fragment: Fragment) {
                 BiometricManager.Authenticators.DEVICE_CREDENTIAL or
                         BiometricManager.Authenticators.BIOMETRIC_WEAK
             )
+        } catch (e: IllegalArgumentException) {
+            Log.e("BiometricAuth", "credential check failed IllegalArgumentException :  ${e.message}" )
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+        } catch (e: IllegalStateException) {
+            Log.e("BiometricAuth", "credential check failed IllegalStateException : ${e.message}")
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+        } catch (e: NullPointerException) {
+            Log.e("BiometricAuth", "credential check failed NullPointerException : ${e.message}" )
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+        }  catch (e: ClassNotFoundException) {
+            Log.e("BiometricAuth", "credential check failed ClassNotFoundException : ${e.message}" )
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
         } catch (e: Exception) {
-            Log.e("BiometricAuth", "Device credential check failed", e)
+            Log.e("BiometricAuth", "credential check failed Exception : ${e.message}" )
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
         }
     }

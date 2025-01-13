@@ -8,14 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RawRes
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.skydoves.balloon.ArrowPositionRules
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
+import com.tangoplus.tangoq.function.MeasurementManager.setLabels
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
 import kotlin.math.abs
 
@@ -23,6 +30,9 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
     inner class TrendViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMTIPart : TextView = view.findViewById(R.id.tvMTIPart)
         val ivMTI : ImageView = view.findViewById(R.id.ivMTI)
+        private val clMTI1 : ConstraintLayout = view.findViewById(R.id.clMTI1)
+        private val clMTI2 : ConstraintLayout = view.findViewById(R.id.clMTI2)
+        private val clMTI3 : ConstraintLayout = view.findViewById(R.id.clMTI3)
         private val tvMTI1 : TextView = view.findViewById(R.id.tvMTI1)
         private val tvMTI2 : TextView = view.findViewById(R.id.tvMTI2)
         private val tvMTI3 : TextView = view.findViewById(R.id.tvMTI3)
@@ -39,6 +49,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         val tvSeqs = listOf(tvMTISeq1, tvMTISeq2, tvMTISeq3)
         val pvs = listOf(listOf(pvMTI1Left, pvMTI1Right), listOf(pvMTI2Left, pvMTI2Right), listOf(pvMTI3Left, pvMTI3Right))
         val tvPoses = listOf(tvMTI1, tvMTI2, tvMTI3)
+        val cls = listOf(clMTI1, clMTI2, clMTI3)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -55,9 +66,8 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrendViewHolder) {
             if (analyzes2?.isNotEmpty() == true) {
-                val currentItem = analyzes2[position] // analysisVO가 들어가있는 부위 별임.
+                val currentItemRight = analyzes2[position] // analysisVO가 들어가있는 부위 별임.
                 holder.tvMTIPart.text = matchedParts[position]
-
                 val jointIndex = if (position == 0) 1 else (position + 1) / 2 + 1
 
                 // ------# 부위 drawable 좌우 반전 #------
@@ -75,13 +85,10 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                 }
 
                 // -------# 부위 선택 #------
-                val selectAnalysisIndex = matchedIndexs[position]
-
-                val normalCount = selectAnalysisIndex.count { indexTriple ->
-                    currentItem[indexTriple.second].labels[indexTriple.third].state == 0 || currentItem[indexTriple.second].labels[indexTriple.third].state == 1
+                val selectAnalysisRight = matchedIndexs[position]
+                val normalCount = selectAnalysisRight.count { indexTriple ->
+                    currentItemRight[indexTriple.second].labels[indexTriple.third].state == 0 || currentItemRight[indexTriple.second].labels[indexTriple.third].state == 1
                 }
-
-                Log.v("선택된 항목 판단", "$selectAnalysisIndex,선택된 3개 중 normal 개수: $normalCount")
                 if (normalCount >= 2) { // 3개 중 2개 이상이 normal이면 true
                     setPartState(holder, 1)
                 } else if (normalCount == 1) {
@@ -89,14 +96,12 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                 } else {
                     setPartState(holder, 3)
                 }
-
-                selectAnalysisIndex.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
+                // 왼쪽 설정 안됐을 때 우측 비교
+                selectAnalysisRight.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
                     holder.tvSeqs[index].text = setSeqString(indexTriple.first)
-
-                    val unit = currentItem[indexTriple.second].labels[indexTriple.third]
+                    val unit = currentItemRight[indexTriple.second].labels[indexTriple.third]
                     val score = calculateBoundedScore(abs(unit.rawData), unit.rawDataBound)
                     holder.pvs[index][1].progress = score
-
                     holder.tvPoses[index].text = unit.rawDataName
                         .replace("양", "")
                         .replace("과", "")
@@ -106,17 +111,46 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                         .replace("우측 ", "")
 
                     setState(holder, index, splitState(score))
+                    // 오른쪽 balloon comment init
+                    val rightRawData = String.format("%.2f", unit.rawData) + if (unit.columnName.contains("angle")) "°" else "cm"
+                    val rightComment = "우측: $rightRawData\n${setLabels(unit)}"
+                    setBalloon(holder.cls[index], index, rightComment)
                 }
 
-            }
-            if (analyzes1 != null) {
-                val currentItem = analyzes1[position] // analysisVO가 들어가있는 부위 별임.
-                val selectAnalysisIndex = matchedIndexs[position]
-                selectAnalysisIndex.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
-                    val unit = currentItem[indexTriple.second].labels[indexTriple.third]
-                    Log.v("각 점수들", "측정명: ${unit.rawDataName}, 값: ${unit.rawData}, 범위: ${unit.rawDataBound}")
-                    val score = calculateBoundedScore(unit.rawData, unit.rawDataBound)
-                    holder.pvs[index][0].progress = score
+                // 좌측 비교
+                if (analyzes1 != null) {
+                    val currentItemLeft = analyzes1[position] // analysisVO가 들어가있는 부위 별임.
+                    val selectAnalysisLeft = matchedIndexs[position]
+                    selectAnalysisRight.zip(selectAnalysisLeft).forEachIndexed { index, (rightTriple, leftTriple) ->
+                        // 오른쪽
+                        val rightUnit = currentItemRight[rightTriple.second].labels[rightTriple.third]
+                        val rightScore = calculateBoundedScore(rightUnit.rawData, rightUnit.rawDataBound)
+                        holder.pvs[index][1].progress = rightScore
+                        holder.tvPoses[index].text = rightUnit.rawDataName
+                            .replace("양", "")
+                            .replace("과", "")
+                            .replace("와", "")
+                            .replace("에서", "-")
+                            .replace("좌측 ", "")
+                            .replace("우측 ", "")
+
+                        setState(holder, index, splitState(rightScore))
+
+                        // 왼쪽
+                        val leftUnit = currentItemLeft[leftTriple.second].labels[leftTriple.third]
+                        val leftScore = calculateBoundedScore(leftUnit.rawData, leftUnit.rawDataBound)
+                        holder.pvs[index][0].progress = leftScore
+
+                        // balloon에 통합 comment 넣기
+                        val leftRawData = String.format("%.2f", leftUnit.rawData) + if (leftUnit.columnName.contains("angle")) "°" else "cm"
+                        val leftComment = "좌측: $leftRawData"
+
+                        // 오른쪽 balloon comment init
+                        val rightRawData = String.format("%.2f", rightUnit.rawData) + if (rightUnit.columnName.contains("angle")) "°" else "cm"
+                        val rightComment = "우측: $rightRawData\n${setLabels(rightUnit)}"
+                        Log.v("코멘트", "$leftComment, $rightComment")
+                        setBalloon(holder.cls[index], index, "$leftComment $rightComment")
+                    }
                 }
             }
         }
@@ -181,6 +215,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
             }
         }
     }
+
     private fun setPartState(holder: TrendViewHolder, state: Int) {
         when (state) {
             1 -> { holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor500))) }
@@ -189,23 +224,31 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         }
     }
 
-//    private fun setPartState(holder: TrendViewHolder, state: Int) {
-//        when (state) {
-//            0 -> {
-//                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-//                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)))
-//                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor500)))
-//            }
-//            1 -> {
-//                holder.tvMTIPart.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.cautionContainerColor)
-//                holder.tvMTIPart.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))
-//                holder.cvMTI.setCardBackgroundColor(fragment.resources.getColor(R.color.cautionColor, null))
-//            }
-//            2 -> {
-//                holder.tvMTIPart.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteContainerColor))
-//                holder.tvMTIPart.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
-//                holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)))
-//            }
-//        }
-//    }
+    private fun setBalloon(cl: ConstraintLayout, index: Int, comment: String) {
+        val balloon = Balloon.Builder(fragment.requireContext())
+            .setWidthRatio(0.64f)
+            .setHeight(BalloonSizeSpec.WRAP)
+            .setText(comment)
+            .setTextColorResource(R.color.subColor800)
+            .setTextSize(14f)
+            .setTextLineSpacing(5f)
+            .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
+            .setArrowSize(0)
+            .setMargin(4)
+            .setPadding(12)
+            .setCornerRadius(12f)
+            .setBackgroundColorResource(R.color.subColor100)
+            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+            .setLifecycleOwner(fragment.viewLifecycleOwner)
+            .build()
+
+        cl.setOnClickListener {
+            when (index) {
+                0 -> balloon.showAlignEnd(cl)
+                1 -> balloon.showAlignBottom(cl)
+                2 -> balloon.showAlignStart(cl)
+            }
+        }
+    }
+
 }

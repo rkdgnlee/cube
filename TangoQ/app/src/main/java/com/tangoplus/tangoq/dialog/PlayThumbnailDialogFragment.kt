@@ -11,14 +11,12 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -31,7 +29,6 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.PlayFullScreenActivity
-import com.tangoplus.tangoq.PlaySkeletonActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
@@ -41,7 +38,6 @@ import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
@@ -75,7 +71,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         val bundle = arguments
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
         wm = WifiManager(requireContext())
@@ -106,7 +101,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         binding.tvPTDName.text = exerciseData?.exerciseName.toString()
         binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
-        binding.tvPTDTime.text = "${exerciseData?.duration} 초"
+        binding.tvPTDTime.text = "${exerciseData?.duration?.toInt()?.div(60)}분 ${exerciseData?.duration?.toInt()?.rem(60)}초"
         binding.tvPTDStage.text = exerciseData?.exerciseStage
         binding.tvPTDFrequency.text = exerciseData?.exerciseFrequency.toString()
         binding.tvPTRelatedSymptom.text = exerciseData?.relatedSymptom
@@ -158,6 +153,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             intent.putExtra("video_url", videoUrl)
             intent.putExtra("exercise_id", exerciseData?.exerciseId)
             intent.putExtra("total_duration", exerciseData?.duration?.toInt())
+            intent.putExtra("isUnit", true)
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
@@ -176,7 +172,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
         exitButton.setOnClickListener {
             dismiss()
-
         }
 
         val exoPlay = binding.pvPTD.findViewById<ImageButton>(R.id.btnPlay)
@@ -246,25 +241,22 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 //        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
 //            binding.btnPTDAIPlay.visibility = View.VISIBLE
 //        } else {
-            binding.btnPTDAIPlay.visibility = View.GONE
+//            binding.btnPTDAIPlay.visibility = View.GONE
 //        }
-        binding.btnPTDAIPlay.setOnClickListener {
-
-            if (isTablet(requireContext())) {
-                val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
-
-                val exerciseIds = mutableListOf(exerciseData?.exerciseId)
-                val videoUrls = mutableListOf(videoUrl)
-                intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-                intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-                intent.putExtra("total_time", exerciseData?.duration?.toInt())
-                startActivity(intent)
-            } else {
-                context.let { Toast.makeText(it, "태블릿 기기에서 운동을 추천드립니다", Toast.LENGTH_SHORT).show() }
-            }
-
-
-        }
+//        binding.btnPTDAIPlay.setOnClickListener {
+//            if (isTablet(requireContext())) {
+//                val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
+//
+//                val exerciseIds = mutableListOf(exerciseData?.exerciseId)
+//                val videoUrls = mutableListOf(videoUrl)
+//                intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
+//                intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
+//                intent.putExtra("total_time", exerciseData?.duration?.toInt())
+//                startActivity(intent)
+//            } else {
+//                context.let { Toast.makeText(it, "태블릿 기기에서 운동을 추천드립니다", Toast.LENGTH_SHORT).show() }
+//            }
+//        }
         // ------! ai코칭 끝 !------
 
         // ------# share #------

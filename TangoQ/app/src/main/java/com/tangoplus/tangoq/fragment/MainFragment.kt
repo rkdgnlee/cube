@@ -161,45 +161,12 @@ class MainFragment : Fragment() {
 //            animationController.startSequentialAnimation()
 //        }, 500)
         // ------# balance check #------
-        /* 이미 순위가 매겨진 부위들을 넣어서 index별로 각 밸런스 체크에 들어간다 */
-        // TODO 고정으로 일단 위험부위와 점수는 넣어놓기.
-//        val dangerParts = measures?.get(index)?.dangerParts?.map { it.first }?.toMutableList()
-//        val stages = mutableListOf<MutableList<String>>()
-//        stages.add( dangerParts?.subList(0, 2))
-//        stages.add( dangerParts.subList(0, 2))
-//        stages.add( dangerParts.subList(0, 2))
-//        stages.add( dangerParts.subList(2, 3))
-//        stages.add( dangerParts.subList(2, 3))
-//
-//        val dangerDegree = measures?.get(index)?.dangerParts?.map { it.second }?.toMutableList()
-//        val degrees = mutableListOf<Pair<Int,Int>>()
-//        for (i in 0 until 5) {
-//            val degree = dangerDegree?.getOrNull(i) ?: -1  // null이면 기본값으로 -1 사용
-//            when (degree) {
-//                1 -> degrees.add(Pair(1, Random.nextInt(2, 4)))
-//                2 -> degrees.add(Pair(2, Random.nextInt(-1, 2)))
-//                else -> degrees.add(Pair(3, Random.nextInt(-2, -1)))  // 여기서 else는 null 또는 다른 값에 대한 처리
-//            }
-//        }
-        val stages = mutableListOf<MutableList<String>>()
-        val balanceParts1 = mutableListOf("어깨", "골반")
-        stages.add(balanceParts1)
-        val balanceParts2 = mutableListOf("어깨", "팔꿉", "좌측 전완")
-        stages.add(balanceParts2)
-        val balanceParts3 = mutableListOf("골반", "좌측 어깨", "목")
-        stages.add(balanceParts3)
-        val balanceParts4 = mutableListOf("허벅지",  "어깨")
-        stages.add(balanceParts4)
-        val balanceParts5 = mutableListOf("좌측 허벅지", "좌측 골반", "좌측 어깨")
-        stages.add(balanceParts5)
 
-        val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
-//        val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
-        // 부위에 대한 설명 타입 - 근육 긴장, 이상 감지, 불균형 등
+
 
         val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvM3.layoutManager = layoutManager2
-        val balanceAdapter = BalanceRVAdapter(this@MainFragment, stages, degrees)
+        val balanceAdapter = BalanceRVAdapter(this@MainFragment)
         binding.rvM3.adapter = balanceAdapter
     }
 

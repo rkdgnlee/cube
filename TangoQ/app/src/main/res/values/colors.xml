@@ -3,7 +3,7 @@
     <color name="black">#121212</color>
     <color name="white">#FFFFFF</color>
     <color name="whitebar">#FFFFFF</color>
-
+    <color name="whiteText">#FFFFFF</color>
     <color name="mainColor">#2EE88B</color>
     <color name="mainDeepColor">#0C894C</color>
     <color name="mainContainerColor">#EFFEF6</color>
@@ -47,4 +47,5 @@
 
     <color name="deleteRippleColor">#FFE7E4</color>
     <color name="mainRippleColor">#2BEE8C</color>
+    <color name="rippleColor">#80F6F6F6</color>
 </resources>

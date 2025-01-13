@@ -15,7 +15,6 @@ object MathHelpers {
     private const val SCALE_Y = 0.3f
 
     // ------# 기울기 계산 #------
-    // TODO 1번 스케일링된 좌표로 각도를 계산할건지.. 그러면 거리 계산도 다 바꿔야함..
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
         val radians = atan2(y2 -  y1, x2  - x1)
         val degrees = toDegrees(radians.toDouble()).toFloat()

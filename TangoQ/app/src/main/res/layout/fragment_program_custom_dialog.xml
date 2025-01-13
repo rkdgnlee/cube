@@ -198,6 +198,7 @@
                         app:layout_constraintTop_toTopOf="@+id/tvPCDSet"
                         app:progressView_colorBackground="@color/secondContainerColor"
                         app:progressView_colorProgress="@color/thirdColor" />
+
                     <TextView
                         android:id="@+id/tvPCDWeek"
                         android:layout_width="wrap_content"
@@ -371,7 +372,7 @@
             android:padding="16dp"
             android:stateListAnimator="@null"
             android:text="운동 시작하기"
-            android:textColor="@color/white"
+            android:textColor="@color/whiteText"
             android:textSize="18dp" />
     </LinearLayout>
 

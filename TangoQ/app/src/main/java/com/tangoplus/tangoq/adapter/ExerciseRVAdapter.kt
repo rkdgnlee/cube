@@ -153,7 +153,6 @@ class ExerciseRVAdapter (
                     updateLikeButtonState(currentExerciseItem?.exerciseId.toString(), holder.ibtnEILike)
                 }
 
-                // TODO MD2에 맞게 수정해야함
                 if (!progresses.isNullOrEmpty() && sequence != null ) {
 
                     /* Pair(pvm.currentSequence, pvm.selectedSequence.value))

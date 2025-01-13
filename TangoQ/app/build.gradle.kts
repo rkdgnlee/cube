@@ -72,7 +72,7 @@ dependencies {
     implementation("com.kizitonwose.calendar:view:2.5.1")
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.runtime.android)
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")
     implementation("org.apache.commons:commons-math3:3.6.1")
@@ -83,7 +83,7 @@ dependencies {
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // api
-    implementation("com.navercorp.nid:oauth:5.9.1")
+    implementation("com.navercorp.nid:oauth:5.10.0")
     implementation("com.kakao.sdk:v2-common:2.19.0")
     implementation("com.kakao.sdk:v2-user:2.19.0")
     implementation("com.kakao.sdk:v2-auth:2.19.0")
@@ -121,7 +121,7 @@ dependencies {
     annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
     //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:2.6.1")
-    implementation("net.zetetic:android-database-sqlcipher:4.5.3")
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
     implementation("androidx.sqlite:sqlite:2.4.0")
 
 
@@ -141,7 +141,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")
-    implementation("com.google.protobuf:protobuf-javalite:3.19.1")
+    implementation("com.google.protobuf:protobuf-javalite:4.26.1")
 
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")

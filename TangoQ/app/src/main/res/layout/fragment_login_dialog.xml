@@ -84,7 +84,7 @@
             android:padding="20dp"
             android:stateListAnimator="@null"
             android:text="로그인"
-            android:textColor="@color/white"
+            android:textColor="@color/whiteText"
             android:textSize="20sp"
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="@+id/etLDPw"

@@ -110,33 +110,33 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
     fun testCalculateOverall() {
         // Arrange: 테스트 입력 값 준비
         val parts = mutableListOf(
-            "목관절" to Status.WARNING,
+            "목관절" to Status.DANGER,
             "좌측 어깨" to Status.NORMAL,
-            "우측 어깨" to Status.WARNING,
+            "우측 어깨" to Status.NORMAL,
 
             "좌측 팔꿉" to Status.NORMAL,
-            "우측 팔꿉" to Status.NORMAL,
+            "우측 팔꿉" to Status.WARNING,
 
             "좌측 손목" to Status.NORMAL,
             "우측 손목" to Status.DANGER,
 
-            "좌측 골반" to Status.NORMAL,
+            "좌측 골반" to Status.WARNING,
             "우측 골반" to Status.WARNING,
-            "좌측 무릎" to Status.WARNING,
+            "좌측 무릎" to Status.NORMAL,
             "우측 무릎" to Status.NORMAL,
-            "우측 발목" to Status.NORMAL,
-            "우측 발목" to Status.NORMAL
+            "우측 발목" to Status.WARNING,
+            "우측 발목" to Status.WARNING
         )
 
         // Act: 함수 호출
         val result = calculateOverall(parts)
-        println("61 - $result")
+        println("77 - $result")
     }
 
     fun calculateOverall(parts: MutableList<Pair<String, Status>>) : Int {
         val scores = mapOf(
-            Status.DANGER to 35,
-            Status.WARNING to 61,
+            Status.DANGER to 36,
+            Status.WARNING to 63,
             Status.NORMAL to 93
         )
         val weightScore = 1.65

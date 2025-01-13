@@ -144,33 +144,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 }
             }
         }
-
-//        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotation)
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            binding.btnPCDRight.elevation = 2f
-//            binding.btnPCDRight.startAnimation(animation) }, 5000)
-//        // TODO 버튼 깜빡임
-//        context.let { context ->
-//            if (context != null) {
-//                Handler(Looper.getMainLooper()).postDelayed({
-//                    val colorAnimation = ValueAnimator.ofObject(
-//                        ArgbEvaluator(),
-//                        ContextCompat.getColor(context, R.color.mainColor),
-//                        Color.parseColor("#2BEE8C")).apply {
-//                        duration = 500
-//                        repeatCount = ValueAnimator.INFINITE
-//                        repeatMode = ValueAnimator.REVERSE
-//
-//                        addUpdateListener { animator ->
-//                            val color = animator.animatedValue as Int
-//                            binding.btnPCDRight.backgroundTintList = ColorStateList.valueOf(color)
-//                        }
-//                    }
-//                    colorAnimation.start()
-//                }, 4000)
-//            }
-//        }
         binding.btnPCDRight.setOnClickListener {
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
@@ -216,7 +189,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     }
                 }
                 else -> {
-                    // TODO 사용자의 선택된 프로그램 저장 후 보여주기. programVO
                 }
             }
         }
@@ -470,17 +442,30 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
     }
 
+    private fun endSequence() {
+        for (weekIndex in pvm.currentProgresses.indices) {
+            val weekProgress = pvm.currentProgresses[weekIndex]
+            weekProgress
+            // TODO 현재 묶음단위로 progressUnitVO를 다루고 있음. 여기서 이 묶음에서 weekStartAt, weekEndAt, duration == progress 거의 인접하고 updated_at이 당일이면 1번 띄우기
+        }
+
+        val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
+        dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+    }
+
+
     private fun calculateInitialWeekAndSequence() {
         val maxSeq = pvm.currentProgram?.programFrequency
         val maxWeek = pvm.currentProgram?.programWeek
         for (weekIndex in pvm.currentProgresses.indices) {
             val weekProgress = pvm.currentProgresses[weekIndex]
             val minSequenceInWeek = weekProgress.minOfOrNull { it.currentSequence } ?: 0
-//            val minSequenceInWeek = 3
+
             // 현재 주차도 알아내서 -> 주차도 maxWeek에 맞는지 확인하고 나가게 하거나 계속 돌아가게 하면 됨.
-            if (weekIndex == maxWeek && minSequenceInWeek == maxSeq) {
+            if (weekIndex + 1 == maxWeek  && minSequenceInWeek == maxSeq) {
                 // 위크까지 반복문이 왔는데 minSequence까지 max 였다?
-                val dialog = ProgramAlertDialogFragment.newInstance(this)
+
+                val dialog = ProgramAlertDialogFragment.newInstance(this, 2)
                 dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
                 break
             } else if (weekIndex != maxWeek && minSequenceInWeek == maxSeq) {

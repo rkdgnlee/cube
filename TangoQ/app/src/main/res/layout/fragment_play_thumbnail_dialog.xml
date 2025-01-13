@@ -195,7 +195,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="20dp"
                     android:text="⚠ 주의사항"
                     android:textColor="@color/subColor800"
                     android:textSize="22sp"
@@ -283,7 +283,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="15dp"
                     android:layout_weight="1"
-                    android:src="@drawable/icon_time_sub_500"
+                    android:src="@drawable/icon_time_sub_800"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvPTDName" />
 
@@ -307,7 +307,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="15dp"
-                    android:src="@drawable/icon_count_subcolor"
+                    android:src="@drawable/icon_lego"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageView31" />
 
@@ -378,7 +378,7 @@
                         android:gravity="center"
                         android:stateListAnimator="@null"
                         android:text="AI코칭"
-                        android:textColor="@color/white"
+                        android:textColor="@color/whiteText"
                         android:textSize="18dp"
                         android:visibility="gone" />
 
@@ -397,7 +397,7 @@
                         android:insetBottom="0dp"
                         android:stateListAnimator="@null"
                         android:text="운동 시작하기"
-                        android:textColor="@color/white"
+                        android:textColor="@color/whiteText"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:cornerRadius="16dp" />

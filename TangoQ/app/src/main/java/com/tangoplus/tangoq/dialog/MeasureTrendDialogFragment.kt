@@ -1,5 +1,7 @@
 package com.tangoplus.tangoq.dialog
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -40,27 +43,13 @@ import org.json.JSONArray
 
 class MeasureTrendDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureTrendDialogBinding
-    private lateinit var trend1 : String
-    private lateinit var trend2 : String
+
     private val avm : AnalysisViewModel by activityViewModels()
     private val mvm : MeasureViewModel by activityViewModels()
     private lateinit var measures : MutableList<MeasureVO>
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var ssm : SaveSingletonManager
-
     private lateinit var measureResult : JSONArray
-    companion object{
-        private const val ARG_COMPARE1 = "arg_compare1"
-        private const val ARG_COMPARE2 = "arg_compare2"
-        fun newInstance(trend1: String, trend2: String) : MeasureTrendDialogFragment {
-            val fragment = MeasureTrendDialogFragment()
-            val args = Bundle()
-            args.putString(ARG_COMPARE1, trend1)
-            args.putString(ARG_COMPARE2, trend2)
-            fragment.arguments = args
-            return fragment
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,8 +62,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        trend1 = arguments?.getString(ARG_COMPARE1) ?: ""
-        trend2 = arguments?. getString(ARG_COMPARE2) ?: ""
         measures = Singleton_t_measure.getInstance(requireContext()).measures ?: mutableListOf()
         ssm = SaveSingletonManager(requireContext(), requireActivity())
         singletonMeasure = Singleton_t_measure.getInstance(requireContext())
@@ -193,9 +180,16 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
             }
-//            Log.v("AVM>Trend", "$avm")
-        } catch (e: IllegalArgumentException) {
-            Log.e("TrendError", "${e.printStackTrace()}")
+        } catch (e: NullPointerException) {
+            Log.e("TrendError", "NullPointer: ${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e("TrendError", "IllegalState: ${e.message}")
+        } catch (e: ClassNotFoundException) {
+            Log.e("TrendError", "ClassNotFound: ${e.message}")
+        }  catch (e: IllegalArgumentException) {
+            Log.e("TrendError", "IllegalArgumentException: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("TrendError", "Exception: ${e.message}")
         }
 
     }
@@ -320,5 +314,12 @@ class MeasureTrendDialogFragment : DialogFragment() {
         Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
         Log.w("selectedMeasure", "${mvm.selectedMeasure}")
         dialog.dismiss()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 }

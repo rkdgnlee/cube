@@ -56,13 +56,12 @@ class MeasureAnalysisFragment : Fragment() {
 
     companion object {
         private const val ARG_INDEX = "index_analysis"
-        private const val ARG_SCORE = "index_score"
 
-        fun newInstance(indexx: Int, balance: Int): MeasureAnalysisFragment {
+
+        fun newInstance(indexx: Int): MeasureAnalysisFragment {
             val fragment = MeasureAnalysisFragment()
             val args = Bundle()
             args.putInt(ARG_INDEX, indexx)
-            args.putInt(ARG_SCORE, balance)
             fragment.arguments = args
             return fragment
         }
@@ -94,7 +93,6 @@ class MeasureAnalysisFragment : Fragment() {
                 when (index) {
                     0 -> { // 정면 균형
                         binding.tvMPTitle.text = "정면 균형"
-                        binding.tvMAName.text = "정면 균형"
                         binding.tvMAPart1.text = "정면 측정"
                         binding.tvMAPart2.text = "팔꿉 측정"
                         avm.mafMeasureResult.put(mr.optJSONObject(0))
@@ -107,11 +105,9 @@ class MeasureAnalysisFragment : Fragment() {
                             setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 2, binding.ssivMA2, "")
                         }
                         setScreenRawData(avm.mafMeasureResult, 0)
-                        binding.ivMA.setImageResource(R.drawable.drawable_front)
                     }
                     1 -> { // 측면 균형
                         binding.tvMPTitle.text = "측면 균형"
-                        binding.tvMAName.text = "측면 균형"
                         binding.tvMAPart1.text = "좌측 측정"
                         binding.tvMAPart2.text = "우측 측정"
                         avm.mafMeasureResult.put(mr.optJSONObject(3))
@@ -123,11 +119,9 @@ class MeasureAnalysisFragment : Fragment() {
                             setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 4, binding.ssivMA2, "")
                          }
                         setScreenRawData(avm.mafMeasureResult,  3)
-                        binding.ivMA.setImageResource(R.drawable.drawable_side)
                     }
                     2 -> { // 후면 균형
                         binding.tvMPTitle.text = "후면 균형"
-                        binding.tvMAName.text = "후면 균형"
                         binding.tvMAPart1.text = "후면 측정"
                         avm.mafMeasureResult.put(mr.optJSONObject(5))
                         setDynamicUI(false)
@@ -135,11 +129,9 @@ class MeasureAnalysisFragment : Fragment() {
                         lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 5, binding.ssivMA1, "") }
                         binding.flMA.visibility = View.GONE
                         setScreenRawData(avm.mafMeasureResult,  5)
-                        binding.ivMA.setImageResource(R.drawable.drawable_back)
                     }
                     3 -> {
                         binding.tvMPTitle.text = "앉은 후면"
-                        binding.tvMAName.text = "앉은 후면"
                         binding.tvMAPart1.text = "앉은 후면"
                         avm.mafMeasureResult.put(mr.optJSONObject(6))
                         setDynamicUI(false)
@@ -149,11 +141,9 @@ class MeasureAnalysisFragment : Fragment() {
                         lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA1, "") }
                         binding.ssivMA2.visibility = View.GONE
                         setScreenRawData(avm.mafMeasureResult,  6)
-                        binding.ivMA.setImageResource(R.drawable.drawable_back)
                     }
                     4 -> { // 동적 균형
                         binding.tvMPTitle.text = "동적 측정"
-                        binding.tvMAName.text = "동적 균형"
                         avm.mafMeasureResult.put(mr.optJSONArray(1))
                         setDynamicUI(true)
                         setPlayer()
@@ -466,17 +456,15 @@ class MeasureAnalysisFragment : Fragment() {
                         lifecycleScope.launch {
                             while (simpleExoPlayer?.isPlaying == true) {
                                 if (!updateUI) updateVideoUI()
-//                                Log.v("업데이트video", "overlay: (${binding.ovMA.width}, ${binding.ovMA.height}) PlayerView: ( ${binding.pvMA.width}, ${binding.pvMA.height} )")
                                 updateFrameData(videoDuration, jsonArray.length())
                                 delay(24)
-                                Handler(Looper.getMainLooper()).postDelayed( {updateUI = true},1500)
+                                Handler(Looper.getMainLooper()).postDelayed( { updateUI = true },1500)
                             }
                         }
                     } else if (playbackState == Player.STATE_ENDED) {
                         val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
                         exoPlay.visibility = View.VISIBLE
                         exoPlay.bringToFront()
-
                     }
                 }
             })
@@ -505,7 +493,6 @@ class MeasureAnalysisFragment : Fragment() {
         val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
         exoPause.visibility = View.GONE
         exoPlay?.setOnClickListener {
-            Log.d("ButtonClick", "Play button clicked")
             if (simpleExoPlayer?.isPlaying == false) {
                 simpleExoPlayer?.seekTo(0)
                 simpleExoPlayer?.play()
@@ -517,15 +504,13 @@ class MeasureAnalysisFragment : Fragment() {
     private fun updateFrameData(videoDuration: Long, totalFrames: Int) {
         val currentPosition = simpleExoPlayer?.currentPosition ?: 0L
 
-        // 현재 재생 시간에 해당하는 프레임 인덱스 계산
         val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
         val coordinates = extractVideoCoordinates(jsonArray)
-        // 실제 mp4의 비디오 크기를 가져온다
+
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
         if (frameIndex in 0 until totalFrames) {
-            // 해당 인덱스의 데이터를 JSON에서 추출하여 변환
+
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
-            // 변환된 데이터를 화면에 그리기
             requireActivity().runOnUiThread {
                 binding.ovMA.scaleX = -1f
                 binding.ovMA.setResults(
@@ -570,8 +555,6 @@ class MeasureAnalysisFragment : Fragment() {
         binding.pvMA.layoutParams = playerParams
 
         setScreenRawData(avm.mafMeasureResult, 1)
-        binding.ivMA.setImageResource(R.drawable.drawable_dynamic)
-
     }
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {

@@ -109,10 +109,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     }
 
     // static과 dynamic에서는 column을 쓰지를 않음. 그냥 json파일에 있는 값들을 내가 쓰지,
-    // TODO 이 부분 함수 고쳐야 함 -> 현재 url과 jsonArray를 제외한 값을 넣게끔 -> 이 부분은 분리 됨 완료
-    // TODO 현재 저장하고 이 부분은 됐는데 singleton에 넣고 사용하는 이 과정이 아직임. -> 완료
-    // TODO 일단 기존 코드에서 싱글턴에 넣는 것 까지는 전부 잘 동작하게끔 하고, -> 완료
-    // TODO 저장된 파일 유무를 먼저 파악하는게 로직이 추가되야함.
+
 
     private suspend fun fetchAndFilterMeasureInfo(userUUID: String) {
         val currentActivity = activity
@@ -297,7 +294,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     }
 
     // ------# 다운로드 파일을 암호화 MeasureVO에 넣기 #------
-    // TODO 이 함수에서는 파일 복화하면서 가져오면서 jsonArray를 가져와서 매개변수 measureVO에 넣기 해야 함.
+    //  이 함수에서는 파일 복화하면서 가져오면서 jsonArray를 가져와서 매개변수 measureVO에 넣기 해야 함.
     suspend fun insertUrlToMeasureVO(uriTuples: List<UrlTuple>, measureVO: MeasureVO): MeasureVO {
         val ja = JSONArray()
         val uris = mutableListOf<String>()

@@ -143,7 +143,7 @@ class QRCodeDialogFragment : DialogFragment() {
                 // -----! 완료 했을 경우 !------
 //                Snackbar.make(binding.clLSD, "데이터를 전송했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
 
-                // TODO json으로 변환해서 보내기
+                // json으로 변환해서 보내기
                 lifecycleScope.launch {
                     CoroutineScope(Dispatchers.IO).launch {
 

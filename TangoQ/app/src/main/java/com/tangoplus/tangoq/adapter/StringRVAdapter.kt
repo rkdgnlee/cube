@@ -66,6 +66,7 @@ class StringRVAdapter(private val fragment: Fragment,
             is MuscleViewHolder -> {
                 if (currentItem != null) {
                     holder.tvMIName.text = currentItem
+
                     when (currentItem) {
                         // 목
                         "목빗근", "흉쇄유돌근" -> setIV("mok_bit", holder.ivMI)
@@ -130,42 +131,41 @@ class StringRVAdapter(private val fragment: Fragment,
                         "앞톱니근" -> setIV("jeon_geo", holder.ivMI)
                         "배곧은근" -> setIV("bok", holder.ivMI)
                         // 허리
-                        "척추기립근", "척추세움근", "가장긴근" -> setIV("cheock_chu_gi_rip", holder.ivMI)
-                        "요방형근", "허리 네모근" -> setIV("yo_bang_hyeong", holder.ivMI)
+                        "척추기립근", "척추세움근", "가장긴근", "허리네모근", "허리 네모근", "척주ㅅ세움근" -> setIV("cheock_chu_gi_rip", holder.ivMI)
+                        "요방형근" -> setIV("yo_bang_hyeong", holder.ivMI)
+                        "뭇갈래근" -> setIV("mut_gal_le", holder.ivMI)
+                        "외복사근", "배바깥빗근" -> setIV("oe_bok_sa", holder.ivMI)
 
                         // 고관절 & 엉덩이
-                        "둔근" -> setIV("dun", holder.ivMI)
-                        "봉공근", "넙다리빗근" -> setIV("dae_toe_sa_du", holder.ivMI)
+                        "둔근", "중간볼기근", "엉덩관절 가쪽 돌림근" -> setIV("dun", holder.ivMI)
+                        "봉공근" -> setIV("dae_toe_sa_du", holder.ivMI)
                         "엉덩갈비근" -> setIV("cheock_chu_gi_rip", holder.ivMI)
                         "큰볼기근" -> setIV("dun", holder.ivMI)
                         "엉덩정강근막띠", "장경인대" -> setIV("dae_toe_sa_du", holder.ivMI)
-                        "궁등구멍근", "이상근" -> setIV("ha_bok", holder.ivMI)
+                        "궁둥구멍근", "이상근" -> setIV("ha_bok", holder.ivMI)
                         "엉덩허리근"-> setIV("dun", holder.ivMI)
-
+                        "두덩정강근" -> setIV("du_dung_jung_gang", holder.ivMI)
                         // 대퇴
-                        "대퇴사두근" -> setIV("dae_toe_sa_du", holder.ivMI)
+                        "대퇴사두근", "하지근육" -> setIV("dae_toe_sa_du", holder.ivMI)
                         "대퇴이두", "햄스트링" -> setIV("dae_toe_i_du", holder.ivMI)
                         "내전근" -> setIV("dae_toe_sa_du", holder.ivMI)
-                        "넙다리네갈래근" -> setIV("dae_toe_sa_du", holder.ivMI)
+                        "넙다리네갈래근", "안쪽넓은근", "가쪽넓은근"  -> setIV("dae_toe_sa_du", holder.ivMI)
                         "뒤넙다리근" -> setIV("dae_toe_i_du", holder.ivMI)
+                        "넙다리 빗근", "넙다리빗근" -> setIV("nub_da_ri_bit", holder.ivMI)
 
                         // 하전
-
                         "앞정강근" -> setIV("jung_gang_i", holder.ivMI)
-                        "앞정강근(전경골근)" ->setIV("jung_gang_i", holder.ivMI)
+                        "앞정강근(전경골근)", "긴발가락굽힘근", "장지굴근" -> setIV("jung_gang_i", holder.ivMI)
 
                         // 하퇴
                         "뒤정강근", "후경골근", "뒤정강근(후경골근)" -> setIV("jong_a_ri", holder.ivMI)
-                        "장지굴근" -> setIV("jong_a_ri", holder.ivMI)
-                        "가자미근", "넙치근" -> setIV("jong_a_ri", holder.ivMI)
-                        "종아리근", "비골근" -> setIV("jong_a_ri", holder.ivMI)
-                        "장딴지근", "가쪽장딴지근(비복근)" -> setIV("jong_a_ri", holder.ivMI)
+                        "가자미근", "넙치근" -> setIV("ga_ja_mi", holder.ivMI)
+                        "종아리근", "비골근", "긴종아리근" -> setIV("jong_a_ri", holder.ivMI)
+                        "장딴지근", "가쪽장딴지근(비복근)", "가쪽장딴지근" -> setIV("jong_a_ri", holder.ivMI)
 
-
-                        "발목 굽힘근" -> setIV("jong_a_ri", holder.ivMI)
-                        "긴발가락굽힘근(장지굴근)" -> setIV("jong_a_ri", holder.ivMI)
-                        "긴엄지굽힘근(장무지굴근)"-> setIV("jong_a_ri", holder.ivMI)
-
+                        "발목 굽힘근" -> setIV("bal_ga_rak_gup_him", holder.ivMI)
+                        "긴발가락굽힘근(장지굴근)" -> setIV("bal_ga_rak_gup_him", holder.ivMI)
+                        "긴엄지굽힘근(장무지굴근)"-> setIV("bal_ga_rak_gup_him", holder.ivMI)
                         else -> {
 
                         }

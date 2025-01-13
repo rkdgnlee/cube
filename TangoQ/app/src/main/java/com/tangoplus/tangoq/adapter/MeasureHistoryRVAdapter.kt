@@ -48,7 +48,6 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
             holder.tvMIScore.text = currentItem.overall.toString()
             val hideBadgeFunction = fragment.hideBadgeOnClick(holder.tvMIName, holder.clMI, "${holder.tvMIName.text}", ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
-            // TODO 여기다가 앱에 대한 다운로드 찾아야함.
             holder.clMI.setOnClickListener {
                 try {
                     // measure 선택하기

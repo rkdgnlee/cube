@@ -158,7 +158,6 @@ class MainPartDialogFragment : DialogFragment() {
             resultString.append("스쿼트 정보를 확인하세요")
         }
         when (part) {
-            // TODO angle Direction 수정하기
             "목관절" -> {
                 when (seq) {
                     0 -> {
@@ -174,7 +173,7 @@ class MainPartDialogFragment : DialogFragment() {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
                                 resultString.append(
-                                    "머리가 $angleDirection 방향으로 ${String.format("%.2f", angleData)}° 치우쳐 있습니다.ㅅ  "
+                                    "머리가 $angleDirection 방향으로 ${String.format("%.2f", angleData)}° 치우쳐 있습니다.  "
                                 )
                             }
                         }

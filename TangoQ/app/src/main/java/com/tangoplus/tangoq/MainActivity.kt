@@ -56,12 +56,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
     private lateinit var wifiManager: WifiManager
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         // 새로운 인텐트가 들어왔을 때 딥링크 처리
-        if (intent != null) {
-            handleIntent(intent)
-        }
+        handleIntent(intent)
     }
 
     @SuppressLint("ScheduleExactAlarm")

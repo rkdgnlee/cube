@@ -89,6 +89,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvMTIPart">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMTI1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1">
@@ -104,6 +105,7 @@
                 app:layout_constraintHorizontal_bias="0.35"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMTISeq1"
+                app:progressView_colorBackground="@color/white"
                 app:progressView_colorProgress="@color/subColor200"
                 app:progressView_orientation="vertical"
                 app:progressView_radius="2dp" />
@@ -120,6 +122,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMTISeq1"
                 app:progressView_animation="accelerateDecelerate"
+                app:progressView_colorBackground="@color/white"
                 app:progressView_colorProgress="@color/thirdColor"
                 app:progressView_orientation="vertical"
                 app:progressView_radius="2dp" />
@@ -156,6 +159,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMTI2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1">
@@ -171,6 +175,7 @@
                 app:layout_constraintHorizontal_bias="0.35"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMTISeq2"
+                app:progressView_colorBackground="@color/white"
                 app:progressView_colorProgress="@color/subColor200"
                 app:progressView_orientation="vertical"
                 app:progressView_radius="2dp" />
@@ -187,6 +192,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMTISeq2"
                 app:progressView_animation="accelerateDecelerate"
+                app:progressView_colorBackground="@color/white"
                 app:progressView_colorProgress="@color/thirdColor"
                 app:progressView_orientation="vertical"
                 app:progressView_radius="2dp" />
@@ -223,6 +229,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMTI3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1">
@@ -238,6 +245,7 @@
                 app:layout_constraintHorizontal_bias="0.35"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMTISeq3"
+                app:progressView_colorBackground="@color/white"
                 app:progressView_colorProgress="@color/subColor200"
                 app:progressView_orientation="vertical"
                 app:progressView_radius="2dp" />
@@ -254,6 +262,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMTISeq3"
                 app:progressView_animation="accelerateDecelerate"
+                app:progressView_colorBackground="@color/white"
                 app:progressView_colorProgress="@color/thirdColor"
                 app:progressView_orientation="vertical"
                 app:progressView_radius="2dp" />

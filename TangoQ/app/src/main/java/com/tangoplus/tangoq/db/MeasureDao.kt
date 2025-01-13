@@ -56,7 +56,6 @@ interface MeasureDao {
     @Insert
     suspend fun insertByStatic(entity: MeasureStatic) : Long
 
-    // TODO 현재 user_sn인데 user_uuid로 바꿔야함.
     @Query("SELECT * FROM t_measure_static WHERE user_uuid = :userUUID")
     fun getAllStatic(userUUID: String): List<MeasureStatic>
 

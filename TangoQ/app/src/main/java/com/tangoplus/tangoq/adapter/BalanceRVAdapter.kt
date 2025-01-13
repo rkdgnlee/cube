@@ -15,7 +15,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvBalanceItemBinding
 import com.tangoplus.tangoq.fragment.MeasureAnalysisFragment
 
-class BalanceRVAdapter(private val fragment: Fragment, private val stages:MutableList<MutableList<String>>, private val degree: MutableList<Pair<Int, Int>>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BalanceRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class BalanceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvBIName: TextView = view.findViewById(R.id.tvBIName)
         val ivBI: ImageView = view.findViewById(R.id.ivBI)
@@ -35,7 +35,7 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = stages[position]
+//        val currentItem = stages[position]
         if (holder is BalanceViewHolder) {
             setItem(position, holder.ivBI, holder.tvBIName, holder.tvBIExplain)
 
@@ -52,7 +52,7 @@ class BalanceRVAdapter(private val fragment: Fragment, private val stages:Mutabl
 
             holder.clBI.setOnClickListener{
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position, degree[position].first))
+                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position))
                     addToBackStack(null)
                     commit()
                 }

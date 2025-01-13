@@ -8,6 +8,8 @@ data class ProgressUnitVO(
     val currentWeek: Int,
     val currentSequence: Int,
     val requiredSequence : Int,
+    val weekStartAt : String,
+    val weekEndAt : String,
     val videoDuration: Int,
     val lastProgress : Int,
     val isCompleted : Int,
