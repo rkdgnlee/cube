@@ -116,9 +116,10 @@ class MainActivity : AppCompatActivity() {
             when (currentFragment) {
                 is MainFragment, is ProgramSelectFragment -> binding.bnbMain.selectedItemId = R.id.main
                 is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
-                is MeasureFragment, is MeasureDashBoard1Fragment, is MeasureDashBoard2Fragment, is MeasureHistoryFragment, is MeasureDetailFragment, is MeasureAnalysisFragment-> binding.bnbMain.selectedItemId = R.id.measure
+                is MeasureDashBoard1Fragment, is MeasureDashBoard2Fragment, is MeasureHistoryFragment, is MeasureDetailFragment -> binding.bnbMain.selectedItemId = R.id.measure
                 is ProfileFragment, is WithdrawalFragment -> binding.bnbMain.selectedItemId = R.id.profile
             }
+            //
         }
 
         AlarmReceiver()

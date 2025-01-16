@@ -491,7 +491,7 @@ class MeasureAnalysisFragment : Fragment() {
         binding.pvMA.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
         val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
         val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
-        exoPause.visibility = View.GONE
+
         exoPlay?.setOnClickListener {
             if (simpleExoPlayer?.isPlaying == false) {
                 simpleExoPlayer?.seekTo(0)

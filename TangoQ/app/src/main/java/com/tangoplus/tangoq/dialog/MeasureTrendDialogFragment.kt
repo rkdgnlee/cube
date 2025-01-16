@@ -1,25 +1,18 @@
 package com.tangoplus.tangoq.dialog
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ListPopupWindow
-import android.widget.Spinner
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,6 +35,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -113,9 +107,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         CoroutineScope(Dispatchers.IO).launch {
                             Log.v("시퀀스들", "position: ${position}, rightMeasure: ${avm.rightMeasurement.value}")
                             if (position == 0) {
+                                Log.v("애널라이즈", "${avm.rightAnalyzes}")
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, 0 , binding.ssivMTDRight, "")
                             } else {
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, position + 1 , binding.ssivMTDRight, "trend")
+                            }
+
+                            // spinner 클릭시 adapter 갱신
+                            withContext(Dispatchers.Main) {
+                                val parentIndexes = matchedTripleIndexes.mapIndexedNotNull { index, triples ->
+                                    if (triples.any { it.first == position }) index else null
+                                }
+                                Log.v("인덱스들", "$parentIndexes")
+//                                val filteredAnalyzes = avm.leftAnalyzes?.filterIndexed { index, _ ->
+//                                    index in parentIndexes
+//                                }?.toMutableList()
+                                setAdapter(avm.leftAnalyzes, avm.rightAnalyzes, parentIndexes)
                             }
                         }
                     }
@@ -150,7 +157,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 binding.actvMTDRight.setText(measureDatesRight[0])
                 avm.rightMeasurement.value = measures[0]
                 avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
-                setAdapter(avm.leftAnalyzes, avm.rightAnalyzes)
+                setAdapter(avm.leftAnalyzes, avm.rightAnalyzes, listOf())
                 CoroutineScope(Dispatchers.IO).launch {
                     setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value,0, binding.ssivMTDRight, "trend")
                     withContext(Dispatchers.Main) {
@@ -191,11 +198,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
     }
 
-    private fun setAdapter(analyzesLeft: MutableList<MutableList<AnalysisVO>>?, analyzesRight : MutableList<MutableList<AnalysisVO>>?) { // 부위별 > 3개 > 2개의 float
+    private fun setAdapter(analyzesLeft: MutableList<MutableList<AnalysisVO>>?,
+                           analyzesRight : MutableList<MutableList<AnalysisVO>>?,
+                           filteredIndexes: List<Int> = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)) { // 부위별 > 3개 > 2개의 float
         // ------# rv #------
 
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val adapter = TrendRVAdapter(this@MeasureTrendDialogFragment, analyzesLeft, analyzesRight)
+        val adapter = TrendRVAdapter(this@MeasureTrendDialogFragment, analyzesLeft, analyzesRight, filteredIndexes)
         binding.rvMTD.layoutManager = layoutManager
         binding.rvMTD.adapter = adapter
         adapter.notifyDataSetChanged()
@@ -227,7 +236,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         binding.textView30.setOnClickListener { it.showAlignBottom(balloon2) }
     }
 
-
+    // 13 > 3개의 AnalysisVO임. == 관절 1개의 3개가 들어간 raw 하나를 말하는 것.
     private fun transformAnalysis(ja : JSONArray) : MutableList<MutableList<AnalysisVO>> {
         val analyzes = mutableListOf<MutableList<AnalysisVO>>()
         matchedUris.forEach { (part, seqList) ->

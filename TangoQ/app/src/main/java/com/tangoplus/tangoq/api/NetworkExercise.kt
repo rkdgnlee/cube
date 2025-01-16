@@ -62,30 +62,32 @@ object  NetworkExercise {
                 val exerciseDataList = mutableListOf<ExerciseVO>()
                 val jsonArr = responseBody?.let { JSONArray(it) }
 
-                if (jsonArr != null) {
+                if (jsonArr != null) { // 174 ~ 195 번의 exercise_id  250116 기준 현재 0 ~ 203
                     for (i in 0 until jsonArr.length()) {
-                        val jsonObject = jsonArr.getJSONObject(i)
-                        val exerciseData = ExerciseVO(
-                            exerciseId = jsonObject.optString("exercise_id"),
-                            exerciseName = jsonObject.optString("exercise_name"),
-                            exerciseTypeId = jsonObject.getString("exercise_type_id"),
-                            exerciseTypeName = jsonObject.getString("exercise_type_name"),
-                            exerciseCategoryId = jsonObject.getString("exercise_category_id"),
-                            exerciseCategoryName = jsonObject.getString("exercise_category_name"),
-                            relatedJoint = jsonObject.getString("related_joint"),
-                            relatedMuscle = jsonObject.getString("related_muscle"),
-                            relatedSymptom = jsonObject.getString("related_symptom"),
-                            exerciseStage = jsonObject.getString("exercise_stage"),
-                            exerciseFrequency = jsonObject.getString("exercise_frequency"),
-                            exerciseIntensity = jsonObject.getString("exercise_intensity"),
-                            exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
-                            exerciseMethod = jsonObject.getString("exercise_method"),
-                            exerciseCaution = jsonObject.getString("exercise_caution"),
-                            videoFilepath = jsonObject.getString("video_filepath"),
-                            duration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
-                            imageFilePath = jsonObject.getString("image_filepath"),
-                        )
-                        exerciseDataList.add(exerciseData)
+                        if (i !in 173 .. 194) {
+                            val jsonObject = jsonArr.getJSONObject(i)
+                            val exerciseData = ExerciseVO(
+                                exerciseId = jsonObject.optString("exercise_id"),
+                                exerciseName = jsonObject.optString("exercise_name"),
+                                exerciseTypeId = jsonObject.getString("exercise_type_id"),
+                                exerciseTypeName = jsonObject.getString("exercise_type_name"),
+                                exerciseCategoryId = jsonObject.getString("exercise_category_id"),
+                                exerciseCategoryName = jsonObject.getString("exercise_category_name"),
+                                relatedJoint = jsonObject.getString("related_joint"),
+                                relatedMuscle = jsonObject.getString("related_muscle"),
+                                relatedSymptom = jsonObject.getString("related_symptom"),
+                                exerciseStage = jsonObject.getString("exercise_stage"),
+                                exerciseFrequency = jsonObject.getString("exercise_frequency"),
+                                exerciseIntensity = jsonObject.getString("exercise_intensity"),
+                                exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
+                                exerciseMethod = jsonObject.getString("exercise_method"),
+                                exerciseCaution = jsonObject.getString("exercise_caution"),
+                                videoFilepath = jsonObject.getString("video_filepath"),
+                                duration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
+                                imageFilePath = jsonObject.getString("image_filepath"),
+                            )
+                            exerciseDataList.add(exerciseData)
+                        }
                     }
                 }
                 exerciseDataList

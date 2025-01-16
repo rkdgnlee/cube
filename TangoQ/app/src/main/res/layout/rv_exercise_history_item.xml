@@ -14,19 +14,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tvEHIStage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="___"
-            android:textColor="@color/subColor800"
-            android:textSize="14dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.6"
-            app:layout_constraintStart_toEndOf="@+id/cardView2"
-            app:layout_constraintTop_toBottomOf="@+id/tvEHIName" />
-
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView2"
             android:layout_width="90dp"
@@ -111,6 +98,19 @@
             app:layout_constraintEnd_toStartOf="@+id/tvEHIStage"
             app:layout_constraintTop_toTopOf="@+id/tvEHIStage"
             app:srcCompat="@drawable/icon_stage_1" />
+
+        <TextView
+            android:id="@+id/tvEHIStage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="___"
+            android:textColor="@color/subColor800"
+            android:textSize="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.6"
+            app:layout_constraintStart_toEndOf="@+id/cardView2"
+            app:layout_constraintTop_toBottomOf="@+id/tvEHIName" />
 
         <com.skydoves.progressview.ProgressView
             android:id="@+id/hpvEHI"

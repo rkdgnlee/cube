@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -41,6 +42,7 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
+import com.tangoplus.tangoq.api.NetworkProgress.convertToProgressUnitVO
 import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
@@ -66,12 +68,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(inflater)
-
-        startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                // 결과 처리
-//            }
-        }
+        startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result -> }
         return binding.root
     }
 
@@ -163,8 +160,6 @@ class MainFragment : Fragment() {
 //        }, 500)
         // ------# balance check #------
 
-
-
         val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvM3.layoutManager = layoutManager2
         val balanceAdapter = BalanceRVAdapter(this@MainFragment)
@@ -223,17 +218,15 @@ class MainFragment : Fragment() {
 
 
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
-                        Log.v("현재 선택된 날짜", "$selectedDate")
+                        Log.v("VM선택날짜", "mvm.selectedMeasureDate: $selectedDate")
                         val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
 
                         // ------# 매칭 프로그램이 있는지 없는지 확인하기 #------
-
-
-                        if (selectedDate != measures?.get(0)?.regDate) {
-                            setProgramButton(false)
-                        } else {
-                            setProgramButton(true)
-                        }
+//                        if (selectedDate != measures?.get(0)?.regDate) {
+//                            setProgramButton(false)
+//                        } else {
+//                            setProgramButton(true)
+//                        }
                         if (dateIndex != null) {
                             measures?.get(dateIndex)?.recommendations
                             binding.tvMMeasureDate.text = measure[dateIndex].regDate.substring(0, 10)
@@ -261,80 +254,45 @@ class MainFragment : Fragment() {
                                     binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
                                 }
                             }
-
                         }
 
-
-                        // ------# 측정 결과에 맞는 진행 프로그램 2번째 가져오기 #------
-                        CoroutineScope(Dispatchers.IO).launch {
-                            /* 1. 가장 최근에 한 운동 가져오기
-                             *  2. 그 값에서 가져와서 해당 주차의 uvp 가져오기 week가 (동일한 uvp)
-                             *  3. 그걸로만 rv 채우기.
-                             * */
+                        // 내가 했던 프로그램의 운동 목록 가져오기
+                        lifecycleScope.launch(Dispatchers.IO) {
                             try {
-                                val latestProgress = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
-                                val programSn = latestProgress?.optInt("exercise_program_sn")  // 여기서 exception으로 나가짐.
-                                var currentPage = 0
+                                if (latestRecSn == -1) {
+                                    val recommendations = mvm.selectedMeasure?.recommendations
+                                    if (recommendations != null) {
+                                        latestRecSn = recommendations.map { it.recommendationSn }.random()
+                                    }
+                                }
+                                Log.v("latestRecSn", "sn: $latestRecSn, recommendationSn: ${mvm.selectedMeasure?.recommendations}")
+                                val latestProgressResult = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
+                                val programSn = latestProgressResult?.second?.optInt("exercise_program_sn")
+                                val currentPage = 0
                                 var adapter =  ExerciseRVAdapter(this@MainFragment, mutableListOf(), mutableListOf(), null, null, "history")
 
                                 // -------# 최근 진행 프로그램 가져오기 #------
                                 withContext(Dispatchers.Main) {
-                                    // ------# 마지막으로 시청한 정보가 없을 때 #------
-
-                                    if (programSn != 0 && uvm.existedProgramData == null) {
-                                        val week = latestProgress?.optInt("week_number")
-                                        Log.v("프로세싱있을때week", "week: $week")
-                                        uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), programSn.toString())
-
-                                        withContext(Dispatchers.IO) {
-                                            if (week != null) {
-                                                val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
-                                                withContext(Dispatchers.Main) {
-                                                    Log.w("저장안된 프로그램", "${uvm.existedProgramData?.programSn}")
-                                                    val exercises = uvm.existedProgramData?.exercises
-                                                    if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
-                                                        progresses, Pair(currentPage, currentPage), null, "history")
-                                                }
-                                            }
-
+                                    uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), programSn.toString())
+                                    val latestProgress = convertToProgressUnitVO(latestProgressResult?.first)
+                                    val filledProgresses = uvm.existedProgramData?.exercises?.mapIndexed { index, exercise ->
+                                        val targetIndex = uvm.existedProgramData?.exercises?.indexOfFirst {
+                                            it.exerciseId?.toInt() == latestProgress.exerciseId
                                         }
-                                        // ------# 마지막으로 시청한 정보가 없을 때 + 근데 프로그램 조회는 했음. #------
-                                    } else if (uvm.existedProgramData != null) {
-                                        if (programSn != 0) {
-                                            val week = latestProgress?.optInt("week_number")
-                                            withContext(Dispatchers.IO) {
-                                                if (week != null) {
-                                                    val progresses = getWeekProgress(getString(R.string.API_progress), latestRecSn, week, requireContext())
-                                                    if (progresses != null) {
-                                                        currentPage = findCurrentIndex(progresses)
-                                                    }
-                                                    withContext(Dispatchers.Main) {
-                                                        val exercises = uvm.existedProgramData?.exercises
-                                                        Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn}")
-                                                        if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises, progresses, Pair(currentPage, currentPage), null, "history")
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), mvm.selectedMeasure?.recommendations?.get(0)?.programSn.toString())
-                                            withContext(Dispatchers.Main) {
-                                                Log.w("저장된프로그램", "${uvm.existedProgramData?.programSn}")
-                                                val exercises = uvm.existedProgramData?.exercises
-                                                if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises, null, null, null, "history")
+                                        when {
+                                            exercise.exerciseId?.toInt() == latestProgress.exerciseId -> latestProgress
+                                            index < targetIndex!! -> ProgressUnitVO(-1, -1, -1, -1, -1, -1,
+                                                "", "", 100, 100, -1, "")
+                                            else -> {
+                                                ProgressUnitVO(-1, -1, -1, -1, -1, -1,
+                                                    "", "", -1, -1, -1, "")
                                             }
                                         }
-                                        // ------# 시청한 정보도 없고 새로 받아와야 함 #------
-                                    } else {
-                                        Log.v("추천들", "${mvm.selectedMeasure?.recommendations?.map { it.programSn }}")
-                                        val randomProgramSn = mvm.selectedMeasure?.recommendations?.map { it.programSn }?.random().toString()
-                                        uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), randomProgramSn)
-                                        withContext(Dispatchers.Main) {
-                                            Log.w("저장안된프로그램", "${uvm.existedProgramData?.programSn}")
-                                            val exercises = uvm.existedProgramData?.exercises
-                                            if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
-                                                null, null, null, "history")
-                                        }
-                                    }
+
+                                    }?.toMutableList()
+                                    val exercises = uvm.existedProgramData?.exercises
+                                    if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
+                                        filledProgresses, Pair(currentPage, currentPage), null, "history")
 
                                     // -------# 최근 진행 프로그램 뷰페이저 #------
                                     binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -445,9 +403,6 @@ class MainFragment : Fragment() {
                                         }
                                     }
                                 }
-                                CoroutineScope(Dispatchers.Main).launch {
-
-                                }
                             }  catch (e: IndexOutOfBoundsException) {
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     binding.sflM.stopShimmer() }, 3000)
@@ -504,9 +459,6 @@ class MainFragment : Fragment() {
         if (isEnabled) {
             binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.mainColor)
             binding.btnMProgram.text = "프로그램 선택하기"
-//        } else {
-//            binding.btnMProgram.text = "프로그램 완료, 재측정을 진행해 주세요"
-//            binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.subColor150)
         }
     }
 

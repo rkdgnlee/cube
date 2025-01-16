@@ -15,6 +15,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
 
 object ImageProcessingUtil {
+    private val strokeWidths = 2.5f
     fun combineImageAndOverlay(
         originalBitmap: Bitmap,
         poseLandmarkResult: PoseLandmarkResult,
@@ -51,24 +52,24 @@ object ImageProcessingUtil {
         val canvas = Canvas(resultBitmap)
         val axisPaint = Paint().apply {
             color = Color.parseColor("#FF5449")
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
         val axisSubPaint = Paint().apply {
             color = Color.parseColor("#FF981D")
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
 
         val paint = Paint().apply {
             color = Color.parseColor("#2EE88B")
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
 
         val borderPaint = Paint().apply {
             color = Color.parseColor("#2EE88B") // 테두리 색
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE // 테두리만 그리기
             isAntiAlias = true
             setShadowLayer(10f, 0f, 0f, Color.parseColor("#1A2EE88B")) // 반지름, x-offset, y-offset, 그림자 색상
@@ -136,6 +137,8 @@ object ImageProcessingUtil {
                     canvas.drawLine(leftAnkle.x ,leftAnkle.y, rightAnkle.x, rightAnkle.y, axisSubPaint)
                     canvas.drawLine(midShoulderX, midShoulderY, midHipX, midHipY , axisSubPaint)
                     canvas.drawLine(midShoulderX, midShoulderY, nose.x, nose.y , axisSubPaint)
+                    canvas.drawLine(leftKnee.x, leftKnee.y - 50 ,  leftKnee.x, leftAnkle.y + 100, axisPaint)
+                    canvas.drawLine(rightKnee.x, rightKnee.y - 50 , rightKnee.x, rightAnkle.y + 100, axisPaint)
                 }
                 3 -> {
                     canvas.drawLine(leftAnkle.x, leftAnkle.y + 50, leftAnkle.x, nose.y - 200, axisPaint)

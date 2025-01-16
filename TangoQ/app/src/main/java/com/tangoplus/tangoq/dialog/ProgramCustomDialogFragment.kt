@@ -436,17 +436,19 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     }
 
     private fun endSequence() {
-        val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last()
+        val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
         val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val currentDate = LocalDate.now()
-        Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence}")
-        if (pvm.currentSequence == lastWeekProgress.currentSequence && inputDate == currentDate && lastWeekProgress.currentSequence > 0) {
-            Log.v("오늘자", "오늘자 완료했습니다. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence}")
+        Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence} , $inputDate / $currentDate")
+
+        if (inputDate == currentDate && lastWeekProgress.currentSequence > 0) {
             val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
             dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+
+            // 버튼 잠금
+            setButtonFlavor()
         }
-        // TODO 현재 묶음단위로 progressUnitVO를 다루고 있음.
-        // TODO 여기서 이 묶음에서 weekStartAt, weekEndAt, duration == progress 거의 인접하고 updated_at이 당일이면 1번 띄우기
+
     }
 
     private fun calculateInitialWeekAndSequence() {

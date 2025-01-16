@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.function
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.graphics.PointF
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Log
@@ -770,6 +771,7 @@ object MeasurementManager {
                                 // ------# main part일 때 #------
                                 if (case == "mainPart") {
                                     ssiv.setImage(ImageSource.bitmap(combinedBitmap))
+                                    // 이미지 크기 맞추기
                                     // ------# trend 비교 일 때 #------
                                 } else if (case == "trend") {
                                     ssiv.setImage(ImageSource.bitmap(
@@ -784,6 +786,12 @@ object MeasurementManager {
                                             ))
                                         else -> ssiv.setImage(ImageSource.bitmap(combinedBitmap))
                                     }
+                                }
+                                ssiv.maxScale = 3.5f
+                                ssiv.minScale = 1f
+                                if (case in listOf("mainPart", "")) {
+                                    ssiv.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
+                                    ssiv.setScaleAndCenter(scaleFactorX, PointF(ssiv.sWidth / 2f, ssiv.sHeight / 2f))
                                 }
 
                                 continuation.resume(true)
@@ -976,4 +984,27 @@ object MeasurementManager {
         }
         return result
     }
+
+    // first: seq / second: matchedUris의 index / third: 가장 작은 index
+    val matchedTripleIndexes = listOf(
+        listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
+        // 어깨
+        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
+        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
+        // 팔꿉
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 2)),
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 2)),
+        // 손목
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
+        // 골반
+        listOf(Triple(0, 0, 1), Triple(3,1,0), Triple(5, 2, 0)),
+        listOf(Triple(0, 0, 1), Triple(4,1,0), Triple(5, 2, 0)),
+        // 무릎
+        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 1, 1)),
+        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 1, 1)),
+        // 발목
+        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
+        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
+    )
 }

@@ -44,18 +44,18 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
         axisPaint.apply {
             color = Color.parseColor("#FF5449")
-            strokeWidth = 4f
+            strokeWidth = 3f
             style = Paint.Style.STROKE
         }
         axisSubPaint.apply {
             color = Color.parseColor("#FF981D")
-            strokeWidth = 4f
+            strokeWidth = 3f
             style = Paint.Style.STROKE
         }
         // ------! 꼭짓점 색 !------
         borderPaint = Paint().apply {
             color = Color.parseColor("#2EE88B") // 테두리 색
-            strokeWidth = 4f
+            strokeWidth = 3f
             style = Paint.Style.STROKE // 테두리만 그리기
             isAntiAlias = true
             setShadowLayer(10f, 0f, 0f, Color.parseColor("#1A2EE88B")) // 반지름, x-offset, y-offset, 그림자 색상
@@ -64,7 +64,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             color = Color.parseColor("#FFFFFF") // 내부 색
             style = Paint.Style.FILL // 내부만 채우기
         }
-
     }
 
     fun setResults(
@@ -228,6 +227,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 canvas.drawLine(leftHipX + 200, leftHipY, rightHipX - 200, rightHipY, axisPaint)
                 canvas.drawLine(leftKneeX + 200, leftKneeY, rightKneeX - 200, rightKneeY, axisPaint)
                 canvas.drawLine((leftAnkleX + rightAnkleX) / 2, leftAnkleY + 200, (leftAnkleX + rightAnkleX) / 2, noseY - 300, axisPaint)
+
+                canvas.drawLine(leftHipX, leftHipY - 50, leftHipX, leftAnkleY + 100, axisPaint)
+                canvas.drawLine(rightHipX, rightHipY - 50, rightHipX, rightAnkleY + 100, axisPaint)
             }
             val connections = listOf(
                 Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),

@@ -171,7 +171,7 @@ object NetworkProgress {
         })
     }
     // 가장 최신 정보를 가져오는게 좋다.
-    suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : JSONObject? {
+    suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : Pair<JSONObject, JSONObject>? {
         val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?recommendation_sn=$recSn&latest_progress")
@@ -186,19 +186,10 @@ object NetworkProgress {
                     val dataJson = JSONObject(responseBody.toString())
                     val progressJo = dataJson.optJSONObject("progress_data")
                     val programJo = dataJson.optJSONObject("program_data")
-                    val jo = JSONObject()
-                    if (programJo != null && progressJo != null) {
-                        jo.put("uvp_sn", progressJo.optInt("uvp_sn"))
-                        jo.put("recommendation_sn", progressJo.optInt("recommendation_sn"))
-                        jo.put("count_set", progressJo.optInt("count_set"))
-                        jo.put("progress", progressJo.optInt("progress"))
-                        jo.put("week_number", progressJo.optInt("week_number"))
-                        jo.put("measure_sn", progressJo.optInt("measure_sn"))
-                        jo.put("exercise_program_sn", programJo.optInt("exercise_program_sn"))
-                        return@use jo
-                    } else {
-                        return@use jo
+                    if (progressJo != null && programJo != null) {
+                        return@use Pair(progressJo, programJo)
                     }
+                    return@use Pair(JSONObject(), JSONObject())
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgressIndex", "latestProgress: ${e.message}")
@@ -338,5 +329,29 @@ object NetworkProgress {
                 null
             }
         }
+    }
+    fun convertToProgressUnitVO(jo: JSONObject?): ProgressUnitVO {
+        if (jo != null) {
+            val progressUnitVO = ProgressUnitVO(
+                uvpSn = jo.optInt(""),
+                exerciseId  = jo.optInt(""),
+                recommendationSn = jo.optInt(""),
+                currentWeek = jo.optInt(""),
+                currentSequence = jo.optInt(""),
+                requiredSequence = jo.optInt(""),
+                weekStartAt = jo.optString(""),
+                weekEndAt  = jo.optString(""),
+                videoDuration = jo.optInt(""),
+                lastProgress  = jo.optInt(""),
+                isCompleted = jo.optInt(""),
+                updateDate  = jo.optString(""),
+            )
+
+            return progressUnitVO
+        } else {
+            return ProgressUnitVO(-1, -1, -1, -1, -1, -1, "", "", -1, -1, -1, "")
+        }
+
+
     }
 }

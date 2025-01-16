@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
@@ -63,7 +64,13 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
         CoroutineScope(Dispatchers.Main).launch {
+            // 상단 최근 한 운동 cardView 보이기
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
+            binding.cvEProgress.animation = animation
 
+
+
+            // 메인 5개 카테고리 연결
             val categoryArrayList = mutableListOf<ArrayList<Int>>()
             categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 스트레칭
             categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 하지근육 강화, 기본 스트레칭 의자 활용, 기본 유산소 운동

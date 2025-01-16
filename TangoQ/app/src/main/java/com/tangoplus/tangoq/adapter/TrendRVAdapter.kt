@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RawRes
+import androidx.camera.core.processing.SurfaceProcessorNode.In
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -22,11 +23,16 @@ import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
+import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
 import com.tangoplus.tangoq.function.MeasurementManager.setLabels
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
 import kotlin.math.abs
 
-class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: MutableList<MutableList<AnalysisVO>>?, private val analyzes2: MutableList<MutableList<AnalysisVO>>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TrendRVAdapter(private val fragment: Fragment,
+                     private val analyzes1: MutableList<MutableList<AnalysisVO>>?,
+                     private val analyzes2: MutableList<MutableList<AnalysisVO>>?,
+                     private val filteredIndexes: List<Int>
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class TrendViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMTIPart : TextView = view.findViewById(R.id.tvMTIPart)
         val ivMTI : ImageView = view.findViewById(R.id.ivMTI)
@@ -59,14 +65,19 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
     }
 
     override fun getItemCount(): Int {
-        return analyzes2?.size ?: 0
+        return filteredIndexes.size
     }
 
     @SuppressLint("DiscouragedApi")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrendViewHolder) {
             if (analyzes2?.isNotEmpty() == true) {
-                val currentItemRight = analyzes2[position] // analysisVO가 들어가있는 부위 별임.
+                // 필터링된 index list가 있을 때 넣기
+                // 필터링 index를 가져와서 currentItemRight를 접근ㅅㄷ
+                val index = filteredIndexes[position]
+                val currentItemRight = analyzes2[index] // analysisVO가 들어가있는 부위 별임.
+                val selectAnalysisRight = matchedTripleIndexes[index]
+
                 holder.tvMTIPart.text = matchedParts[position]
                 val jointIndex = if (position == 0) 1 else (position + 1) / 2 + 1
 
@@ -85,7 +96,6 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                 }
 
                 // -------# 부위 선택 #------
-                val selectAnalysisRight = matchedIndexs[position]
                 val normalCount = selectAnalysisRight.count { indexTriple ->
                     currentItemRight[indexTriple.second].labels[indexTriple.third].state == 0 || currentItemRight[indexTriple.second].labels[indexTriple.third].state == 1
                 }
@@ -120,7 +130,7 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                 // 좌측 비교
                 if (analyzes1 != null) {
                     val currentItemLeft = analyzes1[position] // analysisVO가 들어가있는 부위 별임.
-                    val selectAnalysisLeft = matchedIndexs[position]
+                    val selectAnalysisLeft = matchedTripleIndexes[position]
                     selectAnalysisRight.zip(selectAnalysisLeft).forEachIndexed { index, (rightTriple, leftTriple) ->
                         // 오른쪽
                         val rightUnit = currentItemRight[rightTriple.second].labels[rightTriple.third]
@@ -157,30 +167,6 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
 
     private val matchedParts = listOf(
         "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목")
-
-    // first: seq / second: matchedUris의 index / third: 가장 작은 index
-
-    private val matchedIndexs = listOf(
-        listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
-        // 어깨
-        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
-        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
-        // 팔꿉
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 2)),
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 2)),
-        // 손목
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
-        // 골반
-        listOf(Triple(0, 0, 1), Triple(3,1,0), Triple(5, 2, 0)),
-        listOf(Triple(0, 0, 1), Triple(4,1,0), Triple(5, 2, 0)),
-        // 무릎
-        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 1, 1)),
-        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 1, 1)),
-        // 발목
-        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
-        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
-    )
 
     private fun setSeqString(seq: Int?) : String {
         return when (seq) {

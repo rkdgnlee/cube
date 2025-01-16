@@ -46,7 +46,7 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
             }
         }
         binding.tvSpinner.text = list[position]
-        binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+        binding.tvSpinner.textSize = if (isTablet(context)) 22f else 16f
 
         binding.tvSpinner.gravity = Gravity.CENTER
         return binding.root
@@ -74,7 +74,7 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
 
             }
         }
-        binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+        binding.tvSpinner.textSize = if (isTablet(context)) 22f else 16f
         return binding.root
     }
 

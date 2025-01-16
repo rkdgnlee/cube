@@ -29,7 +29,9 @@ import kotlinx.coroutines.launch
 
 class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClosedListener {
     lateinit var binding : FragmentExerciseDetailBinding
+    // 대분류 5개에서 들어오기
     private var filteredDataList : MutableList<ExerciseVO>? = null
+    // 소분류 에서 선택된 관절에 대한 리스트
     private var currentCateExercises : MutableList<ExerciseVO>? = null
     private var categoryId : ArrayList<Int>? = null
     private val evm : ExerciseViewModel by activityViewModels()
@@ -91,33 +93,39 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         }
         binding.tvEDMainCategoryName.textSize = 23f
 
-        // -----! 카테고리  시작 !-----
-        categoryList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")
-        categoryMap = mapOf(
-            "목관절" to 1,
-            "어깨" to 2,
-            "팔꿉" to 3,
-            "손목" to 4,
-            "몸통전면(복부)" to 5,
-            "몸통 후면(척추)" to 6,
-            "몸통 코어" to 7,
-            "엉덩" to 8,
-            "무릎" to 9,
-            "발목" to 10,
-            "유산소" to 11
-        )
-
-        val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryList, this@ExerciseDetailFragment,  sn!! ,"subCategory" )
-        adapter2.onCategoryClickListener = this
-        binding.rvEDCategory.adapter = adapter2
-        val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.rvEDCategory.layoutManager = linearLayoutManager2
-        // -----! 카테고리 끝 !-----
-
         lifecycleScope.launch {
             filteredDataList = categoryId?.map { id ->
                 evm.allExercises.filter { it.exerciseCategoryId == id.toString() }
             }?.flatten()?.toMutableList()
+
+            // -----! 카테고리  시작 !-----
+
+            categoryMap = mapOf(
+                "목관절" to 1,
+                "어깨" to 2,
+                "팔꿉" to 3,
+                "손목" to 4,
+                "몸통전면(복부)" to 5,
+                "몸통 후면(척추)" to 6,
+                "몸통 코어" to 7,
+                "엉덩" to 8,
+                "무릎" to 9,
+                "발목" to 10,
+                "유산소" to 11
+            )
+            categoryList = listOf("목관절", "어깨", "팔꿉", "손목", "몸통전면(복부)", "몸통 후면(척추)", "몸통 코어", "엉덩", "무릎", "발목", "유산소")
+
+            val categoryCounts = categoryList.map { string ->
+                filteredDataList?.filter { it.exerciseTypeId == categoryMap.get(string).toString() }?.count()
+            }
+            val aa = categoryList.zip(categoryCounts)
+            val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), aa, this@ExerciseDetailFragment,  sn!! ,"subCategory" )
+            adapter2.onCategoryClickListener = this@ExerciseDetailFragment
+            binding.rvEDCategory.adapter = adapter2
+            val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            binding.rvEDCategory.layoutManager = linearLayoutManager2
+            // -----! 카테고리 끝 !-----
+
             // ------! 자동완성 시작 !------
             binding.linearLayout3.setOnClickListener{
                 val dialog = ExerciseSearchDialogFragment()
@@ -182,10 +190,10 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onCategoryClick(clicked: String) {
-        Log.v("category,search", "categoryId: ${categoryId}, typeId: ${categoryMap[clicked]}")
+    override fun onCategoryClick(category: String) {
+        Log.v("category,search", "categoryId: ${categoryId}, typeId: ${categoryMap[category]}")
         try {
-            currentCateExercises = filteredDataList?.filter { it.exerciseTypeId == categoryMap[clicked].toString() }?.sortedBy { it.exerciseId }?.toMutableList()
+            currentCateExercises = filteredDataList?.filter { it.exerciseTypeId == categoryMap[category].toString() }?.sortedBy { it.exerciseId }?.toMutableList()
             val filterIndex = binding.spnrED.selectedItemPosition
             when (filterIndex) {
                 0 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList())

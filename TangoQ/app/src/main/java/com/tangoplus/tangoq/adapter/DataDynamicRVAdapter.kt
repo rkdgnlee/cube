@@ -1,23 +1,27 @@
 package com.tangoplus.tangoq.adapter
 
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvDataDynamicAnalysisItemBinding
 import com.tangoplus.tangoq.databinding.RvDataDynamicItemBinding
 import com.tangoplus.tangoq.view.TrendCurveView
-import java.lang.IllegalArgumentException
+
 
 class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, private val titles: List<String>, private val case: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val distinctTitles = titles.map { it.replace("좌측 ", "").replace("우측 ", "") }.distinct()
     inner class MAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvDDI1 : TextView = view.findViewById(R.id.tvDDI1)
+        val tvDDI1 : TextView = view.findViewById(com.tangoplus.tangoq.R.id.tvDDI1)
         val cvDDI1 : TrendCurveView = view.findViewById(R.id.cvDDI1)
         val tvDDI2 : TextView = view.findViewById(R.id.tvDDI2)
         val cvDDI2 : TrendCurveView = view.findViewById(R.id.cvDDI2)
+        val clDDI2 : ConstraintLayout = view.findViewById(R.id.clDDI2)
+        val clDDI1In : ConstraintLayout = view.findViewById(R.id.clDDI1In)
     }
     inner class MPAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvDDAITitle : TextView = view.findViewById(R.id.tvDDAITitle)
@@ -58,16 +62,28 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
         if (holder is MAViewHolder) {
             val pairStartIndex = (position * 2)
             val leftIndex = pairStartIndex + 1
+            when (position) {
+                1 -> {
+                    holder.clDDI2.visibility = View.GONE
+                    holder.cvDDI1.setPoints(data[pairStartIndex])
+                    holder.tvDDI1.text = titles[pairStartIndex]
 
-            if (leftIndex < data.size) {
-                holder.cvDDI1.setPoints(data[leftIndex])
-                holder.tvDDI1.text = titles[leftIndex]
+                    val layoutParams = holder.clDDI1In.layoutParams as ConstraintLayout.LayoutParams
+                    layoutParams.horizontalBias = 0.5f
+                    holder.clDDI1In.layoutParams = layoutParams
+                }
+                else -> {
+                    if (leftIndex < data.size) {
+                        holder.cvDDI1.setPoints(data[pairStartIndex])
+                        holder.tvDDI1.text = titles[pairStartIndex]
+                    }
+                    if (pairStartIndex < data.size) {
+                        holder.cvDDI2.setPoints(data[leftIndex])
+                        holder.tvDDI2.text = titles[leftIndex]
+                    }
+                }
             }
 
-            if (pairStartIndex < data.size) {
-                holder.cvDDI2.setPoints(data[pairStartIndex])
-                holder.tvDDI2.text = titles[pairStartIndex]
-            }
         } else if (holder is MPAViewHolder){
             holder.tvDDAITitle.text = "${distinctTitles[position]} 이동 안정성"
 

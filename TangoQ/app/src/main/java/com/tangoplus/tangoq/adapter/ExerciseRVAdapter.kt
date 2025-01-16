@@ -172,7 +172,6 @@ class ExerciseRVAdapter (
                     val currentSeq = sequence.first // 안변함
                     val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
                     val currentUnitsSeq = currentItem.currentSequence // 0,0 으로 나왔다고 쳤을 떄,
-//                    Log.v("어댑터내Seq", "currentSeq: $currentSeq, selectedSeq: $selectedSeq, currentUnitsSeq: $currentUnitsSeq")
 
                     val condition = when {
                         selectedSeq == currentSeq -> {
