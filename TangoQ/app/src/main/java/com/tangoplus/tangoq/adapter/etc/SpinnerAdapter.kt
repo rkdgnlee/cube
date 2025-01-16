@@ -16,6 +16,12 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 @Suppress("UNREACHABLE_CODE")
 class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>, private val case: Int) : ArrayAdapter<String>(context, resId, list) {
 
+
+    /*
+    *   case 0: 회원가입 도메인 or trend mea
+    *   case 1: exercise detail, history -> 정렬
+    *   case 2 : trend의 seq
+    * */
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -52,14 +58,17 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
         binding.tvSpinner.gravity = Gravity.CENTER
         when (case) {
             0 -> {
+                binding.tvSpinner.gravity = Gravity.CENTER
                 binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
                 binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                binding.tvSpinner.setPadding(3, 3, 3, 3)
             }
             1 -> {
                 binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
                 binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
                 binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+                binding.root.setPadding(6, 6, 6, 0)
             }
             2 -> {
 

@@ -85,24 +85,25 @@ object DeviceService {
         return regex.find(jsonString)?.groupValues?.get(1) ?: ""
     }
 
-    fun playIntegrityVerify(myUrl: String, token: String, callback: (JSONObject) -> Unit){
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = token.toRequestBody(mediaType)
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url(myUrl)
-            .post(body)
-            .build()
-        client.newCall(request).execute().use { response ->
-            val responseBody = response.body?.string()
-            if (responseBody != null) {
-                val bodyJo = JSONObject(responseBody)
-                Log.v("verifyIntegrity", "Success to execute request: $responseBody")
-                callback(bodyJo)
-            }
-            return@use response.code
-        }
-    }
+//    fun playIntegrityVerify(myUrl: String, token: String, callback: (JSONObject) -> Unit){
+//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+//        val body = token.toRequestBody(mediaType)
+//        val client = OkHttpClient()
+//        val request = Request.Builder()
+//            .url(myUrl)
+//            .post(body)
+//            .build()
+//        client.newCall(request).execute().use { response ->
+//            val responseBody = response.body?.string()
+//            if (responseBody != null) {
+//                val bodyJo = JSONObject(responseBody)
+//                Log.v("verifyIntegrity", "Success to execute request: $responseBody")
+//                callback(bodyJo)
+//            }
+//            return@use response.code
+//        }
+//    }
+
     // pose landmark build용 (null 처리) emulator 확인 함수
     fun isEmulator(): Boolean {
         return Build.PRODUCT.contains("sdk") ||

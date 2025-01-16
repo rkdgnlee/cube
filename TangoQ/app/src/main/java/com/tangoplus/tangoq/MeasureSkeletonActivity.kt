@@ -1271,7 +1271,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 val jo = JSONObject().apply {
                     put("index", index)
                     put("isActive", true)
-                    if (index == 0) { // 코는 아주 유명한 1개만 있는 부위임
+                    if (index == 0) { // 코는 아주 유명한 몸에서 1개만 있는 부위임
                         put("sx", calculateScreenX(poseLandmark.x()).roundToInt())
                         put("sy", calculateScreenY(poseLandmark.y()).roundToInt())
                         put("wx", poseLandmark.x())
@@ -1477,11 +1477,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val kneeAnkleToeAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.toeData[0].first, mvm.toeData[0].second) % 180 ,
                         calculateAngle(mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second, mvm.toeData[1].first, mvm.toeData[1].second) % 180 )
 
-//                    val indexDistanceByCenter : Pair<Float, Float> = Pair(getRealDistanceX(mvm.indexData[0], ankleAxis),
-//                        getRealDistanceX(mvm.indexData[1], ankleAxis))
-//                    val indexAngle : Float = calculateSlope(mvm.indexData[0].first, mvm.indexData[0].second, mvm.indexData[1].first, mvm.indexData[1].second)
-//                    val indexDistance : Float = getRealDistanceX(mvm.indexData[0], mvm.indexData[1])
-
                     if (!isNameInit) {
                         videoFileName = "0_${measureInfoSn}_2_7_${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))}"
                         measureVideoName = "MT_DYNAMIC_OVERHEADSQUAT_FRONT_0_0_${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))}"
@@ -1541,10 +1536,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_vertical_angle_ankle_toe_right", safePut(ankleToeAngle.second))
                         put("front_vertical_angle_knee_ankle_toe_left", safePut(kneeAnkleToeAngle.first))
                         put("front_vertical_angle_knee_ankle_toe_right", safePut(kneeAnkleToeAngle.second))
-//                        put("front_horizontal_angle_mid_finger_tip", indexAngle)
-//                        put("front_horizontal_distance_mid_finger_tip", indexDistance)
-//                        put("front_horizontal_distance_center_mid_finger_tip_left", indexDistanceByCenter.first)
-//                        put("front_horizontal_distance_center_mid_finger_tip_right", indexDistanceByCenter.second)
                         put("times",String.format("%.7f", (System.nanoTime() - frameStartTime) / 1_000_000_000f).toFloat())
                         put("pose_landmark", poseLandmarks)
                     }

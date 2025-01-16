@@ -33,7 +33,7 @@ object NetworkProgram {
                             exercises.add(exerciseUnit)
                             exerciseTimes += exerciseUnit.duration?.toInt() ?: 0
                         }
-//                    Log.v("프로그램Exercises", "exerciseSize: $exerciseSize, exerciseTime: ${exerciseTimes}")
+
                         val programVO = ProgramVO(
                             programSn = sn.toInt(),
                             programName = jsonInfo.optString("exercise_program_title"),
@@ -42,7 +42,7 @@ object NetworkProgram {
                             programCount = exerciseSize.toString(),
                             programFrequency = jsonInfo.optInt("exercise_frequency"),
                             programWeek = jsonInfo.optInt("required_week"),
-//                        exerciseTime = exerciseTimes,
+
                             exercises = exercises
                         )
                         return@use programVO

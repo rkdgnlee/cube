@@ -308,7 +308,19 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData = it.rawData
 
-                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", angleData)}°입니다. 90°에 가까울수록 정상 체형입니다.  ")
+                                resultString.append("골반중심에서 어깨선의 각도가 ${String.format("%.2f", angleData)}°입니다. 90°에 가까울수록 균형입니다.  ")
+                            }
+                        }
+                        val shoulderData2 = units.find { it.columnName == "back_horizontal_angle_shoulder"}
+                        var angleData2 = 0f
+                        shoulderData2?.let {
+                            val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
+                            val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
+
+                            if (it.rawData !in boundRange) {
+                                angleData2 = it.rawData
+
+                                resultString.append("양 어깨 기울기는 ${String.format("%.2f", angleData)}° 로 0°에 가까울수록 균형입니다.  ")
                             }
                         }
                     }
@@ -911,22 +923,9 @@ class MainPartDialogFragment : DialogFragment() {
                         }
                     }
                     4 -> {
-                        var angleData1 = 0f
-                        var angleDirection1 = ""
                         var subDistanceData = 0f
                         var distanceDirection = ""
-                        val hipData1 = units.find { it.columnName == "side_right_vertical_angle_hip_knee"}
-                        hipData1?.let {
-                            val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
-                            val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
-
-                            if (it.rawData !in boundRange) {
-                                angleData1 = it.rawData
-                                angleDirection1 = getDirection(it.rawData)
-                                resultString.append("골반-무릎간 측면 기울기가 ${String.format("%.2f", angleData1)}°로 정상범위에서 벗어났습니다.  ")
-                            }
-                        }
-                        val hipData2 = units.find { it.columnName == "side_left_horizontal_distance_hip"}
+                        val hipData2 = units.find { it.columnName == "side_right_horizontal_distance_hip"}
                         hipData2?.let {
                             val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
                             val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)

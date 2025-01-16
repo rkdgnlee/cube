@@ -3,8 +3,8 @@ package com.tangoplus.tangoq.mediapipe
 
 data class PoseLandmarkResult(val landmarks : List<PoseLandmark>) {
     data class PoseLandmark(
-        val x: Float,
-        val y: Float,
+        var x: Float,
+        var y: Float,
     )
 
     companion object {

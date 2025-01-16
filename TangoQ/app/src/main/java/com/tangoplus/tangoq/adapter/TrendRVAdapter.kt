@@ -148,7 +148,6 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
                         // 오른쪽 balloon comment init
                         val rightRawData = String.format("%.2f", rightUnit.rawData) + if (rightUnit.columnName.contains("angle")) "°" else "cm"
                         val rightComment = "우측: $rightRawData\n${setLabels(rightUnit)}"
-                        Log.v("코멘트", "$leftComment, $rightComment")
                         setBalloon(holder.cls[index], index, "$leftComment $rightComment")
                     }
                 }
@@ -167,8 +166,8 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
         listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
         listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
         // 팔꿉
-        listOf(Triple(0,0,0), Triple(2, 1, 0), Triple(3, 2, 2)),
-        listOf(Triple(0,0,0), Triple(2, 1, 0), Triple(4, 2, 2)),
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 2)),
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 2)),
         // 손목
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
         listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),

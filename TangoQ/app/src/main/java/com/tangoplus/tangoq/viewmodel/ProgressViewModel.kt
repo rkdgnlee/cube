@@ -38,6 +38,8 @@ class ProgressViewModel : ViewModel() {
         selectedDailyTime.value = 0
     }
 
+    var isFirstRun = false
+
     fun calculateSequenceForWeek(weekIndex: Int): Int {
         if (weekIndex <= currentWeek) {
             val weekProgress = currentProgresses[weekIndex]

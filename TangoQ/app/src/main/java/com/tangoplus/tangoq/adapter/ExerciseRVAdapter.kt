@@ -190,7 +190,8 @@ class ExerciseRVAdapter (
                             2
                         }
                     }
-
+                    // Program 의 UI 
+                    holder.hpvEI.visibility = View.VISIBLE
                     when (condition) {
                         0 -> { // 재생 및 완료
                             holder.tvEIFinish.visibility = View.VISIBLE
@@ -198,13 +199,11 @@ class ExerciseRVAdapter (
                             holder.ibtnEILike.isEnabled = false
                             holder.vEI.visibility = View.VISIBLE
                             holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondContainerColor)
-                            holder.hpvEI.visibility = View.VISIBLE
                             holder.hpvEI.progress = 100f
                             holder.hpvEI.autoAnimate = false
                         }
                         1 -> { // 재생 시간 중간
                             holder.tvEIFinish.visibility = View.GONE
-                            holder.hpvEI.visibility = View.VISIBLE
                             val duration  = currentExerciseItem?.duration
                             if (duration != null) {
                                 holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
@@ -214,7 +213,6 @@ class ExerciseRVAdapter (
                         }
                         else -> { // 재생기록 없는 item
                             holder.tvEIFinish.visibility = View.GONE
-                            holder.hpvEI.visibility = View.GONE
                         }
                     }
                 } else {

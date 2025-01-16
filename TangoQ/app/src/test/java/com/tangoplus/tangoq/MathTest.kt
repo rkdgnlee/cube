@@ -45,34 +45,6 @@ class MathTest {
             return abs(180 - normalized)
         }
     }
-    @Test
-    fun getKneeDistance() {
-
-        val prevFrontShoulder = calculateSlope(0.3800059f, 0.33592227f, 0.62224734f, 0.33485872f)
-        val prevFrontShoulder180 = calculateSlope180(0.3800059f, 0.33592227f, 0.62224734f, 0.33485872f)
-        println("어깨 원시: $prevFrontShoulder, 180: ${prevFrontShoulder180}")
-        val prevFrontHip = calculateSlope(0.42858624f, 0.5420497f, 0.5741844f, 0.54563606f)
-        val prevFrontHip180 = calculateSlope180(0.42858624f, 0.5420497f, 0.5741844f, 0.54563606f)
-        println("골반 원시: $prevFrontHip, 180: $prevFrontHip180")
-        val prevFrontKnee = calculateSlope(0.43309414f, 0.69748914f, 0.55954874f, 0.69440746f)
-        val prevFrontKnee180 = calculateSlope180(0.43309414f, 0.69748914f, 0.55954874f, 0.69440746f)
-        println("무릎 원시: $prevFrontKnee, 180: $prevFrontKnee180")
-        val prevFrontAnkle = calculateSlope(0.44268543f, 0.8084885f, 0.53620124f, 0.80681765f)
-        val prevFrontAnkle180 = calculateSlope180(0.44268543f, 0.8084885f, 0.53620124f, 0.80681765f)
-        println("발목 원시: $prevFrontAnkle, 180: $prevFrontAnkle180")
-
-        println("후면 데이터")
-        val backShoulderAngle = calculateSlope( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
-        val backShoulderAngle180 = calculateSlope180( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
-        println("어깨 원시: $backShoulderAngle, 180: ${backShoulderAngle180}")
-        val backWristAngle = calculateSlope( 0.6474066f, 0.53509456f, 0.3499326f, 0.53832406f)
-        val backWristAngle180 = calculateSlope180( 0.5396624f, 0.2456446f, 0.4431353f, 0.24797726f)
-        println("손목 원시: $backWristAngle, 180: ${backWristAngle180}")
-        val backKneeAngle = calculateSlope( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
-        val backKneeAngle180 = calculateSlope180( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
-        println("무릎 원시: $backKneeAngle, 180: ${backKneeAngle180}")
-
-    }
 
     @Test
     fun getScalingAngle() {
@@ -115,16 +87,6 @@ class MathTest {
         val backAnkle = calculateSlope(321.5162f, 1040.9277f, 379.52997f, 1032.6945f)
         println("발목 후면: $backAnkle")
 
-//        println("후면 데이터")
-//        val backShoulderAngle = calculateSlope( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
-//        val backShoulderAngle180 = calculateSlope180( 0.62880296f, 0.33354384f, 0.37626427f, 0.3290543f)
-//        println("어깨 원시: $backShoulderAngle, 180: ${backShoulderAngle180}")
-//        val backWristAngle = calculateSlope( 0.6474066f, 0.53509456f, 0.3499326f, 0.53832406f)
-//        val backWristAngle180 = calculateSlope180( 0.5396624f, 0.2456446f, 0.4431353f, 0.24797726f)
-//        println("손목 원시: $backWristAngle, 180: ${backWristAngle180}")
-//        val backKneeAngle = calculateSlope( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
-//        val backKneeAngle180 = calculateSlope180( 0.5422297f, 0.69960886f, 0.41508266f, 0.7011234f)
-//        println("무릎 원시: $backKneeAngle, 180: ${backKneeAngle180}")
     }
 
     @Test
@@ -166,11 +128,11 @@ class MathTest {
         val leftKnee = Pair(395f, 885f)
         val rightKnee = Pair(310f, 888f)
 
-        val shoulderLeftDis = getRealDistanceY(leftShoulder, rightShoulder)
+        val shoulderLeftDis = getRealDistanceY(rightShoulder, leftShoulder)
 
-        val wristLeftDis = getRealDistanceY(leftWrist, rightWrist)
+        val wristLeftDis = getRealDistanceY(rightWrist, leftWrist)
 
-        val kneeLeftDis = getRealDistanceY(leftKnee, rightKnee)
+        val kneeLeftDis = getRealDistanceY(rightKnee, leftKnee)
 
         println("어깨: ${shoulderLeftDis}")
         println("손목: ${wristLeftDis}")
@@ -217,7 +179,7 @@ class MathTest {
         return abs(point2.first - point1.first)
     }
     fun getDistanceY(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
-        return abs(point2.second - point1.second)
+        return point2.second - point1.second
     }
 
     fun getRealDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>) : Float {

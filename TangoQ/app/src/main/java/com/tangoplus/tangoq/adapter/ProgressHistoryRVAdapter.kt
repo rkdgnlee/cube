@@ -39,11 +39,4 @@ class ProgressHistoryRVAdapter(val data: List<ProgressHistoryVO>) : RecyclerView
         return data.size
     }
 
-//    fun convertDateString(input: String): String {
-//        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-//        val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-//        val dateTime = LocalDateTime.parse(input, inputFormatter)
-//
-//        return dateTime.format(outputFormatter)
-//    }
 }

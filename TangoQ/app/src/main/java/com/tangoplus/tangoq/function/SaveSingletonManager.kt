@@ -286,8 +286,20 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                 Log.v("파일다운로드", "finish saveJobs")
                 Result.success(Unit)
+            } catch (e: ClassNotFoundException) {
+                Log.e("downloadFiles", "Unexpected 'ClassNotFound' error: ${e.message}")
+                Result.failure(e)
+            } catch (e: NullPointerException) {
+                Log.e("downloadFiles", "Unexpected 'NullPointer' error: ${e.message}")
+                Result.failure(e)
+            } catch (e: IllegalAccessException) {
+                Log.e("downloadFiles", "Unexpected 'IllegalAccess' error: ${e.message}")
+                Result.failure(e)
+            } catch (e: IllegalStateException) {
+                Log.e("downloadFiles", "Unexpected 'IllegalState' error: ${e.message}")
+                Result.failure(e)
             } catch (e: Exception) {
-                Log.e("downloadFiles", "Unexpected error: ${e.message}", e)
+                Log.e("downloadFiles", "Unexpected error: ${e.message}")
                 Result.failure(e)
             }
         }
@@ -425,7 +437,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
                                 measure.recommendations = newRecommendations
                                 singletonMeasure.measures?.set(index, measure)
-
                                 Log.v("recommendCreated", "New recommendations for measureSn: $newRecommendations")
                             }
                         }
@@ -496,7 +507,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 //                for (i in 0 until singletonProgress.programProgresses?.size) {
 //                    Log.v("singletonProgress2", "${singletonProgress.programProgresses[i].size}")
 //                }
-
                 continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
             } else {
                 // ------# 측정 기록이 없음 #------

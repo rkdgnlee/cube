@@ -23,35 +23,85 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <Spinner
-            android:id="@+id/spnrMTDLeft"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilMTDLeft"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/bckgnd_0_spinner"
-            android:paddingTop="4dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="4dp"
+            android:gravity="end"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:endIconDrawable="@drawable/icon_arrow_down_small"
+            app:endIconMinSize="28dp"
+            app:endIconMode="dropdown_menu"
+            app:endIconScaleType="center"
+            app:endIconTint="@color/subColor800"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.15"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView30" />
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintStart_toStartOf="@+id/nestedScrollView"
+            app:layout_constraintTop_toBottomOf="@+id/textView30"
+            app:layout_constraintWidth_percent="0.4">
 
-        <Spinner
-            android:id="@+id/spnrMTDRight"
-            android:layout_width="wrap_content"
+            <AutoCompleteTextView
+                android:id="@+id/actvMTDLeft"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="0dp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:dropDownHeight="300dp"
+                android:editable="false"
+                android:gravity="center"
+                android:inputType="none"
+                android:text="선택"
+                android:textColor="@color/subColor800"
+                android:textSize="18dp"
+                app:dropDownBackgroundTint="@color/white" />
+            />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilMTDRight"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bckgnd_0_spinner"
-            android:paddingTop="4dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/nestedScrollView"
+            android:gravity="end"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:endIconDrawable="@drawable/icon_arrow_down_small"
+            app:endIconMinSize="28dp"
+            app:endIconMode="dropdown_menu"
+            app:endIconScaleType="center"
+            app:endIconTint="@color/subColor800"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.85"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintStart_toStartOf="@+id/nestedScrollView"
+            app:layout_constraintTop_toTopOf="@+id/tilMTDLeft"
+            app:layout_constraintWidth_percent="0.4">
+
+            <AutoCompleteTextView
+                android:id="@+id/actvMTDRight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="0dp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:dropDownHeight="300dp"
+                android:editable="false"
+                android:gravity="center"
+                android:inputType="none"
+                android:text="2024-10-31 "
+                android:textColor="@color/subColor800"
+                android:textSize="18dp"
+                app:dropDownBackgroundTint="@color/white" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
@@ -61,7 +111,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spnrMTDLeft">
+            app:layout_constraintTop_toBottomOf="@+id/tilMTDLeft">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

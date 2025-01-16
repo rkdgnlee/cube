@@ -10,11 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 
 
 class ProgramAlertDialogFragment : DialogFragment() {
@@ -22,6 +24,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
     private lateinit var parentDialog: ProgramCustomDialogFragment
     private var case = 0
     private var alertMessage = ""
+    private val pvm : ProgressViewModel by activityViewModels()
     companion object {
         const val ALERT_KEY_CASE = "a"
         fun newInstance (parentDialog : ProgramCustomDialogFragment, case: Int) : ProgramAlertDialogFragment {
@@ -55,30 +58,37 @@ class ProgramAlertDialogFragment : DialogFragment() {
                 val colorSpan = ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.mainColor))
                 spannableString.setSpan(colorSpan, accentIndex, accentIndex + 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 binding.tvPAD.text = spannableString
-                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_program_alert))
+                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_finish_program))
+                binding.btnPAD1.setOnClickListener {
+                    dismiss()
+                    parentDialog.dismissThisFragment()
+                }
+                binding.btnPAD2.setOnClickListener {
+                    dismiss()
+                    parentDialog.dismissThisFragment()
+                    val bnb = requireActivity().findViewById<BottomNavigationView>(R.id.bnbMain)
+                    bnb.selectedItemId = R.id.measure
+                }
+                binding.btnPAD1.visibility = View.GONE
+                binding.btnPAD2.visibility = View.VISIBLE
             }
             1 -> {
-                binding.btnPAD2.text = "결과 보기"
-                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_program_alert))
-                alertMessage = "오늘 필요한 운동을 다 마쳤습니다!\n휴식을 가진 후, 다른 부위 운동 프로그램을 시작해보세요 !"
+                binding.btnPAD2.text = "확인"
+                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_finish_sequence))
+                alertMessage = "오늘 필요한 운동을 다 마쳤습니다.\n개인 운동을 진행 하거나 휴식을 취해주세요."
                 binding.tvPAD.text = alertMessage
+                binding.btnPAD1.visibility = View.GONE
+                binding.btnPAD2.visibility = View.VISIBLE
+                binding.btnPAD2.setOnClickListener {
+                    dismiss()
+                    parentDialog.dismissThisFragment()
+                }
             }
             0 -> {
 
             }
         }
         binding.tvPAD.textSize = if (isTablet(requireContext())) 22f else 16f
-        binding.btnPAD1.setOnClickListener {
-            dismiss()
-            parentDialog.dismissThisFragment()
-        }
-        binding.btnPAD2.setOnClickListener {
-            dismiss()
-            parentDialog.dismissThisFragment()
-            val bnb = requireActivity().findViewById<BottomNavigationView>(R.id.bnbMain)
-            bnb.selectedItemId = R.id.measure
-        }
-
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

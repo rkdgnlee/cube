@@ -47,11 +47,7 @@ class PoseLandmarkerHelper(
     fun isClose(): Boolean {
         return poseLandmarker == null
     }
-    // 현재 설정을 사용하여 포즈 랜드마크를 초기화합니다.
-    // 그것을 사용하고 있는 스레드. CPU는 Landmarker와 함께 사용할 수 있습니다.
-    // 메인 스레드에서 생성되어 백그라운드 스레드에서 사용되지만
-    // GPU 대리자를 초기화한 스레드에서 사용해야 합니다.
-    // 랜드마크
+
     fun setupPoseLandmarker() {
         // Set general pose landmarker options
         val baseOptionBuilder = BaseOptions.builder()
@@ -87,9 +83,6 @@ class PoseLandmarkerHelper(
             }
             else -> { } // no-op
         }
-
-        // 가상 avd에만 들어가는 하드웨어가 있는지 확인
-
         try {
             if (!isEmulator()) {
                 val baseOptions = baseOptionBuilder.build()
@@ -251,9 +244,9 @@ class PoseLandmarkerHelper(
 
         const val DELEGATE_CPU = 0
         const val DELEGATE_GPU = 1
-        const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.5F
-        const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.5F
-        const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.5F
+        const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.6F
+        const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.6F
+        const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.6F
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
         const val MODEL_POSE_LANDMARKER_FULL = 0

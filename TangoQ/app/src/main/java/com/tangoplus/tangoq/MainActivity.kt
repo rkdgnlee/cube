@@ -40,6 +40,13 @@ import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
+import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
+import com.tangoplus.tangoq.fragment.MeasureAnalysisFragment
+import com.tangoplus.tangoq.fragment.MeasureDashBoard1Fragment
+import com.tangoplus.tangoq.fragment.MeasureDashBoard2Fragment
+import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
+import com.tangoplus.tangoq.fragment.ProgramSelectFragment
+import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -103,6 +110,17 @@ class MainActivity : AppCompatActivity() {
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        // bottomnavigation도 같이 backstack 반응하기
+        supportFragmentManager.addOnBackStackChangedListener {
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
+            when (currentFragment) {
+                is MainFragment, is ProgramSelectFragment -> binding.bnbMain.selectedItemId = R.id.main
+                is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
+                is MeasureFragment, is MeasureDashBoard1Fragment, is MeasureDashBoard2Fragment, is MeasureHistoryFragment, is MeasureDetailFragment, is MeasureAnalysisFragment-> binding.bnbMain.selectedItemId = R.id.measure
+                is ProfileFragment, is WithdrawalFragment -> binding.bnbMain.selectedItemId = R.id.profile
+            }
+        }
+
         AlarmReceiver()
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         if (hasExactAlarmPermission(this@MainActivity)) {

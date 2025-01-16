@@ -141,7 +141,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             ?.map { it.first() }
             ?.toMutableList()
 
-        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, displayMuscleList, "muscle", evm)
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullmuscleList, "muscle", evm)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager

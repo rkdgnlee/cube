@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.lang.ClassCastException
 
 
 class AgreementDetailDialogFragment : DialogFragment() {
@@ -57,6 +59,19 @@ class AgreementDetailDialogFragment : DialogFragment() {
 
             return termsAndConditions
         } catch (e: IOException) {
+            Log.e("agreementDetail", "IO: ${e.message}")
+            return ""
+        } catch (e: ClassCastException) {
+            Log.e("agreementDetail", "ClassCast: ${e.message}")
+            return ""
+        } catch (e: ClassNotFoundException) {
+            Log.e("agreementDetail", "ClassNotFound: ${e.message}")
+            return ""
+        } catch (e: IllegalArgumentException) {
+            Log.e("agreementDetail", "IllegalArgument: ${e.message}")
+            return ""
+        } catch (e: Exception) {
+            Log.e("agreementDetail", "Exception: ${e.message}")
             return ""
         }
     }

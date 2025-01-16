@@ -46,6 +46,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListener {
     lateinit var binding : FragmentProgramCustomDialogBinding
@@ -183,13 +187,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         requireContext().startActivity(intent)
                         startActivityForResult(intent, 8080)
                         Log.v("인텐트담은것들", "${videoUrls}, $exerciseIds, $uvpIds")
-
                     } else {
                         Log.e("ExerciseProgress", "Invalid startIndex: $startIndex")
                     }
                 }
-                else -> {
-                }
+                else -> { }
             }
         }
     }
@@ -209,7 +211,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     program.programTime = times
                     pvm.currentProgram = program
                 }
-
             }
         }  catch (e: IndexOutOfBoundsException) {
             Log.e("ProgramIndex", "${e.message}")
@@ -243,6 +244,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses ?: mutableListOf()// 이곳에 프로그램하나에 해당되는 모든 upv들이 가져와짐.
                     // ------# 현재 시퀀스 찾기 #------
                     withContext(Dispatchers.Main) {
+                        endSequence()
                         calculateInitialWeekAndSequence()
                     }
                     // 모든 IO 작업이 완료되면 결과를 반환
@@ -321,15 +323,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 Log.e("ProgramException", "${e}")
             }
         }
-
-        // ------# 프로그램 기간 만료 #------
-//        val programEndDate = programStartDate.plusWeeks(viewModel.currentProgram.programWeek.toLong()).minusDays(1)
-//        Log.v("programDates", "프로그램 시작날짜: ${programStartDate}, 종료날짜: ${programEndDate}")
-//        if (LocalDate.now() == programEndDate) {
-//            val programAlertDialogFragment = ProgramAlertDialogFragment.newInstance(this)
-//            programAlertDialogFragment.show(childFragmentManager, "ProgramAlertDialogFragment")
-//        }
-
     }
 
     private fun initializeProgram() {
@@ -443,16 +436,18 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     }
 
     private fun endSequence() {
-        for (weekIndex in pvm.currentProgresses.indices) {
-            val weekProgress = pvm.currentProgresses[weekIndex]
-            weekProgress
-            // TODO 현재 묶음단위로 progressUnitVO를 다루고 있음. 여기서 이 묶음에서 weekStartAt, weekEndAt, duration == progress 거의 인접하고 updated_at이 당일이면 1번 띄우기
+        val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last()
+        val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val currentDate = LocalDate.now()
+        Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence}")
+        if (pvm.currentSequence == lastWeekProgress.currentSequence && inputDate == currentDate && lastWeekProgress.currentSequence > 0) {
+            Log.v("오늘자", "오늘자 완료했습니다. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence}")
+            val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
+            dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
         }
-
-        val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
-        dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+        // TODO 현재 묶음단위로 progressUnitVO를 다루고 있음.
+        // TODO 여기서 이 묶음에서 weekStartAt, weekEndAt, duration == progress 거의 인접하고 updated_at이 당일이면 1번 띄우기
     }
-
 
     private fun calculateInitialWeekAndSequence() {
         val maxSeq = pvm.currentProgram?.programFrequency

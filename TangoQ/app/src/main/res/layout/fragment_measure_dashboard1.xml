@@ -352,7 +352,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:text="질환 예측"
+                        android:text=" 측정 기록"
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toTopOf="@+id/tvMD1MeasureHistory"

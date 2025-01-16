@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
 import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -243,6 +244,17 @@ class MainFragment : Fragment() {
                             val measureSize = measures?.get(dateIndex)?.dangerParts?.size
                             if (measureSize != null) {
                                 if (measureSize > 1) {
+                                    val summaryComments  = createMeasureComment(measures?.get(dateIndex)?.dangerParts)
+                                    Log.v("어떻게 나왔니", "${summaryComments}")
+//                                    if (summaryComments.size > 1) {
+//                                        binding.tvMMeasureResult1.text = summaryComments[0]
+//                                        binding.tvMMeasureResult2.text = summaryComments[1]
+//                                    } else if (summaryComments.size == 1) {
+//                                        binding.tvMMeasureResult1.text = summaryComments[0]
+//                                        binding.tvMMeasureResult2.visibility = View.INVISIBLE
+//                                    } else {
+//                                        Log.v("어떻게 나왔니", "${summaryComments}")
+//                                    }
                                     binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
                                     binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}이(가) 부상 위험이 있습니다."
                                 } else {

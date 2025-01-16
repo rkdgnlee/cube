@@ -82,9 +82,15 @@ class MeasureDashBoard1Fragment : Fragment() {
                         binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)}"
                         binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMD1PredictDicease.setOnClickListener{
-                            hideBadgeFunction?.invoke()
-                            val dialog = ReportDiseaseDialogFragment()
-                            dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
+//                            // TODO 연결 후 질병 예측 부분
+//                            hideBadgeFunction?.invoke()
+//                            val dialog = ReportDiseaseDialogFragment()
+//                            dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flMain, MeasureHistoryFragment())
+                                addToBackStack(null)
+                                commit()
+                            }
                         }
                     } else {
                         binding.tvMD1TotalScore.text = "0"
@@ -97,8 +103,16 @@ class MeasureDashBoard1Fragment : Fragment() {
                         binding.tvMD1More1.isEnabled = false
 
                     }
+                } catch (e: ClassNotFoundException) {
+                    Log.e("MD1Error", "ClassNotFound: ${e.message}")
                 } catch (e: NullPointerException) {
-                    Log.e("MD1Error", "$e")
+                    Log.e("MD1Error", "NullPointer: ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("MD1Error", "IllegalState: ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("MD1Error", "IllegalArgument: ${e.message}")
+                } catch (e: Exception) {
+                    Log.e("MD1Error", "Exception: ${e.message}")
                 }
             }
             false -> {

@@ -112,16 +112,16 @@ object MeasurementManager {
             0 to mapOf("front_vertical_angle_elbow_wrist_left" to Triple(85f, 4f, 6f),
                 "front_horizontal_angle_wrist" to Triple(180f, 2.8f, 4.2f),
                 "front_horizontal_distance_wrist_left" to Triple(22f, 4f, 6f)),
-            2 to mapOf("front_elbow_align_distance_left_wrist_shoulder" to Triple(3f, 3.1f, 4.9f),
-                "front_elbow_align_distance_center_wrist_left" to Triple(22f, 5f, 9f)),
+            2 to mapOf("front_elbow_align_distance_left_wrist_shoulder" to Triple(4f, 3.7f, 4.9f),
+                "front_elbow_align_distance_center_wrist_left" to Triple(22f, 7f, 10f)),
             3 to mapOf("side_left_horizontal_distance_wrist" to Triple(15f, 4.5f, 6.4f))
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_elbow_wrist_right" to Triple(85f, 4f, 6f),
                 "front_horizontal_angle_wrist" to Triple(-180f, 2.8f, 4.2f),
                 "front_horizontal_distance_wrist_right" to Triple(22f, 4f, 6f)),
-            2 to mapOf("front_elbow_align_distance_right_wrist_shoulder" to Triple(3f, 3.1f, 4.9f),
-                "front_elbow_align_distance_center_wrist_right" to Triple(22f, 5f, 9f)),
+            2 to mapOf("front_elbow_align_distance_right_wrist_shoulder" to Triple(4f, 3.7f, 4.9f),
+                "front_elbow_align_distance_center_wrist_right" to Triple(22f, 7f, 10f)),
             4 to mapOf("side_right_horizontal_distance_wrist" to Triple(15f, 4.5f, 6.4f))
         ),
         // 좌측 골반
@@ -141,7 +141,6 @@ object MeasurementManager {
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
             )
         ),
-        // 좌측 무릎 정상은 정면 좌측이 음수 우측이 양수 // 후면은 좌측이 양수 우측이 음수ㅅ
         mapOf(
             0 to mapOf("front_horizontal_angle_knee" to Triple(-180f, 1.95f, 3.85f),
                 "front_horizontal_distance_knee_left" to Triple(13f, 1.65f, 3.75f),
@@ -181,11 +180,12 @@ object MeasurementManager {
     // 정면 정상 부위: +179 오른쪽이 정상 // -179 -> 왼쪽이 정상
     // 후면 안좋은 부위: -179 오른쪽이 정상  // +179 -> 왼쪽이 정상
     // 0108 수정불필요: //*&* 수정 필요: //*^*
+    // 좌측 무릎 정상은 정면 좌측이 음수 우측이 양수 // 후면은 좌측이 양수 우측이 음수
     private val maleErrorBounds = listOf(
         mapOf(
             0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 1.1f, 3.2f)), //*&*
-            3 to mapOf( "side_left_vertical_angle_ear_shoulder" to Triple(90f,4.74f, 10.21f)), //*&*
-            4 to mapOf( "side_right_vertical_angle_ear_shoulder" to Triple(90f,4.74f, 10.21f)), //*&*
+            3 to mapOf( "side_left_vertical_angle_ear_shoulder" to Triple(90f,7.48f, 12.95f)), //*&*
+            4 to mapOf( "side_right_vertical_angle_ear_shoulder" to Triple(90f,7.48f, 12.95f)), //*&*
             5 to mapOf( "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 6f)), //*&*
             6 to mapOf( "back_sit_horizontal_angle_ear" to Triple(0f,1.09f, 3.29f), //*&*
                 "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Triple(84.23f,3.07f, 9.19f)) //*&*
@@ -194,7 +194,7 @@ object MeasurementManager {
         mapOf(
             0 to mapOf("front_horizontal_angle_shoulder" to Triple(180f, 0.9f, 1.8f),
                 "front_horizontal_distance_sub_shoulder" to Triple(0f, 0.6f, 1.6f)), //*&*
-            3 to mapOf("side_left_horizontal_distance_shoulder" to Triple(2.9f, 2.1f, 3.7f)), //*&*
+            3 to mapOf("side_left_horizontal_distance_shoulder" to Triple(2.9f, 2.6f, 3.7f)), //*&*
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 2.5f, 4f),
                 "back_horizontal_angle_shoulder" to Triple(0f, -0.9f,-1.8f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 5f, 9f),
@@ -204,7 +204,7 @@ object MeasurementManager {
         mapOf( // 179 -> 양수 -> 오른쪽이 안좋은 거 // -0.76
             0 to mapOf("front_horizontal_angle_shoulder" to Triple(-180f, 0.9f, 1.8f),
                 "front_horizontal_distance_sub_shoulder" to Triple(0f, 0.6f, 1.6f)), //*&*
-            4 to mapOf("side_right_horizontal_distance_shoulder" to Triple(2.9f, 2.1f, 3.7f)), //*&*
+            4 to mapOf("side_right_horizontal_distance_shoulder" to Triple(2.9f, 2.6f, 3.7f)), //*&*
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 2.5f, 4f),
                 "back_horizontal_angle_shoulder" to Triple(0f, 0.9f,1.8f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 5f, 9f),
@@ -253,7 +253,7 @@ object MeasurementManager {
                 "front_horizontal_angle_hip" to Triple(180f, 1.4f, 2.5f)),
             3 to mapOf("side_left_horizontal_distance_hip" to Triple(2.5f, 1.55f, 3.25f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, -1.5f, -3.1f)),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
+            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,8f, 14f),
             )
         ),
         mapOf(
@@ -261,7 +261,7 @@ object MeasurementManager {
                 "front_horizontal_angle_hip" to Triple(-180f, 1.4f, 2.5f)),
             4 to mapOf("side_right_horizontal_distance_hip" to Triple(2.5f, 1.55f, 3.25f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 1.5f, 3.1f)),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
+            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,8f, 14f),
             )
         ),
         // 좌측 무릎 정상은 정면 좌측이 음수 우측이 양수 // 후면은 좌측이 양수 우측이 음수
@@ -524,8 +524,8 @@ object MeasurementManager {
     fun calculateOverall(parts: MutableList<Pair<String, Status>>) : Int {
         val scores = mapOf(
             Status.DANGER to 36,
-            Status.WARNING to 63,
-            Status.NORMAL to 93
+            Status.WARNING to 64,
+            Status.NORMAL to 95
         )
         val weightScore = 1.65
         val reverseWeightScore = 0.7
@@ -800,11 +800,15 @@ object MeasurementManager {
                 }
             } else { continuation.resume(false) }
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("Error", "$e")
+            Log.e("scalingError", "IndexOutOfBound: ${e.message}")
         } catch (e: FileNotFoundException) {
-            Log.e("scalingFileNotFound", "$e")
+            Log.e("scalingError", "FileNotFound: ${e.message}")
         } catch (e: IllegalStateException) {
-            Log.e("scalingStateError", "$e" )
+            Log.e("scalingError", "IllegalState: ${e.message}" )
+        } catch (e: ClassNotFoundException) {
+            Log.e("scalingError", "Class Not Found: ${e.message}" )
+        } catch (e: Exception) {
+            Log.e("scalingError", "Exception: ${e.message}" )
         }
     }
     fun getVideoDimensions(context : Context, videoUri: Uri) : Pair<Int, Int> {
@@ -942,5 +946,34 @@ object MeasurementManager {
             "back_horizontal_distance_heel_right" -> "후면에서 발뒷꿈치의 기울기는 값 11cm 기준으로 7cm 오차 이내가 정상입니다. 이를 벗어날 경우, 전면과 비교해 발의 정렬을 교정해주세요"
             else -> "측정 사진을 확인하세요"
         }
+    }
+
+    fun createMeasureComment(dangerParts : MutableList<Pair<String, Float>>?) : List<String> {
+        val result = mutableListOf<String>()
+        val painParts = dangerParts?.map { it.first }
+        val keywordToCommentMap = mapOf(
+            listOf("목관절", "좌측 어깨", "우측 어깨") to "어깨 불균형과 거북목을 조심하세요.",
+            listOf("목관절", "좌측 어깨") to "우측으로 쏠려있는 상체를 다시 교정해보세요",
+            listOf("목관절", "우측 어깨") to "좌측으로 쏠려있는 상체를 다시 교정해보세요",
+            // TODO 코멘트 다시 수정
+            listOf("좌측 어깨", "좌측 팔꿉", "좌측 손목") to "좌측 상체의 긴장을 의심해야 합니다.",
+            listOf("좌측 팔꿉", "좌측 손목") to "좌측 팔 근육과 주변 어깨 근육을 확인하세요",
+            listOf("우측 어깨", "우측 팔꿉", "우측 손목") to "우측 상체의 긴장을 의심해야 합니다.",
+            listOf("우측 팔꿉", "우측 손목") to "우측 팔 근육과 주변 어깨 근육을 확인하세요",
+
+            listOf("좌측 골반", "우측 골반") to "골반 균형을 확인하세요",
+            listOf("좌측 골반", "우측 무릎") to "우측 쏠림을 의심해보세요",
+            listOf("우측 골반", "좌측 무릎") to "좌측 쏠림을 의심해보세요",
+            listOf("좌측 무릎", "좌측 발목") to "좌측 다리의 정렬을 확인하세요",
+            listOf("우측 무릎", "우측 발목") to "우측 다리의 정렬을 확인하세요"
+        )
+        for ((keywords, comments) in keywordToCommentMap) {
+            if (result.size < 3) {
+                if (painParts?.containsAll(keywords) == true && painParts.let { keywords.containsAll(it) }) {
+                    result.add(comments)
+                }
+            }
+        }
+        return result
     }
 }

@@ -85,10 +85,15 @@ object NetworkMeasure {
                 // 타임아웃 처리
                 Log.e("getMeasureResultError", "Request timed out", e)
                 callback(null)
-                return@withContext Result.failure(Exception("Request timed out"))
+                return@withContext Result.failure(Exception("Request timed out / ${e.message}"))
             } catch (e: IOException) {
                 // 네트워크 문제 처리
-                Log.e("getMeasureResultError", "Network error", e)
+                Log.e("getMeasureResultError", "Network error IO: ${e.message}")
+                callback(null)
+                return@withContext Result.failure(Exception("Network error: ${e.message}"))
+            } catch (e: InterruptedException) {
+                // 네트워크 문제 처리
+                Log.e("getMeasureResultError", "InterruptedException: ${e.message}")
                 callback(null)
                 return@withContext Result.failure(Exception("Network error: ${e.message}"))
             } catch (e: Exception) {
