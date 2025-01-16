@@ -32,6 +32,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="15dp"
                     android:background="@drawable/effect_ibtn_12dp"
+                    android:contentDescription="showQrCodeScan"
                     android:src="@drawable/icon_qr_code"
                     app:layout_constraintBottom_toBottomOf="@+id/ibtnMsAlarm"
                     app:layout_constraintEnd_toStartOf="@+id/ibtnMsAlarm"
@@ -45,6 +46,7 @@
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="showAlarm"
                     android:padding="4dp"
                     android:src="@drawable/icon_alarm"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -120,7 +122,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tlMs"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintVertical_bias="0.0">
 
         </androidx.viewpager2.widget.ViewPager2>
 

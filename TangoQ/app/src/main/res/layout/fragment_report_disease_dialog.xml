@@ -32,7 +32,7 @@
                     android:background="@color/whitebar">
 
                     <TextView
-                        android:id="@+id/textView109"
+                        android:id="@+id/textView38"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
@@ -47,148 +47,162 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout6"
-                android:layout_width="0dp"
-                android:layout_height="156dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/bckgnd_2_main_20"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView34">
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:id="@+id/constraintLayout6"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="156dp"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginTop="30dp"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:background="@drawable/bckgnd_2_main_20"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/cardView34">-->
 
-                <TextView
-                    android:id="@+id/textView110"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
-                    android:text="우려질환"
-                    android:textColor="@color/subColor800"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textView110"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="20dp"-->
+<!--                    android:layout_marginTop="16dp"-->
+<!--                    android:text="우려질환"-->
+<!--                    android:textColor="@color/subColor800"-->
+<!--                    android:textSize="16sp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
-                <TextView
-                    android:id="@+id/tvRDName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="회전근개건염(힘줄염)"
-                    android:textColor="@color/subColor800"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <TextView-->
+<!--                    android:id="@+id/tvRDName"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="회전근개건염(힘줄염)"-->
+<!--                    android:textColor="@color/subColor800"-->
+<!--                    android:textSize="24sp"-->
+<!--                    android:textStyle="bold"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
-                <ImageView
-                    android:id="@+id/imageView22"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:src="@drawable/drawable_pain3"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvRDName"
-                    app:layout_constraintEnd_toStartOf="@+id/tvRDName"
-                    app:layout_constraintTop_toTopOf="@+id/tvRDName" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+<!--                <ImageView-->
+<!--                    android:id="@+id/imageView22"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginEnd="8dp"-->
+<!--                    android:src="@drawable/drawable_pain3"-->
+<!--                    app:layout_constraintBottom_toBottomOf="@+id/tvRDName"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/tvRDName"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/tvRDName" />-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textView112"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:text="질환 설명"-->
+<!--                android:textColor="@color/subColor800"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textStyle="bold"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tvRDExplain"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:text="머리 위쪽으로 팔을 들어 올리는 운동이나 작업으로  인한 염증이 원인\n주로 외측 삼각근 부위에 통증이 나타나며  서서히 진행하고 팔을 들어 올리거나 팔을 뒤로  움직일때 특징적으로 발생합니다."-->
+<!--                android:textColor="@color/subColor800"-->
+<!--                android:textSize="16sp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/textView112" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textView114"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:text="증상"-->
+<!--                android:textColor="@color/subColor800"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textStyle="bold"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/tvRDExplain"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/tvRDExplain" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tvRDSymptom"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:text="어깨가 많이 결린 느낌\n증상이 있는 어깨로 누우면 아픔\n팔에 힘이 떨어짐\n어깨에서 소리가 크게 남 "-->
+<!--                android:textColor="@color/subColor800"-->
+<!--                android:textSize="16sp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/textView114" />-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/tvRDSymptom">-->
+
+<!--                <androidx.appcompat.widget.AppCompatButton-->
+<!--                    android:id="@+id/btnRDShare"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="20dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:layout_marginRight="8dp"-->
+<!--                    android:layout_marginBottom="20dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:background="@drawable/effect_ibtn_12dp"-->
+<!--                    android:backgroundTint="@color/subColor100"-->
+<!--                    android:stateListAnimator="@null"-->
+<!--                    android:text="공유하기"-->
+<!--                    android:textSize="16sp" />-->
+
+<!--                <androidx.appcompat.widget.AppCompatButton-->
+<!--                    android:id="@+id/btnRDRecommend"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="8dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:layout_marginRight="20dp"-->
+<!--                    android:layout_marginBottom="20dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:background="@drawable/effect_ibtn_12dp"-->
+<!--                    android:backgroundTint="@color/mainColor"-->
+<!--                    android:paddingLeft="20dp"-->
+<!--                    android:paddingRight="8dp"-->
+<!--                    android:stateListAnimator="@null"-->
+<!--                    android:text="예방 프로그램 보기"-->
+<!--                    android:textColor="#FFFFFF"-->
+<!--                    android:textSize="16sp" />-->
+<!--            </LinearLayout>-->
 
             <TextView
-                android:id="@+id/textView112"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="질환 설명"
-                android:textColor="@color/subColor800"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
-
-            <TextView
-                android:id="@+id/tvRDExplain"
+                android:id="@+id/textView16"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:text="머리 위쪽으로 팔을 들어 올리는 운동이나 작업으로  인한 염증이 원인\n주로 외측 삼각근 부위에 통증이 나타나며  서서히 진행하고 팔을 들어 올리거나 팔을 뒤로  움직일때 특징적으로 발생합니다."
+                android:layout_height="0dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="측정 결과로 쉽게 발생할 수 있는 질환을 예측합니다. \n추후 공개될 예정입니다."
                 android:textColor="@color/subColor800"
-                android:textSize="16sp"
+                android:textSize="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView112" />
-
-            <TextView
-                android:id="@+id/textView114"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="증상"
-                android:textColor="@color/subColor800"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/tvRDExplain"
-                app:layout_constraintTop_toBottomOf="@+id/tvRDExplain" />
-
-            <TextView
-                android:id="@+id/tvRDSymptom"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:text="어깨가 많이 결린 느낌\n증상이 있는 어깨로 누우면 아픔\n팔에 힘이 떨어짐\n어깨에서 소리가 크게 남 "
-                android:textColor="@color/subColor800"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView114" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvRDSymptom">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnRDShare"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="20dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/subColor100"
-                    android:stateListAnimator="@null"
-                    android:text="공유하기"
-                    android:textSize="16sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnRDRecommend"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/mainColor"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="8dp"
-                    android:stateListAnimator="@null"
-                    android:text="예방 프로그램 보기"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/cardView34" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

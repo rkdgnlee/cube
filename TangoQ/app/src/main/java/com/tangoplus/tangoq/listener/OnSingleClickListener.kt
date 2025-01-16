@@ -5,7 +5,6 @@ import android.view.View
 
 class OnSingleClickListener(private val clickListener: View.OnClickListener) : View.OnClickListener {
     companion object {
-
         // ---- 클릭 방지 시간 설정 ----
         const val CLICK_INTERVAL : Long = 1000
         const val TAG = "OnSingleClickListener"

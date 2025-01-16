@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,47 +11,38 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.kakao.sdk.auth.AuthApiClient
-import com.kakao.sdk.user.UserApiClient
-import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditDialogFragment
-import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
-import com.tangoplus.tangoq.db.SecurePreferencesManager.getEncryptedJwtToken
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.dialog.ProfileEditBSDialogFragment
+import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
 import com.tangoplus.tangoq.fragment.ProfileFragment
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.fragment.WithdrawalFragment
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import org.json.JSONObject
-
 import java.lang.IllegalArgumentException
 
 class ProfileRVAdapter(private val fragment: Fragment,
                        private val booleanClickListener: BooleanClickListener,
                        val first: Boolean,
                        val case: String,
-                       val vm: ViewModel
+                       private val vm: ViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
-    var profilemenulist = mutableListOf<String>()
+    var profileMenuList = mutableListOf<String>()
 
-    private val VIEW_TYPE_NORMAL = 0
-    private val VIEW_TYPE_SPECIAL_ITEM = 1
+    private val viewTypeNormal = 0
+    private val viewTypeSpecial = 1
     var userJson = JSONObject()
+
     inner class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val tvPfSettingsName : TextView = view.findViewById(R.id.tvPfSettingsName)
         val tvPfInfo: TextView = view.findViewById(R.id.tvPfInfo)
@@ -66,12 +56,12 @@ class ProfileRVAdapter(private val fragment: Fragment,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            VIEW_TYPE_NORMAL -> {
+            viewTypeNormal -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = RvProfileItemBinding.inflate(inflater, parent, false)
                 ViewHolder(binding.root)
             }
-            VIEW_TYPE_SPECIAL_ITEM -> {
+            viewTypeSpecial -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = RvProfileSpecialItemBinding.inflate(inflater, parent, false)
                 SpecialItemViewHolder(binding.root)
@@ -82,30 +72,31 @@ class ProfileRVAdapter(private val fragment: Fragment,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = profilemenulist[position]
+        val currentItem = profileMenuList[position]
         when (holder.itemViewType) {
-            VIEW_TYPE_NORMAL -> {
+            viewTypeNormal -> {
                 val ViewHolder = holder as ViewHolder
                 when (case) {
                     "profile" -> {
                         when (currentItem) {
                             "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
-                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+//                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+                            "QR코드 핀번호 로그인" -> holder.ivPf.setImageResource(R.drawable.icon_qr_code)
                             "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
                             "문의하기" -> holder.ivPf.setImageResource(R.drawable.icon_inquire)
                             "공지사항" -> holder.ivPf.setImageResource(R.drawable.icon_announcement)
                             "앱 버전" -> holder.ivPf.setImageResource(R.drawable.icon_copy)
                             "개인정보 처리방침" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
                             "서비스 이용약관" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
-                            "로그아웃" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
-                            "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
+                            "로그아웃", "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
+
                         }
                         // ------! 앱 버전 text 설정 시작 !------
                         ViewHolder.tvPfSettingsName.text = currentItem
                         if (ViewHolder.tvPfSettingsName.text == "앱 버전") {
                             val packageInfo = fragment.requireContext().packageManager.getPackageInfo(fragment.requireContext().packageName, 0)
-                            val versionName = packageInfo.versionName
-                            ViewHolder.tvPfInfo.text = "v$versionName"
+                            val versionName =  "v" + packageInfo.versionName
+                            ViewHolder.tvPfInfo.text = versionName
                         } else
                             ViewHolder.tvPfInfo.text = ""
                         // ------! 앱 버전 text 설정 끝 !------
@@ -120,8 +111,12 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 }
                                 "QR코드 핀번호 로그인" -> {
                                     val dialog = QRCodeDialogFragment()
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LoginScanDialogFragment")
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "QRCodeDialogFragment")
                                 }
+//                                "연동 관리" -> {
+//                                    val dialog = ConnectManageDialogFragment()
+//                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LinkManageDialogFragment")
+//                                }
                                 "푸쉬 알림 설정" -> {
                                     val intent = Intent().apply {
                                         action = "android.settings.APP_NOTIFICATION_SETTINGS"
@@ -156,31 +151,22 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
                                 }
                                 "로그아웃" -> {
-                                    if (Firebase.auth.currentUser != null) {
-                                        Firebase.auth.signOut()
-                                        Log.d("로그아웃", "Firebase sign out successful")
-                                    } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
-                                        NaverIdLoginSDK.logout()
-                                        Log.d("로그아웃", "Naver sign out successful")
-                                    } else if (AuthApiClient.instance.hasToken()) {
-                                        UserApiClient.instance.logout { error->
-                                            if (error != null) {
-                                                Log.e("로그아웃", "KAKAO Sign out failed", error)
-                                            } else {
-                                                Log.e("로그아웃", "KAKAO Sign out successful")
-                                            }
+                                    MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                        setTitle("로그아웃")
+                                        setMessage("로그아웃 하시겠습니까?")
+                                        setPositiveButton("예") { _, _ ->
+                                            logout(fragment.requireActivity(), 0)
                                         }
-                                    } else if (getEncryptedJwtToken(fragment.requireContext()) != null) {
-                                        saveEncryptedJwtToken(fragment.requireContext(), null)
+                                        setNegativeButton("아니오") { _, _ -> }
+                                    }.show()
+                                }
+                                "회원탈퇴" -> {
+                                    fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                                        setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                                        replace(R.id.flMain, WithdrawalFragment())
+                                        addToBackStack(null)
+                                        commit()
                                     }
-                                    val intent = Intent(holder.itemView.context, IntroActivity::class.java)
-                                    holder.itemView.context.startActivity(intent)
-                                    fragment.requireActivity().finishAffinity()
-                                    // 싱글턴에 들어갔던거 전부 비우기
-                                    Singleton_t_user.getInstance(fragment.requireContext()).jsonObject = null
-                                    Singleton_t_measure.getInstance(fragment.requireContext()).measures = null
-                                    Singleton_t_progress.getInstance(fragment.requireContext()).programProgresses = mutableListOf()
-                                    Singleton_t_progress.getInstance(fragment.requireContext()).graphProgresses = mutableListOf()
                                 }
                             }
                         }
@@ -192,14 +178,29 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         holder.ivPf.setImageResource(R.drawable.icon_profile)
                         holder.tvPfSettingsName.text = currentItem
                         when (holder.tvPfSettingsName.text) {
-
                             "이름" -> {
-                                holder.tvPfInfo.text = userJson.optString("user_name")
+                                val userName = userJson.optString("user_name")
+                                if (isKorean(userName)) holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
+                                else holder.tvPfInfo.text = maskedProfileData(userName)
+
                                 holder.ivPf.setImageResource(R.drawable.icon_profile)
                             }
-                            "성별" -> {
-                                holder.tvPfInfo.text = if (userJson.optString("gender")== "0") "여자" else "남자"
-                                holder.ivPf.setImageResource(R.drawable.icon_gender)
+                            "이메일" -> {
+                                (vm as SignInViewModel).setEmail.observe(fragment.viewLifecycleOwner) { email ->
+                                    val maskingEmail = maskedProfileData(email)
+                                    holder.tvPfInfo.text = maskingEmail
+                                }
+                                holder.ivPf.setImageResource(R.drawable.icon_email)
+                            }
+                            "비밀번호" -> {
+                                holder.tvPfInfo.text = "************"
+                                holder.ivPf.setImageResource(R.drawable.icon_security)
+                            }
+                            "전화번호" -> {
+                                (vm as SignInViewModel).setMobile.observe(fragment.viewLifecycleOwner) { mobile ->
+                                    holder.tvPfInfo.text = "${maskedProfileData(mobile.toString())}"
+                                }
+                                holder.ivPf.setImageResource(R.drawable.icon_phone)
                             }
                             "몸무게" -> {
                                 (vm as SignInViewModel).setWeight.observe(fragment.viewLifecycleOwner) { weight ->
@@ -207,43 +208,60 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_weight)
                             }
+
                             "신장" -> {
                                 (vm as SignInViewModel).setHeight.observe(fragment.viewLifecycleOwner) { height ->
                                     holder.tvPfInfo.text = "$height cm"
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_height)
                             }
-                            "이메일" -> {
-                                (vm as SignInViewModel).setEmail.observe(fragment.viewLifecycleOwner) { email ->
-                                    holder.tvPfInfo.text = "$email"
+                            "생년월일" -> {
+                                (vm as SignInViewModel).setBirthday.observe(fragment.viewLifecycleOwner) { birthday ->
+                                    holder.tvPfInfo.text = if (birthday == "0") "미설정" else "$birthday"
                                 }
-                                holder.ivPf.setImageResource(R.drawable.icon_email)
+                                holder.ivPf.setImageResource(R.drawable.icon_cake)
+                            }
+                            "성별" -> {
+                                holder.tvPfInfo.text = if (userJson.optString("gender")== "0") "여자" else "남자"
+                                holder.ivPf.setImageResource(R.drawable.icon_gender)
                             }
                         }
 
 
                         holder.cltvPfSettings.setOnClickListener {
                             when (holder.tvPfSettingsName.text) {
+                                "이메일" -> {
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                }
+                                "비밀번호" -> {
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                }
+                                "전화번호" -> {
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("전화번호", "")
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                }
                                 "몸무게" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("몸무게", (vm as SignInViewModel).setWeight.value.toString())
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("몸무게", (vm as SignInViewModel).setWeight.value.toString())
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "신장" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("신장", (vm as SignInViewModel).setHeight.value.toString())
+                                    val dialog = ProfileEditChangeDialogFragment.newInstance("신장", (vm as SignInViewModel).setHeight.value.toString())
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
-                                "이메일" -> {
-                                    val dialog = ProfileEditBSDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                "생년월일" -> {
+                                    if (holder.tvPfSettingsName.text != "미설정") {
+                                        val dialog = ProfileEditChangeDialogFragment.newInstance("생년월일", (vm as SignInViewModel).setBirthday.value.toString())
+                                        dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                    }
                                 }
-
                             }
                         }
                     }
                 }
-
             } // -----! 다크모드 시작 !-----
-            VIEW_TYPE_SPECIAL_ITEM -> {
+            viewTypeSpecial -> {
                 val myViewHolder = holder as SpecialItemViewHolder
                 when (currentItem) {
                     "다크 모드" -> {
@@ -264,13 +282,50 @@ class ProfileRVAdapter(private val fragment: Fragment,
 
     override fun getItemViewType(position: Int): Int {
         return if (position == 1 && first) {
-            VIEW_TYPE_SPECIAL_ITEM
+            viewTypeSpecial
         } else {
-            VIEW_TYPE_NORMAL
+            viewTypeNormal
         }
     }
     override fun getItemCount(): Int {
-        return profilemenulist.size
-
+        return profileMenuList.size
     }
+
+    private fun maskedProfileData(resultString: String) : String {
+        val atIndex = resultString.indexOf('@')
+        if (atIndex == -1) {
+            val maskedString = resultString.mapIndexed{ index, char ->
+                when {
+                    index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
+                    index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
+                    else -> char
+                }
+            }.joinToString("")
+
+            return maskedString
+        }  // @ 기호가 없으면 원본 그대로 반환
+
+        val username = resultString.substring(0, atIndex)
+        val domain = resultString.substring(atIndex)
+        val maskedUsername = username.mapIndexed { index, char ->
+
+            when {
+                index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
+                index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
+                else -> char
+            }
+        }.joinToString("")
+
+        val maskedDomain = domain.mapIndexed { index, char ->
+            when {
+                index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
+                index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
+                else -> char
+            }
+        }.joinToString("")
+
+        return maskedUsername + maskedDomain
+    }
+
+
 }

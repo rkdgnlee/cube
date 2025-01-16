@@ -3,23 +3,23 @@ package com.tangoplus.tangoq.dialog
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
-import android.graphics.Point
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentAgreementDetailDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.lang.ClassCastException
 
 
 class AgreementDetailDialogFragment : DialogFragment() {
+    lateinit var binding: FragmentAgreementDetailDialogBinding
     companion object {
         const val ARG_AGREEMENT_TYPE = "agreement_type"
 
@@ -32,7 +32,6 @@ class AgreementDetailDialogFragment : DialogFragment() {
             return fragment
         }
     }
-    lateinit var binding: FragmentAgreementDetailDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +59,19 @@ class AgreementDetailDialogFragment : DialogFragment() {
 
             return termsAndConditions
         } catch (e: IOException) {
+            Log.e("agreementDetail", "IO: ${e.message}")
+            return ""
+        } catch (e: ClassCastException) {
+            Log.e("agreementDetail", "ClassCast: ${e.message}")
+            return ""
+        } catch (e: ClassNotFoundException) {
+            Log.e("agreementDetail", "ClassNotFound: ${e.message}")
+            return ""
+        } catch (e: IllegalArgumentException) {
+            Log.e("agreementDetail", "IllegalArgument: ${e.message}")
+            return ""
+        } catch (e: Exception) {
+            Log.e("agreementDetail", "Exception: ${e.message}")
             return ""
         }
     }
@@ -73,51 +85,19 @@ class AgreementDetailDialogFragment : DialogFragment() {
             else -> ""
         }
         val builder = AlertDialog.Builder(requireContext())
-
         binding = FragmentAgreementDetailDialogBinding.inflate(layoutInflater)
         builder.setView(binding.root)
-
         binding.tvAgreement.text = agreementText
-
         return builder.create()
     }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.6f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-
-        val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
-        if (agreementType == "agreement1") {
-            dialogFragmentResize(0.8f, 0.7f)
-        } else {
-            dialogFragmentResize(0.8f, 0.7f)
-        }
+        dialogFragmentResize(requireContext(), this@AgreementDetailDialogFragment)
     }
-    private fun dialogFragmentResize(width: Float, height: Float) {
-        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        if (Build.VERSION.SDK_INT < 30) {
-            val display = windowManager.defaultDisplay
-            val size = Point()
-
-            display.getSize(size)
-
-            val window = dialog?.window
-
-            val x = (size.x * width).toInt()
-            val y = (size.y * height).toInt()
-            window?.setLayout(x, y)
-        } else {
-            val rect = windowManager.currentWindowMetrics.bounds
-
-            val window = dialog?.window
-
-            val x = (rect.width() * width).toInt()
-            val y = (rect.height() * height).toInt()
-
-            window?.setLayout(x, y)
-        }
-    }
 }

@@ -36,6 +36,7 @@
                 app:layout_constraintVertical_bias="0.0">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cvMD1"
                     android:layout_width="28dp"
                     android:layout_height="0dp"
                     android:layout_marginEnd="10dp"
@@ -43,6 +44,7 @@
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="@+id/lcMD1"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/lcMD1"
                     app:layout_constraintTop_toTopOf="@+id/lcMD1">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -128,7 +130,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:background="@drawable/effect_ibtn_4dp"
+                    android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/subColor100"
                     android:stateListAnimator="@null"
                     android:text="+ 기록 더보기"
@@ -150,7 +152,7 @@
                     android:paddingTop="4dp"
                     android:paddingEnd="12dp"
                     android:paddingBottom="4dp"
-                    android:text="기간 04.11 ~ 08.08"
+                    android:text="기간 __.__ ~ __.__"
                     android:textColor="@color/subColor400"
                     android:textSize="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -161,7 +163,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:background="@drawable/bckgnd_rectangle_8"
+                    android:background="@drawable/bckgnd_rectangle_12"
                     android:backgroundTint="@color/subColor100"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
@@ -194,6 +196,7 @@
                         android:id="@+id/ivMD1Position"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="showBalloon"
                         android:padding="4dp"
                         android:src="@drawable/icon_arrow_board"
                         app:layout_constraintBottom_toTopOf="@+id/vMD1Percent"
@@ -305,7 +308,7 @@
                     android:id="@+id/tvMD1TotalScore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="21"
+                    android:text="_"
                     android:textColor="@color/thirdColor"
                     android:textSize="36dp"
                     android:textStyle="bold"
@@ -349,15 +352,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:text="질환 예측"
+                        android:text=" 측정 기록"
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toTopOf="@+id/tvMD1MeasureHistory"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageButton
-                        android:id="@+id/ibtnMD1Detail"
+                    <ImageView
+                        android:id="@+id/ivMD1Detail"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginTop="8dp"
@@ -438,6 +441,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/white"
+                android:contentDescription="shareGraph"
                 android:padding="4dp"
                 android:src="@drawable/icon_share"
                 app:layout_constraintBottom_toBottomOf="@+id/textView66"

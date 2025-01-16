@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.mediapipe
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.os.Build
 import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.VisibleForTesting
@@ -14,6 +15,7 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
+import com.tangoplus.tangoq.api.DeviceService.isEmulator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +24,7 @@ class PoseLandmarkerHelper(
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
     var minPoseTrackingConfidence: Float = DEFAULT_POSE_TRACKING_CONFIDENCE,
     var minPosePresenceConfidence: Float = DEFAULT_POSE_PRESENCE_CONFIDENCE,
-    var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
+    private var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
     var currentDelegate: Int = DELEGATE_GPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
@@ -45,11 +47,7 @@ class PoseLandmarkerHelper(
     fun isClose(): Boolean {
         return poseLandmarker == null
     }
-    // 현재 설정을 사용하여 포즈 랜드마크를 초기화합니다.
-    // 그것을 사용하고 있는 스레드. CPU는 Landmarker와 함께 사용할 수 있습니다.
-    // 메인 스레드에서 생성되어 백그라운드 스레드에서 사용되지만
-    // GPU 대리자를 초기화한 스레드에서 사용해야 합니다.
-    // 랜드마크
+
     fun setupPoseLandmarker() {
         // Set general pose landmarker options
         val baseOptionBuilder = BaseOptions.builder()
@@ -85,33 +83,57 @@ class PoseLandmarkerHelper(
             }
             else -> { } // no-op
         }
-
         try {
-            val baseOptions = baseOptionBuilder.build()
+            if (!isEmulator()) {
+                val baseOptions = baseOptionBuilder.build()
 
-            // 기본 옵션과 특정 옵션이 포함된 옵션 빌더를 생성합니다.
-            // 옵션은 Pose Landmarker에만 사용됩니다.
-            val optionsBuilder =
-                PoseLandmarker.PoseLandmarkerOptions.builder()
-                    .setBaseOptions(baseOptions)
-                    .setMinPoseDetectionConfidence(minPoseDetectionConfidence)
-                    .setMinTrackingConfidence(minPoseTrackingConfidence)
-                    .setMinPosePresenceConfidence(minPosePresenceConfidence)
-                    .setRunningMode(runningMode)
+                // 기본 옵션과 특정 옵션이 포함된 옵션 빌더를 생성합니다.
+                // 옵션은 Pose Landmarker에만 사용됩니다.
+                val optionsBuilder =
+                    PoseLandmarker.PoseLandmarkerOptions.builder()
+                        .setBaseOptions(baseOptions)
+                        .setMinPoseDetectionConfidence(minPoseDetectionConfidence)
+                        .setMinTrackingConfidence(minPoseTrackingConfidence)
+                        .setMinPosePresenceConfidence(minPosePresenceConfidence)
+                        .setRunningMode(runningMode)
 
-            // ResultListener 및 ErrorListener는 LIVE_STREAM 모드에만 사용됩니다.
-            if (runningMode == RunningMode.LIVE_STREAM) {
-                optionsBuilder
-                    .setResultListener(this::returnLivestreamResult)
-                    .setErrorListener(this::returnLivestreamError)
+                // ResultListener 및 ErrorListener는 LIVE_STREAM 모드에만 사용됩니다.
+                if (runningMode == RunningMode.LIVE_STREAM) {
+                    optionsBuilder
+                        .setResultListener(this::returnLivestreamResult)
+                        .setErrorListener(this::returnLivestreamError)
+                }
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        val options = optionsBuilder.build()
+                        Log.d("PoseLandmarkerDebug", "Build.PRODUCT: ${Build.PRODUCT}")
+                        Log.d("PoseLandmarkerDebug", "Build.HARDWARE: ${Build.HARDWARE}")
+                        Log.d("PoseLandmarkerDebug", "Build.MODEL: ${Build.MODEL}")
+                        Log.d("PoseLandmarkerDebug", "Build.MANUFACTURER: ${Build.MANUFACTURER}")
+                        Log.d("PoseLandmarkerDebug", "Build.BRAND: ${Build.BRAND}")
+                        Log.d("PoseLandmarkerDebug", "Build.DEVICE: ${Build.DEVICE}")
+                        Log.d("PoseLandmarkerDebug", "Build.FINGERPRINT: ${Build.FINGERPRINT}")
+
+                        // 옵션 생성 전 옵션 객체 세부 정보 로깅
+                        Log.d("PoseLandmarkerDebug", "Options: $options")
+
+
+                        poseLandmarker = PoseLandmarker.createFromOptions(context, options)
+                    } catch (e: UnsatisfiedLinkError) {
+                        poseLandmarker = null
+                        Log.e(TAG, "${e.message}")
+                    } catch (e: IllegalStateException) {
+                        Log.e(TAG, "${e.message}")
+                    } catch (e: NullPointerException) {
+                        Log.e(TAG, "${e.message}")
+                    } catch (e: IllegalArgumentException) {
+                        Log.e(TAG, "${e.message}")
+                    }
+                }
+            } else {
+                poseLandmarker = null
             }
-
-
-            CoroutineScope(Dispatchers.Main).launch {
-                val options = optionsBuilder.build()
-                poseLandmarker = PoseLandmarker.createFromOptions(context, options)
-            }
-
         } catch (e: IllegalStateException) {
             poseLandmarkerHelperListener?.onError(
                 "Pose Landmarker failed to initialize. See error logs for " +
@@ -222,9 +244,9 @@ class PoseLandmarkerHelper(
 
         const val DELEGATE_CPU = 0
         const val DELEGATE_GPU = 1
-        const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.5F
-        const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.5F
-        const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.5F
+        const val DEFAULT_POSE_DETECTION_CONFIDENCE = 0.6F
+        const val DEFAULT_POSE_TRACKING_CONFIDENCE = 0.6F
+        const val DEFAULT_POSE_PRESENCE_CONFIDENCE = 0.6F
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
         const val MODEL_POSE_LANDMARKER_FULL = 0

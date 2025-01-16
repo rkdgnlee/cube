@@ -3,7 +3,7 @@
     <color name="black">#121212</color>
     <color name="white">#FFFFFF</color>
     <color name="whitebar">#FFFFFF</color>
-
+    <color name="whiteText">#FFFFFF</color>
     <color name="mainColor">#2EE88B</color>
     <color name="mainDeepColor">#0C894C</color>
     <color name="mainContainerColor">#EFFEF6</color>
@@ -24,7 +24,7 @@
     <color name="cautionColor">#FF981D</color>
     <color name="cautionContainerColor">#FFEFDC</color>
 
-    <color name="subColor100">#F5F5F5</color>
+    <color name="subColor100">#F6F6F6</color>
     <color name="subColor150">#DFDFE0</color>
     <color name="subColor200">#D9D9D9</color>
     <color name="subColor300">#C8C8C8</color>
@@ -37,4 +37,15 @@
     <color name="conditionSuccessColor">#7AA2E3</color>
     <color name="opacityColor">#4D000000</color>
     <color name="opacitySubColor">#25959595</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="transparentColor">#00000000</color>
+    <color name="white_overlay">#F5FFFFFF</color>
+
+    <color name="deleteRippleColor">#FFE7E4</color>
+    <color name="mainRippleColor">#2BEE8C</color>
+    <color name="rippleColor">#80F6F6F6</color>
 </resources>

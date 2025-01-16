@@ -51,7 +51,6 @@
         android:singleLine="true"
         android:text="2024.05.17"
         android:textSize="18dp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView48"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout26"

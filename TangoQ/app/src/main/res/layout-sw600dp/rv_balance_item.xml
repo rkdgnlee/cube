@@ -25,47 +25,38 @@
         android:id="@+id/tvBIName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
         android:text="정면 균형"
         android:textColor="@color/subColor800"
         android:textSize="22dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView48"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toEndOf="@+id/ivBI"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/ivBIicon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvBIName"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon_caution" />
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
+        android:id="@+id/imageView48"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ivBIicon"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_arrow_circle_right" />
 
-        <TextView
-            android:id="@+id/tvBIPredict"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:maxLength="58"
-            android:maxLines="3"
-            android:singleLine="false"
-            android:text="_"
-            android:textColor="@color/subColor800"
-            android:textSize="18dp" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvBIExplain"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="15dp"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView48"
+        app:layout_constraintStart_toEndOf="@+id/tvBIName"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

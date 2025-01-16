@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.marginEnd
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.RadarData
@@ -28,8 +27,8 @@ import com.skydoves.balloon.BalloonSizeSpec
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.BalanceRVAdapter
-import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.vo.MeasureVO
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import java.io.File
@@ -37,9 +36,9 @@ import java.io.FileOutputStream
 
 
 class MeasureDetailFragment : Fragment() {
-    lateinit var binding : FragmentMeasureDetailBinding
-    lateinit var bodyParts : List<String>
-    private lateinit var measure : MeasureVO
+    private lateinit var binding : FragmentMeasureDetailBinding
+
+    private var measure : MeasureVO? = null
     private val viewModel : MeasureViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,7 +81,7 @@ class MeasureDetailFragment : Fragment() {
         }
 
         // ------# measure 에 맞게 UI 수정 #------
-        measure = viewModel.selectedMeasure!!
+        measure = viewModel.selectedMeasure
         updateUI()
 
         // ------# 10각형 레이더 차트 #------
@@ -91,17 +90,17 @@ class MeasureDetailFragment : Fragment() {
         val indices = listOf(0, 1, 3, 5, 7, 9, 11, 12, 10, 8, 6, 4, 2)
 
         // 먼저 모든 점수를 95로 초기화
-        val scores = MutableList(bodyParts.size) { 97f }
-        Log.v("raderScores", "${ measure.dangerParts}")
+        val scores = MutableList(bodyParts.size) { 96f }
+        Log.v("raderScores", "${ measure?.dangerParts}")
         // measure.dangerParts에 있는 부위들의 점수만 업데이트
-        measure.dangerParts.forEach { (part, danger) ->
+        measure?.dangerParts?.forEach { (part, danger) ->
             val index = bodyParts.indexOf(part)
             if (index != -1) {
                 scores[index] = when (danger) {
                     1.0f -> 80f
                     2.0f -> 70f
                     3.0f -> 60f
-                    else -> 97f
+                    else -> 96f
                 }
             }
         }
@@ -112,7 +111,7 @@ class MeasureDetailFragment : Fragment() {
         Log.v("raderScores", raderScores.toString())
 
         val entries = mutableListOf<RadarEntry>()
-        for (i in 0 until bodyParts.size) {
+        for (i in bodyParts.indices) {
             entries.add(RadarEntry(raderScores[i]))
         }
         Log.v("재조정x축", "$raderXParts")
@@ -139,8 +138,8 @@ class MeasureDetailFragment : Fragment() {
                 setDrawGridLines(true)
                 valueFormatter = IndexAxisValueFormatter(raderXParts)
                 textColor = resources.getColor(R.color.subColor400, null)
-                textSize = if (isTablet(requireContext())) 18f else 13f   // 텍스트 크기 증가
-                yOffset = 20f  // 텍스트를 차트에서 조금 더 멀리 배치
+                textSize = if (isTablet(requireContext())) 20f else 13f   // 텍스트 크기 증가
+                yOffset = 40f
 
 
             }
@@ -163,7 +162,7 @@ class MeasureDetailFragment : Fragment() {
             invalidate() // 차트 갱신
         }
 
-        val dangerParts = measure.dangerParts.map { it.first }.toMutableList()
+//        val dangerParts = measure?.dangerParts?.map { it.first }?.toMutableList()
         val stages = mutableListOf<MutableList<String>>()
         val balanceParts1 = mutableListOf("어깨", "골반")
         stages.add(balanceParts1)
@@ -229,27 +228,27 @@ class MeasureDetailFragment : Fragment() {
     private fun setAdapter(stages: MutableList<MutableList<String>>, degrees: MutableList<Pair<Int,Int>>) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMD.layoutManager = layoutManager
-        val balanceAdapter = BalanceRVAdapter(this@MeasureDetailFragment, stages, degrees)
+        val balanceAdapter = BalanceRVAdapter(this@MeasureDetailFragment)
         binding.rvMD.adapter = balanceAdapter
     }
 
-    private fun calculateBalanceScore(angle: Float, case: String): Int {
-        val normalRange = when (case) {
-            "목" -> 0.5
-            "우측어깨", "좌측어깨","우측무릎", "좌측무릎" -> 1.0
-            else -> 3.0
-        }
-        val deviationFromNormal = Math.abs(angle) - normalRange
-
-        return when {
-            deviationFromNormal <= 0 -> 100
-            else -> (100 - (deviationFromNormal * 10)).toInt().coerceAtLeast(0)
-        }
-    }
+//    private fun calculateBalanceScore(angle: Float, case: String): Int {
+//        val normalRange = when (case) {
+//            "목" -> 0.5
+//            "우측어깨", "좌측어깨","우측무릎", "좌측무릎" -> 1.0
+//            else -> 3.0
+//        }
+//        val deviationFromNormal = Math.abs(angle) - normalRange
+//
+//        return when {
+//            deviationFromNormal <= 0 -> 100
+//            else -> (100 - (deviationFromNormal * 10)).toInt().coerceAtLeast(0)
+//        }
+//    }
 
     private fun updateUI() {
-        binding.tvMDScore.text = measure.overall.toString()
-        binding.tvMDDate.text = measure.regDate.substring(0, 10)
-        binding.tvMDParts.text = "우려부위: ${measure.dangerParts.map { it.first }.joinToString(", ")}"
+        binding.tvMDScore.text = measure?.overall.toString()
+        binding.tvMDDate.text = measure?.regDate?.substring(0, 10)
+        binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
     }
 }

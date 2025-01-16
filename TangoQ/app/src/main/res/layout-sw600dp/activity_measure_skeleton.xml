@@ -12,11 +12,12 @@
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:scaleType="fillStart">
+        app:scaleType="fitCenter">
+
 
     </androidx.camera.view.PreviewView>
 
@@ -29,52 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivMeasureSkeletonFrame"
-        android:layout_width="300dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="140dp"
-        android:layout_marginBottom="60dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/llMeasureSkeletonBottom"
-        app:layout_constraintEnd_toEndOf="@+id/view_finder"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/view_finder"
-        app:layout_constraintVertical_bias="0.6"
-        app:srcCompat="@drawable/drawable_measure_0" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clMeasureSkeletonAngle"
-        android:layout_width="40dp"
-        android:layout_height="400dp"
-        android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView21"
-            android:layout_width="16dp"
-            android:layout_height="0dp"
-            app:cardBackgroundColor="@color/subColor800"
-            app:cardCornerRadius="6dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvMeasureSkeletonIndicator"
-            android:layout_width="36dp"
-            android:layout_height="48dp"
-            app:cardBackgroundColor="@color/subColor100"
-            app:cardCornerRadius="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/cardView21"
-            app:layout_constraintEnd_toEndOf="@+id/cardView21"
-            app:layout_constraintStart_toStartOf="@+id/cardView21"
-            app:layout_constraintTop_toTopOf="@+id/cardView21" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clMeasureSkeletonTop"
@@ -85,41 +40,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/ibtnMeasureSkeletonInfo"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#00FFFFFF"
-            android:padding="8dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/icon_info" />
-
         <TextView
-            android:id="@+id/tvMeasureSkeletonCount"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvMeasureSkeletonDefault"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:text="프레임에 맞춰 서주세요"
-            android:textColor="@color/black"
-            android:textSize="34dp"
+            android:gravity="center"
+            android:text="버튼을 누르고 편하게 자세를 취해주세요"
+            android:textColor="@color/subColor800"
+            android:textSize="28dp"
             android:textStyle="bold"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/ibtnMeasureSkeletonBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/ibtnMeasureSkeletonBack" />
 
         <ImageButton
+            android:id="@+id/ibtnMeasureSkeletonInfo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="24dp"
+            android:backgroundTint="#00FFFFFF"
+            android:contentDescription="showCautionDialog"
+            android:padding="6dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icon_setting_gear" />
+
+        <ImageButton
             android:id="@+id/ibtnMeasureSkeletonBack"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
             android:background="#00FFFFFF"
+            android:contentDescription="exitActivity"
+            android:padding="6dp"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -128,10 +83,10 @@
         <com.shuhart.stepview.StepView
             android:id="@+id/svMeasureSkeleton"
             android:layout_width="0dp"
-            android:layout_height="64dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="20dp"
+            android:layout_height="86dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="-8dp"
+            android:layout_marginEnd="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ibtnMeasureSkeletonBack"
@@ -151,14 +106,15 @@
             app:sv_selectedTextColor="@color/thirdColor"
             app:sv_stepsNumber="7"
             app:sv_textPadding="4dp"
-            app:sv_textSize="14sp" />
+            app:sv_textSize="16dp" />
+
 
         <com.skydoves.progressview.ProgressView
             android:id="@+id/pvMeasureSkeleton"
             android:layout_width="0dp"
-            android:layout_height="6dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_height="8dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:background="#00FFFFFF"
             android:orientation="horizontal"
             android:requiresFadingEdge="horizontal"
@@ -167,9 +123,77 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/svMeasureSkeleton"
             app:progressView_colorBackground="@color/secondContainerColor"
-            app:progressView_colorProgress="@color/thirdColor" />
+            app:progressView_colorProgress="@color/thirdColor"
+            app:progressView_progressFromPrevious="true" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clCautionAngleVerti"
+        android:layout_width="60dp"
+        android:layout_height="350dp"
+        android:layout_marginStart="20dp"
+        android:contentDescription="showVerticalSensing"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView21"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            app:cardBackgroundColor="@color/subColor800"
+            app:cardCornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvCautionVerti"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
+            app:cardBackgroundColor="@color/subColor100"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/cardView21"
+            app:layout_constraintEnd_toEndOf="@+id/cardView21"
+            app:layout_constraintStart_toStartOf="@+id/cardView21"
+            app:layout_constraintTop_toTopOf="@+id/cardView21" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clCautionAngleHorizon"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="showVerticalSensing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView36"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            app:cardBackgroundColor="@color/subColor800"
+            app:cardCornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvCautionHorizon"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
+            app:cardBackgroundColor="@color/subColor100"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/cardView36"
+            app:layout_constraintEnd_toEndOf="@+id/cardView36"
+            app:layout_constraintStart_toStartOf="@+id/cardView36"
+            app:layout_constraintTop_toTopOf="@+id/cardView36" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <LinearLayout
         android:id="@+id/llMeasureSkeletonBottom"
         android:layout_width="0dp"
@@ -227,4 +251,92 @@
 
     </FrameLayout>
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
+        app:cardCornerRadius="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/llMeasureSkeletonBottom"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/fabtnMeasureSkeleton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/effect_ibtn_28dp"
+            android:paddingStart="32dp"
+            android:paddingTop="22dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="22dp"
+            app:srcCompat="@drawable/icon_question" />
+    </androidx.cardview.widget.CardView>
+    <ImageView
+        android:id="@+id/ivMeasureSkeletonFrame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="50dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/llMeasureSkeletonBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/drawable_measure_0" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvMeasureSkeletonLine"
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="2dp"
+        app:cardBackgroundColor="@color/mainColor"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivMeasureSkeletonFrame"
+        app:layout_constraintWidth_percent="0.575" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMeasureSkeletonCount"
+        android:layout_width="450dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bckgnd_rectangle_12"
+        android:backgroundTint="@color/white_overlay"
+        android:elevation="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop">
+
+        <TextView
+            android:id="@+id/tvMeasureSkeletonGuide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="자세를 따라해주세요"
+            android:textColor="@color/subColor700"
+            android:textSize="30dp"
+            app:layout_constraintBottom_toTopOf="@+id/tvMeasureSkeletonCount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvMeasureSkeletonCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:elevation="4dp"
+            android:gravity="center_horizontal"
+            android:text="3"
+            android:textColor="@color/black"
+            android:textSize="160dp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

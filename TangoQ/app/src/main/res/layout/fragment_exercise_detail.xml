@@ -21,7 +21,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout7"
                 android:layout_width="match_parent"
-                android:layout_height="64dp">
+                android:layout_height="64dp"
+                android:background="@drawable/bckgnd_top_4">
 
                 <ImageButton
                     android:id="@+id/ibtnEDAlarm"
@@ -31,6 +32,7 @@
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="showAlarm"
                     android:padding="4dp"
                     android:src="@drawable/icon_alarm"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -42,6 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="15dp"
                     android:background="@drawable/effect_ibtn_12dp"
+                    android:contentDescription="showQrCodeScan"
                     android:src="@drawable/icon_qr_code"
                     app:layout_constraintBottom_toBottomOf="@+id/ibtnEDAlarm"
                     app:layout_constraintEnd_toStartOf="@+id/ibtnEDAlarm"
@@ -49,14 +52,15 @@
 
                 <TextView
                     android:id="@+id/tvEDMainCategoryName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:text="운동"
+                    android:text="_"
                     android:textColor="@color/black"
-                    android:textSize="32dp"
+                    android:textSize="23dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView56"
+                    app:layout_constraintEnd_toStartOf="@+id/ibtnEDQRCode"
                     app:layout_constraintStart_toEndOf="@+id/imageView56"
                     app:layout_constraintTop_toTopOf="@+id/imageView56" />
 
@@ -64,8 +68,8 @@
                     android:id="@+id/imageView56"
                     android:layout_width="36dp"
                     android:layout_height="38dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/app_logo"
                     app:layout_constraintStart_toStartOf="parent"
@@ -146,6 +150,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_weight="1"
+                        android:contentDescription="clearEditText"
                         android:src="@drawable/icon_text_clear" />
                 </LinearLayout>
 

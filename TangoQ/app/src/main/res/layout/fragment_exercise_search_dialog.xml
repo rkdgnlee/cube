@@ -60,6 +60,7 @@
                     android:layout_height="24dp"
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
+                    android:contentDescription="clearEtESDSearch"
                     android:src="@drawable/icon_text_clear" />
             </LinearLayout>
 

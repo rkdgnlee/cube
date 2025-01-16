@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -28,15 +30,16 @@ import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignTop
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.vo.MeasureVO
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard1Binding
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
-import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.db.Singleton_t_measure
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -64,8 +67,8 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         // ------# 싱글턴 패턴 객체 가져오기 #------
         val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
-        measures = singletonMeasure.measures
-//        measures = mutableListOf()
+        measures = singletonMeasure.measures ?: mutableListOf()
+
 
         // ------!  이름 + 통증 부위 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
@@ -75,13 +78,19 @@ class MeasureDashBoard1Fragment : Fragment() {
                 try {
                     if (measures?.isNotEmpty() == true) {
                         val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
-                        binding.tvMD1TotalScore.text = "${viewModel.selectedMeasure?.overall?: 0}"
-                        binding.tvMD1MeasureHistory.text = if (viewModel.selectedMeasure?.regDate == "") "측정기록없음" else "최근 측정 기록 - ${viewModel.selectedMeasure?.regDate?.substring(0, 10)}"
+                        binding.tvMD1TotalScore.text = "${measures?.get(0)?.overall ?: 0}"
+                        binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)}"
                         binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMD1PredictDicease.setOnClickListener{
-                            hideBadgeFunction?.invoke()
-                            val dialog = ReportDiseaseDialogFragment()
-                            dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
+//                            // TODO 연결 후 질병 예측 부분
+//                            hideBadgeFunction?.invoke()
+//                            val dialog = ReportDiseaseDialogFragment()
+//                            dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flMain, MeasureHistoryFragment())
+                                addToBackStack(null)
+                                commit()
+                            }
                         }
                     } else {
                         binding.tvMD1TotalScore.text = "0"
@@ -91,13 +100,20 @@ class MeasureDashBoard1Fragment : Fragment() {
                         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
                         params.horizontalBias = 0.5f
                         binding.ivMD1Position.layoutParams = params
-                        binding.ivMD1Position.visibility = View.GONE
+                        binding.tvMD1More1.isEnabled = false
+
                     }
+                } catch (e: ClassNotFoundException) {
+                    Log.e("MD1Error", "ClassNotFound: ${e.message}")
                 } catch (e: NullPointerException) {
-                    Log.e("MD1Error", "$e")
+                    Log.e("MD1Error", "NullPointer: ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("MD1Error", "IllegalState: ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("MD1Error", "IllegalArgument: ${e.message}")
+                } catch (e: Exception) {
+                    Log.e("MD1Error", "Exception: ${e.message}")
                 }
-
-
             }
             false -> {
 
@@ -130,15 +146,8 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         // ------# 자세히 보기 #------
         binding.tvMD1More1.setOnClickListener {
-            val dialog = MeasureTrendDialogFragment.newInstance("", "")
+            val dialog = MeasureTrendDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
-
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-//                replace(R.id.flMain, MeasureHistoryFragment())
-//                addToBackStack(null)
-//                commit()
-//            }
         }
 
         binding.btnMD1More2.setOnClickListener{
@@ -148,7 +157,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                 addToBackStack(null)
                 commit()
             }
-        } // ------ ! 자세히 보기 끝 !------
+        }
+        // ------ ! 자세히 보기 끝 !------
 
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMD1
@@ -160,27 +170,36 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         val lcDataList: MutableList<Pair<String, Int>> = mutableListOf()
 
-        measures?.let { measure ->
-            if (measures?.size != 7) {
-                for (i in 0 until (7 - measures?.size!!)) {
-                    lcDataList.add(Pair("", 0))
-                }
-            }
+        // measures 꺾은선 그래프 
+        measures?.let {
+            val measureSize = measures?.size
             if (!measures.isNullOrEmpty()) {
-                for (i in measures!!.size - 1 downTo 0) {
-                    val measure = measures!![i]
-                    lcDataList.add(Pair(measure.regDate, measure.overall?.toInt()!!))
-                }
-                Log.v("lcDataList", "${lcDataList}")
-                for (i in lcDataList.indices) {
-                    startIndex = i
-                    break
-                }
-            } else {
-                for (i in 6 downTo 0) {
-                    lcDataList.add(Pair("", 0))
+                // 조건 처리 1 총 measures가 7 이하.
+               if (measureSize == 0){
+                    for (i in 6 downTo 0) {
+                        lcDataList.add(Pair("", 20))
+                    }
+               } else if (measureSize != null && measureSize <= 7 ){
+                    for (i in 0 until (7 - measureSize)) {
+                        lcDataList.add(Pair("", 20))
+                    }
+               } else {
+                    for (i in 6 downTo 0) {
+                        val measureUnit = measures?.get(i)
+                        val regDate = measureUnit?.regDate
+                        val overall = measureUnit?.overall?.toInt()
+                        if (regDate != null && overall != null) {
+                            lcDataList.add(Pair(regDate, overall))
+                        }
+                    }
+                    Log.v("lcDataList", "$lcDataList")
+                    for (i in lcDataList.indices) {
+                        startIndex = i
+                        break
+                    }
                 }
             }
+
 
             val lcEntries: MutableList<Entry> = mutableListOf()
             for (i in startIndex until lcDataList.size) {
@@ -194,6 +213,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 lineWidth = 4F
                 valueTextSize = 0F
                 setCircleColors(resources.getColor(R.color.thirdColor, null))
+                circleRadius = 5f
                 setDrawCircleHole(false)
                 setDrawFilled(false)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
@@ -202,7 +222,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             lcXAxis.apply {
                 isEnabled = false
                 textSize = 14f
-                textColor = resources.getColor(R.color.subColor500)
+                textColor = resources.getColor(R.color.subColor500, null)
                 labelRotationAngle = 2F
                 setDrawAxisLine(false)
                 setDrawGridLines(false)
@@ -212,6 +232,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                 axisLineWidth = 1.0f
             }
             lcYAxisLeft.apply {
+                axisMinimum = 10f
+                axisMaximum = 100f
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 setLabelCount(3, false)
@@ -228,6 +250,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             }
             lineChart.apply {
                 data = LineData(lcLineDataSet)
+//                animateX(1000, Easing.EaseInOutBack)
                 setTouchEnabled(true)
                 isDragEnabled = true
                 description.isEnabled = false
@@ -240,12 +263,14 @@ class MeasureDashBoard1Fragment : Fragment() {
                         set.setDrawHighlightIndicators(false)
                     }
                 }
-
+//                animateChart(lineChart, lcLineDataSet, lcEntries)
                 notifyDataSetChanged()
                 description.text = ""
                 setScaleEnabled(false)
                 invalidate()
             }
+
+
             // ------! 날짜 기간 가져오기 시작 !------
             val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             val outputFormatter = DateTimeFormatter.ofPattern("MM.dd")
@@ -289,7 +314,6 @@ class MeasureDashBoard1Fragment : Fragment() {
                             .setLifecycleOwner(viewLifecycleOwner)
                             .build()
 
-
                         val pts = FloatArray(2)
                         pts[0] = entry.x
                         pts[1] = entry.y
@@ -303,52 +327,48 @@ class MeasureDashBoard1Fragment : Fragment() {
 
             // ------! balloon 시작 !------
             var percentage = 0.5f
-            if (measures!!.size >= 1) {
-                val userPercentile = measures!![0].overall
-                percentage = calculatePercentage(userPercentile?.toInt()!!)
+            val measuresSize = measures?.size
+            if (measuresSize != null && measuresSize >= 1) {
+                val userPercentile = measures?.get(0)?.overall?.toInt() ?: 0
+                percentage = calculatePercentage(userPercentile)
             }
 
-            val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
-            params.horizontalBias = percentage
-            binding.ivMD1Position.layoutParams = params
-            val percent = (params.horizontalBias * 100).toInt()
 
-            when (percent) {
-                in 0 .. 30 -> {
-                    createBalloon(userJson, percent)
+            animateArrowToPercentage(percentage)
+            animateCardViewToPercentage()
+            when (percentage) {
+                in 0f .. 0.3f -> {
                     binding.vMD1Middle.visibility = View.INVISIBLE
                     binding.vMD1Low.visibility = View.VISIBLE
                 }
-                in 70 .. 100 -> {
-                    createBalloon(userJson, percent)
+                in 0.7f .. 1.0f -> {
                     binding.vMD1Middle.visibility = View.INVISIBLE
                     binding.vMD1Low.visibility = View.GONE
                     binding.vMD1High.visibility = View.VISIBLE
                 }
                 else -> {
-                    createBalloon(userJson, percent)
                     binding.vMD1Middle.visibility = View.VISIBLE
                     binding.vMD1High.visibility = View.GONE
                     binding.vMD1Low.visibility = View.GONE
                 }
             }
+            createBalloon(userJson, percentage)
             binding.clMD1Percent.setOnClickListener {
-                balloon!!.dismissWithDelay(2500L)
+                balloon?.dismissWithDelay(2500L)
             }
             binding.ivMD1Position.setOnClickListener{
-                binding.ivMD1Position.showAlignTop(balloon!!)
+                balloon?.let { it1 -> binding.ivMD1Position.showAlignTop(it1) }
             }
         }
 
     }
     // ------! 추천 운동 받기 끝!------
-    private fun createBalloon(userJson: JSONObject?, percent: Int) {
-
+    private fun createBalloon(userJson: JSONObject?, percent: Float) {
         balloon = Balloon.Builder(requireContext())
             .setWidthRatio(0.6f)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 50) "상위 ${100 - percent}" else "하위 ${percent}"}%에 위치합니다.")
-            .setTextColorResource(R.color.white)
+            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 0.5f) "상위 ${((1.0f - percent) * 100).toInt()}" else "하위 ${(percent * 100).toInt()}"}%에 위치합니다.")
+            .setTextColorResource(R.color.whiteText)
             .setTextSize(15f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
             .setArrowSize(0)
@@ -356,20 +376,82 @@ class MeasureDashBoard1Fragment : Fragment() {
             .setPadding(8)
             .setCornerRadius(16f)
             .setBackgroundColorResource(when (percent) {
-                in 0..30 -> {R.color.deleteColor}
+                in 0f..0.3f -> {R.color.deleteColor}
                 else -> {R.color.mainColor}
             })
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
     }
-    fun calculatePercentage(value: Int): Float {
+
+    private fun calculatePercentage(value: Int?): Float {
         // 70~100의 범위를 0~100%로 매핑
-        val minInput = 50
+        val minInput = 40
         val maxInput = 100
-        val percentage = (value - minInput).toDouble() / (maxInput - minInput)
+        val percentage = ((value?.minus(minInput))?.toDouble() ?: 0.0) / (maxInput - minInput)
 
         // 소수점 두 자리까지 반올림
         return String.format("%.3f", percentage).toFloat()
     }
+
+    private fun animateArrowToPercentage(percent: Float) {
+        val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
+        // 현재 horizontalBias
+        val startBias = params.horizontalBias
+        val endBias = percent // 이동할 목표 위치
+
+        // ValueAnimator 생성
+        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+            duration = 1000L // 1초 동안 애니메이션
+            interpolator = AccelerateDecelerateInterpolator() // 가속/감속 효과
+
+            addUpdateListener { animation ->
+                val animatedValue = animation.animatedValue as Float
+                params.horizontalBias = animatedValue
+                binding.ivMD1Position.layoutParams = params
+            }
+        }
+        animator.start()
+    }
+
+    private fun animateCardViewToPercentage() {
+        val params = binding.cvMD1.layoutParams as ConstraintLayout.LayoutParams
+        val startBias = params.horizontalBias
+        val endBias = 1.0f // 이동할 목표 위치
+
+        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+            duration = 1000L // 1초 동안 애니메이션
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { animation ->
+                val animatedValue = animation.animatedValue as Float
+                params.horizontalBias = animatedValue
+                binding.cvMD1.layoutParams = params
+            }
+        }
+        animator.start()
+    }
+
+//    private fun animateChart(chart: LineChart, dataSet: LineDataSet, allEntries: List<Entry>) {
+//        if (allEntries.isEmpty()) {
+//            Log.e("Error", "allEntries is empty. No data to animate.")
+//            return
+//        }
+//
+//        val animator = ValueAnimator.ofInt(0, allEntries.size.coerceAtLeast(1)).apply {
+//            duration = 1000L
+//            interpolator = AccelerateDecelerateInterpolator()
+//            addUpdateListener { animation ->
+//                val currentIndex = animation.animatedValue as Int
+//                if (currentIndex in 0..allEntries.size) {
+//                    dataSet.values = allEntries.subList(0, currentIndex)
+//                    chart.data.notifyDataChanged()
+//                    chart.notifyDataSetChanged()
+//                    chart.invalidate()
+//                } else {
+//                    Log.e("Error", "Invalid currentIndex: $currentIndex, allEntries size: ${allEntries.size}")
+//                }
+//            }
+//        }
+//        animator.start()
+//    }
 }

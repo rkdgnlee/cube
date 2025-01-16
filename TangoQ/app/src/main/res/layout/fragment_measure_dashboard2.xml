@@ -250,6 +250,7 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:background="@color/subColor100"
+                            android:contentDescription="minus1MonthInCalendar"
                             android:scaleType="center"
                             android:src="@drawable/icon_arrow_calendar_left" />
 
@@ -270,6 +271,7 @@
                             android:layout_height="48dp"
                             android:layout_weight="1"
                             android:background="@color/subColor100"
+                            android:contentDescription="plus1MonthInCalendar"
                             android:scaleType="center"
                             android:src="@drawable/icon_arrow_calendar_right" />
                     </LinearLayout>
@@ -370,6 +372,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/icon_run"
                     app:layout_constraintEnd_toEndOf="@+id/textView24"
                     app:layout_constraintStart_toStartOf="@+id/textView24"
@@ -380,7 +383,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="운동시간"
+                    android:text="운동 횟수"
                     app:layout_constraintEnd_toStartOf="@+id/view6"
                     app:layout_constraintHorizontal_bias="0.375"
                     app:layout_constraintStart_toStartOf="parent"

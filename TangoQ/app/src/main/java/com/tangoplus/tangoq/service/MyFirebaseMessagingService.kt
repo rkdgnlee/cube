@@ -13,20 +13,13 @@ import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.MessageVO
-import com.tangoplus.tangoq.db.PreferencesManager
-import com.tangoplus.tangoq.`object`.Singleton_t_user
-import java.time.LocalDateTime
+import com.tangoplus.tangoq.vo.MessageVO
+import com.tangoplus.tangoq.function.PreferencesManager
 
 class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림 채널.
-//    private val userSn: Int = Singleton_t_user.getInstance(applicationContext).jsonObject?.optString("user_sn")?.toInt()!! // 예시로 사용자 SN 값을 설정
+
     private lateinit var preferencesManager: PreferencesManager
 
-//    override fun onCreate() {
-//        super.onCreate()
-//        // PreferencesManager 초기화
-//        preferencesManager = PreferencesManager(applicationContext, userSn)
-//    }
     override fun onCreate() {
         super.onCreate()
         preferencesManager = (application as MyApplication).preferencesManager
@@ -58,11 +51,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림
             // 메시지에 알림 페이로드가 포함되어 있는지 확인
             message.notification?.let {
                 sendNotification(
-                    message.notification!!.title.toString(),
-                    message.notification!!.body.toString()
+                    message.notification?.title.toString(),
+                    message.notification?.body.toString()
                 )
                 messageToStore = MessageVO(
-                    message = message.notification!!.body.toString(),
+                    message = message.notification?.body.toString(),
                     timeStamp = System.currentTimeMillis(),
                     route = "AlarmActivity"
                 )
@@ -110,12 +103,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림
         super.onNewToken(token)
         sendRegistrationToServer(token)
     }
-
-
-    private fun handleNow() {
-        Log.d(TAG, "Short lived task is done.")
-    }
-
     private fun sendRegistrationToServer(token: String?) {
         Log.d("TAG", "sendRegistrationTokenToServer($token)")
     }

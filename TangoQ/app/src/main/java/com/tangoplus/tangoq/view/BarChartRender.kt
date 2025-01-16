@@ -3,7 +3,6 @@ package com.tangoplus.tangoq.view
 import android.graphics.Canvas
 import android.graphics.RectF
 import com.github.mikephil.charting.animation.ChartAnimator
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.BarChartRenderer
@@ -13,13 +12,13 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 class BarChartRender(chart: BarDataProvider?, animator: ChartAnimator?, viewPortHandler: ViewPortHandler?) : BarChartRenderer(chart, animator, viewPortHandler) {
     private var mRightRadius = 16f
     private var mLeftRadius = 16f
-    fun setRightRadius(mRightRadius: Float) {
-        this.mRightRadius = mRightRadius
-    }
-
-    fun setLeftRadius(mLeftRadius: Float) {
-        this.mLeftRadius = mLeftRadius
-    }
+//    fun setRightRadius(mRightRadius: Float) {
+//        this.mRightRadius = mRightRadius
+//    }
+//
+//    fun setLeftRadius(mLeftRadius: Float) {
+//        this.mLeftRadius = mLeftRadius
+//    }
 
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val trans = mChart.getTransformer(dataSet.axisDependency)

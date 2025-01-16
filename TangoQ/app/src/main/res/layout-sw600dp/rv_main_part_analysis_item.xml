@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tvMPAITitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="key"
+        android:textColor="@color/subColor800"
+        android:textSize="26dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout19"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bckgnd_rectangle_12"
+        android:backgroundTint="@color/subColor100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvMPAITitle">
+
+        <View
+            android:id="@+id/view25"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:background="@drawable/bckgnd_rectangle_8"
+            android:backgroundTint="@color/subColor200"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvMPAIData"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.475"
+            app:layout_constraintWidth_percent="0.6" />
+
+        <View
+            android:id="@+id/vMPAILeft"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:background="@drawable/bckgnd_left_delete_8"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view25"
+            app:layout_constraintEnd_toStartOf="@+id/view28"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <TextView
+            android:id="@+id/tvMPAILeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="표준이하"
+            android:textColor="@color/subColor400"
+            android:textSize="18dp"
+            app:layout_constraintEnd_toEndOf="@+id/vMPAILeft"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toBottomOf="@+id/vMPAILeft" />
+
+        <View
+            android:id="@+id/view28"
+            android:layout_width="3dp"
+            android:layout_height="24dp"
+            android:background="@color/subColor400"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view25"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintHorizontal_bias="0.325"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <View
+            android:id="@+id/vMPAIMiddle"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:background="@drawable/bckgnd_rectangle"
+            android:backgroundTint="@color/cautionColor"
+            android:elevation="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/vMPAIRight"
+            app:layout_constraintStart_toEndOf="@+id/vMPAILeft"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <TextView
+            android:id="@+id/tvMPAIMiddle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="주의"
+            android:textColor="@color/subColor400"
+            android:textSize="18dp"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toBottomOf="@+id/view25" />
+
+        <View
+            android:id="@+id/view29"
+            android:layout_width="3dp"
+            android:layout_height="24dp"
+            android:background="@color/subColor400"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view25"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintHorizontal_bias="0.675"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <View
+            android:id="@+id/vMPAIRight"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:background="@drawable/bckgnd_right_8"
+            android:backgroundTint="@color/thirdColor"
+            android:elevation="2dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/view25"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintStart_toEndOf="@+id/view29"
+            app:layout_constraintTop_toTopOf="@+id/view25" />
+
+        <TextView
+            android:id="@+id/tvMPAIRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="표준"
+            android:textColor="@color/subColor400"
+            android:textSize="18dp"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintStart_toEndOf="@+id/view29"
+            app:layout_constraintTop_toBottomOf="@+id/view25" />
+
+        <ImageView
+            android:id="@+id/ivMPAIArrow"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="4dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@+id/view25"
+            app:layout_constraintEnd_toEndOf="@+id/view25"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/view25"
+            app:srcCompat="@drawable/icon_arrow_board" />
+
+        <TextView
+            android:id="@+id/tvMPAIData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/bckgnd_rectangle_8"
+            android:backgroundTint="@color/deleteColor"
+            android:elevation="4dp"
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp"
+            android:text="168.00"
+            android:textColor="@color/whiteText"
+            android:textSize="22dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvMPAIExplain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="앉은 자세에서 골반과 상지 중심의 코의 기울기를 통해서 상지의 밸런스를 체크합니다."
+        android:textColor="@color/subColor400"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout19" />
+</androidx.constraintlayout.widget.ConstraintLayout>

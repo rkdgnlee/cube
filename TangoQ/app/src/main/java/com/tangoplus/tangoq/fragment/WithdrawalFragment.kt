@@ -21,9 +21,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
-import com.tangoplus.tangoq.`object`.NetworkUser.fetchUserDeleteJson
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
+import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.db.Singleton_t_user
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class WithdrawalFragment : Fragment() {
@@ -43,13 +46,12 @@ class WithdrawalFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        // ------! 화면 확장 및 세팅 & 싱글턴 초기화 시작 !------
-//        (activity as MainActivity).setFullLayout(requireActivity().findViewById(R.id.flMain), requireActivity().findViewById(R.id.clMain))
+        // ------# 화면 확장 및 세팅 & 싱글턴 초기화 #------
+
         binding.btnWd.isEnabled = false
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())
-//            .jsonObject?.optJSONObject("data")
-        // ------! 화면 확장 및 세팅 & 싱글턴 초기화 끝 !------
+
 
 
         // ------! spinner !------
@@ -66,7 +68,7 @@ class WithdrawalFragment : Fragment() {
         })
 
 
-        binding.cbW.setOnCheckedChangeListener{compoundButton, isChecked ->
+        binding.cbW.setOnCheckedChangeListener{ _, isChecked ->
             setBtnUI(isChecked)
         }
 
@@ -85,31 +87,33 @@ class WithdrawalFragment : Fragment() {
                     dialog.dismiss()
                     deleteAccount()
                 }
-                setNegativeButton("아니오") { dialog, _ ->
+                setNegativeButton("아니오") { _, _ ->
                 }
                 create()
             }.show()
         }
     }
     private fun deleteAccount() {
-        fetchUserDeleteJson(getString(R.string.API_user),
-            singletonUserInstance.jsonObject?.optJSONObject("data")?.optString("user_email").toString()
-        ) {
-            requireActivity().runOnUiThread {
-                MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                    setMessage("탈퇴가 완료됐습니다.")
-                    setPositiveButton("예") { dialog, _ ->
-                        val intent = Intent(requireContext(), IntroActivity::class.java)
-                        singletonUserInstance.jsonObject = null
-                        singletonMeasureInstance.measures = null
-                        startActivity(intent)
-                        requireActivity().finishAffinity()
-                    }
-                    create()
-                }.show()
+        CoroutineScope(Dispatchers.IO).launch {
+            val responseCode = fetchUserDeleteJson(requireContext(), getString(R.string.API_user),
+                singletonUserInstance.jsonObject?.optInt("sn").toString()
+            )
+            if (responseCode == 200) {
+                requireActivity().runOnUiThread {
+                    MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                        setMessage("탈퇴가 완료됐습니다.")
+                        setPositiveButton("예") { _, _ ->
+                            val intent = Intent(requireContext(), IntroActivity::class.java)
+                            singletonUserInstance.jsonObject = null
+                            singletonMeasureInstance.measures = null
+                            startActivity(intent)
+                            requireActivity().finishAffinity()
+                        }
+                        create()
+                    }.show()
+                }
             }
         }
-
     }
     private fun setBtnUI(isChecked: Boolean) {
         val states = arrayOf(

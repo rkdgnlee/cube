@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".dialog.ProgramWeekBSDialogFragment">
+    tools:context=".dialog.bottomsheet.ProgramWeekBSDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -45,9 +45,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvWBSDName" />
+            app:layout_constraintTop_toBottomOf="@+id/tvWBSDName"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
             android:id="@+id/ibtnWBSDExit"
@@ -55,6 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:background="@drawable/effect_ibtn_12dp"
+            android:contentDescription="exitBSDialog"
             android:padding="4dp"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_exit"

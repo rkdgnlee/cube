@@ -27,18 +27,16 @@ import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ScanMode
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.skydoves.balloon.showAlignEnd
 import com.skydoves.balloon.showAlignStart
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentQRCodeDialogBinding
-import com.tangoplus.tangoq.`object`.NetworkUser.loginWithPin
-import com.tangoplus.tangoq.`object`.NetworkUser.loginWithQRCode
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.api.NetworkUser.loginWithPin
+import com.tangoplus.tangoq.api.NetworkUser.loginWithQRCode
+import com.tangoplus.tangoq.db.Singleton_t_user
 import `in`.aabhasjindal.otptextview.OTPListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +69,7 @@ class QRCodeDialogFragment : DialogFragment() {
         binding.ibtnLSDInfo.alpha = 0f
         binding.ibtnLSDInfo.visibility = View.GONE
         binding.ibtnLSDBack2.visibility = View.GONE
-        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject!!
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
 
         // ------! balloon 시작 !------
         val balloon = Balloon.Builder(requireContext())
@@ -145,7 +143,7 @@ class QRCodeDialogFragment : DialogFragment() {
                 // -----! 완료 했을 경우 !------
 //                Snackbar.make(binding.clLSD, "데이터를 전송했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
 
-                // TODO json으로 변환해서 보내기
+                // json으로 변환해서 보내기
                 lifecycleScope.launch {
                     CoroutineScope(Dispatchers.IO).launch {
 
@@ -181,8 +179,16 @@ class QRCodeDialogFragment : DialogFragment() {
     private fun initScanner() {
         try {
             codeScanner = CodeScanner(requireContext(), binding.csvLSD)
-        } catch (e: Exception) {
-            Log.e("codeScannerError", e.message!!)
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("ProgramIndex", "${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("ProgramIllegal", "${e.message}")
+        } catch (e: IllegalStateException) {
+            Log.e("ProgramIllegal", "${e.message}")
+        } catch (e: NullPointerException) {
+            Log.e("ProgramNull", "${e.message}")
+        } catch (e: java.lang.Exception) {
+            Log.e("ProgramException", "${e.message}")
         }
         codeScanner.startPreview()
         codeScanner.formats = CodeScanner.ALL_FORMATS
@@ -264,7 +270,11 @@ class QRCodeDialogFragment : DialogFragment() {
         binding.otvLSD.visibility = View.VISIBLE
         binding.ibtnLSDInfo.visibility = View.GONE
         binding.ibtnLSDBack2.visibility = View.GONE
-        codeScanner.startPreview()
+        CoroutineScope(Dispatchers.Main).launch {
+
+            initScanner()
+            codeScanner.startPreview()
+        }
 
     }
 

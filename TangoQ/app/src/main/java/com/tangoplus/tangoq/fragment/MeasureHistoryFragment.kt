@@ -15,15 +15,12 @@ import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MeasureHistoryRVAdapter
-import com.tangoplus.tangoq.adapter.SpinnerAdapter
-import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
+import com.tangoplus.tangoq.vo.MeasureVO
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureHistoryBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
-import org.json.JSONObject
-import java.time.LocalDate
-import kotlin.random.Random
+import com.tangoplus.tangoq.db.Singleton_t_measure
 
 class MeasureHistoryFragment : Fragment() {
     lateinit var binding : FragmentMeasureHistoryBinding
@@ -43,24 +40,22 @@ class MeasureHistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.ibtnMHAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
-
 
         val filterList = arrayListOf<String>()
         filterList.add("최신순")
         filterList.add("오래된순")
         filterList.add("높은 점수순")
         filterList.add("낮은 점수순")
-        binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, false)
+        binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, 1)
 
         measures = Singleton_t_measure.getInstance(requireContext()).measures
         measures?.let { measure ->
-            setAdpater(measures!!)
-            binding.tvMHCount.text = "총 측정건: ${measures!!.size}건"
+            setAdapter(measures)
+            binding.tvMHCount.text = "총 측정건: ${measures?.size}건"
 
             // ------# spinner 연결 #------
             binding.spnrMH.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -68,16 +63,16 @@ class MeasureHistoryFragment : Fragment() {
                 ) {
                     when (position) {
                         0 -> {
-                            measures!!.sortedByDescending { it.regDate }
+                            measures?.sortedByDescending { it.regDate }
                         }
                         1 -> {
-                            measures!!.sortedBy { it.regDate }
+                            measures?.sortedBy { it.regDate }
                         }
                         2 -> {
-                            measures!!.sortedByDescending { it.overall?.toInt() }
+                            measures?.sortedByDescending { it.overall?.toInt() }
                         }
                         3 -> {
-                            measures!!.sortedBy { it.overall?.toInt() }
+                            measures?.sortedBy { it.overall?.toInt() }
                         }
                     }
                 }
@@ -92,8 +87,8 @@ class MeasureHistoryFragment : Fragment() {
         }
     }
 
-    private fun setAdpater(measures: MutableList<MeasureVO>) {
-        val adapter = MeasureHistoryRVAdapter(this@MeasureHistoryFragment, measures, viewModel)
+    private fun setAdapter(measures: MutableList<MeasureVO>?) {
+        val adapter = MeasureHistoryRVAdapter(this@MeasureHistoryFragment, measures ?: mutableListOf(), viewModel)
         binding.rvMH.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMH.layoutManager = linearLayoutManager

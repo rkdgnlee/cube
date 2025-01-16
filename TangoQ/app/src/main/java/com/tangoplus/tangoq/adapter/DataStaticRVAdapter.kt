@@ -15,7 +15,7 @@ import com.tangoplus.tangoq.databinding.RvDataStaticItemBinding
 
 class DataStaticRVAdapter(private val context: Context, private val data: List<Triple<String, String, String?>>, private val isDangerParts: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class StaticViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvDSITitle : TextView = view.findViewById(R.id.tvDSITitle)
         val tvDSI1 : TextView = view.findViewById(R.id.tvDSI1)
         val tvDSI2 : TextView = view.findViewById(R.id.tvDSI2)
@@ -26,7 +26,7 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvDataStaticItemBinding.inflate(inflater, parent, false)
-        return viewHolder(binding.root)
+        return StaticViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int {
@@ -35,16 +35,11 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = data[position]
-        if (holder is viewHolder) {
-            if (isDangerParts) {
-                setBackgroundDrawable(holder.clDSI)
-                holder.ivDSI.visibility = View.VISIBLE
-            }
-//            val newDangerParts = dangerParts.map { it.replace("좌측 ", "").replace("우측 ", "") }
-//            val containsDangerPart = newDangerParts.any { part -> currentItem.first.contains(part) }
-//            if (containsDangerPart) {
-//                setBackgroundDrawable(holder.clDSI)
-//            }
+        if (holder is StaticViewHolder) {
+            // state 관리
+            setDrawableState(holder.clDSI, holder.ivDSI, isDangerParts)
+
+
             holder.tvDSITitle.text = currentItem.first
             if (currentItem.third == null) {
                 holder.tvDSI1.text = currentItem.second
@@ -53,17 +48,20 @@ class DataStaticRVAdapter(private val context: Context, private val data: List<T
             holder.tvDSI1.text = currentItem.second
             holder.tvDSI2.text = currentItem.third
             }
-
-
-
-
         }
     }
-    private fun setBackgroundDrawable(cl : ConstraintLayout) {
-        cl.setBackgroundResource(R.drawable.bckgnd_rectangle_12)
-        cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.subColor100))
+    private fun setDrawableState(cl : ConstraintLayout, iv: ImageView, isNormal : Boolean) {
+        when (isNormal) {
+            true -> {
+                cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.subColor100))
+                iv.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_caution_circle))
+            }
+            false -> {
+                cl.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context,R.color.white))
+                iv.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_normal_circle))
+            }
+        }
+//        cl.setBackgroundResource(R.drawable.bckgnd_rectangle_12)
+
     }
-
-
-
-}   // @drawable/background_stroke_1dp_sub_color
+}

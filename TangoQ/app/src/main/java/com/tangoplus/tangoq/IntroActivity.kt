@@ -8,15 +8,12 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -37,31 +34,22 @@ import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.tangoplus.tangoq.data.MeasureVO
 import com.tangoplus.tangoq.dialog.LoginDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.`object`.NetworkUser.storeUserInSingleton
-import com.tangoplus.tangoq.`object`.Singleton_t_user
-import com.tangoplus.tangoq.data.SignInViewModel
+import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
+import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
-import com.tangoplus.tangoq.db.SecurePreferencesManager
-import com.tangoplus.tangoq.db.SecurePreferencesManager.createKey
-import com.tangoplus.tangoq.db.SecurePreferencesManager.encryptData
-import com.tangoplus.tangoq.db.SecurePreferencesManager.saveEncryptedData
-import com.tangoplus.tangoq.dialog.AgreementBottomSheetDialogFragment
-import com.tangoplus.tangoq.dialog.SetupDialogFragment
-import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.NetworkRecommendation.createRecommendProgram
-import com.tangoplus.tangoq.`object`.NetworkUser.getUserBySdk
-import com.tangoplus.tangoq.`object`.SaveSingletonManager
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.function.SecurePreferencesManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
+import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
+import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 import java.lang.Exception
 
 
@@ -106,11 +94,10 @@ class IntroActivity : AppCompatActivity() {
                                 val credential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
                                 firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
                                         if (firebaseAuth.currentUser != null) {
-
                                             // ---- Google 토큰에서 가져오기 시작 ----
                                             val user: FirebaseUser = firebaseAuth.currentUser!!
                                             Log.v("user", "${user.phoneNumber}")
-                                            Log.v("user", user.providerId)
+                                            Log.v("user", user.uid)
                                             // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
                                             val jsonObj = JSONObject()
                                             jsonObj.put("device_sn" ,0)
@@ -119,7 +106,6 @@ class IntroActivity : AppCompatActivity() {
                                             jsonObj.put("email", user.email.toString())
                                             jsonObj.put("google_login_id", user.uid)
 //                                            jsonObj.put("google_id_token", tokenId) // 토큰 값
-                                            jsonObj.put("mobile", user.phoneNumber)
                                             jsonObj.put("social_account", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                             Log.v("jsonObj", "$jsonObj")
@@ -132,16 +118,25 @@ class IntroActivity : AppCompatActivity() {
                                                     }
                                                 }
                                             }
-                                        // ------! GOOGLE API에서 DB에 넣는 공간 끝 !------
-
-                                        // ------! Google 토큰에서 가져오기 끝 !------
                                         }
                                     }
                             }
                         } ?: throw Exception()
+                    } catch (e: IndexOutOfBoundsException) {
+                        enabledAllLoginBtn()
+                        Log.e("IntroIndex", "${e.message}")
+                    } catch (e: IllegalArgumentException) {
+                        enabledAllLoginBtn()
+                        Log.e("IntroIllegal", "${e.message}")
+                    } catch (e: NullPointerException) {
+                        enabledAllLoginBtn()
+                        Log.e("IntroNull", "${e.message}")
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        enabledAllLoginBtn()
+                        Log.e("IntroException", "${e.message}")
                     }
+                } else {
+                    enabledAllLoginBtn()
                 }
             }
         } else {
@@ -152,7 +147,7 @@ class IntroActivity : AppCompatActivity() {
 
         // ---- 구글 로그인 시작 ----
         binding.ibtnGoogleLogin.setOnClickListener {
-
+            disabledSNSLogin(0)
             CoroutineScope(Dispatchers.IO).launch {
                 val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.firebase_client_id))
@@ -168,21 +163,23 @@ class IntroActivity : AppCompatActivity() {
         val oauthLoginCallback = object : OAuthLoginCallback {
             override fun onError(errorCode: Int, message: String) {
                 onFailure(errorCode, message)
+                enabledAllLoginBtn()
             }
             override fun onFailure(httpStatus: Int, message: String) {
                 val errorCode = NaverIdLoginSDK.getLastErrorCode().code
                 val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
                 Toast.makeText(this@IntroActivity, "로그인에 실패했습니다.\n다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("failed Login to NAVER", "errorCode: $errorCode, errorDesc: $errorDescription")
+                enabledAllLoginBtn()
             }
             override fun onSuccess() {
                 // ---- 네이버 로그인 성공 동작 시작 ----
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
-                    override fun onError(errorCode: Int, message: String) {}
-                    override fun onFailure(httpStatus: Int, message: String) {}
+                    override fun onError(errorCode: Int, message: String) { enabledAllLoginBtn() }
+                    override fun onFailure(httpStatus: Int, message: String) { enabledAllLoginBtn() }
                     override fun onSuccess(result: NidProfileResponse) {
                         val jsonObj = JSONObject()
-                        val naverMobile = result.profile?.mobile.toString().replaceFirst("010", "+8210")
+                        val naverMobile = result.profile?.mobile.toString().replaceFirst("-", "")
                         val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
                         jsonObj.put("device_sn" ,0)
                         jsonObj.put("user_sn", 0)
@@ -212,6 +209,7 @@ class IntroActivity : AppCompatActivity() {
             }
         }
         binding.btnOAuthLoginImg.setOnClickListener {
+            disabledSNSLogin(2)
             NaverIdLoginSDK.authenticate(this, oauthLoginCallback)
         }
 
@@ -219,8 +217,10 @@ class IntroActivity : AppCompatActivity() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("카카오톡", "카카오톡 로그인 실패 $error")
+                enabledAllLoginBtn()
                 when {
                     error.toString() == AuthErrorCause.AccessDenied.toString() -> {
+                        enabledAllLoginBtn()
                         Log.e("카카오톡", "접근이 거부 됨(동의 취소) $error")
                     }
                 }
@@ -228,16 +228,18 @@ class IntroActivity : AppCompatActivity() {
                 Log.e("카카오톡", "로그인에 성공하였습니다.")
                 UserApiClient.instance.accessTokenInfo { tokenInfo, error1 ->
                     if (error1 != null) {
+                        enabledAllLoginBtn()
                         Log.e(TAG, "토큰 정보 보기 실패", error1)
                     }
                     else if (tokenInfo != null) {
                         UserApiClient.instance.me { user, error2 ->
                             if (error2 != null) {
+                                enabledAllLoginBtn()
                                 Log.e(TAG, "사용자 정보 요청 실패", error2)
                             }
                             else if (user != null) {
                                 val jsonObj = JSONObject()
-                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
+                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("-", "")
                                 jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
                                 val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
                                 jsonObj.put("device_sn" ,0)
@@ -269,6 +271,7 @@ class IntroActivity : AppCompatActivity() {
             }
         }
         binding.ibtnKakaoLogin.setOnClickListener {
+            disabledSNSLogin(1)
             if (UserApiClient.instance.isKakaoTalkLoginAvailable(this@IntroActivity)) {
                 UserApiClient.instance.loginWithKakaoTalk(this@IntroActivity, callback = callback)
             }  else {
@@ -279,7 +282,12 @@ class IntroActivity : AppCompatActivity() {
 
         binding.btnIntroLogin.setOnSingleClickListener{
             val dialog = LoginDialogFragment()
-            dialog.show(this@IntroActivity.supportFragmentManager, "LoginDialogFragment")
+            dialog.show(this@IntroActivity.supportFragmentManager
+//                .beginTransaction()
+//                .addSharedElement(binding.ivIntroLogo, "transLogo")
+//                .addSharedElement(binding.tvIntroComment, "transComment")
+//                .setTransition(FragmentTransaction.TRANSIT_NONE)
+                , "LoginDialogFragment")
         }
 
         binding.btnIntroSignIn.setOnSingleClickListener {
@@ -301,8 +309,8 @@ class IntroActivity : AppCompatActivity() {
                 storeUserInSingleton(this@IntroActivity, jo)
                 createKey(getString(R.string.SECURE_KEY_ALIAS))
                 Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid")!!
-                val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt()!!
+                val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid") ?: ""
+                val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt() ?: -1
                 ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
                     mainInit()
                 }
@@ -311,14 +319,14 @@ class IntroActivity : AppCompatActivity() {
             201 -> {
 
                 // ------! 광고성 수신 동의 문자 시작 !------
-                val bottomSheetFragment = AgreementBottomSheetDialogFragment()
+                val bottomSheetFragment = AgreementBSDialogFragment()
                 bottomSheetFragment.isCancelable = false
                 bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
-                bottomSheetFragment.setOnFinishListener(object : AgreementBottomSheetDialogFragment.OnAgreeListener {
+                bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
                     override fun onFinish(agree: Boolean) {
                         if (agree) {
 
-                            // TODO 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
+                            // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
                             jsonObj.put("device_sn" ,0)
                             jsonObj.put("user_sn", 0)
                             jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
@@ -330,10 +338,12 @@ class IntroActivity : AppCompatActivity() {
                             storeUserInSingleton(this@IntroActivity, jo)
                             createKey(getString(R.string.SECURE_KEY_ALIAS))
                             Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                            val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")!!
-                            val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()!!
-                            ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
-                                mainInit()
+                            val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
+                            val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()
+                            if (userUUID != null && userInfoSn != null) {
+                                ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+                                    mainInit()
+                                }
                             }
 
 //                            val dialog = SetupDialogFragment()
@@ -356,15 +366,16 @@ class IntroActivity : AppCompatActivity() {
                                     }
                                 }
                             }
+                            this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
                         }
                     }
                 })
             }
         }
     }
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        val code = intent?.getIntExtra("SignInFinished", 0) ?: 0
+        val code = intent.getIntExtra("SignInFinished", 0) ?: 0
         handleSignInResult(code)
     }
 
@@ -402,5 +413,38 @@ class IntroActivity : AppCompatActivity() {
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
+    }
+
+    private fun disabledSNSLogin(case : Int) {
+        when (case) {
+            0 -> {
+                binding.ibtnGoogleLogin.isEnabled = true
+                binding.ibtnKakaoLogin.isEnabled = false
+                binding.btnOAuthLoginImg.isEnabled = false
+                binding.btnIntroLogin.isEnabled = false
+                binding.btnIntroSignIn.isEnabled = false
+            }
+            1 -> {
+                binding.ibtnGoogleLogin.isEnabled = false
+                binding.ibtnKakaoLogin.isEnabled = true
+                binding.btnOAuthLoginImg.isEnabled = false
+                binding.btnIntroLogin.isEnabled = false
+                binding.btnIntroSignIn.isEnabled = false
+            }
+            2 -> {
+                binding.ibtnGoogleLogin.isEnabled = false
+                binding.ibtnKakaoLogin.isEnabled = false
+                binding.btnOAuthLoginImg.isEnabled = true
+                binding.btnIntroLogin.isEnabled = false
+                binding.btnIntroSignIn.isEnabled = false
+            }
+        }
+    }
+    private fun enabledAllLoginBtn() {
+        binding.ibtnGoogleLogin.isEnabled = true
+        binding.ibtnKakaoLogin.isEnabled = true
+        binding.btnOAuthLoginImg.isEnabled = true
+        binding.btnIntroLogin.isEnabled = true
+        binding.btnIntroSignIn.isEnabled = true
     }
 }

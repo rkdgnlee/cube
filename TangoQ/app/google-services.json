@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "196772683133",
     "project_id": "tango-q",
-    "storage_bucket": "tango-q.appspot.com"
+    "storage_bucket": "tango-q.firebasestorage.app"
   },
   "client": [
     {
@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "196772683133-oa79e0olodhp605qg0711v79ar4tpa98.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tangoplus.tangoq",
+            "certificate_hash": "d17c3015f525e025bbdc4cf728c8cf6bb01eaf0f"
+          }
+        },
+        {
           "client_id": "196772683133-qiqh69jvddpnblbjqemmah73r0q5vlvm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -44,7 +52,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCjzWhd-pqcPXlGMXuwHXkGDgOSkqaawJw"
+          "current_key": "AIzaSyC4Hx5fAaEp_VCNtpa7u4c4H3mCV8GuSEk"
         }
       ],
       "services": {

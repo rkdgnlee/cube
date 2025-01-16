@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,7 +19,6 @@ import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.LoadControl
 import com.google.android.exoplayer2.MediaItem
@@ -31,25 +29,21 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tangoplus.tangoq.data.ExerciseViewModel
-
-import com.tangoplus.tangoq.data.ProgressUnitVO
-import com.tangoplus.tangoq.data.PlayViewModel
+import com.google.common.eventbus.Subscribe
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
-import com.tangoplus.tangoq.`object`.NetworkProgress.patchProgress1Item
-import com.tangoplus.tangoq.`object`.Singleton_t_progress
+import com.tangoplus.tangoq.api.NetworkProgress.patchProgress1Item
+import com.tangoplus.tangoq.function.EventBusManager
+import com.tangoplus.tangoq.service.ForcedTerminationService
+import com.tangoplus.tangoq.service.TerminationEvent
 import org.json.JSONObject
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 
 class PlayFullScreenActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayFullScreenBinding
-    val viewModel: ExerciseViewModel by viewModels()
-    val pViewModel : PlayViewModel by viewModels()
+    val pvm : PlayViewModel by viewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var chronometer: Chronometer
@@ -65,6 +59,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private var uvpSns : MutableList<String>? = null
 
     private val playbackPositions = mutableMapOf<Int, Long>()
+
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
         object : CountDownTimer(3000, 1000) {
@@ -74,7 +69,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     binding.tvFullScreenGuide.visibility = View.VISIBLE
                     binding.tvFullScreenGuide.alpha = 1f
                     binding.tvFullScreenGuide.text = "다음 운동이 곧 시작합니다 !\n준비해 주세요\n\n${(millisUntilFinished.toFloat() / 1000.0f).roundToInt()}"
-
                 }
             }
 
@@ -85,6 +79,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayFullScreenBinding.inflate(layoutInflater)
@@ -94,7 +89,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
         chronometer = findViewById(R.id.chronometer)
         chronometer.base = SystemClock.elapsedRealtime()
         chronometer.start()
-
+        startService(Intent(this, ForcedTerminationService::class.java))
+        EventBusManager.eventBus.register(this)
 
         // ------# landscape로 방향 설정 & 재생시간 받아오기 #------
         val videoUrl = intent.getStringExtra("video_url")
@@ -105,7 +101,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
         totalDuration = intent.getIntExtra("total_duration", 0)
         uvpSns = intent.getStringArrayListExtra("uvp_sns")
-
+        pvm.isUnit = intent.getBooleanExtra("isUnit", false)
         Log.v("url들", "videoUrl: $exerciseIds, urls: $videoUrls, uvpSns: $uvpSns")
 
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
@@ -154,10 +150,10 @@ class PlayFullScreenActivity : AppCompatActivity() {
         forward5.setOnClickListener {
             val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
             if (forwardPosition != null) {
-                if (forwardPosition < simpleExoPlayer?.duration?.minus(5000)!!) {
+                if (forwardPosition < (simpleExoPlayer?.duration?.minus(5000) ?: 0L)) {
                     simpleExoPlayer?.seekTo(forwardPosition)
                 } else {
-                    simpleExoPlayer!!.pause()
+                    simpleExoPlayer?.pause()
                 }
             }
         } // ------! 앞으로 감기 뒤로 감기 끝 !------
@@ -217,58 +213,60 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     Player.STATE_BUFFERING -> Log.v("PlaybackState", "Player.STATE_BUFFERING")
                     Player.STATE_READY -> {
                         Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: $currentMediaSourceIndex")
-                        currentVideoDuration = simpleExoPlayer!!.duration
+                        currentVideoDuration = simpleExoPlayer?.duration ?: 0
                         Log.e("currentVideoDuration임", "$currentVideoDuration")
 
                     }
                     Player.STATE_ENDED -> {
                         Log.v("PlaybackState", "Player.STATE_ENDED")
 
-                        if (baseUrls.size > 1) {
-                            sendData(true)
-                            val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
-                            val elapsedSeconds = elapsedMillis / 1000
-                            chronometer.stop()
-                            Log.v("elapsedSeconds", "$elapsedSeconds")
-                            viewModel.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
-                            // 이 곳에 총 크로노미터 + 도합 운동시간 + 운동 갯수 3개 보내야함.
-                            val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-                            intent.putExtra("feedback_finish", viewModel.exerciseLog)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                            Log.v("feedback_finish", "VM_exercise_log: ${viewModel.exerciseLog}")
-                            startActivity(intent)
-                            finish()
+                        if (!pvm.isUnit) {
+                            sendData(true) {
+                                val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
+                                val elapsedSeconds = elapsedMillis / 1000
+                                chronometer.stop()
+                                Log.v("elapsedSeconds", "$elapsedSeconds")
+                                pvm.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
+                                // 이 곳에 총 크로노미터 + 도합 운동시간 + 운동 갯수 3개 보내야함.
+                                val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                                intent.putExtra("feedback_finish", pvm.exerciseLog)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                Log.v("feedback_finish", "VM_exercise_log: ${pvm.exerciseLog}")
+                                startActivity(intent)
+                                finish()
+                            }
+
                         } else {
                             val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                             startActivity(intent)
                             finish()
                         }
-
-
                     }
                 }
             }
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
-                val currentWindowIndex = simpleExoPlayer!!.currentWindowIndex
+                val currentWindowIndex = simpleExoPlayer?.currentWindowIndex
 
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     if (baseUrls.size > 1) {
-                        sendData(true)
-                        val currentPlaybackPosition = simpleExoPlayer!!.currentPosition
-                        pViewModel.currentWindowIndex.value = currentWindowIndex
-                        pViewModel.currentPlaybackPosition.value = currentPlaybackPosition
+                        sendData(true) {}
+                        val currentPlaybackPosition = simpleExoPlayer?.currentPosition
+                        pvm.currentWindowIndex.value = currentWindowIndex
+                        pvm.currentPlaybackPosition.value = currentPlaybackPosition
 
-                        if (currentWindowIndex < mediaSourceList.size) {
-                            viewModel.totalProgressDuration += simpleExoPlayer!!.duration.toInt()
-                            currentMediaSourceIndex++
-                            Log.v("윈도우인덱스", "$currentMediaSourceIndex")
+                        if (currentWindowIndex != null) {
+                            if (currentWindowIndex < mediaSourceList.size) {
+                                pvm.totalProgressDuration += simpleExoPlayer?.duration?.toInt() ?: 0
+                                currentMediaSourceIndex++
+                                Log.v("윈도우인덱스", "$currentMediaSourceIndex")
 
-                            currentExerciseId = sns!![currentWindowIndex]
-                            startNextVideoCountdown()
-                            currentVideoDuration = simpleExoPlayer!!.duration
-                            Log.e("currentVideoDuration임", "$currentVideoDuration")
+                                currentExerciseId = sns?.get(currentWindowIndex) ?: ""
+                                startNextVideoCountdown()
+                                currentVideoDuration = simpleExoPlayer?.duration ?: 0
+                                Log.e("currentVideoDuration임", "$currentVideoDuration")
+                            }
                         }
                     }
 
@@ -277,7 +275,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         })
     }
     // ------# isFinish는 영상 길이 전부 시청했는지 여부 #------
-    private fun sendData(isFinish: Boolean) {
+    private fun sendData(isFinish: Boolean, callback: () -> Unit) {
         val player = simpleExoPlayer ?: return
         val currentPositionMs = player.currentPosition - 1
         // 현재 윈도우의 재생 위치 저장
@@ -290,11 +288,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
         } else {
             jo.put("progress", currentPositionSeconds)
         }
-        Log.v("미디어소스인덱스", "${uvpSns!![currentMediaSourceIndex].toInt()}, jo: $jo, totalDuration: $totalDurationMs")
-
-        if (uvpSns?.isNotEmpty() == true) {
-            patchProgress1Item(getString(R.string.API_progress), uvpSns!![currentMediaSourceIndex].toInt(), jo, this@PlayFullScreenActivity) { progressUnitVO -> }
-            Log.v("progress완료업데이트", "${uvpSns!![currentMediaSourceIndex].toInt()}, currentPosition: $currentPositionMs")
+        Log.v("미디어소스인덱스", "${uvpSns?.get(currentMediaSourceIndex)?.toInt()}, jo: $jo, totalDuration: $totalDurationMs")
+        val currentUvpSns = uvpSns?.get(currentMediaSourceIndex)?.toInt()
+        if (uvpSns?.isNotEmpty() == true && currentUvpSns != null) {
+            patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { }
+            Log.v("progress완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
+            callback()
         }
     }
 
@@ -308,6 +307,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                         or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         or View.SYSTEM_UI_FLAG_FULLSCREEN )
     }
+
     override fun onWindowFocusChanged(hasFocus : Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if(hasFocus) fullScreen(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
@@ -340,12 +340,13 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setTitle("알림")
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
-                if (baseUrls.size > 1) {
-                    sendData(false)
-                    val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    startActivity(intent)
-                    finish()
+                if (!pvm.isUnit) {
+                    sendData(false) {
+                        val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        startActivity(intent)
+                        finish()
+                    }
                 } else {
                     val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                     startActivity(intent)
@@ -380,24 +381,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }, delay)
     }
 
-
-    // 특정 동작이 완료되었을 때 호출되는 함수
-    private fun getCurrentDateTimeAsString(): String {
-        // 현재 날짜와 시간을 가져옴
-        val currentDateTime = LocalDateTime.now()
-
-        // 원하는 형식으로 날짜와 시간을 포맷
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        return currentDateTime.format(formatter)
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-//        pViewModel.currentPlaybackPosition.value = simpleExoPlayer!!.currentPosition
-//        pViewModel.currentWindowIndex.value = simpleExoPlayer!!.currentWindowIndex
-    }
-    // 일시중지
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true
@@ -433,5 +416,13 @@ class PlayFullScreenActivity : AppCompatActivity() {
         outState.putLong("playbackPosition", simpleExoPlayer?.currentPosition ?: 0L)
         outState.putInt("currentWindow", simpleExoPlayer?.currentWindowIndex ?: 0)
         outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
+    }
+
+    @Subscribe
+    fun onTerminationEvent(event: TerminationEvent) {
+        Log.v("강제종료", "sendData: $currentVideoDuration")
+        sendData(false) {
+            EventBusManager.eventBus.unregister(this)
+        }
     }
 }

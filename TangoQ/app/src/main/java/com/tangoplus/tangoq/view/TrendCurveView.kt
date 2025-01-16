@@ -10,8 +10,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.tangoplus.tangoq.R
-import org.apache.commons.math3.fitting.PolynomialCurveFitter
-import org.apache.commons.math3.fitting.WeightedObservedPoints
 
 class TrendCurveView @JvmOverloads constructor(
     context: Context,
@@ -21,22 +19,22 @@ class TrendCurveView @JvmOverloads constructor(
 
     private val paint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.thirdColor)
-        strokeWidth = 6f
+        strokeWidth = 4.5f
         style = Paint.Style.STROKE
     }
-
     private val path = Path()
 
     private var points = listOf<Pair<Float, Float>>()
     private var resampledPoints = listOf<Pair<Float, Float>>()
     private var margin = 20f // 기본 마진 값
     private var boundingBox = RectF()
+    private val resampleSize = 35
 
-    fun setPoints(newPoints: List<Pair<Float, Float>>, resampleSize: Int = 10, newMargin: Float = 15f) {
+    fun setPoints(newPoints: List<Pair<Float, Float>>, newMargin: Float = 15f) {
         points = newPoints
         margin = newMargin
         calculateBoundingBox()
-        resamplePoints(resampleSize)
+        resamplePoints()
         invalidate()
     }
 
@@ -48,7 +46,7 @@ class TrendCurveView @JvmOverloads constructor(
         boundingBox.set(minX, minY, maxX, maxY)
     }
 
-    private fun resamplePoints(resampleSize: Int) {
+    private fun resamplePoints() {
         val chunkedPoints = points.chunked(points.size / resampleSize)
         resampledPoints = chunkedPoints.map { chunk ->
             val avgX = chunk.map { it.first }.average().toFloat()
@@ -70,7 +68,7 @@ class TrendCurveView @JvmOverloads constructor(
         path.moveTo(scaledPoints[0].first, scaledPoints[0].second)
 
         for (i in 1 until scaledPoints.size) {
-            val p0 = if (i > 1) scaledPoints[i - 2] else scaledPoints[i - 1]
+            val p0 = if (i > 1) scaledPoints[i - 2] else scaledPoints[0]
             val p1 = scaledPoints[i - 1]
             val p2 = scaledPoints[i]
             val p3 = if (i < scaledPoints.size - 1) scaledPoints[i + 1] else p2
@@ -84,14 +82,12 @@ class TrendCurveView @JvmOverloads constructor(
                 p2.first - (p3.first - p1.first) / 4,
                 p2.second - (p3.second - p1.second) / 4
             )
-
             path.cubicTo(
                 controlPoint1.first, controlPoint1.second,
                 controlPoint2.first, controlPoint2.second,
                 p2.first, p2.second
             )
         }
-
         canvas.drawPath(path, paint)
     }
 

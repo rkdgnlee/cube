@@ -3,7 +3,7 @@
     <color name="black">#FFFFFF</color>
     <color name="white">#121212</color>
     <color name="whitebar">#1D1D1D</color>
-
+    <color name="whiteText">#FFFFFF</color>
     <color name="mainColor">#2EE88B</color>
     <color name="mainDeepColor">#EFFEF6</color>
     <color name="mainContainerColor">#0C894C</color>
@@ -22,7 +22,7 @@
     <color name="deleteContainerColor">#12181E</color>
     <color name="deleteTextColor">#AEAEAE</color>
     <color name="cautionColor">#FF981D</color>
-    <color name="cautionContainerColor">#FFEFDC</color>
+    <color name="cautionContainerColor">#503D24</color>
 
     <color name="subColor100">#47484C</color>
     <color name="subColor150">#757575</color>
@@ -31,10 +31,16 @@
     <color name="subColor400">#C8C8C8</color>
     <color name="subColor500">#D9D9D9</color>
     <color name="subColor700">#DFDFE0</color>
-    <color name="subColor800">#F5F5F5</color>
+    <color name="subColor800">#F6F6F6</color>
 
     <color name="successColor">#45FF02</color>
     <color name="conditionSuccessColor">#7AA2E3</color>
     <color name="opacityColor">#4D000000</color>
     <color name="opacitySubColor">#25959595</color>
+    <color name="transparentColor">#00000000</color>
+    <color name="white_overlay">#F5000000</color>
+
+    <color name="deleteRippleColor">#27313D</color>
+    <color name="mainRippleColor">#42ED97</color>
+    <color name="rippleColor">#80090909</color>
 </resources>

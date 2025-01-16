@@ -9,13 +9,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.adapter.RecommendationRVAdapter
-import com.tangoplus.tangoq.data.MeasureVO
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.vo.MeasureVO
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramSelectBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
-import com.tangoplus.tangoq.dialog.MeasureBSDialogFragment
+import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.db.Singleton_t_measure
 
 class ProgramSelectFragment : Fragment() {
    lateinit var binding : FragmentProgramSelectBinding
@@ -37,9 +37,9 @@ class ProgramSelectFragment : Fragment() {
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
         vm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
-            val dateIndex = singletonMeasure?.indexOf(singletonMeasure?.find { it.regDate == selectedDate }!!)
+            val dateIndex = singletonMeasure?.indexOf(singletonMeasure?.find { it.regDate == selectedDate })
             Log.v("dataIndex", "현재날짜 싱글턴에서 index: ${dateIndex}, vm: ${vm.selectedMeasure?.regDate}")
-            binding.tvPSMeasureDate.text = singletonMeasure?.get(dateIndex!!)?.regDate?.substring(0, 10)
+            binding.tvPSMeasureDate.text = dateIndex?.let { singletonMeasure?.get(it)?.regDate?.substring(0, 10) }
             if (dateIndex != null) {
                 setAdapter(dateIndex)
             }
@@ -65,10 +65,13 @@ class ProgramSelectFragment : Fragment() {
         "어깨" to 2,
         "팔꿉" to 3,
         "손목" to 4,
-        "척추" to 5,
-        "골반" to 6,
-        "무릎" to 7,
-        "발목" to 8,
+        "몸통전면(복부)" to 5,
+        "몸통후면(척추)" to 6,
+        "몸통 코어" to 7,
+        "엉덩" to 8,
+        "고관절" to 8,
+        "무릎" to 9,
+        "발목" to 10,
     )
     // category의 id값들을 따로 adapter에서 매개변수로 넣어서, drawable id값 매칭.
 
@@ -76,15 +79,14 @@ class ProgramSelectFragment : Fragment() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvPSD.layoutManager = layoutManager
 
-        val categoryNums = singletonMeasure?.get(dateIndex)?.recommendations!!.map { categoryMap.entries.find { entry -> it.title.contains(entry.key) }?.value }
+        val categoryNums = singletonMeasure?.get(dateIndex)?.recommendations?.map { categoryMap.entries.find { entry -> it.title.contains(entry.key) }?.value }
 
-        singletonMeasure?.get(dateIndex)?.recommendations!!
-            .mapNotNull { rec ->
+        singletonMeasure?.get(dateIndex)?.recommendations?.mapNotNull { rec ->
                 categoryMap.entries.find { entry -> rec.title.contains(entry.key) }?.value
             }
         Log.v("categoryNums", "categoryNums: $categoryNums")
-        val adapter = RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations!!, categoryNums)
-        Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations!!}")
+        val adapter = categoryNums?.let { RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations ?: mutableListOf(), it ) }
+        Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations}")
         binding.rvPSD.adapter = adapter
     }
 }

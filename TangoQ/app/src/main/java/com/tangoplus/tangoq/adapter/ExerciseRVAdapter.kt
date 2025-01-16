@@ -1,19 +1,15 @@
 package com.tangoplus.tangoq.adapter
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,23 +17,23 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ProgressUnitVO
+import com.tangoplus.tangoq.vo.ExerciseVO
+import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.databinding.RvExerciseHistoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import java.lang.IllegalArgumentException
 
 
 class ExerciseRVAdapter (
     private val fragment: Fragment,
-    var exerciseList: MutableList<ExerciseVO>,
+    var exerciseList: MutableList<ExerciseVO>?,
     private val progresses : MutableList<ProgressUnitVO>?,
     private val sequence : Pair<Int, Int>?,
     private val history : MutableList<String>?,
-    var xmlname: String,
+    private var xmlName: String,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var dialogClosedListener: OnDialogClosedListener? = null
@@ -75,7 +71,7 @@ class ExerciseRVAdapter (
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (xmlname) {
+        return when (xmlName) {
             "main" -> 0
             "recommend" -> 1
             "history" -> 2
@@ -103,22 +99,22 @@ class ExerciseRVAdapter (
     }
 
     override fun getItemCount(): Int {
-        return exerciseList.size
+        return exerciseList?.size ?: 0
     }
 
     @SuppressLint("ClickableViewAccessibility", "MissingInflatedId", "InflateParams", "SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentExerciseItem = exerciseList[position]
+        val currentExerciseItem = exerciseList?.get(position)
 
-        val second = "${currentExerciseItem.videoDuration?.toInt()?.div(60)}분 ${currentExerciseItem.videoDuration?.toInt()?.rem(60)}초"
+        val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
 
         when (holder) {
             is MainViewHolder -> {
                 // -----! recyclerview에서 운동군 보여주기 !------
-                holder.tvEISymptom.text = currentExerciseItem.relatedSymptom.toString()
-                holder.tvEIName.text = currentExerciseItem.exerciseName
+                holder.tvEISymptom.text = currentExerciseItem?.relatedSymptom.toString()
+                holder.tvEIName.text = currentExerciseItem?.exerciseName
                 holder.tvEITime.text = second
-                when (currentExerciseItem.exerciseStage) {
+                when (currentExerciseItem?.exerciseStage) {
                     "초급" -> {
                         holder.ivEIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
                         holder.tvEIStage.text = "초급자"
@@ -134,33 +130,32 @@ class ExerciseRVAdapter (
                 }
 
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePathReal}")
+                    .load("${currentExerciseItem?.imageFilePath}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEIThumbnail)
 
                 // ------# 시청 기록 #------\
 //                if (currentExerciseItem.exerciseId == currentHistoryItem.exerciseId) {
-//                    holder.hpvEIHistory.progresses = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt()!!))!! * 100
+//                    holder.hpvEIHistory.progresses = (currentHistoryItem.timestamp?.div(currentExerciseItem.videoDuration?.toInt())) * 100
 //                }
 
                 // ------# 하트 버튼 #------
-                updateLikeButtonState(currentExerciseItem.exerciseId.toString(), holder.ibtnEILike)
+                updateLikeButtonState(currentExerciseItem?.exerciseId.toString(), holder.ibtnEILike)
                 holder.ibtnEILike.setOnClickListener {
-                    val currentLikeState = prefs.existLike(currentExerciseItem.exerciseId.toString())
+                    val currentLikeState = prefs.existLike(currentExerciseItem?.exerciseId.toString())
                     if (currentLikeState) {
-                        prefs.deleteLike(currentExerciseItem.exerciseId.toString())
+                        prefs.deleteLike(currentExerciseItem?.exerciseId.toString())
                     } else {
-                        prefs.storeLike(currentExerciseItem.exerciseId.toString())
+                        prefs.storeLike(currentExerciseItem?.exerciseId.toString())
                     }
                     // 상태 변경 후 즉시 UI 업데이트
-                    updateLikeButtonState(currentExerciseItem.exerciseId.toString(), holder.ibtnEILike)
+                    updateLikeButtonState(currentExerciseItem?.exerciseId.toString(), holder.ibtnEILike)
                 }
 
-                // TODO MD2에 맞게 수정해야함
                 if (!progresses.isNullOrEmpty() && sequence != null ) {
 
-                    /* Pair(pvm.currentSequence, pvm.selectedSequence.value!!))
+                    /* Pair(pvm.currentSequence, pvm.selectedSequence.value))
                     * 회차를 기준으로 나눠진거임. progresses[position] == 16개의 운동이 담긴 1회차 선택한 회차를 가져옴.
                     * selectSeq.first == currentSeq
                     * selectSeq.second == selectedSeq
@@ -195,7 +190,8 @@ class ExerciseRVAdapter (
                             2
                         }
                     }
-
+                    // Program 의 UI 
+                    holder.hpvEI.visibility = View.VISIBLE
                     when (condition) {
                         0 -> { // 재생 및 완료
                             holder.tvEIFinish.visibility = View.VISIBLE
@@ -203,17 +199,20 @@ class ExerciseRVAdapter (
                             holder.ibtnEILike.isEnabled = false
                             holder.vEI.visibility = View.VISIBLE
                             holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondContainerColor)
-                            holder.hpvEI.visibility = View.GONE
+                            holder.hpvEI.progress = 100f
+                            holder.hpvEI.autoAnimate = false
                         }
                         1 -> { // 재생 시간 중간
                             holder.tvEIFinish.visibility = View.GONE
-                            holder.hpvEI.visibility = View.VISIBLE
-                            holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toFloat()!!
+                            val duration  = currentExerciseItem?.duration
+                            if (duration != null) {
+                                holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
+                            }
                             Log.v("hpvprogresses", "${holder.hpvEI.progress}")
+                            holder.hpvEI.autoAnimate = true
                         }
                         else -> { // 재생기록 없는 item
                             holder.tvEIFinish.visibility = View.GONE
-                            holder.hpvEI.visibility = View.GONE
                         }
                     }
                 } else {
@@ -248,12 +247,12 @@ class ExerciseRVAdapter (
             }
             // ------! play thumbnail 추천 운동 시작 !------
             is RecommendViewHolder -> {
-                holder.tvRcPName.text = currentExerciseItem.exerciseName
+                holder.tvRcPName.text = currentExerciseItem?.exerciseName
                 holder.tvRcPTime.text = second
-                holder.tvRcPStage.text = currentExerciseItem.exerciseStage
+                holder.tvRcPStage.text = currentExerciseItem?.exerciseStage
 
                 Glide.with(holder.itemView.context)
-                    .load("${currentExerciseItem.imageFilePathReal}?width=200&height=200")
+                    .load("${currentExerciseItem?.imageFilePath}?width=200&height=200")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(200)
                     .into(holder.ivRcPThumbnail)
@@ -269,9 +268,9 @@ class ExerciseRVAdapter (
 
             is HistoryViewHolder -> {
                 val currentItem = progresses?.get(position)
-                holder.tvEHIName.text = currentExerciseItem.exerciseName
+                holder.tvEHIName.text = currentExerciseItem?.exerciseName
                 holder.tvEHITime.text = second
-                when (currentExerciseItem.exerciseStage) {
+                when (currentExerciseItem?.exerciseStage) {
                     "초급" -> {
                         holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
                         holder.tvEHIStage.text = "초급자"
@@ -286,48 +285,18 @@ class ExerciseRVAdapter (
                     }
                 }
                 Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem.imageFilePathReal}")
+                    .load("${currentExerciseItem?.imageFilePath}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEHIThumbnail)
-                if (currentItem != null) {
-                    holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / currentExerciseItem.videoDuration?.toFloat()!!
+                val duration = currentExerciseItem?.duration
+                if (currentItem != null && duration != null) {
+                    holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
                 }
-                holder.tvEHISeq.text = "${position+1}/${exerciseList.size}"
+                holder.tvEHISeq.text = "${position+1}/${exerciseList?.size}"
             }
         }
     }
-
-    private fun changeBackgroundColor(view:View, startColor: Int, endColor: Int, duration: Long = 350) {
-        val animator = ValueAnimator.ofFloat(0f, 1f)
-        animator.duration = duration
-
-        animator.addUpdateListener { animation ->
-            val fraction = animation.animatedValue as Float
-            val newColor = ColorUtils.blendARGB(startColor, endColor, fraction)
-            view.backgroundTintList = ColorStateList.valueOf(newColor)
-        }
-        animator.interpolator = LinearInterpolator()
-        animator.start()
-    }
-
-    fun List<ProgressUnitVO>.getExerciseStatuses(currentWeek: Int, currentSeq: Int): List<Int> {
-        return this.map { exercise ->
-            when {
-                exercise.currentWeek < currentWeek ||
-                        (exercise.currentWeek == currentWeek && exercise.currentSequence < currentSeq) -> {
-                    if (exercise.lastProgress >= exercise.videoDuration) 0
-                    else 1
-                }
-                exercise.currentWeek == currentWeek && exercise.currentSequence == currentSeq -> {
-                    if (exercise.lastProgress > 0) 1
-                    else 2
-                }
-                else -> 2
-            }
-        }
-    }
-
     private fun updateLikeButtonState(exerciseId: String, ibtn : ImageButton) {
         val isLike = prefs.existLike(exerciseId)
         ibtn.setImageDrawable(
@@ -336,8 +305,5 @@ class ExerciseRVAdapter (
                 if (isLike) R.drawable.icon_like_enabled else R.drawable.icon_like_disabled
             )
         )
-    }
-    fun setOnDialogClosedListener(listener: OnDialogClosedListener) {
-        dialogClosedListener = listener
     }
 }

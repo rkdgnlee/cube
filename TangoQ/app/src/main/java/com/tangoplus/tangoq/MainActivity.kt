@@ -1,9 +1,12 @@
 package com.tangoplus.tangoq
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.UiModeManager
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,65 +17,150 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.tangoplus.tangoq.api.HttpClientProvider.scheduleTokenCheck
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
-import com.tangoplus.tangoq.data.ExerciseViewModel
-import com.tangoplus.tangoq.data.ProgressViewModel
-import com.tangoplus.tangoq.data.MeasureViewModel
-import com.tangoplus.tangoq.data.UserViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
-import com.tangoplus.tangoq.db.DeepLinkManager
+import com.tangoplus.tangoq.function.DeepLinkManager
+import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
-import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseById
-import com.tangoplus.tangoq.`object`.Singleton_t_measure
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
+import com.tangoplus.tangoq.function.WifiManager
+import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
+import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.dialog.AlertDialogFragment
+import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
+import com.tangoplus.tangoq.fragment.MeasureAnalysisFragment
+import com.tangoplus.tangoq.fragment.MeasureDashBoard1Fragment
+import com.tangoplus.tangoq.fragment.MeasureDashBoard2Fragment
+import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
+import com.tangoplus.tangoq.fragment.ProgramSelectFragment
+import com.tangoplus.tangoq.fragment.WithdrawalFragment
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-    private val eViewModel : ExerciseViewModel by viewModels()
-    private val uViewModel : UserViewModel by viewModels()
-    private val hViewModel : ProgressViewModel by viewModels()
-    private val mViewModel : MeasureViewModel by viewModels()
+    private val pvm : PlayViewModel by viewModels()
+    private val mvm : MeasureViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
-//    private lateinit var program : ProgramVO
-
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
+    private lateinit var wifiManager: WifiManager
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         // 새로운 인텐트가 들어왔을 때 딥링크 처리
-        if (intent != null) {
-            handleIntent(intent)
-        }
+        handleIntent(intent)
     }
 
+    @SuppressLint("ScheduleExactAlarm")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ------# 다크모드 메뉴 이름 설정 시작 #------
-        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        val isNightMode = uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
-        selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
+        // ------! activity 사전 설정 시작 !------
+        // 로그인 완료 시 2분마다 토큰 갱신
+        val workManager = WorkManager.getInstance(this)
+        scheduleTokenCheck(this)
+        workManager.getWorkInfosForUniqueWorkLiveData("TokenCheckWork").observe(this) { workInfos ->
+            if (workInfos.isNullOrEmpty()) return@observe
+            val workInfo = workInfos[0]
+            if (workInfo.state == WorkInfo.State.FAILED) {
+                // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
+                val dialog = AlertDialogFragment.newInstance("logout")
+                dialog.show(supportFragmentManager, "AlertDialogFragment")
+            }
+        }
 
+        wifiManager = WifiManager(this)
+        // ------! activity 사전 설정 끝 !------
+
+        // ------# 접근 방지 #------
+        when (val securityType = wifiManager.checkWifiSecurity()) {
+            "OPEN","WEP" -> {
+                Log.v("securityNotice", "securityType: $securityType")
+                Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_LONG).show()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    logout(this@MainActivity, 0)
+                },   3 * 60000) //
+            }
+        }
+        if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
+            Toast.makeText(this, "올바르지 않은 접근입니다.\n다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
+            logout(this@MainActivity, 0)
+        }
+        // ------# 접근 방지 #------
+
+        selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        // bottomnavigation도 같이 backstack 반응하기
+        supportFragmentManager.addOnBackStackChangedListener {
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
+            when (currentFragment) {
+                is MainFragment, is ProgramSelectFragment -> binding.bnbMain.selectedItemId = R.id.main
+                is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
+                is MeasureFragment, is MeasureDashBoard1Fragment, is MeasureDashBoard2Fragment, is MeasureHistoryFragment, is MeasureDetailFragment, is MeasureAnalysisFragment-> binding.bnbMain.selectedItemId = R.id.measure
+                is ProfileFragment, is WithdrawalFragment -> binding.bnbMain.selectedItemId = R.id.profile
+            }
+        }
+
         AlarmReceiver()
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        if (hasExactAlarmPermission(this@MainActivity)) {
+
+            val time = Triple(13, 5, 0)
+            val intent = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
+                putExtra("title", title)
+                putExtra("text", "장시간 앉아있었다면 무리한 목과 허리를 위해 스트레칭을 추천드려요")
+            }
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, time.first)
+            calendar.set(Calendar.MINUTE, time.second)
+            calendar.set(Calendar.SECOND, time.third)
+
+            if (calendar.timeInMillis <= System.currentTimeMillis()) {
+                calendar.add(Calendar.DAY_OF_MONTH, 1)
+            }
+            val pendingIntent = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
+            Log.v("setAlarm", "Success to Alarm $title, $time")
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
+            val time2 = Triple(19, 30, 0)
+            val intent2 = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
+                putExtra("title", title)
+                putExtra("text", "더 나은 내일을 위해 운동을 시작할 때 입니다")
+            }
+            val calendar2 = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, time2.first)
+            calendar.set(Calendar.MINUTE, time2.second)
+            calendar.set(Calendar.SECOND, time2.third)
+
+            if (calendar2.timeInMillis <= System.currentTimeMillis()) {
+                calendar2.add(Calendar.DAY_OF_MONTH, 1)
+            }
+            val pendingIntent2 = PendingIntent.getBroadcast(this@MainActivity, 8080, intent2, PendingIntent.FLAG_IMMUTABLE)
+            Log.v("setAlarm", "Success to Alarm $title, $time2")
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent2)
+        }
 
         // -----# 초기 화면 설정 #-----
-//        handlePendingDeepLink()
 
         singletonMeasure = Singleton_t_measure.getInstance(this)
         setCurrentFragment(selectedTabId)
@@ -80,10 +168,9 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
         if (!singletonMeasure.measures.isNullOrEmpty()) { // 값이 하나라도 있을 때만 가져오기.
-            mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
-            mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+            mvm.selectedMeasure = singletonMeasure.measures?.get(0)
+            mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
         }
-
         handleIntent(intent)
 
         // -------# 버튼 시작 #------
@@ -110,8 +197,8 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val finishedMeasure = result.data?.getBooleanExtra("finishedMeasure", false) ?: false
                 if (finishedMeasure) {
-                    mViewModel.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
-                    mViewModel.selectedMeasure = singletonMeasure.measures?.get(0)
+                    mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+                    mvm.selectedMeasure = singletonMeasure.measures?.get(0)
                     val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure
                     val bundle = Bundle()
@@ -134,7 +221,7 @@ class MainActivity : AppCompatActivity() {
         outState.putInt("selectedTabId", selectedTabId)
     }
 
-    fun setCurrentFragment(itemId: Int) {
+    private fun setCurrentFragment(itemId: Int) {
         val fragment = when(itemId) {
             R.id.main -> MainFragment()
             R.id.exercise -> ExerciseFragment()
@@ -157,8 +244,8 @@ class MainActivity : AppCompatActivity() {
         val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
         Log.v("intent>feedback", "$feedbackData")
         if (feedbackData != null) {
-            if (eViewModel.isDialogShown.value == false) {
-                eViewModel.exerciseLog = feedbackData
+            if (pvm.isDialogShown.value == false) {
+                pvm.exerciseLog = feedbackData
 
                 // 이미 DialogFragment가 표시되어 있는지 확인
                 val fragmentManager = supportFragmentManager
@@ -169,7 +256,7 @@ class MainActivity : AppCompatActivity() {
                     dialog.show(fragmentManager, "FeedbackDialogFragment")
                 }
             } else {
-                eViewModel.isDialogShown.value = true
+                pvm.isDialogShown.value = true
             }
         }
     }
@@ -188,12 +275,12 @@ class MainActivity : AppCompatActivity() {
                     isEnabled = false
                     finishAffinity() // 앱을 완전히 종료
                 } else {
+                    MeasureDatabase.closeDatabase()
                     backPressedOnce = true
                     Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
                     backPressHandler.postDelayed(backPressRunnable, 1000)
                 }
             } else {
-
                 fragmentManager.popBackStack()
             }
         }
@@ -203,27 +290,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // 핸들러의 콜백을 제거하여 메모리 누수를 방지
         backPressHandler.removeCallbacks(backPressRunnable)
-        clearCache()
-    }
-
-    private fun clearCache() {
-//        val cacheDir = cacheDir // 앱의 캐시 디렉토리 가져오기
-//        cacheDir?.let {
-//            deleteDir(it)
-//        }
-    }
-
-    private fun deleteDir(dir: File?): Boolean {
-        if (dir != null && dir.isDirectory) {
-            val children = dir.list()
-            children?.forEach { child ->
-                val success = deleteDir(File(dir, child))
-                if (!success) {
-                    return false
-                }
-            }
-        }
-        return dir?.delete() ?: false
+        WorkManager.getInstance(this).cancelUniqueWork("TokenCheckWork")
     }
 
     private fun handleIntent(intent: Intent) {
@@ -240,7 +307,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToFragment(path: String, exerciseId : String?) {
-        Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: ${exerciseId}")
+        Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: $exerciseId")
         when (path) {
             "PT" -> {
                 if (exerciseId != null) {
@@ -289,6 +356,13 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MeasureSkeletonActivity::class.java)
         measureSkeletonLauncher.launch(intent)
     }
-
+    private fun hasExactAlarmPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.canScheduleExactAlarms()
+        } else {
+            true
+        }
+    }
 }
 

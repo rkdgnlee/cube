@@ -5,31 +5,31 @@
     android:viewportWidth="139"
     android:viewportHeight="419">
     <path
-        android:strokeColor="@color/opacityColor"
+        android:strokeColor="#FFFFFF"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:pathData="M68.97 166.03s2.06 4.61 0.4 6.38"/>
     <path
-        android:strokeColor="@color/opacityColor"
+        android:strokeColor="#FFFFFF"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:pathData="M107.28 150.84c-2.27 6.72-3.44 12.87-3.13 19.95l0.14 3.16s15.54 11.25 9.64 72.19c0 0-3.42 32.94-8.86 40.35l-1.56 17.56s4.5 26.08-6.37 55.18l-4.15 28.22s7.39 15.57 10.41 19.35c4.51 5.63-8.15 12.5-18.47 10.32-6.34-1.35-10.7-6.51-10.7-12.27v-14.42s-1.96-4.76 2.7-6.4c0 0-0.15-20.98-1.5-31.64-0.68-5.34-1-10.7-1.03-16.08-0.07-12.23 0.41-30.53 3.67-37.28 0 0-4.98-13.36-2.49-22.15 0 0-4.55-52.15-1.76-56.54 0 0-2.23 1.8-4.33 1.8s-4.33-1.8-4.33-1.8c2.8 4.39-1.76 56.54-1.76 56.54 2.48 8.79-2.49 22.15-2.49 22.15 3.26 6.75 3.74 25.05 3.67 37.28-0.03 5.38-0.36 10.74-1.03 16.08-1.35 10.66-1.5 31.63-1.5 31.63 4.66 1.65 2.7 6.4 2.7 6.4v14.43c0 5.76-4.36 10.92-10.7 12.27-10.32 2.2-22.98-4.7-18.47-10.32 3.02-3.78 10.4-19.35 10.4-19.35l-4.14-28.22c-10.88-29.1-6.37-55.18-6.37-55.18L33.9 286.5c-5.44-7.41-8.86-40.35-8.86-40.35-5.9-60.94 9.64-72.19 9.64-72.19l0.22-5.05c0.26-6.02-0.43-12.04-1.92-17.89-0.41-1.6-0.59-2.92-0.59-2.92"/>
     <path
-        android:strokeColor="@color/opacityColor"
+        android:strokeColor="#FFFFFF"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:pathData="M44.53 286.9s5.75 4.02 10.16 1.97"/>
     <path
-        android:strokeColor="@color/opacityColor"
+        android:strokeColor="#FFFFFF"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:pathData="M96.44 286.9s-5.75 4.02-10.15 1.97"/>
     <path
-        android:strokeColor="@color/opacityColor"
+        android:strokeColor="#FFFFFF"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"

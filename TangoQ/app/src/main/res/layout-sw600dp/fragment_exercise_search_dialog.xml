@@ -66,6 +66,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="#00FAFAFA"
+                    android:contentDescription="clearEtESDSearch"
                     android:scaleType="centerCrop"
                     android:src="@drawable/icon_text_clear" />
             </LinearLayout>

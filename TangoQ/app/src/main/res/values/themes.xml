@@ -17,7 +17,6 @@
     </style>
 
 
-
     <!--    alertdialog theme 적용 -->
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorPrimary">@color/black</item>
@@ -27,8 +26,10 @@
         <item name="android:background">@color/white</item>
         <item name="android:windowBackground">@color/subColor100</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.App.Body.Text</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text
+        </item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.App.Body.Text
+        </item>
 
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
@@ -37,4 +38,14 @@
     <style name="Theme.TangoQ" parent="Base.Theme.TangoQ">
         <item name="android:fontFamily">@font/font_style</item>
     </style>
+
+    <style name="ThemeOverlay.TangoQ.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
+        <item name="fullscreenTextColor">@color/light_blue_A200</item>
+    </style>
+<!--    <style name="AppTheme.Splash" parent="Theme.Material3.DayNight.NoActionBar">-->
+<!--        <item name="android:statusBarColor">@android:color/white</item>-->
+<!--        <item name="android:navigationBarColor">@android:color/white</item>-->
+<!--        <item name="android:backgroundTint">@android:color/white</item>-->
+<!--    </style>-->
 </resources>

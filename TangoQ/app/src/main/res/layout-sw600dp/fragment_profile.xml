@@ -20,6 +20,7 @@
             android:layout_marginEnd="40dp"
             android:background="@drawable/effect_ibtn_20dp"
             android:backgroundTint="@color/white"
+            android:contentDescription="showAlarm"
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_alarm"
@@ -69,6 +70,7 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_marginTop="12dp"
+                    android:contentDescription="profileEdit"
                     android:src="@drawable/profile_default"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -86,19 +88,6 @@
                     app:layout_constraintEnd_toEndOf="@+id/civP"
                     app:layout_constraintStart_toStartOf="@+id/civP"
                     app:layout_constraintTop_toBottomOf="@+id/civP" />
-
-                <!--TODO 소개는 추가 예정            <TextView-->
-                <!--                android:id="@+id/tvPfIntroduce"-->
-                <!--                android:layout_width="wrap_content"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_marginTop="16dp"-->
-                <!--                android:text="소개를 입력해주세요"-->
-                <!--                android:textColor="@color/black"-->
-                <!--                android:textSize="16sp"-->
-                <!--                app:layout_constraintEnd_toEndOf="@+id/tvPfName"-->
-                <!--                app:layout_constraintHorizontal_bias="0.478"-->
-                <!--                app:layout_constraintStart_toStartOf="@+id/tvPfName"-->
-                <!--                app:layout_constraintTop_toBottomOf="@+id/tvPfName" />-->
 
                 <TextView
                     android:id="@+id/TextView125"
@@ -264,29 +253,13 @@
                     android:id="@+id/rvPDetail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="100dp"
                     android:nestedScrollingEnabled="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView106" />
-
-                <TextView
-                    android:id="@+id/tvWithDrawal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="64dp"
-                    android:layout_marginBottom="64dp"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:gravity="right|center_vertical"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="회원 탈퇴"
-                    android:textColor="@color/subColor300"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rvPDetail" />
 
                 <View
                     android:id="@+id/view4"

@@ -5,13 +5,15 @@
     android:id="@+id/constraintLayout63"
     android:layout_width="256dp"
     android:layout_height="110dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:contentDescription="ShowSimilarExerciseDetail">
 
     <View
         android:id="@+id/vRPTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/effect_ibtn_12dp"
+        android:contentDescription="showRecommendExercise"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

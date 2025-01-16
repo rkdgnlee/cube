@@ -41,6 +41,7 @@
                         android:layout_marginEnd="40dp"
                         android:background="@drawable/effect_ibtn_20dp"
                         android:backgroundTint="@color/white"
+                        android:contentDescription="showAlarm"
                         android:padding="8dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/icon_alarm"
@@ -53,6 +54,7 @@
                         android:layout_height="48dp"
                         android:layout_marginEnd="24dp"
                         android:background="@drawable/effect_ibtn_12dp"
+                        android:contentDescription="showQrCodeScan"
                         android:scaleType="centerCrop"
                         android:src="@drawable/icon_qr_code"
                         app:layout_constraintBottom_toBottomOf="@+id/ibtnEDAlarm"
@@ -133,6 +135,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="#00FFFFFF"
+                    android:contentDescription="clearEditText"
                     android:scaleType="centerCrop"
                     android:src="@drawable/icon_text_clear" />
             </LinearLayout>

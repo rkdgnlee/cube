@@ -28,6 +28,8 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:backgroundTint="#00FFFFFF"
+            android:contentDescription="playVideo"
+            android:focusableInTouchMode="true"
             android:visibility="gone"
             app:srcCompat="@drawable/media_play_button" />
 
@@ -71,12 +73,14 @@
             android:id="@id/exo_progress_placeholder"
             android:layout_width="0dp"
             android:layout_height="52dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:contentDescription="moveToPointOfView" />
 
         <TextView
             android:id="@id/exo_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="duration"
             android:includeFontPadding="false"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
@@ -93,6 +97,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="#00FFFFFF"
+        android:contentDescription="exitDialog"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/media_exit_button" />
@@ -102,6 +107,7 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:background="#00FFFFFF"
+        android:contentDescription="moveTo5SecondsForward"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
         app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
@@ -114,6 +120,7 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:background="#00FFFFFF"
+        android:contentDescription="moveTo5SecondsBack"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.dialog
 
+import android.annotation.SuppressLint
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.Color
 import android.graphics.Rect
@@ -19,18 +20,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.adapter.ExerciseHistoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
-import com.tangoplus.tangoq.data.ExerciseVO
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.vo.ExerciseVO
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseSearchDialogBinding
-import com.tangoplus.tangoq.db.PreferencesManager
+import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
-import com.tangoplus.tangoq.`object`.Singleton_t_user
 import java.util.Locale
 
 class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, OnHistoryClickListener {
     lateinit var binding : FragmentExerciseSearchDialogBinding
-    private val viewModel : ExerciseViewModel by activityViewModels()
+    private val evm : ExerciseViewModel by activityViewModels()
     private lateinit var prefsManager : PreferencesManager
     private var isKeyboardVisible = false
     override fun onCreateView(
@@ -46,7 +46,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
 
         prefsManager = PreferencesManager(requireContext())
         binding.clESDEmpty.visibility = View.GONE
-        viewModel.searchHistory.value?.clear()
+        evm.searchHistory.value?.clear()
 
         // ------# 검색에 포커스 #------
         binding.etESDSearch.requestFocus()
@@ -55,7 +55,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             imm.showSoftInput(binding.etESDSearch, InputMethodManager.SHOW_IMPLICIT)
         }, 250)
         val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
         isKeyboardVisible = true
 
 
@@ -66,16 +66,18 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
 
         for (i in prefsManager.getLastSn() downTo 1) {
             if (prefsManager.getStoredHistory(i) != "") {
-                viewModel.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
+                evm.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
                 Log.v("storedHistory", prefsManager.getStoredHistory(i))
             }
 
         }
-        Log.v("searchHistory", "${viewModel.searchHistory.value}")
-
-
-        var adapter2 = ExerciseHistoryRVAdapter(viewModel.searchHistory.value!!, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
-        setAdapter(adapter2, binding.rv2)
+        Log.v("searchHistory", "${evm.searchHistory.value}")
+        var adapter2 : ExerciseHistoryRVAdapter
+        val searchHistory = evm.searchHistory.value
+        if (searchHistory != null) {
+            adapter2 = ExerciseHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
+            setAdapter(adapter2, binding.rv2)
+        }
 
 
         binding.etESDSearch.addTextChangedListener(object : TextWatcher{
@@ -87,9 +89,9 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
                 val query = s.toString()
                 val filteredList = mutableListOf<ExerciseVO>()
                 if (query.isNotEmpty()) {
-                    val filteredPattern = query.toLowerCase(Locale.getDefault()).trim()
-                    for (indices in viewModel.allExercises) {
-                        if (indices.exerciseName?.toLowerCase(Locale.getDefault())?.contains(filteredPattern) == true) {
+                    val filteredPattern = query.lowercase(Locale.getDefault()).trim()
+                    for (indices in evm.allExercises) {
+                        if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
                             filteredList.add(indices)
                         }
                     }
@@ -101,7 +103,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             }
         })
 
-        viewModel.searchHistory.observe(viewLifecycleOwner) {
+        evm.searchHistory.observe(viewLifecycleOwner) {
             adapter2 = ExerciseHistoryRVAdapter(it, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
             setAdapter(adapter2, binding.rv2)
         }
@@ -144,8 +146,9 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         rv.adapter = adapter
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onHistoryDelete(history: Pair<Int,String>) {
-        viewModel.searchHistory.value?.remove(viewModel.searchHistory.value!!.find { it.second == history.second })
+        evm.searchHistory.value?.remove(evm.searchHistory.value?.find { it.second == history.second })
         prefsManager.deleteStoredHistory(history.first)
         binding.rv2.adapter?.notifyDataSetChanged()
     }

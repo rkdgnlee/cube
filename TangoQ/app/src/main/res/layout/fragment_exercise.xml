@@ -57,6 +57,7 @@
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="showAlarm"
                     android:padding="4dp"
                     android:src="@drawable/icon_alarm"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -68,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="15dp"
                     android:background="@drawable/effect_ibtn_12dp"
+                    android:contentDescription="showQrCodeScan"
                     android:src="@drawable/icon_qr_code"
                     app:layout_constraintBottom_toBottomOf="@+id/ibtnEAlarm"
                     app:layout_constraintEnd_toStartOf="@+id/ibtnEAlarm"
@@ -140,6 +142,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_weight="1"
+                        android:contentDescription="clearEditText"
                         android:src="@drawable/icon_text_clear" />
                 </LinearLayout>
 
@@ -147,12 +150,10 @@
                     android:id="@+id/rvEMainCategory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="40dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintStart_toStartOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

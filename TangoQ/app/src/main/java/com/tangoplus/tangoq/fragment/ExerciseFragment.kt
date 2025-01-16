@@ -7,19 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
-import com.tangoplus.tangoq.data.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper.Companion.TAG
-import com.tangoplus.tangoq.`object`.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.`object`.NetworkExercise.fetchExerciseJson
+import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,45 +62,43 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
+        CoroutineScope(Dispatchers.Main).launch {
 
-        when (isNetworkAvailable(requireContext())) {
-            true -> {
-                CoroutineScope(Dispatchers.Main).launch {
+            val categoryArrayList = mutableListOf<ArrayList<Int>>()
+            categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 스트레칭
+            categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 하지근육 강화, 기본 스트레칭 의자 활용, 기본 유산소 운동
+            categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 상지 하지 스트레칭 근육 운동
+            categoryArrayList.add(arrayListOf(10, 11)) // 근골격계질환 개선 위한 스트레칭 운동
+            categoryArrayList.add(arrayListOf(12)) // 기본 밸런스, 스트레칭
 
-                    val categoryArrayList = mutableListOf<Pair<Int, String>>()
-                    categoryArrayList.add(Pair(1, "기본 밸런스 운동프로그램"))
-                    categoryArrayList.add(Pair(2, "기본 스트레칭 운동"))
-                    categoryArrayList.add(Pair(3, "근육중심 운동프로그램"))
-                    categoryArrayList.add(Pair(4, "운동기구 활용 스트레칭 프로그램"))
-                    categoryArrayList.add(Pair(5, "운동기구 활용 운동프로그램"))
-                    val typeArrayList = listOf("목관절", "어깨", "팔꿉", "손목", "척추", "복부", "엉덩", "무릎","발목" )
+            try { // ------! rv vertical 시작 !------
+                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, listOf(),this@ExerciseFragment,  sn, "mainCategory" )
+                binding.rvEMainCategory.adapter = adapter
+                val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                binding.rvEMainCategory.layoutManager = linearLayoutManager
+                // ------! rv vertical 끝 !------
 
-                    try { // ------! rv vertical 시작 !------
-
-                        val adapter = ExerciseCategoryRVAdapter(categoryArrayList, typeArrayList,this@ExerciseFragment, this@ExerciseFragment, sn, "mainCategory" )
-                        binding.rvEMainCategory.adapter = adapter
-                        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                        binding.rvEMainCategory.layoutManager = linearLayoutManager
-                        // ------! rv vertical 끝 !------
-
-                        // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
-                        if (viewModel.allExercises.isEmpty()) {
-                            viewModel.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
-                            Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
-                        }
-
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error: ${e.message}")
-                    }
-
-                    binding.linearLayout7.setOnClickListener{
-                        val dialog = ExerciseSearchDialogFragment()
-                        dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
-                    }
+                // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
+                if (viewModel.allExercises.isEmpty()) {
+                    viewModel.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
+                    Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
                 }
-            }
-            false -> {
 
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("EDetailIndex", "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("EDetailIllegal", "${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("EDetailIllegal", "${e.message}")
+            } catch (e: NullPointerException) {
+                Log.e("EDetailNull", "${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("EDetailException", "${e.message}")
+            }
+
+            binding.linearLayout7.setOnClickListener{
+                val dialog = ExerciseSearchDialogFragment()
+                dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
             }
         }
     }

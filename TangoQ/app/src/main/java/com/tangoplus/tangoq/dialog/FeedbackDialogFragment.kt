@@ -10,25 +10,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.data.ExerciseViewModel
 
-import com.tangoplus.tangoq.data.MeasureViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentFeedbackDialogBinding
-import com.tangoplus.tangoq.`object`.Singleton_t_user
+import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import org.json.JSONObject
 
 class FeedbackDialogFragment : DialogFragment() {
     lateinit var binding: FragmentFeedbackDialogBinding
-    private val eViewModel: ExerciseViewModel by activityViewModels()
-    private val mViewModel : MeasureViewModel by activityViewModels()
+    private val pvm: PlayViewModel by activityViewModels()
+    private val mvm : MeasureViewModel by activityViewModels()
 
     private lateinit var fatigues: TextViewGroup
     private lateinit var intensitys: TextViewGroup
@@ -50,9 +47,9 @@ class FeedbackDialogFragment : DialogFragment() {
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
 
         // ------# 가져온 시간 + 운동 갯수 뿌려주기 #------
-        binding.tvFDTime1.text = "${eViewModel.exerciseLog.first / 60}:${eViewModel.exerciseLog.first % 60}"
-        binding.tvFDTime2.text = "${eViewModel.exerciseLog.second / 60}:${eViewModel.exerciseLog.second % 60}"
-        binding.tvFDCount.text = "${eViewModel.exerciseLog.third} 개"
+        binding.tvFDTime1.text = "${pvm.exerciseLog.first / 60}:${pvm.exerciseLog.first % 60}"
+        binding.tvFDTime2.text = "${pvm.exerciseLog.second / 60}:${pvm.exerciseLog.second % 60}"
+        binding.tvFDCount.text = "${pvm.exerciseLog.third} 개"
 
         // ------! 각 점수표 조작 시작 !------
         fatigues = TextViewGroup(listOf(binding.tvFDFatigue1, binding.tvFDFatigue2, binding.tvFDFatigue3, binding.tvFDFatigue4, binding.tvFDFatigue5),
@@ -70,8 +67,8 @@ class FeedbackDialogFragment : DialogFragment() {
 
         binding.tvFDSkip.paintFlags = Paint.UNDERLINE_TEXT_FLAG
         binding.tvFDSkip.setOnClickListener {
-//            eViewModel.exerciseLog.value = null
-            eViewModel.isDialogShown.value = true
+//            pvm.exerciseLog.value = null
+            pvm.isDialogShown.value = true
             dismiss()
         }
 
@@ -81,45 +78,40 @@ class FeedbackDialogFragment : DialogFragment() {
             Log.v("score", "${satisfactions.getIndex()}")
             val jsonObj = JSONObject()
             val parts = mutableListOf<String>()
-            for (i in 0 until mViewModel.feedbackParts.value?.size!!) {
-//                parts.add(mViewModel.feedbackParts.value!![i].name)
-            }
+            val feedbackPartSize = mvm.feedbackParts.value?.size
+//            if (feedbackPartSize != null) {
+//                for (i in 0 until feedbackPartSize) {
+////                parts.add(mvm.feedbackParts.value!![i].name)
+//                }
+//            }
+
             jsonObj.put("user_sn", userJson?.optString("user_sn"))
             jsonObj.put("intensity_score",intensitys.getIndex())
             jsonObj.put("fatigue_score",fatigues.getIndex())
             jsonObj.put("satisfaction_score",satisfactions.getIndex())
-
             jsonObj.put("pain_parts", parts)
 
             Log.v("피드백 점수", "$jsonObj")
-//            val intent = Intent(requireActivity(), MainActivity::class.java)
-//            startActivity(intent)
-//            requireActivity().finishAffinity()
+
             dismiss()
-//            eViewModel.exerciseLog.value = null
-            eViewModel.isDialogShown.value = true
+            pvm.isDialogShown.value = true
         }
     }
 
     override fun onResume() {
         super.onResume()
-        // full Screen code
+
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-
     }
-//    fun getCheckedRadioButtonIndex(radioGroup: RadioGroup): Int {
-//        val checkedRadioButtonId = radioGroup.checkedRadioButtonId
-//        val radioButton = radioGroup.findViewById<RadioButton>(checkedRadioButtonId)
-//        return radioGroup.indexOfChild(radioButton)
-//    }
+
     inner class TextViewGroup(
         private val textViews: List<TextView>,
         private val defaultColor: Int = Color.BLACK,
         private val mainColor: Int = Color.BLUE
     ) {
-        var selectedIndex: Int = -1
+        private var selectedIndex: Int = -1
 
         init {
             textViews.forEachIndexed { index, textView ->

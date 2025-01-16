@@ -4,14 +4,17 @@
 
     <item
         android:id="@+id/main"
+        android:contentDescription="main"
         android:icon="@drawable/bnb_main"
         android:title="메인" />
     <item
         android:id="@+id/exercise"
+        android:contentDescription="exercise"
         android:icon="@drawable/bnb_exercise"
         android:title="운동" />
     <item
         android:id="@+id/measure"
+        android:contentDescription="measure"
         android:icon="@drawable/bnb_measure"
         android:title="측정" />
 <!--    <item-->
@@ -20,6 +23,7 @@
 <!--        android:title="저장" />-->
     <item
         android:id="@+id/profile"
+        android:contentDescription="profile"
         android:icon="@drawable/bnb_profile"
         android:title="내정보" />
 </menu>

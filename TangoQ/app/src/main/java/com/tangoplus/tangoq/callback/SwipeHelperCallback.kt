@@ -5,7 +5,6 @@ import android.icu.lang.UCharacter
 import android.os.Build
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -41,6 +40,7 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
         getDefaultUIUtil().clearView(getView(viewHolder))
         Log.v("SwipeHelperCallback", "clearView - previousPosition: $previousPosition")
     }
+
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         viewHolder?.let {
