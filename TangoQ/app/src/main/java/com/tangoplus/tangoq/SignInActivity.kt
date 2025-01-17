@@ -547,7 +547,7 @@ class SignInActivity : AppCompatActivity() {
                     jsonObj?.put("device_sn" ,0)
                     jsonObj?.put("user_sn", 0)
                     // ------! 광고성 넣기 끝 !------
-                    Log.v("회원가입JSon", "$jsonObj")
+//                    Log.v("회원가입JSon", "$jsonObj")
                     if (jsonObj != null) {
                         lifecycleScope.launch {
                             CoroutineScope(Dispatchers.IO).launch {

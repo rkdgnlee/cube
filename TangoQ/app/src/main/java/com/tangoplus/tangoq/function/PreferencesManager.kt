@@ -147,7 +147,7 @@ class PreferencesManager(private val context: Context) {
         val currentTime = System.currentTimeMillis()
 
         // 일주일(7일) 후 만료 체크
-        if (currentTime - storedTimestamp > 7 * 24 * 60 * 60 * 1000L) {
+        if (currentTime - storedTimestamp > 1 * 24 * 60 * 60 * 1000L) {
             // 만료된 경우 데이터 삭제
             loginFailedPrefs.edit()
                 .remove("loginId_${loginId}")

@@ -366,7 +366,6 @@ object ImageProcessingUtil {
     fun reverseLeftRight(landmarks: List<PoseLandmarkResult.PoseLandmark>, screenWidth: Float): List<PoseLandmarkResult.PoseLandmark> {
         println("Before swap - First 3 landmarks:")
         landmarks.take(3).forEachIndexed { index, landmark ->
-            println("Position $index: X: ${landmark.x}, Y: ${landmark.y}")
         }
 
         val result = landmarks.map { landmark ->
@@ -375,8 +374,6 @@ object ImageProcessingUtil {
                 y = landmark.y  // y 좌표는 그대로 유지
             )
         }
-
-        println("\nAfter swap - First 3 landmarks:")
         result.take(3).forEachIndexed { index, landmark ->
             println("Position $index: X: ${landmark.x}, Y: ${landmark.y}")
         }

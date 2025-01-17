@@ -173,7 +173,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
 
         else { // video 일 때
-            canvas.scale(-1f, 1f, width / 2f, 0f)
+            canvas.scale(1f, 1f, width / 2f, 0f)
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
 

@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -24,6 +25,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -56,6 +58,14 @@ class MainPartPoseDialogFragment : DialogFragment() {
     private var videoUrl = ""
     private var updateUI = false
     private var measureResult: JSONArray? = null
+    private var exoPlay: ImageButton? = null
+    private var exoPause: ImageButton? = null
+    private var llSpeed: LinearLayout? = null
+    private var btnSpeed: ImageButton? = null
+    private var exo05: ImageButton? = null
+    private var exo075: ImageButton? = null
+    private var exo10: ImageButton? = null
+
     companion object {
         private const val ARG_SEQ = "arg_seq"
         fun newInstance(seq: Int): MainPartPoseDialogFragment {
@@ -78,15 +88,24 @@ class MainPartPoseDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        avm.currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
         val seq = arguments?.getInt(ARG_SEQ)
         if (seq != null) {
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
+                avm.currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
 
                 when (seq) {
                     1 -> {
                         setDynamicUI(true)
                         setPlayer()
+                        exoPlay = view.findViewById(R.id.btnPlay)
+                        exoPause = view.findViewById(R.id.btnPause)
+                        llSpeed = view.findViewById(R.id.llSpeed)
+                        btnSpeed = view.findViewById(R.id.btnSpeed)
+
+                        exo05 = view.findViewById(R.id.btn05)
+                        exo075 = view.findViewById(R.id.btn075)
+                        exo10 = view.findViewById(R.id.btn10)
+                        setClickListener()
                     }
                     else -> {
 
@@ -196,40 +215,43 @@ class MainPartPoseDialogFragment : DialogFragment() {
             binding.flMPPD.visibility = View.GONE
         }
     }
-
-
-
     private fun setPlayer() {
-        lifecycleScope.launch {
-            Log.v("동적측정json", "${mvm.selectedMeasure?.measureResult?.optJSONArray(1)}")
-            dynamicJa = mvm.selectedMeasure?.measureResult?.optJSONArray(1) ?: JSONArray()
-            Log.v("jsonDataLength", "${dynamicJa.length()}")
-            initPlayer()
+        // 외부 코루틴 제거
+        Log.v("동적측정json", "${mvm.selectedMeasure?.measureResult?.optJSONArray(1)}")
+        dynamicJa = mvm.selectedMeasure?.measureResult?.optJSONArray(1) ?: JSONArray()
+        Log.v("jsonDataLength", "${dynamicJa.length()}")
+        initPlayer()
 
-            simpleExoPlayer?.addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    super.onPlaybackStateChanged(playbackState)
-                    if (playbackState == Player.STATE_READY) {
-
+        simpleExoPlayer?.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                super.onPlaybackStateChanged(playbackState)
+                when (playbackState) {
+                    Player.STATE_READY -> {
                         val videoDuration = simpleExoPlayer?.duration ?: 0L
-                        lifecycleScope.launch {
+                        viewLifecycleOwner.lifecycleScope.launch {
                             while (simpleExoPlayer?.isPlaying == true) {
                                 if (!updateUI) updateVideoUI()
-//                                Log.v("업데이트video", "overlay: (${binding.ovMPPD.width}, ${binding.ovMPPD.height}) PlayerView: ( ${binding.pvMPPD.width}, ${binding.pvMPPD.height} )")
                                 updateFrameData(videoDuration, dynamicJa.length())
                                 delay(24)
-                                Handler(Looper.getMainLooper()).postDelayed( { updateUI = true },1500)
+                                Handler(Looper.getMainLooper()).postDelayed({ updateUI = true }, 1500)
                             }
                         }
-                    } else if (playbackState == Player.STATE_ENDED) {
-                        val exoPlay = binding.pvMPPD.findViewById<ImageButton>(R.id.btnPlay)
-                        exoPlay.visibility = View.VISIBLE
-                        exoPlay.bringToFront()
+                    }
+                    Player.STATE_ENDED -> {
+                        // binding을 사용하고 있으니, 여기서도 binding을 통해 접근
+                        binding.pvMPPD.findViewById<ImageButton>(R.id.btnPlay)?.apply {
+                            visibility = View.VISIBLE
+                            bringToFront()
+                        }
+                        binding.pvMPPD.findViewById<ImageButton>(R.id.btnPause)?.apply {
+                            visibility = View.GONE
+                        }
                     }
                 }
-            })
-        }
+            }
+        })
     }
+
     private fun updateVideoUI() {
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
         val displayMetrics = DisplayMetrics()
@@ -279,20 +301,90 @@ class MainPartPoseDialogFragment : DialogFragment() {
         binding.pvMPPD.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
         binding.pvMPPD.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
 
-//        val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
-        val exoPlay = binding.pvMPPD.findViewById<ImageButton>(R.id.btnPlay)
-        val exoPause = binding.pvMPPD.findViewById<ImageButton>(R.id.btnPause)
-//        val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
-        exoPause.visibility = View.GONE
+    }
+
+    private fun setClickListener() {
+        exoPlay?.visibility = View.GONE
         exoPlay?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == false) {
-                simpleExoPlayer?.seekTo(0)
-                simpleExoPlayer?.play()
-                exoPlay.visibility = View.GONE
+            simpleExoPlayer?.seekTo(0)
+            simpleExoPlayer?.play()
+            exoPlay?.visibility = View.GONE
+            exoPause?.visibility = View.VISIBLE
+        }
+        exoPause?.setOnClickListener{
+            simpleExoPlayer?.pause()
+            exoPlay?.visibility = View.VISIBLE
+            exoPause?.visibility = View.GONE
+        }
+        var isShownSpeed = false
+        var forChanged = false
+
+
+        llSpeed?.visibility = View.VISIBLE
+
+        btnSpeed?.setOnClickListener{
+            if (!isShownSpeed) {
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
+                isShownSpeed = true
+            } else {
+                exo05?.visibility = View.GONE
+                exo075?.visibility = View.GONE
+                isShownSpeed = false
+            }
+        }
+
+        exo05?.setOnClickListener {
+            if (forChanged) {
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.VISIBLE
+                forChanged = false
+            } else {
+                simpleExoPlayer?.playbackParameters = PlaybackParameters(0.5f)
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.GONE
+                exo10?.visibility = View.GONE
+                btnSpeed?.visibility = View.GONE
+                isShownSpeed = false
+                forChanged = true
+            }
+
+        }
+        exo075?.setOnClickListener {
+            if (forChanged) {
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.VISIBLE
+                forChanged = false
+            } else {
+                simpleExoPlayer?.playbackParameters = PlaybackParameters(0.75f)
+                exo05?.visibility = View.GONE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.GONE
+                btnSpeed?.visibility = View.GONE
+                isShownSpeed = false
+                forChanged = true
+            }
+
+        }
+        exo10?.setOnClickListener {
+            if (forChanged) {
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.VISIBLE
+                forChanged = false
+            } else {
+                simpleExoPlayer?.playbackParameters = PlaybackParameters(1.0f)
+                exo05?.visibility = View.GONE
+                exo075?.visibility = View.GONE
+                exo10?.visibility = View.VISIBLE
+                btnSpeed?.visibility = View.GONE
+                isShownSpeed = false
+                forChanged = true
             }
         }
     }
-
 
     private fun updateFrameData(videoDuration: Long, totalFrames: Int) {
         val currentPosition = simpleExoPlayer?.currentPosition ?: 0L

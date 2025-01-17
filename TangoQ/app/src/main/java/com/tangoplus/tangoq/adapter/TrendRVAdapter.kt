@@ -2,14 +2,11 @@ package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RawRes
-import androidx.camera.core.processing.SurfaceProcessorNode.In
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -73,13 +70,13 @@ class TrendRVAdapter(private val fragment: Fragment,
         if (holder is TrendViewHolder) {
             if (analyzes2?.isNotEmpty() == true) {
                 // 필터링된 index list가 있을 때 넣기
-                // 필터링 index를 가져와서 currentItemRight를 접근ㅅㄷ
+                // 필터링 index를 가져와서 currentItemRight를 접근
                 val index = filteredIndexes[position]
                 val currentItemRight = analyzes2[index] // analysisVO가 들어가있는 부위 별임.
                 val selectAnalysisRight = matchedTripleIndexes[index]
 
-                holder.tvMTIPart.text = matchedParts[position]
-                val jointIndex = if (position == 0) 1 else (position + 1) / 2 + 1
+                holder.tvMTIPart.text = matchedParts[index]
+                val jointIndex = if (index == 0) 1 else (index + 1) / 2 + 1
 
                 // ------# 부위 drawable 좌우 반전 #------
                 val resourceName = "@drawable/icon_part$jointIndex"
@@ -89,7 +86,7 @@ class TrendRVAdapter(private val fragment: Fragment,
 
                 holder.ivMTI.setImageResource(resourceId)
                 // 2~7에 해당하는 홀수 번째 항목일 때만 좌우 반전 적용
-                if (position != 0 && position % 2 != 0) {
+                if (index != 0 && index % 2 != 0) {
                     holder.ivMTI.scaleX = -1f // 좌우 반전
                 } else {
                     holder.ivMTI.scaleX = 1f // 원래 상태
@@ -129,14 +126,14 @@ class TrendRVAdapter(private val fragment: Fragment,
 
                 // 좌측 비교
                 if (analyzes1 != null) {
-                    val currentItemLeft = analyzes1[position] // analysisVO가 들어가있는 부위 별임.
-                    val selectAnalysisLeft = matchedTripleIndexes[position]
-                    selectAnalysisRight.zip(selectAnalysisLeft).forEachIndexed { index, (rightTriple, leftTriple) ->
+                    val currentItemLeft = analyzes1[index] // analysisVO가 들어가있는 부위 별임.
+                    val selectAnalysisLeft = matchedTripleIndexes[index]
+                    selectAnalysisRight.zip(selectAnalysisLeft).forEachIndexed { indexIn, (rightTriple, leftTriple) ->
                         // 오른쪽
                         val rightUnit = currentItemRight[rightTriple.second].labels[rightTriple.third]
                         val rightScore = calculateBoundedScore(rightUnit.rawData, rightUnit.rawDataBound)
-                        holder.pvs[index][1].progress = rightScore
-                        holder.tvPoses[index].text = rightUnit.rawDataName
+                        holder.pvs[indexIn][1].progress = rightScore
+                        holder.tvPoses[indexIn].text = rightUnit.rawDataName
                             .replace("양", "")
                             .replace("과", "")
                             .replace("와", "")
@@ -144,12 +141,12 @@ class TrendRVAdapter(private val fragment: Fragment,
                             .replace("좌측 ", "")
                             .replace("우측 ", "")
 
-                        setState(holder, index, splitState(rightScore))
+                        setState(holder, indexIn, splitState(rightScore))
 
                         // 왼쪽
                         val leftUnit = currentItemLeft[leftTriple.second].labels[leftTriple.third]
                         val leftScore = calculateBoundedScore(leftUnit.rawData, leftUnit.rawDataBound)
-                        holder.pvs[index][0].progress = leftScore
+                        holder.pvs[indexIn][0].progress = leftScore
 
                         // balloon에 통합 comment 넣기
                         val leftRawData = String.format("%.2f", leftUnit.rawData) + if (leftUnit.columnName.contains("angle")) "°" else "cm"
@@ -158,7 +155,7 @@ class TrendRVAdapter(private val fragment: Fragment,
                         // 오른쪽 balloon comment init
                         val rightRawData = String.format("%.2f", rightUnit.rawData) + if (rightUnit.columnName.contains("angle")) "°" else "cm"
                         val rightComment = "우측: $rightRawData\n${setLabels(rightUnit)}"
-                        setBalloon(holder.cls[index], index, "$leftComment $rightComment")
+                        setBalloon(holder.cls[indexIn], indexIn, "$leftComment $rightComment")
                     }
                 }
             }

@@ -79,7 +79,7 @@ dependencies {
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
-    implementation("com.arthenica:mobile-ffmpeg-full:4.4")
+    implementation("com.arthenica:ffmpeg-kit-full:4.5")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // api

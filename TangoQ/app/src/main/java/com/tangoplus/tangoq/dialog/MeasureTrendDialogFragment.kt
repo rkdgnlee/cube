@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -116,9 +117,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
                             // spinner 클릭시 adapter 갱신
                             withContext(Dispatchers.Main) {
                                 val parentIndexes = matchedTripleIndexes.mapIndexedNotNull { index, triples ->
-                                    if (triples.any { it.first == position }) index else null
+                                    Log.v("포지션인덱스", "index, position : $index, $position")
+                                    when {
+                                        position == 0 -> if (triples.any { triple -> triple.first == 0 }) index else null
+                                        else -> if (triples.any { triple -> triple.first == position + 1 }) index else null
+                                    }
                                 }
-                                Log.v("인덱스들", "$parentIndexes")
+                                Log.v("parentIndexes", "$parentIndexes")
 //                                val filteredAnalyzes = avm.leftAnalyzes?.filterIndexed { index, _ ->
 //                                    index in parentIndexes
 //                                }?.toMutableList()
@@ -131,8 +136,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
 
                 // -------# 측정 고르는 spinnner left #-------
-                val measureDates = measures.map { it.regDate.substring(0, 11) }.toMutableList()
-                val leftAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, measureDates)
+                val measureDatesLeft = measures.map { "${it.regDate.substring(0, 11)}\n${it.userName}" }.toMutableList()
+                val leftAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, measureDatesLeft)
                 binding.actvMTDLeft.setAdapter(leftAdapter)
                 binding.actvMTDLeft.setOnItemClickListener { _, _, position, _ ->
                     Log.v("leftPosition", "$position")
@@ -153,7 +158,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                 // ------# 측정 고르는 spinner right #------
                 // 초기 오른쪽 세팅
-                val measureDatesRight = measures.map { it.regDate.substring(0, 11) }.toMutableList()
+                val measureDatesRight = measures.map { "${it.regDate.substring(0, 11)}\n${it.userName}" }.toMutableList()
                 binding.actvMTDRight.setText(measureDatesRight[0])
                 avm.rightMeasurement.value = measures[0]
                 avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
@@ -208,6 +213,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
         binding.rvMTD.layoutManager = layoutManager
         binding.rvMTD.adapter = adapter
         adapter.notifyDataSetChanged()
+
+//        val constraintSet = ConstraintSet()
+//        constraintSet.clone(binding.clMTD)
+//        constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
+//        constraintSet.applyTo(binding.clMTD)
+        Handler(Looper.getMainLooper()).postDelayed({
+            val rightHeight = binding.ssivMTDRight.height
+            val layoutParams = binding.ssivMTDLeft.layoutParams
+            layoutParams.height = rightHeight
+            binding.ssivMTDLeft.layoutParams = layoutParams
+//
+//            val constraintSet = ConstraintSet()
+//            constraintSet.clone(binding.clMTD)
+//            constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
+//            constraintSet.applyTo(binding.clMTD)
+        }, 250)
     }
 
     private fun showBalloon() {

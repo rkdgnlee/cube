@@ -59,6 +59,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
 import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
@@ -90,11 +92,13 @@ import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 import com.tangoplus.tangoq.api.NetworkMeasure.resendMeasureFile
 import com.tangoplus.tangoq.api.NetworkMeasure.sendMeasureData
+import com.tangoplus.tangoq.db.FileStorageUtil.getPathFromUri
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateAngleBySlope
 import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceX
 import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceY
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.dialog.MeasureSetupDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -236,10 +240,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             dynamicStartTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                             startVideoRecording {
                                 // 녹화 종료 시점
-                                Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
                                 dynamicEndTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                                isRecording = false // 녹화 완료
-                                startRecording = false
                                 updateUI()
                                 Log.v("dynamicJa총길이", "${mvm.dynamicJa.length()}")
 
@@ -439,6 +440,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 setTitle("알림")
                 setMessage("측정을 종료하시겠습니까 ?")
                 setPositiveButton("예") { _, _ ->
+                    Log.v("mvm이름잘", "name: ${mvm.setupName}, mobile: ${mvm.setupMobile}")
                     val activityIntent = Intent(this@MeasureSkeletonActivity, MainActivity::class.java)
                     intent.putExtra("showMeasureFragment", true)
                     startActivity(activityIntent)
@@ -827,10 +829,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.fabtnMeasureSkeleton.setOnSingleClickListener {
-            val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
-            dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+            val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
+            dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
-
+        binding.ibtnMeasureSkeletonInfo.setOnSingleClickListener {
+            val dialog4 = MeasureSetupDialogFragment()
+            dialog4.show(supportFragmentManager, "MeasureSkeletonSetup")
+        }
         // ------! 다시 찍기 관리 시작 !------
         repeatCount.observe(this@MeasureSkeletonActivity) { count ->
             binding.btnMeasureSkeletonStepPrevious.visibility = if (count.compareTo(0) == 0) {
@@ -1097,6 +1102,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
         val rotation = binding.viewFinder.display?.rotation
             ?: Surface.ROTATION_0
+        Log.d("RotationDebug", "Display Rotation: $rotation")
         // 이미지 분석. RGBA 8888을 사용하여 모델 작동 방식 일치
         imageAnalyzer =
             ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9)
@@ -1115,7 +1121,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         imageCapture = ImageCapture.Builder()
 //            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetResolution(Size(720, 1280))
-            .setTargetRotation(Surface.ROTATION_0)
+            .setTargetRotation(rotation)
             .build()
 
         videoCapture = VideoCapture.withOutput(
@@ -1707,12 +1713,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val sitBackHipAngle = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second) % 180
                     // -------# 삼각형 계산을 위한 scale 적용 #------
                     mvm.apply {
-                        mvm.noseData = Pair(calculateScreenX(mvm.noseData.first).toFloat(), calculateScreenY(mvm.noseData.second).toFloat())
+                        mvm.noseData = Pair(calculateScreenX(mvm.noseData.first), calculateScreenY(mvm.noseData.second))
                         mvm.shoulderData = listOf(
-                            Pair(calculateScreenX(mvm.shoulderData[0].first).toFloat(), calculateScreenY(mvm.shoulderData[0].second).toFloat()),
-                            Pair(calculateScreenX(mvm.shoulderData[1].first).toFloat(), calculateScreenY(mvm.shoulderData[1].second).toFloat())
+                            Pair(calculateScreenX(mvm.shoulderData[0].first), calculateScreenY(mvm.shoulderData[0].second)),
+                            Pair(calculateScreenX(mvm.shoulderData[1].first), calculateScreenY(mvm.shoulderData[1].second))
                         )
-                        middleHip = Pair(calculateScreenX((mvm.hipData[0].first + mvm.hipData[1].first) / 2).toFloat(), calculateScreenY((mvm.hipData[0].second + mvm.hipData[1].second) / 2).toFloat())
+                        middleHip = Pair(calculateScreenX((mvm.hipData[0].first + mvm.hipData[1].first) / 2), calculateScreenY((mvm.hipData[0].second + mvm.hipData[1].second) / 2))
                     }
 
                     val shoulderNoseTriangleAngle : Triple<Float, Float, Float> = Triple(
@@ -1751,8 +1757,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
+    // 공통 인적사항ㅅ
     private fun saveJson(jsonObj: JSONObject, step: Int) {
-
         jsonObj.apply {
             put("measure_seq", step + 1)
             put("measure_type", when (step) {
@@ -1767,7 +1773,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             put("device_sn", 0)
             put("mobile_device_uuid", decryptedUUID)
             put("user_uuid", singletonUser.jsonObject?.getString("user_uuid"))
-            put("user_name", singletonUser.jsonObject?.getString("user_name") ?: "")
+            put("user_name", mvm.setupName) // singletonUser.jsonObject?.getString("user_name") ?: ""
             put("user_sn", singletonUser.jsonObject?.getInt("user_sn") ?: -1)
             put("measure_start_time", timestamp)
             put("measure_end_time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
@@ -1895,9 +1901,23 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     }
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
+                            Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
+                            isRecording = false
+                            startRecording = false
                             val savedUri = recordEvent.outputResults.outputUri
-                            saveMediaToCache(this@MeasureSkeletonActivity, savedUri, videoFileName, false)
-                            callback()
+                            val inputPath = getPathFromUri(this@MeasureSkeletonActivity, savedUri) // URI를 파일 경로로 변환
+                            val outputPath = File(this@MeasureSkeletonActivity.cacheDir, "mirrored_video.mp4").absolutePath
+
+                            if (inputPath != null) {
+                                flipVideoHorizontally(inputPath, outputPath) { success ->
+                                    if (success) {
+                                        saveMediaToCache(this@MeasureSkeletonActivity, Uri.fromFile(File(outputPath)), videoFileName, false)
+                                        callback()
+                                    } else {
+                                        Log.e(TAG, "Failed to apply mirror effect to video.")
+                                    }
+                                }
+                            }
                         } else {
                             CoroutineScope(Dispatchers.Main).launch  {
                                 isRecording = false
@@ -1946,7 +1966,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 // EXIF 데이터 읽기
                 val exif = ExifInterface(tempFile.absolutePath)
                 val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-
+                Log.d("ExifDebug", "Exif Orientation: $orientation")
                 // 비트맵 디코딩
                 val options = BitmapFactory.Options().apply {
                     inJustDecodeBounds = true
@@ -1970,15 +1990,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 var bitmap = BitmapFactory.decodeFile(tempFile.absolutePath, options)
                 val matrix = Matrix()
 
-                // ★★★ 좌우반전 ★★★
-                matrix.postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
-
                 // 회전 적용
                 when (orientation) {
-                    ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-                    ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                    ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                    ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)   // 시계 방향 90도
+                    ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f) // 시계 방향 180도
+                    ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f) // 시계 방향 270도
                 }
+
+                // ★★★ 좌우반전 ★★★
+                matrix.postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
 
                 // 모든 변환을 한번에 적용
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
@@ -2237,5 +2257,34 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     }
     private fun safePut(value: Float) : Float {
         return if (value.isNaN()) 0f else value
+    }
+
+    private fun flipVideoHorizontally(inputPath: String, outputPath: String, callback: (Boolean) -> Unit) {
+        val command = "-i $inputPath -vf hflip -c:a copy $outputPath"
+        lifecycleScope.launch(Dispatchers.Main) {
+            val dialog = LoadingDialogFragment.newInstance("동영상").apply {
+                show(supportFragmentManager, "LoadingDialogFragment")
+            }
+
+            withContext(Dispatchers.IO) {
+                // FFmpeg 명령 실행
+                FFmpegKit.executeAsync(command) { session ->
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        val returnCode = session.returnCode
+                        if (!isFinishing && !isDestroyed) {
+                            dialog.dismiss()
+                        }
+                        if (ReturnCode.isSuccess(returnCode)) {
+                            Log.d("FFMPEGAlert", "Video successfully mirrored and saved to: $outputPath")
+                            callback(true)
+                        } else {
+                            Log.e("FFMPEGAlert", "Error occurred while mirroring video: ${session.failStackTrace}")
+                            callback(false)
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

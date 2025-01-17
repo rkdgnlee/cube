@@ -173,16 +173,26 @@ class MeasureDashBoard1Fragment : Fragment() {
         // measures 꺾은선 그래프 
         measures?.let {
             val measureSize = measures?.size
+            Log.v("measureSize", "$measureSize")
             if (!measures.isNullOrEmpty()) {
                 // 조건 처리 1 총 measures가 7 이하.
                if (measureSize == 0){
                     for (i in 6 downTo 0) {
                         lcDataList.add(Pair("", 20))
                     }
-               } else if (measureSize != null && measureSize <= 7 ){
-                    for (i in 0 until (7 - measureSize)) {
-                        lcDataList.add(Pair("", 20))
-                    }
+
+               } else if (measureSize != null && measureSize <= 7 && measureSize >= 1){
+                   for (i in 0 until (7 - measureSize)) {
+                       lcDataList.add(Pair("", 20))
+                   }
+                   for (i in measureSize - 1 downTo 0) {
+                       val measureUnit = measures?.get(i)
+                       val regDate = measureUnit?.regDate
+                       val overall = measureUnit?.overall?.toInt()
+                       if (regDate != null && overall != null) {
+                           lcDataList.add(Pair(regDate, overall))
+                       }
+                   }
                } else {
                     for (i in 6 downTo 0) {
                         val measureUnit = measures?.get(i)
@@ -205,7 +215,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             for (i in startIndex until lcDataList.size) {
                 lcEntries.add(Entry((i - startIndex).toFloat(), lcDataList[i].second.toFloat()))
             }
-
+            Log.v("lcDataList", "$lcDataList")
             val lcLineDataSet = LineDataSet(lcEntries, "")
             lcLineDataSet.apply {
                 color = resources.getColor(R.color.thirdColor, null)
@@ -218,7 +228,6 @@ class MeasureDashBoard1Fragment : Fragment() {
                 setDrawFilled(false)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
             }
-
             lcXAxis.apply {
                 isEnabled = false
                 textSize = 14f
@@ -285,8 +294,10 @@ class MeasureDashBoard1Fragment : Fragment() {
                 val oldestDate = datesWithIndex.minByOrNull { it.second }
                 val newestDate = datesWithIndex.maxByOrNull { it.second }
 
-                if (oldestDate != null && newestDate != null) {
-                    binding.tvMD1Duration.text = "${oldestDate.second.format(outputFormatter)} ~ ${newestDate.second.format(outputFormatter)}"
+                binding.tvMD1Duration.text = if (oldestDate != null && newestDate != null) {
+                    "${oldestDate.second.format(outputFormatter)} ~ ${newestDate.second.format(outputFormatter)}"
+                } else {
+                    "측정 기록 없음"
                 }
             }
             // ------! 날짜 기간 가져오기 끝 !------

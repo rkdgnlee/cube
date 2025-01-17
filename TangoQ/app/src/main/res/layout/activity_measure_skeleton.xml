@@ -43,7 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="버튼을 누르고 편하게 자세를 취해주세요"
+            android:text="버튼을 누르면 시작됩니다"
             android:textColor="@color/subColor800"
             android:textSize="19dp"
             android:textStyle="bold"
@@ -64,6 +64,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/icon_setting_gear" />
+
+        <ImageButton
+            android:id="@+id/ibtnMeasureSkeletonSetup"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#00FFFFFF"
+            android:contentDescription="showSetupDialog"
+            android:padding="4dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toStartOf="@+id/ibtnMeasureSkeletonInfo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icon_profile" />
 
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonBack"

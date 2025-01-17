@@ -526,7 +526,7 @@ object MeasurementManager {
         val scores = mapOf(
             Status.DANGER to 36,
             Status.WARNING to 64,
-            Status.NORMAL to 95
+            Status.NORMAL to 93
         )
         val weightScore = 1.65
         val reverseWeightScore = 0.7

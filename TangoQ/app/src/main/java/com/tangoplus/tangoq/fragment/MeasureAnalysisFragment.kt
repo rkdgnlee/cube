@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
@@ -20,6 +21,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -465,6 +467,13 @@ class MeasureAnalysisFragment : Fragment() {
                         val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
                         exoPlay.visibility = View.VISIBLE
                         exoPlay.bringToFront()
+                        val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
+                        exoPause.visibility = View.GONE
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            simpleExoPlayer?.seekTo(0)
+//                            simpleExoPlayer?.play()
+//                        },1000)
+
                     }
                 }
             })
@@ -489,14 +498,91 @@ class MeasureAnalysisFragment : Fragment() {
         binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
+
         val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
         val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
-
+        exoPlay.visibility = View.GONE
         exoPlay?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == false) {
-                simpleExoPlayer?.seekTo(0)
-                simpleExoPlayer?.play()
-                exoPlay.visibility = View.GONE
+            simpleExoPlayer?.seekTo(0)
+            simpleExoPlayer?.play()
+            exoPlay.visibility = View.GONE
+            exoPause.visibility = View.VISIBLE
+        }
+        exoPause?.setOnClickListener{
+            simpleExoPlayer?.pause()
+            exoPlay.visibility = View.VISIBLE
+            exoPause.visibility = View.GONE
+        }
+        var isShownSpeed = false
+        var forChanged = false
+        // 재생속도
+        val exo05 = requireActivity().findViewById<ImageButton>(R.id.btn05)
+        val exo075 = requireActivity().findViewById<ImageButton>(R.id.btn075)
+        val exo10 = requireActivity().findViewById<ImageButton>(R.id.btn10)
+        val llSpeed = requireActivity().findViewById<LinearLayout>(R.id.llSpeed)
+        val btnSpeed = requireActivity().findViewById<ImageButton>(R.id.btnSpeed)
+        llSpeed.visibility = View.VISIBLE
+
+        btnSpeed.setOnClickListener{
+            if (!isShownSpeed) {
+                exo05.visibility = View.VISIBLE
+                exo075.visibility = View.VISIBLE
+                isShownSpeed = true
+            } else {
+                exo05.visibility = View.GONE
+                exo075.visibility = View.GONE
+                isShownSpeed = false
+            }
+        }
+
+        exo05.setOnClickListener {
+            if (forChanged) {
+                exo05.visibility = View.VISIBLE
+                exo075.visibility = View.VISIBLE
+                exo10.visibility = View.VISIBLE
+                forChanged = false
+            } else {
+                simpleExoPlayer?.playbackParameters = PlaybackParameters(0.5f)
+                exo05.visibility = View.VISIBLE
+                exo075.visibility = View.GONE
+                exo10.visibility = View.GONE
+                btnSpeed.visibility = View.GONE
+                isShownSpeed = false
+                forChanged = true
+            }
+
+        }
+        exo075.setOnClickListener {
+            if (forChanged) {
+                exo05.visibility = View.VISIBLE
+                exo075.visibility = View.VISIBLE
+                exo10.visibility = View.VISIBLE
+                forChanged = false
+            } else {
+                simpleExoPlayer?.playbackParameters = PlaybackParameters(0.75f)
+                exo05.visibility = View.GONE
+                exo075.visibility = View.VISIBLE
+                exo10.visibility = View.GONE
+                btnSpeed.visibility = View.GONE
+                isShownSpeed = false
+                forChanged = true
+            }
+
+        }
+        exo10.setOnClickListener {
+            if (forChanged) {
+                exo05.visibility = View.VISIBLE
+                exo075.visibility = View.VISIBLE
+                exo10.visibility = View.VISIBLE
+                forChanged = false
+            } else {
+                simpleExoPlayer?.playbackParameters = PlaybackParameters(1.0f)
+                exo05.visibility = View.GONE
+                exo075.visibility = View.GONE
+                exo10.visibility = View.VISIBLE
+                btnSpeed.visibility = View.GONE
+                isShownSpeed = false
+                forChanged = true
             }
         }
     }

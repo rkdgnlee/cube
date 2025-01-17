@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.db
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.SecurePreferencesManager
@@ -78,6 +80,18 @@ object FileStorageUtil {
         }
     }
 
+    fun getPathFromUri(context: Context, uri: Uri): String? {
+        var path: String? = null
+        val projection = arrayOf(MediaStore.MediaColumns.DATA)
+        val cursor = context.contentResolver.query(uri, projection, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
+                path = it.getString(columnIndex)
+            }
+        }
+        return path
+    }
     fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
         val file = File(dir, fileName)

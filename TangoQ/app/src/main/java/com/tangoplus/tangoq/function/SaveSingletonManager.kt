@@ -156,6 +156,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                 val measureVO = MeasureVO(
                                     deviceSn = 0,
                                     sn = currentInfoSn,
+                                    userName = info.user_name.toString(),
                                     regDate = info.measure_date.toString(),
                                     overall = info.t_score,
                                     dangerParts = dangerParts.toMutableList(),
@@ -177,6 +178,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                 val measureVO = MeasureVO(
                                     deviceSn = 0,
                                     sn = currentInfoSn,
+                                    userName = info.user_name.toString(),
                                     regDate = info.measure_date.toString(),
                                     overall = info.t_score,
                                     dangerParts = dangerParts.toMutableList(),
@@ -384,6 +386,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 val measureVO = MeasureVO(
                     deviceSn = 0,
                     sn = info.sn,
+                    userName = info.user_name.toString(),
                     regDate = info.measure_date.toString(),
                     overall = info.t_score,
                     dangerParts = dangerParts.toMutableList(),

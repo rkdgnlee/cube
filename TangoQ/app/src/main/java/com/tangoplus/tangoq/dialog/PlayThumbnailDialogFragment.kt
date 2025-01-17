@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -53,7 +54,13 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     private var playbackPosition = 0L
     private lateinit var prefs : PreferencesManager
     private lateinit var wm : WifiManager
-
+    private var exoPlay: ImageButton? = null
+    private var exoPause: ImageButton? = null
+    private var llSpeed: LinearLayout? = null
+    private var btnSpeed: ImageButton? = null
+    private var exo05: ImageButton? = null
+    private var exo075: ImageButton? = null
+    private var exo10: ImageButton? = null
     interface DialogCloseListener {
         fun onDialogClose()
     }
@@ -82,6 +89,35 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             isLike = true
             binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
         }
+
+        // playerview 넣기
+        exoPlay = view.findViewById(R.id.btnPlay)
+        exoPause = view.findViewById(R.id.btnPause)
+        llSpeed = view.findViewById(R.id.llSpeed)
+        btnSpeed = view.findViewById(R.id.btnSpeed)
+
+        exo05 = view.findViewById(R.id.btn05)
+        exo075 = view.findViewById(R.id.btn075)
+        exo10 = view.findViewById(R.id.btn10)
+
+        exoPlay?.visibility = View.GONE
+
+        exoPause?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == true) {
+                simpleExoPlayer?.pause()
+                exoPause?.visibility = View.GONE
+                exoPlay?.visibility = View.VISIBLE
+            }
+        }
+        exoPlay?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == false) {
+                simpleExoPlayer?.play()
+                exoPause?.visibility = View.VISIBLE
+                exoPlay?.visibility = View.GONE
+            }
+        }
+
+
 
         binding.ibtnPTDLike.setOnClickListener {
             if (isLike) {
@@ -284,6 +320,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             simpleExoPlayer?.prepare(it)
         }
         simpleExoPlayer?.seekTo(playbackPosition)
+
     }
 
     private fun buildMediaSource() : MediaSource {

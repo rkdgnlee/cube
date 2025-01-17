@@ -248,7 +248,7 @@ class MeasureDetailFragment : Fragment() {
 
     private fun updateUI() {
         binding.tvMDScore.text = measure?.overall.toString()
-        binding.tvMDDate.text = measure?.regDate?.substring(0, 10)
+        binding.tvMDDate.text = "${measure?.regDate?.substring(0, 10)} ${measure?.userName}"
         binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
     }
 }

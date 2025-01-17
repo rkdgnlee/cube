@@ -44,6 +44,10 @@ class MeasureViewModel : ViewModel() {
     val staticJsonFiles = mutableListOf<File>()
     var dynamicJsonFile : File? = null
 
+    // 핸드폰번호, 이름 세팅 vm
+    var setupMobile =""
+    var setupName = ""
+
     // ------# 각 부위 데이터들 #------
     var noseData : Pair<Float, Float> = Pair(0f, 0f)
     var earData = listOf<Pair<Float, Float>>()
@@ -61,7 +65,7 @@ class MeasureViewModel : ViewModel() {
 
     init {
         selectedMeasureDate.value = ""
-        selectedMeasure = MeasureVO(-1,-1, "", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
+        selectedMeasure = MeasureVO(-1,-1, "","", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
     }
 
     // ------# JSONObject로 변경 전 앞에 접두사 안생기게끔 하기 #------

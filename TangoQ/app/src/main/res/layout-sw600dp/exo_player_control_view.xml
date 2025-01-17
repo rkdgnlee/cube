@@ -29,7 +29,6 @@
             android:layout_height="86dp"
             android:backgroundTint="#00FFFFFF"
             android:contentDescription="playVideo"
-            android:focusableInTouchMode="true"
             android:scaleType="centerCrop"
             android:visibility="gone"
             app:srcCompat="@drawable/media_play_button" />
@@ -48,7 +47,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
@@ -56,7 +55,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/llSpeed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         app:layout_constraintVertical_bias="1.0">
@@ -132,4 +131,50 @@
         app:layout_constraintTop_toTopOf="@+id/linearLayout2"
         app:srcCompat="@drawable/icon_5_forward" />
 
+    <LinearLayout
+        android:id="@+id/llSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn05"
+            android:layout_width="86dp"
+            android:layout_height="64dp"
+            android:background="@drawable/effect_ibtn_20dp"
+            android:backgroundTint="#00FFFFFF"
+            android:visibility="gone"
+            app:srcCompat="@drawable/icon_05" />
+
+        <ImageButton
+            android:id="@+id/btn075"
+            android:layout_width="86dp"
+            android:layout_height="64dp"
+            android:background="@drawable/effect_ibtn_20dp"
+            android:backgroundTint="#00FFFFFF"
+            android:visibility="gone"
+            app:srcCompat="@drawable/icon_075" />
+
+        <ImageButton
+            android:id="@+id/btn10"
+            android:layout_width="86dp"
+            android:layout_height="64dp"
+            android:background="@drawable/effect_ibtn"
+            android:backgroundTint="#00FFFFFF"
+            android:visibility="gone"
+            app:srcCompat="@drawable/icon_10" />
+
+        <ImageButton
+            android:id="@+id/btnSpeed"
+            android:layout_width="86dp"
+            android:layout_height="64dp"
+            android:background="@drawable/effect_ibtn"
+            android:backgroundTint="#00FFFFFF"
+            app:srcCompat="@drawable/icon_speed" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

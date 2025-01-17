@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Chronometer
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -59,6 +60,13 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private var uvpSns : MutableList<String>? = null
 
     private val playbackPositions = mutableMapOf<Int, Long>()
+    private var exoPlay: ImageButton? = null
+    private var exoPause: ImageButton? = null
+    private var llSpeed: LinearLayout? = null
+    private var btnSpeed: ImageButton? = null
+    private var exo05: ImageButton? = null
+    private var exo075: ImageButton? = null
+    private var exo10: ImageButton? = null
 
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
@@ -106,6 +114,32 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
 
+
+        exoPlay = findViewById(R.id.btnPlay)
+        exoPause = findViewById(R.id.btnPause)
+        llSpeed = findViewById(R.id.llSpeed)
+        btnSpeed = findViewById(R.id.btnSpeed)
+
+        exo05 = findViewById(R.id.btn05)
+        exo075 = findViewById(R.id.btn075)
+        exo10 = findViewById(R.id.btn10)
+
+        exoPlay?.visibility = View.GONE
+
+        exoPause?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == true) {
+                simpleExoPlayer?.pause()
+                exoPause?.visibility = View.GONE
+                exoPlay?.visibility = View.VISIBLE
+            }
+        }
+        exoPlay?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == false) {
+                simpleExoPlayer?.play()
+                exoPause?.visibility = View.VISIBLE
+                exoPlay?.visibility = View.GONE
+            }
+        }
 
         if (!videoUrls.isNullOrEmpty()) {
             baseUrls.addAll(videoUrls)
@@ -187,22 +221,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         simpleExoPlayer?.seekTo(windowIndex, savedPosition)
         simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
 
-        val exoPlay = findViewById<ImageButton>(R.id.btnPlay)
-        val exoPause = findViewById<ImageButton>(R.id.btnPause)
-        exoPause?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == true) {
-                simpleExoPlayer?.pause()
-                exoPause.visibility = View.GONE
-                exoPlay.visibility = View.VISIBLE
-            }
-        }
-        exoPlay?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == false) {
-                simpleExoPlayer?.play()
-                exoPause.visibility = View.VISIBLE
-                exoPlay.visibility = View.GONE
-            }
-        }
+
 
         simpleExoPlayer?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
