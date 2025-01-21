@@ -63,7 +63,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
                 binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_finish_program))
                 binding.btnPAD1.setOnClickListener {
                     dismiss()
-
                 }
                 binding.btnPAD2.setOnClickListener {
                     dismiss()
@@ -81,7 +80,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
                 binding.btnPAD2.visibility = View.VISIBLE
                 binding.btnPAD2.setOnClickListener {
                     dismiss()
-
                 }
             }
             0 -> {

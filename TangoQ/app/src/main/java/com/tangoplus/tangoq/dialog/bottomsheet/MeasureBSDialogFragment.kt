@@ -42,13 +42,18 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
 
         val dates = measures?.let { measure ->
             List(measure.size) { i ->
-                "${measure.get(i).regDate.substring(0, 10)} ${measure.get(i).userName}"
+                measure.get(i).regDate
+            }
+        } ?: emptyList()
+        val names = measures?.let { measure ->
+            List(measure.size) { i ->
+                measure.get(i).userName
             }
         } ?: emptyList()
         Log.v("MeasureBS", "$dates")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMBSD.layoutManager = layoutManager
-        val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), "measure",  mvm)
+        val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), names.toMutableList(),"measure",  mvm)
         binding.rvMBSD.adapter = adapter
 
         setupButtons()

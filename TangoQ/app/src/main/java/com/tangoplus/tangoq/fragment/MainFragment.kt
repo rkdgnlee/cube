@@ -47,6 +47,7 @@ import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,6 +57,7 @@ class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
     private val uvm by activityViewModels<UserViewModel>()
     private val mvm : MeasureViewModel by activityViewModels()
+    private val pvm : ProgressViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     private lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
@@ -220,7 +222,7 @@ class MainFragment : Fragment() {
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
                         Log.v("VM선택날짜", "mvm.selectedMeasureDate: $selectedDate")
                         val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
-
+                        Log.v("메인Date", "dateIndex: ")
                         // ------# 매칭 프로그램이 있는지 없는지 확인하기 #------
 //                        if (selectedDate != measures?.get(0)?.regDate) {
 //                            setProgramButton(false)
@@ -234,67 +236,41 @@ class MainFragment : Fragment() {
                             setAdapter(dateIndex)
 
                             Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure: ${measures?.get(dateIndex)?.dangerParts}, ${measures?.get(dateIndex)?.recommendations}")
+                            Log.v("써머리들어가기 전", "${measures?.get(dateIndex)?.dangerParts}")
                             val measureSize = measures?.get(dateIndex)?.dangerParts?.size
                             if (measureSize != null) {
                                 if (measureSize > 1) {
                                     val summaryComments  = createMeasureComment(measures?.get(dateIndex)?.dangerParts)
-                                    Log.v("어떻게 나왔니", "${summaryComments}")
-//                                    if (summaryComments.size > 1) {
-//                                        binding.tvMMeasureResult1.text = summaryComments[0]
-//                                        binding.tvMMeasureResult2.text = summaryComments[1]
-//                                    } else if (summaryComments.size == 1) {
-//                                        binding.tvMMeasureResult1.text = summaryComments[0]
-//                                        binding.tvMMeasureResult2.visibility = View.INVISIBLE
-//                                    } else {
-//                                        Log.v("어떻게 나왔니", "${summaryComments}")
-//                                    }
-                                    binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
-                                    binding.tvMMeasureResult2.text = "${measures?.get(dateIndex)?.dangerParts?.get(1)?.first}이(가) 부상 위험이 있습니다."
-                                } else {
-                                    binding.tvMMeasureResult1.text = "${measures?.get(dateIndex)?.dangerParts?.get(0)?.first}이(가) 부상 위험이 있습니다."
-                                }
+
+                                    Log.v("써머리들어간 후", "$summaryComments")
+                                    if (summaryComments.size > 1) {
+                                        binding.tvMMeasureResult1.text = summaryComments[0]
+                                        binding.tvMMeasureResult2.text = summaryComments[1]
+                                    } else if (summaryComments.size == 1) {
+                                        binding.tvMMeasureResult1.text = summaryComments[0]
+                                        binding.tvMMeasureResult2.visibility = View.INVISIBLE
+                                    } else {
+                                        binding.tvMMeasureResult1.text = ""
+                                    }
+                               }
                             }
                         }
 
                         // 내가 했던 프로그램의 운동 목록 가져오기
                         lifecycleScope.launch(Dispatchers.IO) {
                             try {
-                                if (latestRecSn == -1) {
-                                    val recommendations = mvm.selectedMeasure?.recommendations
-                                    if (recommendations != null) {
-                                        latestRecSn = recommendations.map { it.recommendationSn }.random()
-                                    }
+                                val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
+                                val uvpResults = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
+                                val programExercises = progressResult?.second
+                                Log.v("최근프로그램데이터", "$uvpResults")
+                                val adapter =  ExerciseRVAdapter(this@MainFragment, programExercises, uvpResults, null,null, null, "M")
+                                var currentPage = 0
+                                if (uvpResults != null) {
+                                   currentPage = findCurrentIndex(uvpResults)
                                 }
-                                Log.v("latestRecSn", "sn: $latestRecSn, recommendationSn: ${mvm.selectedMeasure?.recommendations}")
-                                val latestProgressResult = getLatestProgress(getString(R.string.API_progress), latestRecSn, requireContext())
-                                val programSn = latestProgressResult?.second?.optInt("exercise_program_sn")
-                                val currentPage = 0
-                                var adapter =  ExerciseRVAdapter(this@MainFragment, mutableListOf(), mutableListOf(), null, null, "history")
 
-                                // -------# 최근 진행 프로그램 가져오기 #------
+                                // -------# 최근 진행 프로그램 뷰페이저 #------
                                 withContext(Dispatchers.Main) {
-                                    uvm.existedProgramData = fetchProgram(getString(R.string.API_programs), requireContext(), programSn.toString())
-                                    val latestProgress = convertToProgressUnitVO(latestProgressResult?.first)
-                                    val filledProgresses = uvm.existedProgramData?.exercises?.mapIndexed { index, exercise ->
-                                        val targetIndex = uvm.existedProgramData?.exercises?.indexOfFirst {
-                                            it.exerciseId?.toInt() == latestProgress.exerciseId
-                                        }
-                                        when {
-                                            exercise.exerciseId?.toInt() == latestProgress.exerciseId -> latestProgress
-                                            index < targetIndex!! -> ProgressUnitVO(-1, -1, -1, -1, -1, -1,
-                                                "", "", 100, 100, -1, "")
-                                            else -> {
-                                                ProgressUnitVO(-1, -1, -1, -1, -1, -1,
-                                                    "", "", -1, -1, -1, "")
-                                            }
-                                        }
-
-                                    }?.toMutableList()
-                                    val exercises = uvm.existedProgramData?.exercises
-                                    if (exercises != null) adapter = ExerciseRVAdapter(this@MainFragment, exercises,
-                                        filledProgresses, Pair(currentPage, currentPage), null, "history")
-
-                                    // -------# 최근 진행 프로그램 뷰페이저 #------
                                     binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
                                     binding.vpM.apply {
                                         clipToPadding = false

@@ -98,14 +98,14 @@ class TrendCurveView @JvmOverloads constructor(
                 ContextCompat.getColor(context, R.color.deleteColor),
                 startRatio,
                 0.3f,
-                0.4f
+                0.45f
             )
             val endColor = blendColorsWithThreshold(
                 ContextCompat.getColor(context, R.color.thirdColor),
                 ContextCompat.getColor(context, R.color.deleteColor),
                 endRatio,
                 0.3f,
-                0.4f
+                0.45f
             )
 
             // LinearGradient를 선분에 적용

@@ -25,10 +25,12 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
     }
     inner class MPAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvDDAITitle : TextView = view.findViewById(R.id.tvDDAITitle)
-        val tvDDAILeft : TextView = view.findViewById(R.id.tvDDAILeft)
-        val tvDDAIRight : TextView = view.findViewById(R.id.tvDDAIRight)
-        val cvDDAILeft : TrendCurveView = view.findViewById(R.id.cvDDAILeft)
-        val cvDDAIRight : TrendCurveView = view.findViewById(R.id.cvDDAIRight)
+        val tvDDAI1 : TextView = view.findViewById(R.id.tvDDAI1)
+        val tvDDAI2 : TextView = view.findViewById(R.id.tvDDAI2)
+        val cvDDAI1 : TrendCurveView = view.findViewById(R.id.cvDDAI1)
+        val cvDDAI2 : TrendCurveView = view.findViewById(R.id.cvDDAI2)
+        val clDDAI1 : ConstraintLayout = view.findViewById(R.id.clDDAI1)
+        val clDDAI2 : ConstraintLayout = view.findViewById(R.id.clDDAI2)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -86,19 +88,30 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
 
         } else if (holder is MPAViewHolder){
             holder.tvDDAITitle.text = "${distinctTitles[position]} 이동 안정성"
-
             val pairStartIndex = (position * 2)
-            val rightIndex = pairStartIndex + 1
+            val leftIndex = pairStartIndex + 1
+            when (position) {
+                1 -> {
+                    holder.clDDAI2.visibility = View.GONE
+                    holder.tvDDAI2.visibility = View.GONE
 
-            // 인덱스가 유효한지 확인
-            if (pairStartIndex < data.size) {
-                holder.cvDDAILeft.setPoints(data[pairStartIndex])
-                holder.tvDDAILeft.text = titles[pairStartIndex]
-            }
+                    holder.cvDDAI1.setPoints(data[pairStartIndex])
+                    holder.tvDDAI1.text = titles[pairStartIndex]
 
-            if (rightIndex < data.size) {
-                holder.cvDDAIRight.setPoints(data[rightIndex])
-                holder.tvDDAIRight.text = titles[rightIndex]
+                    val layoutParams = holder.clDDAI1.layoutParams as ConstraintLayout.LayoutParams
+                    layoutParams.horizontalBias = 0.5f
+                    holder.clDDAI1.layoutParams = layoutParams
+                }
+                else -> {
+                    if (leftIndex < data.size) {
+                        holder.cvDDAI1.setPoints(data[pairStartIndex])
+                        holder.tvDDAI1.text = titles[pairStartIndex]
+                    }
+                    if (pairStartIndex < data.size) {
+                        holder.cvDDAI2.setPoints(data[leftIndex])
+                        holder.tvDDAI2.text = titles[leftIndex]
+                    }
+                }
             }
         }
     }

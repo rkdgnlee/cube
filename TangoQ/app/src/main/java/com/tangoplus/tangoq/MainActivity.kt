@@ -82,7 +82,9 @@ class MainActivity : AppCompatActivity() {
         workManager.getWorkInfosForUniqueWorkLiveData("TokenCheckWork").observe(this) { workInfos ->
             if (workInfos.isNullOrEmpty()) return@observe
             val workInfo = workInfos[0]
+            Log.v("TokenCheckWorker", "$workInfos")
             if (workInfo.state == WorkInfo.State.FAILED) {
+                Log.v("로그아웃해야함", "중복 로그인 - 현재 기기 로그아웃 처리")
                 // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
                 val dialog = AlertDialogFragment.newInstance("logout")
                 dialog.show(supportFragmentManager, "AlertDialogFragment")

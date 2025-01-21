@@ -5,6 +5,7 @@ import android.util.Log
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
+import com.tangoplus.tangoq.vo.ExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -13,6 +14,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
@@ -47,7 +49,7 @@ object NetworkProgress {
                             videoDuration = ja.optJSONObject(i).optInt("duration"),
                             lastProgress = ja.optJSONObject(i).optInt("progress"),
                             isCompleted = ja.optJSONObject(i).optInt("completed"),
-                            updateDate = ja.optJSONObject(i).optString("updated_at")
+                            updateDate =  ja.optJSONObject(i)?.optString("updated_at")
                         )
                         progresses.add(progressUnitVO)
                     }
@@ -171,10 +173,10 @@ object NetworkProgress {
         })
     }
     // 가장 최신 정보를 가져오는게 좋다.
-    suspend fun getLatestProgress(myUrl: String, recSn: Int, context: Context) : Pair<JSONObject, JSONObject>? {
+    suspend fun getLatestProgress(myUrl: String, context: Context) : Pair<MutableList<ProgressUnitVO>, MutableList<ExerciseVO>>? {
         val client = getClient(context)
         val request = Request.Builder()
-            .url("$myUrl?recommendation_sn=$recSn&latest_progress")
+            .url("$myUrl?latest_progress")
             .get()
             .build()
 
@@ -182,14 +184,61 @@ object NetworkProgress {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("Get>Recommend+Progress", "$responseBody")
+                    Log.v("Recommend+Progress", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
-                    val progressJo = dataJson.optJSONObject("progress_data")
-                    val programJo = dataJson.optJSONObject("program_data")
-                    if (progressJo != null && programJo != null) {
-                        return@use Pair(progressJo, programJo)
+
+                    // 프로그레스, 프로그램
+                    val progressJa = dataJson.optJSONArray("progress_data")
+                    val progressUnits = mutableListOf<ProgressUnitVO>()
+                    if (progressJa != null) {
+                        for (i in 0 until progressJa.length()) {
+                            val uvpUnit = progressJa.optJSONObject(i)
+                            val progressUnitVO = ProgressUnitVO(
+                                uvpSn = uvpUnit.optInt("uvp_sn"),
+                                exerciseId = uvpUnit.optInt("content_sn"),
+                                recommendationSn = uvpUnit.optInt("recommendation_sn"),
+                                currentWeek = uvpUnit.optInt("week_number"),
+                                weekStartAt = uvpUnit.optString("week_start_at"),
+                                weekEndAt = uvpUnit.optString("week_end_at"),
+                                currentSequence = uvpUnit.optInt("count_set"),
+                                requiredSequence = uvpUnit.optInt("required_set"),
+                                videoDuration = uvpUnit.optInt("duration"),
+                                lastProgress = uvpUnit.optInt("progress"),
+                                isCompleted = uvpUnit.optInt("completed"),
+                                updateDate = uvpUnit.optString("updated_at")
+                            )
+                            progressUnits.add(progressUnitVO)
+                        }
                     }
-                    return@use Pair(JSONObject(), JSONObject())
+                    val exerciseJo = dataJson.optJSONArray("exercise_data")
+                    val exerciseList = mutableListOf<ExerciseVO>()
+                    if (exerciseJo != null) {
+                        for (i in 0 until exerciseJo.length()) {
+                            val uvpUnit = exerciseJo.optJSONObject(i)
+                            val exerciseData = ExerciseVO(
+                                exerciseId = uvpUnit.optString("exercise_id"),
+                                exerciseName = uvpUnit.optString("exercise_name"),
+                                exerciseTypeId = uvpUnit.getString("exercise_type_id"),
+                                exerciseTypeName = uvpUnit.getString("exercise_type_name"),
+                                exerciseCategoryId = uvpUnit.getString("exercise_category_id"),
+                                exerciseCategoryName = uvpUnit.getString("exercise_category_name"),
+                                relatedJoint = uvpUnit.getString("related_joint"),
+                                relatedMuscle = uvpUnit.getString("related_muscle"),
+                                relatedSymptom = uvpUnit.getString("related_symptom"),
+                                exerciseStage = uvpUnit.getString("exercise_stage"),
+                                exerciseFrequency = uvpUnit.getString("exercise_frequency"),
+                                exerciseIntensity = uvpUnit.getString("exercise_intensity"),
+                                exerciseInitialPosture = uvpUnit.getString("exercise_initial_posture"),
+                                exerciseMethod = uvpUnit.getString("exercise_method"),
+                                exerciseCaution = uvpUnit.getString("exercise_caution"),
+                                videoFilepath = uvpUnit.getString("video_filepath"),
+                                duration = (uvpUnit.optString("duration").toIntOrNull() ?: 0).toString(),
+                                imageFilePath = uvpUnit.getString("image_filepath"),
+                            )
+                            exerciseList.add(exerciseData)
+                        }
+                    }
+                    return@use Pair(progressUnits, exerciseList)
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgressIndex", "latestProgress: ${e.message}")

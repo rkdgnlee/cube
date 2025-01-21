@@ -38,6 +38,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -46,6 +47,7 @@ class MeasureAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMeasureAnalysisBinding
     private val viewModel : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
+    private val pvm : PlayViewModel by activityViewModels()
     private lateinit var mr : JSONArray
     private var index = -1
 
@@ -55,6 +57,14 @@ class MeasureAnalysisFragment : Fragment() {
     private var videoUrl = ""
     private lateinit var jsonArray: JSONArray
     private lateinit var biometricManager : BiometricManager
+
+    private var exoPlay: ImageButton? = null
+    private var exoPause: ImageButton? = null
+    private var llSpeed: LinearLayout? = null
+    private var btnSpeed: ImageButton? = null
+    private var exo05: ImageButton? = null
+    private var exo075: ImageButton? = null
+    private var exo10: ImageButton? = null
 
     companion object {
         private const val ARG_INDEX = "index_analysis"
@@ -87,8 +97,11 @@ class MeasureAnalysisFragment : Fragment() {
             onSuccess = {
                 index = arguments?.getInt(ARG_INDEX) ?: -1
                 mr = viewModel.selectedMeasure?.measureResult ?: JSONArray()
+                Log.v("현재측정2", "$mr")
                 avm.mafMeasureResult = JSONArray()
                 Log.v("현재측정", viewModel.selectedMeasure?.regDate.toString())
+                pvm.videoUrl = null
+                simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
                 // ------# 1차 필터링 (균형별) #------
                 // 0, 1, 2, 3으로 3가지.
@@ -148,6 +161,18 @@ class MeasureAnalysisFragment : Fragment() {
                         binding.tvMPTitle.text = "동적 측정"
                         avm.mafMeasureResult.put(mr.optJSONArray(1))
                         setDynamicUI(true)
+                        exoPlay = view.findViewById(R.id.btnPlay)
+                        exoPause = view.findViewById(R.id.btnPause)
+                        llSpeed = view.findViewById(R.id.llSpeed)
+                        btnSpeed = view.findViewById(R.id.btnSpeed)
+
+                        exo05 = view.findViewById(R.id.btn05)
+                        exo075 = view.findViewById(R.id.btn075)
+                        exo10 = view.findViewById(R.id.btn10)
+                        setClickListener()
+
+                        pvm.setPlaybackPosition(0L)
+                        pvm.setWindowIndex(0)
                         setPlayer()
                     }
                 }
@@ -166,6 +191,7 @@ class MeasureAnalysisFragment : Fragment() {
     // 고정적으로
     // big은 자세 , small은 수직 수평 분석임
     private fun setScreenRawData(measureResult: JSONArray, seq: Int) {
+        Log.v("measureResult", "$measureResult")
         // 정면은 필터링 됨. 수직부터 필터링
         var minResultData = mutableListOf<Triple<String, String, String?>>()
         when (seq) {
@@ -464,11 +490,11 @@ class MeasureAnalysisFragment : Fragment() {
                             }
                         }
                     } else if (playbackState == Player.STATE_ENDED) {
-                        val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
-                        exoPlay.visibility = View.VISIBLE
-                        exoPlay.bringToFront()
-                        val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
-                        exoPause.visibility = View.GONE
+//                        val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
+                        exoPlay?.visibility = View.VISIBLE
+                        exoPlay?.bringToFront()
+//                        val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
+                        exoPause?.visibility = View.GONE
 //                        Handler(Looper.getMainLooper()).postDelayed({
 //                            simpleExoPlayer?.seekTo(0)
 //                            simpleExoPlayer?.play()
@@ -481,112 +507,113 @@ class MeasureAnalysisFragment : Fragment() {
     }
 
     private fun initPlayer() {
+        // viewModel의 이전 영상 보존값들 초기화
+
         simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
         binding.pvMA.player = simpleExoPlayer
         binding.pvMA.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
-            videoUrl = viewModel.selectedMeasure?.fileUris?.get(1).toString()
+            // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
+            videoUrl = pvm.videoUrl ?: viewModel.selectedMeasure?.fileUris?.get(1).toString()
+            pvm.videoUrl = videoUrl  // URL 저장
+
             val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
             val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
                 .createMediaSource(mediaItem)
+
             mediaSource.let {
                 simpleExoPlayer?.prepare(it)
-                simpleExoPlayer?.seekTo(0)
-                simpleExoPlayer?.playWhenReady = true
+                // 저장된 위치로 정확하게 이동
+                simpleExoPlayer?.seekTo(pvm.getPlaybackPosition())
+                simpleExoPlayer?.playWhenReady = pvm.getPlayWhenReady()
             }
         }
         binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
         binding.pvMA.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
-
-        val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
-        val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
-        exoPlay.visibility = View.GONE
+    }
+    private fun setClickListener() {
+        exoPlay?.visibility = View.GONE
         exoPlay?.setOnClickListener {
             simpleExoPlayer?.seekTo(0)
             simpleExoPlayer?.play()
-            exoPlay.visibility = View.GONE
-            exoPause.visibility = View.VISIBLE
+            exoPlay?.visibility = View.GONE
+            exoPause?.visibility = View.VISIBLE
         }
         exoPause?.setOnClickListener{
             simpleExoPlayer?.pause()
-            exoPlay.visibility = View.VISIBLE
-            exoPause.visibility = View.GONE
+            exoPlay?.visibility = View.VISIBLE
+            exoPause?.visibility = View.GONE
         }
         var isShownSpeed = false
         var forChanged = false
-        // 재생속도
-        val exo05 = requireActivity().findViewById<ImageButton>(R.id.btn05)
-        val exo075 = requireActivity().findViewById<ImageButton>(R.id.btn075)
-        val exo10 = requireActivity().findViewById<ImageButton>(R.id.btn10)
-        val llSpeed = requireActivity().findViewById<LinearLayout>(R.id.llSpeed)
-        val btnSpeed = requireActivity().findViewById<ImageButton>(R.id.btnSpeed)
-        llSpeed.visibility = View.VISIBLE
 
-        btnSpeed.setOnClickListener{
+
+        llSpeed?.visibility = View.VISIBLE
+
+        btnSpeed?.setOnClickListener{
             if (!isShownSpeed) {
-                exo05.visibility = View.VISIBLE
-                exo075.visibility = View.VISIBLE
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
                 isShownSpeed = true
             } else {
-                exo05.visibility = View.GONE
-                exo075.visibility = View.GONE
+                exo05?.visibility = View.GONE
+                exo075?.visibility = View.GONE
                 isShownSpeed = false
             }
         }
 
-        exo05.setOnClickListener {
+        exo05?.setOnClickListener {
             if (forChanged) {
-                exo05.visibility = View.VISIBLE
-                exo075.visibility = View.VISIBLE
-                exo10.visibility = View.VISIBLE
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.VISIBLE
                 forChanged = false
             } else {
                 simpleExoPlayer?.playbackParameters = PlaybackParameters(0.5f)
-                exo05.visibility = View.VISIBLE
-                exo075.visibility = View.GONE
-                exo10.visibility = View.GONE
-                btnSpeed.visibility = View.GONE
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.GONE
+                exo10?.visibility = View.GONE
+                btnSpeed?.visibility = View.GONE
                 isShownSpeed = false
                 forChanged = true
             }
 
         }
-        exo075.setOnClickListener {
+        exo075?.setOnClickListener {
             if (forChanged) {
-                exo05.visibility = View.VISIBLE
-                exo075.visibility = View.VISIBLE
-                exo10.visibility = View.VISIBLE
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.VISIBLE
                 forChanged = false
             } else {
                 simpleExoPlayer?.playbackParameters = PlaybackParameters(0.75f)
-                exo05.visibility = View.GONE
-                exo075.visibility = View.VISIBLE
-                exo10.visibility = View.GONE
-                btnSpeed.visibility = View.GONE
+                exo05?.visibility = View.GONE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.GONE
+                btnSpeed?.visibility = View.GONE
                 isShownSpeed = false
                 forChanged = true
             }
 
         }
-        exo10.setOnClickListener {
+        exo10?.setOnClickListener {
             if (forChanged) {
-                exo05.visibility = View.VISIBLE
-                exo075.visibility = View.VISIBLE
-                exo10.visibility = View.VISIBLE
+                exo05?.visibility = View.VISIBLE
+                exo075?.visibility = View.VISIBLE
+                exo10?.visibility = View.VISIBLE
                 forChanged = false
             } else {
                 simpleExoPlayer?.playbackParameters = PlaybackParameters(1.0f)
-                exo05.visibility = View.GONE
-                exo075.visibility = View.GONE
-                exo10.visibility = View.VISIBLE
-                btnSpeed.visibility = View.GONE
+                exo05?.visibility = View.GONE
+                exo075?.visibility = View.GONE
+                exo10?.visibility = View.VISIBLE
+                btnSpeed?.visibility = View.GONE
                 isShownSpeed = false
                 forChanged = true
             }
         }
     }
-
     private fun updateFrameData(videoDuration: Long, totalFrames: Int) {
         val currentPosition = simpleExoPlayer?.currentPosition ?: 0L
 
@@ -650,10 +677,22 @@ class MeasureAnalysisFragment : Fragment() {
         binding.rvMALeft.adapter = dynamicAdapter
     }
 
+    override fun onPause() {
+        super.onPause()
+        simpleExoPlayer?.let { player ->
+            pvm.savePlayerState(player, videoUrl)
+            player.stop()
+            player.playWhenReady = false
+        }
+    }
+
     override fun onStop() {
         super.onStop()
-        simpleExoPlayer?.stop()
-        simpleExoPlayer?.playWhenReady = false
+        simpleExoPlayer?.let { player ->
+            pvm.savePlayerState(player, videoUrl)
+            player.stop()
+            player.playWhenReady = false
+        }
     }
 
     override fun onDestroy() {
@@ -664,5 +703,6 @@ class MeasureAnalysisFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true
+//        setPlayer()
     }
 }

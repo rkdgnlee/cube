@@ -91,22 +91,22 @@ object ImageProcessingUtil {
         val nose = plr.getOrNull(0)
         val leftEar = plr.getOrNull(7)
         val rightEar = plr.getOrNull(8)
-        val leftShoulder = plr.getOrNull(11)
-        val rightShoulder = plr.getOrNull(12)
-        val leftElbow = plr.getOrNull(13)
-        val rightElbow = plr.getOrNull(14)
-        val leftWrist = plr.getOrNull(15)
-        val rightWrist = plr.getOrNull(16)
-        val leftHip = plr.getOrNull(23)
-        val rightHip = plr.getOrNull(24)
-        val leftKnee = plr.getOrNull(25)
-        val rightKnee = plr.getOrNull(26)
-        val leftAnkle = plr.getOrNull(27)
-        val rightAnkle = plr.getOrNull(28)
-        val leftHeel = plr.getOrNull(29)
-        val rightHeel = plr.getOrNull(30)
-        val leftFoot = plr.getOrNull(31) // 왼발 좌표
-        val rightFoot = plr.getOrNull(32) // 오른발 좌표
+        val leftShoulder = plr.getOrNull(12)
+        val rightShoulder = plr.getOrNull(11)
+        val leftElbow = plr.getOrNull(14)
+        val rightElbow = plr.getOrNull(13)
+        val leftWrist = plr.getOrNull(16)
+        val rightWrist = plr.getOrNull(15)
+        val leftHip = plr.getOrNull(24)
+        val rightHip = plr.getOrNull(23)
+        val leftKnee = plr.getOrNull(26)
+        val rightKnee = plr.getOrNull(25)
+        val leftAnkle = plr.getOrNull(28)
+        val rightAnkle = plr.getOrNull(27)
+        val leftHeel = plr.getOrNull(30)
+        val rightHeel = plr.getOrNull(29)
+        val leftFoot = plr.getOrNull(32) // 왼발 좌표
+        val rightFoot = plr.getOrNull(31) // 오른발 좌표
 
         val noseX = nose?.x
         val noseY = nose?.y
@@ -211,15 +211,15 @@ object ImageProcessingUtil {
                     Pair(16, 22), // 오른팔
                     Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
                 )
-                3 ->listOf(
-                    Pair(15, 19), Pair(11, 13), Pair(13, 15),
-                    Pair(11, 23), Pair(23, 25), Pair(25, 27),
-                    Pair(27, 31), Pair(27, 29),
-                )
-                4 -> listOf(
+                3 -> listOf(
                     Pair(16, 20), Pair(12, 14), Pair(14, 16),
                     Pair(12, 24), Pair(24, 26), Pair(26, 28),
                     Pair(28, 32), Pair(28, 30)
+                )
+                4 ->listOf(
+                    Pair(15, 19), Pair(11, 13), Pair(13, 15),
+                    Pair(11, 23), Pair(23, 25), Pair(25, 27),
+                    Pair(27, 31), Pair(27, 29),
                 )
                 5 -> listOf(
                     Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
@@ -250,8 +250,8 @@ object ImageProcessingUtil {
             val pointAccentRange = when (sequence) {
                 0 -> listOf(0, 11, 12, 23, 24, 25, 26)
                 2 -> listOf(0, 11, 12)
-                3 -> listOf(0, 11, 23, 25)
-                4 -> listOf(0, 12, 24, 26)
+                3 -> listOf(0, 12, 24, 26)
+                4 -> listOf(0, 11, 23, 25)
                 5 -> listOf(0, 11, 12, 23, 24, 25, 26)
                 6 -> listOf(11, 12, 23, 24)
                 else -> listOf()
@@ -259,8 +259,8 @@ object ImageProcessingUtil {
             val pointRange = when (sequence) {
                 0 -> listOf(7, 8, 13, 14, 15, 16, 27, 28)
                 2 -> listOf(13, 14, 15, 16)
-                3 -> listOf(13, 15, 27)
-                4 -> listOf(14, 16, 28)
+                3 -> listOf(14, 16, 28)
+                4 -> listOf(13, 15, 27)
                 5 -> listOf(13, 14, 15, 16, 27, 28)
                 6 -> listOf(0)
                 else -> listOf()
@@ -318,10 +318,18 @@ object ImageProcessingUtil {
         val leftCircleX = 100f
         val leftCircleY = 100f
         val circleRadius = 48f
-        canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
-        canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
-        canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)
-        canvas.drawText("R", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        if (sequence in listOf(5, 6)) {
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawText("L", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        } else {
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawText("R", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        }
+
         return resultBitmap
     }
 
@@ -363,6 +371,7 @@ object ImageProcessingUtil {
 
         return Bitmap.createBitmap(original, x, y, cropWidth, cropHeight)
     }
+
     fun reverseLeftRight(landmarks: List<PoseLandmarkResult.PoseLandmark>, screenWidth: Float): List<PoseLandmarkResult.PoseLandmark> {
         println("Before swap - First 3 landmarks:")
         landmarks.take(3).forEachIndexed { index, landmark ->

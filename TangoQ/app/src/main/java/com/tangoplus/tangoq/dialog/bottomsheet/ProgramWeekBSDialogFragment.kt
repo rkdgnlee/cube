@@ -35,7 +35,7 @@ class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
 
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvWBSD.layoutManager = layoutManager
-        val adapter = StringRVAdapter(this@ProgramWeekBSDialogFragment, weeks, "week",  pvm)
+        val adapter = StringRVAdapter(this@ProgramWeekBSDialogFragment, weeks, null, "week",  pvm)
         binding.rvWBSD.adapter = adapter
 
 

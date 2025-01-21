@@ -411,6 +411,7 @@
                     android:contentDescription="likeThisExercise"
                     android:padding="6dp"
                     android:src="@drawable/icon_like_disabled"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/ibtnPTDShare"
                     app:layout_constraintEnd_toStartOf="@+id/ibtnPTDShare"
                     app:layout_constraintTop_toTopOf="@+id/ibtnPTDShare" />

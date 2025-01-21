@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -52,6 +53,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentMainPartPoseDialogBinding
     private val mvm : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
+    private val pvm : PlayViewModel by activityViewModels()
     private var count = false
     private lateinit var dynamicJa: JSONArray
     private var simpleExoPlayer: SimpleExoPlayer? = null
@@ -65,6 +67,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
     private var exo05: ImageButton? = null
     private var exo075: ImageButton? = null
     private var exo10: ImageButton? = null
+
 
     companion object {
         private const val ARG_SEQ = "arg_seq"
@@ -92,10 +95,12 @@ class MainPartPoseDialogFragment : DialogFragment() {
         if (seq != null) {
             viewLifecycleOwner.lifecycleScope.launch {
                 avm.currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
-
+                pvm.isResume = false
                 when (seq) {
                     1 -> {
                         setDynamicUI(true)
+                        pvm.setPlaybackPosition(0L)
+                        pvm.setWindowIndex(0)
                         setPlayer()
                         exoPlay = view.findViewById(R.id.btnPlay)
                         exoPause = view.findViewById(R.id.btnPause)
@@ -259,7 +264,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
         val screenWidth = displayMetrics.widthPixels
 
         val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
-        Log.v("비율", "aspectRatio: $aspectRatio, video: ($videoWidth, $videoHeight), playerView: (${binding.pvMPPD.width}, ${binding.pvMPPD.height}), overlay: (${binding.ovMPPD.width}, ${binding.ovMPPD.height})")
+//        Log.v("비율", "aspectRatio: $aspectRatio, video: ($videoWidth, $videoHeight), playerView: (${binding.pvMPPD.width}, ${binding.pvMPPD.height}), overlay: (${binding.ovMPPD.width}, ${binding.ovMPPD.height})")
         val adjustedHeight = (screenWidth * aspectRatio).toInt()
 
         // clMA의 크기 조절
@@ -286,15 +291,21 @@ class MainPartPoseDialogFragment : DialogFragment() {
         simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
         binding.pvMPPD.player = simpleExoPlayer
         binding.pvMPPD.controllerShowTimeoutMs = 1100
+
         lifecycleScope.launch {
-            videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
+            // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
+            videoUrl = pvm.videoUrl ?: mvm.selectedMeasure?.fileUris?.get(1).toString()
+            pvm.videoUrl = videoUrl  // URL 저장
+
             val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
             val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
                 .createMediaSource(mediaItem)
+
             mediaSource.let {
                 simpleExoPlayer?.prepare(it)
-                simpleExoPlayer?.seekTo(0)
-                simpleExoPlayer?.playWhenReady = true
+                // 저장된 위치로 정확하게 이동
+                simpleExoPlayer?.seekTo(pvm.getPlaybackPosition())
+                simpleExoPlayer?.playWhenReady = pvm.getPlayWhenReady()
             }
         }
         binding.pvMPPD.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
@@ -415,18 +426,41 @@ class MainPartPoseDialogFragment : DialogFragment() {
 
     override fun onStop() {
         super.onStop()
-        simpleExoPlayer?.stop()
-        simpleExoPlayer?.playWhenReady = false
+        simpleExoPlayer?.let { player ->
+            player.stop()
+            player.playWhenReady = false
+            pvm.savePlayerState(player, videoUrl)
+        }
+        pvm.isResume = false
+    }
+
+    override fun onPause() {
+        super.onPause()
+        simpleExoPlayer?.let { player ->
+            player.stop()
+            player.playWhenReady = false
+            pvm.savePlayerState(player, videoUrl)
+        }
+        pvm.isResume = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
         simpleExoPlayer?.release()
+        simpleExoPlayer = null
     }
     override fun onResume() {
         super.onResume()
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        if (!pvm.isResume) {
+            simpleExoPlayer?.let { player ->
+                player.play()
+                player.playWhenReady = true
+            }
+            pvm.isResume = true
+        }
+
     }
 }

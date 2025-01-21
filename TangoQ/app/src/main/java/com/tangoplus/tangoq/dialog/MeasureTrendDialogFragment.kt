@@ -214,21 +214,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
         binding.rvMTD.adapter = adapter
         adapter.notifyDataSetChanged()
 
-//        val constraintSet = ConstraintSet()
-//        constraintSet.clone(binding.clMTD)
-//        constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
-//        constraintSet.applyTo(binding.clMTD)
-        Handler(Looper.getMainLooper()).postDelayed({
-            val rightHeight = binding.ssivMTDRight.height
-            val layoutParams = binding.ssivMTDLeft.layoutParams
-            layoutParams.height = rightHeight
-            binding.ssivMTDLeft.layoutParams = layoutParams
-//
-//            val constraintSet = ConstraintSet()
-//            constraintSet.clone(binding.clMTD)
-//            constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
-//            constraintSet.applyTo(binding.clMTD)
-        }, 250)
+        val rightHeight = binding.ssivMTDRight.height
+        val layoutParams = binding.ssivMTDLeft.layoutParams
+        layoutParams.height = rightHeight
+        binding.ssivMTDLeft.layoutParams = layoutParams
     }
 
     private fun showBalloon() {

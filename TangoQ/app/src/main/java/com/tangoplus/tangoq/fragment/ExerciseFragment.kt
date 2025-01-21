@@ -55,14 +55,6 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         binding.rvEMainCategory.overScrollMode = 0
         val sn = arguments?.getInt(ARG_SN) ?: -1
 
-        binding.ibtnEAlarm.setOnClickListener {
-            val dialog = AlarmDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
-        }
-        binding.ibtnEQRCode.setOnClickListener{
-            val dialog = QRCodeDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
-        }
         CoroutineScope(Dispatchers.Main).launch {
             // 상단 최근 한 운동 cardView 보이기
 //            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
@@ -108,6 +100,15 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                 val dialog = ExerciseSearchDialogFragment()
                 dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
             }
+        }
+
+        binding.ibtnEAlarm.setOnClickListener {
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+        binding.ibtnEQRCode.setOnClickListener{
+            val dialog = QRCodeDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
     }
 

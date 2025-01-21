@@ -42,13 +42,12 @@ import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.db.Singleton_t_progress
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListener {
@@ -148,7 +147,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 }
             }
         }
-        binding.btnPCDRight.setOnClickListener {
+        binding.btnPCDRight.setOnSingleClickListener {
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
 
@@ -161,29 +160,26 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     val currentSequenceProgresses = pvm.currentProgresses[pvm.currentWeek]
                     // 가장 최근에 시작한 운동의 인덱스 찾기
                     val startIndex = findCurrentIndex(currentSequenceProgresses)
-
                     // startIndex가 유효한지 확인
                     if (startIndex >= 0 && startIndex < currentSequenceProgresses.size) {
                         Log.v("startIndex", "${startIndex}, currentSequenceProgresses: ${currentSequenceProgresses.size}")
                         val videoUrls = mutableListOf<String>()
                         val exerciseIds = mutableListOf<String>()
                         val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
-                        var totalDuration = 0
+
                         for (i in startIndex until currentSequenceProgresses.size) {
 
                             val progress = currentSequenceProgresses[i]
                             exerciseIds.add(progress.exerciseId.toString())
                             uvpIds.add(progress.uvpSn.toString())
                             videoUrls.add(program.exercises?.get(i)?.videoFilepath.toString())
-                            totalDuration += program.exercises?.get(i)?.duration?.toInt() ?: 0
                         }
 
                         val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
                         intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
                         intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
                         intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
-                        intent.putExtra("current_position",currentSequenceProgresses[startIndex].lastProgress.toLong())
-                        intent.putExtra("total_duration", totalDuration)
+                        intent.putExtra("current_position", currentSequenceProgresses[startIndex].lastProgress.toLong())
                         requireContext().startActivity(intent)
                         startActivityForResult(intent, 8080)
                         Log.v("인텐트담은것들", "${videoUrls}, $exerciseIds, $uvpIds")
@@ -305,6 +301,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     binding.sflPCD.visibility = View.GONE
                     showBalloon()
                     isResume = true
+                    Log.v("현재IsResume", "isResume: $isResume")
                     binding.tvPCDWeek.setOnClickListener {
                         val dialog = ProgramWeekBSDialogFragment()
                         dialog.show(requireActivity().supportFragmentManager, "ProgramWeekBSDialogFragment")
@@ -312,7 +309,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                 }
             } catch (e: IndexOutOfBoundsException) {
-                Log.e("ProgramIndex", "${e.message}")
+                Log.e("ProgramIndex", "${e.printStackTrace()}")
             } catch (e: IllegalArgumentException) {
                 Log.e("ProgramIllegal", "${e.message}")
             } catch (e: IllegalStateException) {
@@ -341,22 +338,41 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         val frequency = program?.programFrequency
         val adapter : ProgramCustomRVAdapter
         val selectedWeekValue = pvm.selectedWeek.value
+
         if (selectSeqValue != null && frequency != null && selectedWeekValue != null && sequence?.second != null) {
-            adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
-                Triple(frequency, pvm.currentSequence, selectSeqValue),
-                Pair(pvm.currentWeek, selectedWeekValue),
-                this@ProgramCustomDialogFragment)
 
-            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            binding.rvPCDHorizontal.layoutManager = layoutManager
-            binding.rvPCDHorizontal.adapter = adapter
-            adapter.notifyDataSetChanged()
+            // progress를 계산하여 adapter에 연결
+            Log.v("progresses", "${progresses?.map { it.lastProgress }}, ${progresses?.map { it.videoDuration }}")
+            val pvMother = progresses?.sumOf {
+                it.videoDuration
+            }
+            val pvChild = progresses?.sumOf {
+                if (it.currentSequence > sequence.first) {
+                    it.videoDuration
+                } else {
+                    it.lastProgress
+                }
+            }
+            if (pvMother != null && pvChild != null) {
+                val resultProgress =  (pvChild * 100).div(pvMother)
+                adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
+                    Triple(frequency, pvm.currentSequence, selectSeqValue),
+                    Pair(pvm.currentWeek, selectedWeekValue),
+                    resultProgress,
+                    this@ProgramCustomDialogFragment)
 
-            val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses, sequence, null,"main") }
-            binding.rvPCD.adapter = adapter2
-            val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rvPCD.layoutManager = layoutManager2
-            adapter2?.notifyDataSetChanged()
+                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                binding.rvPCDHorizontal.layoutManager = layoutManager
+                binding.rvPCDHorizontal.adapter = adapter
+                adapter.notifyDataSetChanged()
+
+                val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses, null, sequence, null,"PCD") }
+                binding.rvPCD.adapter = adapter2
+                val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                binding.rvPCD.layoutManager = layoutManager2
+                adapter2?.notifyDataSetChanged()
+            }
+
         }
     }
 
@@ -377,31 +393,51 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         val selectedWeekValue = pvm.selectedWeek.value
         val selectedSeqValue = pvm.selectedSequence.value
         if (selectedWeekValue != null) {
-            if (selectedWeekValue <= pvm.currentWeek) {
-                if (pvm.selectedSequence.value == pvm.currentSequence) {
-                    binding.btnPCDRight.apply {
-                        isEnabled = true
-                        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
-                        text = "운동 시작하기"
+            val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
+            Log.v("lastWeekProgress", "$lastWeekProgress, 목록: ${pvm.currentProgresses[pvm.currentWeek]}")
+            if (lastWeekProgress.updateDate != null && lastWeekProgress.updateDate.length > 9) {
+                val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                val currentDate = LocalDate.now()
+                // 현재 주차안에서만
+                if (selectedWeekValue <= pvm.currentWeek) {
+                    // 현재 날짜가 같고, 가장 마지막 lasWeekProgress가 currentSequence가 1보다 클 때, 그리고 선택한 seq가 같을 때
+
+                    if (inputDate == currentDate
+                        && lastWeekProgress.currentSequence > 0
+                        && pvm.selectedSequence.value == pvm.currentSequence
+                    ) {
+                        // 오늘 시퀀스가 끝났으니 버튼 Flavor 맞추기
+                        binding.btnPCDRight.apply {
+                            isEnabled = false
+                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+                            text = "오늘 회차의 운동을 완료했습니다"
+                        }
+                    }
+                    else if (pvm.selectedSequence.value == pvm.currentSequence) {
+                        binding.btnPCDRight.apply {
+                            isEnabled = true
+                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+                            text = "운동 시작하기"
+                        }
+                    } else {
+                        binding.btnPCDRight.apply {
+                            isEnabled = false
+                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+                            if (selectedSeqValue != null) {
+                                text = if (selectedSeqValue > pvm.currentSequence) {
+                                    "현재 프로그램을 진행해주세요"
+                                } else {
+                                    "완료한 운동입니다"
+                                }
+                            }
+                        }
                     }
                 } else {
                     binding.btnPCDRight.apply {
                         isEnabled = false
                         backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-                        if (selectedSeqValue != null) {
-                            text = if (selectedSeqValue > pvm.currentSequence) {
-                                "현재 프로그램을 진행해주세요"
-                            } else {
-                                "완료한 운동입니다"
-                            }
-                        }
+                        text = "현재 프로그램을 진행해주세요"
                     }
-                }
-            } else {
-                binding.btnPCDRight.apply {
-                    isEnabled = false
-                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-                    text = "현재 프로그램을 진행해주세요"
                 }
             }
         }
@@ -437,18 +473,20 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     private fun endSequence() {
         val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
-        val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val currentDate = LocalDate.now()
-        Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence} , $inputDate / $currentDate")
+        Log.v("업데이트확인하기", "$lastWeekProgress")
+        if (lastWeekProgress.updateDate != null && lastWeekProgress.updateDate.length > 9) {
+            val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val currentDate = LocalDate.now()
+            Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence} , $inputDate / $currentDate")
 
-        if (inputDate == currentDate && lastWeekProgress.currentSequence > 0) {
-            val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
-            dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+            if (inputDate == currentDate && lastWeekProgress.currentSequence > 0) {
+                val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
+                dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
 
-            // 버튼 잠금
-            setButtonFlavor()
+                // 버튼 잠금
+                setButtonFlavor()
+            }
         }
-
     }
 
     private fun calculateInitialWeekAndSequence() {
@@ -506,4 +544,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
         binding.ibtnPCDTop.setOnClickListener { it.showAlignBottom(balloon2) }
     }
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
+    }
+
 }

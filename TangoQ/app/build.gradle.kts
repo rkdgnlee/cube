@@ -14,8 +14,8 @@ android {
         minSdk = 27
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
-        versionCode = 25
-        versionName = "1.34"
+        versionCode = 26
+        versionName = "1.35"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -79,7 +79,7 @@ dependencies {
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
-    implementation("com.arthenica:ffmpeg-kit-full:4.5")
+    implementation("com.arthenica:ffmpeg-kit-full-gpl:4.5.LTS")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // api

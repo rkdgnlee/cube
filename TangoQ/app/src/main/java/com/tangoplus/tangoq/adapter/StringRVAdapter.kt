@@ -21,6 +21,7 @@ import com.tangoplus.tangoq.listener.OnDisconnectListener
 
 class StringRVAdapter(private val fragment: Fragment,
                       private val stringList: MutableList<String>?,
+                      private val nameList : MutableList<String>?,
                       private val xmlName: String,
                       private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onDisconnectListener: OnDisconnectListener? = null
@@ -122,7 +123,8 @@ class StringRVAdapter(private val fragment: Fragment,
 
             is CbViewHolder -> {
                 if (xmlName == "measure") {
-                    holder.cbWI.text = currentItem
+                    val currentItem2 = nameList?.get(position)
+                    holder.cbWI.text = "${currentItem?.substring(0, 10)} ${currentItem2}"
                     val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
                     holder.cbWI.isChecked = isInitiallyChecked
                     updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)

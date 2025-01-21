@@ -119,17 +119,17 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
 
 
-        binding.ibtnPTDLike.setOnClickListener {
-            if (isLike) {
-                prefs.deleteLike(exerciseData?.exerciseId.toString())
-                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_disabled))
-                isLike = false
-            } else {
-                prefs.storeLike(exerciseData?.exerciseId.toString())
-                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
-                isLike = true
-            }
-        }
+//        binding.ibtnPTDLike.setOnClickListener {
+//            if (isLike) {
+//                prefs.deleteLike(exerciseData?.exerciseId.toString())
+//                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_disabled))
+//                isLike = false
+//            } else {
+//                prefs.storeLike(exerciseData?.exerciseId.toString())
+//                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
+//                isLike = true
+//            }
+//        }
 
         // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = exerciseData?.videoFilepath.toString()
@@ -177,7 +177,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             ?.map { it.first() }
             ?.toMutableList()
 
-        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullmuscleList, "muscle", evm)
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullmuscleList, null,"muscle", evm)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
@@ -254,7 +254,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                     it.relatedJoint?.contains(exerciseData?.relatedJoint?.split(", ")?.get(0) ?: "") == true
                 }
                 val shuffledList = verticalDataList.shuffled().take(10.coerceAtMost(verticalDataList.size)).toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, shuffledList, null, null, null,"recommend")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, shuffledList, null, null, null, null,"PTD")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager

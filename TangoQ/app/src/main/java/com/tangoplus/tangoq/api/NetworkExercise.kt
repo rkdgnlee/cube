@@ -1,12 +1,22 @@
 package com.tangoplus.tangoq.api
 
+import android.content.Context
+import android.util.Log
+import com.tangoplus.tangoq.api.HttpClientProvider.getClient
+import com.tangoplus.tangoq.vo.ExerciseHistoryVO
 import com.tangoplus.tangoq.vo.ExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.IOException
 
 object  NetworkExercise {
 
@@ -121,5 +131,88 @@ object  NetworkExercise {
         )
     }
 
+    // exercise를 봤을 때만.
+    suspend fun patchExerciseHistory(context: Context, myUrl: String, exerciseId: String, bodyString: String) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyString.toRequestBody(mediaType)
+        val client = getClient(context)
+        val request = Request.Builder()
+            .url("$myUrl/$exerciseId")
+            .patch(body)
+            .build()
 
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.v("ExerciseHistory", "$responseBody")
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ExerciseHistoryError", "IndexOutOfBounds: ${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e("ExerciseHistoryError", "IllegalArgument: ${e.message}")
+            } catch (e: IllegalStateException) {
+                Log.e("ExerciseHistoryError", "IllegalState: ${e.message}")
+            }catch (e: NullPointerException) {
+                Log.e("ExerciseHistoryError", "NullPointer: ${e.message}")
+            } catch (e: java.lang.Exception) {
+                Log.e("ExerciseHistoryError", "Exception: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getExerciseHistory(context: Context, myUrl: String, categoryId: String) : List<ExerciseHistoryVO>? {
+        val client = getClient(context)
+        val request = Request.Builder()
+            .url("$myUrl?exercise_progress=$categoryId")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    val results = mutableListOf<ExerciseHistoryVO>()
+                    val bodyJa = responseBody?.let { JSONArray(it) }
+
+                    if (bodyJa != null) {
+                        for (i in 0 until  bodyJa.length()) {
+                            val historyUnits =  bodyJa.getJSONObject(i)
+                            val exerciseHistoryVO = ExerciseHistoryVO(
+                                evpSn = historyUnits.optInt("evp_sn"),
+                                userSn= historyUnits.optInt("user_sn"),
+                                exerciseId= historyUnits.optInt("exercise_id"),
+                                exerciseName = historyUnits.optString("exercise_name"),
+                                duration= historyUnits.optInt("duration"),
+                                progress= historyUnits.optInt("progress"),
+                                exerciseTypeId= historyUnits.optInt("exercise_type_id"),
+                                exerciseCategoryId= historyUnits.optInt("exercise_category_id"),
+                                completed= historyUnits.optInt("completed"),
+                                registeredAt= historyUnits.optString("registered_at"),
+                                updatedAt= historyUnits.optString("updated_at"),
+                            )
+                            results.add(exerciseHistoryVO)
+                        }
+                    }
+                    Log.v("getExerciseHistory", "results: $results")
+                    return@use results.toList()
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ExerciseHistoryError", "IndexOutOfBounds: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("ExerciseHistoryError", "IllegalArgument: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("ExerciseHistoryError", "IllegalState: ${e.message}")
+                null
+            }catch (e: NullPointerException) {
+                Log.e("ExerciseHistoryError", "NullPointer: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("ExerciseHistoryError", "Exception: ${e.message}")
+                null
+            }
+        }
+    }
 }

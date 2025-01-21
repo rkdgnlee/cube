@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProgramSeqItemBinding
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
@@ -14,10 +15,12 @@ import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 class ProgramCustomRVAdapter(private val fragment: Fragment,
                              private val seq: Triple<Int, Int, Int>,
                              private val week: Pair<Int, Int>,
+                             private val progresses: Int,
                              private val onCustomCategoryClickListener: OnCustomCategoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // frequency 는 총 들어가는 회차, progresses는 같이 들어가는 시청 기록, sequencdState는 현재 회차와 선택한회차
     inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val tvPSIName : TextView = view.findViewById(R.id.tvPSIName)
+        val hpvPSI : ProgressView = view.findViewById(R.id.hpvPSI)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -45,13 +48,25 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
             // seqState.first == 현재 회차 seqState.second == 선택한 회차
 
             if (week.second <= week.first) {
-                if (position == seq.third) {
+
+                // 선택된 회차
+                if (position == seq.third && seq.second == seq.third) {
+                    holder.hpvPSI.progress = progresses.toFloat()
+//                    setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
+
+                } else if (position == seq.third) {
                     setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
-                } else if (position <= seq.second) {
+                } else if (position < seq.second) {
+                    holder.hpvPSI.progress = 0f
                     setTextView(holder.tvPSIName, R.color.secondHalfColor, R.color.whiteText)
+                } else if (position == seq.second) {
+//                    setTextView(holder.tvPSIName, R.color.secondHalfColor, R.color.whiteText)
+                    holder.hpvPSI.progress = progresses.toFloat()
+//                    holder.hpvPSI.autoAnimate = true
                 }
             } else {
                 setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)
+                holder.hpvPSI.progress = 0f
             }
 
              // 회차별 상태 업데이트

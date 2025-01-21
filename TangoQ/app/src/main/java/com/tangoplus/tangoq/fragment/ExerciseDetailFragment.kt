@@ -15,6 +15,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
+import com.tangoplus.tangoq.api.NetworkExercise.getExerciseHistory
 import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseDetailBinding
@@ -24,7 +25,11 @@ import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
+import com.tangoplus.tangoq.vo.ExerciseHistoryVO
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClosedListener {
@@ -33,6 +38,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     private var filteredDataList : MutableList<ExerciseVO>? = null
     // 소분류 에서 선택된 관절에 대한 리스트
     private var currentCateExercises : MutableList<ExerciseVO>? = null
+    private var currentCateHistorys : MutableList<ExerciseHistoryVO>? = null
     private var categoryId : ArrayList<Int>? = null
     private val evm : ExerciseViewModel by activityViewModels()
 
@@ -72,9 +78,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         categoryId = arguments?.getIntegerArrayList(ARG_CATEGORY_ID)
         val sn = arguments?.getInt(ARG_SN)
         prefs = PreferencesManager(requireContext())
-        // ------# 선택 카테고리 & 타입 가져오기  #------
-
-        binding.sflED.startShimmer()
         binding.ibtnEDAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
@@ -93,7 +96,16 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         }
         binding.tvEDMainCategoryName.textSize = 23f
 
+        Log.v("categoryID", "$categoryId")
+        // 운동 기록 EVP 가져오기
+
+        binding.sflED.startShimmer()
         lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val categorys = categoryId.toString().replace(" ", "").replace("[", "").replace("]", "")
+                evm.allExerciseHistorys = getExerciseHistory(requireContext(), getString(R.string.API_exercise), categorys)?.toMutableList()
+            }
+
             filteredDataList = categoryId?.map { id ->
                 evm.allExercises.filter { it.exerciseCategoryId == id.toString() }
             }?.flatten()?.toMutableList()
@@ -137,7 +149,11 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 currentCateExercises = filteredDataList?.filter {  it.exerciseTypeId == categoryMap["목관절"].toString() }?.sortedBy { it.exerciseId }?.toMutableList()
                 filteredDataList = filteredDataList?.toMutableList()
 
-                updateRecyclerView(currentCateExercises?.toMutableList())
+                // 초기 recyclerView 업데이트 하는 곳.
+                if (evm.allExerciseHistorys != null) {
+                    currentCateHistorys = evm.allExerciseHistorys?.filter { it.exerciseTypeId == categoryMap["목관절"] }?.sortedBy { it.exerciseId }?.toMutableList()
+                    updateRecyclerView(currentCateExercises?.toMutableList(), currentCateHistorys)
+                }
             // ------! rv vertical 끝 !------
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("EDetailIndex", "${e.message}")
@@ -162,9 +178,12 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 when (position) {
-                    0 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList())
-                    1 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.relatedSymptom }?.toMutableList())
-                    2 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.duration }?.toMutableList())
+                    0 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList(),
+                        currentCateHistorys?.sortedByDescending { it.exerciseId }?.toMutableList())
+                    1 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.duration }?.toMutableList(),
+                        currentCateHistorys?.sortedByDescending { it.duration }?.toMutableList())
+                    2 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseName }?.toMutableList(),
+                        currentCateHistorys?.sortedByDescending { it.exerciseName }?.toMutableList())
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -172,8 +191,8 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         // ------! spinner 연결 끝 !------
     }
 
-    private fun updateRecyclerView(exercises : MutableList<ExerciseVO>?) {
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null, null, null,"main")
+    private fun updateRecyclerView(exercises : MutableList<ExerciseVO>?, historys: MutableList<ExerciseHistoryVO>?) {
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null ,historys, null, null, "ED")
         adapter.dialogClosedListener = this@ExerciseDetailFragment
         adapter.exerciseList = exercises
         binding.rvEDAll.adapter = adapter
@@ -194,11 +213,16 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         Log.v("category,search", "categoryId: ${categoryId}, typeId: ${categoryMap[category]}")
         try {
             currentCateExercises = filteredDataList?.filter { it.exerciseTypeId == categoryMap[category].toString() }?.sortedBy { it.exerciseId }?.toMutableList()
+            currentCateHistorys = evm.allExerciseHistorys?.filter { it.exerciseTypeId == categoryMap[category] }?.sortedBy { it.exerciseId }?.toMutableList()
+            Log.v("historys", "historys: $currentCateHistorys")
             val filterIndex = binding.spnrED.selectedItemPosition
             when (filterIndex) {
-                0 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList())
-                1 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.relatedSymptom }?.toMutableList())
-                2 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.duration }?.toMutableList())
+                0 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList(),
+                    currentCateHistorys?.sortedByDescending { it.exerciseId }?.toMutableList())
+                1 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.duration }?.toMutableList(),
+                    currentCateHistorys?.sortedByDescending { it.duration }?.toMutableList())
+                2 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseName }?.toMutableList(),
+                    currentCateHistorys?.sortedByDescending { it.exerciseName }?.toMutableList())
             }
         } catch (e: IndexOutOfBoundsException) {
             Log.e("EDetailIndex", "${e.message}")
@@ -217,9 +241,12 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     override fun onDialogClosed() {
         val filterIndex = binding.spnrED.selectedItemPosition
         when (filterIndex) {
-            0 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList())
-            1 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.relatedSymptom }?.toMutableList())
-            2 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.duration }?.toMutableList())
+            0 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList(),
+                currentCateHistorys?.sortedByDescending { it.exerciseId }?.toMutableList())
+            1 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.duration }?.toMutableList(),
+                currentCateHistorys?.sortedByDescending { it.duration }?.toMutableList())
+            2 -> updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseName }?.toMutableList(),
+                currentCateHistorys?.sortedByDescending { it.exerciseName }?.toMutableList())
         }
     }
 }

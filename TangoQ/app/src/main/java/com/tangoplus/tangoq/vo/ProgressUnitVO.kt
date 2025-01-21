@@ -13,5 +13,5 @@ data class ProgressUnitVO(
     val videoDuration: Int,
     val lastProgress : Int,
     val isCompleted : Int,
-    val updateDate : String,
+    val updateDate : String?,
 )
