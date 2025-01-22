@@ -44,7 +44,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = measures[position]
         if (holder is MHViewHolder) {
-            holder.tvMIName.text = "${currentItem.regDate.substring(0, 10)} ${currentItem.userName} 측정"
+            holder.tvMIName.text = "${currentItem.regDate.substring(0, 15)} ${currentItem.userName} 측정"
             holder.tvMIScore.text = currentItem.overall.toString()
             val hideBadgeFunction = fragment.hideBadgeOnClick(holder.tvMIName, holder.clMI, "${holder.tvMIName.text}", ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 

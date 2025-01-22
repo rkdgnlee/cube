@@ -52,7 +52,7 @@ import java.time.format.DateTimeFormatter
 
 class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListener {
     lateinit var binding : FragmentProgramCustomDialogBinding
-    val viewModel : ExerciseViewModel by activityViewModels()
+    val evm : ExerciseViewModel by activityViewModels()
     private val pvm : ProgressViewModel by activityViewModels()
     private val mvm : MeasureViewModel by activityViewModels()
     private val uvm : UserViewModel by activityViewModels()
@@ -155,7 +155,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     val prefManager = PreferencesManager(requireContext())
                     prefManager.saveLatestRecommendation(recommendationSn)
                     Log.v("마지막시청rec", "${prefManager.getLatestRecommendation()}")
-                    uvm.existedProgramData = pvm.currentProgram
+                    evm.latestProgram = pvm.currentProgram
 
                     val currentSequenceProgresses = pvm.currentProgresses[pvm.currentWeek]
                     // 가장 최근에 시작한 운동의 인덱스 찾기

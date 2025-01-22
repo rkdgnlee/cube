@@ -6,6 +6,7 @@ import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import com.tangoplus.tangoq.vo.ExerciseVO
+import com.tangoplus.tangoq.vo.ProgramVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -173,7 +174,7 @@ object NetworkProgress {
         })
     }
     // 가장 최신 정보를 가져오는게 좋다.
-    suspend fun getLatestProgress(myUrl: String, context: Context) : Pair<MutableList<ProgressUnitVO>, MutableList<ExerciseVO>>? {
+    suspend fun getLatestProgress(myUrl: String, context: Context) : Pair<MutableList<ProgressUnitVO>, ProgramVO>? {
         val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?latest_progress")
@@ -238,7 +239,19 @@ object NetworkProgress {
                             exerciseList.add(exerciseData)
                         }
                     }
-                    return@use Pair(progressUnits, exerciseList)
+                    val pjo = dataJson.optJSONObject("execise_program_data")
+                    if (pjo != null) {
+                        val programVO = ProgramVO(
+                            programSn = pjo.optInt("exercise_program_sn"),
+                            programName = pjo.optString("exercise_program_title"),
+                            programFrequency = pjo.optInt("exercise_frequency"),
+                            programWeek = pjo.optInt("required_week"),
+                            programStage = pjo.optString("exercise_stage"),
+                            exercises = exerciseList
+                        )
+                        return@use Pair(progressUnits, programVO)
+                    }
+                    null
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgressIndex", "latestProgress: ${e.message}")

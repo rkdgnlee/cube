@@ -72,7 +72,6 @@ class MainPartDialogFragment : DialogFragment() {
 
                         // ------# 부위와 평균값 넣기 #------
                         val analysisUnits = getAnalysisUnits(requireContext(), part, i, measureResult)
-                        Log.v("통analysis", "${analysisUnits}")
                         val normalUnits = analysisUnits.count { it.state == 1 }
                         val warningUnits = analysisUnits.count { it.state == 2 }
                         val dangerUnits = analysisUnits.count { it.state == 3 }
@@ -96,7 +95,6 @@ class MainPartDialogFragment : DialogFragment() {
                         avm.relatedAnalyzes.add(analysisVO)
                     }
 
-                    Log.v("relatedAnalyzes", "${avm.relatedAnalyzes}, ${avm.relatedAnalyzes.map { it.seq }}")
                     val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     val adapter = MainPartRVAdapter(this@MainPartDialogFragment, avm.relatedAnalyzes)
                     adapter.avm = avm

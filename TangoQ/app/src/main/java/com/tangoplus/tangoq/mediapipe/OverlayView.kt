@@ -23,6 +23,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private var axisSubPaint = Paint()
     private var borderPaint = Paint()
     private var fillPaint = Paint()
+    private var textPaint = Paint()
+    private var circlePaint = Paint()
 
     private var scaleFactorX: Float = 1f
     private var scaleFactorY : Float = 1f
@@ -64,6 +66,16 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             color = Color.parseColor("#FFFFFF") // 내부 색
             style = Paint.Style.FILL // 내부만 채우기
         }
+        textPaint = Paint().apply {
+            color = Color.parseColor("#FFFFFF")
+            textSize = 48f
+            isAntiAlias = true
+            textAlign = Paint.Align.CENTER
+        }
+        circlePaint = Paint().apply {
+            color = Color.parseColor("#41000000")
+            style = Paint.Style.FILL
+        }
     }
 
     fun setResults(
@@ -76,12 +88,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         this.imageHeight = imageHeight
         this.imageWidth = imageWidth
         currentRunningMode = runningMode
-
-//        scaleFactorX = min(width * 1f / imageWidth, height * 1f / imageHeight)
-//        scaleFactorY = max(width * 1f / imageWidth, height * 1f / imageHeight)
-//        scaleFactorX = if (isTablet(context)) max(width * 1f / imageWidth, height * 1f / imageHeight) else min(width * 1f / imageWidth, height * 1f / imageHeight)
-//        scaleFactorY = if (isTablet(context)) min(width * 1f / imageWidth, height * 1f / imageHeight) else max(width * 1f / imageWidth, height * 1f / imageHeight)
-//        invalidate()
         scaleFactorX = if (isTablet(context))
             maxOf(width * 1f / imageWidth, height * 1f / imageHeight)
         else
@@ -223,13 +229,13 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val rightAnkleX = rightAnkle.x * scaleFactorX + offsetX
                 val rightAnkleY = rightAnkle.y * scaleFactorY + offsetY
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
-                canvas.drawLine(leftIndexX + 200, leftIndexY, rightIndexX - 200, rightIndexY, axisPaint)
-                canvas.drawLine(leftHipX + 200, leftHipY, rightHipX - 200, rightHipY, axisPaint)
-                canvas.drawLine(leftKneeX + 200, leftKneeY, rightKneeX - 200, rightKneeY, axisPaint)
+                canvas.drawLine(leftIndexX - 200  , leftIndexY, rightIndexX+ 200, rightIndexY, axisPaint)
+                canvas.drawLine(leftHipX - 200, leftHipY, rightHipX + 200, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX - 200, leftKneeY, rightKneeX + 200, rightKneeY, axisPaint)
                 canvas.drawLine((leftAnkleX + rightAnkleX) / 2, leftAnkleY + 200, (leftAnkleX + rightAnkleX) / 2, noseY - 300, axisPaint)
 
-                canvas.drawLine(leftHipX, leftHipY - 50, leftHipX, leftAnkleY + 100, axisPaint)
-                canvas.drawLine(rightHipX, rightHipY - 50, rightHipX, rightAnkleY + 100, axisPaint)
+                canvas.drawLine(leftHipX, leftHipY - 100, leftHipX, leftAnkleY + 200, axisPaint)
+                canvas.drawLine(rightHipX, rightHipY - 100, rightHipX, rightAnkleY + 200, axisPaint)
             }
             val connections = listOf(
                 Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),

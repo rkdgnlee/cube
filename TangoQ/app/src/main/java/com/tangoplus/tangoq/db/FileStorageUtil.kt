@@ -55,6 +55,7 @@ object FileStorageUtil {
                         }
                     }
 
+
                     encryptFile(tempFile, file, generateAESKey(context))
                     tempFile.delete()
 
@@ -65,16 +66,16 @@ object FileStorageUtil {
                     false
                 }
             } catch (e: IndexOutOfBoundsException) {
-                Log.e("StorageIndex", "${e.message}")
+                Log.e("saveURLError", "indexOutOfBound: ${e.message}")
                 false
             } catch (e: IllegalArgumentException) {
-                Log.e("StorageIllegal", "${e.message}")
+                Log.e("saveURLError", "illegalArgument: ${e.message}")
                 false
             } catch (e: NullPointerException) {
-                Log.e("StorageNull", "${e.message}")
+                Log.e("saveURLError", "nullPointer: ${e.message}")
                 false
             } catch (e: java.lang.Exception) {
-                Log.e("StorageException", "${e.message}")
+                Log.e("saveURLError", "exception: ${e.message}")
                 false
             }
         }
@@ -147,20 +148,45 @@ object FileStorageUtil {
                 cache?.put(fileName, decryptedData)
                 saveToInternalStorage(context, fileName, decryptedData)
             } catch (e: IndexOutOfBoundsException) {
-                Log.e("StorageIndex", "${e.message}")
+                Log.e("getFileError", "indexOutOfBounds: ${e.message}")
                 null
             } catch (e: IllegalArgumentException) {
-                Log.e("StorageIllegal", "${e.message}")
+                Log.e("getFileError", "illegalArgument: ${e.message}")
                 null
             } catch (e: NullPointerException) {
-                Log.e("StorageNull", "${e.message}")
+                Log.e("getFileError", "nullPointer: ${e.message}")
                 null
             } catch (e: IllegalStateException) {
-                Log.e("StorageException", "${e.message}")
+                Log.e("getFileError", "illegalState: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
-                Log.e("StorageException", "${e.message}")
+                Log.e("getFileError", "exception: ${e.message}")
                 null
+            }
+        }
+    }
+
+    // 손상된 파일 삭제 함수
+    suspend fun deleteCorruptedFile(context: Context, fileName: String) {
+        withContext(Dispatchers.IO) {
+            // 캐시에서 삭제
+            val cache = SecurePreferencesManager.DecryptedFileCache.getInstance()
+            cache?.clear()
+
+            // 암호화된 파일 삭제
+            val fileType = getFileTypeFromExtension(fileName)
+            val dir = getDirectory(context, fileType)
+            val encryptedFile = File(dir, fileName)
+            if (encryptedFile.exists()) {
+                encryptedFile.delete()
+                Log.v("DeleteFile", "Deleted encrypted file: ${encryptedFile.absolutePath}")
+            }
+
+            // 내부 저장소의 복호화된 파일 삭제
+            val internalFile = File(context.filesDir, fileName)
+            if (internalFile.exists()) {
+                internalFile.delete()
+                Log.v("DeleteFile", "Deleted internal storage file: ${internalFile.absolutePath}")
             }
         }
     }
@@ -183,16 +209,16 @@ object FileStorageUtil {
             val jsonContent = file.readText(Charsets.UTF_8)
             JSONObject(jsonContent)
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("StorageIndex", "${e.message}")
+            Log.e("readJsonError", "index: ${e.message}")
             null
         } catch (e: IllegalArgumentException) {
-            Log.e("StorageIllegal", "${e.message}")
+            Log.e("readJsonError", "illegalArgument: ${e.message}")
             null
         } catch (e: NullPointerException) {
-            Log.e("StorageNull", "${e.message}")
+            Log.e("readJsonError", "nullPointer: ${e.message}")
             null
         } catch (e: java.lang.Exception) {
-            Log.e("StorageException", "${e.message}")
+            Log.e("readJsonError", "exception: ${e.message}")
             null
         }
     }
@@ -202,16 +228,16 @@ object FileStorageUtil {
             val jsonContent = file.readText(Charsets.UTF_8)
             JSONArray(jsonContent)
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("StorageIndex", "${e.message}")
+            Log.e("readJsonArrError", "index: ${e.message}")
             null
         } catch (e: IllegalArgumentException) {
-            Log.e("StorageIllegal", "${e.message}")
+            Log.e("readJsonArrError", "illegalArgument: ${e.message}")
             null
         } catch (e: NullPointerException) {
-            Log.e("StorageNull", "${e.message}")
+            Log.e("readJsonArrError", "NullPointer: ${e.message}")
             null
         } catch (e: java.lang.Exception) {
-            Log.e("StorageException", "${e.message}")
+            Log.e("readJsonArrError", "exception: ${e.message}")
             null
         }
     }

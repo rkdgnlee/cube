@@ -18,6 +18,9 @@ import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseJson
+import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
+import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +28,7 @@ import kotlinx.coroutines.launch
 
 class ExerciseFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseBinding
-    private val viewModel : ExerciseViewModel by activityViewModels()
+    private val evm : ExerciseViewModel by activityViewModels()
 
     // ------! 블루투스 변수 !------
 
@@ -59,8 +62,26 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
             // 상단 최근 한 운동 cardView 보이기
 //            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
 //            binding.cvEProgress.animation = animation
-            binding.cvEProgress.visibility = View.GONE
+//            binding.cvEProgress.visibility = View.GONE
+            // VM에 기록들이 비었을 때
+            if (evm.latestUVP.isNullOrEmpty() || evm.latestProgram == null) {
+                val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
+                evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
+                evm.latestProgram = progressResult?.second
+            }
+            // 받아온 데이터로 cvEProgress 채우기
+            binding.tvEName
+            binding.tvETime
+            binding.tvEStage
+            binding.hpvE
+            binding.ivEThumbnail
 
+            binding.clEProgress.setOnSingleClickListener {
+                val programSn = evm.latestProgram?.programSn ?: -1
+                val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                ProgramCustomDialogFragment.newInstance(programSn, recSn)
+                    .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+            }
 
 
             // 메인 5개 카테고리 연결
@@ -79,9 +100,9 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                 // ------! rv vertical 끝 !------
 
                 // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
-                if (viewModel.allExercises.isEmpty()) {
-                    viewModel.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
-                    Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
+                if (evm.allExercises.isEmpty()) {
+                    evm.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
+                    Log.v("VM>AllExercises", "${evm.allExercises.size}")
                 }
 
             } catch (e: IndexOutOfBoundsException) {
@@ -112,7 +133,10 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         }
     }
 
-    override fun onCategoryClick(category: String) {
+    override fun onCategoryClick(category: String) { }
 
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
     }
 }

@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tangoplus.tangoq.vo.ExerciseHistoryVO
 import com.tangoplus.tangoq.vo.ExerciseVO
+import com.tangoplus.tangoq.vo.ProgramVO
+import com.tangoplus.tangoq.vo.ProgressUnitVO
 
 class ExerciseViewModel : ViewModel() {
 
@@ -11,6 +13,9 @@ class ExerciseViewModel : ViewModel() {
     var allExercises : MutableList<ExerciseVO>
     var allExerciseHistorys: MutableList<ExerciseHistoryVO>?
 
+
+    var latestProgram : ProgramVO? = null
+    var latestUVP : MutableList<ProgressUnitVO>? = null
     // 운동 검색 기록 임시로 담아두는 곳.
     var searchHistory = MutableLiveData(mutableListOf<Pair<Int, String>>()) // 운동 검색 history
 

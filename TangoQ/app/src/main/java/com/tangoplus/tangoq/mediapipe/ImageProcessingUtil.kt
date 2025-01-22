@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.mediapipe
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -13,18 +14,16 @@ import android.util.TypedValue
 import androidx.core.graphics.scale
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
 object ImageProcessingUtil {
     private val strokeWidths = 2.5f
     fun combineImageAndOverlay(
         originalBitmap: Bitmap,
         poseLandmarkResult: PoseLandmarkResult,
-        scaleFactorX: Float,
-        scaleFactorY: Float,
-        offSetX: Float,
-        offSetY: Float,
         sequence: Int,
         painParts: MutableList<Pair<String, Float>>,
+        context: Context
     ) : Bitmap {
 //        Log.v("스케일과오프셋", "scaleFactor: (${scaleFactorX}, ${scaleFactorY}), offset: ($offSetX, $offSetY)")
 
@@ -80,7 +79,7 @@ object ImageProcessingUtil {
         }
         val textPaint = Paint().apply {
             color = Color.parseColor("#FFFFFF")
-            textSize = 48f
+            textSize = if (isTablet(context)) 32f else 48f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
         }
@@ -317,7 +316,7 @@ object ImageProcessingUtil {
         // left right  표시 넣기
         val leftCircleX = 100f
         val leftCircleY = 100f
-        val circleRadius = 48f
+        val circleRadius = if (isTablet(context)) 32f else 48f
         if (sequence in listOf(5, 6)) {
             canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
             canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)

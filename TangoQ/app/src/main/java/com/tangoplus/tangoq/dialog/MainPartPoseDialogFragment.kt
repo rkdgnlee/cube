@@ -17,6 +17,7 @@ import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -67,7 +68,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
     private var exo05: ImageButton? = null
     private var exo075: ImageButton? = null
     private var exo10: ImageButton? = null
-
+    private var cvLeft : CardView? = null
+    private var cvRight : CardView? = null
 
     companion object {
         private const val ARG_SEQ = "arg_seq"
@@ -110,6 +112,9 @@ class MainPartPoseDialogFragment : DialogFragment() {
                         exo05 = view.findViewById(R.id.btn05)
                         exo075 = view.findViewById(R.id.btn075)
                         exo10 = view.findViewById(R.id.btn10)
+
+                        cvLeft = view.findViewById(R.id.cv_exo_left)
+                        cvRight = view.findViewById(R.id.cv_exo_right)
                         setClickListener()
                     }
                     else -> {
@@ -395,6 +400,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
                 forChanged = true
             }
         }
+        cvLeft?.visibility = View.VISIBLE
+        cvRight?.visibility = View.VISIBLE
     }
 
     private fun updateFrameData(videoDuration: Long, totalFrames: Int) {

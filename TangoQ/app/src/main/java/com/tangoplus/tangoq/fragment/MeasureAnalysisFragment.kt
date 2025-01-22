@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
@@ -65,7 +66,8 @@ class MeasureAnalysisFragment : Fragment() {
     private var exo05: ImageButton? = null
     private var exo075: ImageButton? = null
     private var exo10: ImageButton? = null
-
+    private var cvLeft : CardView? = null
+    private var cvRight : CardView? = null
     companion object {
         private const val ARG_INDEX = "index_analysis"
 
@@ -169,6 +171,9 @@ class MeasureAnalysisFragment : Fragment() {
                         exo05 = view.findViewById(R.id.btn05)
                         exo075 = view.findViewById(R.id.btn075)
                         exo10 = view.findViewById(R.id.btn10)
+                        cvLeft = view.findViewById(R.id.cv_exo_left)
+                        cvRight = view.findViewById(R.id.cv_exo_right)
+
                         setClickListener()
 
                         pvm.setPlaybackPosition(0L)
@@ -613,6 +618,9 @@ class MeasureAnalysisFragment : Fragment() {
                 forChanged = true
             }
         }
+
+        cvLeft?.visibility = View.VISIBLE
+        cvRight?.visibility = View.VISIBLE
     }
     private fun updateFrameData(videoDuration: Long, totalFrames: Int) {
         val currentPosition = simpleExoPlayer?.currentPosition ?: 0L

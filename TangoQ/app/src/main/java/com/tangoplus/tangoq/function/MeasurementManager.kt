@@ -327,7 +327,7 @@ object MeasurementManager {
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기",
                 "back_horizontal_angle_shoulder" to "양 어깨 기울기"),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
-            "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to "골반중심-우측 어깨-좌측 어깨 기울기")
+                "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to "골반중심-우측 어깨-좌측 어깨 기울기")
         ),
         // 좌측 팔꿉  // 8
         mapOf(
@@ -557,9 +557,8 @@ object MeasurementManager {
         val mainSeq = mainPartSeqs[partIndex]
         val errorBound = if (Singleton_t_user.getInstance(context).jsonObject?.optInt("gender") == 1) femaleErrorBounds[partIndex] else maleErrorBounds[partIndex]
 
-        if (currentKey != 1) {
-            val jo = measureResult.getJSONObject(currentKey) // 지금 1이 껴있어서 (dynamic이 있어서 오류가 나옴)
-
+        if (currentKey != 1) { // measureResult에서 dynamic .length() = 7
+            val jo = measureResult.getJSONObject(currentKey)
             // 현재 key에 해당하는 데이터만 처리
             mainSeq[currentKey]?.forEach { (columnName, rawDataName) ->
                 // errorBounds에서 해당하는 Pair 값 찾기
@@ -761,12 +760,9 @@ object MeasurementManager {
                                 val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
                                     bitmap,
                                     poseLandmarkResult,
-                                    scaleFactorX,
-                                    scaleFactorY,
-                                    offsetX,
-                                    offsetY,
                                     seq,
-                                    measureVO.dangerParts
+                                    measureVO.dangerParts,
+                                    fragment.requireContext()
                                 )
                                 isSet = true
                                 // ------# main part일 때 #------

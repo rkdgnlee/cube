@@ -27,6 +27,7 @@ import com.tangoplus.tangoq.api.NetworkProgress.postProgressInCurrentProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationInOneMeasure
+import com.tangoplus.tangoq.db.FileStorageUtil.deleteCorruptedFile
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_progress
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +35,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -314,9 +316,41 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         val uris = mutableListOf<String>()
         // 1. 복호화 부터
         val fileResults = (0 until 7).map { i ->
-            val jsonFile = getFile(context, uriTuples[i].measure_server_json_name)
-            val mediaFile = getFile(context, uriTuples[i].measure_server_file_name)
+            var jsonFile = getFile(context, uriTuples[i].measure_server_json_name)
+            var mediaFile = getFile(context, uriTuples[i].measure_server_file_name)
 
+            val jsonJudge = if (jsonFile != null) {
+                if (i == 1)
+                    readJsonArrayFile(jsonFile)
+                else readJsonFile(jsonFile)
+            } else null
+            val mediaJudge = if (jsonFile != null) {
+                getFile(context, uriTuples[i].measure_server_file_name)
+            } else null
+            // 파일 중 손상된 경우 삭제 후 재 다운로드 로직
+            if (jsonJudge == null || mediaJudge == null || mediaFile == null || !mediaFile.canRead()) {
+                // 손상된 파일 삭제
+                Log.e("FileDebug", "json: $jsonJudge, mediaFile: $mediaFile, mediaFile.canRead: ${mediaFile?.canRead()}")
+                if (jsonFile != null) deleteCorruptedFile(context, uriTuples[i].measure_server_json_name)
+                if (mediaFile != null) deleteCorruptedFile(context, uriTuples[i].measure_server_file_name)
+                // 파일 재다운로드
+                val jsonDownloaded = saveFileFromUrl(
+                    context,
+                    uriTuples[i].measure_server_json_name,
+                    FileStorageUtil.FileType.JSON
+                )
+                val mediaDownloaded = saveFileFromUrl(
+                    context,
+                    uriTuples[i].measure_server_file_name,
+                    if (i == 1) FileStorageUtil.FileType.VIDEO else FileStorageUtil.FileType.IMAGE
+                )
+
+                // 새로 다운로드한 파일 가져오기
+                jsonFile = if (jsonDownloaded) getFile(context, uriTuples[i].measure_server_json_name) else null
+                mediaFile = if (mediaDownloaded) getFile(context, uriTuples[i].measure_server_file_name) else null
+            }
+
+            // 둘다 완성된 값일 경우.
             if (jsonFile != null && mediaFile != null) {
                 Triple(
                     i,
@@ -333,7 +367,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         measureVO.measureResult = ja
         measureVO.fileUris = uris
         // 3. 전부 가져왔으면 measureVO에 넣고
-        Log.v("파일담은 MeasureVO", "$measureVO")
         return measureVO
     }
 

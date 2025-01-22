@@ -41,21 +41,18 @@ import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
-import com.tangoplus.tangoq.api.NetworkProgress.convertToProgressUnitVO
 import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
-import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
-    private val uvm by activityViewModels<UserViewModel>()
+    private val evm by activityViewModels<ExerciseViewModel>()
     private val mvm : MeasureViewModel by activityViewModels()
     private val pvm : ProgressViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
@@ -260,13 +257,14 @@ class MainFragment : Fragment() {
                         lifecycleScope.launch(Dispatchers.IO) {
                             try {
                                 val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
-                                val uvpResults = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
-                                val programExercises = progressResult?.second
-                                Log.v("최근프로그램데이터", "$uvpResults")
-                                val adapter =  ExerciseRVAdapter(this@MainFragment, programExercises, uvpResults, null,null, null, "M")
+                                evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
+                                evm.latestProgram = progressResult?.second
+
+                                Log.v("최근프로그램데이터", "${evm.latestUVP}")
+                                val adapter =  ExerciseRVAdapter(this@MainFragment, evm.latestProgram?.exercises, evm.latestUVP, null,null, null, "M")
                                 var currentPage = 0
-                                if (uvpResults != null) {
-                                   currentPage = findCurrentIndex(uvpResults)
+                                if (evm.latestUVP != null) {
+                                   currentPage = findCurrentIndex(evm.latestUVP)
                                 }
 
                                 // -------# 최근 진행 프로그램 뷰페이저 #------
@@ -330,8 +328,6 @@ class MainFragment : Fragment() {
                                     binding.vpM.addItemDecoration(itemDecoration)
                                     binding.llM.visibility = View.GONE
                                     binding.sflM.stopShimmer()
-
-
                                     // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
 //                                    context.let { context ->
 //                                        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(),
@@ -348,35 +344,11 @@ class MainFragment : Fragment() {
 //                                        }
 //                                        colorAnimation.start()
 //                                    }
-
                                     binding.tvMProgram.setOnClickListener {
-                                        try {
-                                            val programSn = uvm.existedProgramData?.programSn ?: throw IllegalStateException("Program SN is null")
-                                            val recommendationSn = when {
-                                                prefsManager.getLatestRecommendation() != -1 -> {
-                                                    prefsManager.getLatestRecommendation()
-                                                }
-                                                mvm.selectedMeasure?.recommendations?.isNotEmpty() == true -> {
-                                                    mvm.selectedMeasure?.recommendations?.get(0)?.recommendationSn
-                                                        ?: throw IllegalStateException("Recommendation SN is null")
-                                                }
-                                                else -> {
-                                                    throw IllegalStateException("No valid recommendation available")
-                                                }
-                                            }
-                                            ProgramCustomDialogFragment.newInstance(programSn, recommendationSn)
-                                                .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
-                                        } catch (e: IndexOutOfBoundsException) {
-                                            Log.e("MainIndex", "${e.message}")
-                                        } catch (e: IllegalArgumentException) {
-                                            Log.e("MainIllegalA", "${e.message}")
-                                        } catch (e: IllegalStateException) {
-                                            Log.e("MainIllegalS", "${e.message}")
-                                        }catch (e: NullPointerException) {
-                                            Log.e("MainNull", "${e.message}")
-                                        } catch (e: java.lang.Exception) {
-                                            Log.e("MainException", "${e.message}")
-                                        }
+                                        val programSn = evm.latestProgram?.programSn ?: -1
+                                        val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                                        ProgramCustomDialogFragment.newInstance(programSn, recSn)
+                                            .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
                                     }
                                 }
                             }  catch (e: IndexOutOfBoundsException) {
@@ -411,11 +383,11 @@ class MainFragment : Fragment() {
         return (dp * resources.displayMetrics.density).toInt()
     }
 
-    private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
-        val progressIndex = progresses.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
+    private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
+        val progressIndex = progresses?.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
         if (progressIndex != -1) {
             Log.v("progressIndex", "$progressIndex")
-            return progressIndex
+            return progressIndex ?: -1
         }
 
         for (i in 1 until progresses.size) {

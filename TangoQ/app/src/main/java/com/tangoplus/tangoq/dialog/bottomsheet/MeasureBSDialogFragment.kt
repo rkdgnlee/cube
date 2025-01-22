@@ -43,7 +43,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
         val dates = measures?.let { measure ->
             List(measure.size) { i ->
                 measure.get(i).regDate
-            }
+            }.distinct()
         } ?: emptyList()
         val names = measures?.let { measure ->
             List(measure.size) { i ->

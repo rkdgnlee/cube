@@ -303,15 +303,15 @@ class ExerciseRVAdapter (
                     }
                 }
                 // 가장 최근 완료한 운동의 index 가져오기
-
-
                 Glide.with(fragment.requireContext())
                     .load("${currentExerciseItem?.imageFilePath}")
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(180)
                     .into(holder.ivEHIThumbnail)
                 val duration = currentExerciseItem?.duration
-                Log.v("startIndex", "position: $position, startIndex: $startIndex")
+//                Log.v("startIndex", "position: $position, startIndex: $startIndex")
+
+
                 if (currentItem != null && duration != null && startIndex != null) {
                     // 재생 중간
                     if (position < startIndex) {
