@@ -29,7 +29,7 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
         when (case) {
             0 -> {
                 binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whiteText))
                 binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
             }
             1 -> {
@@ -42,7 +42,7 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
                 binding.root.setPadding(0, 2, 2, 0)
                 binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.transparentColor))
                 binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.transparentColor))
-                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.white))
+                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.whiteText))
             }
         }
         binding.tvSpinner.text = list[position]
@@ -66,8 +66,8 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
             }
             1 -> {
                 binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
-                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
-                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whiteText))
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.whiteText))
                 binding.root.setPadding(6, 6, 6, 0)
             }
             2 -> {

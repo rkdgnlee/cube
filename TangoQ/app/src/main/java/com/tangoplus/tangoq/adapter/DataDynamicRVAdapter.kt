@@ -83,6 +83,10 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                         holder.cvDDI2.setPoints(data[leftIndex])
                         holder.tvDDI2.text = titles[leftIndex]
                     }
+                    if (position == 2) {
+                        holder.cvDDI1.setMirrored(true)
+                        holder.cvDDI2.setMirrored(true)
+                    }
                 }
             }
 
@@ -110,6 +114,11 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                     if (pairStartIndex < data.size) {
                         holder.cvDDAI2.setPoints(data[leftIndex])
                         holder.tvDDAI2.text = titles[leftIndex]
+                    }
+
+                    if (position == 2) {
+                        holder.cvDDAI1.setMirrored(true)
+                        holder.cvDDAI2.setMirrored(true)
                     }
                 }
             }

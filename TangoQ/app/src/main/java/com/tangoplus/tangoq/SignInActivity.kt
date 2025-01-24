@@ -209,6 +209,23 @@ class SignInActivity : AppCompatActivity() {
 
         }  // -----! 인증 문자 확인 끝 !-----
 
+        val nameRegex = "^[가-힣]{2,5}$|^[a-zA-Z]{2,20}$"
+        val namePatternCheck = Pattern.compile(nameRegex)
+        binding.etName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.nameCondition.value = namePatternCheck.matcher(binding.etName.text.toString()).find()
+                if (viewModel.nameCondition.value == true) {
+                    binding.tvNameCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
+                    binding.tvNameCondition.text = "올바른 형식입니다"
+
+                } else {
+                    binding.tvNameCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
+                    binding.tvNameCondition.text = "올바른 이름을 입력해주세요"
+                }
+            }
+        })
         binding.etName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 binding.etEmail.requestFocus()
@@ -402,15 +419,15 @@ class SignInActivity : AppCompatActivity() {
                     binding.tvIdCondition.text = "사용 가능합니다"
                     Log.v("아이디", "${binding.etId.text}")
                 } else {
-                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                    binding.tvIdCondition.text = "영문, 숫자를 포함해서 4자리 이상 입력해주세요"
+                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
+                    binding.tvIdCondition.text = "영문, 숫자를 포함해서 4자리~16자리를 입력해주세요"
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // ----- ! 비밀번호 조건 코드 ! -----
+        // ------# 비밀번호 조건 코드 #------
         binding.etPw.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
@@ -420,7 +437,7 @@ class SignInActivity : AppCompatActivity() {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwCondition.text = "사용 가능합니다"
                 } else {
-                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
                     binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ?)를 모두 포함해서\n8~20자리를 입력해주세요"
                 }
             }
@@ -440,7 +457,7 @@ class SignInActivity : AppCompatActivity() {
                     binding.btnSignIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.mainColor))
 
                 } else {
-                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
                     binding.tvPwRepeat.text = "올바르지 않습니다"
                     binding.btnSignIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400))
                 }

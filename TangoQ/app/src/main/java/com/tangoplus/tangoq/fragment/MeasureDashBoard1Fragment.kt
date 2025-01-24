@@ -152,7 +152,7 @@ class MeasureDashBoard1Fragment : Fragment() {
 
         binding.btnMD1More2.setOnClickListener{
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, MeasureHistoryFragment())
                 addToBackStack(null)
                 commit()

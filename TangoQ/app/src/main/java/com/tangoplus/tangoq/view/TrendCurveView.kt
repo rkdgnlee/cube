@@ -27,14 +27,13 @@ class TrendCurveView @JvmOverloads constructor(
         strokeWidth = 4.5f
         style = Paint.Style.STROKE
     }
-    private val path = Path()
 
     private var points = listOf<Pair<Float, Float>>()
     private var resampledPoints = listOf<Pair<Float, Float>>()
     private var margin = 20f // 기본 마진 값
     private var boundingBox = RectF()
     private val resampleSize = 35
-    private val pathMeasure = PathMeasure()
+    private var isMirrored = false // 좌우 반전 여부
 
     fun setPoints(newPoints: List<Pair<Float, Float>>, newMargin: Float = 15f) {
         points = newPoints
@@ -43,7 +42,10 @@ class TrendCurveView @JvmOverloads constructor(
         resamplePoints()
         invalidate()
     }
-
+    fun setMirrored(mirrored: Boolean) {
+        isMirrored = mirrored
+        invalidate()
+    }
     private fun calculateBoundingBox() {
         val minX = points.minOf { it.first }
         val maxX = points.maxOf { it.first }
@@ -67,6 +69,9 @@ class TrendCurveView @JvmOverloads constructor(
 
         if (points.isEmpty()) return
 
+        if (isMirrored) {
+            canvas.scale(-1f, 1f, width / 2f, height / 2f)
+        }
         val scaledPoints = scalePoints(points, flipHorizontal = true, flipVertical = true)
 
         // 경로 길이 계산

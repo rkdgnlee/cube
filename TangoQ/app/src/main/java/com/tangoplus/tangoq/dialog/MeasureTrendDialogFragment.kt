@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -22,7 +21,6 @@ import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignBottom
-import com.skydoves.balloon.showAlignEnd
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.adapter.TrendRVAdapter
@@ -31,13 +29,13 @@ import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -222,11 +220,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
     private fun showBalloon() {
         val balloon2 = Balloon.Builder(requireContext())
-            .setWidthRatio(0.5f)
+            .setWidth(BalloonSizeSpec.WRAP)
             .setHeight(BalloonSizeSpec.WRAP)
             .setText("비교 날짜를 선택해주세요")
             .setTextColorResource(R.color.white)
-            .setTextSize(15f)
+            .setTextSize(if (isTablet(requireContext())) 24f else 16f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
             .setArrowSize(0)
             .setMargin(10)
@@ -237,12 +235,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
 
-        if (isFirstRun("MeasureTrendDialogFragment_isFirstRun")) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                binding.actvMTDLeft.showAlignEnd(balloon2)
-                balloon2.dismissWithDelay(1800L)
-            }, 700)
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.tilMTDLeft.showAlignBottom(balloon2)
+            balloon2.dismissWithDelay(5000L)
+        }, 700)
+//        if (isFirstRun("MeasureTrendDialogFragment_isFirstRun")) {
+//
+//        }
         binding.textView30.setOnClickListener { it.showAlignBottom(balloon2) }
     }
 

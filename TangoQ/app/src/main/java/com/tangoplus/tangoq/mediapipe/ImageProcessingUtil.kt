@@ -11,6 +11,7 @@ import android.graphics.RadialGradient
 import android.graphics.Shader
 import android.util.Log
 import android.util.TypedValue
+import android.view.View
 import androidx.core.graphics.scale
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
@@ -301,10 +302,10 @@ object ImageProcessingUtil {
                 if (columnNames.contains(string)) {
                     val selectParts = painParts.find { it.first == string }
                     when (index) {
-                        0 -> setCircleColor(canvas, selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
+                        0 -> setPartCircle(canvas, selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
                         else -> {
                             if (filterIndexAndSequence(index, sequence)) {
-                                setCircleColor(canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
+                                setPartCircle(canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
                             }
                         }
                     }
@@ -389,7 +390,7 @@ object ImageProcessingUtil {
         return result
     }
 
-    fun setCircleColor(canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
+    private fun setPartCircle(canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
         val dangerPart = Paint().apply {
             isDither = true
             isAntiAlias = true

@@ -19,7 +19,7 @@ class SignInViewModel: ViewModel() {
     var isFindId = true
     var invalidIdCondition = MutableLiveData(false)
     var loginTryCount = MutableLiveData(0)
-
+    var nameCondition = MutableLiveData(false)
     // ------# 약관 동의 #------
     val agreementMk1 = MutableLiveData(false)
     val agreementMk2 = MutableLiveData(false)

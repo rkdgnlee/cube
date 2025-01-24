@@ -31,15 +31,10 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.common.eventbus.Subscribe
 import com.tangoplus.tangoq.api.NetworkExercise.patchExerciseHistory
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.databinding.ActivityPlayFullScreenBinding
 import com.tangoplus.tangoq.api.NetworkProgress.patchProgress1Item
-import com.tangoplus.tangoq.function.EventBusManager
-import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.service.ForcedTerminationService
-import com.tangoplus.tangoq.service.TerminationEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,7 +59,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private var sns: MutableList<String>? = null
     private var uvpSns : MutableList<String>? = null
 
-    private val playbackPositions = mutableMapOf<Int, Long>()
+
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null
     private var llSpeed: LinearLayout? = null
@@ -102,8 +97,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         chronometer = findViewById(R.id.chronometer)
         chronometer.base = SystemClock.elapsedRealtime()
         chronometer.start()
-        startService(Intent(this, ForcedTerminationService::class.java))
-        EventBusManager.eventBus.register(this)
 
         // ------# landscape로 방향 설정 & 재생시간 받아오기 #------
         val videoUrl = intent.getStringExtra("video_url")
@@ -319,10 +312,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
 //        val savedPosition = playbackPositions[windowIndex] ?: positionMs
 //        simpleExoPlayer?.seekTo(windowIndex, savedPosition)
         simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
-
-
-
-
     }
     // ------# isFinish는 영상 길이 전부 시청했는지 여부 #------
     private fun sendUVP(isFinish: Boolean, callback: () -> Unit) {
@@ -468,7 +457,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.v("onStop", "${baseUrls[pvm.getWindowIndex()]} < ${baseUrls}")
         simpleExoPlayer?.let { player ->
             pvm.savePlayerState(player, baseUrls[pvm.getWindowIndex()])
             player.stop()
@@ -476,7 +464,17 @@ class PlayFullScreenActivity : AppCompatActivity() {
             playbackPosition = player.currentPosition
         }
         pvm.isResume = true
-
+        CoroutineScope(Dispatchers.Main).launch {
+            if (pvm.isUnit) {
+                sendUVP(false) {
+                    Log.v("sendUVP", "success to send UVP")
+                }
+            } else {
+                sendEVP(false) {
+                    Log.v("sendEVP", "success to send EVP")
+                }
+            }
+        }
     }
 
     override fun onPause() {
@@ -497,7 +495,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
             simpleExoPlayer = null
             Log.v("exoplayerExit", "SimpleExoPlayer released and null")
         }
-//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     override fun finish() {
@@ -508,19 +505,10 @@ class PlayFullScreenActivity : AppCompatActivity() {
             Log.v("exoplayerExit", "SimpleExoPlayer released and null, finish")
         }
     }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putLong("playbackPosition", simpleExoPlayer?.currentPosition ?: 0L)
         outState.putInt("currentWindow", simpleExoPlayer?.currentWindowIndex ?: 0)
         outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
-    }
-
-    @Subscribe
-    fun onTerminationEvent(event: TerminationEvent) {
-        Log.v("강제종료", "sendUVP: $currentVideoDuration")
-        sendUVP(false) {
-            EventBusManager.eventBus.unregister(this)
-        }
     }
 }

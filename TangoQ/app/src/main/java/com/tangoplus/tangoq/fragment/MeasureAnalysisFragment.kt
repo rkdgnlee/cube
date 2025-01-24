@@ -4,6 +4,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +20,7 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -68,10 +72,9 @@ class MeasureAnalysisFragment : Fragment() {
     private var exo10: ImageButton? = null
     private var cvLeft : CardView? = null
     private var cvRight : CardView? = null
+
     companion object {
         private const val ARG_INDEX = "index_analysis"
-
-
         fun newInstance(indexx: Int): MeasureAnalysisFragment {
             val fragment = MeasureAnalysisFragment()
             val args = Bundle()
@@ -238,7 +241,6 @@ class MeasureAnalysisFragment : Fragment() {
                     val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
                     val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
                     if (!angleValue.isNaN() && !distanceValue.isNaN()) {
-
                         minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
                     }
                 }
@@ -428,10 +430,17 @@ class MeasureAnalysisFragment : Fragment() {
             binding.ssivMA1.visibility = View.GONE
             binding.ssivMA2.visibility = View.GONE
             binding.flMA.visibility = View.VISIBLE
+//            binding.tvMALegend.visibility = View.VISIBLE
+//            val message = SpannableString("시작위치  끝위치")
+//            message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.thirdColor)), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//            message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 5, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//            binding.tvMALegend.text = message
+
         } else {
             binding.ssivMA1.visibility = View.VISIBLE
             binding.ssivMA2.visibility = View.VISIBLE
             binding.flMA.visibility = View.GONE
+//            binding.tvMALegend.visibility = View.GONE
         }
     }
 
@@ -685,6 +694,11 @@ class MeasureAnalysisFragment : Fragment() {
         binding.rvMALeft.adapter = dynamicAdapter
     }
 
+    private fun setDataInModel(motherJa : JSONArray) {
+
+    }
+
+
     override fun onPause() {
         super.onPause()
         simpleExoPlayer?.let { player ->
@@ -711,6 +725,5 @@ class MeasureAnalysisFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true
-//        setPlayer()
     }
 }

@@ -112,19 +112,19 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
         val parts = mutableListOf(
             "목관절" to Status.DANGER,
             "좌측 어깨" to Status.NORMAL,
-            "우측 어깨" to Status.NORMAL,
+            "우측 어깨" to Status.DANGER,
 
             "좌측 팔꿉" to Status.NORMAL,
-            "우측 팔꿉" to Status.WARNING,
+            "우측 팔꿉" to Status.NORMAL,
 
             "좌측 손목" to Status.NORMAL,
             "우측 손목" to Status.DANGER,
 
             "좌측 골반" to Status.WARNING,
             "우측 골반" to Status.WARNING,
-            "좌측 무릎" to Status.NORMAL,
+            "좌측 무릎" to Status.WARNING,
             "우측 무릎" to Status.NORMAL,
-            "우측 발목" to Status.WARNING,
+            "우측 발목" to Status.DANGER,
             "우측 발목" to Status.WARNING
         )
 
@@ -133,20 +133,20 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
         println("77 - $result")
 
         val parts2 = mutableListOf(
-            "목관절" to Status.DANGER,
+            "목관절" to Status.WARNING,
             "좌측 어깨" to Status.WARNING,
-            "우측 어깨" to Status.DANGER,
+            "우측 어깨" to Status.WARNING,
 
-            "좌측 팔꿉" to Status.DANGER,
-            "우측 팔꿉" to Status.WARNING,
+            "좌측 팔꿉" to Status.NORMAL,
+            "우측 팔꿉" to Status.DANGER,
 
             "좌측 손목" to Status.WARNING,
             "우측 손목" to Status.DANGER,
 
-            "좌측 골반" to Status.NORMAL,
+            "좌측 골반" to Status.WARNING,
             "우측 골반" to Status.WARNING,
             "좌측 무릎" to Status.NORMAL,
-            "우측 무릎" to Status.WARNING,
+            "우측 무릎" to Status.NORMAL,
             "우측 발목" to Status.NORMAL,
             "우측 발목" to Status.NORMAL
         )
@@ -158,7 +158,7 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
 
     fun calculateOverall(parts: MutableList<Pair<String, Status>>) : Int {
         val scores = mapOf(
-            Status.DANGER to 36,
+            Status.DANGER to 39,
             Status.WARNING to 64,
             Status.NORMAL to 95
         )

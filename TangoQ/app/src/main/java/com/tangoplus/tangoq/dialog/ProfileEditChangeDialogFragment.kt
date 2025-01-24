@@ -95,7 +95,8 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         val value = arguments?.getString(ARG_EDIT_BS_VALUE).toString()
         Log.v("arg", "$arg, $value")
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
-
+        auth = FirebaseAuth.getInstance()
+        auth.setLanguageCode("kr")
         // ------# 키보드 #------
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         Handler(Looper.getMainLooper()).postDelayed({
@@ -185,7 +186,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     filters = arrayOf(InputFilter.LengthFilter(25))
                 }
 
-                val emailPattern = "^[\\w.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$"
+                val emailPattern = "^[a-z0-9]{4,16}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
                 val emailPatternCheck = Pattern.compile(emailPattern)
                 binding.etPCD1.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int, ) {}
@@ -195,9 +196,11 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                         if (svm.editChangeCondition.value == true) {
                             binding.tvPCD1Condition.text = "올바른 이메일 형식입니다"
                             binding.btnPCDFinish.isEnabled = true
+                            enabledButton()
                         } else {
                             binding.tvPCD1Condition.text = "올바르지 않은 이메일 형식입니다. 다시 확인해 주세요"
                             binding.btnPCDFinish.isEnabled = false
+                            disabledButton()
                         }
                     }
                 })
@@ -358,8 +361,10 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                         "전화번호" -> {
                             userJson.put("mobile", binding.etPCDMobile.text.toString())
                             withContext(Dispatchers.Main) {
-                                svm.setMobile.value = updatedItem
-                            }                        }
+                                svm.setMobile.value = binding.etPCDMobile.text.toString()
+                                Log.v("svm.setMobile", "${svm.setMobile.value}")
+                            }
+                        }
                         "신장" -> {
                             userJson.put("height", updatedItem)
                             withContext(Dispatchers.Main) {
@@ -473,5 +478,31 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     Log.w(ContentValues.TAG, "mobile auth failed.")
                 }
             }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseAuth.getInstance().signOut()
+                val user = FirebaseAuth.getInstance().currentUser
+                Log.v("user", "$user")
+                user?.delete()
+            }
+        }
+        auth.signOut()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseAuth.getInstance().signOut()
+                val user = FirebaseAuth.getInstance().currentUser
+                Log.v("user", "$user")
+                user?.delete()
+            }
+        }
+        auth.signOut()
     }
 }

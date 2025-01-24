@@ -18,6 +18,7 @@ import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.vo.ProgressUnitVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -61,10 +62,12 @@ object MeasurementManager {
     )
     private val femaleErrorBounds = listOf(
         mapOf(
-            0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 1.1f, 3.2f)), //*&*
+            0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 1.1f, 3.2f),
+                "front_horizontal_distance_sub_ear" to Triple(0f, 1.1f, 3.2f)), //*&*
             3 to mapOf( "side_left_vertical_angle_ear_shoulder" to Triple(90f,4.74f, 10.21f)), //*&*
             4 to mapOf( "side_right_vertical_angle_ear_shoulder" to Triple(90f,4.74f, 10.21f)), //*&*
-            5 to mapOf( "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 6f)), //*&*
+            5 to mapOf( "back_horizontal_angle_ear" to Triple(0f,1.2f, 3.2f),
+            "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 6f)),
             6 to mapOf( "back_sit_horizontal_angle_ear" to Triple(0f,1.09f, 3.29f), //*&*
                 "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Triple(84.23f,3.07f, 9.19f)) //*&*
         ),
@@ -185,12 +188,14 @@ object MeasurementManager {
     // 좌측 무릎 정상은 정면 좌측이 음수 우측이 양수 // 후면은 좌측이 양수 우측이 음수
     private val maleErrorBounds = listOf(
         mapOf(
-            0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 1.1f, 3.2f)), //*&*
-            3 to mapOf( "side_left_vertical_angle_ear_shoulder" to Triple(90f,7.48f, 12.95f)), //*&*
-            4 to mapOf( "side_right_vertical_angle_ear_shoulder" to Triple(90f,7.48f, 12.95f)), //*&*
-            5 to mapOf( "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 6f)), //*&*
+            0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 1.1f, 3.2f),
+                "front_horizontal_distance_sub_ear" to Triple(0f, 1.1f, 3.2f)), //*&*
+            3 to mapOf( "side_left_vertical_angle_ear_shoulder" to Triple(85f,14.74f, 10.21f)), //*&*
+            4 to mapOf( "side_right_vertical_angle_ear_shoulder" to Triple(85f,14.74f, 10.21f)), //*&*
+            5 to mapOf( "back_horizontal_angle_ear" to Triple(0f,1.2f, 3.2f),
+            "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 6f)), //*&*
             6 to mapOf( "back_sit_horizontal_angle_ear" to Triple(0f,1.09f, 3.29f), //*&*
-                "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Triple(84.23f,3.07f, 9.19f)) //*&*
+                "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Triple(74.23f,13.07f, 29.19f)) //*&*
         ),
         // 어깨
         mapOf(
@@ -304,10 +309,12 @@ object MeasurementManager {
 
     private val mainPartSeqs = listOf(
         mapOf( // 6
-            0 to mapOf( "front_horizontal_angle_ear" to "양 귀 기울기"),
+            0 to mapOf( "front_horizontal_angle_ear" to "양 귀 기울기",
+                "front_horizontal_distance_sub_ear" to "양 귀 기울기 높이차"),
             3 to mapOf("side_left_vertical_angle_ear_shoulder" to "귀와 좌측 어깨 기울기"),
             4 to mapOf("side_right_vertical_angle_ear_shoulder" to "귀와 우측 어깨 기울기"),
-            5 to mapOf("back_vertical_angle_nose_center_shoulder" to "어깨중심과 코 기울기"),
+            5 to mapOf("back_horizontal_angle_ear" to "양 귀 기울기",
+                "back_vertical_angle_nose_center_shoulder" to "어깨중심과 코 기울기"),
             6 to mapOf( "back_sit_horizontal_angle_ear" to "양 귀 기울기",
                 "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to "우측 어깨-코-좌측 어깨 기울기")
         ),
@@ -525,9 +532,9 @@ object MeasurementManager {
 
     fun calculateOverall(parts: MutableList<Pair<String, Status>>) : Int {
         val scores = mapOf(
-            Status.DANGER to 36,
+            Status.DANGER to 39,
             Status.WARNING to 64,
-            Status.NORMAL to 93
+            Status.NORMAL to 95
         )
         val weightScore = 1.65
         val reverseWeightScore = 0.7
@@ -852,14 +859,36 @@ object MeasurementManager {
         }
     }
 
+    fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
+        val progressIndex = progresses?.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
+        if (progressIndex != -1) {
+            Log.v("progressIndex", "$progressIndex")
+            return progressIndex ?: -1
+        }
+
+        for (i in 1 until progresses.size) {
+            val prev = progresses[i - 1].currentSequence
+            val current = progresses[i].currentSequence
+            if ((prev == 3 && current == 2) ||
+                (prev == 2 && current == 1) ||
+                (prev == 1 && current == 0)) {
+                return i
+            }
+        }
+        Log.v("progressIndex", "$progressIndex")
+        return 0
+    }
+
     // 평균과 설명을 넣어주는 곳
     fun setLabels(unit : AnalysisUnitVO) : String {
         return when (unit.columnName) {
 
             // 목관절
             "front_horizontal_angle_ear" -> "기울기 값 180° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 한쪽으로 기울었을 경우, 기울어진 반대편의 목빗근의 스트레칭을 권장드립니다."
+            "front_horizontal_distance_sub_ear" -> "양 귀의 높이 차이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다."
             "side_left_vertical_angle_ear_shoulder" -> "측면에서는 귀와 어깨가 일직선 상에 있어야 가장 이상적입니다. 목이 앞으로 나와있을 수록 수직에서 멀어지며, 굽은 등, 허리 교정을 추천드립니다."
             "side_right_vertical_angle_ear_shoulder" -> "측면에서는 귀와 어깨가 일직선 상에 있어야 가장 이상적입니다. 목이 앞으로 나와있을 수록 수직에서 멀어지며, 굽은 등, 허리 교정을 추천드립니다."
+            "back_horizontal_angle_ear" -> "기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 한쪽으로 기울었을 경우, 기울어진 반대편의 목빗근과 지지하는 후면 어깨 강화를 추천드립니다."
             "back_vertical_angle_nose_center_shoulder" -> "양 어깨의 중심과 코의 기울기를 의미합니다.  기울기 값 90°를 기준으로 5° 오차를 넘어가면 목관절 틀어짐이 의심됩니다."
             "back_sit_horizontal_angle_ear" -> "기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 기울어진 부위의 반대편의 목빗근 스트레칭을 추천드립니다."
             "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" -> "앉은 자세에서 코를 기준으로 양 어깨의 각도를 의미합니다. 값이 클수록 목이 신체 정면으로 나오고 내려와있기 때문에 심한 거북목으로 예측할 수 있습니다."

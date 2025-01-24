@@ -29,8 +29,7 @@ class UserViewModel: ViewModel() {
 
     // ------# connected 날짜 담기 #------
 
-    val connectedCenters = mutableListOf<Pair<String, String>>()
-
+//    val connectedCenters = mutableListOf<Pair<String, String>>()
 
 
     init {

@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
+import com.tangoplus.tangoq.function.MeasurementManager.findCurrentIndex
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.Dispatchers
@@ -187,7 +188,7 @@ class MainFragment : Fragment() {
             binding.tvMCustom.visibility = View.GONE
 
             binding.btnMProgram.apply {
-                text = "프로그램 추천 받기"
+                text = "측정 시작하기"
                 setOnClickListener{
                     (activity as? MainActivity)?.launchMeasureSkeletonActivity()
                 }
@@ -383,25 +384,7 @@ class MainFragment : Fragment() {
         return (dp * resources.displayMetrics.density).toInt()
     }
 
-    private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
-        val progressIndex = progresses?.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
-        if (progressIndex != -1) {
-            Log.v("progressIndex", "$progressIndex")
-            return progressIndex ?: -1
-        }
 
-        for (i in 1 until progresses.size) {
-            val prev = progresses[i - 1].currentSequence
-            val current = progresses[i].currentSequence
-            if ((prev == 3 && current == 2) ||
-                (prev == 2 && current == 1) ||
-                (prev == 1 && current == 0)) {
-                return i
-            }
-        }
-        Log.v("progressIndex", "$progressIndex")
-        return 0
-    }
 
     private fun setProgramButton(isEnabled: Boolean) {
         if (isEnabled) {

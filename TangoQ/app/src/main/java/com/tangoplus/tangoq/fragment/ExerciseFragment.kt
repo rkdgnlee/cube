@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
@@ -20,6 +23,7 @@ import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseJson
 import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
+import com.tangoplus.tangoq.function.MeasurementManager.findCurrentIndex
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,8 +64,8 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
         CoroutineScope(Dispatchers.Main).launch {
             // 상단 최근 한 운동 cardView 보이기
-//            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
-//            binding.cvEProgress.animation = animation
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
+            binding.cvEProgress.animation = animation
 //            binding.cvEProgress.visibility = View.GONE
             // VM에 기록들이 비었을 때
             if (evm.latestUVP.isNullOrEmpty() || evm.latestProgram == null) {
@@ -69,12 +73,39 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                 evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
                 evm.latestProgram = progressResult?.second
             }
+            val currentIndex = findCurrentIndex(evm.latestUVP)
+            val currentExerciseItem = evm.latestProgram?.exercises?.get(currentIndex)
+            val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
+
             // 받아온 데이터로 cvEProgress 채우기
-            binding.tvEName
-            binding.tvETime
-            binding.tvEStage
-            binding.hpvE
-            binding.ivEThumbnail
+            Glide.with(requireContext())
+                .load("${currentExerciseItem?.imageFilePath}")
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .override(180)
+                .into(binding.ivEThumbnail)
+            binding.tvEName.text = currentExerciseItem?.exerciseName
+            binding.tvETime.text = second
+            when (currentExerciseItem?.exerciseStage) {
+                "초급" -> {
+                    binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
+                    binding.tvEStage.text = "초급자"
+                }
+                "중급" -> {
+                    binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
+                    binding.tvEStage.text = "중급자"
+                }
+                "고급" -> {
+                    binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
+                    binding.tvEStage.text = "상급자"
+                }
+            }
+            val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
+            evpItem.let {
+                if (it != null) {
+                    binding.hpvE.progress = (it.lastProgress * 100 / it.videoDuration).toFloat()
+                }
+            }
+
 
             binding.clEProgress.setOnSingleClickListener {
                 val programSn = evm.latestProgram?.programSn ?: -1

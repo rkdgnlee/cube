@@ -22,6 +22,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
+import com.tangoplus.tangoq.dialog.InputDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
@@ -204,14 +205,20 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "몸무게" -> {
                                 (vm as SignInViewModel).setWeight.observe(fragment.viewLifecycleOwner) { weight ->
-                                    holder.tvPfInfo.text = "$weight kg"
+                                    holder.tvPfInfo.text = when (weight) {
+                                        0 -> "미설정"
+                                        else -> "$weight kg"
+                                    }
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_weight)
                             }
 
                             "신장" -> {
                                 (vm as SignInViewModel).setHeight.observe(fragment.viewLifecycleOwner) { height ->
-                                    holder.tvPfInfo.text = "$height cm"
+                                    holder.tvPfInfo.text = when (height) {
+                                        0 -> "미설정"
+                                        else -> "$height cm"
+                                    }
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_height)
                             }
@@ -235,8 +242,8 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "비밀번호" -> {
-                                    val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                    val dialog = InputDialogFragment()
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
                                 }
                                 "전화번호" -> {
                                     val dialog = ProfileEditChangeDialogFragment.newInstance("전화번호", "")

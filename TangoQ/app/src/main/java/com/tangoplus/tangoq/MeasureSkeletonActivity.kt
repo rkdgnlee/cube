@@ -243,7 +243,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                 dynamicEndTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                                 updateUI()
                                 Log.v("dynamicJa총길이", "${mvm.dynamicJa.length()}")
-
                                 // ------# dynamic의 프레임들에서 db에 넣을 값을 찾는 곳 #------
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     try {
@@ -1010,6 +1009,18 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 mvm.statics.removeAt(repeatCount.value ?: 0) // static을
                 mvm.staticFiles.removeAt(repeatCount.value ?: 0)
                 mvm.staticJsonFiles.removeAt(repeatCount.value ?: 0)
+                val mirroredVideoFile = File(cacheDir, "mirrored_video.mp4")
+                if (mirroredVideoFile.exists()) {
+                    // 파일 삭제
+                    val isDeleted = mirroredVideoFile.delete()
+                    if (isDeleted) {
+                        Log.v("MPEGLog","mirrored_video.mp4 파일이 성공적으로 삭제되었습니다.")
+                    } else {
+                        Log.v("MPEGLog","mirrored_video.mp4 파일 삭제에 실패했습니다.")
+                    }
+                } else {
+                    Log.v("MPEGLog","mirrored_video.mp4 파일이 존재하지 않습니다.")
+                }
             }
             2, 3, 4, 5, 6 -> {
                 repeatCount.value = repeatCount.value?.minus(1)
@@ -2260,7 +2271,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     }
 
     private fun flipVideoHorizontally(inputPath: String, outputPath: String, callback: (Boolean) -> Unit) {
-        val command = "-i $inputPath -vf hflip -c:v libx264 -crf 18 -preset veryfast -c:a copy $outputPath"
+        val command = "-i $inputPath -vf hflip -y -c:v libx264 -crf 18 -preset veryfast -c:a copy $outputPath"
         lifecycleScope.launch(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("동영상").apply {
                 show(supportFragmentManager, "LoadingDialogFragment")

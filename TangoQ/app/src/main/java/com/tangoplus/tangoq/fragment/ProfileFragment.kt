@@ -36,6 +36,7 @@ import com.tangoplus.tangoq.databinding.FragmentProfileBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.sendProfileImage
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,7 +72,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
 
-        binding.ibtnPAlarm.setOnClickListener {
+        binding.ibtnPAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
@@ -85,44 +86,8 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                     .into(binding.civP)
             }
         }
-        binding.civP.setOnClickListener {
-            when {
-                // Android 14
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
-                    if (hasPermissions(
-                            Manifest.permission.READ_MEDIA_IMAGES,
-                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
-                        navigateGallery()
-                    } else {
-                        requestPermissions(
-                            arrayOf(
-                                Manifest.permission.READ_MEDIA_IMAGES,
-                                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-                            ), 1000)
-                    }
-                }
-                // Android 13
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                    if (hasPermission(Manifest.permission.READ_MEDIA_IMAGES)) {
-                        navigateGallery()
-                    } else {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 1000)
-                    }
-                }
-                // Android 12 이하
-                else -> {
-                    if (hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        navigateGallery()
-                    } else {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                            1000
-                        )
-                    }
-                }
-            }
-        }
+        binding.civP.setOnSingleClickListener { navigateImage() }
+        binding.ivPfEdit.setOnSingleClickListener { navigateImage() }
 
         // ------! 정보 목록 recyclerView 연결 시작 !------
         val profilemenulist = mutableListOf(
@@ -339,5 +304,49 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             }
         }
         return file
+    }
+
+    private fun navigateImage() {
+        when {
+            // Android 14
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                if (hasPermissions(
+                        Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+                    navigateGallery()
+                } else {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                        ), 1000)
+                }
+            }
+            // Android 13
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                if (hasPermission(Manifest.permission.READ_MEDIA_IMAGES)) {
+                    navigateGallery()
+                } else {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 1000)
+                }
+            }
+            // Android 12 이하
+            else -> {
+                if (hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    navigateGallery()
+                } else {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        1000
+                    )
+                }
+            }
+        }
+    }
+
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
     }
 }

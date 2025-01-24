@@ -109,8 +109,8 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
         when (isNormal) {
             2, 3 -> {
                 holder.tvMPIState.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
-                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.white))
-                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.white))
+                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.whiteText))
+                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.whiteText))
                 holder.tvMPIState.text = "확인 필요"
             }
             else -> {

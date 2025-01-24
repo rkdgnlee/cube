@@ -150,7 +150,6 @@ class ExerciseRVAdapter (
                         val historyUnit = historys.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
                         historyUnit?.let {
                             holder.hpvEI.visibility = View.VISIBLE
-                            Log.v("historyUnit", "$historyUnit")
                             holder.hpvEI.progress = (it.progress * 100 / it.duration).toFloat()
                         }
                     }

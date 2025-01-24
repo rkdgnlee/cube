@@ -120,7 +120,25 @@ object NetworkUser {
         }
     }
 
-
+    suspend fun verifyPW(context: Context, myUrl: String, pw: JSONObject, callback: (Int) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = pw.toString().toRequestBody(mediaType)
+        val client = getClient(context)
+        val request = Request.Builder()
+            .url("${myUrl}pwd_check.php")
+            .post(body)
+            .build()
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                Log.v("verifyPW", "$responseBody")
+                val status = responseBody?.let { JSONObject(it).optInt("status") }
+                if (status != null) {
+                    callback(status)
+                }
+            }
+        }
+    }
 
     suspend fun insertUser(myUrl: String,  idPw: JSONObject, callback: (Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()

@@ -175,6 +175,22 @@ class MainPartDialogFragment : DialogFragment() {
                                 )
                             }
                         }
+                        val frontNeckData2 = units.find { it.columnName == "front_horizontal_distance_sub_ear" }
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        frontNeckData2?.let {
+                            val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
+                            val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
+
+                            if (it.rawData !in boundRange) {
+                                // 비정상 상태 처리
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append(
+                                    "양 귀가  $angleDirection2 방향으로 ${String.format("%.2f", angleData2)}° 치우쳐 있습니다.  "
+                                )
+                            }
+                        }
                     }
                     3 -> {
                         val frontNeckData = units.find { it.columnName == "side_left_vertical_angle_ear_shoulder"}
@@ -218,6 +234,19 @@ class MainPartDialogFragment : DialogFragment() {
                                 angleData = it.rawData
                                 angleDirection = getDirection(it.rawData)
                                 resultString.append("목 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 틀어져 있습니다.  ")
+                            }
+                        }
+                        val backNeckData2 = units.find { it.columnName == "back_horizontal_angle_ear"}
+                        var angleData2 = 0f
+                        var angleDirection2 = ""
+                        backNeckData2?.let {
+                            val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
+                            val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
+
+                            if (it.rawData !in boundRange) {
+                                angleData2 = it.rawData
+                                angleDirection2 = getDirection(it.rawData)
+                                resultString.append("목 ${String.format("%.2f", angleData2)}° ${angleDirection2}방향으로 틀어져 있습니다.  ")
                             }
                         }
                     }
@@ -318,7 +347,7 @@ class MainPartDialogFragment : DialogFragment() {
                             if (it.rawData !in boundRange) {
                                 angleData2 = it.rawData
 
-                                resultString.append("양 어깨 기울기는 ${String.format("%.2f", angleData)}° 로 0°에 가까울수록 균형입니다.  ")
+                                resultString.append("양 어깨 기울기는 ${String.format("%.2f", angleData2)}° 로 0°에 가까울수록 균형입니다.  ")
                             }
                         }
                     }

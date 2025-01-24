@@ -123,6 +123,7 @@
         </service>
 
         <service android:name=".service.ForcedTerminationService"
+            android:process=":main"
             android:stopWithTask="false"/>
 
         <provider

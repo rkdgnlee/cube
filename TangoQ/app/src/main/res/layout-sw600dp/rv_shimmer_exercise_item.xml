@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout65"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:background="@color/white">
+    android:background="@color/subColor100">
 
     <ImageView
         android:id="@+id/imageView14"
@@ -14,7 +14,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
-        android:background="@color/subColor100"
+        android:background="@color/subColor150"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -28,7 +28,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="20dp"
-        android:background="@color/subColor100"
+        android:background="@color/subColor150"
         app:layout_constraintEnd_toStartOf="@+id/view24"
         app:layout_constraintStart_toEndOf="@+id/imageView14"
         app:layout_constraintTop_toTopOf="@+id/imageView14" />
@@ -39,7 +39,7 @@
         android:layout_height="18dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="20dp"
-        android:background="@color/subColor100"
+        android:background="@color/subColor150"
         app:layout_constraintEnd_toStartOf="@+id/view24"
         app:layout_constraintStart_toStartOf="@+id/textView26"
         app:layout_constraintTop_toBottomOf="@+id/textView26" />
@@ -49,7 +49,7 @@
         android:layout_width="50dp"
         android:layout_height="24dp"
         android:layout_marginBottom="20dp"
-        android:background="@color/subColor100"
+        android:background="@color/subColor150"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView27" />
 
@@ -57,7 +57,7 @@
         android:id="@+id/textView96"
         android:layout_width="50dp"
         android:layout_height="28dp"
-        android:background="@color/subColor100"
+        android:background="@color/subColor150"
         app:layout_constraintBottom_toBottomOf="@+id/textView25"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.4"
@@ -70,7 +70,7 @@
         android:layout_height="64dp"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="32dp"
-        android:background="@color/subColor100"
+        android:background="@color/subColor150"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

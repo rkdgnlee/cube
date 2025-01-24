@@ -381,9 +381,10 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             pvm.selectedSequence.value = sequence
 //            Log.v("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence}")
             val selectedWeekValue = pvm.selectedWeek.value
-            val selectedSequenceValue = pvm.selectedSequence.value
-            if (selectedWeekValue != null && selectedSequenceValue != null) {
-                setAdapter(pvm.currentProgram, pvm.currentProgresses[selectedWeekValue], Pair(pvm.currentSequence, selectedSequenceValue))
+            val selectedSeqValue = pvm.selectedSequence.value
+            if (selectedWeekValue != null && selectedSeqValue != null) {
+                Log.v("회차들", "selectedWeekValue: $selectedWeekValue, selectedSeqValue: $selectedSeqValue, VM.selectedSeq: ${pvm.selectedSequence.value}, VM.currentSeq: ${pvm.currentSequence}")
+                setAdapter(pvm.currentProgram, pvm.currentProgresses[selectedWeekValue], Pair(pvm.currentSequence, selectedSeqValue))
                 setButtonFlavor()
             }
 
@@ -395,49 +396,46 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         if (selectedWeekValue != null) {
             val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
             Log.v("lastWeekProgress", "$lastWeekProgress, 목록: ${pvm.currentProgresses[pvm.currentWeek]}")
-            if (lastWeekProgress.updateDate != null && lastWeekProgress.updateDate.length > 9) {
+
+            // 현재 week에서 벗어남
+            if (selectedWeekValue > pvm.currentWeek) {
+                binding.btnPCDRight.apply {
+                    isEnabled = false
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+                    text = "이번주 운동을 진행해주세요"
+                }
+                // 현재 주차 ok > 현재 회차 벗어남
+            } else if (selectedSeqValue != null &&  selectedSeqValue > pvm.currentSequence) {
+                binding.btnPCDRight.apply {
+                    isEnabled = false
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+                    text = "오늘자 운동을 진행해주세요"
+                }
+                //
+            } else if (lastWeekProgress.updateDate != null && lastWeekProgress.updateDate.length > 9 && selectedSeqValue == pvm.currentSequence) {
                 val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 val currentDate = LocalDate.now()
-                // 현재 주차안에서만
-                if (selectedWeekValue <= pvm.currentWeek) {
-                    // 현재 날짜가 같고, 가장 마지막 lasWeekProgress가 currentSequence가 1보다 클 때, 그리고 선택한 seq가 같을 때
-
-                    if (inputDate == currentDate
-                        && lastWeekProgress.currentSequence > 0
-                        && pvm.selectedSequence.value == pvm.currentSequence
-                    ) {
-                        // 오늘 시퀀스가 끝났으니 버튼 Flavor 맞추기
-                        binding.btnPCDRight.apply {
-                            isEnabled = false
-                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-                            text = "오늘 회차의 운동을 완료했습니다"
-                        }
-                    }
-                    else if (pvm.selectedSequence.value == pvm.currentSequence) {
-                        binding.btnPCDRight.apply {
-                            isEnabled = true
-                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
-                            text = "운동 시작하기"
-                        }
-                    } else {
-                        binding.btnPCDRight.apply {
-                            isEnabled = false
-                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-                            if (selectedSeqValue != null) {
-                                text = if (selectedSeqValue > pvm.currentSequence) {
-                                    "현재 프로그램을 진행해주세요"
-                                } else {
-                                    "완료한 운동입니다"
-                                }
-                            }
-                        }
-                    }
-                } else {
+                if (inputDate == currentDate && lastWeekProgress.currentSequence > 0 && selectedSeqValue == pvm.currentSequence) {
+                    // 오늘 시퀀스가 끝났으니 버튼 Flavor 맞추기
                     binding.btnPCDRight.apply {
                         isEnabled = false
                         backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-                        text = "현재 프로그램을 진행해주세요"
+                        text = "오늘 회차의 운동을 완료했습니다"
                     }
+                    // 회차가 끝난 사람이 다음날 들어오는 곳
+                } else if (selectedSeqValue == pvm.currentSequence) {
+                    binding.btnPCDRight.apply {
+                        isEnabled = true
+                        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+                        text = "운동 시작하기"
+                    }
+                }
+                // 전혀 기록이 없는 사람이 현재 seq눌렀을 떄
+            } else if (selectedSeqValue == pvm.currentSequence) {
+                binding.btnPCDRight.apply {
+                    isEnabled = true
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+                    text = "운동 시작하기"
                 }
             }
         }

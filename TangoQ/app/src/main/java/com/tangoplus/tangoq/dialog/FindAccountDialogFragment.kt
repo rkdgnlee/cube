@@ -90,7 +90,6 @@ class FindAccountDialogFragment : DialogFragment() {
                 binding.etFADAuthNumber.isEnabled = false
                 binding.btnFADAuthSend.isEnabled = false
                 binding.btnFADConfirm.text = "인증 하기"
-                binding.tvFADTelecom.text = ""
                 binding.etFADMobile.setText("")
                 binding.etFADId.setText("")
 
@@ -257,7 +256,6 @@ class FindAccountDialogFragment : DialogFragment() {
 //
 //                            }
 //                        }
-//
 //                    }
 
                     // ------! 비밀번호를 찾기를 하면 아이디와 핸드폰 번호를 맞혀서 일치한다는 번호만 있으면 재설정하는 update하기.
@@ -286,49 +284,8 @@ class FindAccountDialogFragment : DialogFragment() {
             }
         }
         // ------! 비밀번호 재설정 끝 !------
-
-//        val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-//        binding.FADSpinner.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domainList)
-//        binding.FADSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-//            @SuppressLint("SetTextI18n")
-//            override fun onItemSelected(
-//                parent: AdapterView<*>?,
-//                view: View?,
-//                position: Int,
-//                id: Long
-//            ) {
-//                binding.FADSpinner.getItemAtPosition(position).toString()
-//                if (position == 3) {
-//                    binding.etFADEmail.visibility = View.VISIBLE
-//                    binding.FADSpinner.visibility = View.GONE
-//                    binding.ivFADSpinner.setOnClickListener{
-//                        binding.FADSpinner.performClick()
-//                        binding.FADSpinner.visibility = View.VISIBLE
-//                    }
-//                } else {
-//                    binding.etFADEmail.visibility = View.GONE
-//                    binding.etFADEmail.setText("")
-//                    binding.FADSpinner.visibility = View.VISIBLE
-//                }
-//            }
-//            override fun onNothingSelected(parent: AdapterView<*>?) {}
-//        }
-        binding.tvFADTelecom.setOnClickListener {
-            showTelecomBottomSheetDialog(requireActivity())
-        } // -----! 통신사 선택 끝 !-----
-
     }
 
-    private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
-        val bottomsheetfragment = SignInBSDialogFragment()
-        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.OnTelecomSelectedListener {
-            override fun onTelecomSelected(telecom: String) {
-                binding.tvFADTelecom.text = telecom
-            }
-        })
-        val fragmentManager = context.supportFragmentManager
-        bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
-    }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)

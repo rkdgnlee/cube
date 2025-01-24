@@ -109,18 +109,19 @@ class TrendRVAdapter(private val fragment: Fragment,
                     val unit = currentItemRight[indexTriple.second].labels[indexTriple.third]
                     val score = calculateBoundedScore(abs(unit.rawData), unit.rawDataBound)
                     holder.pvs[index][1].progress = score
-                    holder.tvPoses[index].text = unit.rawDataName
+                    val title = unit.rawDataName
                         .replace("양", "")
                         .replace("과", "")
                         .replace("와", "")
                         .replace("에서", "-")
                         .replace("좌측 ", "")
                         .replace("우측 ", "")
+                    holder.tvPoses[index].text = title
 
                     setState(holder, index, splitState(score))
                     // 오른쪽 balloon comment init
                     val rightRawData = String.format("%.2f", unit.rawData) + if (unit.columnName.contains("angle")) "°" else "cm"
-                    val rightComment = "우측: $rightRawData\n${setLabels(unit)}"
+                    val rightComment = "우측: $rightRawData\n$title\n${setLabels(unit)}"
                     setBalloon(holder.cls[index], index, rightComment)
                 }
 

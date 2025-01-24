@@ -136,7 +136,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_1_sub200_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="아이디"
                     android:inputType="text"
@@ -204,7 +204,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/bckgnd_1_sub200_12"
+                android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="비밀번호"
                 android:inputType="textPassword"
@@ -256,7 +256,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/bckgnd_1_sub150_12"
+                android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="비밀번호 확인"
                 android:inputType="textPassword"
@@ -291,30 +291,47 @@
                 android:visibility="visible"
                 app:cornerRadius="12dp" />
 
-            <TextView
-                android:id="@+id/tvNameGuide"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="8dp"
-                android:text="이름"
-                android:textColor="@color/subColor800"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:visibility="visible" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvNameGuide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="4"
+                    android:text="이름"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvNameCondition"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/subColor800"
+                    android:textSize="16dp" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/etName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:layout_marginLeft="20dp"
-
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/bckgnd_1_sub150_12"
+                android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="이름을 입력해주세요"
                 android:inputType="text"
@@ -341,11 +358,10 @@
                     android:id="@+id/etEmailId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_1_sub150_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="이메일을 입력해주세요"
                     android:inputType="textEmailAddress"
@@ -372,7 +388,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_1_sub150_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:visibility="visible">
 
                     <ImageView
@@ -478,7 +494,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
-                        android:background="@drawable/bckgnd_1_sub150_12"
+                        android:background="@drawable/bckgnd_12_edit_text"
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
                         android:inputType="phone"
@@ -562,7 +578,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_1_sub150_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="인증 번호를 입력해주세요"
                     android:inputType="number"
