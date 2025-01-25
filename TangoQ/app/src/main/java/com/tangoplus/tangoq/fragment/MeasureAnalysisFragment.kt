@@ -4,9 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -20,7 +17,6 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -31,6 +27,7 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
@@ -40,6 +37,7 @@ import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
@@ -140,29 +138,34 @@ class MeasureAnalysisFragment : Fragment() {
                          }
                         setScreenRawData(avm.mafMeasureResult,  3)
                     }
-                    2 -> { // 후면 균형
+                    2 -> { // 후면 균형, 앉은 후면
                         binding.tvMPTitle.text = "후면 균형"
                         binding.tvMAPart1.text = "후면 측정"
-                        avm.mafMeasureResult.put(mr.optJSONObject(5))
+                        binding.tvMAPart2.text = "앉은 후면"
+                        avm.mafMeasureResult.apply {
+                            put(mr.optJSONObject(5))
+                            put(mr.optJSONObject(6))
+                        }
                         setDynamicUI(false)
-                        setStaticSplitUi(false)
+                        setStaticSplitUi(true)
                         lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 5, binding.ssivMA1, "") }
+                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA2, "") }
                         binding.flMA.visibility = View.GONE
                         setScreenRawData(avm.mafMeasureResult,  5)
                     }
-                    3 -> {
-                        binding.tvMPTitle.text = "앉은 후면"
-                        binding.tvMAPart1.text = "앉은 후면"
-                        avm.mafMeasureResult.put(mr.optJSONObject(6))
-                        setDynamicUI(false)
-                        setStaticSplitUi(false)
-                        binding.tvMPTitle.visibility = View.VISIBLE
-                        binding.flMA.visibility = View.GONE
-                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA1, "") }
-                        binding.ssivMA2.visibility = View.GONE
-                        setScreenRawData(avm.mafMeasureResult,  6)
-                    }
-                    4 -> { // 동적 균형
+//                    3 -> {
+//                        binding.tvMPTitle.text = "앉은 후면"
+//                        binding.tvMAPart1.text = "앉은 후면"
+//                        avm.mafMeasureResult.put(mr.optJSONObject(6))
+//                        setDynamicUI(false)
+//                        setStaticSplitUi(false)
+//                        binding.tvMPTitle.visibility = View.VISIBLE
+//                        binding.flMA.visibility = View.GONE
+//                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA1, "") }
+//                        binding.ssivMA2.visibility = View.GONE
+//                        setScreenRawData(avm.mafMeasureResult,  6)
+//                    }
+                    3 -> { // 동적 균형
                         binding.tvMPTitle.text = "동적 측정"
                         avm.mafMeasureResult.put(mr.optJSONArray(1))
                         setDynamicUI(true)
@@ -178,7 +181,6 @@ class MeasureAnalysisFragment : Fragment() {
                         cvRight = view.findViewById(R.id.cv_exo_right)
 
                         setClickListener()
-
                         pvm.setPlaybackPosition(0L)
                         pvm.setWindowIndex(0)
                         setPlayer()
@@ -384,10 +386,8 @@ class MeasureAnalysisFragment : Fragment() {
                         minResultData.add(Triple(descrption,"왼쪽: ${String.format("%.2f", leftValue)}cm", "오른쪽: ${String.format("%.2f", rightValue)}cm"))
                     }
                 }
-                set012Adapter(minResultData)
-            }
 
-            6 -> {
+                // 앉은 후면
                 val keyPairs = mapOf(
                     "back_sit_vertical_angle_nose_left_shoulder_right_shoulder" to "코-좌측 어깨-우측 어깨 기울기",
                     "back_sit_vertical_angle_left_shoulder_right_shoulder_nose" to "좌측 어깨-우측 어깨-코 기울기",
@@ -398,7 +398,7 @@ class MeasureAnalysisFragment : Fragment() {
                     "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
                 )
                 keyPairs.forEach { (key, description) ->
-                    val angleValue = measureResult.optJSONObject(0).optDouble(key)
+                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
 
                     if (!angleValue.isNaN() ) {
                         minResultData.add(Triple(description, "기울기: ${String.format("%.3f", angleValue)}°", null))
@@ -414,12 +414,14 @@ class MeasureAnalysisFragment : Fragment() {
                     )
                 }
                 anglePairs.forEach { (description, angleKey, distanceKey) ->
-                    val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
-                    val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
+                    val angleValue = measureResult.optJSONObject(1).optDouble(angleKey)
+                    val distanceValue = measureResult.optJSONObject(1).optDouble(distanceKey)
                     if (!angleValue.isNaN() && !distanceValue.isNaN()) {
                         minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
                     }
                 }
+
+
                 set012Adapter(minResultData)
             }
         }
@@ -448,6 +450,11 @@ class MeasureAnalysisFragment : Fragment() {
         val params = binding.ssivMA1.layoutParams as LayoutParams
 
         if (isSplit) {
+            // 화면 크기
+            binding.clMA.layoutParams = (binding.clMA.layoutParams as LayoutParams).apply {
+                matchConstraintPercentWidth = 1.0f
+            }
+
             binding.ssivMA2.visibility = View.VISIBLE
             binding.tvMAPart2.visibility = View.VISIBLE
             params.width = 0 // MATCH_CONSTRAINT
@@ -664,12 +671,21 @@ class MeasureAnalysisFragment : Fragment() {
         val screenWidth = displayMetrics.widthPixels
 
         val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
-//        Log.v("비율", "aspectRatio: $aspectRatio, video: ($videoWidth, $videoHeight), playerView: (${binding.pvMPPD.width}, ${binding.pvMPPD.height}), overlay: (${binding.ovMPPD.width}, ${binding.ovMPPD.height})")
+        Log.v("aspectRatio", "$aspectRatio")
         val adjustedHeight = (screenWidth * aspectRatio).toInt()
+
+        val resizingValue = if (isTablet(requireContext())) {
+            if (aspectRatio > 1) {
+                0.7f
+            } else { // 가로 (키오스크 일 때 원본 유지 )
+                1f
+            }
+        } else 1f // 태블릿이 아닐 때는 상관없음.
+
         // clMA의 크기 조절
         val params = binding.clMA.layoutParams
-        params.width = screenWidth
-        params.height = adjustedHeight
+        params.width = (screenWidth  * resizingValue).toInt()
+        params.height = (adjustedHeight * resizingValue).toInt()
         binding.clMA.layoutParams = params
 
         // llMARV를 clMA 아래에 위치시키기
@@ -680,8 +696,8 @@ class MeasureAnalysisFragment : Fragment() {
 
         // PlayerView 크기 조절 (필요한 경우)
         val playerParams = binding.pvMA.layoutParams
-        playerParams.width = screenWidth
-        playerParams.height = adjustedHeight
+        playerParams.width = (screenWidth  * resizingValue).toInt()
+        playerParams.height = (adjustedHeight * resizingValue).toInt()
         binding.pvMA.layoutParams = playerParams
 
         setScreenRawData(avm.mafMeasureResult, 1)
@@ -694,9 +710,7 @@ class MeasureAnalysisFragment : Fragment() {
         binding.rvMALeft.adapter = dynamicAdapter
     }
 
-    private fun setDataInModel(motherJa : JSONArray) {
 
-    }
 
 
     override fun onPause() {

@@ -6,6 +6,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import com.tangoplus.tangoq.function.PreferencesManager
 import java.io.File
 
@@ -13,7 +14,7 @@ class MyApplication : Application() {
     lateinit var preferencesManager: PreferencesManager
     private var startedActivities  = 0
     private var isAppInBackground = false
-
+    val fragmentStack = mutableListOf<Fragment>()
     override fun onCreate() {
         super.onCreate()
         // 전역 Context 초기화
@@ -56,6 +57,11 @@ class MyApplication : Application() {
             }
         })
     }
+
+    fun clearFragmentStack() {
+        fragmentStack.clear()
+    }
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var appContext: Context

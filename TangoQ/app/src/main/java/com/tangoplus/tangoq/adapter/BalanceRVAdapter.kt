@@ -30,7 +30,7 @@ class BalanceRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Re
     }
 
     override fun getItemCount(): Int {
-        return 5
+        return 4
     }
 
     @SuppressLint("SetTextI18n")
@@ -60,36 +60,6 @@ class BalanceRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Re
         }
     }
 
-    private fun transferDegree(degree: Pair<Int, Int>): String {
-        return when (degree.second) {
-            3 ->  "는(은) 올바른 균형입니다."
-            2 -> "에 미세한 불균형이 있습니다."
-            1 -> "에 치우침이 있습니다."
-            0 -> "에 약간의 불균형이 있습니다."
-            -1 -> "에 치우침이 있습니다."
-            -2 -> "이(가) 과도하게 치우쳐 있습니다."
-            else -> ""
-        }
-    }
-
-    private fun setColor(index: Int, tv1: TextView, iv: ImageView) {
-        when (index) {
-            2 -> {
-                tv1.setTextColor(Color.parseColor("#FF5449"))
-                iv.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_caution))
-            }
-            1 -> {
-                tv1.setTextColor(Color.parseColor("#FF981D"))
-                iv.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_warning))
-            }
-            0 -> {
-                tv1.setTextColor(Color.parseColor("#AEAEAE"))
-                iv.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_ball))
-
-            }
-        }
-    }
-
     private fun setItem(index: Int, iv: ImageView, tvName: TextView, tvExplain: TextView) {
         when (index) {
             0 -> {
@@ -108,11 +78,6 @@ class BalanceRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Re
                 tvExplain.text = "후면 선 자세에 대해 체크할 수 있습니다. 정면 자세에서 알 수 없었던 다리, 발 뒷꿈치의 위치를 통해 서 있는 자세를 확인하세요"
             }
             3 -> {
-                iv.setImageResource(R.drawable.drawable_sit_back)
-                tvName.text = "앉은 후면"
-                tvExplain.text = "의자에 앉은 자세를 체크할 수 있습니다. 후면 선 자세와 비교해서 골반 틀어짐, 어깨 쏠림 등을 체크해 보세요"
-            }
-            4 -> {
                 iv.setImageResource(R.drawable.drawable_dynamic)
                 tvName.text = "동적 균형"
                 tvExplain.text = "오버헤드 스쿼트 자세를 통해 손끝, 골반, 무릎의 궤적에서 흔들림을 체크해 보세요"

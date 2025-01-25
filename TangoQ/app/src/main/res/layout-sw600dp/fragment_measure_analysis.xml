@@ -48,7 +48,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.7">
 
                 <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
                     android:id="@+id/ssivMA1"
@@ -126,6 +127,55 @@
                         app:use_controller="true">
 
                     </com.google.android.exoplayer2.ui.PlayerView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_exo_left"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginTop="40dp"
+                        android:visibility="gone"
+                        app:cardBackgroundColor="#41000000"
+                        app:cardCornerRadius="70dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/textView35"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#00FFFFFF"
+                            android:gravity="center"
+                            android:text="L"
+                            android:textColor="@color/whiteText"
+                            android:textSize="28dp" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_exo_right"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginEnd="40dp"
+                        android:visibility="gone"
+                        app:cardBackgroundColor="#41000000"
+                        app:cardCornerRadius="70dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/textView122"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#00FFFFFF"
+                            android:gravity="center"
+                            android:text="R"
+                            android:textColor="@color/whiteText"
+                            android:textSize="28dp" />
+                    </androidx.cardview.widget.CardView>
                 </FrameLayout>
 
                 <com.tangoplus.tangoq.mediapipe.OverlayView

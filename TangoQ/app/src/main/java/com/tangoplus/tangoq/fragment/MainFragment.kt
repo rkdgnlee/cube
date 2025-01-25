@@ -75,7 +75,7 @@ class MainFragment : Fragment() {
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        (requireActivity() as MainActivity).logBackStack()
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
         prefsManager = PreferencesManager(requireContext())

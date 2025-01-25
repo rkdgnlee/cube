@@ -89,126 +89,149 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvEProgress"
-                android:layout_width="0dp"
-                android:layout_height="128dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="40dp"
-                android:visibility="visible"
-                app:cardBackgroundColor="#EFEFEF"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clEProgress1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView29">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clEProgress"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/textView44"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="30dp"
+                    android:text="최근 진행한 운동"
+                    android:textColor="@color/subColor800"
+                    android:textSize="28dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView31"
-                        android:layout_width="128dp"
-                        android:layout_height="0dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvEProgress"
+                    android:layout_width="0dp"
+                    android:layout_height="128dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="40dp"
+                    android:visibility="visible"
+                    app:cardBackgroundColor="#EFEFEF"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView44">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clEProgress2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView31"
+                            android:layout_width="128dp"
+                            android:layout_height="0dp"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="0dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/ivEThumbnail"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                app:srcCompat="@color/black" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:id="@+id/tvEName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/gradient_sub_180"
+                            android:paddingStart="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
+                            android:singleLine="true"
+                            android:text="어깨 가슴 프로그램"
+                            android:textSize="20dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/cardView31"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/cardView31"
+                            app:layout_constraintTop_toTopOf="@+id/cardView31"
+                            app:layout_constraintVertical_bias="0.15" />
+
+                        <TextView
+                            android:id="@+id/tvETime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="___"
+                            android:textColor="@color/subColor800"
+                            android:textSize="14dp"
+                            app:layout_constraintEnd_toStartOf="@+id/tvEStage"
+                            app:layout_constraintHorizontal_bias="0.2"
+                            app:layout_constraintStart_toEndOf="@+id/cardView31"
+                            app:layout_constraintTop_toBottomOf="@+id/tvEName" />
 
                         <ImageView
-                            android:id="@+id/ivEThumbnail"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            app:srcCompat="@color/black" />
-                    </androidx.cardview.widget.CardView>
+                            android:id="@+id/imageView15"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:src="@drawable/icon_rv_summary_time"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvETime"
+                            app:layout_constraintEnd_toStartOf="@+id/tvETime"
+                            app:layout_constraintTop_toTopOf="@+id/tvETime" />
 
-                    <TextView
-                        android:id="@+id/tvEName"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gradient_sub_180"
-                        android:paddingStart="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:singleLine="true"
-                        android:text="어깨 가슴 프로그램"
-                        android:textSize="20dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/cardView31"
-                        tools:layout_editor_absoluteY="11dp" />
+                        <ImageView
+                            android:id="@+id/ivEStage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvEStage"
+                            app:layout_constraintEnd_toStartOf="@+id/tvEStage"
+                            app:layout_constraintTop_toTopOf="@+id/tvEStage"
+                            app:srcCompat="@drawable/icon_stage_1" />
 
-                    <TextView
-                        android:id="@+id/tvETime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="___"
-                        android:textColor="@color/subColor800"
-                        android:textSize="14dp"
-                        app:layout_constraintEnd_toStartOf="@+id/tvEStage"
-                        app:layout_constraintHorizontal_bias="0.2"
-                        app:layout_constraintStart_toEndOf="@+id/cardView31"
-                        app:layout_constraintTop_toBottomOf="@+id/tvEName" />
+                        <TextView
+                            android:id="@+id/tvEStage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="___"
+                            android:textColor="@color/subColor800"
+                            android:textSize="14dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.6"
+                            app:layout_constraintStart_toEndOf="@+id/cardView31"
+                            app:layout_constraintTop_toBottomOf="@+id/tvEName" />
 
-                    <ImageView
-                        android:id="@+id/imageView15"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:src="@drawable/icon_rv_summary_time"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvETime"
-                        app:layout_constraintEnd_toStartOf="@+id/tvETime"
-                        app:layout_constraintTop_toTopOf="@+id/tvETime" />
-
-                    <ImageView
-                        android:id="@+id/ivEStage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvEStage"
-                        app:layout_constraintEnd_toStartOf="@+id/tvEStage"
-                        app:layout_constraintTop_toTopOf="@+id/tvEStage"
-                        app:srcCompat="@drawable/icon_stage_1" />
-
-                    <TextView
-                        android:id="@+id/tvEStage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="___"
-                        android:textColor="@color/subColor800"
-                        android:textSize="14dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.6"
-                        app:layout_constraintStart_toEndOf="@+id/cardView31"
-                        app:layout_constraintTop_toBottomOf="@+id/tvEName" />
-
-                    <com.skydoves.progressview.ProgressView
-                        android:id="@+id/hpvE"
-                        android:layout_width="0dp"
-                        android:layout_height="12dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/cardView31"
-                        app:layout_constraintTop_toBottomOf="@+id/tvETime"
-                        app:progressView_colorBackground="@color/subColor150"
-                        app:progressView_colorProgress="@color/thirdColor" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+                        <com.skydoves.progressview.ProgressView
+                            android:id="@+id/hpvE"
+                            android:layout_width="0dp"
+                            android:layout_height="12dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/cardView31"
+                            app:layout_constraintTop_toBottomOf="@+id/tvETime"
+                            app:progressView_colorBackground="@color/subColor150"
+                            app:progressView_colorProgress="@color/thirdColor" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:background="@drawable/bckgnd_rectangle_20"
                 android:backgroundTint="@color/secondContainerColor"
@@ -219,7 +242,7 @@
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cvEProgress">
+                app:layout_constraintTop_toBottomOf="@+id/clEProgress1">
 
                 <ImageView
                     android:id="@+id/imageView26"

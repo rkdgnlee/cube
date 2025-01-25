@@ -172,45 +172,62 @@ object  NetworkExercise {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
+                    Log.v("getExerciseHistory", "responseBody: $responseBody")
                     val results = mutableListOf<ExerciseHistoryVO>()
-                    val bodyJa = responseBody?.let { JSONArray(it) }
+                    if (responseBody.isNullOrEmpty()) {
+                        return@use results
+                    }
 
-                    if (bodyJa != null) {
-                        for (i in 0 until  bodyJa.length()) {
-                            val historyUnits =  bodyJa.getJSONObject(i)
+                    // JSON 객체로 오는 경우 처리 (에러 상태로 판단)
+                    if (responseBody.startsWith("{")) {
+                        val jsonObject = JSONObject(responseBody)
+                        val status = jsonObject.optInt("status", 0)
+                        val message = jsonObject.optString("message", "Unknown error")
+
+                        // status가 404일 경우 메시지 로그를 남기고 빈 리스트 반환
+                        if (status == 404) {
+                            Log.w("getExerciseHistory", "No progress: $message")
+                            return@use results
+                        }
+                    }
+                    if (responseBody.trim().startsWith("[")) {
+                        val bodyJa = JSONArray(responseBody)
+                        for (i in 0 until bodyJa.length()) {
+                            val historyUnits = bodyJa.getJSONObject(i)
                             val exerciseHistoryVO = ExerciseHistoryVO(
                                 evpSn = historyUnits.optInt("evp_sn"),
-                                userSn= historyUnits.optInt("user_sn"),
-                                exerciseId= historyUnits.optInt("exercise_id"),
+                                userSn = historyUnits.optInt("user_sn"),
+                                exerciseId = historyUnits.optInt("exercise_id"),
                                 exerciseName = historyUnits.optString("exercise_name"),
-                                duration= historyUnits.optInt("duration"),
-                                progress= historyUnits.optInt("progress"),
-                                exerciseTypeId= historyUnits.optInt("exercise_type_id"),
-                                exerciseCategoryId= historyUnits.optInt("exercise_category_id"),
-                                completed= historyUnits.optInt("completed"),
-                                registeredAt= historyUnits.optString("registered_at"),
-                                updatedAt= historyUnits.optString("updated_at"),
+                                duration = historyUnits.optInt("duration"),
+                                progress = historyUnits.optInt("progress"),
+                                exerciseTypeId = historyUnits.optInt("exercise_type_id"),
+                                exerciseCategoryId = historyUnits.optInt("exercise_category_id"),
+                                completed = historyUnits.optInt("completed"),
+                                registeredAt = historyUnits.optString("registered_at"),
+                                updatedAt = historyUnits.optString("updated_at"),
                             )
                             results.add(exerciseHistoryVO)
                         }
+                        Log.v("getExerciseHistory", "results: $results")
+                        return@use results.toList()
                     }
-                    Log.v("getExerciseHistory", "results: $results")
                     return@use results.toList()
                 }
             } catch (e: IndexOutOfBoundsException) {
-                Log.e("ExerciseHistoryError", "IndexOutOfBounds: ${e.message}")
+                Log.e("ExerciseHistoryError", "GETIndexOutOfBounds: ${e.message}")
                 null
             } catch (e: IllegalArgumentException) {
-                Log.e("ExerciseHistoryError", "IllegalArgument: ${e.message}")
+                Log.e("ExerciseHistoryError", "GETIllegalArgument: ${e.message}")
                 null
             } catch (e: IllegalStateException) {
-                Log.e("ExerciseHistoryError", "IllegalState: ${e.message}")
+                Log.e("ExerciseHistoryError", "GETIllegalState: ${e.message}")
                 null
             }catch (e: NullPointerException) {
-                Log.e("ExerciseHistoryError", "NullPointer: ${e.message}")
+                Log.e("ExerciseHistoryError", "GETNullPointer: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
-                Log.e("ExerciseHistoryError", "Exception: ${e.message}")
+                Log.e("ExerciseHistoryError", "GETException: ${e.printStackTrace()}")
                 null
             }
         }

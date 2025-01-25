@@ -271,11 +271,17 @@ class MainPartPoseDialogFragment : DialogFragment() {
         val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
 //        Log.v("비율", "aspectRatio: $aspectRatio, video: ($videoWidth, $videoHeight), playerView: (${binding.pvMPPD.width}, ${binding.pvMPPD.height}), overlay: (${binding.ovMPPD.width}, ${binding.ovMPPD.height})")
         val adjustedHeight = (screenWidth * aspectRatio).toInt()
-
+        val resizingValue = if (isTablet(requireContext())) {
+            if (aspectRatio > 1) {
+                0.7f
+            } else { // 가로 (키오스크 일 때 원본 유지 )
+                1f
+            }
+        } else 1f
         // clMA의 크기 조절
         val params = binding.clMPPD.layoutParams
-        params.width = screenWidth
-        params.height = adjustedHeight
+        params.width = (screenWidth  * resizingValue).toInt()
+        params.height = (adjustedHeight * resizingValue).toInt()
         binding.clMPPD.layoutParams = params
 
         // llMARV를 clMA 아래에 위치시키기
@@ -286,8 +292,8 @@ class MainPartPoseDialogFragment : DialogFragment() {
 
         // PlayerView 크기 조절 (필요한 경우)
         val playerParams = binding.pvMPPD.layoutParams
-        playerParams.width = screenWidth
-        playerParams.height = adjustedHeight
+        playerParams.width = (screenWidth  * resizingValue).toInt()
+        playerParams.height = (adjustedHeight * resizingValue).toInt()
         binding.pvMPPD.layoutParams = playerParams
 
     }

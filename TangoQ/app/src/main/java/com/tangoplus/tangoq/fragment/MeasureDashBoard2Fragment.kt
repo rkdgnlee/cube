@@ -30,10 +30,8 @@ import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProgressHistoryRVAdapter
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
-import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
-import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
 import com.tangoplus.tangoq.api.NetworkProgress.getDailyProgress
 import com.tangoplus.tangoq.db.Singleton_t_progress
@@ -41,13 +39,11 @@ import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle

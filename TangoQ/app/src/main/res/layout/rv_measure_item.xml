@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clMI"
     android:layout_width="match_parent"
-    android:layout_height="76dp"
+    android:layout_height="82dp"
     android:background="@drawable/effect_ibtn">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout26"
-        android:layout_width="60dp"
+        android:layout_width="64dp"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -54,7 +54,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView48"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout26"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.333" />
 
     <TextView
         android:id="@+id/textView48"
@@ -64,10 +65,23 @@
         android:drawableEnd="@drawable/icon_arrow_right"
         android:drawableTint="@color/thirdWhiteColor"
         android:gravity="center_vertical"
-        android:text="상세보기"
         android:textColor="@color/thirdWhiteColor"
         android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvMISub"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="-8dp"
+        android:singleLine="true"
+        android:textColor="@color/subColor700"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toStartOf="@+id/textView48"
+        app:layout_constraintStart_toEndOf="@+id/constraintLayout26"
+        app:layout_constraintTop_toBottomOf="@+id/tvMIName" />
 </androidx.constraintlayout.widget.ConstraintLayout>

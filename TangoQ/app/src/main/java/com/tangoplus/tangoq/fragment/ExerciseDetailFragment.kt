@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseCategoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter

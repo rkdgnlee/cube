@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.adapter.RecommendationRVAdapter
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel

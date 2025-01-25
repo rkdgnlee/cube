@@ -100,7 +100,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
                         params.horizontalBias = 0.5f
                         binding.ivMD1Position.layoutParams = params
-                        binding.tvMD1More1.isEnabled = false
+                        binding.btnMD11.isEnabled = false
 
                     }
                 } catch (e: ClassNotFoundException) {
@@ -144,21 +144,19 @@ class MeasureDashBoard1Fragment : Fragment() {
             startActivity(Intent.createChooser(intent, "측정 결과"))
         }
 
-        // ------# 자세히 보기 #------
-        binding.tvMD1More1.setOnClickListener {
-            val dialog = MeasureTrendDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
-        }
 
-        binding.btnMD1More2.setOnClickListener{
+        binding.btnMD11.setOnClickListener{
             requireActivity().supportFragmentManager.beginTransaction().apply {
-//                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                 replace(R.id.flMain, MeasureHistoryFragment())
-                addToBackStack(null)
+                addToBackStack("MeasureHistoryFragment")
                 commit()
             }
         }
-        // ------ ! 자세히 보기 끝 !------
+        // ------# 자세히 보기 #------
+        binding.btnMD12.setOnClickListener {
+            val dialog = MeasureTrendDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
+        }
 
         // ------! 꺾은선 그래프 시작 !------
         val lineChart = binding.lcMD1

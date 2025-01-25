@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.IntroActivity
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
@@ -47,7 +48,7 @@ class WithdrawalFragment : Fragment() {
 
 
         // ------# 화면 확장 및 세팅 & 싱글턴 초기화 #------
-
+        (activity as MainActivity).logBackStack()
         binding.btnWd.isEnabled = false
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())

@@ -21,14 +21,163 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
+            <TextView
+                android:id="@+id/tvMD1Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="사용자님의 기록"
+                android:textColor="@color/subColor800"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout25"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bckgnd_1_sub150_20"
+                android:padding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMD1Name">
+
+                <TextView
+                    android:id="@+id/tvMD1TotalScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:text="_"
+                    android:textColor="@color/thirdColor"
+                    android:textSize="36dp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/cardView7"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView7"
+                    android:layout_width="3dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="-10dp"
+                    android:layout_marginBottom="-10dp"
+                    app:cardBackgroundColor="@color/subColor100"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvMD1TotalScore"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.175"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvMD1TotalScore" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clMD1PredictDicease"
+                    android:layout_width="0dp"
+                    android:layout_height="64dp"
+                    android:layout_marginStart="30dp"
+                    android:background="@drawable/bckgnd_rectangle_8"
+                    android:backgroundTint="@color/secondContainerColor"
+                    app:layout_constraintBottom_toBottomOf="@+id/cardView7"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardView7"
+                    app:layout_constraintTop_toTopOf="@+id/cardView7">
+
+                    <TextView
+                        android:id="@+id/tvMD1Badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text=" 측정 기록"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toTopOf="@+id/tvMD1MeasureHistory"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/ivMD1Detail"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/secondContainerColor"
+                        android:padding="4dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_arrow_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvMD1MeasureHistory"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bckgnd_rectangle_12"
+                        android:backgroundTint="@color/secondContainerColor"
+                        android:text="최근 측정 기록 -     .  .  "
+                        android:textColor="@color/subColor800"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnMD11"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/secondContainerColor"
+                    android:stateListAnimator="@null"
+                    android:text="+ 기록 더 보기"
+                    android:textColor="@color/secondWhiteColor"
+                    android:textSize="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/clMD1PredictDicease" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/textView66"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="기간 요약"
+                android:textColor="@color/subColor800"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout25" />
+
+            <ImageButton
+                android:id="@+id/btnMD1Share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:contentDescription="shareGraph"
+                android:padding="4dp"
+                android:src="@drawable/icon_share"
+                app:layout_constraintBottom_toBottomOf="@+id/textView66"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView66" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ClMD1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="80dp"
+                android:layout_marginBottom="100dp"
                 android:background="@drawable/bckgnd_2_main_20"
                 android:padding="12dp"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -126,15 +275,15 @@
                 </com.github.mikephil.charting.charts.LineChart>
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnMD1More2"
+                    android:id="@+id/btnMD12"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/effect_ibtn_12dp"
                     android:backgroundTint="@color/subColor100"
                     android:stateListAnimator="@null"
-                    android:text="+ 기록 더보기"
-                    android:textColor="@color/subColor400"
+                    android:text="기록 비교하기"
+                    android:textColor="@color/subColor700"
                     android:textSize="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -169,7 +318,7 @@
                     android:paddingEnd="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lcMD1">
+                    app:layout_constraintTop_toBottomOf="@+id/recyclerView">
 
                     <View
                         android:id="@+id/vMD1Percent"
@@ -292,161 +441,15 @@
                         android:textColor="@color/subColor400" />
                 </LinearLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout25"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bckgnd_1_sub150_20"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMD1Name">
-
-                <TextView
-                    android:id="@+id/tvMD1TotalScore"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="_"
-                    android:textColor="@color/thirdColor"
-                    android:textSize="36dp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/cardView7"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView7"
-                    android:layout_width="3dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="@color/subColor100"
-                    app:cardElevation="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.2"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/clMD1PredictDicease"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/bckgnd_rectangle_8"
-                    android:backgroundTint="@color/secondContainerColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/cardView7"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/tvMD1Badge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:text=" 측정 기록"
-                        android:textColor="@color/black"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toTopOf="@+id/tvMD1MeasureHistory"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/ivMD1Detail"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/effect_ibtn_12dp"
-                        android:backgroundTint="@color/secondContainerColor"
-                        android:padding="4dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/icon_arrow_right"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tvMD1MeasureHistory"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="@drawable/bckgnd_rectangle_12"
-                        android:backgroundTint="@color/secondContainerColor"
-                        android:text="최근 측정 기록 -     .  .  "
-                        android:textColor="@color/subColor800"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cvMD1" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <TextView
-                android:id="@+id/textView66"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="기간 요약"
-                android:textColor="@color/subColor800"
-                android:textSize="24dp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout25" />
-
-            <TextView
-                android:id="@+id/tvMD1Name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="사용자님의 기록"
-                android:textColor="@color/subColor800"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvMD1More1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bckgnd_rectangle_20"
-                android:backgroundTint="@color/secondContainerColor"
-                android:drawableLeft="@drawable/icon_plus_small"
-                android:drawablePadding="4dp"
-                android:drawableTint="@color/secondWhiteColor"
-                android:paddingStart="10dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="8dp"
-                android:text="기록 비교하기"
-                android:textColor="@color/secondWhiteColor"
-                android:textSize="14dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvMD1Name"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvMD1Name" />
-
-            <ImageButton
-                android:id="@+id/btnMD1Share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:contentDescription="shareGraph"
-                android:padding="4dp"
-                android:src="@drawable/icon_share"
-                app:layout_constraintBottom_toBottomOf="@+id/textView66"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView66" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
