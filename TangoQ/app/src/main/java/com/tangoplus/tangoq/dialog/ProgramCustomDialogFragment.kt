@@ -105,7 +105,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         programSn = arguments?.getInt(ARG_PROGRAM_SN) ?: -1
         recommendationSn = arguments?.getInt(ARG_RECOMMENDATION_SN) ?: -1
         ssm = SaveSingletonManager(requireContext(), requireActivity())
-
+        val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
+        dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
         isResume = false
         lifecycleScope.launch {
             // 프로그램에 들어가는 운동
@@ -372,7 +373,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 binding.rvPCD.layoutManager = layoutManager2
                 adapter2?.notifyDataSetChanged()
             }
-
         }
     }
 

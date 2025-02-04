@@ -34,7 +34,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
-import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainPartPoseDialogBinding
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
@@ -55,7 +54,6 @@ class MainPartPoseDialogFragment : DialogFragment() {
     private val mvm : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
     private val pvm : PlayViewModel by activityViewModels()
-    private var count = false
     private lateinit var dynamicJa: JSONArray
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoUrl = ""
@@ -96,7 +94,7 @@ class MainPartPoseDialogFragment : DialogFragment() {
         val seq = arguments?.getInt(ARG_SEQ)
         if (seq != null) {
             viewLifecycleOwner.lifecycleScope.launch {
-                avm.currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
+//                avm.currentAnalysis = avm.relatedAnalyzes.find { it.seq == avm.selectedSeq }
                 pvm.isResume = false
                 when (seq) {
                     1 -> {
@@ -132,54 +130,54 @@ class MainPartPoseDialogFragment : DialogFragment() {
                 }
             }
         }
-        binding.tvMPPDTitle.text = "${avm.selectedPart} - ${avm.setSeqString(avm.currentAnalysis?.seq)}"
-        binding.tvMPPDSummary.text = avm.currentAnalysis?.summary
-        measureResult = mvm.selectedMeasure?.measureResult
-        avm.currentAnalysis?.isNormal?.let { setState(it) }
-        if (avm.currentAnalysis != null) {
-            when (avm.currentAnalysis?.seq) {
-                1 -> {
-                    // -----# 동적 측정 setUI #------
-                    binding.tvMPPDSummary.textSize = if (isTablet(requireContext())) 17f else 15f
-                    val dynamicString = "스쿼트 1회 동작에서 좌우 부위의 궤적을 비교합니다.\n하단에 그려진 궤적이 대칭을 이룰 수록 정상범위입니다.\n\n이동 안정성의 불균형이 생겼을 때 손은 어깨, 골반은 엉덩이, 무릎은 허벅지로 각 관절주변에 연결된 근육을 풀어주어야 합니다."
-                    binding.tvMPPDSummary.text = dynamicString
-                    binding.tvMPPDSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.secondContainerColor))
-                    binding.tvMPPDSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
-                    binding.ivMPPDIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.thirdColor))
-
-                    val ja = measureResult?.optJSONArray(1)
-                    if (ja != null) {
-                        avm.dynamicJa = ja
-                        lifecycleScope.launch {
-                            val connections = listOf(
-                                15, 16, 23, 24, 25, 26
-                            )
-                            val coordinates = extractVideoCoordinates(avm.dynamicJa)
-                            val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
-
-                            for (connection in connections) {
-                                val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
-                                for (element in coordinates) {
-                                    filteredCoordinate.add(element[connection])
-                                }
-                                filteredCoordinates.add(filteredCoordinate)
-                            }
-                            setVideoAdapter(filteredCoordinates)
-                        }
-                    }
-                }
-                else -> {
-                    binding.tvMPPDSummary.textSize = if (isTablet(requireContext())) 18f else 15f
-                    setAdapter()
-                    val labels = avm.currentAnalysis?.labels
-                    if (labels != null) {
-                        for (uni in labels) {
-                            uni.summary = setLabels(uni)
-                        }
-                    }
-                }
-            }
-        }
+//        binding.tvMPPDTitle.text = "${avm.selectedPart} - ${avm.setSeqString(avm.currentAnalysis?.seq)}"
+//        binding.tvMPPDSummary.text = avm.currentAnalysis?.summary
+//        measureResult = mvm.selectedMeasure?.measureResult
+//        avm.currentAnalysis?.isNormal?.let { setState(it) }
+//        if (avm.currentAnalysis != null) {
+//            when (avm.currentAnalysis?.seq) {
+//                1 -> {
+//                    // -----# 동적 측정 setUI #------
+//                    binding.tvMPPDSummary.textSize = if (isTablet(requireContext())) 17f else 15f
+//                    val dynamicString = "스쿼트 1회 동작에서 좌우 부위의 궤적을 비교합니다.\n하단에 그려진 궤적이 대칭을 이룰 수록 정상범위입니다.\n\n이동 안정성의 불균형이 생겼을 때 손은 어깨, 골반은 엉덩이, 무릎은 허벅지로 각 관절주변에 연결된 근육을 풀어주어야 합니다."
+//                    binding.tvMPPDSummary.text = dynamicString
+//                    binding.tvMPPDSummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.secondContainerColor))
+//                    binding.tvMPPDSummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
+//                    binding.ivMPPDIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.thirdColor))
+//
+//                    val ja = measureResult?.optJSONArray(1)
+//                    if (ja != null) {
+//                        avm.dynamicJa = ja
+//                        lifecycleScope.launch {
+//                            val connections = listOf(
+//                                15, 16, 23, 24, 25, 26
+//                            )
+//                            val coordinates = extractVideoCoordinates(avm.dynamicJa)
+//                            val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
+//
+//                            for (connection in connections) {
+//                                val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
+//                                for (element in coordinates) {
+//                                    filteredCoordinate.add(element[connection])
+//                                }
+//                                filteredCoordinates.add(filteredCoordinate)
+//                            }
+//                            setVideoAdapter(filteredCoordinates)
+//                        }
+//                    }
+//                }
+//                else -> {
+//                    binding.tvMPPDSummary.textSize = if (isTablet(requireContext())) 18f else 15f
+//                    setAdapter()
+//                    val labels = avm.currentAnalysis?.labels
+//                    if (labels != null) {
+//                        for (uni in labels) {
+//                            uni.summary = setLabels(uni)
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

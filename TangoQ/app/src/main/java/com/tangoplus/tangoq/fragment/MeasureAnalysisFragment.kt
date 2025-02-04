@@ -27,32 +27,43 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.tangoplus.tangoq.MainActivity
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.adapter.AnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
+import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
 import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
+import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
+import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.AnalysisVO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 
 class MeasureAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMeasureAnalysisBinding
-    private val viewModel : MeasureViewModel by activityViewModels()
+    private val mvm : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
     private val pvm : PlayViewModel by activityViewModels()
     private lateinit var mr : JSONArray
-    private var index = -1
+    private var painPart = ""
 
     private var updateUI = false
     // 영상재생
@@ -70,13 +81,13 @@ class MeasureAnalysisFragment : Fragment() {
     private var exo10: ImageButton? = null
     private var cvLeft : CardView? = null
     private var cvRight : CardView? = null
-
+    private lateinit var dynamicJa: JSONArray
     companion object {
-        private const val ARG_INDEX = "index_analysis"
-        fun newInstance(indexx: Int): MeasureAnalysisFragment {
+        private const val ARG_PART = "painParts"
+        fun newInstance(painPart: String): MeasureAnalysisFragment {
             val fragment = MeasureAnalysisFragment()
             val args = Bundle()
-            args.putInt(ARG_INDEX, indexx)
+            args.putString(ARG_PART, painPart)
             fragment.arguments = args
             return fragment
         }
@@ -98,93 +109,120 @@ class MeasureAnalysisFragment : Fragment() {
         biometricManager = BiometricManager(this)
         biometricManager.authenticate(
             onSuccess = {
-                index = arguments?.getInt(ARG_INDEX) ?: -1
-                mr = viewModel.selectedMeasure?.measureResult ?: JSONArray()
+                painPart = arguments?.getString(ARG_PART) ?: ""
+                mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
                 Log.v("현재측정2", "$mr")
                 avm.mafMeasureResult = JSONArray()
-                Log.v("현재측정", viewModel.selectedMeasure?.regDate.toString())
+                Log.v("현재측정", mvm.selectedMeasure?.regDate.toString())
                 pvm.videoUrl = null
                 simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
                 // ------# 1차 필터링 (균형별) #------
-                // 0, 1, 2, 3으로 3가지.
-                when (index) {
-                    0 -> { // 정면 균형
-                        binding.tvMPTitle.text = "정면 균형"
-                        binding.tvMAPart1.text = "정면 측정"
-                        binding.tvMAPart2.text = "팔꿉 측정"
-                        avm.mafMeasureResult.put(mr.optJSONObject(0))
-                        avm.mafMeasureResult.put(mr.optJSONObject(2))
-                        setDynamicUI(false)
-                        setStaticSplitUi(true)
-                        binding.flMA.visibility = View.GONE
-                        lifecycleScope.launch {
-                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 0, binding.ssivMA1, "")
-                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 2, binding.ssivMA2, "")
-                        }
-                        setScreenRawData(avm.mafMeasureResult, 0)
-                    }
-                    1 -> { // 측면 균형
-                        binding.tvMPTitle.text = "측면 균형"
-                        binding.tvMAPart1.text = "좌측 측정"
-                        binding.tvMAPart2.text = "우측 측정"
-                        avm.mafMeasureResult.put(mr.optJSONObject(3))
-                        avm.mafMeasureResult.put(mr.optJSONObject(4))
-                        setDynamicUI(false)
-                        setStaticSplitUi(true)
-                        lifecycleScope.launch {
-                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 3, binding.ssivMA1, "")
-                            setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 4, binding.ssivMA2, "")
-                         }
-                        setScreenRawData(avm.mafMeasureResult,  3)
-                    }
-                    2 -> { // 후면 균형, 앉은 후면
-                        binding.tvMPTitle.text = "후면 균형"
-                        binding.tvMAPart1.text = "후면 측정"
-                        binding.tvMAPart2.text = "앉은 후면"
-                        avm.mafMeasureResult.apply {
-                            put(mr.optJSONObject(5))
-                            put(mr.optJSONObject(6))
-                        }
-                        setDynamicUI(false)
-                        setStaticSplitUi(true)
-                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 5, binding.ssivMA1, "") }
-                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA2, "") }
-                        binding.flMA.visibility = View.GONE
-                        setScreenRawData(avm.mafMeasureResult,  5)
-                    }
-//                    3 -> {
-//                        binding.tvMPTitle.text = "앉은 후면"
-//                        binding.tvMAPart1.text = "앉은 후면"
-//                        avm.mafMeasureResult.put(mr.optJSONObject(6))
-//                        setDynamicUI(false)
-//                        setStaticSplitUi(false)
-//                        binding.tvMPTitle.visibility = View.VISIBLE
-//                        binding.flMA.visibility = View.GONE
-//                        lifecycleScope.launch { setImage(this@MeasureAnalysisFragment, viewModel.selectedMeasure, 6, binding.ssivMA1, "") }
-//                        binding.ssivMA2.visibility = View.GONE
-//                        setScreenRawData(avm.mafMeasureResult,  6)
-//                    }
-                    3 -> { // 동적 균형
-                        binding.tvMPTitle.text = "동적 측정"
-                        avm.mafMeasureResult.put(mr.optJSONArray(1))
-                        setDynamicUI(true)
-                        exoPlay = view.findViewById(R.id.btnPlay)
-                        exoPause = view.findViewById(R.id.btnPause)
-                        llSpeed = view.findViewById(R.id.llSpeed)
-                        btnSpeed = view.findViewById(R.id.btnSpeed)
+                val seqs = matchedUris[painPart]
+                val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
 
-                        exo05 = view.findViewById(R.id.btn05)
-                        exo075 = view.findViewById(R.id.btn075)
-                        exo10 = view.findViewById(R.id.btn10)
-                        cvLeft = view.findViewById(R.id.cv_exo_left)
-                        cvRight = view.findViewById(R.id.cv_exo_right)
-
-                        setClickListener()
-                        pvm.setPlaybackPosition(0L)
-                        pvm.setWindowIndex(0)
-                        setPlayer()
+                seqs?.forEach { seq ->
+                    val analyses = getAnalysisUnits(requireContext(), painPart, seq, mr)
+                    val indexx = when (seq) {
+                        0, 2 -> 0
+                        3, 4 -> 1
+                        5, 6 -> 2
+                        1 -> 3
+                        else -> 0
                     }
+
+                    if (!groupedAnalyses.containsKey(indexx)) {
+                        groupedAnalyses[indexx] = mutableListOf()
+                    }
+                    groupedAnalyses[indexx]?.add(analyses)
+                }
+
+                val adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
+                    AnalysisVO(
+                        indexx = indexx,
+                        labels = analysesList.flatten().toMutableList()
+                    )
+                }.sortedBy { it.indexx }
+                Log.v("어댑터들어가는Analysis", "${adapterAnalysises}")
+
+                //
+                binding.tvMATitle.text = "$painPart 자세히 보기"
+                binding.tlMA.addOnTabSelectedListener(object: OnTabSelectedListener{
+                    override fun onTabSelected(tab: TabLayout.Tab?) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            when (tab?.position) {
+                                0 -> {
+                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 0, binding.ssivAI1, "mainPart")
+                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 2, binding.ssivAI2, "mainPart")
+                                    binding.tvAIPart1.text = "정면 측정"
+                                    binding.tvAIPart2.text = "팔꿉 측정"
+                                }
+                                1 -> {
+
+                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 3, binding.ssivAI1, "mainPart")
+                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 4, binding.ssivAI2, "mainPart")
+                                    binding.tvAIPart1.text = "좌측 측정"
+                                    binding.tvAIPart2.text = "우측 측정"
+                                }
+                                2 -> {
+
+                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 5, binding.ssivAI1, "mainPart")
+                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 6, binding.ssivAI2, "mainPart")
+                                    binding.tvAIPart1.text = "후면 측정"
+                                    binding.tvAIPart2.text = "앉은 후면"
+                                }
+                                3 -> {
+                                    dynamicJa = mvm.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
+                                    withContext(Dispatchers.Main) {
+
+                                        pvm.setPlaybackPosition(0L)
+                                        pvm.setWindowIndex(0)
+
+                                        exoPlay = view.findViewById(R.id.btnPlay)
+                                        exoPause = view.findViewById(R.id.btnPause)
+                                        llSpeed = view.findViewById(R.id.llSpeed)
+                                        btnSpeed = view.findViewById(R.id.btnSpeed)
+
+                                        exo05 = view.findViewById(R.id.btn05)
+                                        exo075 = view.findViewById(R.id.btn075)
+                                        exo10 = view.findViewById(R.id.btn10)
+
+
+                                        setClickListener()
+                                        setPlayer()
+                                    }
+                                }
+                            }
+
+                            if (tab?.position != 3) {
+                                binding.cvExoLeft.visibility = View.GONE
+                                binding.cvExoRight.visibility = View.GONE
+                                binding.flAI.visibility = View.GONE
+                            } else {
+                                binding.cvExoLeft.visibility = View.VISIBLE
+                                binding.cvExoRight.visibility = View.VISIBLE
+                                binding.flAI.visibility = View.VISIBLE
+                            }
+                            withContext(Dispatchers.Main) {
+                                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                val adapter = MainPartAnalysisRVAdapter(this@MeasureAnalysisFragment, adapterAnalysises[tab?.position ?: 0].labels)
+                                binding.rvAI.layoutManager = layoutManager
+                                binding.rvAI.adapter = adapter
+                            }
+                        }
+                    }
+                    override fun onTabUnselected(tab: TabLayout.Tab?) {}
+                    override fun onTabReselected(tab: TabLayout.Tab?) {}
+                })
+
+                // ------# tab 완료 #------
+
+                val myApplication = requireActivity().application as MyApplication
+                myApplication.setBiometricSuccess()
+                binding.tlMA.post {
+                    Log.v("탭위치", "${binding.tlMA.clearFocus()}")
+                    binding.tlMA.getTabAt(1)?.select()
+                    binding.tlMA.getTabAt(0)?.select()
                 }
             },
             onError = {
@@ -198,301 +236,11 @@ class MeasureAnalysisFragment : Fragment() {
         )
     }
 
-    // 고정적으로
-    // big은 자세 , small은 수직 수평 분석임
-    private fun setScreenRawData(measureResult: JSONArray, seq: Int) {
-        Log.v("measureResult", "$measureResult")
-        // 정면은 필터링 됨. 수직부터 필터링
-        var minResultData = mutableListOf<Triple<String, String, String?>>()
-        when (seq) {
-            0 -> {
-                // ------# 수직 값 #------
-                val keyPairs = mapOf(
-                    "front_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
-                    "front_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
-                    "front_vertical_angle_hip_knee" to "골반과 무릎 기울기",
-                    "front_vertical_angle_knee_ankle" to "무릎과 발목 기울기",
-                    "front_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기",
-                    "front_vertical_angle_hip_knee_ankle" to "골반-무릎-발목 기울기"
-                )
-                minResultData = keyPairs.mapNotNull {(key, description) ->
-                    val leftValue = measureResult.optJSONObject(0).optDouble("${key}_left")
-                    val rightValue = measureResult.optJSONObject(0).optDouble("${key}_right")
-
-                    if (!leftValue.isNaN() && !rightValue.isNaN()) {
-                        Triple(description, "왼쪽: ${String.format("%.2f", leftValue)}°", "오른쪽: ${String.format("%.2f", rightValue)}°")
-                    } else null
-                }.toMutableList()
-
-                // ------# 수평 값 #------
-                val anglePairs = listOf(
-                    "ear" to "귀", "shoulder" to "어깨", "elbow" to "팔꿉", "wrist" to "손목", "hip" to "골반", "knee" to "무릎", "ankle" to "발목"
-                ).map { (part, description) ->
-                    Triple(
-                        "양 $description 기울기 높이 차",
-                        "front_horizontal_angle_$part",
-                        "front_horizontal_distance_sub_$part"
-                    )
-                }
-                val distancePairs = listOf(
-                    Triple("중심에서 양 손목 거리", "front_horizontal_distance_wrist_left", "front_horizontal_distance_wrist_right"),
-                    Triple("중심에서 양 무릎 거리", "front_horizontal_distance_knee_left", "front_horizontal_distance_knee_right"),
-                    Triple("중심에서 양 발목 거리", "front_horizontal_distance_ankle_left", "front_horizontal_distance_ankle_right")
-                )
-                anglePairs.forEach { (description, angleKey, distanceKey) ->
-                    val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
-                    val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
-                    if (!angleValue.isNaN() && !distanceValue.isNaN()) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
-                    }
-                }
-                distancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                    val leftValue = measureResult.optJSONObject(0).optDouble(leftKey)
-                    val rightValue = measureResult.optJSONObject(0).optDouble(rightKey)
-                    if (!leftValue.isNaN() && !rightValue.isNaN()) {
-                        minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.2f", leftValue)}cm", "오른쪽: ${String.format("%.2f", rightValue)}cm"))
-                    }
-                }
-
-                // ------# 팔꿉 #------
-                val valueAlignPairs = listOf(
-                    Triple("양 손목과 어깨 기울기", "front_elbow_align_distance_left_wrist_shoulder", "front_elbow_align_distance_right_wrist_shoulder"),
-                    Triple("어깨-팔꿉-손목 기울기", "front_elbow_align_angle_left_shoulder_elbow_wrist", "front_elbow_align_angle_right_shoulder_elbow_wrist")
-                )
-                valueAlignPairs.forEach{ (descrption, leftKey, rightKey) ->
-                    val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
-                    val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
-                    if (!leftValue.isNaN() && !rightValue.isNaN()) {
-                        minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.2f", leftValue)}°", "오른쪽: ${String.format("%.2f", rightValue)}°"))
-                    }
-                }
-                val distanceAlignPairs = listOf(
-                    Triple("중심과 손목 거리", "front_elbow_align_distance_center_wrist_left", "front_elbow_align_distance_center_wrist_right"),
-                )
-                distanceAlignPairs.forEach{ (descrption, leftKey, rightKey) ->
-                    val leftValue = measureResult.optJSONObject(1).optDouble(leftKey)
-                    val rightValue = measureResult.optJSONObject(1).optDouble(rightKey)
-                    if (!leftValue.isNaN() && !rightValue.isNaN()) {
-                        minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.2f", leftValue)}cm", "오른쪽: ${String.format("%.2f", rightValue)}cm"))
-                    }
-                }
-                set012Adapter(minResultData)
-            }
-            1 -> {
-                lifecycleScope.launch {
-                    val connections = listOf(
-                        15, 16, 23, 24, 25, 26
-                    )
-                    val coordinates = extractVideoCoordinates(avm.mafMeasureResult.getJSONArray(0))
-                    val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
-
-                    for (connection in connections) {
-                        val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
-                        for (element in coordinates) {
-                            filteredCoordinate.add(element[connection])
-                        }
-                        filteredCoordinates.add(filteredCoordinate)
-                    }
-                    setVideoAdapter(filteredCoordinates)
-                }
-            }
-            3 -> {
-                val keyAnglePairs = mapOf(
-                    "vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
-                    "vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
-                    "vertical_angle_hip_knee" to "골반과 무릎 기울기",
-                    "vertical_angle_ear_shoulder" to "귀와 어깨 기울기",
-                    "vertical_angle_nose_shoulder" to "코와 어깨 기울기",
-                    "vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기",
-                    "vertical_angle_hip_knee_ankle" to "골반-무릎-발목 기울기"
-                )
-                keyAnglePairs.forEach { (key, description) ->
-                    val leftAngleValue = measureResult.optJSONObject(0).optDouble("side_left_$key")
-                    val rightAngleValue = measureResult.optJSONObject(1).optDouble("side_right_$key")
-
-                    if (!leftAngleValue.isNaN() && !rightAngleValue.isNaN() ) {
-                        minResultData.add(Triple(description, "왼쪽 기울기: ${String.format("%.2f", leftAngleValue)}°", "오른쪽 기울기: ${String.format("%.2f", rightAngleValue)}°"))
-                    }
-                }
-
-                val keyDistancePairs = mapOf(
-                    "horizontal_distance_shoulder" to "중심에서 어깨 거리",
-                    "horizontal_distance_hip" to "중심에서 골반 거리",
-                    "horizontal_distance_pinky" to "중심에서 새끼 거리",
-                    "horizontal_distance_wrist" to "중심에서 손목 거리"
-                )
-                keyDistancePairs.forEach { (key, description) ->
-                    val leftDistanceValue = measureResult.optJSONObject(0).optDouble("side_left_$key")
-                    val rightDistanceValue = measureResult.optJSONObject(1).optDouble("side_right_$key")
-
-                    if (!leftDistanceValue.isNaN() && !rightDistanceValue.isNaN()) {
-                        Log.v("angle들", "side_left_$key: $leftDistanceValue, side_right_$key: $rightDistanceValue")
-                        minResultData.add(Triple(description, "왼쪽 거리: ${String.format("%.2f", leftDistanceValue)}cm", "오른쪽 거리: ${String.format("%.2f", rightDistanceValue)}cm"))
-                    }
-                }
-                set012Adapter(minResultData)
-            }
-            5 -> {
-                // ------# 수직 #------
-                val verticalKeyPairs = mapOf(
-                    "back_vertical_angle_shoudler_center_hip" to "골반중심과 어깨 기울기",
-                    "back_vertical_angle_nose_center_hip" to "골반중심과 코 기울기",
-                    "back_vertical_angle_nose_center_shoulder" to "어깨중심과 코 기울기",
-                )
-                val verticalAnglePairs = listOf(
-                    Triple("무릎과 발목 기울기", "back_vertical_angle_knee_heel_left", "back_vertical_angle_knee_heel_right"),
-                )
-                verticalKeyPairs.forEach { (key, description) ->
-                    val angleValue = measureResult.optJSONObject(0).optDouble(key)
-                    if (!angleValue.isNaN() ) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", null))
-                    }
-                }
-                verticalAnglePairs.forEach{ (descrption, leftKey, rightKey) ->
-                    val leftValue = measureResult.optJSONObject(0).optDouble(leftKey)
-                    val rightValue = measureResult.optJSONObject(0).optDouble(rightKey)
-                    if (!leftValue.isNaN() && !rightValue.isNaN()) {
-                        minResultData.add(Triple(descrption, "왼쪽: ${String.format("%.2f", leftValue)}°", "오른쪽: ${String.format("%.2f", rightValue)}°"))
-                    }
-                }
-
-                // ------# 수평 #------
-                val horizontalAnglePairs = listOf(
-                    "ear" to "귀", "shoulder" to "어깨", "elbow" to "팔꿉", "wrist" to "손목", "hip" to "골반", "knee" to "무릎", "ankle" to "발목"
-                ).map { (part, description) ->
-                    Triple(
-                        "양 $description 기울기 높이 차",
-                        "back_horizontal_angle_$part",
-                        "back_horizontal_distance_sub_$part"
-                    )
-                }
-                val horizontalDistancePairs = listOf(
-                    Triple("중심에서 양 손목 거리", "back_horizontal_distance_wrist_left", "back_horizontal_distance_wrist_right"),
-                    Triple("중심에서 양 무릎 거리", "back_horizontal_distance_knee_left", "back_horizontal_distance_knee_right"),
-                    Triple("중심에서 양 발뒷꿈치 거리", "back_horizontal_distance_heel_left", "back_horizontal_distance_heel_right")
-                )
-
-                horizontalAnglePairs.forEach { (description, angleKey, distanceKey) ->
-                    val angleValue = measureResult.optJSONObject(0).optDouble(angleKey)
-                    val distanceValue = measureResult.optJSONObject(0).optDouble(distanceKey)
-                    if (!angleValue.isNaN() && !distanceValue.isNaN()) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
-                    }
-                }
-                horizontalDistancePairs.forEach{ (descrption, leftKey, rightKey) ->
-                    val leftValue = measureResult.optJSONObject(0).optDouble(leftKey)
-                    val rightValue = measureResult.optJSONObject(0).optDouble(rightKey)
-                    if (!leftValue.isNaN() && !rightValue.isNaN() ) {
-                        minResultData.add(Triple(descrption,"왼쪽: ${String.format("%.2f", leftValue)}cm", "오른쪽: ${String.format("%.2f", rightValue)}cm"))
-                    }
-                }
-
-                // 앉은 후면
-                val keyPairs = mapOf(
-                    "back_sit_vertical_angle_nose_left_shoulder_right_shoulder" to "코-좌측 어깨-우측 어깨 기울기",
-                    "back_sit_vertical_angle_left_shoulder_right_shoulder_nose" to "좌측 어깨-우측 어깨-코 기울기",
-                    "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to "우측 어깨-코-좌측 어깨 기울기",
-                    "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "좌측 어깨-골반중심-우측 어깨 기울기",
-                    "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to "골반중심-우측 어깨-좌측 어깨 기울기",
-                    "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" to "우측어깨-좌측 어깨-골반중심 기울기",
-                    "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
-                )
-                keyPairs.forEach { (key, description) ->
-                    val angleValue = measureResult.optJSONObject(1).optDouble(key)
-
-                    if (!angleValue.isNaN() ) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.3f", angleValue)}°", null))
-                    }
-                }
-                val anglePairs = listOf(
-                    "ear" to "귀", "shoulder" to "어깨", "hip" to "골반",
-                ).map { (part, description) ->
-                    Triple(
-                        "양 $description 기울기 높이 차",
-                        "back_sit_horizontal_angle_$part",
-                        "back_sit_horizontal_distance_sub_$part"
-                    )
-                }
-                anglePairs.forEach { (description, angleKey, distanceKey) ->
-                    val angleValue = measureResult.optJSONObject(1).optDouble(angleKey)
-                    val distanceValue = measureResult.optJSONObject(1).optDouble(distanceKey)
-                    if (!angleValue.isNaN() && !distanceValue.isNaN()) {
-                        minResultData.add(Triple(description, "기울기: ${String.format("%.2f", angleValue)}°", "높이 차: ${String.format("%.2f", distanceValue)}cm"))
-                    }
-                }
-
-
-                set012Adapter(minResultData)
-            }
-        }
-    }
-
-    private fun setDynamicUI(isDynamic: Boolean) {
-        if (isDynamic) {
-            binding.ssivMA1.visibility = View.GONE
-            binding.ssivMA2.visibility = View.GONE
-            binding.flMA.visibility = View.VISIBLE
-//            binding.tvMALegend.visibility = View.VISIBLE
-//            val message = SpannableString("시작위치  끝위치")
-//            message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.thirdColor)), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-//            message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 5, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-//            binding.tvMALegend.text = message
-
-        } else {
-            binding.ssivMA1.visibility = View.VISIBLE
-            binding.ssivMA2.visibility = View.VISIBLE
-            binding.flMA.visibility = View.GONE
-//            binding.tvMALegend.visibility = View.GONE
-        }
-    }
-
-    private fun setStaticSplitUi(isSplit: Boolean) {
-        val params = binding.ssivMA1.layoutParams as LayoutParams
-
-        if (isSplit) {
-            // 화면 크기
-            binding.clMA.layoutParams = (binding.clMA.layoutParams as LayoutParams).apply {
-                matchConstraintPercentWidth = 1.0f
-            }
-
-            binding.ssivMA2.visibility = View.VISIBLE
-            binding.tvMAPart2.visibility = View.VISIBLE
-            params.width = 0 // MATCH_CONSTRAINT
-            params.constrainedWidth = true
-            params.matchConstraintPercentWidth = 0.5f
-        } else {
-            binding.ssivMA2.visibility = View.GONE
-            binding.tvMAPart2.visibility = View.GONE
-            params.width = LayoutParams.MATCH_PARENT
-            params.constrainedWidth = false
-            params.matchConstraintPercentWidth = 1.0f
-        }
-
-        binding.ssivMA1.layoutParams = params
-        (binding.ssivMA1.parent as ConstraintLayout).requestLayout()
-    }
-
-    private fun set012Adapter(allData: MutableList<Triple<String,String, String?>>) {
-        val dangerParts = viewModel.selectedMeasure?.dangerParts?.map { it.first }?.map { it.replace("좌측 ", "").replace("우측 ", "") }
-        val filteredData = allData.filter { dangerParts?.any { part -> it.first.contains(part) } == true }
-        val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val topAdapter = DataStaticRVAdapter(requireContext(), filteredData, true)
-        binding.rvMALeft.layoutManager = linearLayoutManager1
-        binding.rvMALeft.adapter = topAdapter
-
-        val notFilteredData = allData.filterNot { dangerParts?.any { part -> it.first.contains(part) } == true }
-        val linearLayoutManager3 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
-        val bottomAdapter = DataStaticRVAdapter(requireContext(), notFilteredData, false)
-        binding.rvMALeft2.layoutManager = linearLayoutManager3
-        binding.rvMALeft2.adapter = bottomAdapter
-    }
-
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {
         lifecycleScope.launch {
-            Log.v("동적측정json", "${viewModel.selectedMeasure?.measureResult?.getJSONArray(1)}")
-            jsonArray = viewModel.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
+            Log.v("동적측정json", "${mvm.selectedMeasure?.measureResult?.getJSONArray(1)}")
+            jsonArray = mvm.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
             Log.v("jsonDataLength", "${jsonArray.length()}")
             initPlayer()
 
@@ -531,11 +279,11 @@ class MeasureAnalysisFragment : Fragment() {
         // viewModel의 이전 영상 보존값들 초기화
 
         simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        binding.pvMA.player = simpleExoPlayer
-        binding.pvMA.controllerShowTimeoutMs = 1100
+        binding.pvAI.player = simpleExoPlayer
+        binding.pvAI.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
             // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
-            videoUrl = pvm.videoUrl ?: viewModel.selectedMeasure?.fileUris?.get(1).toString()
+            videoUrl = pvm.videoUrl ?: mvm.selectedMeasure?.fileUris?.get(1).toString()
             pvm.videoUrl = videoUrl  // URL 저장
 
             val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
@@ -549,9 +297,9 @@ class MeasureAnalysisFragment : Fragment() {
                 simpleExoPlayer?.playWhenReady = pvm.getPlayWhenReady()
             }
         }
-        binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
-        binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
-        binding.pvMA.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
+        binding.pvAI.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
+        binding.pvAI.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
+        binding.pvAI.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
     }
     private fun setClickListener() {
         exoPlay?.visibility = View.GONE
@@ -649,22 +397,22 @@ class MeasureAnalysisFragment : Fragment() {
 
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
             requireActivity().runOnUiThread {
-                binding.ovMA.scaleX = -1f
-                binding.ovMA.setResults(
+                binding.ovAI.scaleX = -1f
+                binding.ovAI.setResults(
                     poseLandmarkResult,
                     videoWidth,
                     videoHeight,
                     OverlayView.RunningMode.VIDEO
                 )
-                binding.ovMA.invalidate()
+                binding.ovAI.invalidate()
             }
         }
     }
 
     private fun updateVideoUI() {
-        binding.tvMPTitle.text = "동적 측정"
-        binding.ssivMA1.visibility = View.GONE
-        binding.ssivMA2.visibility = View.GONE
+
+        binding.ssivAI1.visibility = View.GONE
+        binding.ssivAI2.visibility = View.GONE
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -683,35 +431,30 @@ class MeasureAnalysisFragment : Fragment() {
         } else 1f // 태블릿이 아닐 때는 상관없음.
 
         // clMA의 크기 조절
-        val params = binding.clMA.layoutParams
+        val params = binding.clAI.layoutParams
         params.width = (screenWidth  * resizingValue).toInt()
         params.height = (adjustedHeight * resizingValue).toInt()
-        binding.clMA.layoutParams = params
+        binding.clAI.layoutParams = params
 
         // llMARV를 clMA 아래에 위치시키기
         val constraintSet = ConstraintSet()
-        constraintSet.clone(binding.clMA)
-        constraintSet.connect(binding.llMARV.id, ConstraintSet.TOP, binding.clMA.id, ConstraintSet.BOTTOM)
-        constraintSet.applyTo(binding.clMA)
+        constraintSet.clone(binding.clAI)
+        constraintSet.connect(binding.rvAI.id, ConstraintSet.TOP, binding.clAI.id, ConstraintSet.BOTTOM)
+        constraintSet.applyTo(binding.clAI)
 
         // PlayerView 크기 조절 (필요한 경우)
-        val playerParams = binding.pvMA.layoutParams
+        val playerParams = binding.pvAI.layoutParams
         playerParams.width = (screenWidth  * resizingValue).toInt()
         playerParams.height = (adjustedHeight * resizingValue).toInt()
-        binding.pvMA.layoutParams = playerParams
-
-        setScreenRawData(avm.mafMeasureResult, 1)
+        binding.pvAI.layoutParams = playerParams
     }
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, 0)
-        binding.rvMALeft.layoutManager = linearLayoutManager1
-        binding.rvMALeft.adapter = dynamicAdapter
+//        binding.rvMALeft.layoutManager = linearLayoutManager1
+//        binding.rvMALeft.adapter = dynamicAdapter
     }
-
-
-
 
     override fun onPause() {
         super.onPause()

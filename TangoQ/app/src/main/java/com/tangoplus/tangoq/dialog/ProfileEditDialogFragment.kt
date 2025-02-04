@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -201,6 +202,9 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 //                        onEditComplete()
 //                    }
 //                }
+                // application에서 biometric success 저장
+                val myApplication = requireActivity().application as MyApplication
+                myApplication.setBiometricSuccess()
             },
             onError = {
                 Toast.makeText(requireContext(), "인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_LONG).show()

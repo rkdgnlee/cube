@@ -51,11 +51,6 @@ class BalanceRVAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Re
 //            holder.tvBIPredict.text = currentComment
 
             holder.clBI.setOnClickListener{
-                fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(position))
-                    addToBackStack(null)
-                    commit()
-                }
             }
         }
     }

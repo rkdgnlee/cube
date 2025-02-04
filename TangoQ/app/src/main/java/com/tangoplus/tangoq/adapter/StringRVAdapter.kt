@@ -54,9 +54,7 @@ class StringRVAdapter(private val fragment: Fragment,
     override fun getItemViewType(position: Int): Int {
         return when (xmlName) {
             "muscle" -> 0
-
-            "measure" -> 1
-            "week" -> 1
+            "measure", "week" -> 1
 //            "connect" -> 3
             else -> throw IllegalArgumentException("Invalid View Type")
         }

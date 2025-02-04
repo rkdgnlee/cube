@@ -27,6 +27,8 @@ import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ScanMode
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -47,7 +49,6 @@ import org.json.JSONObject
 
 class QRCodeDialogFragment : DialogFragment() {
     lateinit var binding : FragmentQRCodeDialogBinding
-    private lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private var userJson = JSONObject()
     private val CAMERA_PERMISSION_CODE = 100
     private lateinit var codeScanner : CodeScanner
@@ -66,9 +67,6 @@ class QRCodeDialogFragment : DialogFragment() {
         // ------! 바코드 스캔 시작 !------
         checkCameraPermission()
 
-        binding.ibtnLSDInfo.alpha = 0f
-        binding.ibtnLSDInfo.visibility = View.GONE
-        binding.ibtnLSDBack2.visibility = View.GONE
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
 
         // ------! balloon 시작 !------
@@ -93,46 +91,26 @@ class QRCodeDialogFragment : DialogFragment() {
             balloon.dismissWithDelay(3000L)
         }
 
-        // ------! behavior + 바텀시트 조작 시작 !------
-        val isTablet = resources.configuration.screenWidthDp >= 600
-        behavior = BottomSheetBehavior.from(binding.clLSD)
-        val screenHeight = resources.displayMetrics.heightPixels
-        val topSpaceHeight = resources.getDimensionPixelSize(com.tangoplus.tangoq.R.dimen.top_space_height_qr_code)
-        val peekHeight = screenHeight - topSpaceHeight
-        behavior.apply {
-            this.peekHeight = peekHeight
-            isFitToContents = false
-            expandedOffset = 0
-            state = BottomSheetBehavior.STATE_COLLAPSED
-            skipCollapsed = false
-            // 기기 유형에 따라 halfExpandedRatio 설정
-            halfExpandedRatio = if (isTablet) {
-                0.65f
-            } else {
-                0.99f
-            }
-        }
-
-        behavior.addBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_EXPANDED -> {
+        binding.tlLSD.addOnTabSelectedListener(object: OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> {
                         hideBarcodeView()
+                        binding.clLSD.visibility = View.VISIBLE
+                        binding.flLSD.visibility = View.GONE
                     }
-                    BottomSheetBehavior.STATE_COLLAPSED -> showBarcodeView()
+                    1 -> {
+                        showBarcodeView()
+                        binding.clLSD.visibility = View.GONE
+                        binding.flLSD.visibility = View.VISIBLE
+                    }
                 }
             }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                binding.ibtnLSDInfo.visibility = View.VISIBLE
-                binding.ibtnLSDBack2.visibility = View.VISIBLE
-                binding.ibtnLSDInfo.alpha = slideOffset
-                binding.ibtnLSDBack2.alpha = slideOffset
-
-                binding.csvLSD.alpha = 1 - slideOffset
-            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-        // ------! behavior + 바텀시트 조작 끝 !------
+        binding.tlLSD.selectTab(binding.tlLSD.getTabAt(0))
+
 
 
         // ------! PIN 번호 관리 시작 !------
@@ -172,8 +150,6 @@ class QRCodeDialogFragment : DialogFragment() {
                 }
             }
         }
-        binding.ibtnLSDBack1.setOnClickListener { dismiss() }
-        binding.ibtnLSDBack2.setOnClickListener { dismiss() }
     }
 
     private fun initScanner() {
@@ -249,29 +225,24 @@ class QRCodeDialogFragment : DialogFragment() {
     }
 
     private fun hideBarcodeView() {
-        binding.csvLSD.visibility = View.GONE
         codeScanner.releaseResources()
         Handler(Looper.getMainLooper()).postDelayed({
             binding.otvLSD.requestFocus()
             binding.otvLSD.isFocusableInTouchMode = true
-
             // 소프트 키보드를 강제로 띄우기
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
-        }, 350)
+        }, 500)
 
 //        val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
 //        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
-
     }
 
     private fun showBarcodeView() {
         binding.csvLSD.visibility = View.VISIBLE
         binding.otvLSD.visibility = View.VISIBLE
-        binding.ibtnLSDInfo.visibility = View.GONE
-        binding.ibtnLSDBack2.visibility = View.GONE
-        CoroutineScope(Dispatchers.Main).launch {
 
+        CoroutineScope(Dispatchers.Main).launch {
             initScanner()
             codeScanner.startPreview()
         }

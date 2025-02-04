@@ -53,6 +53,7 @@
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="#00FFFFFF"
                     android:hint="운동이름을 검색하세요"
+                    android:imeOptions="actionDone"
                     android:singleLine="true"
                     android:textColor="@color/subColor800"
                     android:textColorHint="@color/subColor400"

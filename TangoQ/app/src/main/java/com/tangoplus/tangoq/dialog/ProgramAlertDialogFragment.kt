@@ -26,7 +26,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
     private var alertMessage = ""
     private val pvm : ProgressViewModel by activityViewModels()
     companion object {
-        const val ALERT_KEY_CASE = "a"
+        const val ALERT_KEY_CASE = "alert_key_case"
         fun newInstance (parentDialog : ProgramCustomDialogFragment, case: Int) : ProgramAlertDialogFragment {
             val fragment = ProgramAlertDialogFragment()
             fragment.parentDialog = parentDialog
@@ -96,8 +96,9 @@ class ProgramAlertDialogFragment : DialogFragment() {
         dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f ,height = 0.4f)
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f ,height = 0.5f)
         } else {
             dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.475f)
         }

@@ -260,6 +260,18 @@
                 android:textSize="18sp"
                 android:visibility="visible" />
 
+            <TextView
+                android:id="@+id/tvFinalCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="40dp"
+                android:text="올바르지않습니다"
+                android:textColor="@color/deleteColor"
+                android:textSize="18dp"
+                android:visibility="invisible" />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSignIn"
                 android:layout_width="match_parent"
@@ -278,7 +290,7 @@
                 android:stateListAnimator="@null"
                 android:text="회원가입 완료하기"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="20dp"
                 android:visibility="visible"
                 app:cornerRadius="20dp" />
 

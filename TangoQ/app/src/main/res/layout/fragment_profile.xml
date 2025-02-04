@@ -16,7 +16,8 @@
             android:id="@+id/ibtnPAlarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
             android:background="@drawable/effect_ibtn_20dp"
             android:backgroundTint="@color/white"
             android:contentDescription="showAlarm"
@@ -24,14 +25,14 @@
             android:src="@drawable/icon_alarm"
             app:layout_constraintBottom_toBottomOf="@+id/textView120"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView120" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/imageView46"
             android:layout_width="36dp"
             android:layout_height="38dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="12dp"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -99,6 +99,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
                     val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null, null, null,"E")
                     setAdapter(adapter1, binding.rv1)
                     if (filteredList.isEmpty()) binding.clESDEmpty.visibility = View.VISIBLE else binding.clESDEmpty.visibility = View.GONE
+//                    binding.clESDHistory.visibility = View.GONE
                 }
             }
         })

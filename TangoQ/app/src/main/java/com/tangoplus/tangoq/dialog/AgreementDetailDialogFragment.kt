@@ -26,7 +26,6 @@ class AgreementDetailDialogFragment : DialogFragment() {
         fun newInstance(agreementType: String): AgreementDetailDialogFragment {
             val args = Bundle()
             args.putString(ARG_AGREEMENT_TYPE, agreementType)
-
             val fragment = AgreementDetailDialogFragment()
             fragment.arguments = args
             return fragment
@@ -88,6 +87,10 @@ class AgreementDetailDialogFragment : DialogFragment() {
         binding = FragmentAgreementDetailDialogBinding.inflate(layoutInflater)
         builder.setView(binding.root)
         binding.tvAgreement.text = agreementText
+        binding.ibtnAgreement.setOnClickListener {
+            Log.v("디스미스", "dismiss")
+            dismiss()
+        }
         return builder.create()
     }
 

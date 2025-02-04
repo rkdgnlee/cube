@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.dialog.MainPartDialogFragment
+import com.tangoplus.tangoq.fragment.MeasureAnalysisFragment
 
 class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>? ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class PartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -48,8 +49,11 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
                 "우측 발목", "좌측 발목" -> holder.ivPI.setImageResource(R.drawable.icon_part7)
             }
             holder.clPI.setOnClickListener {
-                val dialog = currentItem?.first?.let { it1 -> MainPartDialogFragment.newInstance(it1) }
-                dialog?.show(fragment.requireActivity().supportFragmentManager, "MainPartDialogFragment")
+                fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(currentItem?.first ?: ""))
+                    addToBackStack(null)
+                    commit()
+                }
             }
         }
     }
@@ -62,11 +66,9 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
         if (isWarning) {
             cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.cautionContainerColor)
             cv.setCardBackgroundColor(fragment.resources.getColor(R.color.cautionColor, null))
-            tv.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))
         } else {
             cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteContainerColor)
             cv.setCardBackgroundColor(fragment.resources.getColor(R.color.deleteColor, null))
-            tv.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteTextColor))
         }
     }
 }

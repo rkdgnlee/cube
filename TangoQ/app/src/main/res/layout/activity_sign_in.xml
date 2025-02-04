@@ -93,6 +93,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
 
@@ -100,22 +101,20 @@
                     android:id="@+id/tvAlarmMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:text="아이디"
                     android:textColor="@color/subColor800"
-                    android:textSize="20sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvIdCondition"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/conditionSuccessColor"
+                    android:textColor="@color/black"
                     android:textSize="13dp"
                     android:visibility="visible" />
             </LinearLayout>
@@ -156,7 +155,8 @@
                     android:layout_marginStart="10dp"
                     android:layout_weight="2"
                     android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/mainColor"
+                    android:backgroundTint="@color/subColor400"
+                    android:enabled="false"
                     android:stateListAnimator="@null"
                     android:text="중복 확인"
                     android:textColor="@color/whiteText"
@@ -170,26 +170,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
 
                 <TextView
                     android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2"
+                    android:gravity="center_vertical"
                     android:text="비밀번호 설정"
                     android:textColor="@color/subColor800"
-                    android:textSize="20sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwCondition"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
@@ -223,26 +226,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
 
                 <TextView
-                    android:id="@+id/tvMDDate"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/TextView80"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:layout_weight="2"
                     android:text="비밀번호 확인"
                     android:textColor="@color/subColor800"
-                    android:textSize="20sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwRepeat"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
                     android:textSize="13dp"
@@ -256,6 +261,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="비밀번호 확인"
@@ -269,6 +275,18 @@
                 android:textSize="18sp"
                 android:visibility="visible" />
 
+            <TextView
+                android:id="@+id/tvFinalCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:text="올바르지않습니다"
+                android:textColor="@color/deleteColor"
+                android:textSize="14dp"
+                android:visibility="invisible" />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSignIn"
                 android:layout_width="match_parent"
@@ -279,7 +297,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/mainColor"
+                android:backgroundTint="@color/subColor400"
                 android:enabled="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -370,7 +388,7 @@
                     android:visibility="visible" />
 
                 <ImageView
-                    android:id="@+id/ssivMDI"
+                    android:id="@+id/ImageView49"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

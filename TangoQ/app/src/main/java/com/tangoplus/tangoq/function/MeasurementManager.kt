@@ -47,19 +47,38 @@ object MeasurementManager {
     )
     val matchedUris = mapOf(
         "목관절" to listOf(0, 3, 4, 5, 6),
-        "좌측 어깨" to listOf(0, 3, 5, 6),
-        "우측 어깨" to listOf(0, 4, 5, 6),
+        "좌측 어깨" to listOf(0, 1, 3, 5, 6),
+        "우측 어깨" to listOf(0, 1,  4, 5, 6),
         "좌측 팔꿉" to listOf(0, 2, 3),
         "우측 팔꿉" to listOf(0, 2, 4),
         "좌측 손목" to listOf(0, 2, 3),
         "우측 손목" to listOf(0, 2, 4),
-        "좌측 골반" to listOf(0, 3, 5, 6),
-        "우측 골반" to listOf(0, 4, 5, 6),
-        "좌측 무릎" to listOf(0, 3, 5),
-        "우측 무릎" to listOf(0, 4, 5),
+        "좌측 골반" to listOf(0, 1, 3, 5, 6),
+        "우측 골반" to listOf(0, 1, 4, 5, 6),
+        "좌측 무릎" to listOf(0, 1, 3, 5),
+        "우측 무릎" to listOf(0, 1, 4, 5),
         "좌측 발목" to listOf(0, 5),
         "우측 발목" to listOf(0, 5)
     )
+    // 그니까 getAnalysisUnits는 현재 seq(currentKey)에 맞는 값을 measureResult에서 빼옴
+    // 근데 여기서 currentKey에 맞는 값에서,
+    val matchedIndexx = mapOf(
+        "목관절" to listOf(0, 1, 2),
+        "좌측 어깨" to listOf(0, 1, 3, 5, 6),
+        "우측 어깨" to listOf(0, 1,  4, 5, 6),
+        "좌측 팔꿉" to listOf(0, 2, 3),
+        "우측 팔꿉" to listOf(0, 2, 4),
+        "좌측 손목" to listOf(0, 2, 3),
+        "우측 손목" to listOf(0, 2, 4),
+        "좌측 골반" to listOf(0, 1, 3, 5, 6),
+        "우측 골반" to listOf(0, 1, 4, 5, 6),
+        "좌측 무릎" to listOf(0, 1, 3, 5),
+        "우측 무릎" to listOf(0, 1, 4, 5),
+        "좌측 발목" to listOf(0, 5),
+        "우측 발목" to listOf(0, 5)
+    )
+
+
     private val femaleErrorBounds = listOf(
         mapOf(
             0 to mapOf( "front_horizontal_angle_ear" to Triple(180f, 1.1f, 3.2f),
@@ -558,7 +577,7 @@ object MeasurementManager {
     // mainPartAnalysis에서 unit 만들기
     fun getAnalysisUnits(context: Context, part: String, currentKey: Int, measureResult: JSONArray): MutableList<AnalysisUnitVO> {
         val result = mutableListOf<AnalysisUnitVO>()
-        val partIndex = matchedIndexs.indexOf(part)
+        val partIndex = matchedIndexs.indexOf(part) // list(0, 3, 4, 5, 6)
 
         // partIndex에 해당하는 mainPartSeqs와 errorBounds 가져오기
         val mainSeq = mainPartSeqs[partIndex]
@@ -587,12 +606,14 @@ object MeasurementManager {
                             rawDataName = rawDataName,
                             rawData = data,
                             rawDataBound = boundPair,
-                            summary = "",
+                            summary = setLabels(columnName),
                             state = state
                         )
                     )
                 }
             }
+        } else {
+
         }
         return result
     }
@@ -759,9 +780,6 @@ object MeasurementManager {
                                 // 스케일 비율 계산
                                 val scaleFactorX = imageViewHeight / sHeight.toFloat()
                                 val scaleFactorY =  imageViewHeight / sHeight.toFloat()
-                                // 오프셋 계산 (뷰 크기 대비 이미지 크기의 여백)
-                                val offsetX = (imageViewWidth - sWidth * scaleFactorX) / 2f
-                                val offsetY = (imageViewHeight - sHeight * scaleFactorY) / 2f
                                 val poseLandmarkResult = fromCoordinates(coordinates)
                                 Log.v("댄저파트", "${measureVO.dangerParts}")
                                 val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
@@ -823,7 +841,7 @@ object MeasurementManager {
             Log.e("scalingError", "Exception: ${e.message}" )
         }
     }
-    fun getVideoDimensions(context : Context, videoUri: Uri) : Pair<Int, Int> {
+    fun getVideoDimensions(context : Context, videoUri: Uri?) : Pair<Int, Int> {
         val retriever = MediaMetadataRetriever()
         retriever.setDataSource(context, videoUri)
         val videoWidth = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt() ?: 0
@@ -880,8 +898,8 @@ object MeasurementManager {
     }
 
     // 평균과 설명을 넣어주는 곳
-    fun setLabels(unit : AnalysisUnitVO) : String {
-        return when (unit.columnName) {
+    fun setLabels(columnName : String) : String {
+        return when (columnName) {
 
             // 목관절
             "front_horizontal_angle_ear" -> "기울기 값 180° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 한쪽으로 기울었을 경우, 기울어진 반대편의 목빗근의 스트레칭을 권장드립니다."
@@ -946,7 +964,7 @@ object MeasurementManager {
             // 우측 골반
             "front_vertical_angle_hip_knee_right" -> "골반-무릎 간의 기울기는 90° 기준으로 약 2° 이내가 정상입니다. 측면의 골반-무릎-발목 기울기와 함께 비교해서 평소 무릎이 조금 굽어진 자세로 서있는지 확인해보세요."
 //            "front_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
-            "side_right_horizontal_distance_hip" -> "발뒷꿈치에서 시작되는 중심선에서 골반까지의 거리를 의미합니다. 좌측과 비교해서 몸의 쏠림, 골반 전방 경사를 판단할 수 있습니다."
+            "side_right_horizontal_distance_hip" -> "발뒷꿈치에서 시작되는 h중심선에서 골반까지의 거리를 의미합니다. 좌측과 비교해서 몸의 쏠림, 골반 전방 경사를 판단할 수 있습니다."
 //            "back_horizontal_angle_hip" -> "양 골반의 기울기를 의미합니다. 기울기 값 0° 기준으로 1° 오차 이내가 표준적인 기울기 입니다"
 //            "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" -> "앉은 자세에서 양 어깨와 골반 중심의 각도를 의미합니다. 각도 값 50° 기준으로 10° 이내의 범위를 표준적인 각도입니다."
 //            "back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip" -> "앉은 자세에서 골반 중심-양 어깨를 이은 삼각형의 오른쪽 어깨 각도입니다. 각도 값이 높을 수록 굽은 등을 교정해주세요"
@@ -997,7 +1015,7 @@ object MeasurementManager {
             listOf("좌측 무릎", "좌측 발목") to "좌측 다리의 정렬을 확인하세요",
             listOf("우측 팔꿉", "우측 손목") to "우측 팔 근육과 주변 어깨 근육을 확인하세요",
             listOf("우측 무릎", "우측 발목") to "우측 다리의 정렬을 확인하세요",
-            listOf("목관절", "좌측 어깨") to "우측으로 쏠려있는 상체를 다시 교정해보세요",
+            listOf("목관절", "좌측 어깨h") to "우측으로 쏠려있는 상체를 다시 교정해보세요",
             listOf("목관절", "우측 어깨") to "좌측으로 쏠려있는 상체를 다시 교정해보세요",
             listOf("우측 어깨", "우측 손목", "우측 골반") to "우측 상체의 긴장을 의심해야 합니다.",
             listOf("좌측 어깨", "좌측 손목", "좌측 골반") to "좌측 상체의 긴장을 의심해야 합니다.",
@@ -1032,8 +1050,8 @@ object MeasurementManager {
         listOf(Triple(0, 0, 1), Triple(3,1,0), Triple(5, 2, 0)),
         listOf(Triple(0, 0, 1), Triple(4,1,0), Triple(5, 2, 0)),
         // 무릎
-        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 1, 1)),
-        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 1, 1)),
+        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
+        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
         // 발목
         listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
         listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),

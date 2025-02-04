@@ -35,7 +35,6 @@ import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
-import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
@@ -223,6 +222,7 @@ class MainActivity : AppCompatActivity() {
                         addToBackStack("measureDetailFragment")
                         commit()
                     }
+                    selectedTabId = -1
                 }
             }
         }
@@ -385,8 +385,8 @@ class MainActivity : AppCompatActivity() {
                 }
             } // measure에 대한 값들을 control해야함
             "RD" -> {
-                val dialog = ReportDiseaseDialogFragment()
-                dialog.show(supportFragmentManager, "ReportDiseaseDialogFragment")
+//                val dialog = ReportDiseaseDialogFragment()
+//                dialog.show(supportFragmentManager, "ReportDiseaseDialogFragment")
             }
             else -> MainFragment()
         }

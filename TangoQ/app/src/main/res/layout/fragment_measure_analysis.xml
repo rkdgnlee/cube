@@ -10,17 +10,16 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/whitebar">
+        android:background="@color/white">
 
         <TextView
-            android:id="@+id/tvMPTitle"
+            android:id="@+id/tvMATitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:gravity="center"
-            android:text="__측정"
             android:textColor="@color/subColor800"
             android:textSize="22dp"
             android:textStyle="bold"
@@ -42,16 +41,58 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tlMA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bckgnd_3_bottom_under_line_second_container"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabIndicatorAnimationDuration="400"
+                app:tabIndicatorColor="@color/secondWhiteColor"
+                app:tabIndicatorFullWidth="true"
+                app:tabPaddingEnd="0dp"
+                app:tabPaddingStart="0dp"
+                app:tabRippleColor="#20FFFFFF"
+                app:tabSelectedTextColor="@color/secondWhiteColor"
+                app:tabTextAppearance="@style/TabLayoutTextStyle4Item"
+                app:tabTextColor="@color/secondHalfColor">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="정면 측정" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="측면 측정" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="후면 측정" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="동적 측정" />
+            </com.google.android.material.tabs.TabLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clMA"
+                android:id="@+id/clAI"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/tlMA">
 
                 <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-                    android:id="@+id/ssivMA1"
+                    android:id="@+id/ssivAI1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -62,7 +103,7 @@
                     app:layout_constraintWidth_percent="0.5" />
 
                 <TextView
-                    android:id="@+id/tvMAPart1"
+                    android:id="@+id/tvAIPart1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
@@ -75,11 +116,11 @@
                     android:text="정면 측정"
                     android:textColor="#FFFFFF"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/ssivMA1"
-                    app:layout_constraintStart_toStartOf="@id/ssivMA1" />
+                    app:layout_constraintEnd_toEndOf="@+id/ssivAI1"
+                    app:layout_constraintStart_toStartOf="@id/ssivAI1" />
 
                 <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-                    android:id="@+id/ssivMA2"
+                    android:id="@+id/ssivAI2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -90,7 +131,7 @@
                     app:layout_constraintWidth_percent="0.5" />
 
                 <TextView
-                    android:id="@+id/tvMAPart2"
+                    android:id="@+id/tvAIPart2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
@@ -103,20 +144,21 @@
                     android:text="팔꿉 측정"
                     android:textColor="#FFFFFF"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/ssivMA2"
-                    app:layout_constraintStart_toStartOf="@id/ssivMA2" />
+                    app:layout_constraintEnd_toEndOf="@+id/ssivAI2"
+                    app:layout_constraintStart_toStartOf="@id/ssivAI2" />
 
                 <FrameLayout
-                    android:id="@+id/flMA"
+                    android:id="@+id/flAI"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.exoplayer2.ui.PlayerView
-                        android:id="@+id/pvMA"
+                        android:id="@+id/pvAI"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:auto_show="true"
@@ -133,7 +175,7 @@
                         android:layout_height="48dp"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="20dp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:cardBackgroundColor="#41000000"
                         app:cardCornerRadius="48dp"
                         app:cardElevation="0dp"
@@ -158,7 +200,7 @@
                         android:layout_gravity="end"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="20dp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:cardBackgroundColor="#41000000"
                         app:cardCornerRadius="48dp"
                         app:cardElevation="0dp"
@@ -179,69 +221,26 @@
                 </FrameLayout>
 
                 <com.tangoplus.tangoq.mediapipe.OverlayView
-                    android:id="@+id/ovMA"
+                    android:id="@+id/ovAI"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="@id/flMA"
-                    app:layout_constraintEnd_toEndOf="@id/flMA"
-                    app:layout_constraintStart_toStartOf="@id/flMA"
-                    app:layout_constraintTop_toTopOf="@id/flMA" />
+                    app:layout_constraintBottom_toBottomOf="@id/flAI"
+                    app:layout_constraintEnd_toEndOf="@id/flAI"
+                    app:layout_constraintStart_toStartOf="@id/flAI"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/llMARV"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAI"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView28">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMALeft"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:nestedScrollingEnabled="false" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout16"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:orientation="horizontal"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llMARV"
-                app:layout_constraintVertical_bias="0.0">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMALeft2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:nestedScrollingEnabled="false" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/textView28"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="위험 부위 데이터"
-                android:textColor="@color/subColor800"
-                android:textSize="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
-
+                app:layout_constraintTop_toBottomOf="@+id/clAI" />
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout3"
                 android:layout_width="0dp"
@@ -249,7 +248,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clMA">
+                app:layout_constraintTop_toBottomOf="parent">
 
                 <ImageView
                     android:id="@+id/ivMAModel"
@@ -521,7 +520,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.5" />
+                    app:layout_constraintGuide_begin="0dp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -23,6 +23,7 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilMTDLeft"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -33,7 +34,7 @@
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
             app:endIconDrawable="@drawable/icon_arrow_down_small"
-            app:endIconMinSize="28dp"
+            app:endIconMinSize="20dp"
             app:endIconMode="dropdown_menu"
             app:endIconScaleType="center"
             app:endIconTint="@color/subColor800"
@@ -57,11 +58,23 @@
                 android:inputType="none"
                 android:text="선택"
                 android:textColor="@color/subColor800"
-                android:textSize="18dp"
+                android:textSize="16dp"
                 app:dropDownBackgroundTint="@color/white" />
             />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/view30"
+            android:layout_width="3dp"
+            android:layout_height="30dp"
+            app:cardBackgroundColor="@color/subColor200"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tilMTDLeft"
+            app:layout_constraintEnd_toEndOf="@+id/nestedScrollView"
+            app:layout_constraintStart_toStartOf="@+id/nestedScrollView"
+            app:layout_constraintTop_toTopOf="@+id/tilMTDLeft" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilMTDRight"
@@ -73,7 +86,7 @@
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
             app:endIconDrawable="@drawable/icon_arrow_down_small"
-            app:endIconMinSize="28dp"
+            app:endIconMinSize="20dp"
             app:endIconMode="dropdown_menu"
             app:endIconScaleType="center"
             app:endIconTint="@color/subColor800"
@@ -97,11 +110,10 @@
                 android:inputType="none"
                 android:text="2024-10-31 "
                 android:textColor="@color/subColor800"
-                android:textSize="18dp"
+                android:textSize="16dp"
                 app:dropDownBackgroundTint="@color/white" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
@@ -136,7 +148,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/spnrMTDLeft"
+                        app:layout_constraintTop_toBottomOf="@+id/actvMTDLeft"
                         app:layout_constraintWidth_percent="0.5"
                         tools:ignore="NotSibling" />
 
@@ -147,9 +159,92 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/spnrMTDRight"
+                        app:layout_constraintTop_toBottomOf="@+id/actvMTDLeft"
                         app:layout_constraintWidth_percent="0.5"
                         tools:ignore="NotSibling" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clMTDLeft"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent="0.5">
+
+                        <FrameLayout
+                            android:id="@+id/flMTDLeft"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <com.google.android.exoplayer2.ui.PlayerView
+                                android:id="@+id/pvMTDLeft"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:auto_show="false"
+                                app:controller_layout_id="@layout/exo_player_control_view"
+                                app:resize_mode="fit"
+                                app:surface_type="surface_view"
+                                app:use_controller="true" />
+
+                        </FrameLayout>
+
+                        <com.tangoplus.tangoq.mediapipe.OverlayView
+                            android:id="@+id/ovMTDLeft"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toBottomOf="@id/flMTDLeft"
+                            app:layout_constraintEnd_toEndOf="@id/flMTDLeft"
+                            app:layout_constraintStart_toStartOf="@id/flMTDLeft"
+                            app:layout_constraintTop_toTopOf="@id/flMTDLeft" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clMTDRight"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent="0.5">
+
+                        <FrameLayout
+                            android:id="@+id/flMTDRight"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <com.google.android.exoplayer2.ui.PlayerView
+                                android:id="@+id/pvMTDRight"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:auto_show="false"
+                                app:controller_layout_id="@layout/exo_player_control_view"
+                                app:resize_mode="fit"
+                                app:surface_type="surface_view"
+                                app:use_controller="true" />
+
+                        </FrameLayout>
+
+                        <com.tangoplus.tangoq.mediapipe.OverlayView
+                            android:id="@+id/ovMTDRight"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toBottomOf="@id/flMTDRight"
+                            app:layout_constraintEnd_toEndOf="@id/flMTDRight"
+                            app:layout_constraintStart_toStartOf="@id/flMTDRight"
+                            app:layout_constraintTop_toTopOf="@id/flMTDRight" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <Spinner
                         android:id="@+id/spnrMTDSeqLeft"
@@ -194,6 +289,8 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

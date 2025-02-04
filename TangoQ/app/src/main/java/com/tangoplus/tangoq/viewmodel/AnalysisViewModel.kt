@@ -11,7 +11,8 @@ class AnalysisViewModel : ViewModel() {
     // ------# 비교할 measure 담을 공간 #------
     val leftMeasurement = MutableLiveData<MeasureVO>()
     val rightMeasurement = MutableLiveData<MeasureVO>()
-
+    var leftSelectedIndex = MutableLiveData<Int>()
+    var rightSelectedIndex = MutableLiveData<Int>()
     // ------# risk part 선택 -> dialog #------
     var relatedAnalyzes = mutableListOf<AnalysisVO>()
     // ------# MainPartAnalysis #------
@@ -19,6 +20,15 @@ class AnalysisViewModel : ViewModel() {
 
     var leftAnalyzes : MutableList<MutableList<AnalysisVO>>? = null
     var rightAnalyzes :MutableList<MutableList<AnalysisVO>>? = null
+    var trendLeftUri: String? = null
+    var trendRightUri : String? = null
+
+    private var leftPlaybackPosition = 0L
+    private var leftwindowIndex = 0
+    private var leftplayWhenReady = true
+    private var rightPlaybackPosition = 0L
+    private var rightWindowIndex = 0
+    private var rightPlayWhenReady = true
     // ------# risk part 선택 -> 특정 자세 선택 -> dialog #------
     var selectedSeq = 0
     var selectedPart = ""

@@ -82,9 +82,9 @@ class ProgramSelectFragment : Fragment() {
 
         val categoryNums = singletonMeasure?.get(dateIndex)?.recommendations?.map { categoryMap.entries.find { entry -> it.title.contains(entry.key) }?.value }
 
-        singletonMeasure?.get(dateIndex)?.recommendations?.mapNotNull { rec ->
-                categoryMap.entries.find { entry -> rec.title.contains(entry.key) }?.value
-            }
+//        singletonMeasure?.get(dateIndex)?.recommendations?.mapNotNull { rec ->
+//                categoryMap.entries.find { entry -> rec.title.contains(entry.key) }?.value
+//            }
         Log.v("categoryNums", "categoryNums: $categoryNums")
         val adapter = categoryNums?.let { RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations ?: mutableListOf(), it ) }
         Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations}")

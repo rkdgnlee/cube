@@ -63,7 +63,7 @@ class AlertDialogFragment : DialogFragment() {
                 binding.tvMkTitle.text = title
                 binding.tvMkContent.text = message
 
-                logout(requireActivity(), 4)
+                logout(requireActivity(), 5)
                 binding.tvMkConfirm.visibility = View.GONE
             }
         }

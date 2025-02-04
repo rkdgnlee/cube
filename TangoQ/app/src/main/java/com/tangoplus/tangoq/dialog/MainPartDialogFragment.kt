@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.adapter.MainPartRVAdapter
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.AnalysisVO
@@ -87,10 +88,7 @@ class MainPartDialogFragment : DialogFragment() {
 
                         val analysisVO = AnalysisVO(
                             i,
-                            createSummary(part, i, analysisUnits),
-                            states,
-                            analysisUnits,
-                            mvm.selectedMeasure?.fileUris?.get(i).toString()
+                            analysisUnits
                         )
                         avm.relatedAnalyzes.add(analysisVO)
                     }
@@ -101,6 +99,9 @@ class MainPartDialogFragment : DialogFragment() {
                     binding.rvMPD.layoutManager = layoutManager
                     binding.rvMPD.adapter = adapter
                 }
+                // application에서 biometric success 저장
+                val myApplication = requireActivity().application as MyApplication
+                myApplication.setBiometricSuccess()
             },
             onError = {
                 Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()

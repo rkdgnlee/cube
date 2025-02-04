@@ -29,7 +29,7 @@ import com.tangoplus.tangoq.databinding.RvMainPartItemBinding
 import com.tangoplus.tangoq.dialog.MainPartPoseDialogFragment
 import java.security.MessageDigest
 
-class MainPartRVAdapter(private val fragment: Fragment, private val analysizes : MutableList<AnalysisVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MainPartRVAdapter(private val fragment: Fragment, private val analyzes : MutableList<AnalysisVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class MPViewHolder(view:View) : RecyclerView.ViewHolder(view) {
         val clMPI : ConstraintLayout = view.findViewById(R.id.clMPI)
@@ -47,34 +47,34 @@ class MainPartRVAdapter(private val fragment: Fragment, private val analysizes :
     }
 
     override fun getItemCount(): Int {
-        return analysizes.size
+        return analyzes.size
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = analysizes[position]
+        val currentItem = analyzes[position]
 
         if (holder is MPViewHolder) {
 
-            holder.tvMPITitle.text = matchedSeq[currentItem.seq]
-            setState(holder, currentItem.isNormal)
-            Glide.with(fragment.requireContext())
-                .load(currentItem.url)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .apply(RequestOptions.bitmapTransform(MultiTransformation(
-                    CenterCrop(),
-                    RoundedCorners(20),
-                    FlipHorizontalTransformation()
-                )))
-                .into(holder.ivMPI)
-
-
-            holder.clMPI.setOnClickListener{
-                (avm as AnalysisViewModel).selectedSeq = currentItem.seq
-                val dialog = MainPartPoseDialogFragment.newInstance(currentItem.seq)
-                dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartPoseDialogFragment")
-            }
-
-            holder.tvMPISummary.text = currentItem.summary
+//            holder.tvMPITitle.text = matchedSeq[currentItem.seq]
+//            setState(holder, currentItem.isNormal)
+//            Glide.with(fragment.requireContext())
+//                .load(currentItem.url)
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .apply(RequestOptions.bitmapTransform(MultiTransformation(
+//                    CenterCrop(),
+//                    RoundedCorners(20),
+//                    FlipHorizontalTransformation()
+//                )))
+//                .into(holder.ivMPI)
+//
+//
+//            holder.clMPI.setOnClickListener{
+//                (avm as AnalysisViewModel).selectedSeq = currentItem.seq
+//                val dialog = MainPartPoseDialogFragment.newInstance(currentItem.seq)
+//                dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartPoseDialogFragment")
+//            }
+//
+//            holder.tvMPISummary.text = currentItem.summary
         }
     }
 

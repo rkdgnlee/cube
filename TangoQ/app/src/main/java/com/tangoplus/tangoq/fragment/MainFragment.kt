@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +44,7 @@ import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.dialog.ProgramAlertDialogFragment
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import com.tangoplus.tangoq.function.MeasurementManager.findCurrentIndex
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
@@ -86,7 +88,6 @@ class MainFragment : Fragment() {
 
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
-
         // ------# 알람 intent #------
         binding.ibtnMAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
@@ -101,6 +102,16 @@ class MainFragment : Fragment() {
         if (isFirstRun("GuideDialogFragment_isFirstRun")) {
             val dialog = GuideDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "GuideDialogFragment")
+        }
+
+        binding.clM1.setOnClickListener{
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, MeasureDetailFragment())
+                addToBackStack(null)
+                commit()
+            }
+            // MeasureDetail로 가면서 생기는 measureTab누르기 방지
+            (activity as MainActivity).binding.bnbMain.setOnItemSelectedListener(null)
         }
 
         when (isNetworkAvailable(requireContext())) {
@@ -150,15 +161,6 @@ class MainFragment : Fragment() {
         val partAdapter = PartRVAdapter(this@MainFragment, filteredParts?.toMutableList())
         binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
-//        // ------# item 반짝이기 #------
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            val animationController = PartAnimationController(
-//                recyclerView = binding.rvM1,
-//                itemCount = partAdapter.itemCount
-//            )
-//            animationController.startSequentialAnimation()
-//        }, 500)
-        // ------# balance check #------
 
         val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvM3.layoutManager = layoutManager2
@@ -221,12 +223,7 @@ class MainFragment : Fragment() {
                         Log.v("VM선택날짜", "mvm.selectedMeasureDate: $selectedDate")
                         val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
                         Log.v("메인Date", "dateIndex: ")
-                        // ------# 매칭 프로그램이 있는지 없는지 확인하기 #------
-//                        if (selectedDate != measures?.get(0)?.regDate) {
-//                            setProgramButton(false)
-//                        } else {
-//                            setProgramButton(true)
-//                        }
+
                         if (dateIndex != null) {
                             measures?.get(dateIndex)?.recommendations
                             binding.tvMMeasureDate.text = measure[dateIndex].regDate.substring(0, 10)
@@ -329,22 +326,7 @@ class MainFragment : Fragment() {
                                     binding.vpM.addItemDecoration(itemDecoration)
                                     binding.llM.visibility = View.GONE
                                     binding.sflM.stopShimmer()
-                                    // ------# 최근 진행 프로그램의 상세 보기로 넘어가기 #------
-//                                    context.let { context ->
-//                                        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(),
-//                                            ContextCompat.getColor(requireContext(), R.color.mainColor),
-//                                            ContextCompat.getColor(requireContext(), R.color.mainRippleColor)).apply {
-//                                            duration = 1000
-//                                            repeatCount = ValueAnimator.INFINITE
-//                                            repeatMode = ValueAnimator.REVERSE
-//
-//                                            addUpdateListener { animator ->
-//                                                val color = animator.animatedValue as Int
-//                                                binding.btnMProgram.backgroundTintList = ColorStateList.valueOf(color)
-//                                            }
-//                                        }
-//                                        colorAnimation.start()
-//                                    }
+
                                     binding.tvMProgram.setOnClickListener {
                                         val programSn = evm.latestProgram?.programSn ?: -1
                                         val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
@@ -383,8 +365,6 @@ class MainFragment : Fragment() {
     private fun dpToPx(dp: Int) : Int {
         return (dp * resources.displayMetrics.density).toInt()
     }
-
-
 
     private fun setProgramButton(isEnabled: Boolean) {
         if (isEnabled) {

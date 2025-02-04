@@ -8,6 +8,9 @@ import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -36,10 +39,10 @@ import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard1Binding
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
-import com.tangoplus.tangoq.dialog.ReportDiseaseDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -50,6 +53,7 @@ import java.time.format.DateTimeFormatter
 class MeasureDashBoard1Fragment : Fragment() {
     lateinit var binding : FragmentMeasureDashboard1Binding
     val viewModel : MeasureViewModel by activityViewModels()
+
     private var balloon : Balloon? = null
     private var measures : MutableList<MeasureVO>? = null
 
@@ -179,8 +183,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                         lcDataList.add(Pair("", 20))
                     }
 
-               } else if (measureSize != null && measureSize <= 7 && measureSize >= 1){
-                   for (i in 0 until (7 - measureSize)) {
+               } else if (measureSize != null && measureSize <= 5 && measureSize >= 1){
+                   for (i in 0 until (5 - measureSize)) {
                        lcDataList.add(Pair("", 20))
                    }
                    for (i in measureSize - 1 downTo 0) {
@@ -192,7 +196,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                        }
                    }
                } else {
-                    for (i in 6 downTo 0) {
+                    for (i in 4 downTo 0) {
                         val measureUnit = measures?.get(i)
                         val regDate = measureUnit?.regDate
                         val overall = measureUnit?.overall?.toInt()
@@ -213,6 +217,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             for (i in startIndex until lcDataList.size) {
                 lcEntries.add(Entry((i - startIndex).toFloat(), lcDataList[i].second.toFloat()))
             }
+            // lcdatalist 5개
             Log.v("lcDataList", "$lcDataList")
             val lcLineDataSet = LineDataSet(lcEntries, "")
             lcLineDataSet.apply {
@@ -300,7 +305,9 @@ class MeasureDashBoard1Fragment : Fragment() {
             }
             // ------! 날짜 기간 가져오기 끝 !------
 
-            // ------! 값 클릭 시 벌룬 나오기 시작 !------
+            // ------! 값 클릭 시 벌룬 나오기 시작 !------+
+            setScoresDates(lcDataList)
+
             lineChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
                 override fun onValueSelected(e: Entry?, h: Highlight?) {
                     e?.let { entry ->
@@ -342,9 +349,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                 percentage = calculatePercentage(userPercentile)
             }
 
-
             animateArrowToPercentage(percentage)
-            animateCardViewToPercentage()
+//            animateCardViewToPercentage()
             when (percentage) {
                 in 0f .. 0.3f -> {
                     binding.vMD1Middle.visibility = View.INVISIBLE
@@ -407,7 +413,13 @@ class MeasureDashBoard1Fragment : Fragment() {
         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
         // 현재 horizontalBias
         val startBias = params.horizontalBias
-        val endBias = percent // 이동할 목표 위치
+
+        val endBias = when (percent) {
+            in 0f .. 33f -> 0.135f
+            in 34f .. 66f -> 0.5f
+            in 65f .. 100f -> 0.875f
+            else -> 0f
+        } // 이동할 목표 위치
 
         // ValueAnimator 생성
         val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
@@ -423,44 +435,37 @@ class MeasureDashBoard1Fragment : Fragment() {
         animator.start()
     }
 
-    private fun animateCardViewToPercentage() {
-        val params = binding.cvMD1.layoutParams as ConstraintLayout.LayoutParams
-        val startBias = params.horizontalBias
-        val endBias = 1.0f // 이동할 목표 위치
-
-        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
-            duration = 1000L // 1초 동안 애니메이션
-            interpolator = AccelerateDecelerateInterpolator()
-            addUpdateListener { animation ->
-                val animatedValue = animation.animatedValue as Float
-                params.horizontalBias = animatedValue
-                binding.cvMD1.layoutParams = params
-            }
-        }
-        animator.start()
-    }
-
-//    private fun animateChart(chart: LineChart, dataSet: LineDataSet, allEntries: List<Entry>) {
-//        if (allEntries.isEmpty()) {
-//            Log.e("Error", "allEntries is empty. No data to animate.")
-//            return
-//        }
+//    private fun animateCardViewToPercentage() {
+//        val params = binding.cvMD1.layoutParams as ConstraintLayout.LayoutParams
+//        val startBias = params.horizontalBias
+//        val endBias = 1.0f // 이동할 목표 위치
 //
-//        val animator = ValueAnimator.ofInt(0, allEntries.size.coerceAtLeast(1)).apply {
-//            duration = 1000L
+//        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+//            duration = 1000L // 1초 동안 애니메이션
 //            interpolator = AccelerateDecelerateInterpolator()
 //            addUpdateListener { animation ->
-//                val currentIndex = animation.animatedValue as Int
-//                if (currentIndex in 0..allEntries.size) {
-//                    dataSet.values = allEntries.subList(0, currentIndex)
-//                    chart.data.notifyDataChanged()
-//                    chart.notifyDataSetChanged()
-//                    chart.invalidate()
-//                } else {
-//                    Log.e("Error", "Invalid currentIndex: $currentIndex, allEntries size: ${allEntries.size}")
-//                }
+//                val animatedValue = animation.animatedValue as Float
+//                params.horizontalBias = animatedValue
+//                binding.cvMD1.layoutParams = params
 //            }
 //        }
 //        animator.start()
 //    }
+
+    private fun setScoresDates(entries:  MutableList<Pair<String, Int>>) {
+        val tvMD1s = listOf(binding.tvMD11, binding.tvMD12, binding.tvMD13, binding.tvMD14, binding.tvMD15)
+        for (i in 0 until 5) {
+            val selectedData = entries[i]
+            if (selectedData.first != "") {
+                val message = SpannableString("${selectedData.second}점\n${selectedData.first.substring(5, 10).replace("-",".")}")
+                message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.subColor700)), message.indexOf("\n"), message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                tvMD1s[i].text = message
+
+            } else {
+                val bodyText =  "기록없음"
+                tvMD1s[i].text =bodyText
+            }
+            tvMD1s[i].textSize = if (isTablet(requireContext())) 18f else 15f
+        }
+    }
 }

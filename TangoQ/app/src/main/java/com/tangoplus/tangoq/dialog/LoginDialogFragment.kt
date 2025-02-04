@@ -16,6 +16,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
+import android.text.style.LeadingMarginSpan
 import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.LayoutInflater
@@ -201,15 +202,12 @@ class LoginDialogFragment : DialogFragment() {
     }
 
     private fun makeMaterialDialog(case: Int, retryAfter : Int) {
-        var message = when (case) {
+        val message = when (case) {
             0 -> "비밀번호 또는 아이디가 올바르지 않습니다.\n로그인을 3회 이상 실패했을 경우 일정 시간 제한될 수 있습니다."
             1 -> "반복적인 로그인 실패로, 로그인이 ${retryAfter}초 동안 제한됩니다."
             2 -> "비밀번호를 10회 틀려 계정이 잠겼습니다.\n고객센터로 문의해주세요"
             else -> ""
         }
-
-
-
 
         MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
             setTitle("⚠️ 알림")

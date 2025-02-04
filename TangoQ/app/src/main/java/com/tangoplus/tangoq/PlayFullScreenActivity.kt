@@ -234,7 +234,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             }
 
                         } else {
-                            CoroutineScope(Dispatchers.IO).launch {
+                            CoroutineScope(Dispatchers.Main).launch {
                                 sendEVP(false) {
                                     val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                                     startActivity(intent)

@@ -121,7 +121,7 @@ class TrendRVAdapter(private val fragment: Fragment,
                     setState(holder, index, splitState(score))
                     // 오른쪽 balloon comment init
                     val rightRawData = String.format("%.2f", unit.rawData) + if (unit.columnName.contains("angle")) "°" else "cm"
-                    val rightComment = "우측: $rightRawData\n$title\n${setLabels(unit)}"
+                    val rightComment = "우측: $rightRawData\n$title\n${setLabels(unit.columnName)}"
                     setBalloon(holder.cls[index], index, rightComment)
                 }
 
@@ -155,7 +155,7 @@ class TrendRVAdapter(private val fragment: Fragment,
 
                         // 오른쪽 balloon comment init
                         val rightRawData = String.format("%.2f", rightUnit.rawData) + if (rightUnit.columnName.contains("angle")) "°" else "cm"
-                        val rightComment = "우측: $rightRawData\n${setLabels(rightUnit)}"
+                        val rightComment = "우측: $rightRawData\n${setLabels(rightUnit.summary)}"
                         setBalloon(holder.cls[indexIn], indexIn, "$leftComment $rightComment")
                     }
                 }

@@ -14,6 +14,7 @@ class MyApplication : Application() {
     lateinit var preferencesManager: PreferencesManager
     private var startedActivities  = 0
     private var isAppInBackground = false
+    private var isBiometricSuccess = false
     val fragmentStack = mutableListOf<Fragment>()
     override fun onCreate() {
         super.onCreate()
@@ -38,7 +39,7 @@ class MyApplication : Application() {
                 startedActivities--
                 if (startedActivities == 0) {
                     isAppInBackground = true
-
+                    clearBiometricSuccess()
 
                     // 앱이 백그라운드로 갔을 때
                 }
@@ -51,11 +52,23 @@ class MyApplication : Application() {
                 if (startedActivities == 0 && isAppInBackground) {
                     // 앱이 완전히 종료되는 시점
                     clearDir()
-
-
+                    clearBiometricSuccess()
                 }
             }
         })
+    }
+
+    fun setBiometricSuccess() {
+        isBiometricSuccess = true
+        Log.v("biometricSuccess", "setBiometricSuccess $isBiometricSuccess")
+    }
+    fun clearBiometricSuccess() {
+        isBiometricSuccess = false
+        Log.v("biometricSuccess", "clearBiometricSuccess $isBiometricSuccess")
+    }
+    fun verifyBiometric() : Boolean {
+        Log.v("biometricSuccess", "verifyBiometric $isBiometricSuccess")
+        return isBiometricSuccess
     }
 
     fun clearFragmentStack() {

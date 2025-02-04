@@ -118,6 +118,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20))
+
         dialog?.setCancelable(false)
         if (isTablet(requireContext())) {
             dialogFragmentResize(requireContext(), this, width =  0.6f ,height = 0.4f)

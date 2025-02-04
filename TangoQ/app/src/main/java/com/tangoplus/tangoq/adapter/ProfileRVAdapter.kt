@@ -181,9 +181,9 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         when (holder.tvPfSettingsName.text) {
                             "이름" -> {
                                 val userName = userJson.optString("user_name")
-                                if (isKorean(userName)) holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
-                                else holder.tvPfInfo.text = maskedProfileData(userName)
-
+//                                if (isKorean(userName)) holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
+//                                else holder.tvPfInfo.text = maskedProfileData(userName)
+                                holder.tvPfInfo.text = userName
                                 holder.ivPf.setImageResource(R.drawable.icon_profile)
                             }
                             "이메일" -> {

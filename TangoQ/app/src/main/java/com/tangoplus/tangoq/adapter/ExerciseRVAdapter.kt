@@ -172,6 +172,7 @@ class ExerciseRVAdapter (
 //                    updateLikeButtonState(currentExerciseItem?.exerciseId.toString(), holder.ibtnEILike)
 //                }
 
+                    // progresses를 보는 곳
                     if (!progresses.isNullOrEmpty() && sequence != null ) {
 
                         /* Pair(pvm.currentSequence, pvm.selectedSequence.value))
@@ -225,29 +226,38 @@ class ExerciseRVAdapter (
                                 if (duration != null) {
                                     holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
                                 }
-                                Log.v("hpvprogresses", "${holder.hpvEI.progress}")
+//                                Log.v("hpvprogresses", "${holder.hpvEI.progress}")
                                 holder.hpvEI.autoAnimate = true
                             }
                             else -> { // 재생기록 없는 item
                                 holder.tvEIFinish.visibility = View.GONE
                             }
                         }
-                    } else {
-                        // ------ # PlayThumbnail #------
-                        holder.vEI.setOnClickListener {
-                            val dialogFragment = PlayThumbnailDialogFragment().apply {
-                                arguments = Bundle().apply {
-                                    putParcelable("ExerciseUnit", currentExerciseItem)
-                                }
-                                setDialogCloseListener(object : PlayThumbnailDialogFragment.DialogCloseListener {
-                                    override fun onDialogClose() {
-                                        dialogClosedListener?.onDialogClosed()
-                                    }
-                                })
-                            }
-                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-                        }
                     }
+                    holder.vEI.setOnClickListener {
+                        val dialogFragment = PlayThumbnailDialogFragment().apply {
+                            arguments = Bundle().apply {
+                                putParcelable("ExerciseUnit", currentExerciseItem)
+                            }
+                        }
+                        dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                    }
+//                    else {
+//                        // ------ # PlayThumbnail #------
+//                        holder.vEI.setOnClickListener {
+//                            val dialogFragment = PlayThumbnailDialogFragment().apply {
+//                                arguments = Bundle().apply {
+//                                    putParcelable("ExerciseUnit", currentExerciseItem)
+//                                }
+//                                setDialogCloseListener(object : PlayThumbnailDialogFragment.DialogCloseListener {
+//                                    override fun onDialogClose() {
+//                                        dialogClosedListener?.onDialogClosed()
+//                                    }
+//                                })
+//                            }
+//                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+//                        }
+//                    }
                     // ------# MD2 #------
                     if (MDHistory != null) {
                         // ------# 완료된 항목만 들어오니, 테이블에 contentId, user식별자, 만 있고, 그렇게 해도 될 것 같은데?
@@ -323,7 +333,7 @@ class ExerciseRVAdapter (
                 holder.tvEHISeq.text = "${position+1}/${exerciseList?.size}"
 
                 // Main History 버튼 클릭 > 바로 재생
-                holder.clEHI.setOnSingleClickListener{
+                holder.clEHI.setOnSingleClickListener {
                     val videoUrls = mutableListOf<String>()
                     val exerciseIds = mutableListOf<String>()
                     val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용

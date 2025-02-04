@@ -23,6 +23,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -146,7 +148,11 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
         binding.tvPTDRelatedMuscle.text = exerciseData?.relatedMuscle.toString()
 //        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
-
+        Glide.with(requireContext())
+            .load("${exerciseData?.imageFilePath}")
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .override(1080)
+            .into(binding.ivPTD)
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
         val networkType = wm.checkNetworkType()
         Log.v("networkType", networkType)
@@ -155,16 +161,16 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 initPlayer()
             }
             else -> {
-                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                    setTitle("데이터 사용 알림")
-                    setMessage("셀룰러 네트워크 데이터를 사용하면 추가 요금이 부과될 수 있습니다.")
-                    setPositiveButton("재생") { _, _ ->
-                        initPlayer()
-                    }
-                    setNegativeButton("취소") { _, _ ->
-
-                    }
-                }.show()
+//                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+//                    setTitle("데이터 사용 알림")
+//                    setMessage("셀룰러 네트워크 데이터를 사용하면 추가 요금이 부과될 수 있습니다.")
+//                    setPositiveButton("재생") { _, _ ->
+//                        initPlayer()
+//                    }
+//                    setNegativeButton("취소") { _, _ ->
+//
+//                    }
+//                }.show()
             }
         }
         // ------! 관련 관절, 근육 recyclerview 시작 !------
@@ -204,47 +210,51 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         } // ------! 하단 운동 시작 버튼 끝 !------
 
-//        // ------# 전체화면 구현 로직 시작 #------
-        val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
-        exitButton.setOnClickListener {
+        binding.ibtnPTDExit.setOnClickListener {
             dismiss()
         }
 
-        val exoPlay = binding.pvPTD.findViewById<ImageButton>(R.id.btnPlay)
-        val exoPause = binding.pvPTD.findViewById<ImageButton>(R.id.btnPause)
-        exoPause?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == true) {
-                simpleExoPlayer?.pause()
-                exoPause.visibility = View.GONE
-                exoPlay.visibility = View.VISIBLE
-            }
-        }
-        exoPlay?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == false) {
-                simpleExoPlayer?.play()
-                exoPause.visibility = View.VISIBLE
-                exoPlay.visibility = View.GONE
-            }
-        }
-        // ------! 앞으로 감기 뒤로 감기 시작 !------
-        val replay5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_replay_5)
-        val forward5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_forward_5)
-        replay5.setOnClickListener {
-            val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
-            if (replayPosition != null) {
-                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition))
-            }
-        }
-        forward5.setOnClickListener {
-            val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
-            if (forwardPosition != null) {
-                if (forwardPosition < (simpleExoPlayer?.duration?.minus(5000) ?: 0)) {
-                    simpleExoPlayer?.seekTo(forwardPosition)
-                } else {
-                    simpleExoPlayer?.pause()
-                }
-            }
-        } // ------! 앞으로 감기 뒤로 감기 끝 !------
+//        // ------# 전체화면 구현 로직 시작 #------
+//        val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
+//        exitButton.setOnClickListener {
+//            dismiss()
+//        }
+//
+//        val exoPlay = binding.pvPTD.findViewById<ImageButton>(R.id.btnPlay)
+//        val exoPause = binding.pvPTD.findViewById<ImageButton>(R.id.btnPause)
+//        exoPause?.setOnClickListener {
+//            if (simpleExoPlayer?.isPlaying == true) {
+//                simpleExoPlayer?.pause()
+//                exoPause.visibility = View.GONE
+//                exoPlay.visibility = View.VISIBLE
+//            }
+//        }
+//        exoPlay?.setOnClickListener {
+//            if (simpleExoPlayer?.isPlaying == false) {
+//                simpleExoPlayer?.play()
+//                exoPause.visibility = View.VISIBLE
+//                exoPlay.visibility = View.GONE
+//            }
+//        }
+//        // ------! 앞으로 감기 뒤로 감기 시작 !------
+//        val replay5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_replay_5)
+//        val forward5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_forward_5)
+//        replay5.setOnClickListener {
+//            val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
+//            if (replayPosition != null) {
+//                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition))
+//            }
+//        }
+//        forward5.setOnClickListener {
+//            val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
+//            if (forwardPosition != null) {
+//                if (forwardPosition < (simpleExoPlayer?.duration?.minus(5000) ?: 0)) {
+//                    simpleExoPlayer?.seekTo(forwardPosition)
+//                } else {
+//                    simpleExoPlayer?.pause()
+//                }
+//            }
+//        } // ------! 앞으로 감기 뒤로 감기 끝 !------
 
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
@@ -314,13 +324,12 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     }
 
     private fun initPlayer(){
-        simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        binding.pvPTD.player = simpleExoPlayer
-        buildMediaSource().let {
-            simpleExoPlayer?.prepare(it)
-        }
-        simpleExoPlayer?.seekTo(playbackPosition)
-
+//        simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
+//        binding.pvPTD.player = simpleExoPlayer
+//        buildMediaSource().let {
+//            simpleExoPlayer?.prepare(it)
+//        }
+//        simpleExoPlayer?.seekTo(playbackPosition)
     }
 
     private fun buildMediaSource() : MediaSource {

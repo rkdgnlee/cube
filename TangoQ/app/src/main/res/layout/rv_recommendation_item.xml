@@ -7,7 +7,7 @@
     android:layout_height="64dp"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
-    android:background="@drawable/bckgnd_2_main_20">
+    android:background="@drawable/bckgnd_1_sub200_12">
 
     <TextView
         android:id="@+id/tvPI"
@@ -17,7 +17,7 @@
         android:layout_marginEnd="10dp"
         android:text="__"
         android:textColor="@color/subColor800"
-        android:textSize="18dp"
+        android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView4"
         app:layout_constraintStart_toEndOf="@+id/ivPIThumbnail"
