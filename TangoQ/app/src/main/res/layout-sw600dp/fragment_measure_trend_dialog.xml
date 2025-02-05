@@ -58,7 +58,7 @@
                 android:inputType="none"
                 android:text="선택"
                 android:textColor="@color/subColor800"
-                android:textSize="16dp"
+                android:textSize="18dp"
                 app:dropDownBackgroundTint="@color/white" />
             />
 
@@ -110,7 +110,7 @@
                 android:inputType="none"
                 android:text="2024-10-31 "
                 android:textColor="@color/subColor800"
-                android:textSize="16dp"
+                android:textSize="18dp"
                 app:dropDownBackgroundTint="@color/white" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -139,7 +139,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView30"
-                    app:layout_constraintWidth_percent="0.8"
                     tools:ignore="NotSibling">
 
                     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
@@ -168,7 +167,7 @@
                         android:id="@+id/clMTDLeft"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -200,10 +199,10 @@
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_left1"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginStart="12dp"
-                                android:layout_marginTop="12dp"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:layout_marginStart="40dp"
+                                android:layout_marginTop="40dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -219,16 +218,16 @@
                                     android:gravity="center"
                                     android:text="L"
                                     android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:textSize="20dp" />
                             </androidx.cardview.widget.CardView>
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_right1"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
                                 android:layout_gravity="end"
-                                android:layout_marginTop="12dp"
-                                android:layout_marginEnd="12dp"
+                                android:layout_marginTop="40dp"
+                                android:layout_marginEnd="40dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -244,7 +243,7 @@
                                     android:gravity="center"
                                     android:text="R"
                                     android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:textSize="20dp" />
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
@@ -256,18 +255,21 @@
                             app:layout_constraintEnd_toEndOf="@id/flMTDLeft"
                             app:layout_constraintStart_toStartOf="@id/flMTDLeft"
                             app:layout_constraintTop_toTopOf="@id/flMTDLeft" />
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clMTDRight"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:visibility="visible"
+                        android:background="#FF7979"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
                         app:layout_constraintWidth_percent="0.5">
 
                         <FrameLayout
@@ -293,10 +295,10 @@
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_left2"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginStart="12dp"
-                                android:layout_marginTop="12dp"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:layout_marginStart="40dp"
+                                android:layout_marginTop="40dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -312,16 +314,16 @@
                                     android:gravity="center"
                                     android:text="L"
                                     android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:textSize="20dp" />
                             </androidx.cardview.widget.CardView>
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_right2"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
                                 android:layout_gravity="end"
-                                android:layout_marginTop="12dp"
-                                android:layout_marginEnd="12dp"
+                                android:layout_marginTop="40dp"
+                                android:layout_marginEnd="40dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -337,7 +339,7 @@
                                     android:gravity="center"
                                     android:text="R"
                                     android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:textSize="20dp" />
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
@@ -365,7 +367,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.2"
-                        app:layout_constraintStart_toStartOf="@+id/ssivMTDLeft" />
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <Spinner
                         android:id="@+id/spnrMTDSeqRight"
@@ -393,6 +395,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/clMTD" />
+
+                <TextView
+                    android:id="@+id/tvMTDAlert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="이전 날짜를 선택해\n비교해보세요"
+                    android:textColor="@color/subColor700"
+                    android:textSize="24dp"
+                    app:layout_constraintBottom_toBottomOf="@id/clMTD"
+                    app:layout_constraintEnd_toEndOf="@id/clMTD"
+                    app:layout_constraintHorizontal_bias="0.2"
+                    app:layout_constraintStart_toStartOf="@id/clMTD"
+                    app:layout_constraintTop_toTopOf="@id/clMTD" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

@@ -1,8 +1,10 @@
 package com.tangoplus.tangoq.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tangoplus.tangoq.vo.AnalysisVO
+import com.tangoplus.tangoq.vo.DateDisplay
 import com.tangoplus.tangoq.vo.MeasureVO
 import org.json.JSONArray
 
@@ -11,8 +13,25 @@ class AnalysisViewModel : ViewModel() {
     // ------# 비교할 measure 담을 공간 #------
     val leftMeasurement = MutableLiveData<MeasureVO>()
     val rightMeasurement = MutableLiveData<MeasureVO>()
-    var leftSelectedIndex = MutableLiveData<Int>()
-    var rightSelectedIndex = MutableLiveData<Int>()
+
+    // actv에 연결할 날짜들
+    var leftMeasureDate = MutableLiveData<DateDisplay>()
+    var rightMeasureDate = MutableLiveData<DateDisplay>()
+    var measureDisplayDates = listOf<DateDisplay>()
+    fun createDateDisplayList(measures: List<MeasureVO>): List<DateDisplay> {
+        return measures.map { measure ->
+            DateDisplay(
+                fullDateTime = measure.regDate,
+                displayDate = "${measure.regDate.substring(0, 11)}\n${measure.userName}"
+            )
+        }
+    }
+    // 필터링 함수 수정: 좌우에서 선택된 값은 제외
+    fun getFilteredDates(excludeDates: List<DateDisplay>): List<DateDisplay> {
+        return measureDisplayDates.filter { date ->
+            excludeDates.none { it.fullDateTime == date.fullDateTime }
+        }
+    }
     // ------# risk part 선택 -> dialog #------
     var relatedAnalyzes = mutableListOf<AnalysisVO>()
     // ------# MainPartAnalysis #------
@@ -22,6 +41,10 @@ class AnalysisViewModel : ViewModel() {
     var rightAnalyzes :MutableList<MutableList<AnalysisVO>>? = null
     var trendLeftUri: String? = null
     var trendRightUri : String? = null
+
+    var currentIndex : Int = 0
+
+
 
     private var leftPlaybackPosition = 0L
     private var leftwindowIndex = 0

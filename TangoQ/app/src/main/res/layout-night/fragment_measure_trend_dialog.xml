@@ -166,7 +166,9 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clMTDLeft"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -180,8 +182,10 @@
                             android:visibility="visible"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0">
 
                             <com.google.android.exoplayer2.ui.PlayerView
                                 android:id="@+id/pvMTDLeft"
@@ -193,6 +197,54 @@
                                 app:surface_type="surface_view"
                                 app:use_controller="true" />
 
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cv_exo_left1"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginStart="12dp"
+                                android:layout_marginTop="12dp"
+                                android:visibility="visible"
+                                app:cardBackgroundColor="#41000000"
+                                app:cardCornerRadius="48dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <TextView
+                                    android:id="@+id/textView35"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#00FFFFFF"
+                                    android:gravity="center"
+                                    android:text="L"
+                                    android:textColor="@color/whiteText"
+                                    android:textSize="14dp" />
+                            </androidx.cardview.widget.CardView>
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cv_exo_right1"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginEnd="12dp"
+                                android:visibility="visible"
+                                app:cardBackgroundColor="#41000000"
+                                app:cardCornerRadius="48dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <TextView
+                                    android:id="@+id/textView122"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#00FFFFFF"
+                                    android:gravity="center"
+                                    android:text="R"
+                                    android:textColor="@color/whiteText"
+                                    android:textSize="14dp" />
+                            </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
                         <com.tangoplus.tangoq.mediapipe.OverlayView
@@ -203,26 +255,33 @@
                             app:layout_constraintEnd_toEndOf="@id/flMTDLeft"
                             app:layout_constraintStart_toStartOf="@id/flMTDLeft"
                             app:layout_constraintTop_toTopOf="@id/flMTDLeft" />
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clMTDRight"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:background="#FF7979"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
                         app:layout_constraintWidth_percent="0.5">
 
                         <FrameLayout
                             android:id="@+id/flMTDRight"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="1.0"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0">
 
                             <com.google.android.exoplayer2.ui.PlayerView
                                 android:id="@+id/pvMTDRight"
@@ -234,6 +293,54 @@
                                 app:surface_type="surface_view"
                                 app:use_controller="true" />
 
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cv_exo_left2"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginStart="12dp"
+                                android:layout_marginTop="12dp"
+                                android:visibility="visible"
+                                app:cardBackgroundColor="#41000000"
+                                app:cardCornerRadius="48dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <TextView
+                                    android:id="@+id/textView134"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#00FFFFFF"
+                                    android:gravity="center"
+                                    android:text="L"
+                                    android:textColor="@color/whiteText"
+                                    android:textSize="14dp" />
+                            </androidx.cardview.widget.CardView>
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cv_exo_right2"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginEnd="12dp"
+                                android:visibility="visible"
+                                app:cardBackgroundColor="#41000000"
+                                app:cardCornerRadius="48dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <TextView
+                                    android:id="@+id/textView136"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#00FFFFFF"
+                                    android:gravity="center"
+                                    android:text="R"
+                                    android:textColor="@color/whiteText"
+                                    android:textSize="14dp" />
+                            </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
                         <com.tangoplus.tangoq.mediapipe.OverlayView
@@ -257,9 +364,10 @@
                         android:paddingTop="2dp"
                         android:paddingEnd="6dp"
                         android:paddingBottom="2dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/ssivMTDLeft"
-                        app:layout_constraintEnd_toEndOf="@+id/ssivMTDLeft"
-                        app:layout_constraintStart_toStartOf="@+id/ssivMTDLeft" />
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.2"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <Spinner
                         android:id="@+id/spnrMTDSeqRight"
@@ -272,9 +380,10 @@
                         android:paddingTop="2dp"
                         android:paddingEnd="6dp"
                         android:paddingBottom="2dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/ssivMTDRight"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/ssivMTDLeft" />
+                        app:layout_constraintHorizontal_bias="0.8"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -286,6 +395,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/clMTD" />
+
+                <TextView
+                    android:id="@+id/tvMTDAlert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="이전 날짜를 선택해\n비교해보세요"
+                    android:textColor="@color/subColor700"
+                    android:textSize="20dp"
+                    app:layout_constraintBottom_toBottomOf="@id/clMTD"
+                    app:layout_constraintEnd_toEndOf="@id/clMTD"
+                    app:layout_constraintHorizontal_bias="0.1"
+                    app:layout_constraintStart_toStartOf="@id/clMTD"
+                    app:layout_constraintTop_toTopOf="@id/clMTD" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

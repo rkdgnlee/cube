@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="110dp"
     android:layout_marginTop="10dp"
+    android:layout_marginEnd="20dp"
     android:layout_marginBottom="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="10dp"
         android:layout_weight="1"
         android:background="@drawable/bckgnd_2_sub100_12">
 
@@ -89,7 +89,7 @@
         android:id="@+id/clDDI2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
         android:layout_weight="1.05"
         android:background="@drawable/bckgnd_2_sub100_12">
 

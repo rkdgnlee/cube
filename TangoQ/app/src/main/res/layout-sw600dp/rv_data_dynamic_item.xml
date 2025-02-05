@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="160dp"
     android:layout_marginTop="20dp"
+    android:layout_marginEnd="40dp"
     android:layout_marginBottom="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="40dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="0dp"
         android:layout_weight="1"
         android:background="@drawable/bckgnd_1_sub150_20">
 
@@ -87,8 +88,7 @@
         android:id="@+id/clDDI2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
         android:layout_weight="1"
         android:background="@drawable/bckgnd_1_sub150_20">
 

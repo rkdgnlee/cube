@@ -193,6 +193,7 @@
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="@+id/lcMD1"
                     app:layout_constraintEnd_toEndOf="@+id/lcMD1"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="@+id/lcMD1"
                     app:layout_constraintTop_toTopOf="@+id/lcMD1">
 

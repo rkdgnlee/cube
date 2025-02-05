@@ -422,7 +422,7 @@ class MeasureDashBoard1Fragment : Fragment() {
         } // 이동할 목표 위치
 
         // ValueAnimator 생성
-        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+        val animator = ValueAnimator.ofFloat(0.5f, endBias).apply {
             duration = 1000L // 1초 동안 애니메이션
             interpolator = AccelerateDecelerateInterpolator() // 가속/감속 효과
 

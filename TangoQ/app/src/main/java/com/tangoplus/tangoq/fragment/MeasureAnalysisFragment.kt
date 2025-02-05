@@ -1,5 +1,7 @@
 package com.tangoplus.tangoq.fragment
 
+import android.content.res.ColorStateList
+import android.hardware.display.DisplayManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -17,6 +19,7 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -39,11 +42,14 @@ import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
 import com.tangoplus.tangoq.function.BiometricManager
+import com.tangoplus.tangoq.function.MeasurementManager.createSummary
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
@@ -82,6 +88,7 @@ class MeasureAnalysisFragment : Fragment() {
     private var cvLeft : CardView? = null
     private var cvRight : CardView? = null
     private lateinit var dynamicJa: JSONArray
+    private lateinit var adapterAnalysises : List<AnalysisVO>
     companion object {
         private const val ARG_PART = "painParts"
         fun newInstance(painPart: String): MeasureAnalysisFragment {
@@ -113,6 +120,7 @@ class MeasureAnalysisFragment : Fragment() {
                 mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
                 Log.v("현재측정2", "$mr")
                 avm.mafMeasureResult = JSONArray()
+
                 Log.v("현재측정", mvm.selectedMeasure?.regDate.toString())
                 pvm.videoUrl = null
                 simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
@@ -137,93 +145,23 @@ class MeasureAnalysisFragment : Fragment() {
                     groupedAnalyses[indexx]?.add(analyses)
                 }
 
-                val adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
+                adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
                     AnalysisVO(
                         indexx = indexx,
                         labels = analysesList.flatten().toMutableList()
                     )
                 }.sortedBy { it.indexx }
-                Log.v("어댑터들어가는Analysis", "${adapterAnalysises}")
 
-                //
                 binding.tvMATitle.text = "$painPart 자세히 보기"
-                binding.tlMA.addOnTabSelectedListener(object: OnTabSelectedListener{
-                    override fun onTabSelected(tab: TabLayout.Tab?) {
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            when (tab?.position) {
-                                0 -> {
-                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 0, binding.ssivAI1, "mainPart")
-                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 2, binding.ssivAI2, "mainPart")
-                                    binding.tvAIPart1.text = "정면 측정"
-                                    binding.tvAIPart2.text = "팔꿉 측정"
-                                }
-                                1 -> {
-
-                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 3, binding.ssivAI1, "mainPart")
-                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 4, binding.ssivAI2, "mainPart")
-                                    binding.tvAIPart1.text = "좌측 측정"
-                                    binding.tvAIPart2.text = "우측 측정"
-                                }
-                                2 -> {
-
-                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 5, binding.ssivAI1, "mainPart")
-                                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 6, binding.ssivAI2, "mainPart")
-                                    binding.tvAIPart1.text = "후면 측정"
-                                    binding.tvAIPart2.text = "앉은 후면"
-                                }
-                                3 -> {
-                                    dynamicJa = mvm.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
-                                    withContext(Dispatchers.Main) {
-
-                                        pvm.setPlaybackPosition(0L)
-                                        pvm.setWindowIndex(0)
-
-                                        exoPlay = view.findViewById(R.id.btnPlay)
-                                        exoPause = view.findViewById(R.id.btnPause)
-                                        llSpeed = view.findViewById(R.id.llSpeed)
-                                        btnSpeed = view.findViewById(R.id.btnSpeed)
-
-                                        exo05 = view.findViewById(R.id.btn05)
-                                        exo075 = view.findViewById(R.id.btn075)
-                                        exo10 = view.findViewById(R.id.btn10)
-
-
-                                        setClickListener()
-                                        setPlayer()
-                                    }
-                                }
-                            }
-
-                            if (tab?.position != 3) {
-                                binding.cvExoLeft.visibility = View.GONE
-                                binding.cvExoRight.visibility = View.GONE
-                                binding.flAI.visibility = View.GONE
-                            } else {
-                                binding.cvExoLeft.visibility = View.VISIBLE
-                                binding.cvExoRight.visibility = View.VISIBLE
-                                binding.flAI.visibility = View.VISIBLE
-                            }
-                            withContext(Dispatchers.Main) {
-                                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                                val adapter = MainPartAnalysisRVAdapter(this@MeasureAnalysisFragment, adapterAnalysises[tab?.position ?: 0].labels)
-                                binding.rvAI.layoutManager = layoutManager
-                                binding.rvAI.adapter = adapter
-                            }
-                        }
-                    }
-                    override fun onTabUnselected(tab: TabLayout.Tab?) {}
-                    override fun onTabReselected(tab: TabLayout.Tab?) {}
-                })
-
-                // ------# tab 완료 #------
-
                 val myApplication = requireActivity().application as MyApplication
                 myApplication.setBiometricSuccess()
-                binding.tlMA.post {
-                    Log.v("탭위치", "${binding.tlMA.clearFocus()}")
-                    binding.tlMA.getTabAt(1)?.select()
-                    binding.tlMA.getTabAt(0)?.select()
-                }
+
+                // 초기 상태
+                avm.currentIndex = 0
+                // 버튼 클릭리스너와 사진 동영상 세팅
+                updateButtonState()
+                setMedia()
+
             },
             onError = {
                 Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
@@ -235,13 +173,138 @@ class MeasureAnalysisFragment : Fragment() {
             }
         )
     }
+    // 버튼 UI
+    private fun updateButtonState() {
+        val buttons = listOf(binding.tvMA1, binding.tvMA2, binding.tvMA3, binding.tvMA4)
+        val allIndexxes = listOf(0, 1, 2, 3)
+        val missingIndexxes = allIndexxes.filterNot { index ->
+            adapterAnalysises.any { it.indexx == index }
+        }
 
+        buttons.forEachIndexed { index, button ->
+            val isActiveButton = !missingIndexxes.contains(index)
+
+            button.isEnabled = isActiveButton
+            button.backgroundTintList = when {
+                avm.currentIndex == index -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+                isActiveButton -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
+                else -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor100))
+            }
+
+            if (isActiveButton) {
+                button.setOnSingleClickListener {
+                    avm.currentIndex = index
+                    updateButtonState()  // 버튼 상태를 다시 업데이트
+                    setMedia()
+                }
+            } else {
+                button.setOnClickListener(null)
+            }
+        }
+    }
+
+
+    private fun setMedia() {
+        if (avm.currentIndex != 3) {
+            if (simpleExoPlayer != null) {
+                // clMA의 크기 조절
+                val params = binding.clAI.layoutParams
+                params.width = DisplayMetrics().widthPixels
+                params.height = binding.ssivAI1.height
+                binding.clAI.layoutParams = params
+            }
+
+            releasePlayer()
+            binding.cvExoLeft.visibility = View.GONE
+            binding.cvExoRight.visibility = View.GONE
+            binding.flAI.visibility = View.GONE
+            binding.ovAI.visibility = View.GONE
+
+            binding.ssivAI1.visibility = View.VISIBLE
+            binding.ssivAI2.visibility = View.VISIBLE
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            when (avm.currentIndex) {
+                0 -> {
+                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 0, binding.ssivAI1, "mainPart")
+                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 2, binding.ssivAI2, "mainPart")
+                    withContext(Dispatchers.Main) {
+                        binding.tvAIPart1.text = "정면 측정"
+                        binding.tvAIPart2.text = "팔꿉 측정"
+                        binding.clAI.requestLayout()
+                    }
+                }
+                1 -> {
+
+                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 3, binding.ssivAI1, "mainPart")
+                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 4, binding.ssivAI2, "mainPart")
+                    withContext(Dispatchers.Main) {
+                        binding.tvAIPart1.text = "좌측 측정"
+                        binding.tvAIPart2.text = "우측 측정"
+                        binding.tvAIPart1.requestLayout()
+                        binding.tvAIPart2.requestLayout()
+                    }
+                }
+                2 -> {
+                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 5, binding.ssivAI1, "mainPart")
+                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 6, binding.ssivAI2, "mainPart")
+                    withContext(Dispatchers.Main) {
+                        binding.tvAIPart1.text = "후면 측정"
+                        binding.tvAIPart2.text = "앉은 후면"
+                        binding.tvAIPart1.requestLayout()
+                        binding.tvAIPart2.requestLayout()
+                    }
+                }
+                3 -> {
+                    dynamicJa = mvm.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
+                    withContext(Dispatchers.Main) {
+                        pvm.setPlaybackPosition(0L)
+                        pvm.setWindowIndex(0)
+
+                        exoPlay = view?.findViewById(R.id.btnPlay)
+                        exoPause = view?.findViewById(R.id.btnPause)
+                        llSpeed = view?.findViewById(R.id.llSpeed)
+                        btnSpeed = view?.findViewById(R.id.btnSpeed)
+
+                        exo05 = view?.findViewById(R.id.btn05)
+                        exo075 = view?.findViewById(R.id.btn075)
+                        exo10 = view?.findViewById(R.id.btn10)
+
+                        binding.cvExoLeft.visibility = View.VISIBLE
+                        binding.cvExoRight.visibility = View.VISIBLE
+                        binding.flAI.visibility = View.VISIBLE
+                        binding.ovAI.visibility = View.VISIBLE
+                        binding.rvAI.visibility = View.VISIBLE
+                        setClickListener()
+                        setPlayer()
+
+                    }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                // summary 만들기
+                // TODO 서머리 부분 함수 seq2개 엮어서 summary만들게 수정하기.
+//                binding.tvMASummary.text = createSummary()
+
+                // mainPartAnalysis 연결
+                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                val adapter = MainPartAnalysisRVAdapter(this@MeasureAnalysisFragment, adapterAnalysises[avm.currentIndex].labels)
+                binding.rvAI.layoutManager = layoutManager
+                binding.rvAI.adapter = adapter
+
+            }
+        }
+    }
+    private fun releasePlayer() {
+        simpleExoPlayer?.release()
+        simpleExoPlayer = null
+    }
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {
         lifecycleScope.launch {
-            Log.v("동적측정json", "${mvm.selectedMeasure?.measureResult?.getJSONArray(1)}")
             jsonArray = mvm.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
-            Log.v("jsonDataLength", "${jsonArray.length()}")
             initPlayer()
 
             simpleExoPlayer?.addListener(object : Player.Listener {
@@ -259,16 +322,9 @@ class MeasureAnalysisFragment : Fragment() {
                             }
                         }
                     } else if (playbackState == Player.STATE_ENDED) {
-//                        val exoPlay = requireActivity().findViewById<ImageButton>(R.id.btnPlay)
                         exoPlay?.visibility = View.VISIBLE
                         exoPlay?.bringToFront()
-//                        val exoPause = requireActivity().findViewById<ImageButton>(R.id.btnPause)
                         exoPause?.visibility = View.GONE
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            simpleExoPlayer?.seekTo(0)
-//                            simpleExoPlayer?.play()
-//                        },1000)
-
                     }
                 }
             })
@@ -364,7 +420,6 @@ class MeasureAnalysisFragment : Fragment() {
                 isShownSpeed = false
                 forChanged = true
             }
-
         }
         exo10?.setOnClickListener {
             if (forChanged) {
@@ -410,7 +465,6 @@ class MeasureAnalysisFragment : Fragment() {
     }
 
     private fun updateVideoUI() {
-
         binding.ssivAI1.visibility = View.GONE
         binding.ssivAI2.visibility = View.GONE
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
@@ -424,7 +478,7 @@ class MeasureAnalysisFragment : Fragment() {
 
         val resizingValue = if (isTablet(requireContext())) {
             if (aspectRatio > 1) {
-                0.7f
+                0.55f
             } else { // 가로 (키오스크 일 때 원본 유지 )
                 1f
             }
@@ -436,25 +490,41 @@ class MeasureAnalysisFragment : Fragment() {
         params.height = (adjustedHeight * resizingValue).toInt()
         binding.clAI.layoutParams = params
 
+        val connections = listOf(
+            15, 16, 23, 24, 25, 26
+        )
+        val coordinates = extractVideoCoordinates(dynamicJa)
+        val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
+
+        for (connection in connections) {
+            val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
+            for (element in coordinates) {
+                filteredCoordinate.add(element[connection])
+            }
+            filteredCoordinates.add(filteredCoordinate)
+        }
+        Log.v("쿨디네이트", "$filteredCoordinates, $dynamicJa")
+        setVideoAdapter(filteredCoordinates)
         // llMARV를 clMA 아래에 위치시키기
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(binding.clAI)
-        constraintSet.connect(binding.rvAI.id, ConstraintSet.TOP, binding.clAI.id, ConstraintSet.BOTTOM)
-        constraintSet.applyTo(binding.clAI)
+//        val constraintSet = ConstraintSet()
+//        constraintSet.clone(binding.clAI)
+//        constraintSet.connect(binding.rvAI.id, ConstraintSet.TOP, binding.clAI.id, ConstraintSet.BOTTOM)
+//        constraintSet.applyTo(binding.clAI)
 
         // PlayerView 크기 조절 (필요한 경우)
-        val playerParams = binding.pvAI.layoutParams
-        playerParams.width = (screenWidth  * resizingValue).toInt()
-        playerParams.height = (adjustedHeight * resizingValue).toInt()
-        binding.pvAI.layoutParams = playerParams
+//        val playerParams = binding.pvAI.layoutParams
+//        playerParams.width = (screenWidth  * resizingValue).toInt()
+//        playerParams.height = (adjustedHeight * resizingValue).toInt()
+//        binding.pvAI.layoutParams = playerParams
     }
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, 0)
-//        binding.rvMALeft.layoutManager = linearLayoutManager1
-//        binding.rvMALeft.adapter = dynamicAdapter
+        binding.rvAI.layoutManager = linearLayoutManager1
+        binding.rvAI.adapter = dynamicAdapter
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -482,5 +552,9 @@ class MeasureAnalysisFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true
+    }
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
     }
 }

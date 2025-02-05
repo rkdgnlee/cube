@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
@@ -26,7 +25,6 @@ import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.BalanceRVAdapter
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
@@ -226,10 +224,10 @@ class MeasureDetailFragment : Fragment() {
     }
 
     private fun setAdapter(stages: MutableList<MutableList<String>>, degrees: MutableList<Pair<Int,Int>>) {
-        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvMD.layoutManager = layoutManager
-        val balanceAdapter = BalanceRVAdapter(this@MeasureDetailFragment)
-        binding.rvMD.adapter = balanceAdapter
+//        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+//        binding.rvMD.layoutManager = layoutManager
+//        val balanceAdapter = BalanceRVAdapter(this@MeasureDetailFragment)
+//        binding.rvMD.adapter = balanceAdapter
     }
 
 //    private fun calculateBalanceScore(angle: Float, case: String): Int {

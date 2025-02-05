@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -23,6 +24,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.MediaItem
@@ -58,6 +60,7 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
+import com.tangoplus.tangoq.vo.DateDisplay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -157,33 +160,17 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         ) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 if (avm.leftMeasurement.value != null) {
-                                    if (position == 0) {
+                                    if (position != 1) {
                                         withContext(Dispatchers.Main) {
                                             setVideoUI(false, false)
+                                            Log.v("어디서?", "rightspnr else")
+                                            setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, position, binding.ssivMTDLeft, "trend")
                                         }
-                                        setImage(
-                                            this@MeasureTrendDialogFragment,
-                                            avm.leftMeasurement.value,
-                                            0,
-                                            binding.ssivMTDLeft,
-                                            "trend"
-                                        )
-                                    } else if (position == 1) {
+                                    } else  {
                                         withContext(Dispatchers.Main) {
                                             setVideoUI(true, false)
                                             setClickListener(false)
                                             setPlayer(false)
-                                        }
-                                    } else {
-                                        setImage(
-                                            this@MeasureTrendDialogFragment,
-                                            avm.leftMeasurement.value,
-                                            position + 1,
-                                            binding.ssivMTDLeft,
-                                            "trend"
-                                        )
-                                        withContext(Dispatchers.Main) {
-                                            setVideoUI(false, false)
                                         }
                                     }
                                 }
@@ -210,43 +197,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
                             position: Int,
                             id: Long
                         ) {
-                            Log.v(
-                                "시퀀스들",
-                                "position: ${position}, rightMeasure: ${avm.rightMeasurement.value}"
-                            )
+                            Log.v("시퀀스들", "position: ${position}, rightMeasure: ${avm.rightMeasurement.value}")
                             CoroutineScope(Dispatchers.IO).launch {
-                                if (position == 0) {
-                                    Log.v("애널라이즈", "${avm.rightAnalyzes}")
+                                if (position != 1) {
                                     withContext(Dispatchers.Main) {
                                         setVideoUI(false, true)
-                                        setImage(
-                                            this@MeasureTrendDialogFragment,
-                                            avm.rightMeasurement.value,
-                                            0,
-                                            binding.ssivMTDRight,
-                                            "trend"
-                                        )
+                                        Log.v("어디서?", "rightspnr else")
+
+                                        setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, position, binding.ssivMTDRight, "trend")
                                     }
-                                } else if (position == 1) {
+                                } else  {
                                     withContext(Dispatchers.Main) {
                                         setVideoUI(true, true)
                                         setClickListener(true)
                                         setPlayer(true)
                                     }
-                                } else {
-
-                                    withContext(Dispatchers.Main) {
-                                        setVideoUI(false, true)
-                                        setImage(
-                                            this@MeasureTrendDialogFragment,
-                                            avm.rightMeasurement.value,
-                                            position + 1,
-                                            binding.ssivMTDRight,
-                                            "trend"
-                                        )
-                                    }
                                 }
-
                                 // spinner 클릭시 adapter 갱신
                                 withContext(Dispatchers.Main) {
                                     val parentIndexes =
@@ -261,6 +227,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
 //                                    index in parentIndexes
 //                                }?.toMutableList()
                                     setAdapter(avm.leftAnalyzes, avm.rightAnalyzes, parentIndexes)
+
+
+                                    val clMTDParams = binding.clMTD.layoutParams
+                                    clMTDParams.height = binding.ssivMTDRight.height
+                                    binding.clMTD.layoutParams = clMTDParams
                                 }
                             }
                         }
@@ -270,23 +241,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
 
                 // -------# 측정 날짜 고르는 ACTV left #-------
-                val measureDatesLeft =
-                    measures.map { "${it.regDate.substring(0, 11)}\n${it.userName}" }
-                        .toMutableList()
-                val leftAdapter =
-                    ArrayAdapter(requireContext(), R.layout.dropdown_item, measureDatesLeft)
+                avm.measureDisplayDates = avm.createDateDisplayList(measures)
+
+                val leftAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, avm.measureDisplayDates.filterIndexed { index, dateDisplay -> index != 0 })
                 binding.actvMTDLeft.setAdapter(leftAdapter)
                 binding.actvMTDLeft.setOnItemClickListener { _, _, position, _ ->
-                    Log.v("leftPosition", "$position")
+                    // 날짜 선택
+                    val selectedDate = binding.actvMTDLeft.adapter.getItem(position) as DateDisplay
 
+                    avm.leftMeasureDate.value = avm.measureDisplayDates.find { it.fullDateTime == selectedDate.fullDateTime }
+                    binding.actvMTDLeft.setText(avm.leftMeasureDate.value?.displayDate, false)
+                    Log.v("selectedDateLeft", "${avm.leftMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
                     CoroutineScope(Dispatchers.IO).launch {
                         // 측정파일 없으면 다운로드
-                        setMeasureFiles(measures[position].regDate)
+                        setMeasureFiles(avm.leftMeasureDate.value?.fullDateTime)
                         withContext(Dispatchers.Main) {
-                            avm.leftMeasurement.value =
-                                Singleton_t_measure.getInstance(requireContext()).measures?.get(
-                                    position
-                                )
+                            avm.leftMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.regDate == avm.leftMeasureDate.value?.fullDateTime }
                             avm.leftAnalyzes = transformAnalysis(
                                 avm.leftMeasurement.value?.measureResult ?: JSONArray()
                             )
@@ -303,72 +273,66 @@ class MeasureTrendDialogFragment : DialogFragment() {
                             binding.spnrMTDSeqLeft.setSelection(0)
                         }
                     }
+                    binding.tvMTDAlert.visibility = View.GONE
                 }
 
                 // ------# 측정 고르는 ACTV right #------
-                // 초기 오른쪽 세팅
-                val measureDatesRight =
-                    measures.map { "${it.regDate.substring(0, 11)}\n${it.userName}" }
-                        .toMutableList()
-                binding.actvMTDRight.setText(measureDatesRight[0])
-                avm.rightMeasurement.value = measures[0]
-                avm.rightAnalyzes =
-                    transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
+                // 초기 오른쪽 데이터 셋팅
+                binding.actvMTDRight.setText(avm.measureDisplayDates[0].displayDate)
+                binding.actvMTDRight.setSelection(0)
+                avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
                 setAdapter(avm.leftAnalyzes, avm.rightAnalyzes, listOf())
-                CoroutineScope(Dispatchers.IO).launch {
-                    setImage(
-                        this@MeasureTrendDialogFragment,
-                        avm.rightMeasurement.value,
-                        0,
-                        binding.ssivMTDRight,
-                        "trend"
-                    )
-                    withContext(Dispatchers.Main) {
-                        binding.spnrMTDSeqRight.setSelection(0)
 
-                    }
-                }
-
-                // 초기값 설정
-//                avm.rightSelectedIndex.value = 0
                 // 오른쪽 actv adapter 연결
-                val rightAdapter =
-                    ArrayAdapter(requireContext(), R.layout.dropdown_item, measureDatesRight)
+                val rightAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, avm.measureDisplayDates)
                 binding.actvMTDRight.setAdapter(rightAdapter)
                 binding.actvMTDRight.setOnItemClickListener { _, _, position, _ ->
-                    binding.actvMTDRight.setText(measureDatesRight[position])
+                    // 날짜 선택
+                    val selectedDate = binding.actvMTDRight.adapter.getItem(position) as DateDisplay
+
+
+                    avm.rightMeasureDate.value = avm.measureDisplayDates.find { it.fullDateTime == selectedDate.fullDateTime }
+                    binding.actvMTDRight.setText(avm.rightMeasureDate.value?.displayDate, false)
+                    Log.v("selectedDateRight", "${avm.rightMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
                     CoroutineScope(Dispatchers.IO).launch {
                         // 측정파일 없으면 다운로드
-                        setMeasureFiles(measures[position].regDate)
+                        setMeasureFiles(avm.rightMeasureDate.value?.fullDateTime)
                         withContext(Dispatchers.Main) {
-                            avm.rightMeasurement.value =
-                                Singleton_t_measure.getInstance(requireContext()).measures?.get(
-                                    position
-                                )
-                            avm.rightAnalyzes = transformAnalysis(
-                                avm.rightMeasurement.value?.measureResult ?: JSONArray()
-                            )
-                            // 다운로드한 jpg 파일 drawing
-                            setImage(
-                                this@MeasureTrendDialogFragment,
-                                avm.rightMeasurement.value,
-                                0,
-                                binding.ssivMTDRight,
-                                "trend"
-                            )
+                            // TODO 날짜 확인해보기
+                            avm.rightMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.regDate == avm.rightMeasureDate.value?.fullDateTime }
+
+                            avm.rightAnalyzes = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
+                            setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, 0, binding.ssivMTDRight, "trend")
                         }
                     }
                 }
 
-//                avm.leftSelectedIndex.observe(viewLifecycleOwner) { leftIndex ->
-//                    val filteredRightDates = measureDatesRight.filterIndexed { index, _ -> index != leftIndex }
-//                    binding.actvMTDRight.setAdapter(ArrayAdapter(requireContext(), R.layout.dropdown_item, filteredRightDates))
-//                }
-//
-//                avm.rightSelectedIndex.observe(viewLifecycleOwner) { rightIndex ->
-//                    val filteredLeftDates = measureDatesLeft.filterIndexed { index, _ -> index != rightIndex }
-//                    binding.actvMTDLeft.setAdapter(ArrayAdapter(requireContext(), R.layout.dropdown_item, filteredLeftDates))
-//                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    withContext(Dispatchers.Main) {
+                        // 초기 오른쪽 선택으로 렌더링 시작
+                        binding.spnrMTDSeqRight.setSelection(0)
+                    }
+                }
+                val combinedObserver = Observer<Any> {
+                    val leftSelected = avm.leftMeasureDate.value
+                    val rightSelected = avm.rightMeasureDate.value
+
+                    // 오른쪽은 왼쪽 선택값 제외, 왼쪽은 오른쪽 선택값 제외
+                    val filteredLeftDates = avm.getFilteredDates(listOfNotNull(rightSelected))
+                    val filteredRightDates = avm.getFilteredDates(listOfNotNull(leftSelected))
+
+                    // Left adapter 갱신
+                    binding.actvMTDLeft.setAdapter(
+                        ArrayAdapter(requireContext(), R.layout.dropdown_item, filteredLeftDates)
+                    )
+
+                    // Right adapter 갱신
+                    binding.actvMTDRight.setAdapter(
+                        ArrayAdapter(requireContext(), R.layout.dropdown_item, filteredRightDates)
+                    )
+                }
+                avm.leftMeasureDate.observe(viewLifecycleOwner, combinedObserver)
+                avm.rightMeasureDate.observe(viewLifecycleOwner, combinedObserver)
             }
         } catch (e: NullPointerException) {
             Log.e("TrendError", "NullPointer: ${e.message}")
@@ -722,59 +686,26 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private fun updateFrameData(isRight: Boolean, videoDuration: Long, totalFrames: Int) {
         when (isRight) {
             true -> {
-
                 val currentPosition = simpleExoPlayer2?.currentPosition ?: 0L
 
                 val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
                 val coordinates = extractVideoCoordinates(rightJa)
 
-                val displayMetrics = requireContext().resources.displayMetrics
-                val screenWidth = displayMetrics.widthPixels // 기기 화면 너비
-                val videoWidth = (screenWidth * 0.5).toInt() // 화면의 50% 크기로 설정
-                val (originalVideoWidth, originalVideoHeight) =
-                    getVideoDimensions(requireContext(), avm.trendRightUri?.toUri())
-
+                val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri())
                 if (frameIndex in 0 until totalFrames) {
+
                     val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
                     requireActivity().runOnUiThread {
-                        val params = binding.pvMTDRight.layoutParams
-                        params.width = videoWidth // 50% 크기로 설정
-                        params.height = (videoWidth * (originalVideoHeight.toFloat() / originalVideoWidth)).toInt() // 비율 유지
-                        binding.pvMTDRight.layoutParams = params
                         binding.ovMTDRight.scaleX = -1f
                         binding.ovMTDRight.setResults(
                             poseLandmarkResult,
-                            originalVideoWidth,
-                            originalVideoHeight,
+                            videoWidth,
+                            videoHeight,
                             OverlayView.RunningMode.VIDEO
                         )
-                        val overlayParams = binding.ovMTDRight.layoutParams
-                        binding.ovMTDRight.layoutParams = overlayParams
                         binding.ovMTDRight.invalidate()
-                        binding.ovMTDRight.requestLayout()
                     }
                 }
-//
-//                val currentPosition = simpleExoPlayer2?.currentPosition ?: 0L
-//
-//                val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
-//                val coordinates = extractVideoCoordinates(rightJa)
-//
-//                val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri())
-//                if (frameIndex in 0 until totalFrames) {
-//
-//                    val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
-//                    requireActivity().runOnUiThread {
-//                        binding.ovMTDRight.scaleX = -1f
-//                        binding.ovMTDRight.setResults(
-//                            poseLandmarkResult,
-//                            videoWidth,
-//                            videoHeight,
-//                            OverlayView.RunningMode.VIDEO
-//                        )
-//                        binding.ovMTDRight.invalidate()
-//                    }
-//                }
             }
             false -> {
                 val currentPosition = simpleExoPlayer1?.currentPosition ?: 0L
@@ -815,7 +746,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                 val resizingValue = if (isTablet(requireContext())) {
                     if (aspectRatio > 1) {
-                        0.7f
+                        1f
                     } else { // 가로 (키오스크 일 때 원본 유지 )
                         1f
                     }
@@ -833,11 +764,18 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
                 constraintSet.applyTo(binding.clMTD)
 
+                val rightParams = binding.clMTDRight.layoutParams
+                rightParams.height = binding.flMTDRight.height
+                binding.clMTDRight.layoutParams = rightParams
+
+                val clMTDParams = binding.clMTD.layoutParams
+                clMTDParams.height = binding.clMTDRight.height
+                binding.clMTD.layoutParams = clMTDParams
                 // PlayerView 크기 조절 (필요한 경우)
-                val playerParams = binding.pvMTDRight.layoutParams
-                playerParams.width = (screenWidth  * resizingValue).toInt()
-                playerParams.height = (adjustedHeight * resizingValue).toInt()
-                binding.pvMTDRight.layoutParams = playerParams
+//                val playerParams = binding.pvMTDRight.layoutParams
+//                playerParams.width = (screenWidth  * resizingValue).toInt()
+//                playerParams.height = (adjustedHeight * resizingValue).toInt()
+//                binding.pvMTDRight.layoutParams = playerParams
             }
             false -> {
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendLeftUri?.toUri()?: "".toUri())
@@ -858,10 +796,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 } else 1f // 태블릿이 아닐 때는 상관없음.
 
                 // clMA의 크기 조절
-                val params = binding.clMTD.layoutParams
+                val params = binding.clMTDLeft.layoutParams
                 params.width = (screenWidth  * resizingValue).toInt()
                 params.height = (adjustedHeight * resizingValue).toInt()
-                binding.clMTD.layoutParams = params
+                binding.clMTDLeft.layoutParams = params
 
                 // llMARV를 clMA 아래에 위치시키기
                 val constraintSet = ConstraintSet()
@@ -869,11 +807,12 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
                 constraintSet.applyTo(binding.clMTD)
 
+                binding.clMTDLeft.requestLayout()
                 // PlayerView 크기 조절 (필요한 경우)
-                val playerParams = binding.pvMTDLeft.layoutParams
-                playerParams.width = (screenWidth  * resizingValue).toInt()
-                playerParams.height = (adjustedHeight * resizingValue).toInt()
-                binding.pvMTDLeft.layoutParams = playerParams
+//                val playerParams = binding.pvMTDLeft.layoutParams
+//                playerParams.width = (screenWidth  * resizingValue).toInt()
+//                playerParams.height = (adjustedHeight * resizingValue).toInt()
+//                binding.pvMTDLeft.layoutParams = playerParams
             }
         }
     }

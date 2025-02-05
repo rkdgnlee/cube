@@ -2,10 +2,7 @@ package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -16,42 +13,30 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.adapter.MainProgressRVAdapter
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.adapter.BalanceRVAdapter
-import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.adapter.PartRVAdapter
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
-import com.tangoplus.tangoq.vo.ProgressUnitVO
-import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentMainBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.GuideDialogFragment
-import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
-import com.tangoplus.tangoq.dialog.ProgramAlertDialogFragment
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
-import com.tangoplus.tangoq.function.MeasurementManager.findCurrentIndex
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -117,9 +102,7 @@ class MainFragment : Fragment() {
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 measures = Singleton_t_measure.getInstance(requireContext()).measures
-//                measures = mutableListOf()
-                binding.llM.visibility = View.VISIBLE
-                binding.sflM.startShimmer()
+
 
                 // ------# 초기 measure 설정 #------
                 if (!measures.isNullOrEmpty()) {
@@ -162,10 +145,7 @@ class MainFragment : Fragment() {
         binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
 
-        val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.rvM3.layoutManager = layoutManager2
-        val balanceAdapter = BalanceRVAdapter(this@MainFragment)
-        binding.rvM3.adapter = balanceAdapter
+
     }
 
     // 블러 유무 판단하기
@@ -182,12 +162,8 @@ class MainFragment : Fragment() {
             binding.tvMMeasureResult1.text = "측정 데이터가 없습니다."
             binding.tvMMeasureResult2.text = "키오스크, 모바일을 통해 측정을 진행해주세요"
             binding.rvM1.visibility = View.GONE
-            binding.llM.visibility = View.GONE
-            binding.vpM.visibility = View.GONE
             binding.tvMProgram.visibility = View.GONE
 
-            binding.rvM3.visibility = View.GONE
-            binding.tvMCustom.visibility = View.GONE
 
             binding.btnMProgram.apply {
                 text = "측정 시작하기"
@@ -204,11 +180,7 @@ class MainFragment : Fragment() {
                     binding.tvMMeasureDate.visibility = View.VISIBLE
                     binding.rvM1.visibility = View.VISIBLE
                     binding.tvMTitle.text = "측정정보"
-                    binding.llM.visibility = View.VISIBLE
-                    binding.vpM.visibility = View.VISIBLE
                     binding.tvMProgram.visibility = View.VISIBLE
-                    binding.tvMCustom.visibility = View.VISIBLE
-                    binding.rvM3.visibility = View.VISIBLE
                     binding.btnMProgram.setOnClickListener {
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flMain, ProgramSelectFragment())
@@ -254,105 +226,32 @@ class MainFragment : Fragment() {
                         // 내가 했던 프로그램의 운동 목록 가져오기
                         lifecycleScope.launch(Dispatchers.IO) {
                             try {
-                                val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
-                                evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
-                                evm.latestProgram = progressResult?.second
+//                                val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
+//                                evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
+//                                evm.latestProgram = progressResult?.second
+//
+//                                Log.v("최근프로그램데이터", "${evm.latestUVP}")
+//                                val adapter =  ExerciseRVAdapter(this@MainFragment, evm.latestProgram?.exercises, evm.latestUVP, null,null, null, "M")
+//                                var currentPage = 0
+//                                if (evm.latestUVP != null) {
+//                                   currentPage = findCurrentIndex(evm.latestUVP)
+//                                }
+                                // 진행 중인 recommendation 넣기
+                                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())
+                                binding.rvM2.layoutManager = layoutManager
+                                binding.rvM2.adapter = adapter
 
-                                Log.v("최근프로그램데이터", "${evm.latestUVP}")
-                                val adapter =  ExerciseRVAdapter(this@MainFragment, evm.latestProgram?.exercises, evm.latestUVP, null,null, null, "M")
-                                var currentPage = 0
-                                if (evm.latestUVP != null) {
-                                   currentPage = findCurrentIndex(evm.latestUVP)
-                                }
 
-                                // -------# 최근 진행 프로그램 뷰페이저 #------
-                                withContext(Dispatchers.Main) {
-                                    binding.vpM.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-                                    binding.vpM.apply {
-                                        clipToPadding = false
-                                        clipChildren = false
-                                        offscreenPageLimit = 3
-
-                                        // ------# viewpager의 setAdapter fun #------
-                                        setAdapter(adapter)
-                                        currentItem = currentPage
-                                        var dp = 5
-                                        try {
-                                            dp = when (isTablet(requireContext())) {
-                                                true -> 28
-                                                false -> 5
-                                            }
-                                        } catch (e: IndexOutOfBoundsException) {
-                                            Log.e("IntroIndex", "${e.message}")
-                                        } catch (e: IllegalArgumentException) {
-                                            Log.e("IntroIllegal", "${e.message}")
-                                        } catch (e: IllegalStateException) {
-                                            Log.e("IntroIllegal", "${e.message}")
-                                        }catch (e: NullPointerException) {
-                                            Log.e("IntroNull", "${e.message}")
-                                        } catch (e: java.lang.Exception) {
-                                            Log.e("IntroException", "${e.message}")
-                                        }
-
-                                        (getChildAt(0) as RecyclerView).apply {
-                                            setPadding(dpToPx(dp), 0, dpToPx(dp), 0)
-                                            clipToPadding = false
-                                        }
-                                    }
-                                    val itemDecoration = object : RecyclerView.ItemDecoration() {
-                                        override fun getItemOffsets(
-                                            outRect: Rect,
-                                            view: View,
-                                            parent: RecyclerView,
-                                            state: RecyclerView.State
-                                        ) {
-                                            val position = parent.getChildAdapterPosition(view)
-                                            val itemCount = state.itemCount
-
-                                            if (position == 0) {
-                                                outRect.left = 0
-                                            } else {
-                                                outRect.left = dpToPx(5)
-                                            }
-
-                                            if (position == itemCount - 1) {
-                                                outRect.right = 0
-                                            } else {
-                                                outRect.right = dpToPx(5)
-                                            }
-                                        }
-                                    }
-                                    // ------# 측정 날짜 바뀌면서 padding많이 먹으면서
-                                    binding.vpM.addItemDecoration(itemDecoration)
-                                    binding.llM.visibility = View.GONE
-                                    binding.sflM.stopShimmer()
-
-                                    binding.tvMProgram.setOnClickListener {
-                                        val programSn = evm.latestProgram?.programSn ?: -1
-                                        val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
-                                        ProgramCustomDialogFragment.newInstance(programSn, recSn)
-                                            .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
-                                    }
-                                }
                             }  catch (e: IndexOutOfBoundsException) {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    binding.sflM.stopShimmer() }, 3000)
                                 Log.e("MainIndex", "${e.message}")
                             } catch (e: IllegalArgumentException) {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    binding.sflM.stopShimmer() }, 3000)
                                 Log.e("MainIllegalA", "${e.message}")
                             } catch (e: IllegalStateException) {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    binding.sflM.stopShimmer() }, 3000)
                                 Log.e("MainIllegalS", "${e.message}")
                             }catch (e: NullPointerException) {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    binding.sflM.stopShimmer() }, 3000)
                                 Log.e("MainNull", "${e.message}")
                             } catch (e: java.lang.Exception) {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    binding.sflM.stopShimmer() }, 3000)
                                 Log.e("MainException", "${e.message}")
                             }
                         }
