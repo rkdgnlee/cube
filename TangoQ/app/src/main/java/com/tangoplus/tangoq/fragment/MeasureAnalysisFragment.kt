@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
 import android.content.res.ColorStateList
-import android.hardware.display.DisplayManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -16,9 +15,6 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
@@ -30,14 +26,9 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.AnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
-import com.tangoplus.tangoq.adapter.DataStaticRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
@@ -48,7 +39,6 @@ import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
-import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
@@ -187,7 +177,7 @@ class MeasureAnalysisFragment : Fragment() {
             button.isEnabled = isActiveButton
             button.backgroundTintList = when {
                 avm.currentIndex == index -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
-                isActiveButton -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
+                isActiveButton -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
                 else -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor100))
             }
 
@@ -206,6 +196,7 @@ class MeasureAnalysisFragment : Fragment() {
 
     private fun setMedia() {
         if (avm.currentIndex != 3) {
+            // 이미지
             if (simpleExoPlayer != null) {
                 // clMA의 크기 조절
                 val params = binding.clAI.layoutParams
@@ -213,17 +204,53 @@ class MeasureAnalysisFragment : Fragment() {
                 params.height = binding.ssivAI1.height
                 binding.clAI.layoutParams = params
             }
-
             releasePlayer()
             binding.cvExoLeft.visibility = View.GONE
             binding.cvExoRight.visibility = View.GONE
             binding.flAI.visibility = View.GONE
             binding.ovAI.visibility = View.GONE
-
+            binding.tvAIPart1.visibility = View.VISIBLE
+            binding.tvAIPart2.visibility = View.VISIBLE
             binding.ssivAI1.visibility = View.VISIBLE
             binding.ssivAI2.visibility = View.VISIBLE
+            // mainPartAnalysis 연결
+            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            val adapter = MainPartAnalysisRVAdapter(this@MeasureAnalysisFragment, adapterAnalysises[avm.currentIndex].labels)
+            binding.rvAI.layoutManager = layoutManager
+            binding.rvAI.adapter = adapter
+            if (!updateUI) updateUI = false
+        } else {
+            // 영상
+            val params = binding.clAI.layoutParams
+            params.width = binding.flAI.width
+            params.height = binding.flAI.height
+            binding.clAI.layoutParams = params
+
+            binding.ssivAI1.visibility = View.GONE
+            binding.ssivAI2.visibility = View.GONE
+            binding.tvAIPart1.visibility = View.GONE
+            binding.tvAIPart2.visibility = View.GONE
+            binding.cvExoLeft.visibility = View.VISIBLE
+            binding.cvExoRight.visibility = View.VISIBLE
+            binding.flAI.visibility = View.VISIBLE
+            binding.ovAI.visibility = View.VISIBLE
+            // 0, 1, 2 (이미지 일 때)
         }
 
+        binding.tvMASummary.text =
+            if (avm.currentIndex != 3) createSummary(painPart, avm.currentIndex, adapterAnalysises[avm.currentIndex].labels)
+            else {
+                "스쿼트 1회 동작에서 좌우 부위의 궤적을 비교합니다.\n하단에 그려진 궤적이 대칭을 이룰 수록 정상범위입니다.\n\n이동 안정성의 불균형이 생겼을 때 손은 회전근개 주변 근육, 골반은 전반적인 하지, 무릎은 허벅지와 발목과 발의 정렬을 교정해야 합니다."
+            }
+        if (binding.tvMASummary.text.contains("부위가 정상 범위 내에 있습니다.") || avm.currentIndex == 3) {
+            binding.tvMASummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.secondContainerColor))
+            binding.tvMASummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
+            binding.ivMAIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.thirdColor))
+        } else {
+            binding.tvMASummary.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.deleteContainerColor))
+            binding.tvMASummary.setTextColor(ContextCompat.getColor(requireContext(), R.color.deleteColor))
+            binding.ivMAIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.deleteColor))
+        }
         lifecycleScope.launch(Dispatchers.IO) {
             when (avm.currentIndex) {
                 0 -> {
@@ -257,6 +284,7 @@ class MeasureAnalysisFragment : Fragment() {
                     }
                 }
                 3 -> {
+
                     dynamicJa = mvm.selectedMeasure?.measureResult?.getJSONArray(1) ?: JSONArray()
                     withContext(Dispatchers.Main) {
                         pvm.setPlaybackPosition(0L)
@@ -271,29 +299,11 @@ class MeasureAnalysisFragment : Fragment() {
                         exo075 = view?.findViewById(R.id.btn075)
                         exo10 = view?.findViewById(R.id.btn10)
 
-                        binding.cvExoLeft.visibility = View.VISIBLE
-                        binding.cvExoRight.visibility = View.VISIBLE
-                        binding.flAI.visibility = View.VISIBLE
-                        binding.ovAI.visibility = View.VISIBLE
-                        binding.rvAI.visibility = View.VISIBLE
                         setClickListener()
                         setPlayer()
 
                     }
                 }
-            }
-
-            withContext(Dispatchers.Main) {
-                // summary 만들기
-                // TODO 서머리 부분 함수 seq2개 엮어서 summary만들게 수정하기.
-//                binding.tvMASummary.text = createSummary()
-
-                // mainPartAnalysis 연결
-                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                val adapter = MainPartAnalysisRVAdapter(this@MeasureAnalysisFragment, adapterAnalysises[avm.currentIndex].labels)
-                binding.rvAI.layoutManager = layoutManager
-                binding.rvAI.adapter = adapter
-
             }
         }
     }
@@ -315,7 +325,7 @@ class MeasureAnalysisFragment : Fragment() {
                         val videoDuration = simpleExoPlayer?.duration ?: 0L
                         lifecycleScope.launch {
                             while (simpleExoPlayer?.isPlaying == true) {
-                                if (!updateUI) updateVideoUI()
+                                updateVideoUI()
                                 updateFrameData(videoDuration, jsonArray.length())
                                 delay(24)
                                 Handler(Looper.getMainLooper()).postDelayed( { updateUI = true },1500)
@@ -358,6 +368,9 @@ class MeasureAnalysisFragment : Fragment() {
         binding.pvAI.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
     }
     private fun setClickListener() {
+        if (avm.currentIndex == 3) {
+            exoPause?.visibility = View.VISIBLE
+        }
         exoPlay?.visibility = View.GONE
         exoPlay?.setOnClickListener {
             simpleExoPlayer?.seekTo(0)
@@ -473,7 +486,6 @@ class MeasureAnalysisFragment : Fragment() {
         val screenWidth = displayMetrics.widthPixels
 
         val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
-        Log.v("aspectRatio", "$aspectRatio")
         val adjustedHeight = (screenWidth * aspectRatio).toInt()
 
         val resizingValue = if (isTablet(requireContext())) {
@@ -482,7 +494,13 @@ class MeasureAnalysisFragment : Fragment() {
             } else { // 가로 (키오스크 일 때 원본 유지 )
                 1f
             }
-        } else 1f // 태블릿이 아닐 때는 상관없음.
+        } else {
+            if (aspectRatio > 1) {
+                0.65f
+            } else { // 가로 (키오스크 일 때 원본 유지 )
+                1f
+            }
+        }
 
         // clMA의 크기 조절
         val params = binding.clAI.layoutParams
@@ -503,24 +521,13 @@ class MeasureAnalysisFragment : Fragment() {
             }
             filteredCoordinates.add(filteredCoordinate)
         }
-        Log.v("쿨디네이트", "$filteredCoordinates, $dynamicJa")
-        setVideoAdapter(filteredCoordinates)
-        // llMARV를 clMA 아래에 위치시키기
-//        val constraintSet = ConstraintSet()
-//        constraintSet.clone(binding.clAI)
-//        constraintSet.connect(binding.rvAI.id, ConstraintSet.TOP, binding.clAI.id, ConstraintSet.BOTTOM)
-//        constraintSet.applyTo(binding.clAI)
 
-        // PlayerView 크기 조절 (필요한 경우)
-//        val playerParams = binding.pvAI.layoutParams
-//        playerParams.width = (screenWidth  * resizingValue).toInt()
-//        playerParams.height = (adjustedHeight * resizingValue).toInt()
-//        binding.pvAI.layoutParams = playerParams
+        setVideoAdapter(filteredCoordinates)
     }
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, 0)
+        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles)
         binding.rvAI.layoutManager = linearLayoutManager1
         binding.rvAI.adapter = dynamicAdapter
     }

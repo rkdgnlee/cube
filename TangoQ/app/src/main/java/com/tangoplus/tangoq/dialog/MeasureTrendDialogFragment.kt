@@ -819,7 +819,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, 0)
+        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles)
 //        binding.rvMALeft.layoutManager = linearLayoutManager1
 //        binding.rvMALeft.adapter = dynamicAdapter
     }

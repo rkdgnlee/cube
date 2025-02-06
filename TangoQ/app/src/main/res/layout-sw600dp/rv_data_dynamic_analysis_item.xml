@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="40dp"
+    android:layout_marginEnd="40dp"
     android:background="@color/white">
 
     <TextView
@@ -16,6 +18,50 @@
         android:textSize="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/llDDAILegend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDDAITitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvDDAITitle">
+
+        <TextView
+            android:id="@+id/textView46"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bckgnd_rectangle_12"
+            android:backgroundTint="@color/secondBgContainerColor"
+            android:drawableStart="@drawable/icon_circle"
+            android:drawablePadding="4dp"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:text="시작 부분"
+            android:textColor="@color/thirdWhiteColor"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/textView49"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bckgnd_rectangle_12"
+            android:backgroundTint="@color/deleteContainerColor"
+            android:drawableStart="@drawable/icon_circle"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/deleteColor"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:text="끝나는 부분"
+            android:textColor="@color/deleteTextColor"
+            android:textSize="16dp" />
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
@@ -31,11 +77,11 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clDDAI2"
-            android:layout_width="100dp"
+            android:layout_width="120dp"
             android:layout_height="0dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="6dp"
             android:background="@drawable/bckgnd_2_main_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,10 +130,10 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clDDAI1"
-            android:layout_width="100dp"
+            android:layout_width="120dp"
             android:layout_height="0dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
             android:background="@drawable/bckgnd_2_main_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

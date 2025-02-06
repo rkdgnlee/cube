@@ -53,13 +53,13 @@
             <TextView
                 android:id="@+id/tvMHCount"
                 android:layout_width="0dp"
-                android:layout_height="110dp"
+                android:layout_height="90dp"
                 android:background="@color/secondContainerColor"
                 android:gravity="center_vertical"
                 android:paddingStart="40dp"
                 android:text="총 측정건: 4건"
                 android:textColor="@color/secondWhiteColor"
-                android:textSize="24dp"
+                android:textSize="22dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider3" />
@@ -103,13 +103,17 @@
                     android:textSize="18dp"
                     app:dropDownBackgroundTint="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMH"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="130dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider21" />
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider21"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageButton
                 android:id="@+id/ibtnMHAlarm"

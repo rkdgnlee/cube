@@ -85,29 +85,9 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
         }
     }
     private fun loadFlippedImage(holder: PartViewHolder, resourceId: Int, isRight: Boolean) {
+        holder.ivPI.setImageResource(resourceId)
         if (isRight) {
-            Glide.with(fragment.requireContext())
-                .load(resourceId)
-                .transform(object : BitmapTransformation() {
-                    override fun transform(pool: BitmapPool, toTransform: Bitmap, outWidth: Int, outHeight: Int): Bitmap {
-                        val matrix = Matrix().apply {
-                            postScale(-1f, 1f, toTransform.width / 2f, toTransform.height / 2f)
-                        }
-
-                        val result = pool.get(toTransform.width, toTransform.height, toTransform.config)
-                        val canvas = Canvas(result)
-                        canvas.drawBitmap(toTransform, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
-
-                        return result
-                    }
-
-                    override fun updateDiskCacheKey(messageDigest: MessageDigest) {
-                        messageDigest.update("flip_transformation".toByteArray())
-                    }
-                })
-                .into(holder.ivPI)
-        } else {
-            holder.ivPI.setImageResource(resourceId)
+            holder.ivPI.scaleX = -1f
         }
     }
 }

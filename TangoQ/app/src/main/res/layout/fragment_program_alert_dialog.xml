@@ -22,13 +22,11 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
             android:gravity="center_vertical"
             android:lineSpacingExtra="4dp"
             android:text="늘 필요한 운동을 다 마쳤습니다.\n개인 운동을 진행 하거나 휴식을 취해주세요."
             android:textColor="@color/subColor800"
             android:textSize="15dp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivPAD" />
@@ -41,7 +39,6 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/drawable_finish_program"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -53,7 +50,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 

@@ -86,12 +86,12 @@ class MeasureDashBoard1Fragment : Fragment() {
                         binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)}"
                         binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMD1PredictDicease.setOnClickListener{
-//                            // TODO 연결 후 질병 예측 부분
-//                            hideBadgeFunction?.invoke()
+
+                            hideBadgeFunction?.invoke()
 //                            val dialog = ReportDiseaseDialogFragment()
 //                            dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
                             requireActivity().supportFragmentManager.beginTransaction().apply {
-                                replace(R.id.flMain, MeasureHistoryFragment())
+                                replace(R.id.flMain, MeasureDetailFragment())
                                 addToBackStack(null)
                                 commit()
                             }
@@ -104,7 +104,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
                         params.horizontalBias = 0.5f
                         binding.ivMD1Position.layoutParams = params
-                        binding.btnMD11.isEnabled = false
+                        binding.btnMD12.isEnabled = false
 
                     }
                 } catch (e: ClassNotFoundException) {
@@ -125,31 +125,31 @@ class MeasureDashBoard1Fragment : Fragment() {
         }
 
         // ------# 공유하기 버튼 #------
-        binding.btnMD1Share.setOnClickListener {
+//        binding.btnMD1Share.setOnClickListener {
+//
+//            // ------! 그래프 캡처 시작 !------
+//            val bitmap = Bitmap.createBitmap(binding.ClMD1.width, binding.ClMD1.height, Bitmap.Config.ARGB_8888)
+//            val canvas = Canvas(bitmap)
+//            binding.ClMD1.draw(canvas)
+//
+//            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
+//            val fileOutputStream = FileOutputStream(file)
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+//            fileOutputStream.flush()
+//            fileOutputStream.close()
+//
+//            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
+//            // ------! 그래프 캡처 끝 !------
+//            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/2")
+//            val intent = Intent(Intent.ACTION_SEND)
+//            intent.type = "image/png" // 이곳에서 공유 데이터 변경
+//            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+//            intent.putExtra(Intent.EXTRA_TEXT, "제 측정 결과들을 공유하고 싶어요 !\n$url")
+//            startActivity(Intent.createChooser(intent, "측정 결과"))
+//        }
 
-            // ------! 그래프 캡처 시작 !------
-            val bitmap = Bitmap.createBitmap(binding.ClMD1.width, binding.ClMD1.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            binding.ClMD1.draw(canvas)
 
-            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
-            val fileOutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
-            fileOutputStream.flush()
-            fileOutputStream.close()
-
-            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
-            // ------! 그래프 캡처 끝 !------
-            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/2")
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "image/png" // 이곳에서 공유 데이터 변경
-            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
-            intent.putExtra(Intent.EXTRA_TEXT, "제 측정 결과들을 공유하고 싶어요 !\n$url")
-            startActivity(Intent.createChooser(intent, "측정 결과"))
-        }
-
-
-        binding.btnMD11.setOnClickListener{
+        binding.btnMD12.setOnClickListener{
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
                 addToBackStack("MeasureHistoryFragment")
@@ -157,7 +157,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             }
         }
         // ------# 자세히 보기 #------
-        binding.btnMD12.setOnClickListener {
+        binding.tvMD11Trend.setOnClickListener {
             val dialog = MeasureTrendDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
         }
@@ -180,12 +180,12 @@ class MeasureDashBoard1Fragment : Fragment() {
                 // 조건 처리 1 총 measures가 7 이하.
                if (measureSize == 0){
                     for (i in 6 downTo 0) {
-                        lcDataList.add(Pair("", 20))
+                        lcDataList.add(Pair("", 50))
                     }
 
                } else if (measureSize != null && measureSize <= 5 && measureSize >= 1){
                    for (i in 0 until (5 - measureSize)) {
-                       lcDataList.add(Pair("", 20))
+                       lcDataList.add(Pair("", 50))
                    }
                    for (i in measureSize - 1 downTo 0) {
                        val measureUnit = measures?.get(i)
@@ -244,7 +244,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 axisLineWidth = 1.0f
             }
             lcYAxisLeft.apply {
-                axisMinimum = 10f
+                axisMinimum = 50f
                 axisMaximum = 100f
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
@@ -453,19 +453,26 @@ class MeasureDashBoard1Fragment : Fragment() {
 //    }
 
     private fun setScoresDates(entries:  MutableList<Pair<String, Int>>) {
-        val tvMD1s = listOf(binding.tvMD11, binding.tvMD12, binding.tvMD13, binding.tvMD14, binding.tvMD15)
+        val tvMD1Dates = listOf(binding.tvMD11, binding.tvMD12, binding.tvMD13, binding.tvMD14, binding.tvMD15)
+        val tvMD1Scores = listOf(binding.tvMD16, binding.tvMD17, binding.tvMD18, binding.tvMD19, binding.tvMD110)
         for (i in 0 until 5) {
             val selectedData = entries[i]
             if (selectedData.first != "") {
-                val message = SpannableString("${selectedData.second}점\n${selectedData.first.substring(5, 10).replace("-",".")}")
-                message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.subColor700)), message.indexOf("\n"), message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                tvMD1s[i].text = message
+                tvMD1Dates[i].text = selectedData.first.substring(5, 10).replace("-",".")
+            } else {
+                val bodyText =  "기록없음"
+                tvMD1Dates[i].text =bodyText
+            }
+
+            if (selectedData.first != "") {
+                tvMD1Scores[i].text = "${selectedData.second}"
 
             } else {
                 val bodyText =  "기록없음"
-                tvMD1s[i].text =bodyText
+                tvMD1Scores[i].text =bodyText
             }
-            tvMD1s[i].textSize = if (isTablet(requireContext())) 18f else 15f
+
+            tvMD1Dates[i].textSize = if (isTablet(requireContext())) 18f else 15f
         }
     }
 }

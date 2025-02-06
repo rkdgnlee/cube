@@ -100,7 +100,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
         if (isTablet(requireContext())) {
             dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f ,height = 0.5f)
         } else {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.475f)
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.5f)
         }
     }
 }

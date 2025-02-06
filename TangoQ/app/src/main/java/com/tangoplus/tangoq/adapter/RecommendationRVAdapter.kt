@@ -14,7 +14,13 @@ import com.tangoplus.tangoq.vo.RecommendationVO
 import com.tangoplus.tangoq.databinding.RvRecommendationItemBinding
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 
-class RecommendationRVAdapter(private val fragment: Fragment, private val data: List<RecommendationVO>, private val exerciseTypeIds: List<Int?>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecommendationRVAdapter(private val fragment: Fragment,
+                              private val data: List<RecommendationVO>,
+                              private val exerciseTypeIds: List<Int?>,
+//                              private val isSelectionModeEnabled: Boolean = false,
+//                              private val onItemSelected: (List<RecommendationVO>) -> Unit
+)
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class RecommendationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvPI : TextView = view.findViewById(R.id.tvPI)

@@ -48,6 +48,8 @@ class MeasureViewModel : ViewModel() {
     var setupMobile =""
     var setupName = ""
 
+    var isSelectionMode = false
+
     // ------# 각 부위 데이터들 #------
     var noseData : Pair<Float, Float> = Pair(0f, 0f)
     var earData = listOf<Pair<Float, Float>>()

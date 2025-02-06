@@ -17,12 +17,13 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 
 class ProgramSelectFragment : Fragment() {
    lateinit var binding : FragmentProgramSelectBinding
-    private val vm : MeasureViewModel by activityViewModels()
+    private val mvm : MeasureViewModel by activityViewModels()
     private var singletonMeasure : MutableList<MeasureVO>? = null
-
+    private lateinit var adapter : RecommendationRVAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,9 +38,8 @@ class ProgramSelectFragment : Fragment() {
 
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
 
-        vm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
+        mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
             val dateIndex = singletonMeasure?.indexOf(singletonMeasure?.find { it.regDate == selectedDate })
-            Log.v("dataIndex", "현재날짜 싱글턴에서 index: ${dateIndex}, vm: ${vm.selectedMeasure?.regDate}")
             binding.tvPSMeasureDate.text = dateIndex?.let { singletonMeasure?.get(it)?.regDate?.substring(0, 10) }
             if (dateIndex != null) {
                 setAdapter(dateIndex)
@@ -60,6 +60,21 @@ class ProgramSelectFragment : Fragment() {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
+
+//        binding.btnPSSelect?.setOnSingleClickListener {
+//            if (!mvm.isSelectionMode) {
+//                // 선택 모드 종료 시 선택된 아이템 처리
+////                val selectedItems = items.filter { it.isSelected }
+////                if (selectedItems.isNotEmpty()) {
+////                    Toast.makeText(
+////                        context,
+////                        "Selected: ${selectedItems.map { it.title }}",
+////                        Toast.LENGTH_SHORT
+////                    ).show()
+////                }
+////                adapter.clearSelection()
+//            }
+//        }
     }
     private val categoryMap = mapOf(
         "목관절" to 1,
@@ -89,5 +104,10 @@ class ProgramSelectFragment : Fragment() {
         val adapter = categoryNums?.let { RecommendationRVAdapter(this@ProgramSelectFragment, singletonMeasure?.get(dateIndex)?.recommendations ?: mutableListOf(), it ) }
         Log.v("recommendations", "${singletonMeasure?.get(dateIndex)?.recommendations}")
         binding.rvPSD.adapter = adapter
+    }
+
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
     }
 }

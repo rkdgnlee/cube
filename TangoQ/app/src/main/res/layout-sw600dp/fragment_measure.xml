@@ -43,8 +43,8 @@
                     android:id="@+id/ibtnMsAlarm"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="32dp"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/white"
                     android:contentDescription="showAlarm"
@@ -60,7 +60,7 @@
                     android:layout_height="38dp"
 
                     android:layout_marginStart="36dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="20dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -84,11 +84,11 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tlMs"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="40dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="40dp"
             android:background="@drawable/bckgnd_3_bottom_under_line_second_container"
             android:textAlignment="inherit"
             app:layout_constraintEnd_toEndOf="parent"
@@ -99,12 +99,12 @@
             app:tabIndicatorColor="@color/secondWhiteColor"
             app:tabIndicatorFullWidth="true"
             app:tabMode="auto"
-            app:tabPaddingEnd="0dp"
-            app:tabPaddingStart="0dp"
+            app:tabPaddingEnd="20dp"
+            app:tabPaddingStart="20dp"
             app:tabRippleColor="#20FFFFFF"
             app:tabSelectedTextColor="@color/secondWhiteColor"
             app:tabTextAppearance="@style/TabLayoutTextStyle"
-            app:tabTextColor="@color/secondContainerWhiteColor">
+            app:tabTextColor="@color/secondHalfColor">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"

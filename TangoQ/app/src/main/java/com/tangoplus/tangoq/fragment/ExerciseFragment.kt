@@ -63,52 +63,55 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         binding.rvEMainCategory.overScrollMode = 0
         val sn = arguments?.getInt(ARG_SN) ?: -1
 
-
         CoroutineScope(Dispatchers.Main).launch {
             try { // ------! rv vertical 시작 !------
                 // 상단 최근 한 운동 cardView 보이기
-                if (!evm.latestUVP.isNullOrEmpty() || evm.latestProgram != null) {
-                    val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
-                    binding.clEProgress1.animation = animation
-                    val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
-                    evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
-                    evm.latestProgram = progressResult?.second
 
-                    val currentIndex = findCurrentIndex(evm.latestUVP)
-                    val currentExerciseItem = evm.latestProgram?.exercises?.get(currentIndex)
-                    val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
-
-                    // 받아온 데이터로 cvEProgress 채우기
-                    Glide.with(requireContext())
-                        .load("${currentExerciseItem?.imageFilePath}")
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .override(180)
-                        .into(binding.ivEThumbnail)
-                    binding.tvEName.text = currentExerciseItem?.exerciseName
-                    binding.tvETime.text = second
-                    when (currentExerciseItem?.exerciseStage) {
-                        "초급" -> {
-                            binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
-                            binding.tvEStage.text = "초급자"
-                        }
-                        "중급" -> {
-                            binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
-                            binding.tvEStage.text = "중급자"
-                        }
-                        "고급" -> {
-                            binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
-                            binding.tvEStage.text = "상급자"
-                        }
-                    }
-                    val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
-                    evpItem.let {
-                        if (it != null) {
-                            binding.hpvE.progress = (it.lastProgress * 100 / it.videoDuration).toFloat()
-                        }
-                    }
+                val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
+                evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
+                evm.latestProgram = progressResult?.second
+                Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
+                if (!evm.latestUVP.isNullOrEmpty() && evm.latestProgram != null) {
+                    binding.clEProgress1.visibility = View.VISIBLE
+                    binding.clEProgress2.visibility = View.VISIBLE
                 } else {
                     binding.clEProgress1.visibility = View.GONE
                 }
+                val currentIndex = findCurrentIndex(evm.latestUVP)
+                val currentExerciseItem = evm.latestProgram?.exercises?.get(currentIndex)
+                val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
+
+                // 받아온 데이터로 cvEProgress 채우기
+                Glide.with(requireContext())
+                    .load("${currentExerciseItem?.imageFilePath}")
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(180)
+                    .into(binding.ivEThumbnail)
+                binding.tvEName.text = currentExerciseItem?.exerciseName
+                binding.tvETime.text = second
+
+                when (currentExerciseItem?.exerciseStage) {
+                    "초급" -> {
+                        binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
+                        binding.tvEStage.text = "초급자"
+                    }
+                    "중급" -> {
+                        binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
+                        binding.tvEStage.text = "중급자"
+                    }
+                    "고급" -> {
+                        binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
+                        binding.tvEStage.text = "상급자"
+                    }
+                }
+                val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
+                evpItem.let {
+                    if (it != null) {
+                        binding.hpvE.progress = (it.lastProgress * 100 / it.videoDuration).toFloat()
+                    }
+                }
+//                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
+//                binding.clEProgress2.animation = animation
 
                 binding.clEProgress2.setOnSingleClickListener {
                     val programSn = evm.latestProgram?.programSn ?: -1

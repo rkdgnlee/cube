@@ -162,7 +162,7 @@ class MainFragment : Fragment() {
             binding.tvMMeasureResult1.text = "측정 데이터가 없습니다."
             binding.tvMMeasureResult2.text = "키오스크, 모바일을 통해 측정을 진행해주세요"
             binding.rvM1.visibility = View.GONE
-            binding.tvMProgram.visibility = View.GONE
+//            binding.tvMProgram.visibility = View.GONE
 
 
             binding.btnMProgram.apply {
@@ -179,8 +179,8 @@ class MainFragment : Fragment() {
                     binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secondBgContainerColor))
                     binding.tvMMeasureDate.visibility = View.VISIBLE
                     binding.rvM1.visibility = View.VISIBLE
-                    binding.tvMTitle.text = "측정정보"
-                    binding.tvMProgram.visibility = View.VISIBLE
+                    binding.tvMTitle.text = "최근 측정 정보"
+//                    binding.tvMProgram.visibility = View.VISIBLE
                     binding.btnMProgram.setOnClickListener {
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flMain, ProgramSelectFragment())

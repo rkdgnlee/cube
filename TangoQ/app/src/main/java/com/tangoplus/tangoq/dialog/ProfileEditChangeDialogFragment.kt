@@ -211,7 +211,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCDGuide.text = "생년월일을 설정해주세요"
                 binding.etPCD1.apply {
                     inputType = InputType.TYPE_CLASS_NUMBER
-                    filters = arrayOf(InputFilter.LengthFilter(25))
+                    filters = arrayOf(InputFilter.LengthFilter(8))
                 }
             }
             "전화번호" -> {
@@ -223,7 +223,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCDGuide.text = "전화번호 재설정을 위해 인증을 진행합니다"
                 binding.etPCD1.apply {
                     inputType = InputType.TYPE_CLASS_NUMBER
-                    filters = arrayOf(InputFilter.LengthFilter(25))
+                    filters = arrayOf(InputFilter.LengthFilter(12))
                 }
                 val mobilePattern = "^010-\\d{4}-\\d{4}\$"
                 val mobilePatternCheck = Pattern.compile(mobilePattern)

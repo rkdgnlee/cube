@@ -353,38 +353,6 @@
                             app:layout_constraintTop_toTopOf="@id/flMTDRight" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Spinner
-                        android:id="@+id/spnrMTDSeqLeft"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/bckgnd_rectangle_12"
-                        android:backgroundTint="@color/opacityColor"
-                        android:paddingStart="6dp"
-                        android:paddingTop="2dp"
-                        android:paddingEnd="6dp"
-                        android:paddingBottom="2dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.2"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <Spinner
-                        android:id="@+id/spnrMTDSeqRight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/bckgnd_rectangle_12"
-                        android:backgroundTint="@color/opacityColor"
-                        android:paddingStart="6dp"
-                        android:paddingTop="2dp"
-                        android:paddingEnd="6dp"
-                        android:paddingBottom="2dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.8"
-                        app:layout_constraintStart_toStartOf="parent" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView

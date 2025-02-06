@@ -217,10 +217,13 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     override fun onCategoryClick(category: String) {
         Log.v("category,search", "categoryId: ${categoryId}, typeId: ${categoryMap[category]}")
         try {
-
-            currentCateExercises = filteredDataList?.filter { it.exerciseTypeId == categoryMap[category].toString() }?.sortedBy { it.exerciseId }?.toMutableList()
-            currentCateHistorys = evm.allExerciseHistorys?.filter { it.exerciseTypeId == categoryMap[category] }?.sortedBy { it.exerciseId }?.toMutableList()
-            Log.v("cateExercise", "cateExercise: ${currentCateExercises?.size}")
+            if (category == "전체") {
+                currentCateExercises = filteredDataList
+            } else {
+                currentCateExercises = filteredDataList?.filter { it.exerciseTypeId == categoryMap[category].toString() }?.sortedBy { it.exerciseId }?.toMutableList()
+                currentCateHistorys = evm.allExerciseHistorys?.filter { it.exerciseTypeId == categoryMap[category] }?.sortedBy { it.exerciseId }?.toMutableList()
+                Log.v("cateExercise", "cateExercise: ${currentCateExercises?.size}")
+            }
             updateRecyclerView(currentCateExercises?.sortedByDescending { it.exerciseId }?.toMutableList(),
                     currentCateHistorys?.sortedByDescending { it.exerciseId }?.toMutableList())
 //            val filterIndex = binding.spnrED.selectedItemPosition

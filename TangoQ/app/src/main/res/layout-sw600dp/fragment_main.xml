@@ -49,7 +49,7 @@
                     android:layout_width="36dp"
                     android:layout_height="38dp"
 
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="36dp"
                     android:layout_marginTop="20dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintStart_toStartOf="parent"
@@ -103,9 +103,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout2"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:background="@color/secondBgContainerColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -115,7 +114,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="40dp"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="50dp"
                         android:text="측정 정보"
                         android:textColor="@color/subColor800"
                         android:textSize="30dp"
@@ -168,7 +167,7 @@
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/clM1"
                                 android:layout_width="0dp"
-                                android:layout_height="90dp"
+                                android:layout_height="86dp"
                                 android:layout_marginStart="20dp"
                                 android:layout_marginEnd="20dp"
                                 android:background="@drawable/bckgnd_rectangle_12"
@@ -222,7 +221,7 @@
                                 android:gravity="center"
                                 android:text="100"
                                 android:textColor="#FFFFFF"
-                                android:textSize="36dp"
+                                android:textSize="44dp"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -272,6 +271,7 @@
                         android:textColor="#FFFFFF"
                         android:textSize="20dp"
                         android:textStyle="bold"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/textView"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/textView" />
@@ -292,20 +292,22 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="40dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="40dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="80dp"
                         android:background="@drawable/effect_ibtn_20dp"
                         android:backgroundTint="@color/mainColor"
                         android:padding="20dp"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
                         android:stateListAnimator="@null"
-                        android:text="프로그램 선택하기"
+                        android:text="프로그램 목록 확인하기"
                         android:textColor="#FFFFFF"
                         android:textSize="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/rvM2" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

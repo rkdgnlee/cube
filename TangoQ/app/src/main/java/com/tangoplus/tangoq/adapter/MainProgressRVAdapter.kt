@@ -39,7 +39,7 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = recommends[position]
         if (holder is MPViewHolder) {
-            val title = replaceLastMatch(currentItem.title, keywords)
+            val title = replaceJointProgram(currentItem.title, keywords)
             holder.tvMPIName.text = title
 
             val partId = when {
@@ -72,27 +72,17 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
     }
-    private val keywords = listOf("목관절", "어깨 ", "팔꿉 ", "손목 ", "고관절 ", "무릎 ", "발목 ")
-    fun replaceLastMatch(input: String, keywords: List<String>): String {
-        // 먼저 긴 문구들을 줄임
-        val shortenedInput = input
-            .replace("질환 유지 단계 증상을 위한", "유지 단계")
-            .replace("부위 운동프로그램", "운동 프로그램")
-
-        // 그 다음 키워드 매칭
-        val lastMatches = keywords.mapNotNull { keyword ->
-            val lastIndex = shortenedInput.lastIndexOf(keyword)
-            if (lastIndex >= 0) {
-                lastIndex to keyword
-            } else null
+    private val keywords = listOf("목관절", "어깨", "팔꿉", "손목", "고관절", "무릎", "발목")
+    fun replaceJointProgram(input: String, jointParts: List<String>): String {
+        var result = input
+        jointParts.forEach { part ->
+            val modifyPart = if (part == "목관절") "목" else part
+            result = result
+                .replace("$modifyPart 부위 운동", "운동")
+                .replace("증상을 위한", "")
+                .replace("질환", "")
+                .replace("운동프로그램", "운동 프로그램")
         }
-
-        return if (lastMatches.isNotEmpty()) {
-            val (_, keywordToRemove) = lastMatches.maxBy { it.first }
-            shortenedInput.replaceFirst(keywordToRemove, "")
-        } else {
-            shortenedInput
-        }
+        return result
     }
-
 }
