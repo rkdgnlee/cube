@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clPI"
-    android:layout_width="86dp"
-    android:layout_height="86dp"
+    android:layout_width="90dp"
+    android:layout_height="90dp"
     android:layout_marginEnd="10dp"
-    android:background="@drawable/bckgnd_rectangle_12"
-    android:backgroundTint="@color/deleteContainerColor">
+    android:background="@drawable/bckgnd_rectangle_8"
+    android:backgroundTint="@color/white">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cvPI"
+        android:id="@+id/cardView37"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_margin="4dp"
-        app:cardBackgroundColor="@color/deleteColor"
+        app:cardBackgroundColor="@color/subColor400"
         app:cardCornerRadius="48dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -41,5 +41,28 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cvPI" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView37" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvPI"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="-4dp"
+        android:layout_marginEnd="-4dp"
+        app:cardBackgroundColor="@color/deleteColor"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="@+id/cardView37"
+        app:layout_constraintTop_toTopOf="@+id/cardView37">
+
+        <TextView
+            android:id="@+id/textView55"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="!"
+            android:textColor="@color/whiteText"
+            android:textSize="11dp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

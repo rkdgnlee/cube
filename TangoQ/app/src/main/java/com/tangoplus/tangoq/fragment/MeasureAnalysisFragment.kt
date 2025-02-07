@@ -177,8 +177,8 @@ class MeasureAnalysisFragment : Fragment() {
             button.isEnabled = isActiveButton
             button.backgroundTintList = when {
                 avm.currentIndex == index -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
-                isActiveButton -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-                else -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor100))
+                isActiveButton -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor200))
+                else -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
             }
 
             if (isActiveButton) {

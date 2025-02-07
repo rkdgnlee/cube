@@ -48,24 +48,7 @@ object MeasurementManager {
     val matchedUris = mapOf(
         "목관절" to listOf(0, 3, 4, 5, 6),
         "좌측 어깨" to listOf(0, 1, 3, 5, 6),
-        "우측 어깨" to listOf(0, 1,  4, 5, 6),
-        "좌측 팔꿉" to listOf(0, 2, 3),
-        "우측 팔꿉" to listOf(0, 2, 4),
-        "좌측 손목" to listOf(0, 2, 3),
-        "우측 손목" to listOf(0, 2, 4),
-        "좌측 골반" to listOf(0, 1, 3, 5, 6),
-        "우측 골반" to listOf(0, 1, 4, 5, 6),
-        "좌측 무릎" to listOf(0, 1, 3, 5),
-        "우측 무릎" to listOf(0, 1, 4, 5),
-        "좌측 발목" to listOf(0, 5),
-        "우측 발목" to listOf(0, 5)
-    )
-    // 그니까 getAnalysisUnits는 현재 seq(currentKey)에 맞는 값을 measureResult에서 빼옴
-    // 근데 여기서 currentKey에 맞는 값에서,
-    val matchedIndexx = mapOf(
-        "목관절" to listOf(0, 1, 2),
-        "좌측 어깨" to listOf(0, 1, 3, 5, 6),
-        "우측 어깨" to listOf(0, 1,  4, 5, 6),
+        "우측 어깨" to listOf(0, 1, 4, 5, 6),
         "좌측 팔꿉" to listOf(0, 2, 3),
         "우측 팔꿉" to listOf(0, 2, 4),
         "좌측 손목" to listOf(0, 2, 3),
@@ -78,6 +61,28 @@ object MeasurementManager {
         "우측 발목" to listOf(0, 5)
     )
 
+    // first: seq / second: matchedUris의 index / third: 가장 작은 index
+    val matchedTripleIndexes = listOf(
+        listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
+        // 어깨
+        listOf(Triple(0,0,1), Triple(3, 2, 0), Triple(5, 4, 0)),
+        listOf(Triple(0,0,1), Triple(4, 2, 0), Triple(5, 4, 0)),
+        // 팔꿉
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 2)),
+        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 2)),
+        // 손목
+        listOf(Triple(0,0,1), Triple(2, 1, 1), Triple(3, 2, 0)),
+        listOf(Triple(0,0,1), Triple(2, 1, 1), Triple(4, 2, 0)),
+        // 골반
+        listOf(Triple(0, 0, 0), Triple(3,2,0), Triple(5, 3, 0)),
+        listOf(Triple(0, 0, 0), Triple(4,2,0), Triple(5, 3, 0)),
+        // 무릎
+        listOf(Triple(0,0,1), Triple(3, 2, 0), Triple(5, 3, 1)),
+        listOf(Triple(0,0,1), Triple(4, 2, 0), Triple(5, 3, 1)),
+        // 발목
+        listOf(Triple(0,0,0), Triple(0, 0, 2), Triple(5, 1, 0)),
+        listOf(Triple(0,0,0), Triple(0, 0, 2), Triple(5, 1, 0)),
+    )
 
     private val femaleErrorBounds = listOf(
         mapOf(
@@ -400,7 +405,7 @@ object MeasurementManager {
             5 to mapOf("back_horizontal_angle_hip" to "후면 - 양 골반 기울기"),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "양 어깨와 골반을 이은 삼각형에서 골반 기울기",
 //                "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
-                )
+            )
         ),
         mapOf( // 7
             0 to mapOf("front_vertical_angle_hip_knee_right" to "정면 - 오른쪽 골반과 무릎 기울기",
@@ -612,8 +617,6 @@ object MeasurementManager {
                     )
                 }
             }
-        } else {
-
         }
         return result
     }
@@ -1022,8 +1025,7 @@ object MeasurementManager {
             listOf("좌측 어깨", "우측 어깨") to "라운드 숄더나 자세 틀어짐을 확인하세요",
             listOf("좌측 팔꿉", "우측 팔꿉") to "상완근, 회전근개의 긴장을 의심해야합니다.",
             listOf("좌측 무릎", "우측 무릎") to "무릎 주변의 근육의 수축과 이완을 확인하세요",
-            listOf("목관절") to "거북목과 머리쏠림을 확인하세요",
-            )
+            listOf("목관절") to "거북목과 머리쏠림을 확인하세요")
         for ((keywords, comments) in keywordToCommentMap) {
             if (result.size < 3) {
                 if (painParts != null && painParts.containsAll(keywords)) {
@@ -1034,28 +1036,6 @@ object MeasurementManager {
         return result
     }
 
-    // first: seq / second: matchedUris의 index / third: 가장 작은 index
-    val matchedTripleIndexes = listOf(
-        listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
-        // 어깨
-        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
-        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
-        // 팔꿉
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 2)),
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 2)),
-        // 손목
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
-        // 골반
-        listOf(Triple(0, 0, 1), Triple(3,1,0), Triple(5, 2, 0)),
-        listOf(Triple(0, 0, 1), Triple(4,1,0), Triple(5, 2, 0)),
-        // 무릎
-        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
-        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
-        // 발목
-        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
-        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
-    )
 
     fun createSummary(part: String, seq: Int, units: MutableList<AnalysisUnitVO>): String {
         // 그냥 여기다가 seq 를 0 1, 2, 3으로 받는 형식으로 변형
@@ -1114,17 +1094,6 @@ object MeasurementManager {
                                 resultString.append("귀와 어깨가 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 기울어져 있습니다.  ")
                             }
                         }
-//                        val frontNeckData2 = units.find { it.columnName == "side_right_vertical_angle_ear_shoulder"}
-//                        frontNeckData2?.let {
-//                            val (center, warning, _) = it.rawDataBound // 중심값, 주의 범위, 경고 범위
-//                            val boundRange = (center - warning)..(center + warning) // 비정상 범위 (경고 범위 기준)
-//
-//                            if (it.rawData !in boundRange) {
-//                                angleData = it.rawData
-//                                angleDirection = getDirection(it.rawData)
-//                                resultString.append("귀와 어깨가 ${String.format("%.2f", angleData)}° ${angleDirection}방향으로 기울어져 있습니다.  ")
-//                            }
-//                        }
                     }
                     2 -> {
                         val backNeckData1 = units.find { it.columnName == "back_vertical_angle_nose_center_shoulder"}

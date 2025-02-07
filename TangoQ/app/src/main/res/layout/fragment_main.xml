@@ -60,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:text="메인"
+                    android:text="Home"
                     android:textColor="@color/black"
                     android:textSize="32sp"
                     android:textStyle="bold"
@@ -102,7 +102,7 @@
                     android:id="@+id/constraintLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/secondBgContainerColor"
+                    android:background="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -127,9 +127,10 @@
                         android:id="@+id/tvMMeasureDate"
                         android:layout_width="140dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:layout_marginEnd="20dp"
                         android:background="@drawable/effect_ibtn_20dp"
-                        android:backgroundTint="@color/secondaryColor"
+                        android:backgroundTint="@color/subColor400"
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
                         android:paddingStart="15dp"
@@ -141,118 +142,113 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/tvMTitle"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tvMTitle"
                         app:layout_constraintTop_toTopOf="@+id/tvMTitle" />
 
-                    <LinearLayout
-                        android:id="@+id/linearLayout5"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clMMeasure"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:background="@drawable/bckgnd_2_main_horizon_white"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:background="@drawable/bckgnd_rectangle_12"
+                        android:backgroundTint="@color/subColor100"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvMTitle"
-                        app:layout_constraintVertical_bias="0.0">
+                        app:layout_constraintTop_toBottomOf="@+id/tvMTitle">
+
 
                         <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/clMMeasure"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/clM1"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="15dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/effect_ibtn_12dp"
-                                android:backgroundTint="@color/subColor100"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvMOverall"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/tvMOverall"
-                                app:layout_constraintTop_toTopOf="@+id/tvMOverall">
-
-                                <TextView
-                                    android:id="@+id/tvMMeasureResult1"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginEnd="10dp"
-                                    android:text="_"
-                                    android:textColor="@color/subColor800"
-                                    android:textSize="16dp"
-                                    android:textStyle="bold"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="0.0"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintVertical_bias="0.3333" />
-
-                                <TextView
-                                    android:id="@+id/tvMMeasureResult2"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="10dp"
-                                    android:layout_marginBottom="15dp"
-                                    android:singleLine="true"
-                                    android:text="주의 부위: _"
-                                    android:textColor="@color/subColor800"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="0.0"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1" />
-                            </androidx.constraintlayout.widget.ConstraintLayout>
+                            android:id="@+id/clM1"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/bckgnd_rectangle_8"
+                            android:backgroundTint="@color/white"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvMOverall"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/tvMOverall"
+                            app:layout_constraintTop_toTopOf="@+id/tvMOverall">
 
                             <TextView
-                                android:id="@+id/tvMOverall"
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:background="@drawable/bckgnd_2_third_main_top_left_bottom_right"
-                                android:gravity="center"
-                                android:text="_"
-                                android:textColor="#FFFFFF"
-                                android:textSize="36dp"
-                                android:textStyle="bold"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/rvM1"
+                                android:id="@+id/tvMMeasureResult1"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
-                                android:layout_marginTop="15dp"
                                 android:layout_marginEnd="10dp"
-                                android:layout_marginBottom="15dp"
+                                android:text="_"
+                                android:textColor="@color/subColor800"
+                                android:textSize="16dp"
+                                android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/tvMOverall" />
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias="0.3333" />
+
+                            <TextView
+                                android:id="@+id/tvMMeasureResult2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginBottom="15dp"
+                                android:singleLine="true"
+                                android:text="주의 부위: _"
+                                android:textColor="@color/subColor800"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvMOverall"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bckgnd_rectangle_8"
+                            android:backgroundTint="@color/white"
+                            android:gravity="center"
+                            android:text="_"
+                            android:textColor="@color/mainColor"
+                            android:textSize="36dp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvM1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="15dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvMOverall" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
                         android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="40dp"
                         android:text="진행 프로그램"
                         android:textColor="@color/subColor800"
                         android:textSize="22dp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+                        app:layout_constraintTop_toBottomOf="@+id/clMMeasure" />
 
                     <TextView
                         android:id="@+id/tvMProgram"
@@ -285,6 +281,11 @@
                         android:layout_marginBottom="80dp"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
+                        android:drawableStart="@drawable/icon_play_filled"
+                        android:drawablePadding="0dp"
+                        android:drawableTint="@color/whiteText"
+                        android:paddingStart="100dp"
+                        android:paddingEnd="100dp"
                         android:stateListAnimator="@null"
                         android:text="프로그램 목록 확인하기"
                         android:textColor="@color/whiteText"

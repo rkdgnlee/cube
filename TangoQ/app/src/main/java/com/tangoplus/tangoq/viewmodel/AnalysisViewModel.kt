@@ -32,46 +32,28 @@ class AnalysisViewModel : ViewModel() {
             excludeDates.none { it.fullDateTime == date.fullDateTime }
         }
     }
-    // ------# risk part 선택 -> dialog #------
-    var relatedAnalyzes = mutableListOf<AnalysisVO>()
-    // ------# MainPartAnalysis #------
-    var currentAnalysis : AnalysisVO? = null
 
-    var leftAnalyzes : MutableList<MutableList<AnalysisVO>>? = null
-    var rightAnalyzes :MutableList<MutableList<AnalysisVO>>? = null
+    // trend
+    var leftAnalysises : MutableList<MutableList<AnalysisVO>>? = null
+    var rightAnalysises : MutableList<MutableList<AnalysisVO>>? = null
     var trendLeftUri: String? = null
     var trendRightUri : String? = null
-
     var currentIndex : Int = 0
 
-
-
-    private var leftPlaybackPosition = 0L
-    private var leftwindowIndex = 0
-    private var leftplayWhenReady = true
-    private var rightPlaybackPosition = 0L
-    private var rightWindowIndex = 0
-    private var rightPlayWhenReady = true
-    // ------# risk part 선택 -> 특정 자세 선택 -> dialog #------
-    var selectedSeq = 0
-    var selectedPart = ""
-
-    var dynamicJa = JSONArray()
-
+    fun setTrendIndexToZero() {
+        currentIndex = 0
+    }
+/* 버튼   실제 index
+*  0    0
+*  1    2
+*  2    3
+*  3    4
+*  4    5
+*  5    6
+*  6    7 (동적 6 번째 )
+* */
     var mafMeasureResult = JSONArray()
 
     val dynamicTitles = listOf("좌측 손", "우측 손", "골반 중심", "골반 중심", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
 
-    fun setSeqString(seq: Int?) :String {
-        return when (seq) {
-            0 -> "정면 분석"
-            1 -> "동적 분석"
-            2 -> "팔꿉 분석"
-            3 -> "왼쪽 측면"
-            4 -> "오른쪽 측면"
-            5 -> "후면 분석"
-            6 -> "앉아 후면"
-            else -> ""
-        }
-    }
 }

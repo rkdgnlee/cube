@@ -51,8 +51,10 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:textColor="@color/subColor800"
-        android:textSize="16dp"
+        android:lineSpacingExtra="4dp"
+        android:text="비교 일자를 선택하면 변화값이 표시됩니다."
+        android:textColor="@color/subColor400"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -97,12 +99,14 @@
                 android:id="@+id/tvMTIScore1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="80점"
+                android:text="- 점"
                 android:textColor="@color/subColor400"
                 android:textSize="24dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -124,6 +128,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="최근"
+                android:textColor="@color/subColor800"
                 android:textSize="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -133,10 +138,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="80점"
+                android:textColor="@color/subColor800"
                 android:textSize="24dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <ImageView
                 android:id="@+id/ivMTIArrow"
@@ -145,6 +153,8 @@
                 android:layout_marginEnd="5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvMTIScore2"
                 app:layout_constraintEnd_toStartOf="@+id/tvMTIScore2"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvMTIScore2"
                 app:srcCompat="@drawable/icon_arrow_board" />
         </androidx.constraintlayout.widget.ConstraintLayout>

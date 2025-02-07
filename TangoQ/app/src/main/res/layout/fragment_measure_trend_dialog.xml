@@ -135,7 +135,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/clMTD"
                     android:layout_width="0dp"
-                    android:layout_height="20dp"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView30"
@@ -167,6 +167,7 @@
                         android:id="@+id/clMTDLeft"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:background="#FFB4B4"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -179,6 +180,7 @@
                             android:id="@+id/flMTDLeft"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:background="#6C8348"
                             android:visibility="visible"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -383,12 +385,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/clMTD">
+                    app:layout_constraintTop_toBottomOf="@+id/textView57">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -396,10 +397,10 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView55"
+                            android:id="@+id/tvMTD1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="5dp"
+                            android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:background="@drawable/effect_ibtn_20dp"
                             android:backgroundTint="@color/mainColor"
@@ -408,53 +409,52 @@
                             android:paddingBottom="8dp"
                             android:text="정면 측정"
                             android:textColor="@color/whiteText"
-                            android:textSize="15dp" />
+                            android:textSize="14dp" />
 
                         <TextView
-                            android:id="@+id/textView57"
+                            android:id="@+id/tvMTD2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
+                            android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:background="@drawable/effect_ibtn_20dp"
-                            android:backgroundTint="@color/mainColor"
+                            android:backgroundTint="@color/subColor200"
                             android:gravity="center"
                             android:paddingTop="8dp"
                             android:paddingBottom="8dp"
                             android:text="팔꿉 측정"
                             android:textColor="@color/whiteText"
-                            android:textSize="15dp" />
+                            android:textSize="14dp" />
 
                         <TextView
-                            android:id="@+id/textView59"
+                            android:id="@+id/tvMTD3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:background="@drawable/effect_ibtn_20dp"
-                            android:backgroundTint="@color/mainColor"
+                            android:backgroundTint="@color/subColor200"
                             android:gravity="center"
                             android:paddingTop="8dp"
                             android:paddingBottom="8dp"
                             android:text="좌측 측정"
                             android:textColor="@color/whiteText"
-                            android:textSize="15dp" />
+                            android:textSize="14dp" />
 
                         <TextView
-                            android:id="@+id/textView60"
+                            android:id="@+id/tvMTD4"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:background="@drawable/effect_ibtn_20dp"
-                            android:backgroundTint="@color/mainColor"
+                            android:backgroundTint="@color/subColor200"
                             android:gravity="center"
                             android:paddingTop="8dp"
                             android:paddingBottom="8dp"
                             android:text="우측 측정"
                             android:textColor="@color/whiteText"
-                            android:textSize="15dp" />
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -464,46 +464,49 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView64"
+                            android:id="@+id/tvMTD5"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:background="@drawable/effect_ibtn_20dp"
-                            android:backgroundTint="@color/mainColor"
+                            android:backgroundTint="@color/subColor200"
                             android:gravity="center"
                             android:paddingTop="8dp"
                             android:paddingBottom="8dp"
                             android:text="후면 측정"
                             android:textColor="@color/whiteText"
-                            android:textSize="15dp" />
+                            android:textSize="14dp" />
 
                         <TextView
-                            android:id="@+id/textView65"
+                            android:id="@+id/tvMTD6"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:background="@drawable/effect_ibtn_20dp"
-                            android:backgroundTint="@color/mainColor"
+                            android:backgroundTint="@color/subColor200"
                             android:gravity="center"
                             android:paddingTop="8dp"
                             android:paddingBottom="8dp"
                             android:text="후면 앉음"
                             android:textColor="@color/whiteText"
-                            android:textSize="15dp" />
+                            android:textSize="14dp" />
 
                         <TextView
-                            android:id="@+id/textView67"
+                            android:id="@+id/tvMTD7"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:background="@drawable/effect_ibtn_20dp"
-                            android:backgroundTint="@color/mainColor"
+                            android:backgroundTint="@color/subColor200"
                             android:gravity="center"
                             android:paddingTop="8dp"
                             android:paddingBottom="8dp"
                             android:text="동적 측정"
                             android:textColor="@color/whiteText"
-                            android:textSize="15dp" />
+                            android:textSize="14dp" />
 
                         <TextView
                             android:id="@+id/textView68"
@@ -512,6 +515,18 @@
                             android:layout_weight="1" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView57"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="비교할 자세를 골라주세요"
+                    android:textColor="@color/subColor800"
+                    android:textSize="18dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/clMTD" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

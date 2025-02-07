@@ -44,7 +44,7 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
                 1f -> true
                 else -> false
             }
-            setPartItem(state, holder.clPI, holder.cvPI, holder.tvPI)
+            setPartItem(state, holder.cvPI)
 
             val drawableId = when (currentItem?.first) {
                 "목관절" -> R.drawable.icon_part1
@@ -75,18 +75,16 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
         return dangerParts?.size ?: 0
     }
 
-    private fun setPartItem(isWarning: Boolean, cl: ConstraintLayout, cv: CardView, tv: TextView){
+    private fun setPartItem(isWarning: Boolean, cv: CardView){
         if (isWarning) {
-            cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.cautionContainerColor)
             cv.setCardBackgroundColor(fragment.resources.getColor(R.color.cautionColor, null))
         } else {
-            cl.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.deleteContainerColor)
             cv.setCardBackgroundColor(fragment.resources.getColor(R.color.deleteColor, null))
         }
     }
     private fun loadFlippedImage(holder: PartViewHolder, resourceId: Int, isRight: Boolean) {
         holder.ivPI.setImageResource(resourceId)
-        if (isRight) {
+        if (!isRight) {
             holder.ivPI.scaleX = -1f
         }
     }
