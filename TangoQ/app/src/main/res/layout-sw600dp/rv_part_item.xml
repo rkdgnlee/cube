@@ -5,7 +5,7 @@
     android:id="@+id/clPI"
     android:layout_width="110dp"
     android:layout_height="110dp"
-    android:layout_marginEnd="10dp"
+    android:layout_marginEnd="20dp"
     android:background="@drawable/bckgnd_rectangle_8"
     android:backgroundTint="@color/white">
 

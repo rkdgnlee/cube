@@ -18,18 +18,30 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
+            <ImageButton
+                android:id="@+id/ibtnMABack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/textView121"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
                 android:text="측정 이력"
                 android:textColor="@color/subColor800"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnMABack"
+                app:layout_constraintStart_toEndOf="@+id/ibtnMABack"
+                app:layout_constraintTop_toTopOf="@+id/ibtnMABack" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/materialDivider3"
@@ -127,6 +139,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/textView121"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView121" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>

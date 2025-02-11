@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
+import androidx.fragment.app.replace
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -81,9 +82,7 @@ class MainActivity : AppCompatActivity() {
         // ------! activity 사전 설정 시작 !------
         // 로그인 완료 시 2분마다 토큰 갱신
         myApplication = application as MyApplication
-        // 액티비티 생성 시 스택 초기화
-        myApplication.clearFragmentStack()
-        logBackStack()
+
         val workManager = WorkManager.getInstance(this)
         scheduleTokenCheck(this)
         workManager.getWorkInfosForUniqueWorkLiveData("TokenCheckWork").observe(this) { workInfos ->
@@ -119,6 +118,7 @@ class MainActivity : AppCompatActivity() {
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
         // bottomnavigation도 같이 backstack 반응하기
         supportFragmentManager.addOnBackStackChangedListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
@@ -234,18 +234,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setCurrentFragment(itemId: Int) {
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val fragmentTag = getFragmentTag(itemId)
-
-        // 스택에서 마지막 프래그먼트를 가져옴
-        val currentFragment = myApplication.fragmentStack.lastOrNull()
-
-        // 이미 해당 프래그먼트가 스택의 최상단이라면 스킵
-        if (currentFragment != null && currentFragment.tag == fragmentTag) {
-            return
-        }
-
         // 새로운 프래그먼트 생성
         val fragment = when (itemId) {
             R.id.main -> MainFragment()
@@ -254,24 +242,10 @@ class MainActivity : AppCompatActivity() {
             R.id.profile -> ProfileFragment()
             else -> MainFragment()
         }
-
-        // 스택에 프래그먼트를 추가
-        myApplication.fragmentStack.add(fragment)
-
         // 프래그먼트 변경
-        fragmentTransaction.replace(R.id.flMain, fragment, fragmentTag)
-        fragmentTransaction.addToBackStack(fragmentTag)
-        fragmentTransaction.commit()
-    }
-
-    // 프래그먼트 태그 생성 함수
-    private fun getFragmentTag(itemId: Int): String {
-        return when (itemId) {
-            R.id.main -> "MainFragment"
-            R.id.exercise -> "ExerciseFragment"
-            R.id.measure -> "MeasureFragment"
-            R.id.profile -> "ProfileFragment"
-            else -> "UnknownFragment"
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flMain, fragment)
+            commit()
         }
     }
 
@@ -303,31 +277,21 @@ class MainActivity : AppCompatActivity() {
     private var backPressedOnce = false
     private val backPressHandler = Handler(Looper.getMainLooper())
     private val backPressRunnable = Runnable { backPressedOnce = false }
-    private var lastPoppedFragmentTag: String? = null
+
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             val fragmentManager = supportFragmentManager
 
-            if (fragmentManager.backStackEntryCount <= 1 || isCurrentFragmentEmpty()) {
-                // 백 스택에 entry가 1개 이하이거나 현재 프래그먼트가 비어있으면 앱 종료 로직 실행
-                if (backPressedOnce) {
-                    isEnabled = false
-                    finishAffinity() // 앱을 완전히 종료
-                } else {
-                    MeasureDatabase.closeDatabase()
-                    backPressedOnce = true
-                    Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
-                    backPressHandler.postDelayed(backPressRunnable, 1000)
-                }
+            if (fragmentManager.fragments.lastOrNull() is MainFragment) {
+                MeasureDatabase.closeDatabase()
+                backPressedOnce = true
+                Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+                backPressHandler.postDelayed(backPressRunnable, 1000)
+                myApplication.clearLastActivity()
             } else {
-                val lastFragment = myApplication.fragmentStack.removeLastOrNull()
-                if (lastFragment != null) {
-                    lastPoppedFragmentTag = lastFragment.tag
-                }
-
-                // 백 스택에서 뒤로가기
-                fragmentManager.popBackStack()
-
+                myApplication.setLastActivity()
+                binding.bnbMain.selectedItemId = R.id.main
+                setCurrentFragment(0)
             }
         }
     }
@@ -342,13 +306,15 @@ class MainActivity : AppCompatActivity() {
     private fun handleIntent(intent: Intent) {
         val deepLinkPath = intent.getStringExtra(DeepLinkManager.DEEP_LINK_PATH_KEY)
         val exerciseId = intent.getStringExtra(DeepLinkManager.EXERCISE_ID_KEY)
+        val finishEVP =  intent.getStringExtra("evp_finish")
+        Log.v("finishEVP", "$finishEVP")
         if (deepLinkPath != null) {
             if (exerciseId != null) {
                 navigateToFragment(deepLinkPath, exerciseId)
             }
             navigateToFragment(deepLinkPath, exerciseId)
-        } else {
-            // 딥링크가 아닌 경우 기본 Fragment로 이동
+        } else if (finishEVP != null) {
+            navigateToFragment("PlayThumbnail", finishEVP)
         }
     }
 
@@ -373,52 +339,46 @@ class MainActivity : AppCompatActivity() {
             "MD1" -> {
                 supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flMain, MeasureFragment())
-                    addToBackStack("MeasureDashBoard1Fragment")
                     commit()
                 }
             }
             "MD" -> {
                 supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flMain, MeasureDetailFragment())
-                    addToBackStack("MeasureDetailFragment")
                     commit()
                 }
-            } // measure에 대한 값들을 control해야함
-            "RD" -> {
-//                val dialog = ReportDiseaseDialogFragment()
-//                dialog.show(supportFragmentManager, "ReportDiseaseDialogFragment")
+            }
+
+            "PlayThumbnail" -> {
+                if (exerciseId != null) {
+                    val typeIds = when (exerciseId.toInt()) {
+                        in 1.. 27 -> arrayListOf(1, 2)
+                        in 28 .. 72 -> arrayListOf(3, 4, 5)
+                        in 73 .. 133 -> arrayListOf(6, 7, 8, 9)
+                        else -> arrayListOf(10, 11)
+                    }
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flMain, ExerciseDetailFragment.newInstance(typeIds, exerciseId.toInt()))
+                        commit()
+                    }
+                }
             }
             else -> MainFragment()
         }
     }
 
-    // ------! 한 번 더 누르시면 앱이 종료됩니다. !------
-    private fun isCurrentFragmentEmpty(): Boolean {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
-        return currentFragment == null || currentFragment.view == null || !currentFragment.isVisible
-    }
 
     fun launchMeasureSkeletonActivity() {
         val intent = Intent(this, MeasureSkeletonActivity::class.java)
         measureSkeletonLauncher.launch(intent)
     }
+
     private fun hasExactAlarmPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.canScheduleExactAlarms()
         } else {
             true
-        }
-    }
-    fun logBackStack() {
-        supportFragmentManager.apply {
-            Log.d("BackStack", "BackStack Entry Count: ${backStackEntryCount}")
-
-            // 백 스택의 각 엔트리 상세 정보 출력
-            for (i in 0 until backStackEntryCount) {
-                val entry = getBackStackEntryAt(i)
-                Log.d("BackStack", "Entry $i: ${entry.name}")
-            }
         }
     }
 }

@@ -5,7 +5,6 @@ import android.content.Context
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 
 class Singleton_t_progress private constructor(context: Context){
-    var graphProgresses : MutableList<MutableList<ProgressUnitVO>>? = null
     var programProgresses: MutableList<MutableList<ProgressUnitVO>>? = null
     // 1개 측정안 프로그램 단위 > 프로그램 안의 회차 단위 > 회차 안에 프로그램 갯수들.
     init {
@@ -25,7 +24,6 @@ class Singleton_t_progress private constructor(context: Context){
         }
     }
     private fun initialize() {
-        graphProgresses = mutableListOf()
         programProgresses = mutableListOf()
     }
 }

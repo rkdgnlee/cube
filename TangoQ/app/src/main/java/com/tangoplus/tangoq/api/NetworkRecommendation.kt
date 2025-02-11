@@ -39,7 +39,7 @@ object NetworkRecommendation {
                                     userSn = ja.optJSONObject(i).optInt("user_sn"),
                                     programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                     title = ja.optJSONObject(i).optString("recommendation_title"),
-                                    regDate = ja.optJSONObject(i).optString("created_at")
+                                    createdAt = ja.optJSONObject(i).optString("created_at")
                                 )
                                 recommendations.add(recommendationVO)
                             }
@@ -100,7 +100,7 @@ object NetworkRecommendation {
                                 userSn = ja.optJSONObject(i).optInt("user_sn"),
                                 programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                 title = ja.optJSONObject(i).optString("recommendation_title"),
-                                regDate = ja.optJSONObject(i).optString("created_at")
+                                createdAt = ja.optJSONObject(i).optString("created_at")
                             )
                             recommendations.add(recommendationVO)
                         }
@@ -152,7 +152,7 @@ object NetworkRecommendation {
                                 userSn = ja.optJSONObject(i).optInt("user_sn"),
                                 programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
                                 title = ja.optJSONObject(i).optString("recommendation_title"),
-                                regDate = ja.optJSONObject(i).optString("created_at")
+                                createdAt = ja.optJSONObject(i).optString("created_at")
                             )
                             recommendations.add(recommendationVO)
 
@@ -181,5 +181,64 @@ object NetworkRecommendation {
 
         }
     }
+    suspend fun getRecommendationProgress(myUrl: String, context: Context, measureInfoSn: Int) : MutableList<RecommendationVO> {
+        val client = getClient(context)
+        val request = Request.Builder()
+            .url("${myUrl}?recommendation_progress=$measureInfoSn")
+            .get()
+            .build()
 
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.v("RecommendProgress", "$responseBody")
+                    val dataJson = JSONObject(responseBody.toString())
+                    val ja = dataJson.optJSONArray("data")
+                    val recommendations = mutableListOf<RecommendationVO>()
+                    if (ja != null) {
+                        for (i in 0 until ja.length()) {
+                            val recommendationVO = RecommendationVO(
+                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
+                                serverSn = ja.optJSONObject(i).optInt("server_sn"),
+                                userSn = ja.optJSONObject(i).optInt("user_sn"),
+                                programSn = ja.optJSONObject(i).optInt("exercise_program_sn"),
+                                exerciseTypeId = ja.optJSONObject(i).optInt("exercise_type_id"),
+                                exerciseStage = ja.optJSONObject(i).optInt("exercise_stage"),
+                                totalDuration = ja.optJSONObject(i).optInt("total_duration"),
+                                numberOfExercise = ja.optJSONObject(i).optInt("number_of_exercise"),
+                                title = ja.optJSONObject(i).optString("recommendation_title"),
+                                createdAt = ja.optJSONObject(i).optString("created_at"),
+                                startAt = ja.optJSONObject(i).optString("start_at"),
+                                endAt = ja.optJSONObject(i).optString("end_at"),
+                                expired = ja.optJSONObject(i).optInt("expired"),
+                                totalProgress = ja.optJSONObject(i).optInt("total_progress"),
+                            )
+                            recommendations.add(recommendationVO)
+
+                        }
+                        return@use recommendations
+                    } else {
+                        return@use recommendations
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("RecommendIndex", "${e.message}")
+                mutableListOf()
+            } catch (e: IllegalArgumentException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            } catch (e: IllegalStateException) {
+                Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            } catch (e: NullPointerException) {
+                Log.e("RecommendNull", "${e.message}")
+                mutableListOf()
+            } catch (e: java.lang.Exception) {
+                Log.e("RecommendException", "${e.message}")
+                mutableListOf()
+            }
+
+        }
+    }
 }

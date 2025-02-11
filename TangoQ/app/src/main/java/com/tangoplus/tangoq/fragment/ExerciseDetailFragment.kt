@@ -156,8 +156,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 if (evm.allExerciseHistorys != null) {
                     currentCateHistorys = evm.allExerciseHistorys?.filter { it.exerciseTypeId == categoryMap["목관절"] }?.sortedBy { it.exerciseId }?.toMutableList()
                     updateRecyclerView(currentCateExercises?.toMutableList(), currentCateHistorys)
-                    binding.sflED.stopShimmer()
-                    binding.sflED.visibility= View.GONE
+
                 }
             // ------! rv vertical 끝 !------
             } catch (e: IndexOutOfBoundsException) {
@@ -170,7 +169,10 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 Log.e("EDetailNull", "${e.message}")
             } catch (e: java.lang.Exception) {
                 Log.e("EDetailException", "${e.message}")
-            } // ------! rv all rv 끝 !------
+            } finally {
+                binding.sflED.stopShimmer()
+                binding.sflED.visibility= View.GONE
+            }// ------! rv all rv 끝 !------
         }
 
 //        // -----! spinner 연결 시작 !-----

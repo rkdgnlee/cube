@@ -95,7 +95,6 @@ class LoginDialogFragment : DialogFragment() {
             override fun afterTextChanged(s: Editable?) {
                 viewModel.id.value = s.toString()
                 viewModel.currentIdCon.value = idPatternCheck.matcher(binding.etLDId.text.toString()).find()
-                Log.v("idPw", "${viewModel.currentIdCon.value} ,${viewModel.idPwCondition.value}")
             }
         })
         binding.etLDPw.addTextChangedListener(object : TextWatcher {
@@ -104,7 +103,6 @@ class LoginDialogFragment : DialogFragment() {
             override fun afterTextChanged(s: Editable?) {
                 viewModel.pw.value = s.toString()
                 viewModel.currentPwCon.value = pwPatternCheck.matcher(binding.etLDPw.text.toString()).find()
-                Log.v("idPw", "${viewModel.currentPwCon.value} ,${viewModel.idPwCondition.value}")
             }
         })
         binding.etLDPw.setOnEditorActionListener { _, actionId, event ->
@@ -148,7 +146,6 @@ class LoginDialogFragment : DialogFragment() {
             val jsonObject = JSONObject()
             jsonObject.put("user_id", viewModel.id.value)
             jsonObject.put("password", viewModel.pw.value)
-            Log.v("idPW", "${viewModel.id.value}, ${viewModel.pw.value}")
             val dialog = LoadingDialogFragment.newInstance("로그인")
             dialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
 

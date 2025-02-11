@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.OptIn
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.tangoplus.tangoq.MainActivity
@@ -55,6 +56,12 @@ class MeasureHistoryFragment : Fragment() {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
+        binding.ibtnMABack.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, MeasureFragment())
+                commit()
+            }
+        }
 
         val filterList = mutableListOf<String>()
         filterList.add("최신순")
@@ -62,7 +69,6 @@ class MeasureHistoryFragment : Fragment() {
         filterList.add("높은 점수순")
         filterList.add("낮은 점수순")
 //        binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, 1)
-
         measures = Singleton_t_measure.getInstance(requireContext()).measures
         measures?.let { measure ->
             setAdapter(measures)

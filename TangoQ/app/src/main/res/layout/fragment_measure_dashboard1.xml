@@ -168,7 +168,7 @@
                         android:src="@drawable/icon_arrow_board"
                         app:layout_constraintBottom_toTopOf="@+id/vMD1Percent"
                         app:layout_constraintEnd_toEndOf="@+id/vMD1Percent"
-                        app:layout_constraintHorizontal_bias="0.875"
+                        app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/vMD1Percent" />
 
                     <View
@@ -207,7 +207,7 @@
 
                     <View
                         android:id="@+id/vMD1High"
-                        android:layout_width="100dp"
+                        android:layout_width="0dp"
                         android:layout_height="10dp"
                         android:background="@drawable/bckgnd_right_24"
                         android:backgroundTint="@color/thirdColor"
@@ -414,7 +414,7 @@
                     android:id="@+id/tvMD11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
+                    android:layout_marginStart="18dp"
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -423,7 +423,7 @@
                     android:textSize="13dp"
                     app:layout_constraintEnd_toEndOf="@+id/cvMD1"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/lcMD1"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lcMD1" />
 
                 <TextView
@@ -436,9 +436,9 @@
                     android:text="날짜"
                     android:textColor="@color/subColor400"
                     android:textSize="13dp"
-                    app:layout_constraintEnd_toEndOf="@+id/cvMD1"
-                    app:layout_constraintHorizontal_bias="0.25"
-                    app:layout_constraintStart_toStartOf="@+id/lcMD1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.2875"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lcMD1" />
 
                 <TextView
@@ -451,8 +451,8 @@
                     android:text="날짜"
                     android:textColor="@color/subColor400"
                     android:textSize="13dp"
-                    app:layout_constraintEnd_toEndOf="@+id/cvMD1"
-                    app:layout_constraintStart_toStartOf="@+id/lcMD1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lcMD1" />
 
                 <TextView
@@ -465,9 +465,9 @@
                     android:text="날짜"
                     android:textColor="@color/subColor400"
                     android:textSize="13dp"
-                    app:layout_constraintEnd_toEndOf="@+id/cvMD1"
-                    app:layout_constraintHorizontal_bias="0.75"
-                    app:layout_constraintStart_toStartOf="@+id/lcMD1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.7125"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lcMD1" />
 
                 <TextView
@@ -475,13 +475,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:layout_marginEnd="3dp"
+                    android:layout_marginEnd="18dp"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="날짜"
                     android:textColor="@color/subColor400"
                     android:textSize="13dp"
-                    app:layout_constraintEnd_toEndOf="@+id/cvMD1"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="@+id/lcMD1"
                     app:layout_constraintTop_toBottomOf="@+id/lcMD1" />
@@ -501,7 +501,7 @@
                     android:paddingBottom="4dp"
                     android:text="0"
                     android:textColor="@color/subColor400"
-                    android:textSize="13dp"
+                    android:textSize="14dp"
                     app:layout_constraintEnd_toEndOf="@+id/tvMD11"
                     app:layout_constraintStart_toStartOf="@+id/tvMD11"
                     app:layout_constraintTop_toBottomOf="@+id/tvMD11" />
@@ -521,7 +521,7 @@
                     android:paddingBottom="4dp"
                     android:text="0"
                     android:textColor="@color/subColor400"
-                    android:textSize="13dp"
+                    android:textSize="14dp"
                     app:layout_constraintEnd_toEndOf="@+id/tvMD12"
                     app:layout_constraintStart_toStartOf="@+id/tvMD12"
                     app:layout_constraintTop_toBottomOf="@+id/tvMD12" />
@@ -541,7 +541,7 @@
                     android:paddingBottom="4dp"
                     android:text="0"
                     android:textColor="@color/subColor400"
-                    android:textSize="13dp"
+                    android:textSize="14dp"
                     app:layout_constraintEnd_toEndOf="@+id/tvMD13"
                     app:layout_constraintStart_toStartOf="@+id/tvMD13"
                     app:layout_constraintTop_toBottomOf="@+id/tvMD13" />
@@ -561,7 +561,7 @@
                     android:paddingBottom="4dp"
                     android:text="0"
                     android:textColor="@color/subColor400"
-                    android:textSize="13dp"
+                    android:textSize="14dp"
                     app:layout_constraintEnd_toEndOf="@+id/tvMD14"
                     app:layout_constraintStart_toStartOf="@+id/tvMD14"
                     app:layout_constraintTop_toBottomOf="@+id/tvMD14" />
@@ -573,15 +573,15 @@
                     android:layout_marginTop="4dp"
                     android:layout_weight="1"
                     android:background="@drawable/bckgnd_rectangle_8"
-                    android:backgroundTint="@color/subColor100"
+                    android:backgroundTint="@color/secondContainerColor"
                     android:gravity="center"
                     android:paddingStart="8dp"
                     android:paddingTop="4dp"
                     android:paddingEnd="8dp"
                     android:paddingBottom="4dp"
                     android:text="0"
-                    android:textColor="@color/subColor400"
-                    android:textSize="13dp"
+                    android:textColor="@color/thirdWhiteColor"
+                    android:textSize="14dp"
                     app:layout_constraintEnd_toEndOf="@+id/tvMD15"
                     app:layout_constraintStart_toStartOf="@+id/tvMD15"
                     app:layout_constraintTop_toBottomOf="@+id/tvMD15" />

@@ -20,6 +20,8 @@ class ProgressViewModel : ViewModel() {
     var currentSequence = 0
     var selectedSequence = MutableLiveData<Int>()
 
+    var graphProgresses : MutableList<Pair<String, Int>>? = null
+    var selectedDate: LocalDate? = LocalDate.now()
 
     // 현재 선택된 progress, 즉 시청 기록을 담는 곳(모든 회차가 다 들어감)
     var currentProgresses = mutableListOf<MutableList<ProgressUnitVO>>()

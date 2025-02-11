@@ -17,18 +17,31 @@
             android:layout_height="wrap_content"
             android:background="@color/white">
 
+            <ImageButton
+                android:id="@+id/ibtnMDBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/textView40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="29dp"
                 android:text="측정 이력"
                 android:textColor="@color/subColor800"
-                android:textSize="28dp"
+                android:textSize="30dp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnMDBack"
+                app:layout_constraintStart_toEndOf="@+id/ibtnMDBack"
+                app:layout_constraintTop_toTopOf="@+id/ibtnMDBack" />
 
             <ImageButton
                 android:id="@+id/ibtnMDAlarm"

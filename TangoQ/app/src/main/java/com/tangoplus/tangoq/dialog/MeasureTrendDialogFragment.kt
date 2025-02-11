@@ -135,6 +135,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 avm.leftMeasurement.value = null
                 avm.leftAnalysises = null
                 avm.rightMeasurement.value = measures[0]
+                avm.currentIndex = 0
                 measureResult = mvm.selectedMeasure?.measureResult ?: JSONArray()
 
                 // ------# 비교할 모든 analysisVO 넣기 #------
@@ -158,17 +159,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         withContext(Dispatchers.Main) {
                             avm.leftMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.regDate == avm.leftMeasureDate.value?.fullDateTime }
                             avm.leftAnalysises = transformAnalysis(avm.leftMeasurement.value?.measureResult ?: JSONArray())
-
+                            val transIndex = if (avm.currentIndex == 6) {
+                                1
+                            } else if (avm.currentIndex > 0){
+                                avm.currentIndex + 1
+                            } else {
+                                0
+                            }
                             // 다운로드한 jpg 파일 drawing
                             if (avm.currentIndex != 6) {
-                                setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, avm.currentIndex, binding.ssivMTDLeft, "trend")
+                                setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, transIndex, binding.ssivMTDLeft, "trend")
                             } else {
                                 setVideoUI(true, false)
                                 setClickListener(false)
                                 setPlayer(false)
                             }
-
-                            setAdapter(avm.leftAnalysises, avm.rightAnalysises)
+                            setAdapter(avm.leftAnalysises, avm.rightAnalysises, transIndex)
                         }
                     }
                     binding.tvMTDAlert.visibility = View.GONE
@@ -237,16 +243,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
             // 값 셋팅
             withContext(Dispatchers.Main) {
                 avm.rightMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.regDate == avm.rightMeasureDate.value?.fullDateTime }
-
                 avm.rightAnalysises = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
+                val transIndex = if (avm.currentIndex == 6) {
+                    1
+                } else if (avm.currentIndex > 0){
+                    avm.currentIndex + 1
+                } else {
+                    0
+                }
                 if (avm.currentIndex != 6) {
-                    setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, avm.currentIndex, binding.ssivMTDRight, "trend")
+                    setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
                 } else {
                     setVideoUI(true, true)
                     setClickListener(true)
                     setPlayer(true)
                 }
-                setAdapter(avm.leftAnalysises, avm.rightAnalysises)
+                setAdapter(avm.leftAnalysises, avm.rightAnalysises, transIndex)
             }
         }
     }
@@ -264,45 +276,33 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 updateButtonState()  // 버튼 상태를 다시 업데이트
 
                 CoroutineScope(Dispatchers.IO).launch {
+                    val transIndex = if (avm.currentIndex == 6) {
+                        1
+                    } else if (avm.currentIndex > 0){
+                        avm.currentIndex + 1
+                    } else {
+                        0
+                    }
+
                     // 왼쪽이 없을 때는 오른쪽만 갱신
-                    if (avm.leftMeasurement.value == null) {
-                        if (avm.currentIndex != 6) {
-                            withContext(Dispatchers.Main) {
-                                // 만약 0번 index일 경우 0으로 넣기
-                                val transIndex = if (avm.currentIndex > 0) {
-                                    avm.currentIndex + 1
-                                } else {
-                                    0
-                                }
-                                // 실제 seq + 1 해서 index가 1인 건너뜀
+                    withContext(Dispatchers.Main) {
+                        if (avm.leftMeasurement.value == null) {
+                            if (avm.currentIndex != 6) {
                                 setVideoUI(false, true)
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
-                                setAdapter(avm.leftAnalysises, avm.rightAnalysises, avm.currentIndex)
-                            }
-                        } else  {
-                            withContext(Dispatchers.Main) {
+                            } else {
                                 setVideoUI(true, true)
                                 setClickListener(true)
                                 setPlayer(true)
                             }
-                        }
-                    } else {
-                        if (avm.currentIndex != 6) {
-                            withContext(Dispatchers.Main) {
-                                val transIndex = if (avm.currentIndex > 0) {
-                                    avm.currentIndex + 1
-                                } else {
-                                    0
-                                }
+                        } else {
 
+                            if (avm.currentIndex != 6) {
                                 setVideoUI(false, false)
                                 setVideoUI(false, true)
                                 setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, transIndex, binding.ssivMTDLeft, "trend")
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
-                                setAdapter(avm.leftAnalysises, avm.rightAnalysises, avm.currentIndex)
-                            }
-                        } else  {
-                            withContext(Dispatchers.Main) {
+                            } else  {
                                 setVideoUI(true, false)
                                 setClickListener(false)
                                 setPlayer(false)
@@ -311,6 +311,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 setPlayer(true)
                             }
                         }
+                        setAdapter(avm.leftAnalysises, avm.rightAnalysises, transIndex)
                     }
                 }
             }
@@ -481,11 +482,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
         when (isRight) {
             true -> {
                 lifecycleScope.launch {
-//                    Log.v("동적측정json", "${avm.rightMeasurement.value?.measureResult?.getJSONArray(1)}")
                     rightJa = avm.rightMeasurement.value?.measureResult?.getJSONArray(1) ?: JSONArray()
-//                    Log.v("rightJa길이", "${rightJa.length()}")
                     initPlayer(isRight)
-
                     simpleExoPlayer2?.addListener(object : Player.Listener {
                         override fun onPlaybackStateChanged(playbackState: Int) {
                             super.onPlaybackStateChanged(playbackState)

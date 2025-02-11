@@ -48,7 +48,6 @@ class WithdrawalFragment : Fragment() {
 
 
         // ------# 화면 확장 및 세팅 & 싱글턴 초기화 #------
-        (activity as MainActivity).logBackStack()
         binding.btnWd.isEnabled = false
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())

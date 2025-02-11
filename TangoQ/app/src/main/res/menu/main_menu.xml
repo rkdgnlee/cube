@@ -6,7 +6,7 @@
         android:id="@+id/main"
         android:contentDescription="main"
         android:icon="@drawable/bnb_main"
-        android:title="메인" />
+        android:title="Main" />
     <item
         android:id="@+id/exercise"
         android:contentDescription="exercise"

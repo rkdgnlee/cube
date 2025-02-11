@@ -16,10 +16,14 @@ class MeasureViewModel : ViewModel() {
     val parts = MutableLiveData(mutableListOf<MeasureVO>())
     val feedbackParts = MutableLiveData(mutableListOf<MeasureVO>())
 
-    /// MD1 측정 날짜 선택 담을 공간 index임
+    // 메인 측정 날짜 선택 담을 공간 index임
     var selectMeasureDate = MutableLiveData<String>()
     var selectedMeasureDate = MutableLiveData<String>()
     var currentMeasureDate = 0
+
+    // MD1에서 선택하는 날짜 담기
+    var md1SelectedMeasureIndex = MutableLiveData<Int>()
+
 
     // 서버에서 받은 측졍 결과 받는 곳
     var measures = mutableListOf<MeasureVO>()

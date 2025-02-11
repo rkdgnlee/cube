@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
         val clMPI : ConstraintLayout = view.findViewById(R.id.clMPI)
         val tvMPIPercent : TextView = view.findViewById(R.id.tvMPIPercent)
         val pvMPI: ProgressView = view.findViewById(R.id.pvMPI)
+        val tvMPITime : TextView = view.findViewById(R.id.tvMPITime)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -57,9 +59,16 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
                 holder.ivMPIThumbnail.setImageResource(drawableResId)
             }
 
-            // progress bar 넣기
-            holder.tvMPIPercent.text = "0%"
-            holder.pvMPI.progress = 0f
+            if (currentItem.totalProgress > 0) {
+                val durationSet = (currentItem.totalProgress * 100).toFloat() / (currentItem.totalDuration * 12)
+                holder.tvMPIPercent.text = "${durationSet.toInt()} %"
+                holder.pvMPI.progress = durationSet
+            } else {
+                holder.tvMPIPercent.text = "0%"
+                holder.pvMPI.progress = 0f
+            }
+            val second = "${currentItem.totalDuration.div(60)}분 ${currentItem.totalDuration.rem(60)}초"
+            holder.tvMPITime.text = second
 
             // 선택
             holder.clMPI.setOnSingleClickListener {

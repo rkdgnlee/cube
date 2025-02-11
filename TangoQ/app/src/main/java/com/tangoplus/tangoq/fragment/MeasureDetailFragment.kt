@@ -77,7 +77,12 @@ class MeasureDetailFragment : Fragment() {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
-
+        binding.ibtnMDBack.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, MeasureHistoryFragment())
+                commit()
+            }
+        }
         // ------# measure 에 맞게 UI 수정 #------
         measure = viewModel.selectedMeasure
         updateUI()

@@ -226,17 +226,16 @@ class PlayFullScreenActivity : AppCompatActivity() {
 //                                pvm.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
                                 // 이 곳에 총 크로노미터 + 도합 운동시간 + 운동 갯수 3개 보내야함.
                                 val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
-//                                intent.putExtra("feedback_finish", pvm.exerciseLog)
                                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-//                                Log.v("feedback_finish", "VM_exercise_log: ${pvm.exerciseLog}")
                                 startActivity(intent)
                                 finish()
                             }
 
                         } else {
                             CoroutineScope(Dispatchers.Main).launch {
-                                sendEVP(false) {
+                                sendEVP(true) {
                                     val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                                    intent.putExtra("evp_finish", currentExerciseId)
                                     startActivity(intent)
                                     finish()
                                 }
@@ -390,6 +389,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     CoroutineScope(Dispatchers.Main).launch {
                         sendEVP(false) {
                             val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                            intent.putExtra("evp_finish", currentExerciseId)
                             startActivity(intent)
                             finish()
                         }
@@ -424,7 +424,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
             jo.put("progress", currentPositionSeconds)
         }
 
-        Log.v("미디어소스인덱스", "currentExerciseId: ${currentExerciseId}, jo: $jo, totalDuration: $totalDurationMs")
         patchExerciseHistory(this@PlayFullScreenActivity, getString(R.string.API_exercise), currentExerciseId, jo.toString())
 
         callback()

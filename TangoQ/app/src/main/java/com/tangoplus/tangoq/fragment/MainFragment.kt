@@ -31,12 +31,14 @@ import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -62,7 +64,6 @@ class MainFragment : Fragment() {
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as MainActivity).logBackStack()
         // ------# 스크롤 관리 #------
         binding.nsvM.isNestedScrollingEnabled = false
         prefsManager = PreferencesManager(requireContext())
@@ -156,7 +157,7 @@ class MainFragment : Fragment() {
         if (measures.isNullOrEmpty()) {
             // ------# measure에 뭐라도 들어있으면 위 코드 #-------
             binding.tvMTitle.text = "${Singleton_t_user.getInstance(requireContext()).jsonObject?.getString("user_name")}님"
-            binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+
             binding.tvMMeasureDate.visibility = View.GONE
             binding.tvMOverall.text = "-"
             binding.tvMMeasureResult1.text = "측정 데이터가 없습니다."
@@ -176,7 +177,7 @@ class MainFragment : Fragment() {
                 Log.v("measure있는지", "$measure")
                 if (measure.size > 0) {
 
-                    binding.constraintLayout2.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secondBgContainerColor))
+
                     binding.tvMMeasureDate.visibility = View.VISIBLE
                     binding.rvM1.visibility = View.VISIBLE
                     binding.tvMTitle.text = "최근 측정 정보"
@@ -226,23 +227,21 @@ class MainFragment : Fragment() {
                         // 내가 했던 프로그램의 운동 목록 가져오기
                         lifecycleScope.launch(Dispatchers.IO) {
                             try {
-//                                val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
-//                                evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
-//                                evm.latestProgram = progressResult?.second
-//
-//                                Log.v("최근프로그램데이터", "${evm.latestUVP}")
-//                                val adapter =  ExerciseRVAdapter(this@MainFragment, evm.latestProgram?.exercises, evm.latestUVP, null,null, null, "M")
-//                                var currentPage = 0
-//                                if (evm.latestUVP != null) {
-//                                   currentPage = findCurrentIndex(evm.latestUVP)
-//                                }
-                                // 진행 중인 recommendation 넣기
-                                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                                val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())
-                                binding.rvM2.layoutManager = layoutManager
-                                binding.rvM2.adapter = adapter
-
-
+                                // progress가 들어간 recommendation이다.
+                                Log.v("시작날짜", "${mvm.selectedMeasure?.recommendations?.map { it.startAt }}")
+                                if (!mvm.selectedMeasure?.recommendations?.filter { it.startAt == "" }.isNullOrEmpty()) {
+                                    // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
+                                    val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+                                    mvm.selectedMeasure?.recommendations = progressRec
+                                    Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+                                    Log.v("싱글턴 잘들어갔는지", "${Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations?.map { it.startAt }}")
+                                }
+                                withContext(Dispatchers.Main) {
+                                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                    val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())
+                                    binding.rvM2.layoutManager = layoutManager
+                                    binding.rvM2.adapter = adapter
+                                }
                             }  catch (e: IndexOutOfBoundsException) {
                                 Log.e("MainIndex", "${e.message}")
                             } catch (e: IllegalArgumentException) {
@@ -261,23 +260,13 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun dpToPx(dp: Int) : Int {
-        return (dp * resources.displayMetrics.density).toInt()
-    }
-
-    private fun setProgramButton(isEnabled: Boolean) {
-        if (isEnabled) {
-            binding.btnMProgram.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.mainColor)
-            binding.btnMProgram.text = "프로그램 선택하기"
-        }
-    }
-
     private fun existedMeasurementGuide() {
-        binding.constraintLayout2.isEnabled = false
+        binding.clM2.isEnabled = false
+        binding.clM2.isClickable = false
         TooltipManager.createGuide(
             context = requireContext(),
-            text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
-            anchor = binding.tvMOverall,
+            text = "최근 측정에서 나온\n위험 부위를 탭해서 확인해보세요",
+            anchor = binding.rvM1,
             gravity = Gravity.BOTTOM,
             dismiss = {
 
@@ -289,11 +278,12 @@ class MainFragment : Fragment() {
                     dismiss = {
                         TooltipManager.createGuide(
                             context = requireContext(),
-                            text = " 탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
-                            anchor = binding.btnMProgram,
-                            gravity = Gravity.BOTTOM,
+                            text = "탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
+                            anchor = binding.rvM2,
+                            gravity = Gravity.TOP,
                             dismiss = {
-                                binding.constraintLayout2.isEnabled = true
+                                binding.clM2.isEnabled = false
+                                binding.clM2.isClickable = false
                             })
                     }
                 )
@@ -311,7 +301,7 @@ class MainFragment : Fragment() {
 
                 TooltipManager.createGuide(
                     context = requireContext(),
-                    text = "7가지 자세 측정을 완료하고 운동 프로그램을 추천받으세요",
+                    text = "측정을 완료하고 운동 프로그램을 추천받으세요",
                     anchor = binding.btnMProgram,
                     gravity = Gravity.BOTTOM,
                     dismiss = {

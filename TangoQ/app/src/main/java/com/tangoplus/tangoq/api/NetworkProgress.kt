@@ -272,10 +272,10 @@ object NetworkProgress {
         }
     }
 
-    suspend fun getWeekProgress(myUrl: String, recSn: Int, week: Int,context: Context) : MutableList<ProgressUnitVO>? {
+    suspend fun getWeekProgress(myUrl: String, context: Context) : MutableList<Pair<String, Int>>? {
         val client = getClient(context)
         val request = Request.Builder()
-            .url("$myUrl?recommendation_sn=$recSn&weeks=$week")
+            .url("$myUrl?week_progress")
             .get()
             .build()
 
@@ -287,31 +287,17 @@ object NetworkProgress {
                     if (!response.isSuccessful) {
                         return@withContext null
                     }
-                    val ja = JSONObject(responseBody.toString()).optJSONArray("data")
-                    val progresses = mutableListOf<ProgressUnitVO>()
-                    if (ja != null) {
-                        for (i in 0 until ja.length()) {
-                            val progressUnitVO = ProgressUnitVO(
-                                uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
-                                exerciseId = ja.optJSONObject(i).optInt("content_sn"),
-                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                                currentWeek = ja.optJSONObject(i).optInt("week_number"),
-                                weekStartAt = ja.optJSONObject(i).optString("week_start_at"),
-                                weekEndAt = ja.optJSONObject(i).optString("week_end_at"),
-                                currentSequence = ja.optJSONObject(i).optInt("count_set"),
-                                requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-                                videoDuration = ja.optJSONObject(i).optInt("duration"),
-                                lastProgress = ja.optJSONObject(i).optInt("progress"),
-                                isCompleted = ja.optJSONObject(i).optInt("completed"),
-                                updateDate = ja.optJSONObject(i).optString("updated_at")
-                            )
-                            progresses.add(progressUnitVO)
-                        }
-                        Log.v("진행길이", "${progresses.size}")
-                        return@use progresses
-                    } else {
-                        return@use progresses
+                    val ja = JSONArray(responseBody.toString())
+                    val weekCounts = mutableListOf<Pair<String, Int>>()
+                    for (i in 0 until ja.length()) {
+                        val unitJo = ja.optJSONObject(i)
+                        val executionDate = unitJo.optString("execution_date") ?: ""
+                        val totalCountSet = unitJo.optInt("total_count_set") ?: 0
+                        val unit = Pair(executionDate, totalCountSet)
+                        weekCounts.add(unit)
                     }
+                    return@use weekCounts
+
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgressIndex", "getWeek: ${e.message}")
@@ -360,13 +346,18 @@ object NetworkProgress {
                                 sn = item.optInt("progress_history_sn"),
                                 userSn = item.optInt("user_sn"),
                                 uvpSn = item.optInt("uvp_sn"),
+                                contentSn = item.optInt("content_sn"),
+                                recommendationSn = item.optInt("recommendation_sn"),
+                                serverSn =  item.optInt("serverSn"),
                                 exerciseName = item.optString("exercise_name"),
+                                imageFilePathReal = item.optString("image_filepath_real"),
                                 recommendationTitle = item.optString("recommendation_title"),
                                 weekNumber = item.optInt("week_number"),
                                 executionDate = item.optString("execution_date"),
                                 countSet = item.optInt("count_set"),
                                 completed = item.optInt("completed"),
                                 expired = item.optInt("expired"),
+                                createdAt = item.optString("created_at")
                             )
                             progresses.add(progressHistory)
                         }

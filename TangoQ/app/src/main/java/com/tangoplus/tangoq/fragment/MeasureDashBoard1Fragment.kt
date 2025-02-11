@@ -52,7 +52,7 @@ import java.time.format.DateTimeFormatter
 
 class MeasureDashBoard1Fragment : Fragment() {
     lateinit var binding : FragmentMeasureDashboard1Binding
-    val viewModel : MeasureViewModel by activityViewModels()
+    val mvm : MeasureViewModel by activityViewModels()
 
     private var balloon : Balloon? = null
     private var measures : MutableList<MeasureVO>? = null
@@ -82,7 +82,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                 try {
                     if (measures?.isNotEmpty() == true) {
                         val hideBadgeFunction = hideBadgeOnClick(binding.tvMD1Badge, binding.clMD1PredictDicease, "${binding.tvMD1Badge.text}", ContextCompat.getColor(requireContext(), R.color.thirdColor))
-                        binding.tvMD1TotalScore.text = "${measures?.get(0)?.overall ?: 0}"
+
                         binding.tvMD1MeasureHistory.text = "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)}"
                         binding.tvMD1Name.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMD1PredictDicease.setOnClickListener{
@@ -96,6 +96,7 @@ class MeasureDashBoard1Fragment : Fragment() {
                                 commit()
                             }
                         }
+
                     } else {
                         binding.tvMD1TotalScore.text = "0"
                         binding.tvMD1MeasureHistory.text = "측정기록없음"
@@ -211,7 +212,8 @@ class MeasureDashBoard1Fragment : Fragment() {
                     }
                 }
             }
-
+            // 선택시 값을 움직일 index 저장
+            mvm.md1SelectedMeasureIndex.value = 4
 
             val lcEntries: MutableList<Entry> = mutableListOf()
             for (i in startIndex until lcDataList.size) {
@@ -335,39 +337,49 @@ class MeasureDashBoard1Fragment : Fragment() {
                         pts[1] = entry.y
                         lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
                         balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
+                        Log.v("originalIndex", "$originalIndex")
+                        mvm.md1SelectedMeasureIndex.value = originalIndex
                     }
+
                 }
                 override fun onNothingSelected() {}
             })
             // ------! 꺾은선 그래프 코드 끝 !------
 
             // ------! balloon 시작 !------
+
+
             var percentage = 0.5f
-            val measuresSize = measures?.size
-            if (measuresSize != null && measuresSize >= 1) {
-                val userPercentile = measures?.get(0)?.overall?.toInt() ?: 0
-                percentage = calculatePercentage(userPercentile)
+            mvm.md1SelectedMeasureIndex.observe(viewLifecycleOwner) {
+
+                val measuresSize = measures?.size
+                if (measuresSize != null && measuresSize >= 1) {
+                    val userPercentile = measures?.get(4 - it)?.overall?.toInt() ?: 0
+                    percentage = calculatePercentage(userPercentile)
+                    when (percentage) {
+                        in 0f .. 0.3f -> {
+                            binding.vMD1Middle.visibility = View.INVISIBLE
+                            binding.vMD1Low.visibility = View.VISIBLE
+                        }
+                        in 0.7f .. 1.0f -> {
+                            binding.vMD1Middle.visibility = View.INVISIBLE
+                            binding.vMD1Low.visibility = View.GONE
+                            binding.vMD1High.visibility = View.VISIBLE
+                        }
+                        else -> {
+                            binding.vMD1Middle.visibility = View.VISIBLE
+                            binding.vMD1High.visibility = View.GONE
+                            binding.vMD1Low.visibility = View.GONE
+                        }
+                    }
+                    animateArrowToPercentage(percentage)
+                    createBalloon(userJson, percentage)
+                    binding.tvMD1TotalScore.text = userPercentile.toString()
+                }
+
+                animateCardViewToPercentage(it)
             }
 
-            animateArrowToPercentage(percentage)
-//            animateCardViewToPercentage()
-            when (percentage) {
-                in 0f .. 0.3f -> {
-                    binding.vMD1Middle.visibility = View.INVISIBLE
-                    binding.vMD1Low.visibility = View.VISIBLE
-                }
-                in 0.7f .. 1.0f -> {
-                    binding.vMD1Middle.visibility = View.INVISIBLE
-                    binding.vMD1Low.visibility = View.GONE
-                    binding.vMD1High.visibility = View.VISIBLE
-                }
-                else -> {
-                    binding.vMD1Middle.visibility = View.VISIBLE
-                    binding.vMD1High.visibility = View.GONE
-                    binding.vMD1Low.visibility = View.GONE
-                }
-            }
-            createBalloon(userJson, percentage)
             binding.clMD1Percent.setOnClickListener {
                 balloon?.dismissWithDelay(2500L)
             }
@@ -392,7 +404,7 @@ class MeasureDashBoard1Fragment : Fragment() {
             .setCornerRadius(16f)
             .setBackgroundColorResource(when (percent) {
                 in 0f..0.3f -> {R.color.deleteColor}
-                else -> {R.color.mainColor}
+                else -> {R.color.thirdColor}
             })
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
@@ -413,16 +425,15 @@ class MeasureDashBoard1Fragment : Fragment() {
         val params = binding.ivMD1Position.layoutParams as ConstraintLayout.LayoutParams
         // 현재 horizontalBias
         val startBias = params.horizontalBias
-
         val endBias = when (percent) {
-            in 0f .. 33f -> 0.135f
-            in 34f .. 66f -> 0.5f
-            in 65f .. 100f -> 0.875f
+            in 0f .. 0.33f -> 0.135f
+            in 0.34f .. 0.66f -> 0.5f
+            in 0.67f .. 1f -> 0.875f
             else -> 0f
         } // 이동할 목표 위치
 
         // ValueAnimator 생성
-        val animator = ValueAnimator.ofFloat(0.5f, endBias).apply {
+        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
             duration = 1000L // 1초 동안 애니메이션
             interpolator = AccelerateDecelerateInterpolator() // 가속/감속 효과
 
@@ -435,22 +446,31 @@ class MeasureDashBoard1Fragment : Fragment() {
         animator.start()
     }
 
-//    private fun animateCardViewToPercentage() {
-//        val params = binding.cvMD1.layoutParams as ConstraintLayout.LayoutParams
-//        val startBias = params.horizontalBias
-//        val endBias = 1.0f // 이동할 목표 위치
-//
-//        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
-//            duration = 1000L // 1초 동안 애니메이션
-//            interpolator = AccelerateDecelerateInterpolator()
-//            addUpdateListener { animation ->
-//                val animatedValue = animation.animatedValue as Float
-//                params.horizontalBias = animatedValue
-//                binding.cvMD1.layoutParams = params
-//            }
-//        }
-//        animator.start()
-//    }
+    private fun animateCardViewToPercentage(index: Int) {
+        val params = binding.cvMD1.layoutParams as ConstraintLayout.LayoutParams
+        val startBias = params.horizontalBias
+        val endBias = when (index) {
+            4 -> 1.0f
+            3 -> 0.75f
+            1 -> 0.25f
+            0 -> 0.0f
+            else -> 0.5f
+        } // 이동할 목표 위치
+        val durations = when (index) {
+            1, 3 -> 750L
+            else -> 1000L
+        }
+        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+            duration = durations // 1초 동안 애니메이션
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { animation ->
+                val animatedValue = animation.animatedValue as Float
+                params.horizontalBias = animatedValue
+                binding.cvMD1.layoutParams = params
+            }
+        }
+        animator.start()
+    }
 
     private fun setScoresDates(entries:  MutableList<Pair<String, Int>>) {
         val tvMD1Dates = listOf(binding.tvMD11, binding.tvMD12, binding.tvMD13, binding.tvMD14, binding.tvMD15)

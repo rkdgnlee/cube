@@ -34,6 +34,7 @@ import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDashboard2Binding
 import com.tangoplus.tangoq.api.NetworkProgress.getDailyProgress
+import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.db.Singleton_t_progress
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.view.BarChartRender
@@ -53,9 +54,7 @@ import java.util.Locale
 class MeasureDashBoard2Fragment : Fragment() {
     lateinit var binding : FragmentMeasureDashboard2Binding
     var currentMonth = YearMonth.now()
-    var selectedDate = LocalDate.now()
 
-    private var graphProgresses : MutableList<MutableList<ProgressUnitVO>>? = null
     private val pvm : ProgressViewModel by activityViewModels()
 
     private lateinit var  todayInWeek : List<Int>
@@ -81,104 +80,115 @@ class MeasureDashBoard2Fragment : Fragment() {
         // ------# 운동 기록 API 공간 #------
         todayInWeek = sortTodayInWeek()
 
-        // ------# 일별 운동 담기 #------
-        graphProgresses = Singleton_t_progress.getInstance(requireContext()).graphProgresses
-
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
-        val weeklySets = mutableListOf<Float>()
-        if (graphProgresses != null) {
-            for (i in 0 until 7) {
-                if (i < (graphProgresses?.size ?: 0) && graphProgresses?.get(i)?.isNotEmpty() == true) {
-                    weeklySets.add((graphProgresses?.get(i)?.count()?.times(100) ?: 0) / 7.toFloat())
-                } else {
-                    weeklySets.add(1f)
+        var weeklySets = listOf<Float>()
+        lifecycleScope.launch(Dispatchers.Main) {
+            if (pvm.graphProgresses.isNullOrEmpty()) {
+                pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
+            }
+
+            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            if (pvm.graphProgresses != null) {
+
+                withContext(Dispatchers.Main) {
+                    weeklySets = (6 downTo 0).map { i ->
+                        val currentDate = LocalDate.now().minusDays(i.toLong())
+                        val currentDateStr = currentDate.format(dateFormatter)
+
+                        // 해당 날짜가 MutableList에 있는지 확인
+                        val matchingPair = pvm.graphProgresses?.find { it.first == currentDateStr }
+                        Log.v("weeklySet가져오기", "$matchingPair")
+                        val count = calculatePercent(matchingPair?.second)
+                        count
+                    }
+
+
+                    var finishSets = 0
+                    for (indices in weeklySets) {
+                        if (indices > 0f) finishSets += 1
+                    }
+
+                    // ------! bar chart 시작 !------
+                    val barChart: BarChart = binding.bcMD2
+                    barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
+                    val entries = ArrayList<BarEntry>()
+
+                    for (i in weeklySets.indices) {
+                        val entry = BarEntry(i.toFloat(), weeklySets[i])
+                        entries.add(entry)
+                    }
+                    val dataSet = BarDataSet(entries, "")
+                    dataSet.apply {
+                        color =  resources.getColor(R.color.thirdColor, null)
+                        setDrawValues(false)
+                    }
+                    // BarData 생성 및 차트에 설정
+                    val bcdata = BarData(dataSet)
+                    bcdata.apply {
+                        barWidth = 0.5f
+                    }
+                    barChart.data = bcdata
+                    // X축 설정
+                    barChart.xAxis.apply {
+                        position = XAxis.XAxisPosition.BOTTOM
+                        setDrawGridLines(false)
+                        setDrawAxisLine(false)
+                        labelRotationAngle = 2f
+                        setDrawLabels(false)
+                    }
+                    barChart.legend.apply {
+                        formSize = 0f
+                    }
+                    // 왼쪽 Y축 설정
+                    barChart.axisLeft.apply {
+                        axisMinimum = -1f // Y축 최소값
+                        axisMaximum = 100f
+                        setDrawAxisLine(false)
+                        setDrawGridLines(false)
+                        setLabelCount(0, false)
+                        setDrawLabels(false)
+                    }
+                    // 차트 스타일링 및 설정
+                    barChart.apply {
+                        axisRight.isEnabled = false
+                        description.isEnabled = false
+                        legend.isEnabled = false
+                        setDrawValueAboveBar(false)
+                        setDrawGridBackground(false)
+                        setFitBars(false)
+                        animateY(500)
+                        setScaleEnabled(false)
+                        setTouchEnabled(false)
+                        invalidate()
+                    }
+
+                    // ------# progress #------
+                    var progressCount = 0
+                    for (i in weeklySets.indices) {
+                        if (weeklySets[i] > 1f) {
+                            progressCount++
+                        }
+                    }
+
+                    binding.tvMD2Progress.text = "최근 일주일 경과: $progressCount/${weeklySets.size}"
+                    // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
+                    sortIvInLayout()
+                    Log.v("weeklySets", "${weeklySets}")
+                    for ((index, value) in weeklySets.withIndex()) {
+                        if (value > 1.0) {
+                            setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
+                        } else {
+                            setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
+                        }
+                        // 오늘 날짜를 지정할 index선택시 자동으로 정렬
+                        if (index == 6) {
+                            setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
+                        }
+                    }
                 }
             }
         }
 
-        var finishSets = 0
-        for (indices in weeklySets) {
-            if (indices > 0f) finishSets += 1
-        }
-
-        // ------! bar chart 시작 !------
-        val barChart: BarChart = binding.bcMD2
-        barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
-        val entries = ArrayList<BarEntry>()
-
-        for (i in weeklySets.indices) {
-            val entry = BarEntry(i.toFloat(), weeklySets[i])
-            entries.add(entry)
-        }
-        val dataSet = BarDataSet(entries, "")
-        dataSet.apply {
-            color =  resources.getColor(R.color.thirdColor, null)
-            setDrawValues(false)
-        }
-        // BarData 생성 및 차트에 설정
-        val bcdata = BarData(dataSet)
-        bcdata.apply {
-            barWidth = 0.5f
-        }
-        barChart.data = bcdata
-        // X축 설정
-        barChart.xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            labelRotationAngle = 2f
-            setDrawLabels(false)
-        }
-        barChart.legend.apply {
-            formSize = 0f
-        }
-        // 왼쪽 Y축 설정
-        barChart.axisLeft.apply {
-            axisMinimum = -1f // Y축 최소값
-            axisMaximum = 100f
-            setDrawAxisLine(false)
-            setDrawGridLines(false)
-            setLabelCount(0, false)
-            setDrawLabels(false)
-        }
-        // 차트 스타일링 및 설정
-        barChart.apply {
-            axisRight.isEnabled = false
-            description.isEnabled = false
-            legend.isEnabled = false
-            setDrawValueAboveBar(false)
-            setDrawGridBackground(false)
-            setFitBars(false)
-            animateY(500)
-            setScaleEnabled(false)
-            setTouchEnabled(false)
-            invalidate()
-        }
-
-        // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
-        sortIvInLayout()
-        Log.v("weeklySets", "${weeklySets}")
-        for ((index, value) in weeklySets.withIndex()) {
-            if (value > 1.0) {
-                setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
-            } else {
-                setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
-            }
-            if (index == 3) {
-                setWeeklyDrawable("ivMD2${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
-            }
-        }
-
-        // ------# progress #------
-        var progressCount = 0
-        for (i in weeklySets.indices) {
-            if (weeklySets[i] > 1f) {
-                progressCount++
-            }
-        }
-
-        binding.tvMD2Progress.text = "완료 $progressCount/${weeklySets.size}"
-        // ---- 꺾은선 그래프 코드 끝 ----
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         Log.v("Singleton>Profile", "${userJson}")
         binding.tvMD2Title.text = "${userJson?.optString("user_name")}님의 기록"
@@ -187,7 +197,7 @@ class MeasureDashBoard2Fragment : Fragment() {
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
 
         // ------# 날짜와 운동 기록 보여주기 #------
-        binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
+        binding.tvMD2Date.text = "${pvm.selectedDate?.year}년 ${getCurrentMonthInKorean(pvm.selectedDate?.yearMonth)} ${getCurrentDayInKorean(pvm.selectedDate)} 운동 정보"
 
         pvm.selectedDailyTime.observe(viewLifecycleOwner) {
             binding.tvMD2DailyTime.text = "${it}초"
@@ -213,8 +223,8 @@ class MeasureDashBoard2Fragment : Fragment() {
 
         binding.nextMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
-            val oldDate = selectedDate
-            selectedDate = null
+            val oldDate = pvm.selectedDate
+            pvm.selectedDate = null
             oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
 
 
@@ -227,8 +237,8 @@ class MeasureDashBoard2Fragment : Fragment() {
 
         binding.previousMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
-            val oldDate = selectedDate
-            selectedDate = null
+            val oldDate = pvm.selectedDate
+            pvm.selectedDate = null
             oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
 
             if (currentMonth > YearMonth.now().minusMonths(24)) {
@@ -243,6 +253,24 @@ class MeasureDashBoard2Fragment : Fragment() {
         }
 
         // ------# 운동 기록 날짜 받아오기 #------
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                pvm.selectedDate?.let { selectedDate ->
+                    val date = selectedDate.format(formatter)
+                    Log.v("date", date)
+                    val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
+                    withContext(Dispatchers.Main) {
+                        if (currentProgresses != null) {
+                            setAdapter(currentProgresses)
+                        }
+                        binding.tvMD2Date.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
+                    }
+                } ?: run {
+                    Log.e("DateSelection", "Selected date is null")
+                }
+            }
+        }
 
         binding.cvMD2Calendar.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthHeaderViewContainer> {
             override fun create(view: View) = MonthHeaderViewContainer(view)
@@ -266,7 +294,7 @@ class MeasureDashBoard2Fragment : Fragment() {
                         textSize = if (isTablet(requireContext())) 24f else 20f
                         when (day.date.dayOfMonth) {
                             in 2 .. 9 -> {
-                                setPadding(26, 14, 26, 14)
+                                setPadding(28, 14, 28, 14)
                             }
                             in 12 .. 19 -> {
                                 setPadding(26, 20, 26, 20)
@@ -281,25 +309,24 @@ class MeasureDashBoard2Fragment : Fragment() {
                                 setPadding(30, 22, 30, 22)
                             }
                             1 -> {
-                                setPadding(28, 14, 28, 14)
+                                setPadding(36, 14, 36, 14)
                             }
                             else -> {
                                 setPadding(24)
                             }
                         }
                         setDateStyle(container, day)
-                        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
                         container.date.setOnClickListener {
                             // 선택된 날짜를 업데이트 + UI 갱신
                             if (day.date <= LocalDate.now() ) {
-                                val oldDate = selectedDate
-                                selectedDate = day.date
+                                val oldDate = pvm.selectedDate
+                                pvm.selectedDate = day.date
                                 oldDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
-                                selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
+                                pvm.selectedDate?.let { binding.cvMD2Calendar.notifyDateChanged(it) }
                                 lifecycleScope.launch {
                                     withContext(Dispatchers.IO) {
-                                        Log.v("selectedDate", "$selectedDate")
-                                        selectedDate?.let { selectedDate ->
+                                        Log.v("selectedDate", "${pvm.selectedDate}")
+                                        pvm.selectedDate?.let { selectedDate ->
                                             val date = selectedDate.format(formatter)
                                             Log.v("date", date)
                                             val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
@@ -336,10 +363,21 @@ class MeasureDashBoard2Fragment : Fragment() {
         }
     }
 
+    private fun calculatePercent(count: Int?) : Float {
+        if (count != null) {
+            return when {
+                count >= 7  -> 100f
+                count == 0 -> 1f
+                else -> (count * 100) / 7f
+            }
+        }
+        return 1f
+    }
+
     private fun setDateStyle(container: DayViewContainer, day: CalendarDay) {
         container.date.background = null
         when {
-            day.date == selectedDate -> {
+            day.date == pvm.selectedDate -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.white))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }
@@ -360,12 +398,12 @@ class MeasureDashBoard2Fragment : Fragment() {
         }
     }
 
-    private fun getCurrentMonthInKorean(month: YearMonth): String {
-        return month.month.getDisplayName(TextStyle.FULL, Locale("ko"))
+    private fun getCurrentMonthInKorean(month: YearMonth?): String {
+        return month?.month?.getDisplayName(TextStyle.FULL, Locale("ko")) ?: "1월"
     }
 
-    private fun getCurrentDayInKorean(date: LocalDate): String {
-        return "${date.dayOfMonth}일"
+    private fun getCurrentDayInKorean(date: LocalDate?): String {
+        return "${date?.dayOfMonth ?: 1}일"
     }
 
     private fun setAdapter(progresses: List<ProgressHistoryVO>) {
@@ -374,10 +412,9 @@ class MeasureDashBoard2Fragment : Fragment() {
 
         // ------# 운동시청기록 + 운동 #------
         pvm.selectedDailyCount.value = progresses.size
+        // TODO 여기서 item에 뭘 넣고, 합산 결과에 뭘 넣을지 결정해야함.
         pvm.selectedDailyTime.value = progresses.sumOf { it.sn }
-        Log.v("프로그레스", "${progresses}")
-//        val adapter = ExerciseRVAdapter(this@MeasureDashBoard2Fragment, mutableListOf(), null, null, null, "main")
-        val adapter = ProgressHistoryRVAdapter(progresses)
+        val adapter = ProgressHistoryRVAdapter(requireParentFragment(), progresses)
         binding.rvMD2.adapter = adapter
 
         if (progresses.isEmpty()) {
@@ -390,17 +427,17 @@ class MeasureDashBoard2Fragment : Fragment() {
     private fun sortTodayInWeek() : List<Int> {
         val today = LocalDate.now()
         val dayOfWeek = today.dayOfWeek.value // 오늘 요일 (2, 3, 4, 5, 6, 7, 1)
-        Log.v("오늘요일", "dayOfWeek: $dayOfWeek")
-        val days = (1..7).toList()
-        val dayIndex = days.indexOf(dayOfWeek)
-
-        val sortedIndex = (1..7).map {
-            val offset = (it - 4 + dayIndex) % 7
-            days[if (offset < 0) offset + 7 else offset]
-        }
-        Log.v("정렬된 요일", "sortedIndex: $sortedIndex")
-        return sortedIndex
-//        return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it } // 오늘요일을 7로 나눴을 때 0인 index가 오늘 요일임.
+//        Log.v("오늘요일", "dayOfWeek: $dayOfWeek")
+//        val days = (1..7).toList()
+//        val dayIndex = days.indexOf(dayOfWeek)
+//
+//        val sortedIndex = (1..7).map {
+//            val offset = (it - 4 + dayIndex) % 7
+//            days[if (offset < 0) offset + 7 else offset]
+//        }
+//        Log.v("정렬된 요일", "sortedIndex: $sortedIndex")
+//        return sortedIndex
+        return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it } // 오늘요일을 7로 나눴을 때 0인 index가 오늘 요일임.
     }
 
 

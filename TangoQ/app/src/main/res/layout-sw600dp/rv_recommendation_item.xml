@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clPI"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
+    android:layout_height="100dp"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
-    android:background="@drawable/bckgnd_1_sub200_12">
+    android:background="@drawable/bckgnd_1_sub150_12">
 
     <TextView
         android:id="@+id/tvPI"
@@ -15,8 +15,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="10dp"
+        android:text="__"
         android:textColor="@color/subColor800"
-        android:textSize="18dp"
+        android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView4"
         app:layout_constraintStart_toEndOf="@+id/ivPIThumbnail"
@@ -24,9 +25,9 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginEnd="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,9 +35,11 @@
 
     <ImageView
         android:id="@+id/ivPIThumbnail"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="84dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

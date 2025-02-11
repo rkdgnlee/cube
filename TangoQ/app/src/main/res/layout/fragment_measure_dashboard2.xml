@@ -35,8 +35,9 @@
                     app:cardCornerRadius="6dp"
                     app:cardElevation="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/bcMD2"
-                    app:layout_constraintStart_toStartOf="@+id/bcMD2"
+                    app:layout_constraintEnd_toEndOf="@+id/llMD2Week"
+                    app:layout_constraintHorizontal_bias="0.972"
+                    app:layout_constraintStart_toStartOf="@+id/llMD2Week"
                     app:layout_constraintTop_toBottomOf="@+id/tvMD2Progress">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -351,7 +352,7 @@
                 android:layout_width="0dp"
                 android:layout_height="70dp"
                 android:layout_marginTop="20dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvMD2Date">
@@ -384,7 +385,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="운동 횟수"
+                    android:text="운동 시간"
                     app:layout_constraintEnd_toStartOf="@+id/view6"
                     app:layout_constraintHorizontal_bias="0.375"
                     app:layout_constraintStart_toStartOf="parent"
