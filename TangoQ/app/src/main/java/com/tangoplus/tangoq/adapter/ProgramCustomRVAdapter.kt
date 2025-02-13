@@ -5,6 +5,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.RelativeSizeSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,7 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 class ProgramCustomRVAdapter(private val fragment: Fragment,
                              private val seq: Triple<Int, Int, Int>,
                              private val week: Pair<Int, Int>,
-                             private val progresses: Int,
+                             private val progresses: List<Int>,
                              private val onCustomCategoryClickListener: OnCustomCategoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // frequency 는 총 들어가는 회차, progresses는 같이 들어가는 시청 기록, sequencdState는 현재 회차와 선택한회차
     inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view){
@@ -53,42 +54,46 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
             val spannableDays = SpannableString.valueOf("0${position+1}\nStep")
             spannableDays.setSpan(RelativeSizeSpan(if (isTablet(fragment.requireContext())) 1.4f else 1.2f), 0, spannableDays.indexOf("\n"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             holder.tvPSIName.text = spannableDays
-
+            val currentProgresses = progresses[position]
             // seqState.first == 현재 회차 seqState.second == 선택한 회차
             holder.ivPSICheck.visibility = View.INVISIBLE
             holder.hpvPSI.autoAnimate = false
+            if (position > seq.second) {
+                holder.tvPSIName.isEnabled = false
+            }
+
             if (week.second <= week.first) {
                 // 선택한 회차 + 현재 회차
                 if (position == seq.third && seq.second == seq.third) {
-                    holder.hpvPSI.progress = progresses.toFloat()
-                    holder.ivPSICheck.visibility = View.VISIBLE
+                    setHpv(holder, true, currentProgresses)
+                    setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
 
                     // 선택한 회차 + 이전 회차
                 } else if (position == seq.third && position < seq.second) {
+                    setHpv(holder, true, currentProgresses)
                     setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
-                    holder.hpvPSI.progress = 100f
-                    holder.ivPSICheck.visibility = View.VISIBLE
-                    // TODO 전부 완료했을 때, 전부 완료 못했을 때는 여기서 나눠야 함.
 
+                    if (holder.hpvPSI.progress == 100f) {
+                        holder.tvPSIName.text = "Completed"
+                        setCheckBadge(holder, true)
+                        holder.ivPSICheck.visibility = View.VISIBLE
+                    }
                     // 선택하지 않은 회차 + 이전 회차
                 } else if (position < seq.second) {
-                    holder.hpvPSI.progress = 0f
-                    holder.hpvPSI.progress = 100f
-                    setTextView(holder.tvPSIName, R.color.secondHalfColor, R.color.whiteText)
-                    holder.ivPSICheck.visibility = View.INVISIBLE
+                    setHpv(holder, true, currentProgresses)
+                    setTextView(holder.tvPSIName, R.color.subColor400, R.color.whiteText)
 
+                    // 다 완료했을 경우
+                    if (holder.hpvPSI.progress == 100f) {
+                        holder.tvPSIName.text = "Completed"
+                        setCheckBadge(holder, false)
+                        holder.ivPSICheck.visibility = View.VISIBLE
+                    }
                     // 선택하지 않았을 때 현재 회차
                 } else if (position == seq.second) {
-                    holder.hpvPSI.progress = progresses.toFloat()
-                    holder.ivPSICheck.visibility = View.INVISIBLE
-
-                    // 선택한 회차 + 미래 회차
-                } else if (position == seq.third && position > seq.second) {
-                    holder.ivPSICheck.visibility = View.VISIBLE
-                    holder.hpvPSI.colorBackground = ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)
-
-                    // 선택하지 않은 회차 + 미래 회차
-                } else {
+                    setHpv(holder, false, currentProgresses)
+                    setTextView(holder.tvPSIName, R.color.secondContainerColor, R.color.thirdColor)
+                }  else {
                     holder.ivPSICheck.visibility = View.INVISIBLE
                     holder.hpvPSI.colorBackground = ContextCompat.getColor(fragment.requireContext(), R.color.subColor200)
                     setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)
@@ -105,19 +110,22 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
             }
         }
     }
-    private fun setCheckBadge(holder: CustomViewHolder, isCurrent: Boolean) {
-        when (isCurrent) {
-            true -> {
-                holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white_secondary))
-                holder.ivPSICheck.visibility = View.VISIBLE
-            }
-            false -> {
-                holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white))
-                holder.ivPSICheck.visibility = View.INVISIBLE
-            }
+    private fun setCheckBadge(holder: CustomViewHolder, isSelect: Boolean) {
+        when (isSelect) {
+            true -> holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white_secondary))
+            false -> holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white))
         }
     }
 
+    private fun setHpv(holder: CustomViewHolder, isSelect : Boolean, progress : Int) {
+        if (isSelect) {
+            holder.hpvPSI.colorBackground = fragment.resources.getColor(R.color.secondContainerColor, null)
+            holder.hpvPSI.progress = progress.toFloat()
+        } else {
+            holder.hpvPSI.colorBackground = fragment.resources.getColor(R.color.subColor100, null)
+            holder.hpvPSI.progress = progress.toFloat()
+        }
+    }
 
     private fun setTextView(tv: TextView, color1: Int, color2: Int) {
         tv.background = ContextCompat.getDrawable(fragment.requireContext(), R.drawable.effect_ibtn_20dp)

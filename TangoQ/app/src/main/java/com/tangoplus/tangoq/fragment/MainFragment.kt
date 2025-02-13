@@ -34,6 +34,8 @@ import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
+import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +44,7 @@ import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
-    private val evm by activityViewModels<ExerciseViewModel>()
+    private val avm by activityViewModels<AnalysisViewModel>()
     private val mvm : MeasureViewModel by activityViewModels()
     private val pvm : ProgressViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
@@ -138,15 +140,13 @@ class MainFragment : Fragment() {
     }
 
     // 상단 어댑터와 하단 어댑터 같이 나옴
-    private fun setAdapter(index: Int) {
+    private fun setPartAdapter(index: Int) {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvM1.layoutManager = layoutManager1
         val filteredParts = measures?.get(index)?.dangerParts?.filter { it.second == 1f || it.second == 2f}
-        val partAdapter = PartRVAdapter(this@MainFragment, filteredParts?.toMutableList())
+        val partAdapter = PartRVAdapter(this@MainFragment, filteredParts?.toMutableList(), avm)
         binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
-
-
     }
 
     // 블러 유무 판단하기
@@ -163,6 +163,7 @@ class MainFragment : Fragment() {
             binding.tvMMeasureResult1.text = "측정 데이터가 없습니다."
             binding.tvMMeasureResult2.text = "키오스크, 모바일을 통해 측정을 진행해주세요"
             binding.rvM1.visibility = View.GONE
+            binding.tvM2.visibility = View.GONE
 //            binding.tvMProgram.visibility = View.GONE
 
 
@@ -177,7 +178,7 @@ class MainFragment : Fragment() {
                 Log.v("measure있는지", "$measure")
                 if (measure.size > 0) {
 
-
+                    binding.tvM2.visibility = View.VISIBLE
                     binding.tvMMeasureDate.visibility = View.VISIBLE
                     binding.rvM1.visibility = View.VISIBLE
                     binding.tvMTitle.text = "최근 측정 정보"
@@ -193,72 +194,73 @@ class MainFragment : Fragment() {
 
 
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
-                        Log.v("VM선택날짜", "mvm.selectedMeasureDate: $selectedDate")
-                        val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
-                        Log.v("메인Date", "dateIndex: ")
+                        try {
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
+                                if (dateIndex != null) {
+                                    measures?.get(dateIndex)?.recommendations
+                                    binding.tvMMeasureDate.text = measure[dateIndex].regDate.substring(0, 10)
+                                    binding.tvMOverall.text = measure[dateIndex].overall.toString()
+                                    setPartAdapter(dateIndex)
 
-                        if (dateIndex != null) {
-                            measures?.get(dateIndex)?.recommendations
-                            binding.tvMMeasureDate.text = measure[dateIndex].regDate.substring(0, 10)
-                            binding.tvMOverall.text = measure[dateIndex].overall.toString()
-                            setAdapter(dateIndex)
 
-                            Log.v("메인Date", "dateIndex: ${dateIndex}, selectedDate: $selectedDate, singletonMeasure: ${measures?.get(dateIndex)?.dangerParts}, ${measures?.get(dateIndex)?.recommendations}")
-                            Log.v("써머리들어가기 전", "${measures?.get(dateIndex)?.dangerParts}")
-                            val measureSize = measures?.get(dateIndex)?.dangerParts?.size
-                            if (measureSize != null) {
-                                if (measureSize > 1) {
-                                    val summaryComments  = createMeasureComment(measures?.get(dateIndex)?.dangerParts)
+                                    // 목록을 만들 dangerParts담기
+                                    avm.currentParts = mvm.selectedMeasure?.dangerParts?.map { it.first }
 
-                                    Log.v("써머리들어간 후", "$summaryComments")
-                                    if (summaryComments.size > 1) {
-                                        binding.tvMMeasureResult1.text = summaryComments[0]
-                                        binding.tvMMeasureResult2.text = summaryComments[1]
-                                    } else if (summaryComments.size == 1) {
-                                        binding.tvMMeasureResult1.text = summaryComments[0]
-                                        binding.tvMMeasureResult2.visibility = View.INVISIBLE
-                                    } else {
-                                        binding.tvMMeasureResult1.text = ""
+                                    val measureSize = measures?.get(dateIndex)?.dangerParts?.size
+                                    if (measureSize != null) {
+                                        if (measureSize > 1) {
+                                            val summaryComments  = createMeasureComment(measures?.get(dateIndex)?.dangerParts)
+
+                                            Log.v("써머리들어간 후", "$summaryComments")
+                                            if (summaryComments.size > 1) {
+                                                binding.tvMMeasureResult1.text = summaryComments[0]
+                                                binding.tvMMeasureResult2.text = summaryComments[1]
+                                            } else if (summaryComments.size == 1) {
+                                                binding.tvMMeasureResult1.text = summaryComments[0]
+                                                binding.tvMMeasureResult2.visibility = View.INVISIBLE
+                                            } else {
+                                                binding.tvMMeasureResult1.text = ""
+                                            }
+                                        }
                                     }
-                               }
-                            }
-                        }
+                                }
 
-                        // 내가 했던 프로그램의 운동 목록 가져오기
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            try {
-                                // progress가 들어간 recommendation이다.
-                                Log.v("시작날짜", "${mvm.selectedMeasure?.recommendations?.map { it.startAt }}")
                                 if (!mvm.selectedMeasure?.recommendations?.filter { it.startAt == "" }.isNullOrEmpty()) {
                                     // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
                                     val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
                                     mvm.selectedMeasure?.recommendations = progressRec
                                     Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-                                    Log.v("싱글턴 잘들어갔는지", "${Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations?.map { it.startAt }}")
+//                                    Log.v("싱글턴 잘들어갔는지", "${Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations?.map { it.startAt }}")
                                 }
-                                withContext(Dispatchers.Main) {
-                                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                                    val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())
-                                    binding.rvM2.layoutManager = layoutManager
-                                    binding.rvM2.adapter = adapter
-                                }
-                            }  catch (e: IndexOutOfBoundsException) {
-                                Log.e("MainIndex", "${e.message}")
-                            } catch (e: IllegalArgumentException) {
-                                Log.e("MainIllegalA", "${e.message}")
-                            } catch (e: IllegalStateException) {
-                                Log.e("MainIllegalS", "${e.message}")
-                            }catch (e: NullPointerException) {
-                                Log.e("MainNull", "${e.message}")
-                            } catch (e: java.lang.Exception) {
-                                Log.e("MainException", "${e.message}")
+                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
+                                setAdapter()
                             }
+                        }  catch (e: IndexOutOfBoundsException) {
+                            Log.e("MainIndex", "${e.message}")
+                        } catch (e: IllegalArgumentException) {
+                            Log.e("MainIllegalA", "${e.message}")
+                        } catch (e: IllegalStateException) {
+                            Log.e("MainIllegalS", "${e.message}")
+                        }catch (e: NullPointerException) {
+                            Log.e("MainNull", "${e.message}")
+                        } catch (e: java.lang.Exception) {
+                            Log.e("MainException", "${e.message}")
                         }
+
                     }
                 }
             }
         }
     }
+    private fun setAdapter() {
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())
+        binding.rvM2.layoutManager = layoutManager
+        binding.rvM2.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
 
     private fun existedMeasurementGuide() {
         binding.clM2.isEnabled = false

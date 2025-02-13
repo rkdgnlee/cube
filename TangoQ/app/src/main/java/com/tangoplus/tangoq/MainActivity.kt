@@ -17,11 +17,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.commit
-import androidx.fragment.app.commitNow
-import androidx.fragment.app.replace
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -45,9 +40,7 @@ import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
-import com.tangoplus.tangoq.fragment.MeasureAnalysisFragment
-import com.tangoplus.tangoq.fragment.MeasureDashBoard1Fragment
-import com.tangoplus.tangoq.fragment.MeasureDashBoard2Fragment
+import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
 import com.tangoplus.tangoq.fragment.ProgramSelectFragment
 import com.tangoplus.tangoq.fragment.WithdrawalFragment
@@ -90,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             val workInfo = workInfos[0]
             Log.v("TokenCheckWorker", "$workInfos")
             if (workInfo.state == WorkInfo.State.FAILED) {
-                Log.v("로그아웃해야함", "중복 로그인 - 현재 기기 로그아웃 처리")
+                Log.v("로그아웃갑시다", "중복 로그인 - 현재 기기 로그아웃 처리")
                 // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
                 val dialog = AlertDialogFragment.newInstance("logout")
                 dialog.show(supportFragmentManager, "AlertDialogFragment")
@@ -124,8 +117,9 @@ class MainActivity : AppCompatActivity() {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
             when (currentFragment) {
                 is MainFragment, is ProgramSelectFragment -> binding.bnbMain.selectedItemId = R.id.main
+                is AnalyzeFragment -> binding.bnbMain.selectedItemId = R.id.analyze
+                is MeasureFragment, is MeasureHistoryFragment, is MeasureDetailFragment -> binding.bnbMain.selectedItemId = R.id.measure
                 is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
-                is MeasureFragment, is MeasureDashBoard1Fragment, is MeasureDashBoard2Fragment, is MeasureHistoryFragment, is MeasureDetailFragment -> binding.bnbMain.selectedItemId = R.id.measure
                 is ProfileFragment, is WithdrawalFragment -> binding.bnbMain.selectedItemId = R.id.profile
             }
             //
@@ -237,6 +231,7 @@ class MainActivity : AppCompatActivity() {
         // 새로운 프래그먼트 생성
         val fragment = when (itemId) {
             R.id.main -> MainFragment()
+            R.id.analyze -> AnalyzeFragment()
             R.id.exercise -> ExerciseFragment()
             R.id.measure -> MeasureFragment()
             R.id.profile -> ProfileFragment()

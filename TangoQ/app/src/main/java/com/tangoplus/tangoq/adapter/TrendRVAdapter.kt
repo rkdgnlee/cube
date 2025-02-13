@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.PartRVAdapter.PartViewHolder
 import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
 import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
@@ -167,7 +166,7 @@ class TrendRVAdapter(private val fragment: Fragment,
     }
 
     private fun calculatePercent(processedData: MutableList<List<AnalysisUnitVO>>, position: Int) : Float {
-        val calculatePercent = processedData[position].map { calculateBoundedScore(abs(it.rawData), it.rawDataBound)}.map { if (it <= 50f) 50f else it }
+        val calculatePercent = processedData[position].map { calculateBoundedScore(it.columnName, abs(it.rawData), it.rawDataBound)}.map { if (it <= 50f) 50f else it }
         return calculatePercent.average().toFloat()
     }
 
@@ -180,7 +179,7 @@ class TrendRVAdapter(private val fragment: Fragment,
     }
     private fun createSummary(units: List<AnalysisUnitVO>) : String {
         val rawDataNames = units.map { it.rawDataName }
-        val bouncedScores = units.map { calculateBoundedScore(abs(it.rawData), it.rawDataBound) }
+        val bouncedScores = units.map { calculateBoundedScore(it.columnName, abs(it.rawData), it.rawDataBound) }
         val bounds = units.map { it.rawDataBound }
 
         // 3가지의 데이터 값 합치기 Triple<칼럼명, 백분위값, 경계범위(Triple)>

@@ -34,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="36dp"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/white"
                     android:contentDescription="알림창버튼"
@@ -48,7 +48,7 @@
                     android:layout_width="36dp"
                     android:layout_height="38dp"
 
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="36dp"
                     android:layout_marginTop="12dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
                     android:layout_marginStart="5dp"
                     android:text="Home"
                     android:textColor="@color/black"
-                    android:textSize="32sp"
+                    android:textSize="32dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView19"
                     app:layout_constraintStart_toEndOf="@+id/imageView19"
@@ -154,6 +154,7 @@
                         android:backgroundTint="@color/subColor100"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
+                        android:paddingBottom="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvMTitle">
@@ -225,15 +226,13 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            android:layout_marginBottom="20dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tvMOverall" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/tvM2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="50dp"
@@ -261,9 +260,9 @@
                         android:textSize="16dp"
                         android:textStyle="bold"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvM2"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/textView" />
+                        app:layout_constraintTop_toTopOf="@+id/tvM2" />
 
 
                     <androidx.appcompat.widget.AppCompatButton
@@ -277,9 +276,9 @@
                         android:drawableStart="@drawable/icon_play_filled"
                         android:drawablePadding="0dp"
                         android:drawableTint="@color/whiteText"
-                        android:paddingStart="250dp"
+                        android:paddingStart="200dp"
                         android:paddingTop="20dp"
-                        android:paddingEnd="250dp"
+                        android:paddingEnd="200dp"
                         android:paddingBottom="20dp"
                         android:stateListAnimator="@null"
                         android:text="프로그램 목록 확인하기"
@@ -297,7 +296,7 @@
                         android:layout_marginTop="30dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvM2" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

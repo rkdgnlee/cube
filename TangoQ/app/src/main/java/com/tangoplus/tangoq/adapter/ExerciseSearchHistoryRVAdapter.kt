@@ -8,11 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDivider
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.databinding.RvHistoryItemBinding
+import com.tangoplus.tangoq.databinding.RvExerciseSearchHistoryItemBinding
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
 
-class ExerciseHistoryRVAdapter(private val historys: MutableList<Pair<Int, String>>, private val historyDeleteListener : OnHistoryDeleteListener, private val historyClickListener: OnHistoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ExerciseSearchHistoryRVAdapter(private val historys: MutableList<Pair<Int, String>>, private val historyDeleteListener : OnHistoryDeleteListener, private val historyClickListener: OnHistoryClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class viewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvHI : TextView = view.findViewById(R.id.tvHI)
@@ -21,7 +21,7 @@ class ExerciseHistoryRVAdapter(private val historys: MutableList<Pair<Int, Strin
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = RvHistoryItemBinding.inflate(inflater, parent, false)
+        val binding = RvExerciseSearchHistoryItemBinding.inflate(inflater, parent, false)
         return viewHolder(binding.root)
     }
 

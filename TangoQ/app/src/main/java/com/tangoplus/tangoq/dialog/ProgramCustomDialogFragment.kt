@@ -39,6 +39,7 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
+import com.tangoplus.tangoq.api.NetworkProgress.getOrInsertProgress
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.db.Singleton_t_progress
 import com.tangoplus.tangoq.db.Singleton_t_user
@@ -116,6 +117,15 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
 
         pvm.selectedWeek.observe(viewLifecycleOwner) { selectedWeek ->
+
+            /* week, seq든 상관없음
+            * 이제 하나하나 unit이니까
+            * recommendation_sn + week 까지만 받아서 쓰면 될듯?
+            * 그러면 내가 week
+            * */
+
+
+
             if (pvm.currentProgram != null && pvm.selectedSequence.value != null) {
                 val maxSeq = pvm.currentProgram?.programFrequency
                 val selectedWeekValue = pvm.selectedWeek.value
@@ -180,6 +190,10 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
                         intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
                         intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
+
+                        // 현재 주차, 회차 넣기
+                        intent.putExtra("currentWeek", pvm.currentWeek)
+                        intent.putExtra("currentSeq", pvm.currentSequence)
                         intent.putExtra("current_position", currentSequenceProgresses[startIndex].lastProgress.toLong())
                         requireContext().startActivity(intent)
                         startActivityForResult(intent, 8080)
@@ -222,6 +236,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
     }
 
+    // 핵심 함수 여기서 초기, 클릭시, 보고 왔을 때, UI들이 update됨.
     private fun updateUI() {
         lifecycleScope.launch {
             try {
@@ -237,11 +252,17 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     // ------# 프로그레스 가져오기 ( IO ) #------
                     /* 현재 보고 있는 프로그램의 시청기록만 싱글턴에서 관리함. 여러 개 넣어서 하는게 아님. 계속 갱신 됨 */
 
-                    ssm.getOrInsertProgress(jo)
+                    // TODO 여기서 기본 셋팅되는 progresses들을 받아옴. 형식에 맞게 양에 맞게 여기서 부터 수정 시작해야함.
+                    getOrInsertProgress(requireContext(), jo)
+                    // ssm에서 싱글톤에다가 현재 currentProgress들 담아줌. 현재 measure > 현재 week에 해당
                     pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses ?: mutableListOf()// 이곳에 프로그램하나에 해당되는 모든 upv들이 가져와짐.
                     // ------# 현재 시퀀스 찾기 #------
+
+                    // 1주에 해당하는 전체 progresses를 통해서 계산.
                     withContext(Dispatchers.Main) {
                         endSequence()
+
+                        // 현재 기본값 설정
                         calculateInitialWeekAndSequence()
                     }
                     // 모든 IO 작업이 완료되면 결과를 반환
@@ -249,7 +270,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 }
 
                 withContext(Dispatchers.Main) {
-                    // 현재 12회차 통합본으로 계산하는 중. 4 * 3으로 나눠야 함.
                     val (currentSeq, currentProgram, currentProgresses) = result
                     if (currentProgram != null && currentProgresses.isNotEmpty() && currentSeq < currentProgresses.size) {
 
@@ -343,23 +363,26 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         if (selectSeqValue != null && frequency != null && selectedWeekValue != null && sequence?.second != null) {
 
             // progress를 계산하여 adapter에 연결
+
+            // TODO 현재 uvp를 가져와서 계산하는데 이 부분 어차피 수정해야 함. -> 1회차에 맞게 progress 전부 합산
             Log.v("progresses", "${progresses?.map { it.lastProgress }}, ${progresses?.map { it.videoDuration }}")
-            val pvMother = progresses?.sumOf {
-                it.videoDuration
-            }
-            val pvChild = progresses?.sumOf {
-                if (it.currentSequence > sequence.first) {
-                    it.videoDuration
-                } else {
-                    it.lastProgress
-                }
-            }
-            if (pvMother != null && pvChild != null) {
-                val resultProgress =  (pvChild * 100).div(pvMother)
+//            val pvMother = progresses?.sumOf {
+//                it.videoDuration
+//            }
+//            val pvChild = progresses?.sumOf {
+//                if (it.currentSequence > sequence.first) {
+//                    it.videoDuration
+//                } else {
+//                    it.lastProgress
+//                }
+//            }
+            val pvs = progresses?.map { ( it.lastProgress * 100 ) / it.videoDuration }
+            if (pvs != null) {
+//                val resultProgress =  (pvChild * 100).div(pvMother)
                 adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
                     Triple(frequency, pvm.currentSequence, selectSeqValue),
                     Pair(pvm.currentWeek, selectedWeekValue),
-                    resultProgress,
+                    pvs,
                     this@ProgramCustomDialogFragment)
 
                 val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -367,7 +390,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 binding.rvPCDHorizontal.adapter = adapter
                 adapter.notifyDataSetChanged()
 
-                val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses, null, sequence, null,"PCD") }
+                val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses, null, sequence, "PCD") }
                 binding.rvPCD.adapter = adapter2
                 val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 binding.rvPCD.layoutManager = layoutManager2

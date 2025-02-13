@@ -90,11 +90,7 @@ class MeasureHistoryFragment : Fragment() {
                 setAdapter(measures)
             }
         }
-        
-        binding.fabtnMH.setOnClickListener{
-            val intent = Intent(requireContext(), MeasureSkeletonActivity::class.java)
-            startActivity(intent)
-        }
+
     }
 
     private fun setAdapter(measures: MutableList<MeasureVO>?) {

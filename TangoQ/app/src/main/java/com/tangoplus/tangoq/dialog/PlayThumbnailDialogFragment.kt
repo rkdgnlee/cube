@@ -86,11 +86,11 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------# like 있는지 판단 #------
         prefs = PreferencesManager(requireContext())
-        var isLike = false
-        if (prefs.existLike(exerciseData?.exerciseId.toString())) {
-            isLike = true
-            binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
-        }
+//        var isLike = false
+//        if (prefs.existLike(exerciseData?.exerciseId.toString())) {
+//            isLike = true
+//            binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
+//        }
 
         // playerview 넣기
         exoPlay = view.findViewById(R.id.btnPlay)
@@ -264,7 +264,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                     it.relatedJoint?.contains(exerciseData?.relatedJoint?.split(", ")?.get(0) ?: "") == true
                 }
                 val shuffledList = verticalDataList.shuffled().take(10.coerceAtMost(verticalDataList.size)).toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, shuffledList, null, null, null, null,"PTD")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, shuffledList, null, null,  null,"PTD")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager

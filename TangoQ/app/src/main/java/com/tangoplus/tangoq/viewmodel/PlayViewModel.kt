@@ -11,16 +11,21 @@ class PlayViewModel : ViewModel() {
     private var playbackPosition = 0L
     private var windowIndex = 0
     private var playWhenReady = true
-    var videoUrl: String? = null  // URL 저장을 위한 변수 추가
-    var baseUrls = listOf<String>()
-    // 현재 재생 상태를 저장하는 함수
+    var videoUrl: String? = null
 
-    fun savePlayerState(player: SimpleExoPlayer, url: String = "", baseUrl : List<String> = listOf()) {
+    // playFullScreen에서 url, ids 담기
+    var baseUrls = arrayListOf<String>()
+    var sns: MutableList<String>? = null
+    var uvpSns : MutableList<String>? = null
+    var weekNumber = 0
+    var cycle = 0
+
+
+    fun savePlayerState(player: SimpleExoPlayer, url: String = "") {
         playbackPosition = player.currentPosition
         playWhenReady = player.playWhenReady
         windowIndex = player.currentWindowIndex
         videoUrl = url
-        baseUrls = baseUrl
     }
 
     fun getPlaybackPosition() = playbackPosition

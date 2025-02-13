@@ -6,6 +6,7 @@ data class ProgressHistoryVO (
     val uvpSn : Int,
     val contentSn : Int,
     val exerciseName: String,
+    val duration: Int? = null,
     val imageFilePathReal : String = "",
     val recommendationSn: Int,
     val serverSn : Int,

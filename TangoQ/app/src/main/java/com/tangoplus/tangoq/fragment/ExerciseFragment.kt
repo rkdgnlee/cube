@@ -66,67 +66,12 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         CoroutineScope(Dispatchers.Main).launch {
             try { // ------! rv vertical 시작 !------
                 // 상단 최근 한 운동 cardView 보이기
-
-                val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
-                evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
-                evm.latestProgram = progressResult?.second
-                Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
-                if (!evm.latestUVP.isNullOrEmpty() && evm.latestProgram != null) {
-                    binding.clEProgress1.visibility = View.VISIBLE
-                    binding.clEProgress2.visibility = View.VISIBLE
-                } else {
-                    binding.clEProgress1.visibility = View.GONE
-                }
-                val currentIndex = findCurrentIndex(evm.latestUVP)
-                val currentExerciseItem = evm.latestProgram?.exercises?.get(currentIndex)
-                val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
-
-                // 받아온 데이터로 cvEProgress 채우기
-                Glide.with(requireContext())
-                    .load("${currentExerciseItem?.imageFilePath}")
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(180)
-                    .into(binding.ivEThumbnail)
-                binding.tvEName.text = currentExerciseItem?.exerciseName
-                binding.tvETime.text = second
-
-                when (currentExerciseItem?.exerciseStage) {
-                    "초급" -> {
-                        binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
-                        binding.tvEStage.text = "초급자"
-                    }
-                    "중급" -> {
-                        binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
-                        binding.tvEStage.text = "중급자"
-                    }
-                    "고급" -> {
-                        binding.ivEStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
-                        binding.tvEStage.text = "상급자"
-                    }
-                }
-                val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
-                evpItem.let {
-                    if (it != null) {
-                        binding.hpvE.progress = (it.lastProgress * 100 / it.videoDuration).toFloat()
-                    }
-                }
-//                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
-//                binding.clEProgress2.animation = animation
-
-                binding.clEProgress2.setOnSingleClickListener {
-                    val programSn = evm.latestProgram?.programSn ?: -1
-                    val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
-                    ProgramCustomDialogFragment.newInstance(programSn, recSn)
-                        .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
-                }
-
-                // 메인 5개 카테고리 연결
                 val categoryArrayList = mutableListOf<ArrayList<Int>>()
-                categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 스트레칭
-                categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 하지근육 강화, 기본 스트레칭 의자 활용, 기본 유산소 운동
-                categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 상지 하지 스트레칭 근육 운동
-                categoryArrayList.add(arrayListOf(10, 11)) // 근골격계질환 개선 위한 스트레칭 운동
-//            categoryArrayList.add(arrayListOf(12)) // 기본 밸런스, 스트레칭
+                categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 기본 스트레칭
+                categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 하지 근육 강화운동 , 기본 스트레칭 의자활용 운동, 기본 유산소 운동
+                categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 상지 하지  근육 스트레칭 운동, 상지 하지  근육 강화 운동
+                categoryArrayList.add(arrayListOf(10, 11)) // 근골격계질환 개선 위한 강화운동, 근골격계질환 개선 위한 스트레칭 운동
+//            categoryArrayList.add(arrayListOf(12)) // 큐브
                 val adapter = ExerciseCategoryRVAdapter(categoryArrayList, listOf(),this@ExerciseFragment,  sn, "mainCategory" )
                 binding.rvEMainCategory.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -169,8 +114,4 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
 
     override fun onCategoryClick(category: String) { }
 
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
-    }
 }

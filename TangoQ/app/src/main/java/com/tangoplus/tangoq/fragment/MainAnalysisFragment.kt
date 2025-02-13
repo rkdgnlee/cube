@@ -30,8 +30,8 @@ import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
+import com.tangoplus.tangoq.databinding.FragmentMainAnalysisBinding
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
-import com.tangoplus.tangoq.databinding.FragmentMeasureAnalysisBinding
 import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.createSummary
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
@@ -53,13 +53,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 
-class MeasureAnalysisFragment : Fragment() {
-    lateinit var binding : FragmentMeasureAnalysisBinding
+class MainAnalysisFragment : Fragment() {
+    lateinit var binding : FragmentMainAnalysisBinding
     private val mvm : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
     private val pvm : PlayViewModel by activityViewModels()
     private lateinit var mr : JSONArray
-    private var painPart = ""
+
 
     private var updateUI = false
     // 영상재생
@@ -81,8 +81,8 @@ class MeasureAnalysisFragment : Fragment() {
     private lateinit var adapterAnalysises : List<AnalysisVO>
     companion object {
         private const val ARG_PART = "painParts"
-        fun newInstance(painPart: String): MeasureAnalysisFragment {
-            val fragment = MeasureAnalysisFragment()
+        fun newInstance(painPart: String): MainAnalysisFragment {
+            val fragment = MainAnalysisFragment()
             val args = Bundle()
             args.putString(ARG_PART, painPart)
             fragment.arguments = args
@@ -94,7 +94,7 @@ class MeasureAnalysisFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMeasureAnalysisBinding.inflate(inflater)
+        binding = FragmentMainAnalysisBinding.inflate(inflater)
         return binding.root
     }
 
@@ -106,7 +106,8 @@ class MeasureAnalysisFragment : Fragment() {
         biometricManager = BiometricManager(this)
         biometricManager.authenticate(
             onSuccess = {
-                painPart = arguments?.getString(ARG_PART) ?: ""
+                val part = arguments?.getString(ARG_PART) ?: ""
+                avm.currentPartIndex.value = avm.currentParts?.indexOf(part)
                 mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
                 Log.v("현재측정2", "$mr")
                 avm.mafMeasureResult = JSONArray()
@@ -115,42 +116,76 @@ class MeasureAnalysisFragment : Fragment() {
                 pvm.videoUrl = null
                 simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
-                // ------# 1차 필터링 (균형별) #------
-                val seqs = matchedUris[painPart]
-                val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
-
-                seqs?.forEach { seq ->
-                    val analyses = getAnalysisUnits(requireContext(), painPart, seq, mr)
-                    val indexx = when (seq) {
-                        0, 2 -> 0
-                        3, 4 -> 1
-                        5, 6 -> 2
-                        1 -> 3
-                        else -> 0
+                binding.ibtnMABack2.setOnClickListener {
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flMain, MainFragment())
+                        commit()
                     }
-
-                    if (!groupedAnalyses.containsKey(indexx)) {
-                        groupedAnalyses[indexx] = mutableListOf()
-                    }
-                    groupedAnalyses[indexx]?.add(analyses)
                 }
 
-                adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
-                    AnalysisVO(
-                        indexx = indexx,
-                        labels = analysesList.flatten().toMutableList()
-                    )
-                }.sortedBy { it.indexx }
+                binding.ibtnMALeft.setOnClickListener {
+                    val currentItem = avm.currentPartIndex.value?.let { it1 -> avm.currentParts?.get(it1) }
+                    avm.currentPartIndex.value = avm.currentParts?.indexOf(currentItem)?.minus(1)
+                }
+                binding.ibtnMARight.setOnClickListener {
+                    val currentItem = avm.currentPartIndex.value?.let { it1 -> avm.currentParts?.get(it1) }
+                    avm.currentPartIndex.value = avm.currentParts?.indexOf(currentItem)?.plus(1)
+                }
+                // 리스트를 통해 옮겨다니기
 
-                binding.tvMATitle.text = "$painPart 자세히 보기"
-                val myApplication = requireActivity().application as MyApplication
-                myApplication.setBiometricSuccess()
+                avm.currentPartIndex.observe(viewLifecycleOwner) { index ->
+                    Log.v("인덱스", "$index, ${avm.currentParts?.get(index)}")
+                    // ------# 1차 필터링 (균형별) #------
+                    if (index == avm.currentParts?.size?.minus(1) ) {
+                        binding.ibtnMARight.visibility = View.GONE
+                        binding.ibtnMALeft.visibility = View.VISIBLE
+                    } else if (index == 0) {
+                        binding.ibtnMALeft.visibility = View.GONE
+                        binding.ibtnMARight.visibility = View.VISIBLE
+                    } else {
+                        binding.ibtnMALeft.visibility = View.VISIBLE
+                        binding.ibtnMARight.visibility = View.VISIBLE
+                    }
 
-                // 초기 상태
-                avm.currentIndex = 0
-                // 버튼 클릭리스너와 사진 동영상 세팅
-                updateButtonState()
-                setMedia()
+                    val painPart = avm.currentParts?.get(index)
+                    val seqs = matchedUris[painPart]
+                    val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
+
+                    seqs?.forEach { seq ->
+                        val analyses = getAnalysisUnits(requireContext(), painPart.toString(), seq, mr)
+                        val indexx = when (seq) {
+                            0, 2 -> 0
+                            3, 4 -> 1
+                            5, 6 -> 2
+                            1 -> 3
+                            else -> 0
+                        }
+                        if (!groupedAnalyses.containsKey(indexx)) {
+                            groupedAnalyses[indexx] = mutableListOf()
+                        }
+                        groupedAnalyses[indexx]?.add(analyses)
+
+                    }
+
+                    adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
+                        AnalysisVO(
+                            indexx = indexx,
+                            labels = analysesList.flatten().toMutableList()
+                        )
+                    }.sortedBy { it.indexx }
+
+                    binding.tvMATitle.text = "$painPart"
+                    val myApplication = requireActivity().application as MyApplication
+                    myApplication.setBiometricSuccess()
+
+                    // 초기 상태
+                    avm.currentIndex = 0
+                    // 버튼 클릭리스너와 사진 동영상 세팅
+                    updateButtonState()
+                    setMedia()
+                }
+
+
 
             },
             onError = {
@@ -178,7 +213,7 @@ class MeasureAnalysisFragment : Fragment() {
             button.backgroundTintList = when {
                 avm.currentIndex == index -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
                 isActiveButton -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor200))
-                else -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+                else -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor100))
             }
 
             if (isActiveButton) {
@@ -215,7 +250,7 @@ class MeasureAnalysisFragment : Fragment() {
             binding.ssivAI2.visibility = View.VISIBLE
             // mainPartAnalysis 연결
             val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            val adapter = MainPartAnalysisRVAdapter(this@MeasureAnalysisFragment, adapterAnalysises[avm.currentIndex].labels)
+            val adapter = MainPartAnalysisRVAdapter(this@MainAnalysisFragment, adapterAnalysises[avm.currentIndex].labels)
             binding.rvAI.layoutManager = layoutManager
             binding.rvAI.adapter = adapter
             if (!updateUI) updateUI = false
@@ -238,8 +273,13 @@ class MeasureAnalysisFragment : Fragment() {
         }
 
         binding.tvMASummary.text =
-            if (avm.currentIndex != 3) createSummary(painPart, avm.currentIndex, adapterAnalysises[avm.currentIndex].labels)
-            else {
+            if (avm.currentIndex != 3) {
+                Log.v("avmCurrentIndex", "${avm.currentIndex}")
+                Log.v("analysisLabels", "${adapterAnalysises[avm.currentIndex].labels}")
+                createSummary(avm.currentPartIndex.value?.let { avm.currentParts?.get(it).toString() },
+                avm.currentIndex,
+                adapterAnalysises[avm.currentIndex].labels)
+            } else {
                 "스쿼트 1회 동작에서 좌우 부위의 궤적을 비교합니다.\n하단에 그려진 궤적이 대칭을 이룰 수록 정상범위입니다.\n\n이동 안정성의 불균형이 생겼을 때 손은 회전근개 주변 근육, 골반은 전반적인 하지, 무릎은 허벅지와 발목과 발의 정렬을 교정해야 합니다."
             }
         if (binding.tvMASummary.text.contains("부위가 정상 범위 내에 있습니다.") || avm.currentIndex == 3) {
@@ -254,8 +294,8 @@ class MeasureAnalysisFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             when (avm.currentIndex) {
                 0 -> {
-                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 0, binding.ssivAI1, "mainPart")
-                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 2, binding.ssivAI2, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 0, binding.ssivAI1, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 2, binding.ssivAI2, "mainPart")
                     withContext(Dispatchers.Main) {
                         binding.tvAIPart1.text = "정면 측정"
                         binding.tvAIPart2.text = "팔꿉 측정"
@@ -264,8 +304,8 @@ class MeasureAnalysisFragment : Fragment() {
                 }
                 1 -> {
 
-                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 3, binding.ssivAI1, "mainPart")
-                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 4, binding.ssivAI2, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 3, binding.ssivAI1, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 4, binding.ssivAI2, "mainPart")
                     withContext(Dispatchers.Main) {
                         binding.tvAIPart1.text = "좌측 측정"
                         binding.tvAIPart2.text = "우측 측정"
@@ -274,8 +314,8 @@ class MeasureAnalysisFragment : Fragment() {
                     }
                 }
                 2 -> {
-                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 5, binding.ssivAI1, "mainPart")
-                    setImage(this@MeasureAnalysisFragment, mvm.selectedMeasure, 6, binding.ssivAI2, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 5, binding.ssivAI1, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 6, binding.ssivAI2, "mainPart")
                     withContext(Dispatchers.Main) {
                         binding.tvAIPart1.text = "후면 측정"
                         binding.tvAIPart2.text = "앉은 후면"

@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
@@ -18,6 +19,8 @@ import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 object NetworkProgress {
 
@@ -350,7 +353,8 @@ object NetworkProgress {
                                 recommendationSn = item.optInt("recommendation_sn"),
                                 serverSn =  item.optInt("serverSn"),
                                 exerciseName = item.optString("exercise_name"),
-                                imageFilePathReal = item.optString("image_filepath_real"),
+                                duration = item.optInt("duration"),
+                                imageFilePathReal = item.optString("image_filepath"),
                                 recommendationTitle = item.optString("recommendation_title"),
                                 weekNumber = item.optInt("week_number"),
                                 executionDate = item.optString("execution_date"),
@@ -383,28 +387,25 @@ object NetworkProgress {
             }
         }
     }
-    fun convertToProgressUnitVO(jo: JSONObject?): ProgressUnitVO {
-        if (jo != null) {
-            val progressUnitVO = ProgressUnitVO(
-                uvpSn = jo.optInt(""),
-                exerciseId  = jo.optInt(""),
-                recommendationSn = jo.optInt(""),
-                currentWeek = jo.optInt(""),
-                currentSequence = jo.optInt(""),
-                requiredSequence = jo.optInt(""),
-                weekStartAt = jo.optString(""),
-                weekEndAt  = jo.optString(""),
-                videoDuration = jo.optInt(""),
-                lastProgress  = jo.optInt(""),
-                isCompleted = jo.optInt(""),
-                updateDate  = jo.optString(""),
-            )
+    suspend fun getOrInsertProgress(context: Context, jo: JSONObject) : Unit = suspendCoroutine  { continuation ->
+        postProgressInCurrentProgram(context.getString(R.string.API_progress), jo, context) { progressUnits -> // MutableList<ProgressUnitVO>
+            // (자동) 있으면 가져오고 없으면 추가되서 가져오고
+            if (progressUnits.isNotEmpty()) {
+                Log.v("프로그레스유닛들", "${progressUnits.size}")
+                val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
 
-            return progressUnitVO
-        } else {
-            return ProgressUnitVO(-1, -1, -1, -1, -1, -1, "", "", -1, -1, -1, "")
+                val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
+                for (week in weeks) { // 1, 2, 3, 4
+                    val weekUnits = progressUnits.filter { it.currentWeek == week }.sortedBy { it.uvpSn }// 일단 주차별로 나눔. 1주차 2주차 3주차 4주차
+                    organizedUnits.add(weekUnits.toMutableList())
+                }
+                // 프로그램 운동 기록이 있을 떄
+                continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
+            } else {
+                // ------# 측정 기록이 없음 #------
+                // 프로그램 운동 기록이 없을 때.
+                continuation.resume(Unit)
+            }
         }
-
-
     }
 }

@@ -65,49 +65,94 @@ object MathHelpers {
     }
 
     // 0~100점의 백분위로 점수 계산하기 (하나의 raw Data를)
-    fun calculateBoundedScore(value: Float, range: Triple<Float, Float, Float>): Float {
-        val midpoint = range.first // 90f
-        val warningBoundary = range.second // 2f
-        val criticalBoundary = range.third // 4f
-        val warningMin = midpoint - warningBoundary // 88f
-        val warningMax = midpoint + warningBoundary // 92f
-        val criticalMin = midpoint - criticalBoundary // 86f
-        val criticalMax = midpoint + criticalBoundary // 94f
+    fun calculateBoundedScore(columnName: String, value: Float, range: Triple<Float, Float, Float>): Float {
+        val midpoint = range.first
+        val warningBoundary = abs(range.second) // 항상 절대값으로 처리
+        val criticalBoundary = abs(range.third) // 항상 절대값으로 처리
         val boundaryMultiplier = 3f // 범위를 벗어난 3배 거리에서 0점
 
+        val isBackHorizontalAngle = columnName.contains("back_horizontal_angle")
+
+        val warningMin = midpoint - warningBoundary
+        val warningMax = midpoint + warningBoundary
+        val criticalMin = midpoint - criticalBoundary
+        val criticalMax = midpoint + criticalBoundary
+
         return when {
-//            value in warningMin .. warningMax -> {
-//
-//            }
-            value in warningMin .. warningMax -> {
-                val diff = Math.abs(value - midpoint)
-                66f + ((warningBoundary - diff) / warningBoundary) * 34f
+            isBackHorizontalAngle -> {
+                if (range.second < 0 || range.third < 0) {
+                    // 음수 방향만 검사
+                    if (value >= midpoint) 100f // 양수 값은 무조건 100점
+                    else calculateNegativeScore(value, midpoint, warningBoundary, criticalBoundary, boundaryMultiplier)
+                } else {
+                    // 양수 방향만 검사
+                    if (value <= midpoint) 100f // 음수 값은 무조건 100점
+                    else calculatePositiveScore(value, midpoint, warningBoundary, criticalBoundary, boundaryMultiplier)
+                }
             }
-            // 주의 범위
-            value in criticalMin .. warningMin || value in warningMax..criticalMax -> {
-                val isBelow = value < warningMin
-                val diff = if (isBelow) warningMin - value else value - warningMax
+            else -> {
+                // 절대값으로 양쪽 검사
+                when {
+                    value in warningMin..warningMax -> {
+                        val diff = abs(value - midpoint)
+                        66f + ((warningBoundary - diff) / warningBoundary) * 34f
+                    }
+                    value in criticalMin .. warningMin || value in warningMax..criticalMax -> {
+                        val diff = if (value < warningMin) warningMin - value else value - warningMax
+                        val maxDiff = criticalBoundary - warningBoundary
+                        33f + ((maxDiff - diff) / maxDiff) * 33f
+                    }
+                    value < criticalMin -> {
+                        val diff = criticalMin - value
+                        val maxDiff = criticalBoundary * boundaryMultiplier
+                        maxOf(0f, 33f - (diff / maxDiff) * 33f)
+                    }
+                    value > criticalMax -> {
+                        val diff = value - criticalMax
+                        val maxDiff = criticalBoundary * boundaryMultiplier
+                        maxOf(0f, 33f - (diff / maxDiff) * 33f)
+                    }
+                    else -> 0f
+                }
+            }
+        }
+    }
+
+    fun calculateNegativeScore(value: Float, midpoint: Float, warningBoundary: Float, criticalBoundary: Float, boundaryMultiplier: Float): Float {
+        val warningMin = midpoint - warningBoundary
+        val criticalMin = midpoint - criticalBoundary
+
+        return when {
+            value in criticalMin..warningMin -> {
+                val diff = warningMin - value
                 val maxDiff = criticalBoundary - warningBoundary
-                // 주의 범위의 점수는 33 ~ 66점
                 33f + ((maxDiff - diff) / maxDiff) * 33f
             }
-
-            // 위험 범위
             value < criticalMin -> {
                 val diff = criticalMin - value
                 val maxDiff = criticalBoundary * boundaryMultiplier
-                // 위험 범위의 점수는 0 ~ 33점
                 maxOf(0f, 33f - (diff / maxDiff) * 33f)
             }
+            else -> 66f // warningMin 이상이면 66점
+        }
+    }
 
+    fun calculatePositiveScore(value: Float, midpoint: Float, warningBoundary: Float, criticalBoundary: Float, boundaryMultiplier: Float): Float {
+        val warningMax = midpoint + warningBoundary
+        val criticalMax = midpoint + criticalBoundary
+
+        return when {
+            value in warningMax..criticalMax -> {
+                val diff = value - warningMax
+                val maxDiff = criticalBoundary - warningBoundary
+                33f + ((maxDiff - diff) / maxDiff) * 33f
+            }
             value > criticalMax -> {
                 val diff = value - criticalMax
                 val maxDiff = criticalBoundary * boundaryMultiplier
-                // 위험 범위의 점수는 0 ~ 33점
                 maxOf(0f, 33f - (diff / maxDiff) * 33f)
             }
-
-            else -> 0f // 이외의 경우 (사실상 발생하지 않음)
+            else -> 66f // warningMax 이하이면 66점
         }
     }
     // ------# 점과 점사이의 거리 #------

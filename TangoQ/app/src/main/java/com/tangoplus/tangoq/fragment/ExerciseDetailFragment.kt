@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tangoplus.tangoq.MainActivity
@@ -87,6 +88,13 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
+//        binding.ibtnEDBack.setOnClickListener {
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                replace(R.id.flMain, ExerciseFragment())
+//                commit()
+//            }
+//        }
+
         Log.v("categoryId", "$categoryId, $sn")
         binding.sflED.startShimmer()
         binding.tvEDMainCategoryName.text = when (categoryId?.get(0)) {
@@ -112,6 +120,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
 
             // -----! 카테고리  시작 !-----
 
+            // TODO 카테고리 우측 몰아버리기
             categoryMap = mapOf(
                 "전체" to 0,
                 "목관절" to 1,
@@ -136,7 +145,12 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 }
             }
             val aa = categoryList.zip(categoryCounts)
-            val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), aa, this@ExerciseDetailFragment,  sn!! ,"subCategory" )
+            val categoryCountList = aa.toMutableList().apply {
+                val zeroItems = filter { it.second == 0 }
+                removeAll(zeroItems)
+                addAll(zeroItems)
+            }
+            val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryCountList, this@ExerciseDetailFragment,  sn!! ,"subCategory" )
             adapter2.onCategoryClickListener = this@ExerciseDetailFragment
             binding.rvEDCategory.adapter = adapter2
             val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -199,7 +213,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     }
 
     private fun updateRecyclerView(exercises : MutableList<ExerciseVO>?, historys: MutableList<ExerciseHistoryVO>?) {
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null ,historys, null, null, "ED")
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null ,historys, null,  "ED")
         adapter.dialogClosedListener = this@ExerciseDetailFragment
         adapter.exerciseList = exercises
         binding.rvEDAll.adapter = adapter

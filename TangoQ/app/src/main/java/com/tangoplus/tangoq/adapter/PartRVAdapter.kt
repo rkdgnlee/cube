@@ -1,9 +1,5 @@
 package com.tangoplus.tangoq.adapter
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,25 +7,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
-import com.tangoplus.tangoq.fragment.MeasureAnalysisFragment
-import java.security.MessageDigest
+import com.tangoplus.tangoq.fragment.MainAnalysisFragment
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 
-class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>? ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>?, private val avm: AnalysisViewModel ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class PartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvPI : TextView = view.findViewById(R.id.tvPI)
         val cvPI : CardView = view.findViewById(R.id.cvPI)
         val ivPI : ImageView = view.findViewById(R.id.ivPI)
         val clPI : ConstraintLayout = view.findViewById(R.id.clPI)
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvPartItemBinding.inflate(inflater, parent, false)
@@ -62,8 +53,9 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
             }
 
             holder.clPI.setOnClickListener {
+                avm.currentPartIndex.value = avm.currentParts?.indexOf(currentItem?.first.toString())
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flMain, MeasureAnalysisFragment.newInstance(currentItem?.first ?: ""))
+                    replace(R.id.flMain, MainAnalysisFragment.newInstance(currentItem?.first ?: ""))
                     addToBackStack(null)
                     commit()
                 }

@@ -11,21 +11,24 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
-import com.tangoplus.tangoq.databinding.RvDashboard2ItemBinding
+import com.tangoplus.tangoq.databinding.RvProgressHistoryItemBinding
+import okio.FileNotFoundException
 
 class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<ProgressHistoryVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class PHViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvD2ITitle : TextView = view.findViewById(R.id.tvD2ITitle)
-        val tvD2ITime : TextView = view.findViewById(R.id.tvD2ITime)
-        val ivD2IThumbnail : ImageView = view.findViewById(R.id.ivD2IThumbnail)
+        val tvPHITitle : TextView = view.findViewById(R.id.tvPHITitle)
+        val tvPHITime : TextView = view.findViewById(R.id.tvPHITime)
+        val tvPHIDuration : TextView = view.findViewById(R.id.tvPHIDuration)
+        val ivPHIThumbnail : ImageView = view.findViewById(R.id.ivPHIThumbnail)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = RvDashboard2ItemBinding.inflate(layoutInflater, parent, false)
+        val binding = RvProgressHistoryItemBinding.inflate(layoutInflater, parent, false)
         return PHViewHolder(binding.root)
     }
 
@@ -35,13 +38,24 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
 
         if (holder is PHViewHolder) {
 
-            holder.tvD2ITime.text = "완료한 시간 : ${currentItem.createdAt.substring(10, currentItem.createdAt.length)}"
-            holder.tvD2ITitle.text = currentItem.exerciseName
-            Glide.with(fragment.requireContext())
-                .load(currentItem.imageFilePathReal)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .override(180)
-                .into(holder.ivD2IThumbnail)
+            holder.tvPHITime.text = "완료한 시간 : ${currentItem.createdAt.substring(10, currentItem.createdAt.length - 3)}"
+            holder.tvPHITitle.text = currentItem.exerciseName
+            val second = "${currentItem.duration?.div(60)}분 ${currentItem.duration?.rem(60)}초"
+            holder.tvPHIDuration.text = if (currentItem.duration == null) "0분" else second
+            try {
+                Glide.with(fragment.requireContext())
+                    .load(currentItem.imageFilePathReal)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(180)
+                    .into(holder.ivPHIThumbnail)
+            } catch (e: GlideException) {
+                Log.e("PHIGlideError", "glideException: ${e.message}")
+            } catch (e: FileNotFoundException) {
+                Log.e("PHIGlideError", "fileNotFoundException: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("PHIGlideError", "Exception: ${e.message}")
+            }
+
         }
     }
 

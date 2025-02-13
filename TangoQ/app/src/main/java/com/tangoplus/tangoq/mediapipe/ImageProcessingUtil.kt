@@ -323,7 +323,7 @@ object ImageProcessingUtil {
             canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
             canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)
             canvas.drawText("L", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
-        } else {
+        } else if (sequence !in listOf(3, 4)) {
             canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
             canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
             canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)

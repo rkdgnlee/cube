@@ -12,6 +12,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 object NetworkRecommendation {
+
+    // TODO create하는 부분 measure_sn 248 인 부분에서 create가 안됨.
     suspend fun createRecommendProgram(myUrl: String, jo: String, context: Context, callback: (MutableList<RecommendationVO>) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = jo.toRequestBody(mediaType)

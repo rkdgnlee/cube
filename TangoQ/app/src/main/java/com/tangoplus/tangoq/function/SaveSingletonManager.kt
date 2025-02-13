@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.function
 import android.content.Context
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import com.google.gson.Gson
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
@@ -28,6 +29,7 @@ import com.tangoplus.tangoq.api.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationInOneMeasure
 import com.tangoplus.tangoq.db.FileStorageUtil.deleteCorruptedFile
+import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_progress
 import kotlinx.coroutines.CoroutineScope
@@ -144,7 +146,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 //                        Log.v("groupedStatics", "${statics.size}")
 
                         if (statics.size < 6 || dynamic.isEmpty()) {
-                            Log.v("건너뜀", "현재 measure: $currentInfoSn, statics size: ${statics.size}, dynamic size: ${dynamic.size}")
+//                            Log.v("건너뜀", "현재 measure: $currentInfoSn, statics size: ${statics.size}, dynamic size: ${dynamic.size}")
                             return@async // 현재 info 처리 건너뜀
                         }
 //                        Log.v("인포목록들", "${info}, sn: ${info.sn}")
@@ -525,30 +527,107 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         }
     }
 
-    suspend fun getOrInsertProgress(jo: JSONObject) : Unit = suspendCoroutine  { continuation ->
-        postProgressInCurrentProgram(context.getString(R.string.API_progress), jo, context) { progressUnits -> // MutableList<ProgressUnitVO>
-            // (자동) 있으면 가져오고 없으면 추가되서 가져오고
-            if (progressUnits.isNotEmpty()) {
-                Log.v("프로그레스유닛들", "${progressUnits.size}")
-                val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
 
-                val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
-                for (week in weeks) { // 1, 2, 3, 4
-                    val weekUnits = progressUnits.filter { it.currentWeek == week }.sortedBy { it.uvpSn }// 일단 주차별로 나눔. 1주차 2주차 3주차 4주차
-                    organizedUnits.add(weekUnits.toMutableList())
+    // 최근 measureResult를 Room에서 꺼내서 만들기 - 없는 값만 확인후 추가.
+    suspend fun setRecent5MeasureResult(currentMeasureIndex: Int) {
+        val currentActivity = activity
+        val dialog = withContext(Dispatchers.Main) {
+            if (!currentActivity.isFinishing && !currentActivity.isDestroyed) {
+                LoadingDialogFragment.newInstance("측정파일").apply {
+                    show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
                 }
-                // 결론적으로 4 * 21의 값만 들어와짐.
-                singletonProgress.programProgresses = organizedUnits
-//                Log.v("singletonProgress", "${singletonProgress.programProgresses.size}")
-//                for (i in 0 until singletonProgress.programProgresses?.size) {
-//                    Log.v("singletonProgress2", "${singletonProgress.programProgresses[i].size}")
-//                }
-                continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
-            } else {
-                // ------# 측정 기록이 없음 #------
-                singletonProgress.programProgresses?.add(mutableListOf())
-                continuation.resume(Unit)
+            } else null
+        }
+        try {
+            withContext(Dispatchers.IO) {
+                val singletonSize = singletonMeasure.measures?.size
+                if (singletonSize != null) {
+                    when (singletonSize) {
+                        in 0 .. 4 -> {
+                            for (i in 0 until singletonSize) {
+                                val singleton = Singleton_t_measure.getInstance(context)
+                                val measures = singleton.measures ?: continue  // measures가 null이면 다음 반복
+                                if (currentMeasureIndex + i >= measures.size) continue  // 인덱스 초과 시 다음 반복
+                                val measureUnit = measures[currentMeasureIndex + i]
+
+                                // measureResult가 이미 존재하면 다음 반복으로 넘어감
+                                if (i == singletonSize - 1 && measureUnit.measureResult != null) return@withContext
+                                if (measureUnit.measureResult != null) continue
+
+                                val serverSn = measureUnit.sn
+                                val statics = mDao.getStaticsBy1Info(serverSn)
+                                val measureResult = JSONArray()
+
+                                statics.forEachIndexed { index, it ->
+                                    if (index == 1) {
+                                        val dynamic = mDao.getDynamicBy1Info(serverSn)
+                                        val dynamicGson = dynamic.toJson()
+                                        val dynamicJo = JSONObject(dynamicGson)
+                                        measureResult.put(dynamicJo)
+                                    }
+                                    val gsonStatic = it.toJson()
+                                    val staticJo = JSONObject(gsonStatic)
+                                    measureResult.put(staticJo)
+                                }
+                                measureUnit.measureResult = measureResult
+                                measures[currentMeasureIndex + i] = measureUnit
+                            }
+                        }
+                        else -> {
+                            for (i in 0 until 5) {
+                                val singleton = Singleton_t_measure.getInstance(context)
+                                val measures = singleton.measures ?: continue  // measures가 null이면 다음 반복
+                                if (currentMeasureIndex + i >= measures.size) continue  // 인덱스 초과 시 다음 반복
+                                val measureUnit = measures[currentMeasureIndex + i]
+
+                                // measureResult가 이미 존재하면 다음 반복으로 넘어감
+                                if (i == 4 && measureUnit.measureResult != null) return@withContext
+                                if (measureUnit.measureResult != null) continue
+
+                                val serverSn = measureUnit.sn
+                                val statics = mDao.getStaticsBy1Info(serverSn)
+                                val measureResult = JSONArray()
+
+                                statics.forEachIndexed { index, it ->
+                                    if (index == 1) {
+                                        val dynamic = mDao.getDynamicBy1Info(serverSn)
+                                        val dynamicGson = dynamic.toJson()
+                                        val dynamicJo = JSONObject(dynamicGson)
+                                        measureResult.put(dynamicJo)
+                                    }
+                                    val gsonStatic = it.toJson()
+                                    val staticJo = JSONObject(gsonStatic)
+                                    measureResult.put(staticJo)
+                                }
+                                measureUnit.measureResult = measureResult
+                                measures[currentMeasureIndex + i] = measureUnit
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: IllegalStateException) {
+            Log.e("measureError", "fetchAndFilterIllegalState: ${e.message}")
+        } catch (e: IllegalArgumentException) {
+            Log.e("measureError", "fetchAndFilterIllegalArgument: ${e.message}")
+        } catch (e: NullPointerException) {
+            Log.e("measureError", "fetchAndFilterNullPointer: ${e.message}")
+        } catch (e: InterruptedException) {
+            Log.e("measureError", "fetchAndFilterInterrupted: ${e.message}")
+        } catch (e: IndexOutOfBoundsException) {
+            Log.e("measureError", "fetchAndFilterIndexOutOfBounds: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("measureError", "fetchAndFilter: ${e.message}")
+        } finally {
+            withContext(Dispatchers.Main) {
+                dialog?.dismiss()
             }
         }
+    }
+    fun MeasureStatic.toJson(): String {
+        return Gson().toJson(this)
+    }
+    fun MeasureDynamic.toJson(): String {
+        return Gson().toJson(this)
     }
 }

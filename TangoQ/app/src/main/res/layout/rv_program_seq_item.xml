@@ -24,17 +24,17 @@
 
     <TextView
         android:id="@+id/tvPSIName"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
         android:layout_margin="8dp"
         android:background="@drawable/effect_ibtn_20dp"
         android:backgroundTint="@color/subColor400"
         android:gravity="center"
-        android:padding="10dp"
+        android:padding="2dp"
         android:stateListAnimator="@null"
         android:text="01\nStep"
         android:textColor="@color/whiteText"
-        android:textSize="18dp"
+        android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

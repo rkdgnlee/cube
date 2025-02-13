@@ -1,28 +1,22 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.skydoves.progressview.ProgressView
-import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
-import com.tangoplus.tangoq.databinding.RvExerciseHistoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.function.PreferencesManager
@@ -38,7 +32,6 @@ class ExerciseRVAdapter (
     private val progresses : MutableList<ProgressUnitVO>?,
     private val historys: MutableList<ExerciseHistoryVO>?,
     private val sequence : Pair<Int, Int>?,
-    private val MDHistory : MutableList<String>?,
     private var xmlName: String,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -65,24 +58,11 @@ class ExerciseRVAdapter (
         val ivRcPThumbnail : ImageView = view.findViewById(R.id.ivRcPThumbnail)
         val vRPTN : View = view.findViewById(R.id.vRPTN)
     }
-
-    inner class HistoryViewHolder(view:View): RecyclerView.ViewHolder(view) {
-        val clEHI : ConstraintLayout = view.findViewById(R.id.clEHI)
-        val tvEHIName : TextView = view.findViewById(R.id.tvEHIName)
-        val ivEHIThumbnail : ImageView = view.findViewById(R.id.ivEHIThumbnail)
-        val tvEHISeq : TextView = view.findViewById(R.id.tvEHISeq)
-        val tvEHITime : TextView = view.findViewById(R.id.tvEHITime)
-        val tvEHIStage : TextView = view.findViewById(R.id.tvEHIStage)
-        val ivEHIStage : ImageView = view.findViewById(R.id.ivEHIStage)
-        val hpvEHI : ProgressView  = view.findViewById(R.id.hpvEHI)
-    }
-
     override fun getItemViewType(position: Int): Int {
         return when (xmlName) {
             "E", "ED", "PCD" -> 0
             "PTD" -> 1
-            "M" -> 2
-            else -> throw IllegalArgumentException("invalied view type")
+            else -> throw IllegalArgumentException("invalid view type")
         }
     }
 
@@ -96,10 +76,6 @@ class ExerciseRVAdapter (
             1 -> {
                 val binding = RvRecommendPTnItemBinding.inflate(inflater, parent, false)
                 RecommendViewHolder(binding.root)
-            }
-            2 -> {
-                val binding = RvExerciseHistoryItemBinding.inflate(inflater, parent, false)
-                HistoryViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("invalid view type binding")
         }
@@ -258,18 +234,6 @@ class ExerciseRVAdapter (
 //                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
 //                        }
 //                    }
-                    // ------# MD2 #------
-                    if (MDHistory != null) {
-                        // ------# 완료된 항목만 들어오니, 테이블에 contentId, user식별자, 만 있고, 그렇게 해도 될 것 같은데?
-//                    val currentHistory = history[position]
-                        holder.tvEIFinish.visibility = View.VISIBLE
-//                    holder.ibtnEILike.visibility = View.INVISIBLE
-//                    holder.ibtnEILike.isEnabled = false
-                        holder.vEI.visibility = View.VISIBLE
-                        holder.vEI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondContainerColor)
-                        holder.hpvEI.visibility = View.GONE
-                        holder.vEI.isEnabled = false
-                    }
                 }
             }
             // ------! play thumbnail 추천 운동 시작 !------
@@ -293,68 +257,68 @@ class ExerciseRVAdapter (
                 }
             }
 
-            is HistoryViewHolder -> {
-                val currentItem = progresses?.get(position)
-                holder.tvEHIName.text = currentExerciseItem?.exerciseName
-                holder.tvEHITime.text = second
-                when (currentExerciseItem?.exerciseStage) {
-                    "초급" -> {
-                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
-                        holder.tvEHIStage.text = "초급자"
-                    }
-                    "중급" -> {
-                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_2))
-                        holder.tvEHIStage.text = "중급자"
-                    }
-                    "고급" -> {
-                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_3))
-                        holder.tvEHIStage.text = "상급자"
-                    }
-                }
-                // 가장 최근 완료한 운동의 index 가져오기
-                Glide.with(fragment.requireContext())
-                    .load("${currentExerciseItem?.imageFilePath}")
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(180)
-                    .into(holder.ivEHIThumbnail)
-                val duration = currentExerciseItem?.duration
-//                Log.v("startIndex", "position: $position, startIndex: $startIndex")
-
-
-                if (currentItem != null && duration != null && startIndex != null) {
-                    // 재생 중간
-                    if (position < startIndex) {
-                        holder.hpvEHI.progress = 100f
-                    } else {
-                        holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
-                    }
-                }
-
-                holder.tvEHISeq.text = "${position+1}/${exerciseList?.size}"
-
-                // Main History 버튼 클릭 > 바로 재생
-                holder.clEHI.setOnSingleClickListener {
-                    val videoUrls = mutableListOf<String>()
-                    val exerciseIds = mutableListOf<String>()
-                    val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
-
-                    if (progresses != null && startIndex != null) {
-                        for (i in startIndex until progresses.size) {
-                            val progress = progresses[i]
-                            exerciseIds.add(progress.exerciseId.toString())
-                            uvpIds.add(progress.uvpSn.toString())
-                            videoUrls.add(exerciseList?.get(i)?.videoFilepath.toString())
-                        }
-                        val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
-                        intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-                        intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-                        intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
-                        intent.putExtra("current_position",progresses[startIndex].lastProgress.toLong())
-                        fragment.requireContext().startActivity(intent)
-
-                    }
-                }
-            }
+//            is HistoryViewHolder -> {
+//                val currentItem = progresses?.get(position)
+//                holder.tvEHIName.text = currentExerciseItem?.exerciseName
+//                holder.tvEHITime.text = second
+//                when (currentExerciseItem?.exerciseStage) {
+//                    "초급" -> {
+//                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
+//                        holder.tvEHIStage.text = "초급자"
+//                    }
+//                    "중급" -> {
+//                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_2))
+//                        holder.tvEHIStage.text = "중급자"
+//                    }
+//                    "고급" -> {
+//                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_3))
+//                        holder.tvEHIStage.text = "상급자"
+//                    }
+//                }
+//                // 가장 최근 완료한 운동의 index 가져오기
+//                Glide.with(fragment.requireContext())
+//                    .load("${currentExerciseItem?.imageFilePath}")
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .override(180)
+//                    .into(holder.ivEHIThumbnail)
+//                val duration = currentExerciseItem?.duration
+////                Log.v("startIndex", "position: $position, startIndex: $startIndex")
+//
+//
+//                if (currentItem != null && duration != null && startIndex != null) {
+//                    // 재생 중간
+//                    if (position < startIndex) {
+//                        holder.hpvEHI.progress = 100f
+//                    } else {
+//                        holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
+//                    }
+//                }
+//
+//                holder.tvEHISeq.text = "${position+1}/${exerciseList?.size}"
+//
+//                // Main History 버튼 클릭 > 바로 재생
+//                holder.clEHI.setOnSingleClickListener {
+//                    val videoUrls = mutableListOf<String>()
+//                    val exerciseIds = mutableListOf<String>()
+//                    val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
+//
+//                    if (progresses != null && startIndex != null) {
+//                        for (i in startIndex until progresses.size) {
+//                            val progress = progresses[i]
+//                            exerciseIds.add(progress.exerciseId.toString())
+//                            uvpIds.add(progress.uvpSn.toString())
+//                            videoUrls.add(exerciseList?.get(i)?.videoFilepath.toString())
+//                        }
+//                        val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
+//                        intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
+//                        intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
+//                        intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
+//                        intent.putExtra("current_position",progresses[startIndex].lastProgress.toLong())
+//                        fragment.requireContext().startActivity(intent)
+//
+//                    }
+//                }
+//            }
         }
     }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {

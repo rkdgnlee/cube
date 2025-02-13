@@ -9,6 +9,9 @@ import com.tangoplus.tangoq.vo.MeasureVO
 import org.json.JSONArray
 
 class AnalysisViewModel : ViewModel() {
+    // MeasureAnalysisFragment
+    var currentParts : List<String>? = null
+    var currentPartIndex = MutableLiveData<Int>()
 
     // ------# 비교할 measure 담을 공간 #------
     val leftMeasurement = MutableLiveData<MeasureVO>()
