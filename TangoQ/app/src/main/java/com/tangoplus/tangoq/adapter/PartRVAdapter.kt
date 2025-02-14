@@ -14,7 +14,7 @@ import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.fragment.MainAnalysisFragment
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 
-class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>?, private val avm: AnalysisViewModel ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>?, private val avm: AnalysisViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class PartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvPI : TextView = view.findViewById(R.id.tvPI)
         val cvPI : CardView = view.findViewById(R.id.cvPI)
@@ -53,7 +53,7 @@ class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  Mu
             }
 
             holder.clPI.setOnClickListener {
-                avm.currentPartIndex.value = avm.currentParts?.indexOf(currentItem?.first.toString())
+                avm.currentPart.value = currentItem?.first
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flMain, MainAnalysisFragment.newInstance(currentItem?.first ?: ""))
                     addToBackStack(null)

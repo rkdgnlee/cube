@@ -881,15 +881,15 @@ object MeasurementManager {
     }
 
     fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
-        val progressIndex = progresses?.indexOfFirst { it.lastProgress > 0 && it.lastProgress < it.videoDuration }
+        val progressIndex = progresses?.indexOfFirst { it.progress > 0 && it.progress < it.duration }
         if (progressIndex != -1) {
             Log.v("progressIndex", "$progressIndex")
             return progressIndex ?: -1
         }
 
         for (i in 1 until progresses.size) {
-            val prev = progresses[i - 1].currentSequence
-            val current = progresses[i].currentSequence
+            val prev = progresses[i - 1].countSet
+            val current = progresses[i].countSet
             if ((prev == 3 && current == 2) ||
                 (prev == 2 && current == 1) ||
                 (prev == 1 && current == 0)) {
@@ -1073,10 +1073,10 @@ object MeasurementManager {
             "목관절" -> {
                 when (seq) {
                     0 -> if (countWarning()) resultString.append("중심선을 기준으로 더 먼 곳에 있는 귀 아래의 목빗근을 이완시켜주시고, 정확한 자세를 위해 측면과 비교해주세요. ")
-                    1 -> if (countWarning()) resultString.append("어깨와 코를 이은 선을 반대편과 비교하세요. 한 쪽의 길이가 더 길다면, 목이 짧은 방향으로 틀어져 있어 짧은 방향의 목빗근을 이완시켜야 합니다. ")
+                    1 -> if (countWarning()) resultString.append("어깨와 코를 이은 선을 반대편과 비교하세요. 한 쪽의 길이가 더 길다면, 목이 짧은 방향으로 틀어져 있어 짧은 방향의 목빗근을 이완시켜야 합니다. 장시간 긴장될 경우 두통의 원인이 될 수 있습니다.")
                     2 -> if (countWarning()) resultString.append("정면과 귀 기울기를 비교하세요. 목의 틀어짐을 더 정확하게 판단할 수 있습니다. ")
                 }
-                resultString.append("두통의 원인이 될 수 있습니다.")
+
             }
             "좌측 어깨","우측 어깨" -> {
                 when (seq) {
@@ -1084,7 +1084,7 @@ object MeasurementManager {
                     1 -> if (countWarning()) resultString.append("중심선과 어깨가 멀어질 수록 라운드숄더 또는 허리 굽어짐을 의심할 수 있습니다. ")
                     2 -> if (countWarning()) resultString.append("정면과 어깨의 틀어짐을 비교해서 정확도를 높여보세요. ")
                 }
-                resultString.append("활동 전, 노머니 스트레칭과, 회전근개 동적 스트레칭을 수시로 해주세요")
+                resultString.append("활동 전, 노머니 스트레칭과 회전근개 동적 스트레칭을 수시로 해주세요")
             }
 
             "좌측 팔꿉", "우측 팔꿉"-> {

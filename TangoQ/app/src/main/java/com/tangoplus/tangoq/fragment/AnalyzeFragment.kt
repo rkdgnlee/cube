@@ -34,7 +34,7 @@ import com.tangoplus.tangoq.adapter.ProgressHistoryRVAdapter
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.api.NetworkProgress.getDailyProgress
-import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgress
+import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgresses
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.databinding.FragmentAnalyzeBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
@@ -88,6 +88,7 @@ class AnalyzeFragment : Fragment() {
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
         var weeklySets = listOf<Float>()
         lifecycleScope.launch(Dispatchers.Main) {
+            setShimmer(true)
             if (pvm.graphProgresses.isNullOrEmpty()) {
                 pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
             }
@@ -192,10 +193,10 @@ class AnalyzeFragment : Fragment() {
                     }
                 }
             }
-            val progressResult = getLatestProgress(getString(R.string.API_progress), requireContext())
+            val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
             evm.latestProgram = progressResult?.second
-            Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
+//            Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
             if (!evm.latestUVP.isNullOrEmpty() && evm.latestProgram != null) {
                 binding.tvAProgressGuide.visibility = View.VISIBLE
                 binding.cvAProgress.visibility = View.VISIBLE
@@ -233,9 +234,10 @@ class AnalyzeFragment : Fragment() {
             val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
             evpItem.let {
                 if (it != null) {
-                    binding.hpvA.progress = (it.lastProgress * 100 / it.videoDuration).toFloat()
+                    binding.hpvA.progress = (it.progress * 100 / it.duration).toFloat()
                 }
             }
+            setShimmer(false)
 //                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
 //                binding.clEProgress2.animation = animation
 
@@ -260,8 +262,9 @@ class AnalyzeFragment : Fragment() {
         binding.tvADate.text = "${pvm.selectedDate?.year}년 ${getCurrentMonthInKorean(pvm.selectedDate?.yearMonth)} ${getCurrentDayInKorean(pvm.selectedDate)} 운동 정보"
 
         pvm.selectedDailyTime.observe(viewLifecycleOwner) {
-            binding.tvADailyTime.text = "${it}초"
+            binding.tvADailyTime.text = "${it.div(60)}분 ${it.rem(60)}초"
         }
+
         pvm.selectedDailyCount.observe(viewLifecycleOwner) {
             binding.tvADailyCount.text = "${it}개"
         }
@@ -555,6 +558,23 @@ class AnalyzeFragment : Fragment() {
 //        setAdapter(historySummaries)
     }
 
+    private fun setShimmer(isStart: Boolean) {
+        when (isStart) {
+            true -> {
+                binding.tvAProgressGuide.visibility = View.VISIBLE
+                binding.sflA.visibility = View.VISIBLE
+                binding.cvAProgress.visibility = View.GONE
+                binding.sflA.startShimmer()
+            }
+            false -> {
+                binding.sflA.visibility = View.GONE
+                binding.tvAProgressGuide.visibility = View.VISIBLE
+                binding.cvAProgress.visibility = View.VISIBLE
+                binding.sflA.stopShimmer()
+            }
+        }
+
+    }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))

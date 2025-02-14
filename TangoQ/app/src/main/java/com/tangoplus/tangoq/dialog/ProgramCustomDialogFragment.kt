@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -32,18 +33,18 @@ import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.vo.ProgramVO
-import com.tangoplus.tangoq.viewmodel.UserViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramCustomDialogBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.ProgramWeekBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
-import com.tangoplus.tangoq.api.NetworkProgress.getOrInsertProgress
+import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgresses
+import com.tangoplus.tangoq.api.NetworkProgress.getProgress
 import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.db.Singleton_t_progress
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -56,10 +57,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     val evm : ExerciseViewModel by activityViewModels()
     private val pvm : ProgressViewModel by activityViewModels()
     private val mvm : MeasureViewModel by activityViewModels()
-    private val uvm : UserViewModel by activityViewModels()
     private lateinit var ssm : SaveSingletonManager
     private var programSn = 0
-    private var recommendationSn = 0
     private var isResume = false
     private lateinit var program : ProgramVO
     private lateinit var userJson : JSONObject
@@ -78,6 +77,10 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -102,73 +105,84 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         super.onViewCreated(view, savedInstanceState)
 
         // -------# 기본 셋팅 #-------
+        initVMValue()
+
+        // main으로 돌아갈시 업데이트
+        pvm.fromProgramCustom = true
+
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
         programSn = arguments?.getInt(ARG_PROGRAM_SN) ?: -1
-        recommendationSn = arguments?.getInt(ARG_RECOMMENDATION_SN) ?: -1
+        pvm.recommendationSn = arguments?.getInt(ARG_RECOMMENDATION_SN) ?: -1
         ssm = SaveSingletonManager(requireContext(), requireActivity())
-//        val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
-//        dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
         isResume = false
+        initializeProgram()
         lifecycleScope.launch {
             // 프로그램에 들어가는 운동
             binding.sflPCD.startShimmer()
             binding.sflPCD.visibility = View.VISIBLE
-            initializeProgram()
-        }
-
-        pvm.selectedWeek.observe(viewLifecycleOwner) { selectedWeek ->
-
-            /* week, seq든 상관없음
-            * 이제 하나하나 unit이니까
-            * recommendation_sn + week 까지만 받아서 쓰면 될듯?
-            * 그러면 내가 week
-            * */
 
 
+            pvm.selectedWeek.observe(viewLifecycleOwner) { selectedWeek ->
 
-            if (pvm.currentProgram != null && pvm.selectedSequence.value != null) {
-                val maxSeq = pvm.currentProgram?.programFrequency
-                val selectedWeekValue = pvm.selectedWeek.value
-                if (selectedWeekValue != null) {
-                    val seqProgresses = pvm.currentProgresses.get(selectedWeekValue)
-                    val minSequenceInWeek = seqProgresses.minOfOrNull { it.currentSequence } ?: 0
+                /* week, seq든 상관없음
+                * 이제 하나하나 unit이니까
+                * recommendation_sn + week 까지만 받아서 쓰면 될듯?
+                * 그러면 내가 week
+                * */
 
-                    if (minSequenceInWeek != maxSeq) {
-                        pvm.currentSequence = minSequenceInWeek // 지금 1주찬데 2주차로넘어갔을 때 0으로 가지겠지?
-                    }
 
-                    val newSequence = pvm.calculateSequenceForWeek(selectedWeek) // 다른 주차일 경우 무조건 0 임. newSequence는. 이전 완료한 주차일 경우 3
-                    if (newSequence == maxSeq) {
-                        pvm.selectedSequence.value = -1
-                        binding.rvPCDHorizontal.isEnabled = false
-                    } else {
-                        pvm.selectedSequence.value = newSequence
-                        binding.rvPCDHorizontal.isEnabled = true
-                    }
-                    pvm.currentSequence = newSequence
-                    Log.v("주차별Seq재설정", "selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
-                    val selectedSeqValue = pvm.selectedSequence.value
-                    if (selectedSeqValue != null) {
-                        setAdapter(pvm.currentProgram, pvm.currentProgresses[selectedWeek], Pair(pvm.currentSequence, selectedSeqValue))
-                        val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
-                        binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/$tvTotalWeek 주차"
+                CoroutineScope(Dispatchers.IO).launch {
+                    pvm.getProgressData(requireContext())
+                    withContext(Dispatchers.Main) {
+                        Log.v("옵저버동작", "selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}")
+                        if (pvm.currentProgram != null && pvm.selectedSequence.value != null) {
+                            val maxSeq = pvm.currentProgram?.programFrequency
 
-                        setButtonFlavor()
+                            if (selectedWeek != null) {
+                                val seqProgresses = pvm.currentProgresses
+                                val minSequenceInWeek = seqProgresses.minOfOrNull { it.countSet } ?: 0
+
+                                if (minSequenceInWeek != maxSeq) {
+                                    pvm.currentSequence = minSequenceInWeek // 지금 1주찬데 2주차로넘어갔을 때 0으로 가지겠지?
+                                }
+
+                                val newSequence = pvm.calculateCurrentSeq(selectedWeek) // 다른 주차일 경우 무조건 0 임. newSequence는. 이전 완료한 주차일 경우 3
+                                if (newSequence == maxSeq) {
+                                    pvm.selectedSequence.value = 0
+                                    binding.rvPCDHorizontal.isEnabled = false
+                                } else {
+                                    pvm.selectedSequence.value = newSequence
+                                    binding.rvPCDHorizontal.isEnabled = true
+                                }
+                                pvm.currentSequence = newSequence
+                                Log.v("옵저버seq존재", "selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
+                                val selectedSeqValue = pvm.selectedSequence.value
+                                setAdapter(pvm.currentProgram, pvm.currentProgresses, Pair(pvm.currentSequence, selectedSeqValue))
+                                val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
+                                val tvWeek = pvm.selectedWeek.value
+                                binding.tvPCDWeek.text = "${tvWeek?.plus(1)}/$tvTotalWeek 주차"
+
+                                setButtonFlavor()
+                            }
+                        }
                     }
                 }
             }
         }
+
+
+
         binding.btnPCDRight.setOnSingleClickListener {
             when (binding.btnPCDRight.text) {
                 "운동 시작하기" -> {
 
                     // PreferencesManager 초기화 및 추천 저장
                     val prefManager = PreferencesManager(requireContext())
-                    prefManager.saveLatestRecommendation(recommendationSn)
+                    prefManager.saveLatestRecommendation(pvm.recommendationSn)
                     Log.v("마지막시청rec", "${prefManager.getLatestRecommendation()}")
                     evm.latestProgram = pvm.currentProgram
 
-                    val currentSequenceProgresses = pvm.currentProgresses[pvm.currentWeek]
+                    val currentSequenceProgresses = pvm.currentProgresses
                     // 가장 최근에 시작한 운동의 인덱스 찾기
                     val startIndex = findCurrentIndex(currentSequenceProgresses)
                     // startIndex가 유효한지 확인
@@ -192,9 +206,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
 
                         // 현재 주차, 회차 넣기
-                        intent.putExtra("currentWeek", pvm.currentWeek)
-                        intent.putExtra("currentSeq", pvm.currentSequence)
-                        intent.putExtra("current_position", currentSequenceProgresses[startIndex].lastProgress.toLong())
+                        intent.putExtra("currentWeek", pvm.currentWeek + 1)
+                        intent.putExtra("currentSeq", pvm.currentSequence + 1)
+                        intent.putExtra("current_position", currentSequenceProgresses[startIndex].progress.toLong())
                         requireContext().startActivity(intent)
                         startActivityForResult(intent, 8080)
                         Log.v("인텐트담은것들", "${videoUrls}, $exerciseIds, $uvpIds")
@@ -236,63 +250,31 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
     }
 
+
+
     // 핵심 함수 여기서 초기, 클릭시, 보고 왔을 때, UI들이 update됨.
     private fun updateUI() {
-        lifecycleScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
+                calculateInitialWeekAndSequence()
                 val result = withContext(Dispatchers.IO) {
-                    // ------# 프로그렘 셋팅 #------
-                    val jo = JSONObject().apply {
-//                        put("user_sn", userJson.optString("sn"))
-                        put("recommendation_sn", recommendationSn)
-                        put("exercise_program_sn", programSn)
-                        put("server_sn", mvm.selectedMeasure?.sn)
-                    }
-                    Log.v("json>Progress", "$jo")
-                    // ------# 프로그레스 가져오기 ( IO ) #------
-                    /* 현재 보고 있는 프로그램의 시청기록만 싱글턴에서 관리함. 여러 개 넣어서 하는게 아님. 계속 갱신 됨 */
-
-                    // TODO 여기서 기본 셋팅되는 progresses들을 받아옴. 형식에 맞게 양에 맞게 여기서 부터 수정 시작해야함.
-                    getOrInsertProgress(requireContext(), jo)
-                    // ssm에서 싱글톤에다가 현재 currentProgress들 담아줌. 현재 measure > 현재 week에 해당
-                    pvm.currentProgresses = Singleton_t_progress.getInstance(requireContext()).programProgresses ?: mutableListOf()// 이곳에 프로그램하나에 해당되는 모든 upv들이 가져와짐.
-                    // ------# 현재 시퀀스 찾기 #------
-
                     // 1주에 해당하는 전체 progresses를 통해서 계산.
-                    withContext(Dispatchers.Main) {
-                        endSequence()
-
-                        // 현재 기본값 설정
-                        calculateInitialWeekAndSequence()
-                    }
+                    endSequence()
+                    // 현재 기본값 설정
+                    pvm.getProgressData(requireContext())
                     // 모든 IO 작업이 완료되면 결과를 반환
                     Triple(pvm.currentSequence, pvm.currentProgram, pvm.currentProgresses)
                 }
 
                 withContext(Dispatchers.Main) {
                     val (currentSeq, currentProgram, currentProgresses) = result
-                    if (currentProgram != null && currentProgresses.isNotEmpty() && currentSeq < currentProgresses.size) {
-
-                        // ------# 프로그레스 바 계산 #------
-                        val currentSequenceProgresses = pvm.currentProgresses[pvm.currentWeek]
-                        val startIndex = findCurrentIndex(currentSequenceProgresses)
-                        val exerciseCount = currentProgram.programCount?.toInt() ?: 0
-                        val totalExercises = currentProgram.programFrequency * currentProgram.programWeek * exerciseCount
-                        val previousWeeksExercises = pvm.currentWeek * (currentProgram.programFrequency * exerciseCount)
-                        val previousSequencesExercises = pvm.currentSequence * exerciseCount
-                        val currentExercises = startIndex + 1
-                        val completedExercises = previousWeeksExercises + previousSequencesExercises + currentExercises
-                        val hpvProgress = (completedExercises * 100) / totalExercises
-
-                        Log.v("프로그레스들", "hpvProgress: $hpvProgress, currentSequence: ${pvm.currentSequence + 1}, currentWeek: ${pvm.currentWeek + 1}, startIndex: ${startIndex + 1}")
-                        binding.hpvPCD.progress = hpvProgress.toFloat()
+                    if (currentProgram != null) { // && currentProgresses.isNotEmpty()
 
                         // ------# 현재 기록으로 어댑터 연걸 #------
                         /* 어댑터에는 현재 회차를 자체적으로 가져와서 넣기.
                         * */
-                        val selectedSeqValue = pvm.selectedSequence.value
-                        if (selectedSeqValue != null) {
-                            setAdapter(currentProgram, currentProgresses[pvm.currentWeek], Pair(currentSeq, selectedSeqValue))
+                        if (pvm.selectedSequence.value != null) {
+                            setAdapter(currentProgram, currentProgresses, Pair(currentSeq, pvm.selectedSequence.value))
                         }
 
                         // ------# UI 업데이트 로직 #------
@@ -313,9 +295,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             else -> ""
                         }
                         binding.tvPCDCount.text = "총 ${currentProgram.programCount} 개"
-                        setButtonFlavor()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            setButtonFlavor()
+                        }
                     } else {
-                        Log.e("Error", "Some required data is null or empty, program: $currentProgram, seq: $currentSeq, size: ${currentProgresses.size}")
+                        Log.e("Error", "Some required data is null or empty, program: ${currentProgram?.exercises?.map { it.exerciseName }}, seq: $currentSeq, size: ${currentProgresses.size}")
                         // 에러 처리 로직 추가
                     }
                     binding.sflPCD.stopShimmer()
@@ -327,7 +311,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         val dialog = ProgramWeekBSDialogFragment()
                         dialog.show(requireActivity().supportFragmentManager, "ProgramWeekBSDialogFragment")
                     }
-
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgramIndex", "${e.printStackTrace()}")
@@ -338,7 +321,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             } catch (e: NullPointerException) {
                 Log.e("ProgramNull", "${e.message}")
             } catch (e: java.lang.Exception) {
-                Log.e("ProgramException", "${e}")
+                Log.e("ProgramException", "${e.printStackTrace()}")
             }
         }
     }
@@ -349,76 +332,60 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             updateUI()  // UI 업데이트는 필요할 때마다 호출
         }
     }
-    private fun setAdapter(program: ProgramVO?, progresses : MutableList<ProgressUnitVO>?, sequence: Pair<Int, Int>?) {
-
+    private fun setAdapter(program: ProgramVO?, progresses : MutableList<ProgressUnitVO>?, sequence: Pair<Int, Int?>) {
         /* sequence = Pair(현재 회차(currentSeq), 선택한 회차 (selectedSeq))
         currentSequence 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
-        pvm.selectedSequence.value = sequence?.second
-        Log.v("클릭>ProgressSeq", "${progresses?.map { it.uvpSn }} ,currentSeq: ${progresses?.map { it.currentSequence }}")
+        pvm.selectedSequence.value = sequence.second
+        Log.v("클릭>ProgressSeq", "${progresses?.map { it.uvpSn }} ,currentSeq: ${progresses?.map { it.countSet }}")
         val selectSeqValue = pvm.selectedSequence.value
         val frequency = program?.programFrequency
         val adapter : ProgramCustomRVAdapter
         val selectedWeekValue = pvm.selectedWeek.value
 
-        if (selectSeqValue != null && frequency != null && selectedWeekValue != null && sequence?.second != null) {
+        if (selectSeqValue != null && frequency != null && selectedWeekValue != null && sequence.second != null) {
+            Log.v("프로그레들", "${pvm.seqHpvs}")
+            adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
+                Triple(frequency, pvm.currentSequence, selectSeqValue),
+                Pair(pvm.currentWeek, selectedWeekValue),
+                pvm.seqHpvs,
+                this@ProgramCustomDialogFragment)
 
-            // progress를 계산하여 adapter에 연결
-
-            // TODO 현재 uvp를 가져와서 계산하는데 이 부분 어차피 수정해야 함. -> 1회차에 맞게 progress 전부 합산
-            Log.v("progresses", "${progresses?.map { it.lastProgress }}, ${progresses?.map { it.videoDuration }}")
-//            val pvMother = progresses?.sumOf {
-//                it.videoDuration
-//            }
-//            val pvChild = progresses?.sumOf {
-//                if (it.currentSequence > sequence.first) {
-//                    it.videoDuration
-//                } else {
-//                    it.lastProgress
-//                }
-//            }
-            val pvs = progresses?.map { ( it.lastProgress * 100 ) / it.videoDuration }
-            if (pvs != null) {
-//                val resultProgress =  (pvChild * 100).div(pvMother)
-                adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
-                    Triple(frequency, pvm.currentSequence, selectSeqValue),
-                    Pair(pvm.currentWeek, selectedWeekValue),
-                    pvs,
-                    this@ProgramCustomDialogFragment)
-
-                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                binding.rvPCDHorizontal.layoutManager = layoutManager
-                binding.rvPCDHorizontal.adapter = adapter
-                adapter.notifyDataSetChanged()
-
-                val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses, null, sequence, "PCD") }
-                binding.rvPCD.adapter = adapter2
-                val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.rvPCD.layoutManager = layoutManager2
-                adapter2?.notifyDataSetChanged()
-            }
+            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            binding.rvPCDHorizontal.layoutManager = layoutManager
+            binding.rvPCDHorizontal.adapter = adapter
+            adapter.notifyDataSetChanged()
+            val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses, null, sequence, "PCD") }
+            binding.rvPCD.adapter = adapter2
+            val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rvPCD.layoutManager = layoutManager2
+            adapter2?.notifyDataSetChanged()
         }
     }
 
     override fun customCategoryClick(sequence: Int) {
         if (pvm.selectedWeek.value == pvm.currentWeek) {
             pvm.selectedSequence.value = sequence
-//            Log.v("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence}")
-            val selectedWeekValue = pvm.selectedWeek.value
-            val selectedSeqValue = pvm.selectedSequence.value
-            if (selectedWeekValue != null && selectedSeqValue != null) {
-                Log.v("회차들", "selectedWeekValue: $selectedWeekValue, selectedSeqValue: $selectedSeqValue, VM.selectedSeq: ${pvm.selectedSequence.value}, VM.currentSeq: ${pvm.currentSequence}")
-                setAdapter(pvm.currentProgram, pvm.currentProgresses[selectedWeekValue], Pair(pvm.currentSequence, selectedSeqValue))
-                setButtonFlavor()
+            CoroutineScope(Dispatchers.IO).launch {
+                pvm.getProgressData(requireContext())
+                withContext(Dispatchers.Main) {
+                    //            Log.v("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence}")
+                    val selectedWeekValue = pvm.selectedWeek.value
+                    val selectedSeqValue = pvm.selectedSequence.value
+                    if (selectedWeekValue != null && selectedSeqValue != null) {
+                        Log.v("회차들", "selectedWeekValue: $selectedWeekValue, selectedSeqValue: $selectedSeqValue, VM.selectedSeq: ${pvm.selectedSequence.value}, VM.currentSeq: ${pvm.currentSequence}")
+                        setAdapter(pvm.currentProgram, pvm.currentProgresses, Pair(pvm.currentSequence, selectedSeqValue))
+                        setButtonFlavor()
+                    }
+                }
             }
-
         }
     }
     private fun setButtonFlavor() {
         val selectedWeekValue = pvm.selectedWeek.value
         val selectedSeqValue = pvm.selectedSequence.value
-        if (selectedWeekValue != null) {
-            val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
-            Log.v("lastWeekProgress", "$lastWeekProgress, 목록: ${pvm.currentProgresses[pvm.currentWeek]}")
+        if (selectedWeekValue != null && pvm.currentProgresses.isNotEmpty()) {
+            val lastWeekProgress = pvm.currentProgresses.last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
+            Log.v("lastWeekProgress", "$lastWeekProgress, 목록: ${pvm.currentProgresses}")
 
             // 현재 week에서 벗어남
             if (selectedWeekValue > pvm.currentWeek) {
@@ -435,10 +402,10 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     text = "오늘자 운동을 진행해주세요"
                 }
                 //
-            } else if (lastWeekProgress.updateDate != null && lastWeekProgress.updateDate.length > 9 && selectedSeqValue == pvm.currentSequence) {
-                val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            } else if (lastWeekProgress.updatedAt != null && lastWeekProgress.updatedAt.length > 9 && selectedSeqValue == pvm.currentSequence) {
+                val inputDate = LocalDate.parse(lastWeekProgress.updatedAt.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 val currentDate = LocalDate.now()
-                if (inputDate == currentDate && lastWeekProgress.currentSequence > 0 && selectedSeqValue == pvm.currentSequence) {
+                if (inputDate == currentDate && lastWeekProgress.countSet > 0 && selectedSeqValue == pvm.currentSequence) {
                     // 오늘 시퀀스가 끝났으니 버튼 Flavor 맞추기
                     binding.btnPCDRight.apply {
                         isEnabled = false
@@ -470,13 +437,13 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     // 해당 회차에서 가장 최근 운동의 index찾아오기 ( 한 seq의 묶음만 들어옴 )
     private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
         // Case 1 시청 중간 기록이 있을 경우
-        val progressIndex1 = progresses.indexOfLast { it.lastProgress in 1 until it.videoDuration }
+        val progressIndex1 = progresses.indexOfLast { it.progress in 1 until it.duration }
         if (progressIndex1 != -1) {
             return progressIndex1
         }
 
         // Case 2 다 보고 난 뒤 완료 처리가 된 후 (currentSequence가 1이 됐을 때) 그 다음 index 반환
-        val progressIndex = progresses.indexOfLast { it.currentSequence - 1 == pvm.currentSequence }
+        val progressIndex = progresses.indexOfLast { it.countSet - 1 == pvm.currentSequence }
         Log.v("프로그레스", "$progressIndex, currentSeq: ${pvm.currentSequence}")
         if (progressIndex != progresses.size) {
             Log.v("가장 최근Index", "${progressIndex +  1}")
@@ -484,7 +451,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
 
         // Case 3 초기상태
-        if (progresses.all { it.lastProgress == 0 }) {
+        if (progresses.all { it.progress == 0 }) {
             Log.v("가장 최근Index", "0")
             return 0
         }  else {
@@ -493,49 +460,64 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     }
 
     private fun endSequence() {
-        val lastWeekProgress = pvm.currentProgresses[pvm.currentWeek].last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
-        Log.v("업데이트확인하기", "$lastWeekProgress")
-        if (lastWeekProgress.updateDate != null && lastWeekProgress.updateDate.length > 9) {
-            val inputDate = LocalDate.parse(lastWeekProgress.updateDate.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            val currentDate = LocalDate.now()
-            Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${lastWeekProgress.currentSequence} , $inputDate / $currentDate")
+        if (pvm.currentProgresses.isNotEmpty()) {
+            val lastWeekProgress = pvm.currentProgresses.last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
+            Log.v("pvmProgresses", "${pvm.currentProgresses}, $lastWeekProgress")
+            if (lastWeekProgress.updatedAt != null && lastWeekProgress.updatedAt.length > 9) {
+                val inputDate = LocalDate.parse(lastWeekProgress.updatedAt.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                val currentDate = LocalDate.now()
+                Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${pvm.selectedSequence.value} , $inputDate / $currentDate")
+                if (pvm.selectedSequence.value == pvm.currentSequence) {
 
-            if (inputDate == currentDate && lastWeekProgress.currentSequence > 0) {
-                val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
-                dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+                    if (inputDate == currentDate && lastWeekProgress.duration == lastWeekProgress.cycleProgress) {
+                        val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
+                        dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
 
-                // 버튼 잠금
-                setButtonFlavor()
+                        // 버튼 잠금
+                        setButtonFlavor()
+                    }
+                }
             }
         }
     }
 
-    private fun calculateInitialWeekAndSequence() {
-        val maxSeq = pvm.currentProgram?.programFrequency
-        val maxWeek = pvm.currentProgram?.programWeek
-        for (weekIndex in pvm.currentProgresses.indices) {
-            val weekProgress = pvm.currentProgresses[weekIndex]
-            val minSequenceInWeek = weekProgress.minOfOrNull { it.currentSequence } ?: 0
+    private suspend fun calculateInitialWeekAndSequence() {
+        withContext(Dispatchers.IO) {
+            val jo = JSONObject().apply {
+                put("recommendation_sn", pvm.recommendationSn)
+                put("exercise_program_sn", programSn)
+                put("server_sn", mvm.selectedMeasure?.sn)
+            }
+            Log.v("json>Progress", "$jo")
 
-            // 현재 주차도 알아내서 -> 주차도 maxWeek에 맞는지 확인하고 나가게 하거나 계속 돌아가게 하면 됨.
-            if (weekIndex + 1 == maxWeek  && minSequenceInWeek == maxSeq) {
-                // 위크까지 반복문이 왔는데 minSequence까지 max 였다?
+            getProgress(getString(R.string.API_progress), jo, requireContext()) { (historySn, week, seq), result ->
+                CoroutineScope(Dispatchers.Main).launch {  // LiveData 업데이트는 메인 스레드에서
+                    val adjustedWeek = if (week == -1) 0 else week - 1
+                    val adjustedSeq = if (seq == -1) 0 else seq - 1
+                    Log.v("포스트getProgress", "callback: $adjustedWeek, $adjustedSeq, $week, $seq, result: $result")
 
-                val dialog = ProgramAlertDialogFragment.newInstance(this, 2)
-                dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
-                break
-            } else if (weekIndex != maxWeek && minSequenceInWeek == maxSeq) {
-                continue
-            } else {
-                pvm.selectWeek.value = weekIndex
-                pvm.selectedWeek.value = weekIndex
-                pvm.currentWeek = weekIndex
-                pvm.currentSequence = minSequenceInWeek
-                pvm.selectedSequence.value = minSequenceInWeek
-                Log.v("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}, maxWeek: $maxWeek, maxSeq: $maxSeq")
-                val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
-                binding.tvPCDWeek.text = "${pvm.selectedWeek.value?.plus(1)}/$tvTotalWeek 주차"
-                break
+                    val serverLastItem = result[adjustedWeek].last()
+                    if (serverLastItem.countSet == serverLastItem.requiredSet) {
+                        // 모든 회차가 끝남
+                        pvm.currentWeek = adjustedWeek + 1
+                        pvm.selectWeek.value = adjustedWeek + 1
+                        pvm.selectedWeek.value = adjustedWeek + 1
+                    } else {
+                        pvm.currentWeek = adjustedWeek
+                        pvm.selectWeek.value = adjustedWeek
+                        pvm.selectedWeek.value = adjustedWeek
+                    }
+                    if (serverLastItem.countSet == seq) {
+                        pvm.currentSequence = adjustedSeq + 1
+                        pvm.selectedSequence.value= adjustedSeq + 1
+                    } else {
+                        pvm.currentSequence = adjustedSeq
+                        pvm.selectedSequence.value= adjustedSeq
+                    }
+
+
+                    Log.v("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}")
+                }
             }
         }
     }
@@ -570,4 +552,14 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         setOnClickListener(OnSingleClickListener(listener))
     }
 
+    private fun initVMValue() {
+        pvm.selectWeek.value = null
+        pvm.selectedSequence.value  =null
+        pvm.currentWeek = 0
+        pvm.currentSequence = 0
+        pvm.currentProgresses.clear()
+        pvm.recommendationSn = 0
+        pvm.selectedWeek.value = null
+
+    }
 }

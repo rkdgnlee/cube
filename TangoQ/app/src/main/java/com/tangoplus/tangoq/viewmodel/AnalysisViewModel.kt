@@ -11,7 +11,9 @@ import org.json.JSONArray
 class AnalysisViewModel : ViewModel() {
     // MeasureAnalysisFragment
     var currentParts : List<String>? = null
-    var currentPartIndex = MutableLiveData<Int>()
+    // seqBottomSheet
+    val currentPart = MutableLiveData<String>()
+    var selectPart = MutableLiveData<String>()
 
     // ------# 비교할 measure 담을 공간 #------
     val leftMeasurement = MutableLiveData<MeasureVO>()

@@ -18,64 +18,31 @@
 
             <TextView
                 android:id="@+id/tvMATitle"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
+                android:background="@drawable/effect_ibtn_12dp"
                 android:gravity="center"
                 android:singleLine="true"
                 android:textColor="@color/subColor800"
                 android:textSize="28dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.25" />
 
-            <ImageButton
-                android:id="@+id/ibtnMABack2"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="20dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tvMATitle"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/ibtnMALeft"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintBottom_toBottomOf="@+id/tvMATitle"
-                app:layout_constraintEnd_toStartOf="@+id/tvMATitle"
-                app:layout_constraintTop_toTopOf="@+id/tvMATitle" />
-
-            <ImageButton
-                android:id="@+id/ibtnMARight"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_right"
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="29dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/icon_autocomplete_button"
                 app:layout_constraintBottom_toBottomOf="@+id/tvMATitle"
                 app:layout_constraintStart_toEndOf="@+id/tvMATitle"
                 app:layout_constraintTop_toTopOf="@+id/tvMATitle" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 

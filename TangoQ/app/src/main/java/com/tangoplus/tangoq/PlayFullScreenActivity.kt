@@ -322,9 +322,9 @@ class PlayFullScreenActivity : AppCompatActivity() {
         } else {
             jo.put("progress", currentPositionSeconds)
         }
-        // TODO 여기다가 현재 주차와 cycle을 넣어야함
-        jo.put("week_number", 0)
-        jo.put("cycle", 0)
+
+        jo.put("week_number", pvm.weekNumber)
+        jo.put("cycle", pvm.cycle)
 
         Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(currentMediaSourceIndex)?.toInt()}, jo: $jo, totalDuration: $totalDurationMs")
         val currentUvpSns = pvm.uvpSns?.get(currentMediaSourceIndex)?.toInt()

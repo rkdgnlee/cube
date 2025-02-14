@@ -62,7 +62,6 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                             hideBadgeFunction?.invoke()
                             // 다운로드 후 이동
                             fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                                setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                                 replace(R.id.flMain, MeasureDetailFragment())
                                 commit()
                             }

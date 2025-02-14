@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity() {
                         addToBackStack("measureDetailFragment")
                         commit()
                     }
-                    selectedTabId = -1
+                    selectedTabId = R.id.main
                 }
             }
         }

@@ -83,6 +83,7 @@ object ImageProcessingUtil {
             textSize = if (isTablet(context)) 32f else 48f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
+            // TODO BOLD나 왼쪽 오른쪽 추가 고려
         }
         val circlePaint = Paint().apply {
             color = Color.parseColor("#41000000")

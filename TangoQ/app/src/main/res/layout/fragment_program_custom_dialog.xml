@@ -30,7 +30,7 @@
                     android:id="@+id/sflPCD"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -213,7 +213,7 @@
                         android:paddingTop="4dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="4dp"
-                        android:text="0 %"
+                        android:text="0/4 주차"
                         android:textColor="#FFFFFF"
                         android:textSize="16dp"
                         android:textStyle="bold"

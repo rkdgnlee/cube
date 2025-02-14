@@ -36,9 +36,14 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.vo.MeasureVO
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -48,7 +53,7 @@ class MeasureFragment : Fragment() {
     val mvm : MeasureViewModel by activityViewModels()
     private var balloon : Balloon? = null
     private var measures : MutableList<MeasureVO>? = null
-
+    private lateinit var ssm : SaveSingletonManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -96,12 +101,16 @@ class MeasureFragment : Fragment() {
                         binding.clMPredictDicease.setOnClickListener {
 
                             hideBadgeFunction?.invoke()
-//                            val dialog = ReportDiseaseDialogFragment()
-//                            dialog.show(requireActivity().supportFragmentManager, "ReportDiseaseDialogFragment")
-                            requireActivity().supportFragmentManager.beginTransaction().apply {
-                                replace(R.id.flMain, MeasureDetailFragment())
-                                addToBackStack(null)
-                                commit()
+                            ssm = SaveSingletonManager(requireContext(), requireActivity())
+                            CoroutineScope(Dispatchers.IO).launch {
+                                ssm.setRecent5MeasureResult(0)
+                                withContext(Dispatchers.Main) {
+                                    // 다운로드 후 이동
+                                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                                        replace(R.id.flMain, MeasureDetailFragment())
+                                        commit()
+                                    }
+                                }
                             }
                         }
 

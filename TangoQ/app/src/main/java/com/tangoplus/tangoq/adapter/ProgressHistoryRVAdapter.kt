@@ -21,7 +21,6 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
 
     inner class PHViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvPHITitle : TextView = view.findViewById(R.id.tvPHITitle)
-        val tvPHITime : TextView = view.findViewById(R.id.tvPHITime)
         val tvPHIDuration : TextView = view.findViewById(R.id.tvPHIDuration)
         val ivPHIThumbnail : ImageView = view.findViewById(R.id.ivPHIThumbnail)
     }
@@ -37,8 +36,6 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
         val currentItem = data[position]
 
         if (holder is PHViewHolder) {
-
-            holder.tvPHITime.text = "완료한 시간 : ${currentItem.createdAt.substring(10, currentItem.createdAt.length - 3)}"
             holder.tvPHITitle.text = currentItem.exerciseName
             val second = "${currentItem.duration?.div(60)}분 ${currentItem.duration?.rem(60)}초"
             holder.tvPHIDuration.text = if (currentItem.duration == null) "0분" else second
@@ -55,7 +52,6 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
             } catch (e: Exception) {
                 Log.e("PHIGlideError", "Exception: ${e.message}")
             }
-
         }
     }
 

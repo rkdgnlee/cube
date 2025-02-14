@@ -31,6 +31,8 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.databinding.FragmentMainAnalysisBinding
+import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
+import com.tangoplus.tangoq.dialog.bottomsheet.SequenceBSDialogFragment
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.createSummary
@@ -107,7 +109,7 @@ class MainAnalysisFragment : Fragment() {
         biometricManager.authenticate(
             onSuccess = {
                 val part = arguments?.getString(ARG_PART) ?: ""
-                avm.currentPartIndex.value = avm.currentParts?.indexOf(part)
+                avm.currentPart.value = part
                 mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
                 Log.v("현재측정2", "$mr")
                 avm.mafMeasureResult = JSONArray()
@@ -116,38 +118,8 @@ class MainAnalysisFragment : Fragment() {
                 pvm.videoUrl = null
                 simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
-                binding.ibtnMABack2.setOnClickListener {
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flMain, MainFragment())
-                        commit()
-                    }
-                }
-
-                binding.ibtnMALeft.setOnClickListener {
-                    val currentItem = avm.currentPartIndex.value?.let { it1 -> avm.currentParts?.get(it1) }
-                    avm.currentPartIndex.value = avm.currentParts?.indexOf(currentItem)?.minus(1)
-                }
-                binding.ibtnMARight.setOnClickListener {
-                    val currentItem = avm.currentPartIndex.value?.let { it1 -> avm.currentParts?.get(it1) }
-                    avm.currentPartIndex.value = avm.currentParts?.indexOf(currentItem)?.plus(1)
-                }
-                // 리스트를 통해 옮겨다니기
-
-                avm.currentPartIndex.observe(viewLifecycleOwner) { index ->
-                    Log.v("인덱스", "$index, ${avm.currentParts?.get(index)}")
-                    // ------# 1차 필터링 (균형별) #------
-                    if (index == avm.currentParts?.size?.minus(1) ) {
-                        binding.ibtnMARight.visibility = View.GONE
-                        binding.ibtnMALeft.visibility = View.VISIBLE
-                    } else if (index == 0) {
-                        binding.ibtnMALeft.visibility = View.GONE
-                        binding.ibtnMARight.visibility = View.VISIBLE
-                    } else {
-                        binding.ibtnMALeft.visibility = View.VISIBLE
-                        binding.ibtnMARight.visibility = View.VISIBLE
-                    }
-
-                    val painPart = avm.currentParts?.get(index)
+                avm.currentPart.observe(viewLifecycleOwner) { part ->
+                    val painPart = avm.currentParts?.find { it == part }
                     val seqs = matchedUris[painPart]
                     val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
 
@@ -184,7 +156,10 @@ class MainAnalysisFragment : Fragment() {
                     updateButtonState()
                     setMedia()
                 }
-
+                binding.tvMATitle.setOnSingleClickListener {
+                    val dialog = SequenceBSDialogFragment()
+                    dialog.show(requireActivity().supportFragmentManager, "SequenceBSDialogFragment")
+                }
 
 
             },
@@ -276,7 +251,7 @@ class MainAnalysisFragment : Fragment() {
             if (avm.currentIndex != 3) {
                 Log.v("avmCurrentIndex", "${avm.currentIndex}")
                 Log.v("analysisLabels", "${adapterAnalysises[avm.currentIndex].labels}")
-                createSummary(avm.currentPartIndex.value?.let { avm.currentParts?.get(it).toString() },
+                createSummary(avm.currentPart.value,
                 avm.currentIndex,
                 adapterAnalysises[avm.currentIndex].labels)
             } else {

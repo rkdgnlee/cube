@@ -24,118 +24,83 @@ import kotlin.coroutines.suspendCoroutine
 
 object NetworkProgress {
 
-    fun postProgressInCurrentProgram(myUrl: String, bodySn : JSONObject, context: Context, callback: (MutableList<ProgressUnitVO>) -> Unit) {
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = bodySn.toString().toRequestBody(mediaType)
+    suspend fun postProgressInCurrentProgram(myUrl: String, sns: Triple<Int, Int, Int>, context: Context, callback: (MutableList<Float>, MutableList<ProgressUnitVO>) -> Unit) {
         val client = getClient(context)
         val request = Request.Builder()
-            .url(myUrl)
-            .post(body)
+            .url("${myUrl}?recommendation_sn=${sns.first}&weeks=${sns.second}&cycles=${sns.third}")
+            .get()
             .build()
-
-        client.newCall(request).execute().use { response ->
-            val responseBody = response.body?.string()
-            Log.v("Post>Progress>inserOrSelect", "$responseBody")
+        return withContext(Dispatchers.IO) {
             try {
-                val ja = JSONObject(responseBody.toString()).optJSONArray("data")
-                val progresses = mutableListOf<ProgressUnitVO>()
-                if (ja != null) {
-                    for (i in 0 until ja.length()) {
-                        val progressUnitVO = ProgressUnitVO(
-                            uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
-                            exerciseId = ja.optJSONObject(i).optInt("content_sn"),
-                            recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-                            currentWeek = ja.optJSONObject(i).optInt("week_number"),
-                            weekStartAt = ja.optJSONObject(i).optString("week_start_at"),
-                            weekEndAt = ja.optJSONObject(i).optString("week_end_at"),
-                            currentSequence = ja.optJSONObject(i).optInt("count_set"),
-                            requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-                            videoDuration = ja.optJSONObject(i).optInt("duration"),
-                            lastProgress = ja.optJSONObject(i).optInt("progress"),
-                            isCompleted = ja.optJSONObject(i).optInt("completed"),
-                            updateDate =  ja.optJSONObject(i)?.optString("updated_at")
-                        )
-                        progresses.add(progressUnitVO)
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    Log.v("포스트프로그램싸이클", "$responseBody")
+                    val bodyJson = JSONObject(responseBody.toString())
+                    val ja = bodyJson.optJSONArray("data")
+                    val pv3 = bodyJson.optJSONObject("sum_data_for_each_cycle")
+                    val pv3s = mutableListOf<Float>()
+                    if (pv3 != null) {
+                        for ( i in 0 until pv3.length()) {
+                            val jo = pv3.optJSONObject("total_sum_for_cycle_${i+1}")
+                            val duration = jo?.optInt("total_duration") ?: 1
+                            val progress = jo?.optInt("total_progress") ?: 0
+
+                            val percent = if (duration > 0) {
+                                ( progress.toFloat() * 100 ) / duration.toFloat()
+                            } else {
+                                0f
+                            }
+
+                            Log.v("총,진행시간", "$duration, $progress, percent: $percent")
+                            pv3s.add(percent)
+                        }
                     }
+
+                    val progresses = mutableListOf<ProgressUnitVO>()
+                    if (ja != null) {
+                        for (i in 0 until ja.length()) {
+                            val jo = ja.optJSONObject(i)
+                            val progressUnitVO = ProgressUnitVO(
+                                uvpSn = jo.optInt("uvp_sn"),
+                                userSn = jo.optInt("user_sn"),
+                                exerciseId = jo.optInt("content_sn"),
+                                recommendationSn = jo.optInt("recommendation_sn"),
+                                weekNumber = jo.optInt("week_number"),
+                                weekStartAt = jo.optString("week_start_at"),
+                                weekEndAt = jo.optString("week_end_at"),
+                                countSet = jo.optInt("count_set"),
+                                requiredSet = jo.optInt("required_set"),
+                                duration = jo.optInt("duration"),
+                                progress = jo.optInt("progress"),
+                                updatedAt = jo.optString("updated_at"),
+                                isWatched = jo.optInt("is_watched"),
+                                cycleProgress = jo.optInt("cycle_progress")
+                            )
+                            progresses.add(progressUnitVO)
+                        }
+                    }
+                    callback(pv3s, progresses)
                 }
-                callback(progresses)
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgressIndex", "Post Progress: ${e.message}")
-                callback(mutableListOf())
+                callback(mutableListOf(), mutableListOf())
             } catch (e: IllegalArgumentException) {
                 Log.e("ProgressIllegal", "Post Progress: ${e.message}")
-                callback(mutableListOf())
+                callback(mutableListOf(), mutableListOf())
             } catch (e: IllegalStateException) {
                 Log.e("ProgressIllegal", "Post Progress: ${e.message}")
-                callback(mutableListOf())
+                callback(mutableListOf(), mutableListOf())
             }catch (e: NullPointerException) {
                 Log.e("ProgressNull", "Post Progress: ${e.message}")
-                callback(mutableListOf())
+                callback(mutableListOf(), mutableListOf())
             } catch (e: java.lang.Exception) {
                 Log.e("ProgressException", "Post Progress: ${e.message}")
-                callback(mutableListOf())
+                callback(mutableListOf(), mutableListOf())
             }
         }
     }
 
     // ------# 현재 프로그램 프로그레스만 가져오기 #------
-//    fun getRecProgresses(myUrl: String, context: Context, recSn: Int, callback: (MutableList<ProgressUnitVO>) -> Unit) {
-//        val client = getClient(context)
-//        val request = Request.Builder()
-//            .url("$myUrl?recommendation_sn=$recSn")
-//            .get()
-//            .build()
-//
-//        client.newCall(request).enqueue(object : Callback {
-//            override fun onFailure(call: Call, e: IOException) {
-//                Log.e("Token응답실패", "Failed to execute request")
-//            }
-//
-//            override fun onResponse(call: Call, response: Response) {
-//                val responseBody = response.body?.string()
-////                Log.v("Server>Progress", "$responseBody")
-//                try {
-//                    val ja = JSONObject(responseBody.toString()).optJSONArray("data")
-//                    val progresses = mutableListOf<ProgressUnitVO>()
-//                    if (ja != null) {
-//                        for (i in 0 until ja.length()) {
-//                            val progressUnitVO = ProgressUnitVO(
-//                                uvpSn = ja.optJSONObject(i).optInt("uvp_sn"),
-//                                exerciseId = ja.optJSONObject(i).optInt("content_sn"),
-//                                recommendationSn = ja.optJSONObject(i).optInt("recommendation_sn"),
-//                                currentWeek = ja.optJSONObject(i).optInt("week_number"),
-//                                currentSequence = ja.optJSONObject(i).optInt("count_set"),
-//                                requiredSequence = ja.optJSONObject(i).optInt("required_set"),
-//                                videoDuration = ja.optJSONObject(i).optInt("duration"),
-//                                lastProgress = ja.optJSONObject(i).optInt("progress"),
-//                                isCompleted = ja.optJSONObject(i).optInt("completed"),
-//                                updateDate = ja.optJSONObject(i).optString("updated_at")
-//
-//                            )
-//                            progresses.add(progressUnitVO)
-//                        }
-//                    }
-//                    Log.v("진행길이", "getRecProgress: ${progresses.size}")
-//                    callback(progresses)
-//                } catch (e: IndexOutOfBoundsException) {
-//                    Log.e("ProgressIndex", "getRecProgress: ${e.message}")
-//                    callback(mutableListOf())
-//                } catch (e: IllegalArgumentException) {
-//                    Log.e("ProgressIllegal", "getRecProgress: ${e.message}")
-//                    callback(mutableListOf())
-//                } catch (e: IllegalStateException) {
-//                    Log.e("ProgressIllegal", "getRecProgress: ${e.message}")
-//                    callback(mutableListOf())
-//                }catch (e: NullPointerException) {
-//                    Log.e("ProgressNull", "getRecProgress: ${e.message}")
-//                    callback(mutableListOf())
-//                } catch (e: java.lang.Exception) {
-//                    Log.e("ProgressException", "getRecProgress: ${e.message}")
-//                    callback(mutableListOf())
-//                }
-//            }
-//        })
-//    }
 
     // 시청기록 1개 보내기 (서버에 저장)
     fun patchProgress1Item(myUrl: String, uvpSn: Int, bodyJo: JSONObject, context: Context, callback: (ProgressUnitVO) -> Unit) {
@@ -159,17 +124,18 @@ object NetworkProgress {
                 if (jo != null) {
                     val progressUnitVO = ProgressUnitVO(
                         uvpSn = jo.optInt("uvp_sn"),
+                        userSn = jo.optInt("user_sn"),
                         exerciseId = jo.optInt("content_sn"),
                         recommendationSn = jo.optInt("recommendation_sn"),
-                        currentWeek = jo.optInt("week_number"),
+                        weekNumber = jo.optInt("week_number"),
                         weekStartAt = jo.optString("week_start_at"),
                         weekEndAt = jo.optString("week_end_at"),
-                        currentSequence = jo.optInt("count_set"),
-                        requiredSequence = jo.optInt("required_set"),
-                        videoDuration = jo.optInt("duration"),
-                        lastProgress = jo.optInt("progress"),
-                        isCompleted = jo.optInt("completed"),
-                        updateDate = jo.optString("updated_at")
+                        countSet = jo.optInt("count_set"),
+                        requiredSet = jo.optInt("required_set"),
+                        duration = jo.optInt("duration"),
+                        progress = jo.optInt("progress"),
+                        updatedAt = jo.optString("updated_at"),
+                        isWatched = jo.optInt("is_watched")
                     )
                     callback(progressUnitVO)
                 }
@@ -177,7 +143,81 @@ object NetworkProgress {
         })
     }
     // 가장 최신 정보를 가져오는게 좋다.
-    suspend fun getLatestProgress(myUrl: String, context: Context) : Pair<MutableList<ProgressUnitVO>, ProgramVO>? {
+    suspend fun getProgress(myUrl: String, bodySn : JSONObject, context: Context, callback: (Triple<Int, Int, Int>, MutableList<MutableList<ProgressUnitVO>>) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodySn.toString().toRequestBody(mediaType)
+        val client = getClient(context)
+        val request = Request.Builder()
+            .url(myUrl)
+            .post(body)
+            .build()
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
+                    val bodyJson = JSONObject(responseBody.toString())
+                    val latest = bodyJson.optJSONObject("latest")
+                    val progressHistorySn = latest?.optInt("progress_history_sn")
+                    val currentWeek = latest?.optInt("week_number")
+                    val currentCycle = latest?.optInt("cycle")
+                    Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
+
+                    val exerciseCount = bodyJson.optInt("row_count") / 4
+                    val data = bodyJson.optJSONArray("data")
+                    val result = mutableListOf<MutableList<ProgressUnitVO>>()
+                    for (i in 0 until 4) {
+                        val seqUnits = mutableListOf<ProgressUnitVO>()
+                        for (j in 0 until exerciseCount) {
+                            val jo = data?.optJSONObject(i * j)
+                            if (jo != null) {
+                                val progressUnitVO = ProgressUnitVO(
+                                    uvpSn = jo.optInt("uvp_sn"),
+                                    userSn = jo.optInt("user_sn"),
+                                    exerciseId = jo.optInt("content_sn"),
+                                    recommendationSn = jo.optInt("recommendation_sn"),
+                                    weekNumber = jo.optInt("week_number"),
+                                    weekStartAt = jo.optString("week_start_at"),
+                                    weekEndAt = jo.optString("week_end_at"),
+                                    countSet = jo.optInt("count_set"),
+                                    requiredSet = jo.optInt("required_set"),
+                                    duration = jo.optInt("duration"),
+                                    progress = jo.optInt("progress"),
+                                    updatedAt = jo.optString("updated_at"),
+                                    isWatched = jo.optInt("is_watched")
+                                )
+                                seqUnits.add(progressUnitVO)
+                            }
+                        }
+                        result.add(seqUnits)
+                    }
+                    callback(
+                        Triple(
+                            progressHistorySn ?: -1,
+                            currentWeek ?: -1,
+                            currentCycle ?: -1
+                        ),
+                        result
+                    )
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ProgressIndex", "Post Progress(latest): ${e.message}")
+                callback(Triple(-1, -1, -1), mutableListOf())
+            } catch (e: IllegalArgumentException) {
+                Log.e("ProgressIllegal", "Post Progress(latest): ${e.message}")
+                callback(Triple(-1, -1, -1), mutableListOf())
+            } catch (e: IllegalStateException) {
+                Log.e("ProgressIllegal", "Post Progress(latest): ${e.message}")
+                callback(Triple(-1, -1, -1), mutableListOf())
+            } catch (e: NullPointerException) {
+                Log.e("ProgressNull", "Post Progress(latest): ${e.message}")
+                callback(Triple(-1, -1, -1), mutableListOf())
+            } catch (e: java.lang.Exception) {
+                Log.e("ProgressException", "Post Progress(latest): ${e.message}")
+                callback(Triple(-1, -1, -1), mutableListOf())
+            }
+        }
+    }
+    suspend fun getLatestProgresses(myUrl: String, context: Context) : Pair<MutableList<ProgressUnitVO>, ProgramVO>? {
         val client = getClient(context)
         val request = Request.Builder()
             .url("$myUrl?latest_progress")
@@ -188,7 +228,7 @@ object NetworkProgress {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("Recommend+Progress", "$responseBody")
+                    Log.v("latestProgress", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
 
                     // 프로그레스, 프로그램
@@ -196,20 +236,21 @@ object NetworkProgress {
                     val progressUnits = mutableListOf<ProgressUnitVO>()
                     if (progressJa != null) {
                         for (i in 0 until progressJa.length()) {
-                            val uvpUnit = progressJa.optJSONObject(i)
+                            val jo = progressJa.optJSONObject(i)
                             val progressUnitVO = ProgressUnitVO(
-                                uvpSn = uvpUnit.optInt("uvp_sn"),
-                                exerciseId = uvpUnit.optInt("content_sn"),
-                                recommendationSn = uvpUnit.optInt("recommendation_sn"),
-                                currentWeek = uvpUnit.optInt("week_number"),
-                                weekStartAt = uvpUnit.optString("week_start_at"),
-                                weekEndAt = uvpUnit.optString("week_end_at"),
-                                currentSequence = uvpUnit.optInt("count_set"),
-                                requiredSequence = uvpUnit.optInt("required_set"),
-                                videoDuration = uvpUnit.optInt("duration"),
-                                lastProgress = uvpUnit.optInt("progress"),
-                                isCompleted = uvpUnit.optInt("completed"),
-                                updateDate = uvpUnit.optString("updated_at")
+                                uvpSn = jo.optInt("uvp_sn"),
+                                userSn = jo.optInt("user_sn"),
+                                exerciseId = jo.optInt("content_sn"),
+                                recommendationSn = jo.optInt("recommendation_sn"),
+                                weekNumber = jo.optInt("week_number"),
+                                weekStartAt = jo.optString("week_start_at"),
+                                weekEndAt = jo.optString("week_end_at"),
+                                countSet = jo.optInt("count_set"),
+                                requiredSet = jo.optInt("required_set"),
+                                duration = jo.optInt("duration"),
+                                progress = jo.optInt("progress"),
+                                updatedAt = jo.optString("updated_at"),
+                                isWatched = jo.optInt("is_watched")
                             )
                             progressUnits.add(progressUnitVO)
                         }
@@ -387,25 +428,17 @@ object NetworkProgress {
             }
         }
     }
-    suspend fun getOrInsertProgress(context: Context, jo: JSONObject) : Unit = suspendCoroutine  { continuation ->
-        postProgressInCurrentProgram(context.getString(R.string.API_progress), jo, context) { progressUnits -> // MutableList<ProgressUnitVO>
-            // (자동) 있으면 가져오고 없으면 추가되서 가져오고
-            if (progressUnits.isNotEmpty()) {
-                Log.v("프로그레스유닛들", "${progressUnits.size}")
-                val weeks = 1..progressUnits.maxOf { it.currentWeek } // 4
-
-                val organizedUnits = mutableListOf<MutableList<ProgressUnitVO>>() // 1이 속한 12개의 seq, 21개의 progressUnits
-                for (week in weeks) { // 1, 2, 3, 4
-                    val weekUnits = progressUnits.filter { it.currentWeek == week }.sortedBy { it.uvpSn }// 일단 주차별로 나눔. 1주차 2주차 3주차 4주차
-                    organizedUnits.add(weekUnits.toMutableList())
-                }
-                // 프로그램 운동 기록이 있을 떄
-                continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
-            } else {
-                // ------# 측정 기록이 없음 #------
-                // 프로그램 운동 기록이 없을 때.
-                continuation.resume(Unit)
-            }
-        }
-    }
+//    suspend fun getOrInsertProgress(context: Context, sns: Triple<Int, Int, Int>) : Unit = suspendCoroutine  { continuation ->
+//        postProgressInCurrentProgram(context.getString(R.string.API_progress), sns, context) { pv3s, progressUnits -> // MutableList<ProgressUnitVO>
+//            // (자동) 있으면 가져오고 없으면 추가되서 가져오고
+//            if (progressUnits.isNotEmpty()) {
+//
+//                continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
+//            } else {
+//                // ------# 측정 기록이 없음 #------
+//                // 프로그램 운동 기록이 없을 때.
+//                continuation.resume(Unit)
+//            }
+//        }
+//    }
 }

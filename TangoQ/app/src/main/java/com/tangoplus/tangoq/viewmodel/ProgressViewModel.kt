@@ -1,13 +1,20 @@
 package com.tangoplus.tangoq.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.api.NetworkProgress.postProgressInCurrentProgram
 import com.tangoplus.tangoq.vo.ProgramVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import java.time.LocalDate
 
 class ProgressViewModel : ViewModel() {
+    // main
+    var fromProgramCustom = false
+
+
     // Main-Custom 현재 program의 주차 - 회차 담아놓는 곳
     var currentProgram : ProgramVO? = null
 
@@ -19,11 +26,11 @@ class ProgressViewModel : ViewModel() {
     // 현재 선택된 회차를 말함
     var currentSequence = 0
     var selectedSequence = MutableLiveData<Int>()
-
-
+    var recommendationSn = 0
 
     // 현재 선택된 progress, 즉 시청 기록을 담는 곳(1주의 모든 회차가 다 들어감) TODO 이걸 만약에 1회차에 들어가는 값만 나온다? 그러면 이 list를 줄이고, 거기다가 값을 넣어서 갱신하는 걸로
-    var currentProgresses = mutableListOf<MutableList<ProgressUnitVO>>()
+    var currentProgresses = mutableListOf<ProgressUnitVO>()
+    var seqHpvs : List<Float>? = null
 
     // ----------------------# MD2 에서 사용하는 공간 #---------------------
     var graphProgresses : MutableList<Pair<String, Int>>? = null
@@ -37,20 +44,30 @@ class ProgressViewModel : ViewModel() {
     // 달력
     var currentProgressItem : ProgressUnitVO? = null
     init {
-        currentProgressItem = ProgressUnitVO(0,0,0,0,0,0,"","",0,0,0, "")
+        currentProgressItem = ProgressUnitVO(0,0,0,0,0,"","",0,0,0,0,0,0,0, "")
         selectedDailyCount.value = 0
         selectedDailyTime.value = 0
     }
 
     var isFirstRun = false
 
-    fun calculateSequenceForWeek(weekIndex: Int): Int {
-        if (weekIndex <= currentWeek) {
-            val weekProgress = currentProgresses[weekIndex]
-            Log.v("주차에서seq", "$weekIndex, ${weekProgress},${weekProgress.minOfOrNull { it.currentSequence } ?: 0}")
-            return weekProgress.minOfOrNull { it.currentSequence } ?: 0
+    fun calculateCurrentSeq(weekIndex: Int): Int {
+        return if (weekIndex <= currentWeek) {
+            // 현재 1~4주차 까지 다들어간 곳에서 seq를 찾는데, 여기서 해당 값을 통해 받아와야함
+            Log.v("주차에서seq", "$weekIndex, ${currentProgresses},${currentProgresses.minOfOrNull { it.countSet } ?: 0}")
+            return currentProgresses.minOfOrNull { it.countSet } ?: 0
+        } else {
+            0
         }
-        // 다른 주차로 이동한 경우
-        return 0
     }
+    suspend fun getProgressData(context: Context) {
+        val sns = Triple(recommendationSn, selectedWeek.value?.plus(1) ?: 1, selectedSequence.value?.plus(1) ?: 1)
+        Log.v("현재주차가져오기", "$sns")
+        postProgressInCurrentProgram(context.getString(R.string.API_progress), sns, context) { pv3s, progressUnits -> // MutableList<ProgressUnitVO>
+            currentProgresses = progressUnits
+            // pv3도 넘겨줘야함
+            seqHpvs = pv3s
+        }
+    }
+
 }

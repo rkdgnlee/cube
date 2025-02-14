@@ -38,6 +38,7 @@ import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,13 +47,13 @@ class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
     private val avm by activityViewModels<AnalysisViewModel>()
     private val mvm : MeasureViewModel by activityViewModels()
-    private val pvm : ProgressViewModel by activityViewModels()
+    private val pvm: ProgressViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     private lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
     private var singletonMeasure : MutableList<MeasureVO>? = null
     private var latestRecSn = -1
-
+    private lateinit var ssm : SaveSingletonManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +64,21 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (pvm.fromProgramCustom) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+                mvm.selectedMeasure?.recommendations = progressRec
+                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
+                withContext(Dispatchers.Main){
+                    setAdapter()
+                    pvm.fromProgramCustom = false
+                }
+            }
+        }
+    }
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -93,10 +109,16 @@ class MainFragment : Fragment() {
         }
 
         binding.clM1.setOnClickListener{
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flMain, MeasureDetailFragment())
-                addToBackStack(null)
-                commit()
+            ssm = SaveSingletonManager(requireContext(), requireActivity())
+            CoroutineScope(Dispatchers.IO).launch {
+                ssm.setRecent5MeasureResult(0)
+                withContext(Dispatchers.Main) {
+                    // 다운로드 후 이동
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flMain, MeasureDetailFragment())
+                        commit()
+                    }
+                }
             }
             // MeasureDetail로 가면서 생기는 measureTab누르기 방지
             (activity as MainActivity).binding.bnbMain.setOnItemSelectedListener(null)
@@ -226,13 +248,10 @@ class MainFragment : Fragment() {
                                     }
                                 }
 
-                                if (!mvm.selectedMeasure?.recommendations?.filter { it.startAt == "" }.isNullOrEmpty()) {
-                                    // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
-                                    val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
-                                    mvm.selectedMeasure?.recommendations = progressRec
-                                    Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-//                                    Log.v("싱글턴 잘들어갔는지", "${Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations?.map { it.startAt }}")
-                                }
+                                // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
+                                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+                                mvm.selectedMeasure?.recommendations = progressRec
+                                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
                                 Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
                                 setAdapter()
                             }

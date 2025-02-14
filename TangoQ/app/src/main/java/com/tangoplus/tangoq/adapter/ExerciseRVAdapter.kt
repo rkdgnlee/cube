@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,13 +32,13 @@ class ExerciseRVAdapter (
     var exerciseList: MutableList<ExerciseVO>?,
     private val progresses : MutableList<ProgressUnitVO>?,
     private val historys: MutableList<ExerciseHistoryVO>?,
-    private val sequence : Pair<Int, Int>?,
+    private val sequence : Pair<Int, Int?>?,
     private var xmlName: String,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var dialogClosedListener: OnDialogClosedListener? = null
-    val prefs =  PreferencesManager(fragment.requireContext())
-    private val startIndex = progresses?.let { findCurrentIndex(it) }
+
+
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
         val tvEIName : TextView = view.findViewById(R.id.tvEIName)
@@ -164,26 +165,15 @@ class ExerciseRVAdapter (
                         val currentItem = progresses[position] // 프로그램 갯수만큼의 progresses의 1개에 접근
                         // currentItem의 currentWeek와 currentSequence로 현재 운동의 회차를 계산
 
-                        val currentSeq = sequence.first // 안변함
-                        val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
-                        val currentUnitsSeq = currentItem.currentSequence // 0,0 으로 나왔다고 쳤을 떄,
-
-                        val condition = when {
-                            selectedSeq == currentSeq -> {
-                                if (currentItem.lastProgress > 0) {
-                                    1
-                                } else if (currentUnitsSeq > currentSeq) {
-                                    0
-                                } else {
-                                    2
-                                }
-                            }
-                            selectedSeq < currentSeq -> 0
-                            selectedSeq > currentSeq -> 2
-                            else -> {
-                                2
-                            }
+//                        val currentSeq = sequence.first // 안변함
+//                        val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
+//                        val currentUnitsSeq = currentItem.countSet // 0,0 으로 나왔다고 쳤을 떄,
+                        val condition = when (currentItem.cycleProgress * 100 / currentItem.duration) {
+                            in 95 .. 100 -> 0
+                            in 1 .. 94 -> 1
+                            else -> 2
                         }
+                        Log.v("condition", "$condition, ${currentItem.cycleProgress}, ${currentItem.duration}")
                         // Program 의 UI
                         holder.hpvEI.visibility = View.VISIBLE
                         when (condition) {
@@ -200,9 +190,8 @@ class ExerciseRVAdapter (
                                 holder.tvEIFinish.visibility = View.GONE
                                 val duration  = currentExerciseItem?.duration
                                 if (duration != null) {
-                                    holder.hpvEI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
+                                    holder.hpvEI.progress = (currentItem.cycleProgress * 100 ) / duration.toFloat()
                                 }
-//                                Log.v("hpvprogresses", "${holder.hpvEI.progress}")
                                 holder.hpvEI.autoAnimate = true
                             }
                             else -> { // 재생기록 없는 item
@@ -326,29 +315,6 @@ class ExerciseRVAdapter (
         setOnClickListener(OnSingleClickListener(listener))
     }
 
-    // 해당 회차에서 가장 최근 운동의 index찾아오기 ( 한 seq의 묶음만 들어옴 )
-    private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
-        // Case 1: 시청 중간 기록이 있을 경우
-        val progressIndex1 = progresses.indexOfLast { it.lastProgress in 1 until it.videoDuration }
-        if (progressIndex1 != -1) {
-            return progressIndex1
-        }
-
-        // Case 2: sequence 기반으로 다음 볼 차례 찾기
-        val maxSequence = progresses.maxOf { it.currentSequence }
-        if (maxSequence > 0) {
-            // 가장 큰 sequence보다 1 작은 sequence의 첫 인덱스를 찾음
-            val nextIndex = progresses.indexOfFirst { it.currentSequence == maxSequence - 1 }
-            return if (nextIndex != -1) nextIndex else 0
-        }
-
-        // Case 3: 초기상태
-        return if (progresses.all { it.lastProgress == 0 }) {
-            0
-        } else {
-            -1
-        }
-    }
 
 //    private fun updateLikeButtonState(exerciseId: String, ibtn : ImageButton) {
 //        val isLike = prefs.existLike(exerciseId)

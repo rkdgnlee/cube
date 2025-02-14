@@ -24,7 +24,6 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccess
 import com.tangoplus.tangoq.api.DeviceService.getDeviceUUID
 import com.tangoplus.tangoq.api.DeviceService.getSSAID
 import com.tangoplus.tangoq.api.NetworkMeasure.saveAllMeasureInfo
-import com.tangoplus.tangoq.api.NetworkProgress.postProgressInCurrentProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.createRecommendProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendProgram
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationInOneMeasure
@@ -37,14 +36,11 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class SaveSingletonManager(private val context: Context, private val activity: FragmentActivity) {
     private val singletonMeasure = Singleton_t_measure.getInstance(context)
