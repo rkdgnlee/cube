@@ -81,7 +81,12 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val bundle = arguments
+
+        // 값 받아오기
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
+        pvm.isProgram = false
+        pvm.isProgram = bundle?.getBoolean("isProgram") ?: false
+        pvm.uvpSn = bundle?.getInt("uvpSn") ?: 0
         wm = WifiManager(requireContext())
 
         // ------# like 있는지 판단 #------
@@ -118,9 +123,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 exoPlay?.visibility = View.GONE
             }
         }
-
-
-
 //        binding.ibtnPTDLike.setOnClickListener {
 //            if (isLike) {
 //                prefs.deleteLike(exerciseData?.exerciseId.toString())
@@ -135,7 +137,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = exerciseData?.videoFilepath.toString()
-        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData?.exerciseName}")
+//        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData?.exerciseName}")
         binding.tvPTDName.text = exerciseData?.exerciseName.toString()
         binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
@@ -174,16 +176,12 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             }
         }
         // ------! 관련 관절, 근육 recyclerview 시작 !------
-        val fullmuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
+        val fullMuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
             ?.replace(")", "")
             ?.split(", ")
             ?.toMutableList()
 
-        val displayMuscleList = fullmuscleList?.chunked(2)
-            ?.map { it.first() }
-            ?.toMutableList()
-
-        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullmuscleList, null,"muscle", evm)
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullMuscleList, null,"muscle", evm)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
@@ -195,7 +193,19 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             intent.putExtra("video_url", videoUrl)
             intent.putExtra("exercise_id", exerciseData?.exerciseId)
             intent.putExtra("total_duration", exerciseData?.duration?.toInt())
-            intent.putExtra("isUnit", true)
+
+            when (pvm.isProgram) {
+                true -> {
+                    intent.putExtra("isEVP", false)
+                    intent.putExtra("isProgram", true)
+                    intent.putExtra("uvpSn", pvm.uvpSn)
+                }
+                false -> {
+                    intent.putExtra("isEVP", true)
+                    intent.putExtra("isProgram", false)
+                    intent.putExtra("uvpSn", 0)
+                }
+            }
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------

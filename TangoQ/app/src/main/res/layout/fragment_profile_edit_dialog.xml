@@ -299,15 +299,23 @@
                     android:visibility="visible">
 
                     <include
-                        layout="@layout/rv_shimmer_exercise_item"
+                        layout="@layout/rv_shimmer_profile_item"
                         android:visibility="visible" />
 
                     <include
-                        layout="@layout/rv_shimmer_exercise_item"
+                        layout="@layout/rv_shimmer_profile_item"
                         android:visibility="visible" />
 
                     <include
-                        layout="@layout/rv_shimmer_exercise_item"
+                        layout="@layout/rv_shimmer_profile_item"
+                        android:visibility="visible" />
+
+                    <include
+                        layout="@layout/rv_shimmer_profile_item"
+                        android:visibility="visible" />
+
+                    <include
+                        layout="@layout/rv_shimmer_profile_item"
                         android:visibility="visible" />
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>

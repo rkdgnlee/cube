@@ -17,6 +17,7 @@ import android.view.View
 import android.widget.Chronometer
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -46,14 +47,14 @@ import kotlin.math.roundToInt
 class PlayFullScreenActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayFullScreenBinding
     val pvm : PlayViewModel by viewModels()
-    private var simpleExoPlayer: SimpleExoPlayer? = null
+//    private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var chronometer: Chronometer
     var currentExerciseId = ""
     private var isExitDialogVisible = false
     private lateinit var mediaSourceList: List<MediaSource>
-    private var currentMediaSourceIndex = 0
-    private var currentVideoDuration = 0L
+//    private var currentMediaSourceIndex = 0
+//    private var currentVideoDuration = 0L
 
 
 
@@ -81,7 +82,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.R)
             override fun onFinish() {
                 setAnimation(binding.tvFullScreenGuide, 500, 0, false ) { }
-                simpleExoPlayer?.play()
+                pvm.simpleExoPlayer?.play()
             }
         }
     }
@@ -106,12 +107,17 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val currentWeek = intent.getIntExtra("currentWeek", 0)
         val currentSeq = intent.getIntExtra("currentSeq", 0)
 
+        val isProgram = intent.getBooleanExtra("isProgram", false)
+        val uvpSn = intent.getIntExtra("uvpSn", 0)
         pvm.uvpSns = intent.getStringArrayListExtra("uvp_sns")
-        pvm.isUnit = intent.getBooleanExtra("isUnit", false)
+        pvm.isEVP = intent.getBooleanExtra("isEVP", false)
         pvm.weekNumber = currentWeek
         pvm.cycle = currentSeq
-        Log.v("url들", "isUnit: ${pvm.isUnit}, urls: $videoUrls, uvpSns: ${pvm.uvpSns}")
-        Log.v("ptd로그", "isUnit: ${pvm.isUnit}, exerciseId: ${exerciseId}, videoUrl: $videoUrl")
+        pvm.isProgram = isProgram
+        pvm.uvpSn = uvpSn
+
+        Log.v("url들", "isEVP: ${pvm.isEVP}, urls: $videoUrls, uvpSns: ${pvm.uvpSns}, isProgram: $isProgram, uvpSn: $uvpSn")
+        Log.v("ptd로그", "isEVP: ${pvm.isEVP}, exerciseId: ${exerciseId}, videoUrl: $videoUrl")
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
         if (!videoUrls.isNullOrEmpty()) {
             pvm.baseUrls.addAll(videoUrls)
@@ -146,15 +152,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
         exoPlay?.visibility = View.GONE
 
         exoPause?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == true) {
-                simpleExoPlayer?.pause()
+            if (pvm.simpleExoPlayer?.isPlaying == true) {
+                pvm.simpleExoPlayer?.pause()
                 exoPause?.visibility = View.GONE
                 exoPlay?.visibility = View.VISIBLE
             }
         }
         exoPlay?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == false) {
-                simpleExoPlayer?.play()
+            if (pvm.simpleExoPlayer?.isPlaying == false) {
+                pvm.simpleExoPlayer?.play()
                 exoPause?.visibility = View.VISIBLE
                 exoPlay?.visibility = View.GONE
             }
@@ -170,22 +176,47 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val replay5 = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_replay_5)
         val forward5 = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_forward_5)
         replay5.setOnClickListener {
-            val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
+            val replayPosition = pvm.simpleExoPlayer?.currentPosition?.minus(5000)
             if (replayPosition != null) {
-                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition))
+                pvm.simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition))
             }
         }
 
         forward5.setOnClickListener {
-            val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
+            val forwardPosition = pvm.simpleExoPlayer?.currentPosition?.plus(5000)
             if (forwardPosition != null) {
-                if (forwardPosition < (simpleExoPlayer?.duration?.minus(5000) ?: 0L)) {
-                    simpleExoPlayer?.seekTo(forwardPosition)
+                if (forwardPosition < (pvm.simpleExoPlayer?.duration?.minus(5000) ?: 0L)) {
+                    pvm.simpleExoPlayer?.seekTo(forwardPosition)
                 } else {
-                    simpleExoPlayer?.pause()
+                    pvm.simpleExoPlayer?.pause()
                 }
             }
         } // ------! 앞으로 감기 뒤로 감기 끝 !------
+
+
+        // 뒤로가기시 바로 보내기
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                Log.v("뒤로가기누름", "뒤로가기 버튼 눌림.")
+                if (!pvm.isEVP) {
+                    sendUVP(false) {
+                        val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        startActivity(intent)
+                        finish()
+                    }
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        sendEVP(false) {
+                            val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
+                            intent.putExtra("evp_finish", currentExerciseId)
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
+                }
+            }
+        })
     }
 
     private fun setPlayer() {
@@ -196,7 +227,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }
         Log.v("setPlayer", "position: ${pvm.getPlaybackPosition()}, windowIndex: ${pvm.getWindowIndex()}")
         initPlayer(pvm.baseUrls, pvm.getWindowIndex(), pvm.getPlaybackPosition())
-        simpleExoPlayer?.addListener(object : Player.Listener {
+        pvm.simpleExoPlayer?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
                 Log.v("PlaybackState", "State: $playbackState")
@@ -204,15 +235,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     Player.STATE_IDLE -> Log.v("PlaybackState", "Player.STATE_IDLE")
                     Player.STATE_BUFFERING -> Log.v("PlaybackState", "Player.STATE_BUFFERING")
                     Player.STATE_READY -> {
-                        Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: $currentMediaSourceIndex")
-                        currentVideoDuration = simpleExoPlayer?.duration ?: 0
-                        Log.e("currentVideoDuration임", "$currentVideoDuration")
+                        Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: ${pvm.currentMediaSourceIndex}")
+                        pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
+                        Log.e("currentVideoDuration임", "$pvm.currentVideoDuration")
 
                     }
                     Player.STATE_ENDED -> {
                         Log.v("PlaybackState", "Player.STATE_ENDED")
 
-                        if (!pvm.isUnit) {
+                        if (!pvm.isEVP) {
                             sendUVP(true) {
                                 val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
                                 val elapsedSeconds = elapsedMillis / 1000
@@ -243,7 +274,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
-                val currentWindowIndex = simpleExoPlayer?.currentWindowIndex
+                val currentWindowIndex = pvm.simpleExoPlayer?.currentWindowIndex
 
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     if (pvm.baseUrls.size > 1) {
@@ -255,19 +286,19 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             Log.v("현재윈도index", "$currentWindowIndex")
                             pvm.setWindowIndex(currentWindowIndex)
                         }
-                        simpleExoPlayer?.let { player ->
+                        pvm.simpleExoPlayer?.let { player ->
                             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
                         }
                         if (currentWindowIndex != null) {
                             if (currentWindowIndex < mediaSourceList.size) {
-                                pvm.totalProgressDuration += simpleExoPlayer?.duration?.toInt() ?: 0
-                                currentMediaSourceIndex++
-                                Log.v("윈도우인덱스", "$currentMediaSourceIndex")
+                                pvm.totalProgressDuration += pvm.simpleExoPlayer?.duration?.toInt() ?: 0
+                                pvm.currentMediaSourceIndex++
+                                Log.v("윈도우인덱스", "$pvm.currentMediaSourceIndex")
 
                                 currentExerciseId = pvm.sns?.get(currentWindowIndex) ?: ""
                                 startNextVideoCountdown()
-                                currentVideoDuration = simpleExoPlayer?.duration ?: 0
-                                Log.e("currentVideoDuration임", "$currentVideoDuration")
+                                pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
+                                Log.e("currentVideoDuration임", "$pvm.currentVideoDuration")
                             }
                         }
                     }
@@ -288,33 +319,34 @@ class PlayFullScreenActivity : AppCompatActivity() {
             .build()
         val trackSelector: TrackSelector = DefaultTrackSelector(this)
 
-        simpleExoPlayer = SimpleExoPlayer.Builder(this)
+        pvm.simpleExoPlayer = SimpleExoPlayer.Builder(this)
             .setLoadControl(loadControl)
             .setTrackSelector(trackSelector)
             .build()
-        binding.pvFullScreen.player = simpleExoPlayer
+        binding.pvFullScreen.player = pvm.simpleExoPlayer
         mediaSourceList = buildMediaSource(resourceList)
-        currentMediaSourceIndex = windowIndex
+        pvm.currentMediaSourceIndex = windowIndex
 
         // ------# 중간 재생 시점부터 재생 #------
         pvm.setPlaybackPosition(playbackPosition * 1000)
-        simpleExoPlayer?.setMediaSources(mediaSourceList)
-        simpleExoPlayer?.prepare()
-        simpleExoPlayer?.seekTo(pvm.getWindowIndex(), pvm.getPlaybackPosition())
-        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${simpleExoPlayer?.duration}")
+        pvm.simpleExoPlayer?.setMediaSources(mediaSourceList)
+        pvm.simpleExoPlayer?.prepare()
+        pvm.simpleExoPlayer?.seekTo(pvm.getWindowIndex(), pvm.getPlaybackPosition())
+        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
 //        val positionMs = playbackPosition * 1000
 //        val savedPosition = playbackPositions[windowIndex] ?: positionMs
 //        simpleExoPlayer?.seekTo(windowIndex, savedPosition)
-        simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
+        pvm.simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
     }
+
     // ------# isFinish는 영상 길이 전부 시청했는지 여부 #------
     private fun sendUVP(isFinish: Boolean, callback: () -> Unit) {
-        val player = simpleExoPlayer ?: return
+        val player = pvm.simpleExoPlayer ?: return
         val currentPositionMs = player.currentPosition - 1
         // 현재 윈도우의 재생 위치 저장
 
         val currentPositionSeconds = (currentPositionMs / 1000.0).toInt()
-        val totalDurationMs = (currentVideoDuration / 1000.0 ).toInt()
+        val totalDurationMs = (pvm.currentVideoDuration / 1000.0 ).toInt()
         val jo = JSONObject()
         if (isFinish && currentPositionSeconds >= 0) {
             jo.put("progress", totalDurationMs)
@@ -326,10 +358,14 @@ class PlayFullScreenActivity : AppCompatActivity() {
         jo.put("week_number", pvm.weekNumber)
         jo.put("cycle", pvm.cycle)
 
-        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(currentMediaSourceIndex)?.toInt()}, jo: $jo, totalDuration: $totalDurationMs")
-        val currentUvpSns = pvm.uvpSns?.get(currentMediaSourceIndex)?.toInt()
+        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()}, jo: $jo, totalDuration: $totalDurationMs")
+        val currentUvpSns = pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()
         if (pvm.uvpSns?.isNotEmpty() == true && currentUvpSns != null) {
             patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { }
+            Log.v("progress완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
+            callback()
+        } else if (pvm.uvpSn != 0) {
+            patchProgress1Item(getString(R.string.API_progress), pvm.uvpSn, jo, this@PlayFullScreenActivity) { }
             Log.v("progress완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
             callback()
         }
@@ -365,7 +401,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     }
 
     private fun startNextVideoCountdown() {
-        simpleExoPlayer?.pause()
+        pvm.simpleExoPlayer?.pause()
         binding.tvFullScreenGuide.visibility = View.VISIBLE
         binding.tvFullScreenGuide.alpha = 1f
         mCountDown.start()
@@ -378,7 +414,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             setTitle("알림")
             setMessage("운동을 종료하시겠습니까 ?")
             setPositiveButton("예") { dialog, _ ->
-                if (!pvm.isUnit) {
+                if (!pvm.isEVP) {
                     sendUVP(false) {
                         val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -409,14 +445,14 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
     // ------# isFinish는 영상 길이 전부 시청했는지 여부 #------
     private suspend fun sendEVP(isFinish: Boolean, callback: () -> Unit) {
-        val player = simpleExoPlayer ?: return
+        val player = pvm.simpleExoPlayer ?: return
         val currentPositionMs = withContext(Dispatchers.Main) {
             player.currentPosition - 1
         }
         // 현재 윈도우의 재생 위치 저장
 
         val currentPositionSeconds = (currentPositionMs / 1000.0).toInt()
-        val totalDurationMs = (currentVideoDuration / 1000.0 ).toInt()
+        val totalDurationMs = (pvm.currentVideoDuration / 1000.0 ).toInt()
         val jo = JSONObject()
         if (isFinish && currentPositionSeconds >= 0) {
             jo.put("progress", totalDurationMs)
@@ -425,7 +461,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }
 
         patchExerciseHistory(this@PlayFullScreenActivity, getString(R.string.API_exercise), currentExerciseId, jo.toString())
-
         callback()
     }
 
@@ -453,10 +488,14 @@ class PlayFullScreenActivity : AppCompatActivity() {
 //            pvm.isResume = false
 //        }
 //    }
+    override fun onStart() {
+        super.onStart()
+        setPlayer()
+    }
 
     override fun onStop() {
         super.onStop()
-        simpleExoPlayer?.let { player ->
+        pvm.simpleExoPlayer?.let { player ->
             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
             player.stop()
             player.playWhenReady = false
@@ -464,7 +503,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }
         pvm.isResume = true
         CoroutineScope(Dispatchers.Main).launch {
-            if (pvm.isUnit) {
+            if (!pvm.isEVP) {
                 sendUVP(false) {
                     Log.v("sendUVP", "success to send UVP")
                 }
@@ -478,7 +517,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        simpleExoPlayer?.let { player ->
+        pvm.simpleExoPlayer?.let { player ->
             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
             player.stop()
             player.playWhenReady = false
@@ -489,25 +528,27 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (simpleExoPlayer != null) {
-            simpleExoPlayer?.release()
-            simpleExoPlayer = null
+        if (pvm.simpleExoPlayer != null) {
+            pvm.simpleExoPlayer?.release()
+            pvm.simpleExoPlayer = null
             Log.v("exoplayerExit", "SimpleExoPlayer released and null")
         }
     }
 
     override fun finish() {
         super.finish()
-        if (simpleExoPlayer != null) {
-            simpleExoPlayer?.release()
-            simpleExoPlayer = null
+        if (pvm.simpleExoPlayer != null) {
+            pvm.simpleExoPlayer?.release()
+            pvm.simpleExoPlayer = null
             Log.v("exoplayerExit", "SimpleExoPlayer released and null, finish")
         }
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putLong("playbackPosition", simpleExoPlayer?.currentPosition ?: 0L)
-        outState.putInt("currentWindow", simpleExoPlayer?.currentWindowIndex ?: 0)
-        outState.putBoolean("playWhenReady", simpleExoPlayer?.playWhenReady ?: true)
+        outState.putLong("playbackPosition", pvm.simpleExoPlayer?.currentPosition ?: 0L)
+        outState.putInt("currentWindow", pvm.simpleExoPlayer?.currentWindowIndex ?: 0)
+        outState.putBoolean("playWhenReady", pvm.simpleExoPlayer?.playWhenReady ?: true)
     }
+
+
 }

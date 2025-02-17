@@ -21,11 +21,13 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.ExifInterface
 import android.net.Uri
+import android.net.http.NetworkException
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.os.NetworkOnMainThreadException
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -147,11 +149,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         private const val REQUEST_CODE_PERMISSIONS = 1001
         // 버전별 필요 권한 정의
         fun hasPermissions(context: Context): Boolean {
+            Log.d("PermissionCheck", "Context type: ${context::class.java.name}")
             return getRequiredPermissions().all {
                 ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
             }
         }
     }
+    private var permissionDialog: AlertDialog? = null
     private lateinit var binding : ActivityMeasureSkeletonBinding
     private lateinit var poseLandmarkerHelper: PoseLandmarkerHelper
     private val viewModel: SkeletonViewModel by viewModels()
@@ -1182,31 +1186,37 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                setUpCamera()
-                Log.v("스켈레톤 Init", "모든 권한 승인 완료")
+
+        if (requestCode != REQUEST_CODE_PERMISSIONS) return  // 잘못된 요청 코드 방지
+
+        if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            setUpCamera()
+            Log.v("스켈레톤 Init", "모든 권한 승인 완료")
+        } else {
+            val deniedPermissions = permissions.filterIndexed { index, _ ->
+                grantResults[index] == PackageManager.PERMISSION_DENIED
+            }
+            Log.v("스켈레톤 Init", "거부된 권한: ${deniedPermissions.joinToString()}")
+
+            // "다시 묻지 않음"을 체크한 경우 -> 앱 종료
+            if (deniedPermissions.all { !shouldShowRequestPermissionRationale(it) }) {
+                finish()
+                Toast.makeText(this, "권한을 모두 허용한 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             } else {
-                val deniedPermissions = permissions.filterIndexed { index, _ ->
-                    grantResults[index] == PackageManager.PERMISSION_DENIED
-                }
-                Log.v("스켈레톤 Init", "거부된 권한: ${deniedPermissions.joinToString()}")
-                if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
-                    showPermissionExplanationDialog()
-                } else {
-                    // 다시 묻지 않기를 선택한 경우
-                    showSettingsDialog()
-                }
+                // 한 번 거부한 경우 -> 설명 다이얼로그 표시
+                showPermissionExplanationDialog()
             }
         }
     }
 
+
     private fun showPermissionExplanationDialog() {
-        AlertDialog.Builder(this)
+        if (permissionDialog?.isShowing == true) return  // 이미 다이얼로그가 떠 있으면 return
+
+        permissionDialog = AlertDialog.Builder(this)
             .setTitle("권한 필요")
-            .setMessage("앱의 정상적인 동작을 위해서는 모든 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+            .setMessage("측정을 위해서는 사진 및 갤러리 권한을 모두 허용해야 합니다.")
             .setPositiveButton("설정으로 이동") { _, _ ->
-                // 앱 설정 화면으로 이동
                 startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", packageName, null)
                 })
@@ -1216,7 +1226,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             }
             .show()
     }
-
     private fun showSettingsDialog() {
         AlertDialog.Builder(this)
             .setTitle("권한 설정 필요")

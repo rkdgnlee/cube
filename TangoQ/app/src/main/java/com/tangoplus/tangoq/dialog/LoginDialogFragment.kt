@@ -45,6 +45,7 @@ import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.regex.Pattern
@@ -151,6 +152,19 @@ class LoginDialogFragment : DialogFragment() {
 
             lifecycleScope.launch {
                 getUserIdentifyJson(getString(R.string.API_user), jsonObject) { jo ->
+                    if (jo == null) {
+                        if (dialog.isVisible) {
+                            dialog.dismiss()
+                            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                setTitle("알림")
+                                setMessage("네트워크 문제로 로그인할 수 없습니다.\n나중에 다시 이용해주세요")
+                                setPositiveButton("예") { _, _ ->
+                                    dismiss()
+                                }
+                            }.show()
+                            return@getUserIdentifyJson
+                        }
+                    }
                     val statusCode = jo?.optInt("status") ?: 0
                     val retryAfter = jo?.optInt("retry_after") ?: 0
                     Log.v("코드", "$statusCode")

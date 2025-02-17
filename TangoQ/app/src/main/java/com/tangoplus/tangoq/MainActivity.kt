@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
 import com.tangoplus.tangoq.fragment.ProgramSelectFragment
 import com.tangoplus.tangoq.fragment.WithdrawalFragment
+import com.tangoplus.tangoq.viewmodel.MainViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val pvm : PlayViewModel by viewModels()
     private val mvm : MeasureViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
@@ -71,7 +73,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
+            Toast.makeText(this, "올바르지 않은 접근입니다.\n다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
+            logout(this@MainActivity, 0)
+        }
         // ------! activity 사전 설정 시작 !------
         // 로그인 완료 시 2분마다 토큰 갱신
         myApplication = application as MyApplication
@@ -83,12 +88,22 @@ class MainActivity : AppCompatActivity() {
             val workInfo = workInfos[0]
             Log.v("TokenCheckWorker", "$workInfos")
             if (workInfo.state == WorkInfo.State.FAILED) {
-                Log.v("로그아웃갑시다", "중복 로그인 - 현재 기기 로그아웃 처리")
+
                 // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
                 val dialog = AlertDialogFragment.newInstance("logout")
                 dialog.show(supportFragmentManager, "AlertDialogFragment")
             }
         }
+        viewModel.showLogoutDialog.observe(this) { shouldShow ->
+            if (shouldShow) {
+                Log.v("로그아웃갑시다", "중복 로그인 - 현재 기기 로그아웃 처리")
+                // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
+                val dialog = AlertDialogFragment.newInstance("logout")
+                dialog.show(supportFragmentManager, "AlertDialogFragment")
+                viewModel.resetLogoutDialog()
+            }
+        }
+
 
         wifiManager = WifiManager(this)
         // ------! activity 사전 설정 끝 !------
@@ -103,10 +118,7 @@ class MainActivity : AppCompatActivity() {
                 },   3 * 60000) //
             }
         }
-        if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
-            Toast.makeText(this, "올바르지 않은 접근입니다.\n다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
-            logout(this@MainActivity, 0)
-        }
+
         // ------# 접근 방지 #------
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
@@ -122,7 +134,6 @@ class MainActivity : AppCompatActivity() {
                 is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
                 is ProfileFragment, is WithdrawalFragment -> binding.bnbMain.selectedItemId = R.id.profile
             }
-            //
         }
 
         AlarmReceiver()
@@ -180,22 +191,10 @@ class MainActivity : AppCompatActivity() {
 
         // -------# 버튼 시작 #------
         binding.bnbMain.setOnItemSelectedListener {
-            if (selectedTabId != it.itemId) {
-                selectedTabId = it.itemId
-            }
-            setCurrentFragment(selectedTabId)
+            setCurrentFragment(it.itemId)
             true
         }
-
-        binding.bnbMain.setOnItemReselectedListener {
-            when(it.itemId) {
-                // ------# fragment 경로 지정 #------
-                R.id.main -> {}
-                R.id.exercise -> {}
-                R.id.measure -> {}
-                R.id.profile -> {}
-            }
-        }
+        binding.bnbMain.setOnItemReselectedListener { setCurrentFragment(it.itemId) }
 
         // ------# 측정 완료 후 측정 디테일 화면으로 바로 가기 #------
         measureSkeletonLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -213,10 +212,9 @@ class MainActivity : AppCompatActivity() {
                     }
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flMain, measureDetailFragment)
-                        addToBackStack("measureDetailFragment")
                         commit()
                     }
-                    selectedTabId = R.id.main
+
                 }
             }
         }
@@ -283,6 +281,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
                 backPressHandler.postDelayed(backPressRunnable, 1000)
                 myApplication.clearLastActivity()
+                finishAffinity()
             } else {
                 myApplication.setLastActivity()
                 binding.bnbMain.selectedItemId = R.id.main
@@ -307,7 +306,6 @@ class MainActivity : AppCompatActivity() {
             if (exerciseId != null) {
                 navigateToFragment(deepLinkPath, exerciseId)
             }
-            navigateToFragment(deepLinkPath, exerciseId)
         } else if (finishEVP != null) {
             navigateToFragment("PlayThumbnail", finishEVP)
         }
@@ -346,17 +344,19 @@ class MainActivity : AppCompatActivity() {
 
             "PlayThumbnail" -> {
                 if (exerciseId != null) {
-                    val typeIds = when (exerciseId.toInt()) {
-                        in 1.. 27 -> arrayListOf(1, 2)
-                        in 28 .. 72 -> arrayListOf(3, 4, 5)
-                        in 73 .. 133 -> arrayListOf(6, 7, 8, 9)
-                        else -> arrayListOf(10, 11)
-                    }
+//                    val typeIds = when (exerciseId.toInt()) {
+//                        in 1.. 27 -> arrayListOf(1, 2)
+//                        in 28 .. 72 -> arrayListOf(3, 4, 5)
+//                        in 73 .. 133 -> arrayListOf(6, 7, 8, 9)
+//                        else -> arrayListOf(10, 11)
+//                    }
+                    binding.bnbMain.selectedItemId = R.id.exercise
                     supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flMain, ExerciseDetailFragment.newInstance(typeIds, exerciseId.toInt()))
+                        replace(R.id.flMain, ExerciseFragment())
                         commit()
                     }
                 }
+
             }
             else -> MainFragment()
         }

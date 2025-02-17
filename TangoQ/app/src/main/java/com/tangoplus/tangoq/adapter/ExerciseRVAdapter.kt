@@ -173,7 +173,7 @@ class ExerciseRVAdapter (
                             in 1 .. 94 -> 1
                             else -> 2
                         }
-                        Log.v("condition", "$condition, ${currentItem.cycleProgress}, ${currentItem.duration}")
+                        Log.v("condition", "${currentItem.uvpSn}, ${currentItem.cycleProgress}, ${currentItem.duration}")
                         // Program 의 UI
                         holder.hpvEI.visibility = View.VISIBLE
                         when (condition) {
@@ -200,9 +200,14 @@ class ExerciseRVAdapter (
                         }
                     }
                     holder.vEI.setOnClickListener {
+                        val currentItem = progresses?.get(position)
                         val dialogFragment = PlayThumbnailDialogFragment().apply {
                             arguments = Bundle().apply {
                                 putParcelable("ExerciseUnit", currentExerciseItem)
+                                if (progresses != null) {
+                                    putBoolean("isProgram", true)
+                                    putInt("uvpSn", currentItem?.uvpSn ?: 0)
+                                }
                             }
                         }
                         dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")

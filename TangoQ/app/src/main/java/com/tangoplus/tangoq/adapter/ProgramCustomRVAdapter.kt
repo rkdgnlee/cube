@@ -51,8 +51,8 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
 
         // episode는 첫 번째가 선택된 회차, 두 번째가 진행되는 회차임.
         if (holder is CustomViewHolder) {
-            val spannableDays = SpannableString.valueOf("0${position+1}\nStep")
-            spannableDays.setSpan(RelativeSizeSpan(if (isTablet(fragment.requireContext())) 1.4f else 1.2f), 0, spannableDays.indexOf("\n"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            val spannableDays = SpannableString.valueOf("Day ${position+1}")
+//            spannableDays.setSpan(RelativeSizeSpan(if (isTablet(fragment.requireContext())) 1.6f else 1.4f), 0, spannableDays.indexOf("\n"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             holder.tvPSIName.text = spannableDays
 
             // seqState.first == 현재 회차 seqState.second == 선택한 회차
@@ -96,18 +96,18 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                         setHpv(holder, false, currentHpvProgresses)
                         setTextView(holder.tvPSIName, R.color.secondContainerColor, R.color.thirdColor)
                     }  else {
+                        setHpv(holder, false, 0f)
                         holder.ivPSICheck.visibility = View.INVISIBLE
-                        holder.hpvPSI.colorBackground = ContextCompat.getColor(fragment.requireContext(), R.color.subColor200)
                         setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)
                     }
                 } else {
                     setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)
-                    holder.hpvPSI.progress = 0f
+                    setHpv(holder, false, 0f)
                     holder.ivPSICheck.visibility = View.INVISIBLE
                 }
             } else {
+                setHpv(holder, false, 0f)
                 setTextView(holder.tvPSIName, R.color.subColor100, R.color.subColor400)
-                holder.hpvPSI.progress = 0f
                 holder.ivPSICheck.visibility = View.INVISIBLE
             }
 

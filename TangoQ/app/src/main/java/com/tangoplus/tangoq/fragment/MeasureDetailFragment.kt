@@ -49,6 +49,7 @@ class MeasureDetailFragment : Fragment() {
     private var singletonMeasure : MutableList<MeasureVO>? = null
     private var measure : MeasureVO? = null
     private val mvm : MeasureViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

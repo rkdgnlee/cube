@@ -109,10 +109,12 @@ class MainFragment : Fragment() {
         }
 
         binding.clM1.setOnClickListener{
+
             ssm = SaveSingletonManager(requireContext(), requireActivity())
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 ssm.setRecent5MeasureResult(0)
                 withContext(Dispatchers.Main) {
+                    (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
                     // 다운로드 후 이동
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flMain, MeasureDetailFragment())
@@ -120,8 +122,6 @@ class MainFragment : Fragment() {
                     }
                 }
             }
-            // MeasureDetail로 가면서 생기는 measureTab누르기 방지
-            (activity as MainActivity).binding.bnbMain.setOnItemSelectedListener(null)
         }
 
         when (isNetworkAvailable(requireContext())) {

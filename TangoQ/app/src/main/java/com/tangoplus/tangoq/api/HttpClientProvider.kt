@@ -40,6 +40,8 @@ object HttpClientProvider {
                                 .header("Authorization", "Bearer $newAccessToken")
                                 .build()
                             return@addInterceptor chain.proceed(request)
+                        } else if (responseCode == 400) {
+                            LogoutManager.notifyLogout()
                         }
                     }
                     response

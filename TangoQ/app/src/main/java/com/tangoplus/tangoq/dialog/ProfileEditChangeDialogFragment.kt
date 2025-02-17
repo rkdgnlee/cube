@@ -97,6 +97,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
         auth = FirebaseAuth.getInstance()
         auth.setLanguageCode("kr")
+        disabledButton()
         // ------# 키보드 #------
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         Handler(Looper.getMainLooper()).postDelayed({
@@ -158,6 +159,20 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
             }
 
             "몸무게" -> {
+                val weightPattern = "^(2\\d|[3-9]\\d|[1]\\d{2}|200)\$"
+                val weightPatternCheck = Pattern.compile(weightPattern)
+                binding.etPCD1.addTextChangedListener(object: TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        svm.weightCondition.value = weightPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        if (svm.weightCondition.value == true) {
+                            enabledButton()
+                        } else {
+                            disabledButton()
+                        }
+                    }
+                })
                 setUIVisibility(1)
                 binding.tvPCD.text = "몸무게 재설정"
                 binding.tvPCDGuide.text = "몸무게을 다시 설정해주세요"
@@ -168,6 +183,20 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 }
             }
             "신장" -> {
+                val heightPattern = "^(8\\d|[9]\\d|[1-2]\\d{2}|250)\$"
+                val heightPatternCheck = Pattern.compile(heightPattern)
+                binding.etPCD1.addTextChangedListener(object: TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        svm.heightCondition.value = heightPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        if (svm.heightCondition.value == true) {
+                            enabledButton()
+                        } else {
+                            disabledButton()
+                        }
+                    }
+                })
                 setUIVisibility(1)
                 binding.tvPCD.text = "신장 재설정"
                 binding.tvPCDGuide.text = "신장을 다시 설정해주세요"
@@ -206,6 +235,20 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 })
             }
             "생년월일" -> {
+                val birthdayPattern = "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\$"
+                val birthdayPatternCheck = Pattern.compile(birthdayPattern)
+                binding.etPCD1.addTextChangedListener(object: TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        svm.birthdayCondition.value = birthdayPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        if (svm.birthdayCondition.value == true) {
+                            enabledButton()
+                        } else {
+                            disabledButton()
+                        }
+                    }
+                })
                 setUIVisibility(1)
                 binding.tvPCD.text = "생년월일 설정"
                 binding.tvPCDGuide.text = "생년월일을 설정해주세요"
@@ -309,7 +352,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.btnPCDAuthConfirm.setOnSingleClickListener {
                     val credential = PhoneAuthProvider.getCredential(svm.verificationId, binding.etPCDAuth.text.toString())
                     signInWithPhoneAuthCredential(credential)
-
+                    enabledButton()
                 }
             }
             else -> "미설정"
@@ -403,10 +446,12 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
     private fun enabledButton() {
         binding.btnPCDFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
         binding.btnPCDFinish.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white)))
+        binding.btnPCDFinish.isEnabled = true
     }
     private fun disabledButton() {
         binding.btnPCDFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
         binding.btnPCDFinish.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
+        binding.btnPCDFinish.isEnabled = false
     }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }

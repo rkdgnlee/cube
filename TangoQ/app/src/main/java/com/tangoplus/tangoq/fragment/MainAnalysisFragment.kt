@@ -160,8 +160,10 @@ class MainAnalysisFragment : Fragment() {
                     val dialog = SequenceBSDialogFragment()
                     dialog.show(requireActivity().supportFragmentManager, "SequenceBSDialogFragment")
                 }
-
-
+                binding.ivMAPartBS.setOnSingleClickListener {
+                    val dialog = SequenceBSDialogFragment()
+                    dialog.show(requireActivity().supportFragmentManager, "SequenceBSDialogFragment")
+                }
             },
             onError = {
                 Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
@@ -225,7 +227,8 @@ class MainAnalysisFragment : Fragment() {
             binding.ssivAI2.visibility = View.VISIBLE
             // mainPartAnalysis 연결
             val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            val adapter = MainPartAnalysisRVAdapter(this@MainAnalysisFragment, adapterAnalysises[avm.currentIndex].labels)
+            Log.v("인덱스이외값전부", "${avm.currentIndex}, ${adapterAnalysises.find { it.indexx == avm.currentIndex }}")
+            val adapter = MainPartAnalysisRVAdapter(this@MainAnalysisFragment, adapterAnalysises.find { it.indexx == avm.currentIndex }?.labels) // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
             binding.rvAI.layoutManager = layoutManager
             binding.rvAI.adapter = adapter
             if (!updateUI) updateUI = false
@@ -249,11 +252,8 @@ class MainAnalysisFragment : Fragment() {
 
         binding.tvMASummary.text =
             if (avm.currentIndex != 3) {
-                Log.v("avmCurrentIndex", "${avm.currentIndex}")
-                Log.v("analysisLabels", "${adapterAnalysises[avm.currentIndex].labels}")
-                createSummary(avm.currentPart.value,
-                avm.currentIndex,
-                adapterAnalysises[avm.currentIndex].labels)
+                createSummary(avm.currentPart.value, avm.currentIndex,
+                    adapterAnalysises.find { it.indexx == avm.currentIndex }?.labels)
             } else {
                 "스쿼트 1회 동작에서 좌우 부위의 궤적을 비교합니다.\n하단에 그려진 궤적이 대칭을 이룰 수록 정상범위입니다.\n\n이동 안정성의 불균형이 생겼을 때 손은 회전근개 주변 근육, 골반은 전반적인 하지, 무릎은 허벅지와 발목과 발의 정렬을 교정해야 합니다."
             }

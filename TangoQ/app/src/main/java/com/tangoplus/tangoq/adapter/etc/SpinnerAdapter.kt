@@ -29,7 +29,7 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
         when (case) {
             0 -> {
                 binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whiteText))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.subColor800))
             }
             1 -> {

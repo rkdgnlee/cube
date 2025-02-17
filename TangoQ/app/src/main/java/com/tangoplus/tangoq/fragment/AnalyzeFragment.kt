@@ -38,7 +38,9 @@ import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgresses
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.databinding.FragmentAnalyzeBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
+import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.function.MeasurementManager.findCurrentIndex
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.view.BarChartRender
@@ -85,6 +87,18 @@ class AnalyzeFragment : Fragment() {
         // ------# 운동 기록 API 공간 #------
         todayInWeek = sortTodayInWeek()
 
+        // 클릭 리스너 달기
+        binding.ibtnAAlarm.setOnClickListener {
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+
+        binding.ibtnAQRCode.setOnClickListener {
+            val dialog = QRCodeDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
+        }
+
+
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
         var weeklySets = listOf<Float>()
         lifecycleScope.launch(Dispatchers.Main) {
@@ -97,156 +111,71 @@ class AnalyzeFragment : Fragment() {
             if (pvm.graphProgresses != null) {
 
                 withContext(Dispatchers.Main) {
-                    weeklySets = (6 downTo 0).map { i ->
-                        val currentDate = LocalDate.now().minusDays(i.toLong())
-                        val currentDateStr = currentDate.format(dateFormatter)
-
-                        // 해당 날짜가 MutableList에 있는지 확인
-                        val matchingPair = pvm.graphProgresses?.find { it.first == currentDateStr }
-                        Log.v("weeklySet가져오기", "$matchingPair")
-                        val count = calculatePercent(matchingPair?.second)
-                        count
-                    }
-                    // TODO selectedDate를 통해서 바꿔야함
-
-                    var finishSets = 0
-                    for (indices in weeklySets) {
-                        if (indices > 0f) finishSets += 1
-                    }
-
-                    // ------! bar chart 시작 !------
-                    val barChart: BarChart = binding.bcA
-                    barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
-                    val entries = ArrayList<BarEntry>()
-
-                    for (i in weeklySets.indices) {
-                        val entry = BarEntry(i.toFloat(), weeklySets[i])
-                        entries.add(entry)
-                    }
-                    val dataSet = BarDataSet(entries, "")
-                    dataSet.apply {
-                        color =  resources.getColor(R.color.thirdColor, null)
-                        setDrawValues(false)
-                    }
-                    // BarData 생성 및 차트에 설정
-                    val bcdata = BarData(dataSet)
-                    bcdata.apply {
-                        barWidth = 0.5f
-                    }
-                    barChart.data = bcdata
-                    // X축 설정
-                    barChart.xAxis.apply {
-                        position = XAxis.XAxisPosition.BOTTOM
-                        setDrawGridLines(false)
-                        setDrawAxisLine(false)
-                        labelRotationAngle = 2f
-                        setDrawLabels(false)
-                    }
-                    barChart.legend.apply {
-                        formSize = 0f
-                    }
-                    // 왼쪽 Y축 설정
-                    barChart.axisLeft.apply {
-                        axisMinimum = -1f // Y축 최소값
-                        axisMaximum = 100f
-                        setDrawAxisLine(false)
-                        setDrawGridLines(false)
-                        setLabelCount(0, false)
-                        setDrawLabels(false)
-                    }
-                    // 차트 스타일링 및 설정
-                    barChart.apply {
-                        axisRight.isEnabled = false
-                        description.isEnabled = false
-                        legend.isEnabled = false
-                        setDrawValueAboveBar(false)
-                        setDrawGridBackground(false)
-                        setFitBars(false)
-                        animateY(500)
-                        setScaleEnabled(false)
-                        setTouchEnabled(false)
-                        invalidate()
-                    }
-
-                    // ------# progress #------
-                    var progressCount = 0
-                    for (i in weeklySets.indices) {
-                        if (weeklySets[i] > 1f) {
-                            progressCount++
-                        }
-                    }
-
-                    binding.tvAWeekProgress.text = "진행일수 $progressCount/${weeklySets.size}"
-                    // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
-                    sortIvInLayout()
-                    Log.v("weeklySets", "${weeklySets}")
-                    for ((index, value) in weeklySets.withIndex()) {
-                        if (value > 1.0) {
-                            setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
-                        } else {
-                            setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
-                        }
-                        // 오늘 날짜를 지정할 index선택시 자동으로 정렬
-                        if (index == 6) {
-                            setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
-                        }
-                    }
+                    setGraph()
                 }
             }
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
-            evm.latestUVP = progressResult?.first?.sortedBy { it.uvpSn }?.toMutableList()
-            evm.latestProgram = progressResult?.second
+            if (progressResult != null) {
+                evm.latestUVP = progressResult.first.sortedBy { it.uvpSn }.toMutableList()
+                evm.latestProgram = progressResult.second
 //            Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
-            if (!evm.latestUVP.isNullOrEmpty() && evm.latestProgram != null) {
-                binding.tvAProgressGuide.visibility = View.VISIBLE
-                binding.cvAProgress.visibility = View.VISIBLE
-            } else {
-                binding.tvAProgressGuide.visibility = View.GONE
-                binding.cvAProgress.visibility = View.GONE
-            }
-            val currentIndex = findCurrentIndex(evm.latestUVP)
-            val currentExerciseItem = evm.latestProgram?.exercises?.get(currentIndex)
-            val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
+                if (!evm.latestUVP.isNullOrEmpty() && evm.latestProgram != null) {
+                    binding.tvAProgressGuide.visibility = View.VISIBLE
+                    binding.cvAProgress.visibility = View.VISIBLE
+                } else {
+                    binding.tvAProgressGuide.visibility = View.GONE
+                    binding.cvAProgress.visibility = View.GONE
+                }
+                val currentIndex = findCurrentIndex(evm.latestUVP)
+                val currentExerciseItem = evm.latestProgram?.exercises?.get(currentIndex)
+                val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
 
-            // 받아온 데이터로 cvEProgress 채우기
-            Glide.with(requireContext())
-                .load("${currentExerciseItem?.imageFilePath}")
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .override(180)
-                .into(binding.ivAThumbnail)
-            binding.tvAExerciseName.text = currentExerciseItem?.exerciseName
-            binding.tvAExerciseTime.text = second
+                // 받아온 데이터로 cvEProgress 채우기
+                Glide.with(requireContext())
+                    .load("${currentExerciseItem?.imageFilePath}")
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(180)
+                    .into(binding.ivAThumbnail)
+                binding.tvAExerciseName.text = currentExerciseItem?.exerciseName
+                binding.tvAExerciseTime.text = second
 
-            when (currentExerciseItem?.exerciseStage) {
-                "초급" -> {
-                    binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
-                    binding.tvAExerciseStage.text = "초급자"
+                when (currentExerciseItem?.exerciseStage) {
+                    "초급" -> {
+                        binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
+                        binding.tvAExerciseStage.text = "초급자"
+                    }
+                    "중급" -> {
+                        binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
+                        binding.tvAExerciseStage.text = "중급자"
+                    }
+                    "고급" -> {
+                        binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
+                        binding.tvAExerciseStage.text = "상급자"
+                    }
                 }
-                "중급" -> {
-                    binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
-                    binding.tvAExerciseStage.text = "중급자"
+                val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
+                evpItem.let {
+                    if (it != null) {
+                        binding.hpvA.progress = (it.progress * 100 / it.duration).toFloat()
+                    }
                 }
-                "고급" -> {
-                    binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
-                    binding.tvAExerciseStage.text = "상급자"
-                }
-            }
-            val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
-            evpItem.let {
-                if (it != null) {
-                    binding.hpvA.progress = (it.progress * 100 / it.duration).toFloat()
-                }
-            }
-            setShimmer(false)
+                setShimmer(false)
 //                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
 //                binding.clEProgress2.animation = animation
 
-            binding.cvAProgress.setOnSingleClickListener {
-                val programSn = evm.latestProgram?.programSn ?: -1
-                val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
-                ProgramCustomDialogFragment.newInstance(programSn, recSn)
-                    .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                binding.cvAProgress.setOnSingleClickListener {
+                    val programSn = evm.latestProgram?.programSn ?: -1
+                    val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                    ProgramCustomDialogFragment.newInstance(programSn, recSn)
+                        .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                }
+            } else {
+                setGraph()
+                setShimmer(false)
             }
+
+
+
 
 
         }
@@ -262,11 +191,19 @@ class AnalyzeFragment : Fragment() {
         binding.tvADate.text = "${pvm.selectedDate?.year}년 ${getCurrentMonthInKorean(pvm.selectedDate?.yearMonth)} ${getCurrentDayInKorean(pvm.selectedDate)} 운동 정보"
 
         pvm.selectedDailyTime.observe(viewLifecycleOwner) {
-            binding.tvADailyTime.text = "${it.div(60)}분 ${it.rem(60)}초"
+            binding.tvADailyTime.text = if (it != null) {
+                "${it.div(60)}분 ${it.rem(60) ?: 0}초"
+            } else {
+                "0분 0초"
+            }
         }
 
         pvm.selectedDailyCount.observe(viewLifecycleOwner) {
-            binding.tvADailyCount.text = "${it}개"
+            binding.tvADailyCount.text = if (it != null) {
+                "${it}개"
+            } else {
+                "0개"
+            }
         }
         binding.cvACalendar.apply {
             setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
@@ -578,5 +515,102 @@ class AnalyzeFragment : Fragment() {
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
+    }
+
+    private fun setGraph() {
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val weeklySets = (6 downTo 0).map { i ->
+            val currentDate = LocalDate.now().minusDays(i.toLong())
+            val currentDateStr = currentDate.format(dateFormatter)
+
+            // 해당 날짜가 MutableList에 있는지 확인
+            val matchingPair = pvm.graphProgresses?.find { it.first == currentDateStr }
+            Log.v("weeklySet가져오기", "$matchingPair")
+            val count = calculatePercent(matchingPair?.second)
+            count
+        }
+
+        var finishSets = 0
+        for (indices in weeklySets) {
+            if (indices > 0f) finishSets += 1
+        }
+
+        // ------! bar chart 시작 !------
+        val barChart: BarChart = binding.bcA
+        barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
+        val entries = ArrayList<BarEntry>()
+
+        for (i in weeklySets.indices) {
+            val entry = BarEntry(i.toFloat(), weeklySets[i])
+            entries.add(entry)
+        }
+        val dataSet = BarDataSet(entries, "")
+        dataSet.apply {
+            color =  resources.getColor(R.color.thirdColor, null)
+            setDrawValues(false)
+        }
+        // BarData 생성 및 차트에 설정
+        val bcdata = BarData(dataSet)
+        bcdata.apply {
+            barWidth = 0.5f
+        }
+        barChart.data = bcdata
+        // X축 설정
+        barChart.xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+            labelRotationAngle = 2f
+            setDrawLabels(false)
+        }
+        barChart.legend.apply {
+            formSize = 0f
+        }
+        // 왼쪽 Y축 설정
+        barChart.axisLeft.apply {
+            axisMinimum = -1f // Y축 최소값
+            axisMaximum = 100f
+            setDrawAxisLine(false)
+            setDrawGridLines(false)
+            setLabelCount(0, false)
+            setDrawLabels(false)
+        }
+        // 차트 스타일링 및 설정
+        barChart.apply {
+            axisRight.isEnabled = false
+            description.isEnabled = false
+            legend.isEnabled = false
+            setDrawValueAboveBar(false)
+            setDrawGridBackground(false)
+            setFitBars(false)
+            animateY(500)
+            setScaleEnabled(false)
+            setTouchEnabled(false)
+            invalidate()
+        }
+
+        // ------# progress #------
+        var progressCount = 0
+        for (i in weeklySets.indices) {
+            if (weeklySets[i] > 1f) {
+                progressCount++
+            }
+        }
+
+        binding.tvAWeekProgress.text = "진행일수 $progressCount/${weeklySets.size}"
+        // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
+        sortIvInLayout()
+        Log.v("weeklySets", "${weeklySets}")
+        for ((index, value) in weeklySets.withIndex()) {
+            if (value > 1.0) {
+                setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
+            } else {
+                setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
+            }
+            // 오늘 날짜를 지정할 index선택시 자동으로 정렬
+            if (index == 6) {
+                setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
+            }
+        }
     }
 }

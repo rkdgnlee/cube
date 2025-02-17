@@ -113,7 +113,7 @@ class MeasureFragment : Fragment() {
                                 }
                             }
                         }
-
+                        binding.tvM1Trend.isEnabled = true
                     } else {
                         binding.tvMTotalScore.text = "0"
                         binding.tvMMeasureHistory.text = "측정기록없음"
@@ -124,7 +124,7 @@ class MeasureFragment : Fragment() {
                         params.horizontalBias = 0.5f
                         binding.ivMPosition.layoutParams = params
                         binding.btnM2.isEnabled = false
-
+                        binding.tvM1Trend.isEnabled = false
                     }
                 } catch (e: ClassNotFoundException) {
                     Log.e("MError", "ClassNotFound: ${e.message}")
@@ -362,16 +362,17 @@ class MeasureFragment : Fragment() {
 
                 val measuresSize = measures?.size
                 if (measuresSize != null && measuresSize >= 1) {
-                    val userPercentile = measures?.get(4 - it)?.overall?.toInt() ?: 0
+                    val userPercentile = measures?.get(4 - it)?.overall?.toInt() ?: 0 // index가 4, 3, 2, 1, 0으로 들어감.
                     percentage = calculatePercentage(userPercentile)
+                    Log.v("userPercentile", "$userPercentile, $percentage")
                     when (percentage) {
-                        in 0f..0.3f -> {
+                        in 0f..0.33f -> {
                             binding.vMMiddle.visibility = View.INVISIBLE
                             binding.vMLow.visibility = View.VISIBLE
                             binding.vMHigh.visibility = View.INVISIBLE
                         }
 
-                        in 0.7f..1.0f -> {
+                        in 0.66f..1.0f -> {
                             binding.vMMiddle.visibility = View.INVISIBLE
                             binding.vMLow.visibility = View.GONE
                             binding.vMHigh.visibility = View.VISIBLE
@@ -437,9 +438,9 @@ class MeasureFragment : Fragment() {
         val startBias = params.horizontalBias
         val endBias = when (percent) {
             in 0f .. 0.33f -> 0.135f
-            in 0.34f .. 0.66f -> 0.5f
-            in 0.67f .. 1f -> 0.875f
-            else -> 0f
+            in 0.33f .. 0.66f -> 0.5f
+            in 0.66f .. 1f -> 0.875f
+            else -> 0.5f
         } // 이동할 목표 위치
 
         // ValueAnimator 생성

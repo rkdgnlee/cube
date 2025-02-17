@@ -40,7 +40,6 @@ import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
-import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.api.NetworkUser.idDuplicateCheck
@@ -140,10 +139,7 @@ class SignInActivity : AppCompatActivity() {
         binding.pvSignIn.progress = 25f
         // -----! progress bar 끝 !-----
 
-        // -----! 통신사 선택 시작 !-----
-        binding.tvTelecom.setOnSingleClickListener {
-            showTelecomBottomSheetDialog(this@SignInActivity)
-        } // -----! 통신사 선택 끝 !-----
+
 
         // -----! 회원가입 입력 창 anime 시작  !-----
         TransitionManager.beginDelayedTransition(binding.llSignIn, SignInTransition())
@@ -368,6 +364,8 @@ class SignInActivity : AppCompatActivity() {
                                 setTitle("알림")
                                 setMessage("이미 사용중인 아이디입니다.")
                                 setNeutralButton("확인") { dialog, _ ->
+                                    binding.tvIdCondition.text = "사용중인 아이디입니다. 새로운 아이디를 만들어주세요"
+                                    binding.tvIdCondition.setTextColor(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.deleteColor))
                                     dialog.dismiss()
                                 }
                             }.show()
@@ -479,12 +477,9 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.pwCompare.value == true) {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwRepeat.text = "일치합니다"
-                    binding.btnSignIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.mainColor))
-
                 } else {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
                     binding.tvPwRepeat.text = "올바르지 않습니다"
-                    binding.btnSignIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400))
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----
 
@@ -587,16 +582,7 @@ class SignInActivity : AppCompatActivity() {
             }
     }
 
-    private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
-        val bottomsheetfragment = SignInBSDialogFragment()
-        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.OnTelecomSelectedListener {
-            override fun onTelecomSelected(telecom: String) {
-                binding.tvTelecom.text = telecom
-            }
-        })
-        val fragmentManager = context.supportFragmentManager
-        bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
-    }
+
 
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
         val bottomSheetFragment = AgreementBSDialogFragment()

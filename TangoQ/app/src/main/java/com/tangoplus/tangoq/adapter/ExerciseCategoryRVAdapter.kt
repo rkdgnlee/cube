@@ -115,7 +115,6 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
         Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
-            addToBackStack(null)
             commit()
         }
     }

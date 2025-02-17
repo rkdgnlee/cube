@@ -79,14 +79,18 @@ object ImageProcessingUtil {
             style = Paint.Style.FILL // 내부만 채우기
         }
         val textPaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF")
-            textSize = if (isTablet(context)) 32f else 48f
+            color = Color.parseColor("#000000")
+            textSize = 48f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
             // TODO BOLD나 왼쪽 오른쪽 추가 고려
         }
-        val circlePaint = Paint().apply {
+        val outerCirclePaint = Paint().apply {
             color = Color.parseColor("#41000000")
+            style = Paint.Style.FILL
+        }
+        val innerCirclePaint = Paint().apply {
+            color = Color.parseColor("#FFFFFF")
             style = Paint.Style.FILL
         }
         val nose = plr.getOrNull(0)
@@ -318,16 +322,21 @@ object ImageProcessingUtil {
         // left right  표시 넣기
         val leftCircleX = 100f
         val leftCircleY = 100f
-        val circleRadius = if (isTablet(context)) 32f else 48f
+        val circleRadius = 48f
+        val innerRadius = 10f
         if (sequence in listOf(5, 6)) {
-            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
             canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
-            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
             canvas.drawText("L", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
         } else if (sequence !in listOf(3, 4)) {
-            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
             canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
-            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
             canvas.drawText("R", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
         }
 

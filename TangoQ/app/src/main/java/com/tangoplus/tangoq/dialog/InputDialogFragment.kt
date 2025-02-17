@@ -63,7 +63,7 @@ class InputDialogFragment : DialogFragment() {
                 verifyPW(requireContext(), getString(R.string.API_user), jo) { status ->
                     when (status) {
                         200 -> {
-                            val dialog = ProfileEditChangeDialogFragment.newInstance("전화번호", "")
+                            val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
                             dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                             dismiss()
                         }

@@ -281,7 +281,7 @@ object MeasurementManager {
         // 좌측 골반
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_left" to Triple(90f,2.1f, 3.8f),
-                "front_horizontal_angle_hip" to Triple(180f, 1.5f, 2.8f)),
+                "front_horizontal_angle_hip" to Triple(180f, 1.2f, 2.1f)),
             3 to mapOf("side_left_horizontal_distance_hip" to Triple(2.5f, 2.55f, 3.75f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, -0.9f, -2.3f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,8f, 14f),
@@ -289,7 +289,7 @@ object MeasurementManager {
         ),
         mapOf(
             0 to mapOf("front_vertical_angle_hip_knee_right" to Triple(90f,2.1f, 3.8f),
-                "front_horizontal_angle_hip" to Triple(-180f, 1.5f, 2.8f)),
+                "front_horizontal_angle_hip" to Triple(-180f, 1.2f, 2.1f)),
             4 to mapOf("side_right_horizontal_distance_hip" to Triple(2.5f, 2.55f, 3.75f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 0.9f, 2.3f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,8f, 14f),
@@ -1039,7 +1039,7 @@ object MeasurementManager {
     }
 
     // 그냥 여기다가 seq 를 0 1, 2, 3으로 받는 형식으로 변형
-    fun createSummary(part: String?, seq: Int, units: MutableList<AnalysisUnitVO>): String {
+    fun createSummary(part: String?, seq: Int, units: MutableList<AnalysisUnitVO>?): String {
         val resultString = StringBuilder()
 
 //        fun getDirection(value: Float): String {
@@ -1058,12 +1058,16 @@ object MeasurementManager {
 //        }
 
         fun countWarning() : Boolean {
-            val totalUnits = units.size
-            val warningUnits = units.count { it.state > 1 }
+            val totalUnits = units?.size
+            val warningUnits = units?.count { it.state > 1 }
 
-            val percent = warningUnits / totalUnits.toFloat()
+            val percent = totalUnits?.toFloat()?.let { warningUnits?.div(it) }
             // 갯수를 셌는데 과반수면 해당관절 + 해당 관절
-            return percent >= 0.5f
+            if (percent != null) {
+                return percent >= 0.5f
+            } else {
+                return true
+            }
         }
 
         if (seq == 3) {

@@ -39,13 +39,14 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.api.NetworkProgram.fetchProgram
-import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgresses
 import com.tangoplus.tangoq.api.NetworkProgress.getProgress
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -129,10 +130,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 * recommendation_sn + week 까지만 받아서 쓰면 될듯?
                 * 그러면 내가 week
                 * */
-
-
                 CoroutineScope(Dispatchers.IO).launch {
-                    pvm.getProgressData(requireContext())
+                    val result = async { pvm.getProgressData(requireContext()) }
+                    result.await()
                     withContext(Dispatchers.Main) {
                         Log.v("옵저버동작", "selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}")
                         if (pvm.currentProgram != null && pvm.selectedSequence.value != null) {
@@ -155,7 +155,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                     binding.rvPCDHorizontal.isEnabled = true
                                 }
                                 pvm.currentSequence = newSequence
-                                Log.v("옵저버seq존재", "selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
+                                Log.v("옵저버seq존재", "프로그레스들: ${pvm.currentProgresses.map { it.progress }}, cycle: ${pvm.currentProgresses.map { it.cycleProgress }}  selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
                                 val selectedSeqValue = pvm.selectedSequence.value
                                 setAdapter(pvm.currentProgram, pvm.currentProgresses, Pair(pvm.currentSequence, selectedSeqValue))
                                 val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
@@ -194,10 +194,14 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                         for (i in startIndex until currentSequenceProgresses.size) {
 
+                            // 재생완료인 것들은 빼버리기
                             val progress = currentSequenceProgresses[i]
-                            exerciseIds.add(progress.exerciseId.toString())
-                            uvpIds.add(progress.uvpSn.toString())
-                            videoUrls.add(program.exercises?.get(i)?.videoFilepath.toString())
+                            Log.v("progress", "${progress.exerciseId}, ${progress.uvpSn}")
+                            if (progress.cycleProgress <= (progress.duration * 95 ) / 100) {
+                                exerciseIds.add(progress.exerciseId.toString())
+                                uvpIds.add(progress.uvpSn.toString())
+                                videoUrls.add(program.exercises?.find { it.exerciseId == progress.exerciseId.toString() }?.videoFilepath.toString())
+                            }
                         }
 
                         val intent = Intent(requireContext(), PlayFullScreenActivity::class.java)
@@ -332,6 +336,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             updateUI()  // UI 업데이트는 필요할 때마다 호출
         }
     }
+
     private fun setAdapter(program: ProgramVO?, progresses : MutableList<ProgressUnitVO>?, sequence: Pair<Int, Int?>) {
         /* sequence = Pair(현재 회차(currentSeq), 선택한 회차 (selectedSeq))
         currentSequence 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
@@ -343,7 +348,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         val selectedWeekValue = pvm.selectedWeek.value
 
         if (selectSeqValue != null && frequency != null && selectedWeekValue != null && sequence.second != null) {
-            Log.v("프로그레들", "${pvm.seqHpvs}")
+
             adapter = ProgramCustomRVAdapter(this@ProgramCustomDialogFragment,
                 Triple(frequency, pvm.currentSequence, selectSeqValue),
                 Pair(pvm.currentWeek, selectedWeekValue),
@@ -493,7 +498,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             getProgress(getString(R.string.API_progress), jo, requireContext()) { (historySn, week, seq), result ->
                 CoroutineScope(Dispatchers.Main).launch {  // LiveData 업데이트는 메인 스레드에서
                     val adjustedWeek = if (week == -1) 0 else week - 1
-                    val adjustedSeq = if (seq == -1) 0 else seq - 1
+                    val adjustedSeq = seq
                     Log.v("포스트getProgress", "callback: $adjustedWeek, $adjustedSeq, $week, $seq, result: $result")
 
                     val serverLastItem = result[adjustedWeek].last()
@@ -524,11 +529,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     private fun showBalloon() {
         val balloon2 = Balloon.Builder(requireContext())
-            .setWidthRatio(0.8f)
+            .setWidth(BalloonSizeSpec.WRAP)
             .setHeight(BalloonSizeSpec.WRAP)
             .setText("주차 요일에 맞추어 운동을 진행합니다.\n프로그램을 한 주동안 원하는 날짜에 진행해보세요")
             .setTextColorResource(R.color.white)
-            .setTextSize(15f)
+            .setTextSize(if (isTablet(requireContext())) 24f else 18f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
             .setArrowSize(0)
             .setMargin(10)

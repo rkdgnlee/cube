@@ -84,8 +84,12 @@ class SignInViewModel: ViewModel() {
     val setEmail = MutableLiveData<String>()
     val setBirthday = MutableLiveData<String>()
     val setMobile = MutableLiveData<String>()
-
     val editChangeCondition = MutableLiveData(false)
+
+    val birthdayCondition = MutableLiveData(false)
+    val heightCondition = MutableLiveData(false)
+    val weightCondition = MutableLiveData(false)
+
 
     var verificationId = ""
     init {

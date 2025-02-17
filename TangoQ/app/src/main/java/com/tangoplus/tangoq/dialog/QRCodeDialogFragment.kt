@@ -33,6 +33,7 @@ import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
+import com.skydoves.balloon.showAlignBottom
 import com.skydoves.balloon.showAlignStart
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentQRCodeDialogBinding
@@ -70,10 +71,11 @@ class QRCodeDialogFragment : DialogFragment() {
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
 
         // ------! balloon 시작 !------
+
         val balloon = Balloon.Builder(requireContext())
-            .setWidthRatio(0.6f)
+            .setWidth(BalloonSizeSpec.WRAP)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("탱고바디 화면에 나오는 6자리 PIN번호를 입력해주세요")
+            .setText("탱고바디 키오스크로 로그인을 위한 화면입니다\n탱고바디 화면에 나오는 6자리 PIN번호를 입력해주세요")
             .setTextColorResource(R.color.subColor800)
             .setTextSize(18f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
@@ -87,9 +89,11 @@ class QRCodeDialogFragment : DialogFragment() {
             .build()
 
         binding.ibtnLSDInfo.setOnClickListener {
-            binding.ibtnLSDInfo.showAlignStart(balloon)
-            balloon.dismissWithDelay(3000L)
+            binding.textView20.showAlignBottom(balloon)
+            balloon.dismissWithDelay(5000L)
         }
+        binding.textView20.showAlignBottom(balloon)
+        balloon.dismissWithDelay(3000L)
 
         binding.tlLSD.addOnTabSelectedListener(object: OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {

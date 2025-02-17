@@ -6,7 +6,9 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefres
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import com.tangoplus.tangoq.db.Singleton_t_user
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -73,6 +75,9 @@ object NetworkUser {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     Log.e("자체로그인Failed", "Failed to execute request!")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        callback(null)
+                    }
                 }
 
                 override fun onResponse(call: Call, response: Response) {

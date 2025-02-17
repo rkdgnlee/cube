@@ -35,7 +35,7 @@
                 app:layout_constraintWidth_percent="0.25" />
 
             <ImageView
-                android:id="@+id/imageView10"
+                android:id="@+id/ivMAPartBS"
                 android:layout_width="29dp"
                 android:layout_height="28dp"
                 android:layout_marginStart="10dp"
@@ -235,8 +235,8 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cv_exo_left"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="20dp"
                         android:visibility="visible"
@@ -250,17 +250,19 @@
                             android:id="@+id/textView35"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="#00FFFFFF"
+                            android:layout_margin="6dp"
+                            android:background="@drawable/bckgnd_rectangle_36"
+                            android:backgroundTint="#FFFFFF"
                             android:gravity="center"
                             android:text="L"
-                            android:textColor="@color/whiteText"
-                            android:textSize="20dp" />
+                            android:textColor="#000000"
+                            android:textSize="22dp" />
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cv_exo_right"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         android:layout_gravity="end"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="20dp"
@@ -275,11 +277,13 @@
                             android:id="@+id/textView122"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="#00FFFFFF"
+                            android:layout_margin="6dp"
+                            android:background="@drawable/bckgnd_rectangle_36"
+                            android:backgroundTint="#FFFFFF"
                             android:gravity="center"
                             android:text="R"
-                            android:textColor="@color/whiteText"
-                            android:textSize="20dp" />
+                            android:textColor="#000000"
+                            android:textSize="22dp" />
                     </androidx.cardview.widget.CardView>
 
                 </FrameLayout>

@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:background="@drawable/bckgnd_rectangle_20"
-            android:backgroundTint="@color/secondaryColor"
+            android:backgroundTint="@color/subColor400"
             android:drawableEnd="@drawable/icon_arrow_right_small"
             android:gravity="center|center_vertical"
             android:paddingStart="15dp"

@@ -20,6 +20,9 @@ class PlayViewModel : ViewModel() {
     var weekNumber = 0
     var cycle = 0
 
+    var simpleExoPlayer: SimpleExoPlayer? = null
+    var currentMediaSourceIndex = 0
+    var currentVideoDuration = 0L
 
     fun savePlayerState(player: SimpleExoPlayer, url: String = "") {
         playbackPosition = player.currentPosition
@@ -38,7 +41,9 @@ class PlayViewModel : ViewModel() {
     var totalProgressDuration = 0
     var exerciseLog = Triple(0, 0, 0) // 진행시간, 갯수, 총 시간.
     var isDialogShown = MutableLiveData(false)
-    var isUnit = false
+    var isEVP = false
 
-
+    // Play Thumbnail
+    var isProgram = false
+    var uvpSn = 0
 }

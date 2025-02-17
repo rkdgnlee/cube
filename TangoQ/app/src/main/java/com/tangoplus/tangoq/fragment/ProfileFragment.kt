@@ -224,22 +224,24 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         Log.v("Singleton>updateUserData", "$userJson")
+        val heightJo = userJson?.optDouble("height")
+        val weightJo = userJson?.optDouble("weight")
         requireActivity().runOnUiThread {
             if (userJson != null) {
+                if (heightJo != null && weightJo != null) {
+                    val height = when (userJson.optDouble("height")) {
+                        in 80.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
+                        else -> { "미설정" }
+                    }
+                    binding.tvPHeight.text = height
+
+                    val weight = when(userJson.optDouble("weight")) {
+                        in 20.0 .. 200.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
+                        else -> { "미설정" }
+                    }
+                    binding.tvPWeight.text = weight
+                }
                 binding.tvPfName.text = userJson.optString("user_name")
-
-                val height = when (userJson.optDouble("height")) {
-                    in 1.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
-                    else -> { "미설정" }
-                }
-                binding.tvPHeight.text = height
-
-                val weight = when(userJson.optDouble("weight")) {
-                    in 1.0 .. 150.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
-                    else -> { "미설정" }
-                }
-                binding.tvPWeight.text = weight
-
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = try {
                     if (userJson.optString("birthday") != "0000-00-00") {
@@ -249,19 +251,19 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                     }
 
                 } catch (e: IndexOutOfBoundsException) {
-                    Log.e("EDetailIndex", "${e.message}")
+                    Log.e("ProfileError", "IndexOutOfBounds: ${e.message}")
                     "미설정"
                 } catch (e: IllegalArgumentException) {
-                    Log.e("EDetailIllegal", "${e.message}")
+                    Log.e("ProfileError", "IllegalArgument: ${e.message}")
                     "미설정"
                 } catch (e: IllegalStateException) {
-                    Log.e("EDetailIllegal", "${e.message}")
+                    Log.e("ProfileError", "IllegalState: ${e.message}")
                     "미설정"
                 } catch (e: NullPointerException) {
-                    Log.e("EDetailNull", "${e.message}")
+                    Log.e("ProfileError", "NullPointer: ${e.message}")
                     "미설정"
                 } catch (e: java.lang.Exception) {
-                    Log.e("EDetailException", "${e.message}")
+                    Log.e("ProfileError", "Exception: ${e.message}")
                     "미설정"
                 }
 
