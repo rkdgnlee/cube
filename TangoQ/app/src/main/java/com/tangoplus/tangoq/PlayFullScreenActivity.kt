@@ -116,8 +116,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
         pvm.isProgram = isProgram
         pvm.uvpSn = uvpSn
 
-        Log.v("url들", "isEVP: ${pvm.isEVP}, urls: $videoUrls, uvpSns: ${pvm.uvpSns}, isProgram: $isProgram, uvpSn: $uvpSn")
-        Log.v("ptd로그", "isEVP: ${pvm.isEVP}, exerciseId: ${exerciseId}, videoUrl: $videoUrl")
+        Log.v("url들", "isEVP: ${pvm.isEVP}, urls: $videoUrls, uvpSns: ${pvm.uvpSns}, isProgram: $isProgram, uvpSn: $uvpSn, cycle: ${pvm.cycle}, weekNumber: ${pvm.weekNumber}")
+
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
         if (!videoUrls.isNullOrEmpty()) {
             pvm.baseUrls.addAll(videoUrls)
@@ -366,7 +366,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
             callback()
         } else if (pvm.uvpSn != 0) {
             patchProgress1Item(getString(R.string.API_progress), pvm.uvpSn, jo, this@PlayFullScreenActivity) { }
-            Log.v("progress완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
+            Log.v("progress완료업데이트", "week: ${pvm.weekNumber} cycle: ${pvm.cycle}, currentPosition: $currentPositionMs")
             callback()
         }
     }

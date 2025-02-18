@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -23,6 +25,7 @@ import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.vo.ExerciseHistoryVO
 import java.lang.IllegalArgumentException
 
@@ -173,7 +176,7 @@ class ExerciseRVAdapter (
                             in 1 .. 94 -> 1
                             else -> 2
                         }
-                        Log.v("condition", "${currentItem.uvpSn}, ${currentItem.cycleProgress}, ${currentItem.duration}")
+//                        Log.v("condition", "${currentItem.uvpSn}, ${currentItem.exerciseId}, ${currentExerciseItem?.exerciseId} ${currentItem.cycleProgress}, ${currentItem.duration}")
                         // Program 의 UI
                         holder.hpvEI.visibility = View.VISIBLE
                         when (condition) {

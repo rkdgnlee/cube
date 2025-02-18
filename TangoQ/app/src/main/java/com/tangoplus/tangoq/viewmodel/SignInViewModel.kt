@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.json.JSONObject
+import kotlin.math.truncate
 
 class SignInViewModel: ViewModel() {
     // 회원가입에 담는 user
@@ -16,8 +17,7 @@ class SignInViewModel: ViewModel() {
     var id = MutableLiveData("")
     var pw = MutableLiveData("")
     var emailId = MutableLiveData("")
-
-    // 아이디 비밀번호 찾기
+    var setGender = MutableLiveData(0)    // 아이디 비밀번호 찾기
     var isFindId = true
 
 

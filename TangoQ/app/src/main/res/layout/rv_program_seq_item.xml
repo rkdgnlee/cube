@@ -33,9 +33,9 @@
         android:gravity="center"
         android:padding="2dp"
         android:stateListAnimator="@null"
-        android:text="01\nStep"
+        android:text="Day 1"
         android:textColor="@color/whiteText"
-        android:textSize="16dp"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

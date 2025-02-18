@@ -7,8 +7,6 @@ import org.json.JSONObject
 class Singleton_t_user private constructor(context: Context) {
     var jsonObject: JSONObject? = null
 
-
-
     companion object {
         @SuppressLint("StaticFieldLeak")
         @Volatile

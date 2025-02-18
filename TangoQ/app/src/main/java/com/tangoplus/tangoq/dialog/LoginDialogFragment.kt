@@ -191,7 +191,7 @@ class LoginDialogFragment : DialogFragment() {
                                 if (safeContext != null) {
                                     dialog.dismiss()
                                     ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                        Log.v("자체로그인완료", "${Singleton_t_user.getInstance(safeContext).jsonObject}")
+//                                        Log.v("자체로그인완료", "${Singleton_t_user.getInstance(safeContext).jsonObject}")
                                         Handler(Looper.getMainLooper()).postDelayed({
                                             val intent = Intent(safeContext, MainActivity::class.java)
                                             safeContext.startActivity(intent)

@@ -144,7 +144,7 @@ class FindAccountDialogFragment : DialogFragment() {
         // ------! 인증 문자 확인 시작 !------
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                Log.v("verifyComplete", "PhoneAuthCredential: $p0")
+//                Log.v("verifyComplete", "PhoneAuthCredential: $p0")
             }
             override fun onVerificationFailed(p0: FirebaseException) {
                 Log.e("failedAuth", "$p0")
@@ -153,7 +153,7 @@ class FindAccountDialogFragment : DialogFragment() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 verifyId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId ,token: $token")
+//                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId ,token: $token")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireView(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                 binding.btnFADConfirm.isEnabled = true
@@ -179,7 +179,7 @@ class FindAccountDialogFragment : DialogFragment() {
                     else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
                 }
                 isFormatting = false
-                Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()}")
+//                Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()}")
                 svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()
                 if (svm.mobileCondition.value == true) {
                     svm.User.value?.put("user_mobile", s.toString() )
@@ -196,7 +196,7 @@ class FindAccountDialogFragment : DialogFragment() {
                 .setMessage("$transformMobile 로 인증 하시겠습니까?")
                 .setPositiveButton("예") { _, _ ->
                     transformMobile = transformMobile.replace("-", "")
-                    Log.w("전화번호", transformMobile)
+//                    Log.w("전화번호", transformMobile)
 
                     val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(transformMobile)
@@ -263,7 +263,7 @@ class FindAccountDialogFragment : DialogFragment() {
                         put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
                         put("mobile_check", if (svm.mobileAuthCondition.value == true) "checked" else "nonChecked")
                     }
-                    Log.v("찾기>핸드폰번호", "$jo")
+//                    Log.v("찾기>핸드폰번호", "$jo")
                     findUserId(requireContext(), getString(R.string.API_user), jo.toString()) { resultString ->
                         if (resultString == "") {
                             requireActivity().runOnUiThread {

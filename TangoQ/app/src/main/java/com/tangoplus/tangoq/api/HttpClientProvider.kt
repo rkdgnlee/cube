@@ -103,7 +103,7 @@ object HttpClientProvider {
         val tokenCheckRequest = PeriodicWorkRequestBuilder<TokenCheckWorker>(
             50, TimeUnit.SECONDS
         ).build()
-        Log.v("worker실행", "scheduleTokenCheck")
+//        Log.v("worker실행", "scheduleTokenCheck")
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "TokenCheckWork", // 작업의 고유 이름
             ExistingPeriodicWorkPolicy.UPDATE, // 기존 작업 유지

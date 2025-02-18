@@ -23,12 +23,14 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.yearMonth
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProgressHistoryRVAdapter
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
@@ -41,7 +43,6 @@ import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.function.MeasurementManager.findCurrentIndex
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
@@ -100,7 +101,6 @@ class AnalyzeFragment : Fragment() {
 
 
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
-        var weeklySets = listOf<Float>()
         lifecycleScope.launch(Dispatchers.Main) {
             setShimmer(true)
             if (pvm.graphProgresses.isNullOrEmpty()) {
@@ -116,7 +116,7 @@ class AnalyzeFragment : Fragment() {
             }
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             if (progressResult != null) {
-                evm.latestUVP = progressResult.first.sortedBy { it.uvpSn }.toMutableList()
+                evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
                 evm.latestProgram = progressResult.second
 //            Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
                 if (!evm.latestUVP.isNullOrEmpty() && evm.latestProgram != null) {
@@ -126,8 +126,9 @@ class AnalyzeFragment : Fragment() {
                     binding.tvAProgressGuide.visibility = View.GONE
                     binding.cvAProgress.visibility = View.GONE
                 }
-                val currentIndex = findCurrentIndex(evm.latestUVP)
-                val currentExerciseItem = evm.latestProgram?.exercises?.get(currentIndex)
+//                val currentIndex = findCurrentIndex(evm.latestUVP)
+                val currentEId = evm.latestUVP?.get(0)?.exerciseId
+                val currentExerciseItem = evm.latestProgram?.exercises?.find { it.exerciseId?.toInt() == currentEId }
                 val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
 
                 // 받아온 데이터로 cvEProgress 채우기
@@ -172,17 +173,13 @@ class AnalyzeFragment : Fragment() {
             } else {
                 setGraph()
                 setShimmer(false)
+                binding.tvAProgressGuide.visibility = View.GONE
+                binding.cvAProgress.visibility = View.GONE
             }
-
-
-
-
-
         }
 
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        Log.v("Singleton>Profile", "${userJson}")
-
+//        Log.v("Singleton>Profile", "${userJson}")
 
         // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
@@ -260,7 +257,7 @@ class AnalyzeFragment : Fragment() {
             withContext(Dispatchers.IO) {
                 pvm.selectedDate?.let { selectedDate ->
                     val date = selectedDate.format(formatter)
-                    Log.v("date", date)
+//                    Log.v("date", date)
                     val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
                     withContext(Dispatchers.Main) {
                         if (!currentProgresses.isNullOrEmpty()) {
@@ -329,10 +326,10 @@ class AnalyzeFragment : Fragment() {
                                 pvm.selectedDate?.let { binding.cvACalendar.notifyDateChanged(it) }
                                 lifecycleScope.launch {
                                     withContext(Dispatchers.IO) {
-                                        Log.v("selectedDate", "${pvm.selectedDate}")
+//                                        Log.v("selectedDate", "${pvm.selectedDate}")
                                         pvm.selectedDate?.let { selectedDate ->
                                             val date = selectedDate.format(formatter)
-                                            Log.v("date", date)
+//                                            Log.v("date", date)
                                             val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
                                             withContext(Dispatchers.Main) {
                                                 if (!currentProgresses.isNullOrEmpty()) {
@@ -343,7 +340,7 @@ class AnalyzeFragment : Fragment() {
                                                 binding.tvADate.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
                                             }
                                         } ?: run {
-                                            Log.e("DateSelection", "Selected date is null")
+//                                            Log.e("DateSelection", "Selected date is null")
                                         }
                                     }
                                 }
@@ -364,8 +361,23 @@ class AnalyzeFragment : Fragment() {
         } // ------! calendar 끝 !------
 
         binding.btnAExercise.setOnClickListener {
-            val bnb : BottomNavigationView = requireActivity().findViewById(R.id.bnbMain)
-            bnb.selectedItemId = R.id.exercise
+            if (evm.latestUVP != null) {
+                val programSn = evm.latestProgram?.programSn ?: -1
+                val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                ProgramCustomDialogFragment.newInstance(programSn, recSn)
+                    .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+            } else {
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("알림")
+                    setMessage("프로그램 기록이 없습니다.\n측정으로 이동합니다.")
+                    setPositiveButton("확인", { _ , _ ->
+                        (activity as MainActivity).launchMeasureSkeletonActivity()
+                    })
+                    setNegativeButton("취소", {_, _ ->
+
+                    })
+                }.show()
+            }
         }
     }
 
@@ -525,7 +537,7 @@ class AnalyzeFragment : Fragment() {
 
             // 해당 날짜가 MutableList에 있는지 확인
             val matchingPair = pvm.graphProgresses?.find { it.first == currentDateStr }
-            Log.v("weeklySet가져오기", "$matchingPair")
+//            Log.v("weeklySet가져오기", "$matchingPair")
             val count = calculatePercent(matchingPair?.second)
             count
         }
@@ -600,7 +612,7 @@ class AnalyzeFragment : Fragment() {
         binding.tvAWeekProgress.text = "진행일수 $progressCount/${weeklySets.size}"
         // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
         sortIvInLayout()
-        Log.v("weeklySets", "${weeklySets}")
+//        Log.v("weeklySets", "$weeklySets")
         for ((index, value) in weeklySets.withIndex()) {
             if (value > 1.0) {
                 setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")

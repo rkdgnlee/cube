@@ -235,7 +235,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         avm.rightMeasureDate.value = avm.measureDisplayDates.find { it.fullDateTime == selectedDate.fullDateTime }
         binding.actvMTDRight.setText(avm.rightMeasureDate.value?.displayDate, false)
 
-        Log.v("selectedDateRight", "${avm.rightMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
+//        Log.v("selectedDateRight", "${avm.rightMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
         CoroutineScope(Dispatchers.IO).launch {
             // 데이터 셋팅 확인
             setMeasureFiles(avm.rightMeasureDate.value?.fullDateTime)
@@ -439,12 +439,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         if (singletonIndex != null && singletonIndex >= 0) {
                             singletonMeasure.measures?.set(singletonIndex, editedMeasure)
                             avm.leftMeasurement.value = editedMeasure
-                            Log.v("수정완료", "index: $singletonIndex, VO: $editedMeasure")
+//                            Log.v("수정완료", "index: $singletonIndex, VO: $editedMeasure")
                             withContext(Dispatchers.Main) {
                                 loadingDialog.dismiss()
                             }
-                        } else {
-
                         }
                     }
 
@@ -465,8 +463,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 Log.e("trendError", "MeasureBS: ${e.message}")
             }
         }
-        Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
-        Log.w("selectedMeasure", "${mvm.selectedMeasure}")
+//        Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
+//        Log.w("selectedMeasure", "${mvm.selectedMeasure}")
         if (loadingDialog.dialog?.isShowing == true) {
             loadingDialog.dismiss()
         }
@@ -552,7 +550,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 lifecycleScope.launch {
                     // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
                     avm.trendRightUri = avm.rightMeasurement.value?.fileUris?.get(1).toString()
-                    Log.v("VMTrendRight", "${avm.trendRightUri}")
+//                    Log.v("VMTrendRight", "${avm.trendRightUri}")
                     val mediaItem = MediaItem.fromUri(Uri.parse(avm.trendRightUri))
                     val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
                         .createMediaSource(mediaItem)
@@ -687,7 +685,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 val screenWidth = displayMetrics.widthPixels
 
                 val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
-                Log.v("aspectRatio", "$aspectRatio")
+//                Log.v("aspectRatio", "$aspectRatio")
                 val adjustedHeight = (screenWidth * aspectRatio).toInt()
 
                 val resizingValue = if (isTablet(requireContext())) {

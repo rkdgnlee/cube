@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -52,6 +53,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     private var videoUrl = ""
     val evm: ExerciseViewModel by activityViewModels()
     val pvm: PlayViewModel by activityViewModels()
+    val progressVm: ProgressViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var prefs : PreferencesManager
@@ -199,6 +201,9 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                     intent.putExtra("isEVP", false)
                     intent.putExtra("isProgram", true)
                     intent.putExtra("uvpSn", pvm.uvpSn)
+                    intent.putExtra("current_position", progressVm.currentProgresses.find { it.uvpSn == pvm.uvpSn }?.cycleProgress?.toLong())
+                    intent.putExtra("currentWeek", progressVm.currentWeek + 1)
+                    intent.putExtra("currentSeq", progressVm.currentSequence + 1)
                 }
                 false -> {
                     intent.putExtra("isEVP", true)
@@ -223,49 +228,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         binding.ibtnPTDExit.setOnClickListener {
             dismiss()
         }
-
-//        // ------# 전체화면 구현 로직 시작 #------
-//        val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
-//        exitButton.setOnClickListener {
-//            dismiss()
-//        }
-//
-//        val exoPlay = binding.pvPTD.findViewById<ImageButton>(R.id.btnPlay)
-//        val exoPause = binding.pvPTD.findViewById<ImageButton>(R.id.btnPause)
-//        exoPause?.setOnClickListener {
-//            if (simpleExoPlayer?.isPlaying == true) {
-//                simpleExoPlayer?.pause()
-//                exoPause.visibility = View.GONE
-//                exoPlay.visibility = View.VISIBLE
-//            }
-//        }
-//        exoPlay?.setOnClickListener {
-//            if (simpleExoPlayer?.isPlaying == false) {
-//                simpleExoPlayer?.play()
-//                exoPause.visibility = View.VISIBLE
-//                exoPlay.visibility = View.GONE
-//            }
-//        }
-//        // ------! 앞으로 감기 뒤로 감기 시작 !------
-//        val replay5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_replay_5)
-//        val forward5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_forward_5)
-//        replay5.setOnClickListener {
-//            val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
-//            if (replayPosition != null) {
-//                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition))
-//            }
-//        }
-//        forward5.setOnClickListener {
-//            val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
-//            if (forwardPosition != null) {
-//                if (forwardPosition < (simpleExoPlayer?.duration?.minus(5000) ?: 0)) {
-//                    simpleExoPlayer?.seekTo(forwardPosition)
-//                } else {
-//                    simpleExoPlayer?.pause()
-//                }
-//            }
-//        } // ------! 앞으로 감기 뒤로 감기 끝 !------
-
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
             val responseArrayList = evm.allExercises
@@ -292,28 +254,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         }
 
         // ------! 관련 운동 횡 rv 끝 !------
-
-        // ------! ai코칭 시작 !------
-//        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
-//            binding.btnPTDAIPlay.visibility = View.VISIBLE
-//        } else {
-//            binding.btnPTDAIPlay.visibility = View.GONE
-//        }
-//        binding.btnPTDAIPlay.setOnClickListener {
-//            if (isTablet(requireContext())) {
-//                val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
-//
-//                val exerciseIds = mutableListOf(exerciseData?.exerciseId)
-//                val videoUrls = mutableListOf(videoUrl)
-//                intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-//                intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-//                intent.putExtra("total_time", exerciseData?.duration?.toInt())
-//                startActivity(intent)
-//            } else {
-//                context.let { Toast.makeText(it, "태블릿 기기에서 운동을 추천드립니다", Toast.LENGTH_SHORT).show() }
-//            }
-//        }
-        // ------! ai코칭 끝 !------
 
         // ------# share #------
         binding.ibtnPTDShare.setOnClickListener {
@@ -401,7 +341,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     val pendingIntent = PendingIntent.getBroadcast(requireContext(), requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
     alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
 
-    Log.v("현재 시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
+//    Log.v("현재 시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
     }
 
     fun setDialogCloseListener(listener: DialogCloseListener) {

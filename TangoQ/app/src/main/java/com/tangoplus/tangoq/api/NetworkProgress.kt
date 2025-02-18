@@ -34,7 +34,7 @@ object NetworkProgress {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("포스트프로그램싸이클", "$responseBody")
+                    // Log.v("포스트프로그램싸이클", "$responseBody")
                     val bodyJson = JSONObject(responseBody.toString())
                     val ja = bodyJson.optJSONArray("data")
                     val pv3 = bodyJson.optJSONObject("sum_data_for_each_cycle")
@@ -51,7 +51,7 @@ object NetworkProgress {
                                 0f
                             }
 
-                            Log.v("총,진행시간", "$duration, $progress, percent: $percent")
+                            // Log.v("총,진행시간", "$duration, $progress, percent: $percent")
                             pv3s.add(percent)
                         }
                     }
@@ -119,7 +119,7 @@ object NetworkProgress {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("patch>Progress1Item", "$responseBody")
+                // Log.v("patch>Progress1Item", "$responseBody")
                 val jo = JSONObject(responseBody.toString()).optJSONObject("update_video_progress")
                 if (jo != null) {
                     val progressUnitVO = ProgressUnitVO(
@@ -228,7 +228,7 @@ object NetworkProgress {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("latestProgress", "$responseBody")
+                    // Log.v("latestProgress", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
 
                     // 프로그레스, 프로그램
@@ -327,7 +327,7 @@ object NetworkProgress {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("Server>week>Progress", "$responseBody")
+                    // Log.v("Server>week>Progress", "$responseBody")
                     if (!response.isSuccessful) {
                         return@withContext null
                     }
@@ -379,7 +379,7 @@ object NetworkProgress {
                         return@withContext null
                     }
                     val responseBody = response.body?.string()
-                    Log.v("Server>Daily>Progress", "$responseBody")
+                    // Log.v("Server>Daily>Progress", "$responseBody")
 
                     val ja = responseBody?.let { JSONObject(it).optJSONArray("data") }
                     val progresses = mutableListOf<ProgressHistoryVO>()

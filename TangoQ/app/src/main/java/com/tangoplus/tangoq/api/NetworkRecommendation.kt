@@ -13,7 +13,6 @@ import org.json.JSONObject
 
 object NetworkRecommendation {
 
-    // TODO create하는 부분 measure_sn 248 인 부분에서 create가 안됨.
     suspend fun createRecommendProgram(myUrl: String, jo: String, context: Context, callback: (MutableList<RecommendationVO>) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = jo.toRequestBody(mediaType)
@@ -27,7 +26,7 @@ object NetworkRecommendation {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.e("Create>Recommendation", "$responseBody")
+                    // Log.v("Create>Recommendation", "$responseBody")
 
                     val recommendations = mutableListOf<RecommendationVO>()
                     responseBody?.let {
@@ -90,7 +89,7 @@ object NetworkRecommendation {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("Get>Recommendation", "$responseBody")
+                    // Log.v("Get>Recommendation", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
                     val ja = dataJson.optJSONArray("data")
                     val recommendations = mutableListOf<RecommendationVO>()
@@ -142,7 +141,7 @@ object NetworkRecommendation {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("Get>Recommendation", "$responseBody")
+                    // Log.v("Get>Recommendation", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
                     val ja = dataJson.optJSONArray("data")
                     val recommendations = mutableListOf<RecommendationVO>()
@@ -194,7 +193,7 @@ object NetworkRecommendation {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("RecommendProgress", "$responseBody")
+                    // Log.v("RecommendProgress", "$responseBody")
                     val dataJson = JSONObject(responseBody.toString())
                     val ja = dataJson.optJSONArray("data")
                     val recommendations = mutableListOf<RecommendationVO>()

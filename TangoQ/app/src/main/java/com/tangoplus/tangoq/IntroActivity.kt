@@ -173,13 +173,16 @@ class IntroActivity : AppCompatActivity() {
                 enabledAllLoginBtn()
             }
             override fun onSuccess() {
-                // ---- 네이버 로그인 성공 동작 시작 ----
+                // ------! 네이버 로그인 성공 동작 시작 !-----
+                // TODO 여기서 NaverIdLoginSDK.getAccessToken(),  getRefreshToken() 을 사용해서 가져올 수 있음. 내가 이걸 전달해주면 -> 회원 프로프리 조회 API 명세를 통해 서버에서 PHP의 로그인 응답결과를 받아서 사용하면 될 듯?
+
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                     override fun onError(errorCode: Int, message: String) { enabledAllLoginBtn() }
                     override fun onFailure(httpStatus: Int, message: String) { enabledAllLoginBtn() }
                     override fun onSuccess(result: NidProfileResponse) {
+                        Log.v("네이버로그인", "${result.resultCode}, ${result.message}, ${result.profile}")
                         val jsonObj = JSONObject()
-                        val naverMobile = result.profile?.mobile.toString().replaceFirst("-", "")
+                        val naverMobile = result.profile?.mobile.toString().replace("-", "")
                         val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
                         jsonObj.put("device_sn" ,0)
                         jsonObj.put("user_sn", 0)

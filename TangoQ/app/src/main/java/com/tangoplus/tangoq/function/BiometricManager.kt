@@ -51,8 +51,6 @@ class BiometricManager(private val fragment: Fragment) {
         onError: (String) -> Unit,
         fallbackToDeviceCredential: Boolean = true
     ) {
-        Log.v("BiometricAuth", "Authentication started")
-        Log.v("BiometricAuth", "Device secure: ${isDeviceSecure()}")
         // 디바이스에 보안 설정이 전혀 없는 경우 바로 성공 처리
         if (!isDeviceSecure()) {
             Log.v("BiometricAuth", "No device security, bypassing authentication")
@@ -70,8 +68,6 @@ class BiometricManager(private val fragment: Fragment) {
             false -> {
                 // 디바이스 자격 증명 상태 확인
                 val deviceCredentialStatus = checkDeviceCredentialStatus()
-                Log.v("BiometricAuth", "Device credential status: $deviceCredentialStatus")
-
                 when (deviceCredentialStatus) {
                     BiometricManager.BIOMETRIC_SUCCESS -> {
                         promptDeviceCredential(onSuccess, onError)
@@ -116,8 +112,8 @@ class BiometricManager(private val fragment: Fragment) {
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    Log.e("BiometricAuth", "Device credential authentication error: $errorCode - $errString")
-                    onError("기기 인증 중 오류가 발생했습니다: $errString")
+                    Log.e("BiometricAuth", "Device credential authentication error")
+                    onError("기기 인증 중 오류가 발생했습니다")
                 }
             }
         )

@@ -27,8 +27,8 @@
         android:layout_width="120dp"
         android:layout_height="0dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="21dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -171,9 +171,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="1.04"
         app:progressView_colorBackground="@color/secondContainerColor"
-        app:progressView_colorProgress="@color/thirdColor" />
+        app:progressView_colorProgress="@color/thirdColor"
+        app:progressView_radius="0dp" />
 
     <TextView
         android:id="@+id/tvEIFinish"

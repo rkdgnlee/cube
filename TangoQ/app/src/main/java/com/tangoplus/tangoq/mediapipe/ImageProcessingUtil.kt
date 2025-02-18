@@ -42,11 +42,6 @@ object ImageProcessingUtil {
         } else {
             poseLandmarkResult.landmarks
         }
-//        val plr = reverseLeftRight(poseLandmarkResult.landmarks, originalBitmap.width.toFloat())
-//        val plr = poseLandmarkResult.landmarks
-//        Log.v("landmarks", "${poseLandmarkResult.landmarks}")
-//        Log.v("plr", "${plr}")
-
         val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
         val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(resultBitmap)
@@ -83,7 +78,7 @@ object ImageProcessingUtil {
             textSize = 48f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
-            // TODO BOLD나 왼쪽 오른쪽 추가 고려
+
         }
         val outerCirclePaint = Paint().apply {
             color = Color.parseColor("#41000000")

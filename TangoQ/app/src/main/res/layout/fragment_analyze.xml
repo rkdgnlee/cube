@@ -596,7 +596,7 @@
                             android:layout_marginTop="10dp"
                             android:text="완료한 운동 갯수"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.3"
+                            app:layout_constraintHorizontal_bias="0.25"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/imageView21" />
 
@@ -654,7 +654,7 @@
                             android:layout_marginTop="10dp"
                             android:text="총 운동 시간"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.2"
+                            app:layout_constraintHorizontal_bias="0.15"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/imageView17" />
 

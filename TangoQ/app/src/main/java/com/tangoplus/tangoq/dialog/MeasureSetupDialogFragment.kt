@@ -42,7 +42,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
         binding.ibtnMSDPhoneClear.setOnClickListener{ binding.etMSDPhone.setText("")}
         binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
         binding.tvMSDSkip.setOnClickListener {
-            Log.v("스킵", "go skip")
+//            Log.v("스킵", "go skip")
             dismiss()
         }
 
@@ -57,7 +57,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
         }
         buttonEnabled.observe(viewLifecycleOwner) { isEnabled ->
             binding.btnMSDFinish.isEnabled = isEnabled
-            Log.v("isEnabled", "$isEnabled")
+//            Log.v("isEnabled", "$isEnabled")
         }
 
         val mobilePattern = "^010-\\d{4}-\\d{4}\$"
@@ -91,7 +91,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
             override fun afterTextChanged(s: Editable?) {
                 svm.id.value = s.toString()
                 svm.idCondition.value = NamePatternCheck.matcher(binding.etMSDName.text.toString()).find()
-                Log.v("idPw", "${svm.idCondition.value}")
+//                Log.v("idPw", "${svm.idCondition.value}")
             }
         })
 
@@ -107,7 +107,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
             mvm.setupName = binding.etMSDName.text.toString()
             mvm.setupMobile = binding.etMSDPhone.text.toString()
             dismiss()
-            Log.v("mvm넣기", "mvm.Name: ${mvm.setupName}, mvm.Mobile: ${mvm.setupMobile}")
+//            Log.v("mvm넣기", "mvm.Name: ${mvm.setupName}, mvm.Mobile: ${mvm.setupMobile}")
         }
     }
 

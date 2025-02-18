@@ -170,7 +170,7 @@ class MeasureFragment : Fragment() {
         // measures 꺾은선 그래프
         measures?.let {
             val measureSize = measures?.size
-            Log.v("measureSize", "$measureSize")
+//            Log.v("measureSize", "$measureSize")
             if (!measures.isNullOrEmpty()) {
                 // 조건 처리 1 총 measures가 7 이하.
                 if (measureSize == 0) {
@@ -199,7 +199,7 @@ class MeasureFragment : Fragment() {
                             lcDataList.add(Pair(regDate, overall))
                         }
                     }
-                    Log.v("lcDataList", "$lcDataList")
+//                    Log.v("lcDataList", "$lcDataList")
                     for (i in lcDataList.indices) {
                         startIndex = i
                         break
@@ -218,7 +218,7 @@ class MeasureFragment : Fragment() {
                 lcEntries.add(Entry((i - startIndex).toFloat(), lcDataList[i].second.toFloat()))
             }
             // lcdatalist 5개
-            Log.v("lcDataList", "$lcDataList")
+//            Log.v("lcDataList", "$lcDataList")
             val lcLineDataSet = LineDataSet(lcEntries, "")
             lcLineDataSet.apply {
                 color = resources.getColor(R.color.thirdColor, null)
@@ -344,7 +344,7 @@ class MeasureFragment : Fragment() {
                         pts[1] = entry.y
                         lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
                         balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
-                        Log.v("originalIndex", "$originalIndex")
+//                        Log.v("originalIndex", "$originalIndex")
                         mvm.selectedMeasureIndex.value = originalIndex
                     }
 
@@ -364,7 +364,7 @@ class MeasureFragment : Fragment() {
                 if (measuresSize != null && measuresSize >= 1) {
                     val userPercentile = measures?.get(4 - it)?.overall?.toInt() ?: 0 // index가 4, 3, 2, 1, 0으로 들어감.
                     percentage = calculatePercentage(userPercentile)
-                    Log.v("userPercentile", "$userPercentile, $percentage")
+//                    Log.v("userPercentile", "$userPercentile, $percentage")
                     when (percentage) {
                         in 0f..0.33f -> {
                             binding.vMMiddle.visibility = View.INVISIBLE

@@ -14,7 +14,7 @@ class TokenCheckWorker(context: Context, params: WorkerParameters) : Worker(cont
 
         // 로그아웃 처리
         if (response != 200) {
-            Log.v("TokenCheckWorker", "다른 기기에서 로그인됨. 로그아웃 처리")
+            Log.v("TokenCheckWorker", "inappropriate response code")
             return Result.failure()
         }
         Log.d("TokenCheckWorker", "토큰 유효성 확인 완료")

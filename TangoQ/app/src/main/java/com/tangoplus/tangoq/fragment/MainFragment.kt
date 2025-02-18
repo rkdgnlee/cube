@@ -183,7 +183,7 @@ class MainFragment : Fragment() {
             binding.tvMMeasureDate.visibility = View.GONE
             binding.tvMOverall.text = "-"
             binding.tvMMeasureResult1.text = "측정 데이터가 없습니다."
-            binding.tvMMeasureResult2.text = "키오스크, 모바일을 통해 측정을 진행해주세요"
+            binding.tvMMeasureResult2.text = "키오스크, 모바일에서 측정을 진행해주세요"
             binding.rvM1.visibility = View.GONE
             binding.tvM2.visibility = View.GONE
 //            binding.tvMProgram.visibility = View.GONE
@@ -197,7 +197,6 @@ class MainFragment : Fragment() {
             }
         } else {
             measures?.let { measure ->
-                Log.v("measure있는지", "$measure")
                 if (measure.size > 0) {
 
                     binding.tvM2.visibility = View.VISIBLE
@@ -252,7 +251,7 @@ class MainFragment : Fragment() {
                                 val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
                                 mvm.selectedMeasure?.recommendations = progressRec
                                 Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
+//                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
                                 setAdapter()
                             }
                         }  catch (e: IndexOutOfBoundsException) {

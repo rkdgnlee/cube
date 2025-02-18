@@ -525,7 +525,7 @@ object MeasurementManager {
             val dangerCount = tempPart.count { it.second == Status.DANGER }
             val warningCount = tempPart.count { it.second == Status.WARNING }
             val normalCount = tempPart.count { it.second == Status.NORMAL }
-            Log.v("부위카운트", "$part: ($dangerCount, $warningCount, $normalCount)")
+//            Log.v("부위카운트", "$part: ($dangerCount, $warningCount, $normalCount)")
             val total = dangerCount + warningCount + normalCount
             if (dangerCount > total / 2) results.add(Pair(part, Status.DANGER))
             if (warningCount > total / 2) results.add(Pair(part, Status.WARNING))
@@ -577,7 +577,6 @@ object MeasurementManager {
         }
         return if (totalWeight > 0) (weightedScoreSum / totalWeight).toInt() else 0
     }
-
 
     // mainPartAnalysis에서 unit 만들기
     fun getAnalysisUnits(context: Context, part: String, currentKey: Int, measureResult: JSONArray): MutableList<AnalysisUnitVO> {
@@ -767,7 +766,7 @@ object MeasurementManager {
             var isSet = false
             if (imageUrls != null && imageUrls != "") {
                 val imageFile = File(imageUrls)
-                Log.v("setImages", imageFile.toUri().toString())
+//                Log.v("setImages", imageFile.toUri().toString())
                 val bitmap = BitmapFactory.decodeFile(imageUrls)
                 fragment.lifecycleScope.launch(Dispatchers.Main) {
                     ssiv.setImage(ImageSource.uri(imageFile.toUri().toString()))
@@ -782,9 +781,9 @@ object MeasurementManager {
                                 val sHeight = ssiv.sHeight
                                 // 스케일 비율 계산
                                 val scaleFactorX = imageViewHeight / sHeight.toFloat()
-                                val scaleFactorY =  imageViewHeight / sHeight.toFloat()
+
                                 val poseLandmarkResult = fromCoordinates(coordinates)
-                                Log.v("댄저파트", "${measureVO.dangerParts}")
+//                                Log.v("댄저파트", "${measureVO.dangerParts}")
                                 val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
                                     bitmap,
                                     poseLandmarkResult,
@@ -883,7 +882,6 @@ object MeasurementManager {
     fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
         val progressIndex = progresses?.indexOfFirst { it.progress > 0 && it.progress < it.duration }
         if (progressIndex != -1) {
-            Log.v("progressIndex", "$progressIndex")
             return progressIndex ?: -1
         }
 
@@ -896,16 +894,12 @@ object MeasurementManager {
                 return i
             }
         }
-        Log.v("progressIndex", "$progressIndex")
         return 0
     }
 
     // 평균과 설명을 넣어주는 곳
-    fun setLabels(columnName : String) : String {
+    private fun setLabels(columnName : String) : String {
         return when (columnName) {
-
-
-            // TODO 좀더 세부적인 "목빗근의 수축을 풀어야 무슨 통증이 없어진다. 어떤 불편함이 사라진다는 comment가 추가돼야 함.
             // 목관절
             "front_horizontal_angle_ear" -> "기울기 값 180° 기준으로 1° 오차 이내가 표준적인 기울기 입니다. 한쪽으로 기울었을 경우, 기울어진 반대편의 목빗근의 스트레칭을 권장드립니다."
             "front_horizontal_distance_sub_ear" -> "양 귀의 높이 차이를 의미합니다. 값 0cm를 기준으로 1cm 오차 이내가 표준 어깨 높이 차이 입니다."
@@ -1020,14 +1014,15 @@ object MeasurementManager {
             listOf("좌측 무릎", "좌측 발목") to "좌측 다리의 정렬을 확인하세요",
             listOf("우측 팔꿉", "우측 손목") to "우측 팔 근육과 주변 어깨 근육을 확인하세요",
             listOf("우측 무릎", "우측 발목") to "우측 다리의 정렬을 확인하세요",
-            listOf("목관절", "좌측 어깨h") to "우측으로 쏠려있는 상체를 다시 교정해보세요",
-            listOf("목관절", "우측 어깨") to "좌측으로 쏠려있는 상체를 다시 교정해보세요",
+            listOf("목관절", "좌측 어깨") to "우측으로 쏠려있는 상체를 교정해보세요",
+            listOf("목관절", "우측 어깨") to "좌측으로 쏠려있는 상체를 교정해보세요",
             listOf("우측 어깨", "우측 손목", "우측 골반") to "우측 상체의 긴장을 의심해야 합니다.",
             listOf("좌측 어깨", "좌측 손목", "좌측 골반") to "좌측 상체의 긴장을 의심해야 합니다.",
             listOf("좌측 어깨", "우측 어깨") to "라운드 숄더나 자세 틀어짐을 확인하세요",
             listOf("좌측 팔꿉", "우측 팔꿉") to "상완근, 회전근개의 긴장을 의심해야합니다.",
             listOf("좌측 무릎", "우측 무릎") to "무릎 주변의 근육의 수축과 이완을 확인하세요",
-            listOf("목관절") to "거북목과 머리쏠림을 확인하세요")
+            listOf("목관절") to "거북목과 머리쏠림을 확인하세요",
+        )
         for ((keywords, comments) in keywordToCommentMap) {
             if (result.size < 3) {
                 if (painParts != null && painParts.containsAll(keywords)) {
@@ -1041,22 +1036,6 @@ object MeasurementManager {
     // 그냥 여기다가 seq 를 0 1, 2, 3으로 받는 형식으로 변형
     fun createSummary(part: String?, seq: Int, units: MutableList<AnalysisUnitVO>?): String {
         val resultString = StringBuilder()
-
-//        fun getDirection(value: Float): String {
-//            return when {
-//                value > 0 -> "우측"
-//                value < 0 -> "좌측"
-//                else -> "중앙"
-//            }
-//        }ㅅㄷ
-//
-//        fun getForwardDirection(value: Float): String {
-//            return when {
-//                value > 70 -> "정상"
-//                else -> "앞쪽"
-//            }
-//        }
-
         fun countWarning() : Boolean {
             val totalUnits = units?.size
             val warningUnits = units?.count { it.state > 1 }

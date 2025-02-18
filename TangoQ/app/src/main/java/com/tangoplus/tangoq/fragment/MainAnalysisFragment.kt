@@ -111,10 +111,10 @@ class MainAnalysisFragment : Fragment() {
                 val part = arguments?.getString(ARG_PART) ?: ""
                 avm.currentPart.value = part
                 mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
-                Log.v("현재측정2", "$mr")
+//                Log.v("현재측정2", "$mr")
                 avm.mafMeasureResult = JSONArray()
 
-                Log.v("현재측정", mvm.selectedMeasure?.regDate.toString())
+//                Log.v("현재측정", mvm.selectedMeasure?.regDate.toString())
                 pvm.videoUrl = null
                 simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
@@ -227,7 +227,7 @@ class MainAnalysisFragment : Fragment() {
             binding.ssivAI2.visibility = View.VISIBLE
             // mainPartAnalysis 연결
             val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            Log.v("인덱스이외값전부", "${avm.currentIndex}, ${adapterAnalysises.find { it.indexx == avm.currentIndex }}")
+//            Log.v("인덱스이외값전부", "${avm.currentIndex}, ${adapterAnalysises.find { it.indexx == avm.currentIndex }}")
             val adapter = MainPartAnalysisRVAdapter(this@MainAnalysisFragment, adapterAnalysises.find { it.indexx == avm.currentIndex }?.labels) // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
             binding.rvAI.layoutManager = layoutManager
             binding.rvAI.adapter = adapter

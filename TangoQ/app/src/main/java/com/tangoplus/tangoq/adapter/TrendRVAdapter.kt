@@ -66,8 +66,8 @@ class TrendRVAdapter(private val fragment: Fragment,
             } else if (!leftAnalysises.isNullOrEmpty() && !rightAnalysises.isNullOrEmpty()) {
                 val leftAnalysisUnits = createAnalysises(leftAnalysises, position)
                 val rightAnalysisUnits = createAnalysises(rightAnalysises, position)
-                Log.v("왼쪽", "$leftAnalysisUnits")
-                Log.v("오른쪽", "${rightAnalysisUnits[position].map { it.columnName }}")
+//                Log.v("왼쪽", "$leftAnalysisUnits")
+//                Log.v("오른쪽", "${rightAnalysisUnits[position].map { it.columnName }}")
                 val leftScore = calculatePercent(leftAnalysisUnits, position)
                 val rightScore = calculatePercent(rightAnalysisUnits, position)
                 val state = if (leftScore == rightScore) {

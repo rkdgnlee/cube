@@ -41,7 +41,7 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()?.substringAfter("response: ")
-                Log.v("SDK>Server>User", "$responseBody")
+                // Log.v("SDK>Server>User", "$responseBody")
 
                 if (response.code == 401) {
                     callback(null)
@@ -82,7 +82,7 @@ object NetworkUser {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-                    Log.v("자체로그인Success", "$responseBody")
+                    // Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     callback(jo)
@@ -109,7 +109,7 @@ object NetworkUser {
                 val response = client.newCall(request).execute()
                 withContext(Dispatchers.Main) {
                     callback(response.code)
-                    Log.v("logout", "${response.code}")
+                    // Log.v("logout", "${response.code}")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("UserIndex", "refresh: ${e.message}")
@@ -136,7 +136,7 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                Log.v("verifyPW", "$responseBody")
+                // Log.v("verifyPW", "$responseBody")
                 val status = responseBody?.let { JSONObject(it).optInt("status") }
                 if (status != null) {
                     callback(status)
@@ -164,7 +164,7 @@ object NetworkUser {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseBody = response.body?.string()
-                        Log.v("응답성공", "code: ${response.code}, body: $responseBody")
+                        // Log.v("응답성공", "code: ${response.code}, body: $responseBody")
 
                         if (response.isSuccessful) {
                             Log.v("회원가입로그", "${response.code}")
@@ -210,7 +210,7 @@ object NetworkUser {
                     }
 
                     response.body?.string()?.let { responseString ->
-                        Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
+                        // Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
                         val bodyJo = JSONObject(responseString)
                         return@withContext bodyJo.optInt("status")
                     }
@@ -251,7 +251,7 @@ object NetworkUser {
                         return@withContext null
                     }
                     val responseBody = response.body?.string()
-                    Log.v("회원update", "$responseBody")
+                    // Log.v("회원update", "$responseBody")
                     return@withContext true
                 }
             } catch (e: IllegalStateException) {
@@ -289,7 +289,7 @@ object NetworkUser {
                         return@withContext null
                     }
                     val responseCode = response.code
-                    Log.v("회원탈퇴Success", "$responseCode")
+                    // Log.v("회원탈퇴Success", "$responseCode")
                     return@withContext responseCode
                 }
             } catch (e: IllegalStateException) {
@@ -328,7 +328,7 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("userId", "$responseBody")
+                // Log.v("userId", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
                 val id = jo?.optString("user_id")
                 if (id != null) {
@@ -354,7 +354,7 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     if (responseBody != null) {
-                        Log.w("profileImage", "Success to execute request: $responseBody")
+                        // Log.w("profileImage", "Success to execute request: $responseBody")
                         callback(extractProfileImageUrl(responseBody))
                     }
                 }
@@ -390,7 +390,7 @@ object NetworkUser {
             client.newCall(request).execute().use { response ->
                 val code = response.code
                 val responseBody = response.body?.string()
-                Log.v("PIN>ResponseBody", "$responseBody")
+                // Log.v("PIN>ResponseBody", "$responseBody")
                 code
             }
         }
@@ -409,7 +409,7 @@ object NetworkUser {
             client.newCall(request).execute().use { response ->
                 val statusCode = response.code
                 val responseBody = response.body?.string()
-                Log.v("QRcode>ResponseBody", "$responseBody")
+                // Log.v("QRcode>ResponseBody", "$responseBody")
                 statusCode
             }
         }

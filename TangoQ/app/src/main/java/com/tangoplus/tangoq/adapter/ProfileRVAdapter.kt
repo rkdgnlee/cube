@@ -44,7 +44,6 @@ class ProfileRVAdapter(private val fragment: Fragment,
     private val viewTypeNormal = 0
     private val viewTypeSpecial = 1
     var userJson = JSONObject()
-
     inner class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val tvPfSettingsName : TextView = view.findViewById(R.id.tvPfSettingsName)
         val tvPfInfo: TextView = view.findViewById(R.id.tvPfInfo)
@@ -186,7 +185,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
 //                                else holder.tvPfInfo.text = maskedProfileData(userName)
                                 holder.tvPfInfo.text = userName
                                 holder.ivPf.setImageResource(R.drawable.icon_profile)
-                                holder.cltvPfSettings.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
+                                holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                             }
                             "이메일" -> {
                                 (vm as SignInViewModel).setEmail.observe(fragment.viewLifecycleOwner) { email ->
@@ -201,7 +200,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "전화번호" -> {
                                 (vm as SignInViewModel).setMobile.observe(fragment.viewLifecycleOwner) { mobile ->
-                                    holder.tvPfInfo.text = "${maskedProfileData(mobile.toString())}".toString().replace("-", "")
+                                    holder.tvPfInfo.text = "010${maskedProfileData(mobile.toString())}"
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_phone)
                             }
@@ -226,25 +225,23 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "생년월일" -> {
                                 (vm as SignInViewModel).setBirthday.observe(fragment.viewLifecycleOwner) { birthday ->
-                                    holder.tvPfInfo.text = if (birthday == "0") "미설정" else "$birthday"
+                                    holder.tvPfInfo.text = if (birthday == "0" || birthday == "") "미설정" else birthday
                                 }
+                                if (holder.tvPfInfo.text != "미설정") holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                 holder.ivPf.setImageResource(R.drawable.icon_cake)
                             }
                             "성별" -> {
-                                when (userJson.optString("gender")) {
-                                    "0" -> {
-                                        holder.tvPfInfo.text = "여자"
-                                        holder.cltvPfSettings.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-                                    }
-                                    "1" -> {
-                                        holder.tvPfInfo.text = "남자"
-                                        holder.cltvPfSettings.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-                                    }
-                                    else -> {
+                                (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderInt ->
+                                    if (genderInt == null) {
                                         holder.tvPfInfo.text = "미설정"
+                                    } else if (genderInt == 0) {
+                                        holder.tvPfInfo.text = "여자"
+                                        holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
+                                    } else if (genderInt == 1) {
+                                        holder.tvPfInfo.text = "남자"
+                                        holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                     }
                                 }
-
                                 holder.ivPf.setImageResource(R.drawable.icon_gender)
                             }
                         }
@@ -273,14 +270,14 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "생년월일" -> {
-                                    if (holder.tvPfSettingsName.text != "미설정") {
+                                    if (holder.tvPfInfo.text == "미설정") {
                                         val dialog = ProfileEditChangeDialogFragment.newInstance("생년월일", (vm as SignInViewModel).setBirthday.value.toString())
                                         dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                     }
                                 }
                                 "성별" -> {
-                                    if (holder.tvPfSettingsName.text == "미설정") {
-                                        val dialog = ProfileEditChangeDialogFragment.newInstance("생년월일", (vm as SignInViewModel).setBirthday.value.toString())
+                                    if (holder.tvPfInfo.text == "미설정") {
+                                        val dialog = ProfileEditChangeDialogFragment.newInstance("성별", (vm as SignInViewModel).setBirthday.value.toString())
                                         dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                     }
                                 }
@@ -322,7 +319,8 @@ class ProfileRVAdapter(private val fragment: Fragment,
     private fun maskedProfileData(resultString: String) : String {
         val atIndex = resultString.indexOf('@')
         if (atIndex == -1) {
-            val maskedString = resultString.mapIndexed{ index, char ->
+            val except010String = resultString.substring(3, resultString.length).replace("-", "")
+            val maskedString = except010String.mapIndexed{ index, char ->
                 when {
                     index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
                     index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'

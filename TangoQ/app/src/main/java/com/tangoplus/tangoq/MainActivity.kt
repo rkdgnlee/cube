@@ -29,7 +29,6 @@ import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
-import com.tangoplus.tangoq.dialog.FeedbackDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
@@ -86,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         workManager.getWorkInfosForUniqueWorkLiveData("TokenCheckWork").observe(this) { workInfos ->
             if (workInfos.isNullOrEmpty()) return@observe
             val workInfo = workInfos[0]
-            Log.v("TokenCheckWorker", "$workInfos")
+//            Log.v("TokenCheckWorker", "$workInfos")
             if (workInfo.state == WorkInfo.State.FAILED) {
 
                 // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
@@ -111,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         // ------# 접근 방지 #------
         when (val securityType = wifiManager.checkWifiSecurity()) {
             "OPEN","WEP" -> {
-                Log.v("securityNotice", "securityType: $securityType")
+//                Log.v("securityNotice", "securityType: $securityType")
                 Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_LONG).show()
                 Handler(Looper.getMainLooper()).postDelayed({
                     logout(this@MainActivity, 0)
@@ -122,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         // ------# 접근 방지 #------
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
+        setCurrentFragment(selectedTabId)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // bottomnavigation도 같이 backstack 반응하기
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         // -----# 초기 화면 설정 #-----
 
         singletonMeasure = Singleton_t_measure.getInstance(this)
-        setCurrentFragment(selectedTabId)
+
 
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
@@ -235,6 +235,7 @@ class MainActivity : AppCompatActivity() {
             R.id.profile -> ProfileFragment()
             else -> MainFragment()
         }
+        selectedTabId = itemId
         // 프래그먼트 변경
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flMain, fragment)
@@ -247,7 +248,7 @@ class MainActivity : AppCompatActivity() {
 
         // ------! 0일 때만 피드백 켜지게 !------
         val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
-        Log.v("intent>feedback", "$feedbackData")
+//        Log.v("intent>feedback", "$feedbackData")
         if (feedbackData != null) {
             if (pvm.isDialogShown.value == false) {
                 pvm.exerciseLog = feedbackData
@@ -257,8 +258,8 @@ class MainActivity : AppCompatActivity() {
                 val existingDialog = fragmentManager.findFragmentByTag("FeedbackDialogFragment")
 
                 if (existingDialog == null) {
-                    val dialog = FeedbackDialogFragment()
-                    dialog.show(fragmentManager, "FeedbackDialogFragment")
+//                    val dialog = FeedbackDialogFragment()
+//                    dialog.show(fragmentManager, "FeedbackDialogFragment")
                 }
             } else {
                 pvm.isDialogShown.value = true

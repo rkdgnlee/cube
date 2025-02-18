@@ -106,7 +106,7 @@ class MeasureDetailFragment : Fragment() {
 
         // 먼저 모든 점수를 95로 초기화
         val scores = MutableList(bodyParts.size) { 96f }
-        Log.v("raderScores", "${ measure?.dangerParts}")
+//        Log.v("raderScores", "${ measure?.dangerParts}")
         // measure.dangerParts에 있는 부위들의 점수만 업데이트
         measure?.dangerParts?.forEach { (part, danger) ->
             val index = bodyParts.indexOf(part)
@@ -123,13 +123,13 @@ class MeasureDetailFragment : Fragment() {
         // indices를 사용하여 올바른 순서로 raderScores 생성
         val raderScores = indices.map { scores[it] }
         val raderXParts = indices.map { bodyParts[it] }
-        Log.v("raderScores", raderScores.toString())
+//        Log.v("raderScores", raderScores.toString())
 
         val entries = mutableListOf<RadarEntry>()
         for (i in bodyParts.indices) {
             entries.add(RadarEntry(raderScores[i]))
         }
-        Log.v("재조정x축", "$raderXParts")
+//        Log.v("재조정x축", "$raderXParts")
         val dataSet = RadarDataSet(entries, "신체 부위").apply {
             color = resources.getColor(R.color.mainColor, null)
             setDrawFilled(true)
@@ -300,7 +300,7 @@ class MeasureDetailFragment : Fragment() {
                         result.add(partScores)
                     }
                     val entries = convertEntries(result)
-                    Log.v("entries", "$entries")
+//                    Log.v("entries", "$entries")
                     val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     binding.rvMD.layoutManager = layoutManager
                     val adapter = MeasureDetailRVAdapter(this@MeasureDetailFragment, entries, dates.reversed())

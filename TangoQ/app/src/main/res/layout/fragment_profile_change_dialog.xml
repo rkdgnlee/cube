@@ -18,6 +18,7 @@
         android:textColor="@color/black"
         android:textSize="32dp"
         android:textStyle="bold"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,6 +34,7 @@
         android:text="현재 비밀번호"
         android:textColor="@color/secondaryColor"
         android:textSize="22dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPCD" />
@@ -44,13 +46,14 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="입력해주세요"
         android:inputType="text|textPassword"
         android:padding="16dp"
         android:textColor="@color/subColor800"
         android:textSize="18dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,6 +71,7 @@
         android:text="새 비밀번호"
         android:textColor="@color/secondaryColor"
         android:textSize="22dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPCD1" />
@@ -79,13 +83,14 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="새로운 비밀번호"
         android:inputType="text|textPassword"
         android:padding="16dp"
         android:textColor="@color/subColor800"
         android:textSize="18dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPCDPWCondition" />
@@ -102,6 +107,7 @@
         android:text="새 비밀번호 확인"
         android:textColor="@color/secondaryColor"
         android:textSize="22dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPCD2" />
@@ -113,13 +119,14 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="20dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="새로운 비밀번호 확인"
         android:inputType="text|textPassword"
         android:padding="16dp"
         android:textColor="@color/subColor800"
         android:textSize="18dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -133,6 +140,7 @@
         android:layout_marginEnd="20dp"
         android:textColor="@color/subColor800"
         android:textSize="13dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/etPCD2"
@@ -147,6 +155,7 @@
         android:layout_marginEnd="20dp"
         android:textColor="@color/subColor800"
         android:textSize="13dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPCD3" />
@@ -162,6 +171,7 @@
         android:text="보다 안전한 서비스 이용을 위해 비밀번호는\n6개월에 1번씩 교체를 권장드리고 있습니다"
         android:textColor="@color/subColor400"
         android:textSize="16dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPCD1" />
@@ -171,6 +181,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -189,6 +200,7 @@
             android:text="전화번호 인증"
             android:textColor="@color/secondaryColor"
             android:textSize="22dp"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -200,12 +212,13 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="15dp"
-            android:background="@drawable/bckgnd_1_sub150_12"
+            android:background="@drawable/bckgnd_12_edit_text"
             android:ems="10"
             android:hint="핸드폰 번호를 입력해주세요"
             android:inputType="phone"
             android:padding="16dp"
             android:textColor="@color/subColor800"
+            android:visibility="visible"
             app:layout_constraintEnd_toStartOf="@+id/btnPCDAuthSend"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -223,6 +236,7 @@
             android:text="인증번호 전송"
             android:textColor="@color/white"
             android:textSize="16dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/etPCDMobile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -237,12 +251,13 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:background="@drawable/bckgnd_1_sub150_12"
+            android:background="@drawable/bckgnd_12_edit_text"
             android:ems="10"
             android:hint="인증번호를 입력해주세요"
             android:inputType="number"
             android:padding="16dp"
             android:textColor="@color/subColor800"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etPCDMobile" />
@@ -261,6 +276,7 @@
             android:text="인증 확인"
             android:textColor="@color/white"
             android:textSize="18dp"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etPCDAuth" />
@@ -276,6 +292,7 @@
         android:contentDescription="clearPCD1EditText"
         android:padding="4dp"
         android:src="@drawable/icon_text_clear"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/etPCD1"
         app:layout_constraintEnd_toEndOf="@+id/etPCD1"
         app:layout_constraintTop_toTopOf="@+id/etPCD1" />
@@ -290,6 +307,7 @@
         android:contentDescription="clearPCD2EditText"
         android:padding="4dp"
         android:src="@drawable/icon_text_clear"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/etPCD2"
         app:layout_constraintEnd_toEndOf="@+id/etPCD2"
         app:layout_constraintTop_toBottomOf="@+id/tvPCDPWCondition" />
@@ -304,6 +322,7 @@
         android:contentDescription="clearPCD3EditText"
         android:padding="4dp"
         android:src="@drawable/icon_text_clear"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/etPCD3"
         app:layout_constraintEnd_toEndOf="@+id/etPCD3"
         app:layout_constraintTop_toTopOf="@+id/etPCD3" />
@@ -315,9 +334,89 @@
         android:layout_marginTop="15dp"
         android:textColor="@color/subColor800"
         android:textSize="13dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/etPCD1"
         app:layout_constraintStart_toStartOf="@+id/etPCD1"
         app:layout_constraintTop_toBottomOf="@+id/tvPCDGuide" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clPCDGender"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvPCD"
+        app:layout_constraintVertical_bias="0.4">
+
+        <RadioGroup
+            android:id="@+id/mrgPCD"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/mrbPCDMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="45dp"
+                android:padding="4dp"
+                android:text="남성"
+                android:textColor="@color/subColor800"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:buttonTint="@color/tint_main_sub200" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/mrbPCDFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="45dp"
+                android:padding="4dp"
+                android:text="여성"
+                android:textColor="@color/subColor800"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:buttonTint="@color/tint_main_sub200" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivPCDMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/drawable_male"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/ivPCDFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/drawable_female"
+                android:visibility="visible" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout10"
@@ -362,7 +461,7 @@
             android:stateListAnimator="@null"
             android:text="수정 완료"
             android:textColor="@color/white"
-            android:textSize="16dp"
+            android:textSize="18dp"
             android:textStyle="bold" />
     </LinearLayout>
 

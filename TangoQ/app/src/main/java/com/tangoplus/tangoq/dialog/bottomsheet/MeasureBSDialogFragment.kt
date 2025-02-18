@@ -50,7 +50,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
                 measure.get(i).userName
             }
         } ?: emptyList()
-        Log.v("MeasureBS", "$dates")
+//        Log.v("MeasureBS", "$dates")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMBSD.layoutManager = layoutManager
         val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), names.toMutableList(),"measure",  mvm)
@@ -106,8 +106,8 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
                 }
 
             }
-            Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
-            Log.w("selectedMeasure", "${mvm.selectedMeasure}")
+//            Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
+//            Log.w("selectedMeasure", "${mvm.selectedMeasure}")
             dismiss()
         }
     }

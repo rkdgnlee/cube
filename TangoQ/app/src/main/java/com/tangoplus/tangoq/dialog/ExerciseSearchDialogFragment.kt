@@ -67,11 +67,11 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         for (i in prefsManager.getLastSn() downTo 1) {
             if (prefsManager.getStoredHistory(i) != "") {
                 evm.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
-                Log.v("storedHistory", prefsManager.getStoredHistory(i))
+//                Log.v("storedHistory", prefsManager.getStoredHistory(i))
             }
 
         }
-        Log.v("searchHistory", "${evm.searchHistory.value}")
+//        Log.v("searchHistory", "${evm.searchHistory.value}")
         var adapter2 : ExerciseSearchHistoryRVAdapter
         val searchHistory = evm.searchHistory.value
         if (searchHistory != null) {
@@ -120,7 +120,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
 
             if (isKeyboardVisible && !isKeyboardNowVisible && binding.etESDSearch.text.isNotEmpty()) {
                 prefsManager.setStoredHistory(binding.etESDSearch.text.toString())
-                Log.v("saveHistory", "sn: ${prefsManager.getLastSn()}, history: ${prefsManager.getStoredHistory(prefsManager.getLastSn())}")
+//                Log.v("saveHistory", "sn: ${prefsManager.getLastSn()}, history: ${prefsManager.getStoredHistory(prefsManager.getLastSn())}")
 
             }
 

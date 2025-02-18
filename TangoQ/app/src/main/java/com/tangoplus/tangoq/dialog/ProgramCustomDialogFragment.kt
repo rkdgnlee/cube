@@ -163,6 +163,13 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                 binding.tvPCDWeek.text = "${tvWeek?.plus(1)}/$tvTotalWeek 주차"
 
                                 setButtonFlavor()
+
+
+
+                                val currentSequenceProgresses = pvm.currentProgresses
+                                // 가장 최근에 시작한 운동의 인덱스 찾기
+                                val startIndex = findCurrentIndex(currentSequenceProgresses)
+                                Log.v("startIndex찾기", "${currentSequenceProgresses.sortedBy { it.exerciseId }.map { it.isWatched }} $startIndex")
                             }
                         }
                     }
@@ -185,6 +192,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     val currentSequenceProgresses = pvm.currentProgresses
                     // 가장 최근에 시작한 운동의 인덱스 찾기
                     val startIndex = findCurrentIndex(currentSequenceProgresses)
+
                     // startIndex가 유효한지 확인
                     if (startIndex >= 0 && startIndex < currentSequenceProgresses.size) {
                         Log.v("startIndex", "${startIndex}, currentSequenceProgresses: ${currentSequenceProgresses.size}")
@@ -197,7 +205,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             // 재생완료인 것들은 빼버리기
                             val progress = currentSequenceProgresses[i]
                             Log.v("progress", "${progress.exerciseId}, ${progress.uvpSn}")
-                            if (progress.cycleProgress <= (progress.duration * 95 ) / 100) {
+                            if (progress.cycleProgress <= (progress.duration * 92 ) / 100) {
                                 exerciseIds.add(progress.exerciseId.toString())
                                 uvpIds.add(progress.uvpSn.toString())
                                 videoUrls.add(program.exercises?.find { it.exerciseId == progress.exerciseId.toString() }?.videoFilepath.toString())
@@ -341,7 +349,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         /* sequence = Pair(현재 회차(currentSeq), 선택한 회차 (selectedSeq))
         currentSequence 는 진행중인 주차, 진행중인 회차, 선택된 회차 이렇게 나눠짐 */
         pvm.selectedSequence.value = sequence.second
-        Log.v("클릭>ProgressSeq", "${progresses?.map { it.uvpSn }} ,currentSeq: ${progresses?.map { it.countSet }}")
         val selectSeqValue = pvm.selectedSequence.value
         val frequency = program?.programFrequency
         val adapter : ProgramCustomRVAdapter
@@ -359,7 +366,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             binding.rvPCDHorizontal.layoutManager = layoutManager
             binding.rvPCDHorizontal.adapter = adapter
             adapter.notifyDataSetChanged()
-            val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses, null, sequence, "PCD") }
+            val adapter2 = program.exercises?.let { ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses?.sortedBy { it.exerciseId }?.toMutableList(), null, sequence, "PCD") }
+
             binding.rvPCD.adapter = adapter2
             val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             binding.rvPCD.layoutManager = layoutManager2
@@ -442,26 +450,32 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     // 해당 회차에서 가장 최근 운동의 index찾아오기 ( 한 seq의 묶음만 들어옴 )
     private fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>) : Int {
         // Case 1 시청 중간 기록이 있을 경우
-        val progressIndex1 = progresses.indexOfLast { it.progress in 1 until it.duration }
+//        val progressIndex1 = progresses.indexOfLast { it.progress in 1 until it.duration }
+//        if (progressIndex1 != -1) {
+//            return progressIndex1
+//        }
+        val sortedProgresses = progresses.sortedBy { it.exerciseId }
+        val progressItem = sortedProgresses.first { it.isWatched == 0 }
+        val progressIndex1 = sortedProgresses.indexOf(progressItem)
         if (progressIndex1 != -1) {
             return progressIndex1
-        }
-
-        // Case 2 다 보고 난 뒤 완료 처리가 된 후 (currentSequence가 1이 됐을 때) 그 다음 index 반환
-        val progressIndex = progresses.indexOfLast { it.countSet - 1 == pvm.currentSequence }
-        Log.v("프로그레스", "$progressIndex, currentSeq: ${pvm.currentSequence}")
-        if (progressIndex != progresses.size) {
-            Log.v("가장 최근Index", "${progressIndex +  1}")
-            return progressIndex + 1
-        }
-
-        // Case 3 초기상태
-        if (progresses.all { it.progress == 0 }) {
+        } else if (progresses.all { it.isWatched == 0 }) {
             Log.v("가장 최근Index", "0")
             return 0
         }  else {
             return -1
         }
+        // Case 2 다 보고 난 뒤 완료 처리가 된 후 (currentSequence가 1이 됐을 때) 그 다음 index 반환
+//        val progressIndex = progresses.indexOfLast { it.countSet - 1 == pvm.currentSequence }
+//        Log.v("프로그레스", "$progressIndex, currentSeq: ${pvm.currentSequence}")
+//        if (progressIndex != progresses.size) {
+//            Log.v("가장 최근Index", "${progressIndex +  1}")
+//            return progressIndex + 1
+//        }
+
+        // Case 3 초기상태
+
+
     }
 
     private fun endSequence() {
@@ -498,10 +512,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             getProgress(getString(R.string.API_progress), jo, requireContext()) { (historySn, week, seq), result ->
                 CoroutineScope(Dispatchers.Main).launch {  // LiveData 업데이트는 메인 스레드에서
                     val adjustedWeek = if (week == -1) 0 else week - 1
-                    val adjustedSeq = seq
+                    val adjustedSeq = if (seq == -1) 0 else seq - 1
                     Log.v("포스트getProgress", "callback: $adjustedWeek, $adjustedSeq, $week, $seq, result: $result")
 
                     val serverLastItem = result[adjustedWeek].last()
+                    Log.v("포스트getProgress", "$serverLastItem $adjustedSeq, $week, $seq")
                     if (serverLastItem.countSet == serverLastItem.requiredSet) {
                         // 모든 회차가 끝남
                         pvm.currentWeek = adjustedWeek + 1
@@ -513,8 +528,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         pvm.selectedWeek.value = adjustedWeek
                     }
                     if (serverLastItem.countSet == seq) {
-                        pvm.currentSequence = adjustedSeq + 1
-                        pvm.selectedSequence.value= adjustedSeq + 1
+                        pvm.currentSequence = adjustedSeq
+                        pvm.selectedSequence.value= adjustedSeq
                     } else {
                         pvm.currentSequence = adjustedSeq
                         pvm.selectedSequence.value= adjustedSeq

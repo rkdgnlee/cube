@@ -34,8 +34,8 @@ object NetworkMeasure {
                 client.newCall(request).execute().use { response ->
                     if (response.code == 500) {
                         // 서버 응답이 성공하지 않았을 경우 처리
-                        Log.e("전송실패3", "$response")
-                        Log.e("전송실패3", "body: ${response.body?.string()}")
+                        // Log.e("전송실패3", "$response")
+                        // Log.e("전송실패3", "body: ${response.body?.string()}")
                         callback(null)
                         return@withContext Result.failure(Exception("Failed to fetch data: ${response.code}"))
                     }
@@ -45,7 +45,7 @@ object NetworkMeasure {
                     val mDao = md.measureDao()
 
                     val responseBody = response.body?.string()
-                    Log.w("getMeasureResult", "$responseBody")
+                    // Log.w("getMeasureResult", "$responseBody")
 
                     val bodyJo = JSONObject(responseBody.toString())
                     val fileSuccess = bodyJo.optString("reupload_file")

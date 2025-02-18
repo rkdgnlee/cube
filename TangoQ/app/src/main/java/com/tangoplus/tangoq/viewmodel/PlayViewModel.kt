@@ -46,4 +46,5 @@ class PlayViewModel : ViewModel() {
     // Play Thumbnail
     var isProgram = false
     var uvpSn = 0
+    var uvpSnCurrentPosition = 0
 }

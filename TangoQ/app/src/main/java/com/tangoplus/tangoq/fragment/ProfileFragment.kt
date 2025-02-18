@@ -37,6 +37,7 @@ import com.tangoplus.tangoq.databinding.FragmentProfileBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.sendProfileImage
+import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +54,7 @@ import java.util.TimeZone
 
 class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener {
     lateinit var binding : FragmentProfileBinding
-    val viewModel : SignInViewModel by activityViewModels()
+    val svm : SignInViewModel by activityViewModels()
     private var userJson : JSONObject? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +70,16 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+        // profile쪽 VM 값 세팅
+        svm.snsCount = 0
+        // ------! 싱글턴에서 가져오기 !------
+        svm.User.value = userJson
+        svm.setHeight.value = svm.User.value?.optInt("height")
+        svm.setWeight.value = svm.User.value?.optInt("weight")
+        svm.setEmail.value = svm.User.value?.optString("email")
+        svm.setBirthday.value = svm.User.value?.optInt("birthday").toString()
+        svm.setMobile.value = svm.User.value?.optString("mobile").toString()
+        svm.setGender.value = svm.User.value?.optInt("gender")
 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
@@ -79,7 +90,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         }
 
         // ------! 프로필 사진 관찰 시작 !------
-        viewModel.ivProfile.observe(viewLifecycleOwner) {
+        svm.ivProfile.observe(viewLifecycleOwner) {
             if (it != null) {
                 Glide.with(this)
                     .load(it)
@@ -112,6 +123,25 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         setAdapter(profilemenulist.subList(3,6), binding.rvPHelp, 1)
         setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
+        svm.setHeight.observe(viewLifecycleOwner) { height ->
+
+
+        }
+
+        svm.setWeight.observe(viewLifecycleOwner) { weight ->
+            binding.tvPWeight.text = weight.toString() + "kg"
+        }
+        svm.setHeight.observe(viewLifecycleOwner) { height ->
+            binding.tvPHeight.text = height.toString() + "cm"
+        }
+        binding.tvPHeight.setOnSingleClickListener {
+            val dialog = ProfileEditChangeDialogFragment.newInstance("신장", svm.setHeight.value.toString())
+            dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+        }
+        binding.tvPWeight.setOnSingleClickListener {
+            val dialog = ProfileEditChangeDialogFragment.newInstance("몸무게", svm.setWeight.value.toString())
+            dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+        }
     }
 
     // ------! 프로필 사진 관찰 끝 !------
@@ -153,12 +183,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
     private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", viewModel)
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", svm)
             adapter.profileMenuList = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         } else {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", viewModel)
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", svm)
             adapter.profileMenuList = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

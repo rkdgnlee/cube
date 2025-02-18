@@ -68,18 +68,8 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         biometricManager = BiometricManager(this)
         biometricManager.authenticate(
             onSuccess = {
-                binding.sflPED.startShimmer()
-                svm.snsCount = 0
-                // ------! 싱글턴에서 가져오기 !------
-                svm.User.value = singletonUser.jsonObject
-                svm.setHeight.value = svm.User.value?.optInt("height")
-                svm.setWeight.value = svm.User.value?.optInt("weight")
-                svm.setEmail.value = svm.User.value?.optString("email")
-                svm.setBirthday.value = svm.User.value?.optInt("birthday").toString()
-                svm.setMobile.value = svm.User.value?.optString("mobile").toString()
+//                Log.v("개인정보편집", "${svm.User.value}")
                 userSn = svm.User.value?.optString("sn").toString()
-                Log.v("개인정보편집", "${svm.User.value}")
-
                 // ------! 정보 목록 recyclerView 연결 시작 !------
                 profilemenulist = mutableListOf(
                     "이름",
@@ -92,8 +82,6 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                     "성별"
                 )
                 setAdapter(profilemenulist)
-
-                // ------! 정보 목록 recyclerView 연결 끝 !------
                 // ------! 개인정보수정 rv 연결 끝 !------
 
                 // ------! 소셜 계정 로그인 연동 시작 !------
@@ -152,7 +140,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
                                 if (isUpdateFinished == true) {
-                                    Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
+//                                    Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
                                     singletonUser.jsonObject = svm.User.value
                                     requireActivity().runOnUiThread {
                                         val dialog = AlertDialogFragment.newInstance("agree")
@@ -172,36 +160,6 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                     svm.agreementMk1.value = isChecked
                     svm.agreementMk2.value = isChecked
                 }
-//                binding.btnPEDFinish.setOnClickListener {
-////            viewModel.User.value?.put("user_id", viewModel.id.value.toString())
-////            viewModel.User.value?.put("password", viewModel.pw.value.toString())
-//                    svm.User.value?.put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
-//                    svm.User.value?.put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
-//                    svm.User.value?.put("height", svm.setHeight.value)
-//                    svm.User.value?.put("weight", svm.setWeight.value)
-//                    svm.User.value?.put("email", svm.setEmail.value)
-//                    Log.v("userJson>receive", "${svm.User.value}")
-////            val userEditEmail = userJson.optString("user_email")
-////            val encodedUserEmail = URLEncoder.encode(userEditEmail, "UTF-8")
-//                    fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), svm.User.value?.toString().toString(), userSn) {
-//                        Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-//                        singletonUser.jsonObject = svm.User.value
-////                requireActivity().runOnUiThread{
-////                    uViewModel.setupProgress = 34
-////                    uViewModel.setupStep = 0
-////                    uViewModel.step1.value = null
-////                    uViewModel.step21.value = null
-////                    uViewModel.step22.value = null
-////                    uViewModel.step2.value = null
-////                    uViewModel.step31.value = null
-////                    uViewModel.step32.value = null
-////                    uViewModel.step3.value = null
-////                    uViewModel.User.value = null
-////                    uViewModel.User.value = null
-////                }
-//                        onEditComplete()
-//                    }
-//                }
                 // application에서 biometric success 저장
                 val myApplication = requireActivity().application as MyApplication
                 myApplication.setBiometricSuccess()

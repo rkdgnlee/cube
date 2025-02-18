@@ -30,7 +30,6 @@ import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationInOneMeas
 import com.tangoplus.tangoq.db.FileStorageUtil.deleteCorruptedFile
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.Singleton_t_measure
-import com.tangoplus.tangoq.db.Singleton_t_progress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +43,6 @@ import java.io.File
 
 class SaveSingletonManager(private val context: Context, private val activity: FragmentActivity) {
     private val singletonMeasure = Singleton_t_measure.getInstance(context)
-    private val singletonProgress = Singleton_t_progress.getInstance(context)
     private val md = MeasureDatabase.getDatabase(context)
     private val mDao = md.measureDao()
 
@@ -167,10 +165,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                 )
                                 val serverSn = info.sn
                                 val uriTuples = get1MeasureUrls(serverSn)
-                                Log.v("리스너1", "$uriTuples")
                                 downloadFiles(uriTuples)
                                 val editedMeasure = insertUrlToMeasureVO(uriTuples, measureVO)
-                                Log.v("리스너2", "$editedMeasure")
 
                                 // singleton의 인덱스 찾아서 ja와 값 넣기
                                 measures.add(editedMeasure)
@@ -239,7 +235,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     if (index == 1) {
                         val fileName2 = urlTuples[index].measure_server_file_name
                         val jsonName2 = urlTuples[index].measure_server_json_name
-                        Log.v("urlTuples", "mp4: ${fileName2}, json: $jsonName2")
+//                        Log.v("urlTuples", "mp4: ${fileName2}, json: $jsonName2")
                         saveJobs.add(async {
                             try {
                                 saveFileFromUrl(context, fileName2, FileStorageUtil.FileType.VIDEO)
@@ -281,7 +277,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 }
 
                 // 작업 개수 로그 확인
-                Log.v("downloadFiles", "Total save jobs: ${saveJobs.size}")
+                Log.v("downloadFiles", "Total save jobs")
 
                 // 모든 작업 완료 대기
                 saveJobs.awaitAll()
@@ -328,7 +324,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             // 파일 중 손상된 경우 삭제 후 재 다운로드 로직
             if (jsonJudge == null || mediaJudge == null || mediaFile == null || !mediaFile.canRead()) {
                 // 손상된 파일 삭제
-                Log.e("FileDebug", "json: $jsonJudge, mediaFile: $mediaFile, mediaFile.canRead: ${mediaFile?.canRead()}")
+//                Log.e("FileDebug", "json: $jsonJudge, mediaFile: $mediaFile, mediaFile.canRead: ${mediaFile?.canRead()}")
                 if (jsonFile != null) deleteCorruptedFile(context, uriTuples[i].measure_server_json_name)
                 if (mediaFile != null) deleteCorruptedFile(context, uriTuples[i].measure_server_file_name)
                 // 파일 재다운로드
@@ -375,15 +371,16 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             val mDao = md.measureDao()
 
             val info = mDao.getInfoByMobileSn(mobileInfoSn)
-            Log.v("1itemInfo", "$info")
+//            Log.v("1itemInfo", "$info")
             val statics = mutableListOf<MeasureStatic>()
             for (i in 0 until mobileStaticSns.size) {
                 statics.add(mDao.getStaticByMobileSn(mobileStaticSns[i]))
-                Log.v("1itemStatic$i", "${statics[i]}")
+//                Log.v("1itemStatic$i", "${statics[i]}")
             }
             val dynamic = mDao.getDynamicByMobileSn(mobileDynamicSn)
-            Log.v("1itemDynamic", "$dynamic")
+//            Log.v("1itemDynamic", "$dynamic")
             val ja = JSONArray()
+
             val uris = mutableListOf<String>()
 
             for (i in 0 until 7) {
@@ -411,9 +408,9 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
 
             val dangerParts =  getDangerParts(info)
-            Log.v("dangerParts", "$dangerParts")
+//            Log.v("dangerParts", "$dangerParts")
             if (info.sn != null) {
-                Log.v("싱글턴Measure넣기전", "info.sn : ${info.sn}")
+//                Log.v("싱글턴Measure넣기전", "info.sn : ${info.sn}")
                 val measureVO = MeasureVO(
                     deviceSn = 0,
                     sn = info.sn,
@@ -426,14 +423,14 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     isMobile = info.device_sn == 0,
                     recommendations = null
                 )
-                Log.v("싱글턴Measure넣기전 다른 값", "t_score: ${info.t_score},ja:  ${ja},uris: ${uris}, ${info.device_sn}")
+//                Log.v("싱글턴Measure넣기전 다른 값", "t_score: ${info.t_score},ja:  ${ja},uris: ${uris}, ${info.device_sn}")
                 // ------# 초기 측정 상태일 때 null 예외 처리 #------
                 if (singletonMeasure.measures == null) {
                     singletonMeasure.measures = mutableListOf()
                 }
                 singletonMeasure.measures?.add(0, measureVO)
-                Log.v("싱글턴Measure넣기전", "${singletonMeasure.measures}")
-                Log.v("싱글턴Measure1Item", "${singletonMeasure.measures?.size}")
+//                Log.v("싱글턴Measure넣기전", "${singletonMeasure.measures}")
+//                Log.v("싱글턴Measure1Item", "${singletonMeasure.measures?.size}")
                 // 3. 추천 프로그램 추가
                 mergeRecommendationInOneMeasure(measureVO.sn)
             }
@@ -471,10 +468,9 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
                                 measure.recommendations = newRecommendations
                                 singletonMeasure.measures?.set(index, measure)
-                                Log.v("recommendCreated", "New recommendations for measureSn: $newRecommendations")
+                                Log.v("recommendCreated", "New recommendations")
                             }
                         }
-                        Log.v("recommendUpdate", "MeasureSn: $measureSn, Recommendations: ${measure.recommendations}")
                     }.await()
                     // 모든 async 작업이 완료될 때까지 대기
                     withContext(Dispatchers.Main) {
@@ -497,7 +493,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 val recommendations = getRecommendationInOneMeasure(context.getString(R.string.API_recommendation), context, measureInfoSn)
                 if (recommendations.isEmpty()) {
                     val (types, stages) = convertToJsonArrays(measure?.dangerParts)
-                    Log.v("types와stages", "types: $types, stages: $stages")
                     val recommendJson = JSONObject().apply {
                         put("exercise_type_id", types)
                         put("exercise_stage", stages)
@@ -509,14 +504,14 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                         if (currentMeasureIndex != null && measure != null) {
                             singletonMeasure.measures?.set(currentMeasureIndex, measure)
                         }
-                        Log.v("recommendCreated", "New recommendations for measureInfoSn: $measureInfoSn")
+                        Log.v("recommendCreated", "New recommendations")
                     }
                 } else {
                     measure?.recommendations = recommendations
                     val currentMeasureIndex = singletonMeasure.measures?.indexOfFirst { it.sn == measureInfoSn }
                     if (measure != null && currentMeasureIndex != null) {
                         singletonMeasure.measures?.set(currentMeasureIndex, measure)
-                        Log.v("recommendCreated", "existed recommendations for measureInfoSn: $measureInfoSn")
+                        Log.v("recommendCreated", "existed recommendations")
                     }
                 }
             }

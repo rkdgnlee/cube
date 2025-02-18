@@ -192,7 +192,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     }
 
     private fun updateRecyclerView(exercises : MutableList<ExerciseVO>?, historys: MutableList<ExerciseHistoryVO>?) {
-        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null ,historys, null,  "ED")
+        val adapter = ExerciseRVAdapter(this@ExerciseDetailFragment, exercises, null ,historys, null,  "ED" )
         adapter.dialogClosedListener = this@ExerciseDetailFragment
         adapter.exerciseList = exercises
         binding.rvEDAll.adapter = adapter

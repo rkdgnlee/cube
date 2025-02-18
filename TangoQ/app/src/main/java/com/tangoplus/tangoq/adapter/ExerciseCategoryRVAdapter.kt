@@ -111,8 +111,8 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
     }
 
     private fun goExerciseDetail(category : ArrayList<Int>) {
-        Log.v("ClickIndex", "category: $category")
-        Log.v("EDsn", "$sn")
+//        Log.v("ClickIndex", "category: $category")
+//        Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
             commit()

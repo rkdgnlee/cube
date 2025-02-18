@@ -34,13 +34,14 @@ object FileStorageUtil {
     suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
         return withContext(Dispatchers.IO) {
             val url = context.getString(R.string.file_url) + fileName  // url 형식 + 파일 이름
-            Log.v("url에서파일저장", url)
+//            Log.v("url에서파일저장", url)
             val dir = getDirectory(context, fileType)
             val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 
             // 파일있으면 다운로드 생략
             if (file.exists()) {
-                Log.v("SaveFileFromUrl", "File already exists: ${file.absolutePath}")
+//                Log.v("SaveFileFromUrl", "File already exists: ${file.absolutePath}")
+                Log.v("SaveFileFromUrl", "File already exists !")
                 return@withContext true
             }
             try {
@@ -59,10 +60,10 @@ object FileStorageUtil {
                     encryptFile(tempFile, file, generateAESKey(context))
                     tempFile.delete()
 
-                    Log.v("SaveFileFromUrl", "Success To Save File : ${file.absolutePath}")
+//                    Log.v("SaveFileFromUrl", "Success To Save File : ${file.absolutePath}")
                     true
                 } else {
-                    Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
+//                    Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
                     false
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -114,7 +115,6 @@ object FileStorageUtil {
         return try {
             val fileContent = jsonArray.toString().toByteArray() // JSONObject를 String으로 변환 후 ByteArray로 변환
             file.outputStream().use { it.write(fileContent) }
-            Log.v("영상JSON주소", file.absolutePath)
             mViewModel.dynamicJsonFile = file
             true
         } catch (e: IOException) {

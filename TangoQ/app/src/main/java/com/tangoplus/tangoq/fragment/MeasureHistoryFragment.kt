@@ -86,7 +86,7 @@ class MeasureHistoryFragment : Fragment() {
                     3 -> measures?.sortedBy { it.overall?.toInt()}?.toMutableList()
                     else -> measures
                 }
-                Log.v("정렬", "position: $position, ${measures?.map { it.overall }}")
+//                Log.v("정렬", "position: $position, ${measures?.map { it.overall }}")
                 setAdapter(measures)
             }
         }
