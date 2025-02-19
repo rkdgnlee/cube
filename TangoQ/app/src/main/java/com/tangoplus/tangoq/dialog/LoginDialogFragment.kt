@@ -81,6 +81,7 @@ class LoginDialogFragment : DialogFragment() {
         binding.etLDId.requestFocus()
         binding.etLDId.postDelayed({
             imm.showSoftInput(binding.etLDId, InputMethodManager.SHOW_IMPLICIT)
+            scrollToView(binding.etLDId)
         }, 250)
 
         imm.hideSoftInputFromWindow(view.windowToken, 0)
@@ -291,5 +292,27 @@ class LoginDialogFragment : DialogFragment() {
         binding.btnLDLogin.isEnabled = true
         binding.btnLDLogin.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
         binding.tvLDAlert.visibility = View.GONE
+    }
+
+    // 창이 길이가 안맞을 때, id로 scroll
+    private fun scrollToView(view: View) {
+        // 1 뷰의 위치를 저장할 배열 생성
+        val location = IntArray(2)
+        // 2 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
+        view.getLocationInWindow(location)
+        val viewTop = location[1]
+        // 3 스크롤 뷰의 위치를 저장할 배열 생성
+        val scrollViewLocation = IntArray(2)
+
+        // 4 스크롤 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
+        binding.nsvLogin.getLocationInWindow(scrollViewLocation)
+        val scrollViewTop = scrollViewLocation[1]
+        // 5 현재 스크롤 뷰의 스크롤된 y 위치 가져오기
+        val scrollY = binding.nsvLogin.scrollY
+        // 6 스크롤할 위치 계산
+        //    현재 스크롤 위치 + 뷰의 상대 위치 = 스크롤 위치 계산
+        val scrollTo = scrollY + viewTop - scrollViewTop
+        // 7 스크롤 뷰 해당 위치로 스크롤
+        binding.nsvLogin.smoothScrollTo(0, scrollTo)
     }
 }

@@ -297,7 +297,7 @@ object ImageProcessingUtil {
                 11 to leftAnkle,
                 12 to rightAnkle,
             )
-            partIndexes.forEach { index, string ->
+            partIndexes.forEach { (index, string) ->
                 val columnNames = painParts.map { it.first }
                 if (columnNames.contains(string)) {
                     val selectParts = painParts.find { it.first == string }

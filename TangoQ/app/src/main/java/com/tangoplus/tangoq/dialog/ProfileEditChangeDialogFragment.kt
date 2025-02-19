@@ -509,7 +509,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCD3.visibility = View.VISIBLE
                 binding.tvPCDPWCondition.visibility = View.VISIBLE
                 binding.tvPCDPWVerifyCondition.visibility = View.VISIBLE
-                binding.tvPCDSkip.visibility = View.VISIBLE
+                binding.tvPCDSkip.visibility = View.GONE
                 binding.clPCDMobile.visibility = View.GONE
                 binding.ibtnPCD2Clear.visibility = View.VISIBLE
                 binding.ibtnPCD3Clear.visibility = View.VISIBLE

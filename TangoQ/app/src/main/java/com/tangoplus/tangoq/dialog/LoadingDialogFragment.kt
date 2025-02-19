@@ -71,28 +71,28 @@ class LoadingDialogFragment : DialogFragment() {
     }
 
     private fun dialogFragmentResize() {
-        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-        if (Build.VERSION.SDK_INT < 30) {
-            val display = windowManager.defaultDisplay
-            val size = Point()
-
-            display.getSize(size)
-
-            val window = dialog?.window
-
-            val x = (size.x * 0.6f).toInt()
-            val y = (size.y *  0.175f).toInt()
-            window?.setLayout(x, y)
-        } else {
-            val rect = windowManager.currentWindowMetrics.bounds
-
-            val window = dialog?.window
-
-            val x = (rect.width() * 0.6f).toInt()
-            val y = (rect.height() *  0.175f).toInt()
-
-            window?.setLayout(x, y)
-        }
+//        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+//
+//        if (Build.VERSION.SDK_INT < 30) {
+//            val display = windowManager.defaultDisplay
+//            val size = Point()
+//
+//            display.getSize(size)
+//
+//            val window = dialog?.window
+//
+//            val x = (size.x * 0.6f).toInt()
+//            val y = (size.y *  0.175f).toInt()
+//            window?.setLayout(x, y)
+//        } else {
+//            val rect = windowManager.currentWindowMetrics.bounds
+//
+//            val window = dialog?.window
+//
+//            val x = (rect.width() * 0.6f).toInt()
+//            val y = (rect.height() *  0.175f).toInt()
+//
+//            window?.setLayout(x, y)
+//        }
     }
 }

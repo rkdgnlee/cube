@@ -42,6 +42,8 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is MPAViewHolder){
             holder.tvDDAITitle.text = "${distinctTitles[position]} 이동 안정성"
+
+            // leftIndex가 +1인 이유: 좌우 값이 반대로 가야함.
             val pairStartIndex = (position * 2)
             val leftIndex = pairStartIndex + 1
             when (position) {
@@ -60,8 +62,8 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                     holder.clDDAI2.visibility = View.GONE
                     holder.tvDDAI2.visibility = View.GONE
                     holder.llDDAILegend.visibility = View.GONE
-                    holder.cvDDAI1.setPoints(data[pairStartIndex])
-                    holder.tvDDAI1.text = titles[pairStartIndex]
+                    holder.cvDDAI1.setPoints(data[2])
+                    holder.tvDDAI1.text = titles[2]
 
                     val layoutParams = holder.clDDAI1.layoutParams as ConstraintLayout.LayoutParams
                     layoutParams.horizontalBias = 0.5f
@@ -69,11 +71,11 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                 }
                 2 -> {
                     if (leftIndex < data.size) {
-                        holder.cvDDAI1.setPoints(data[pairStartIndex])
-                        holder.tvDDAI1.text = titles[pairStartIndex]
+                        holder.cvDDAI1.setPoints(data[pairStartIndex - 1 ]) // data의 size가 5가 됐음.
+                         holder.tvDDAI1.text = titles[pairStartIndex]
                     }
                     if (pairStartIndex < data.size) {
-                        holder.cvDDAI2.setPoints(data[leftIndex])
+                        holder.cvDDAI2.setPoints(data[leftIndex - 1])
                         holder.tvDDAI2.text = titles[leftIndex]
                     }
                     holder.llDDAILegend.visibility = View.GONE

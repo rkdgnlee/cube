@@ -139,7 +139,9 @@ object NetworkUser {
                 // Log.v("verifyPW", "$responseBody")
                 val status = responseBody?.let { JSONObject(it).optInt("status") }
                 if (status != null) {
-                    callback(status)
+                    withContext(Dispatchers.Main) {
+                        callback(status)
+                    }
                 }
             }
         }

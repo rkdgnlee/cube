@@ -229,9 +229,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val rightAnkleX = rightAnkle.x * scaleFactorX + offsetX
                 val rightAnkleY = rightAnkle.y * scaleFactorY + offsetY
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
+                // 가로축
                 canvas.drawLine(leftIndexX - 200  , leftIndexY, rightIndexX+ 200, rightIndexY, axisPaint)
-                canvas.drawLine(leftHipX - 200, leftHipY, rightHipX + 200, rightHipY, axisPaint)
                 canvas.drawLine(leftKneeX - 200, leftKneeY, rightKneeX + 200, rightKneeY, axisPaint)
+                //세로축
+                canvas.drawLine(leftHipX - 200, leftHipY, rightHipX + 200, rightHipY, axisPaint)
+                canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
                 canvas.drawLine((leftAnkleX + rightAnkleX) / 2, leftAnkleY + 200, (leftAnkleX + rightAnkleX) / 2, noseY - 300, axisPaint)
 
                 canvas.drawLine(leftHipX, leftHipY - 100, leftHipX, leftAnkleY + 200, axisPaint)

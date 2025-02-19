@@ -111,10 +111,10 @@ class MainAnalysisFragment : Fragment() {
                 val part = arguments?.getString(ARG_PART) ?: ""
                 avm.currentPart.value = part
                 mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
-//                Log.v("현재측정2", "$mr")
                 avm.mafMeasureResult = JSONArray()
 
-//                Log.v("현재측정", mvm.selectedMeasure?.regDate.toString())
+                // viewModel에 들어가있던 동적 자세 기록들 초기화
+
                 pvm.videoUrl = null
                 simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
@@ -234,11 +234,6 @@ class MainAnalysisFragment : Fragment() {
             if (!updateUI) updateUI = false
         } else {
             // 영상
-            val params = binding.clAI.layoutParams
-            params.width = binding.flAI.width
-            params.height = binding.flAI.height
-            binding.clAI.layoutParams = params
-
             binding.ssivAI1.visibility = View.GONE
             binding.ssivAI2.visibility = View.GONE
             binding.tvAIPart1.visibility = View.GONE
@@ -247,7 +242,12 @@ class MainAnalysisFragment : Fragment() {
             binding.cvExoRight.visibility = View.VISIBLE
             binding.flAI.visibility = View.VISIBLE
             binding.ovAI.visibility = View.VISIBLE
+            setPlayer()
             // 0, 1, 2 (이미지 일 때)
+            val params = binding.clAI.layoutParams
+            params.width = binding.flAI.width
+            params.height = binding.flAI.height
+            binding.clAI.layoutParams = params
         }
 
         binding.tvMASummary.text =
@@ -315,8 +315,6 @@ class MainAnalysisFragment : Fragment() {
                         exo10 = view?.findViewById(R.id.btn10)
 
                         setClickListener()
-                        setPlayer()
-
                     }
                 }
             }
@@ -325,6 +323,7 @@ class MainAnalysisFragment : Fragment() {
     private fun releasePlayer() {
         simpleExoPlayer?.release()
         simpleExoPlayer = null
+        binding.pvAI.player = null
     }
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {
@@ -382,6 +381,7 @@ class MainAnalysisFragment : Fragment() {
         binding.pvAI.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
         binding.pvAI.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
     }
+
     private fun setClickListener() {
         if (avm.currentIndex == 3) {
             exoPause?.visibility = View.VISIBLE
@@ -400,7 +400,6 @@ class MainAnalysisFragment : Fragment() {
         }
         var isShownSpeed = false
         var forChanged = false
-
 
         llSpeed?.visibility = View.VISIBLE
 
@@ -524,19 +523,25 @@ class MainAnalysisFragment : Fragment() {
         binding.clAI.layoutParams = params
 
         val connections = listOf(
-            15, 16, 23, 24, 25, 26
+            15, 16, 23, 25, 26 // 좌측 골반의 pose번호를 가져옴
         )
         val coordinates = extractVideoCoordinates(dynamicJa)
         val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
-
         for (connection in connections) {
-            val filteredCoordinate = mutableListOf<Pair<Float, Float>>()
+            val filteredCoordinate = mutableListOf<Pair<Float, Float>>() // 부위 하나당 몇 십 프레임의 x,y 좌표임
             for (element in coordinates) {
-                filteredCoordinate.add(element[connection])
+                if (connection == 23) {
+                    val a = element[connection]
+                    val b = element[connection]
+                    val midHip = Pair((a.first + b.first) / 2, (a.second + b.second) / 2)
+                    filteredCoordinate.add(midHip)
+                } else {
+                    filteredCoordinate.add(element[connection]) // element의 23, 24가 각각 담김
+                }
             }
             filteredCoordinates.add(filteredCoordinate)
         }
-
+        // 이제 data 는 size가 6개가 아니라 5개임.
         setVideoAdapter(filteredCoordinates)
     }
 
@@ -547,28 +552,17 @@ class MainAnalysisFragment : Fragment() {
         binding.rvAI.adapter = dynamicAdapter
     }
 
-
     override fun onPause() {
         super.onPause()
-        simpleExoPlayer?.let { player ->
-            pvm.savePlayerState(player, videoUrl)
-            player.stop()
-            player.playWhenReady = false
-        }
+        releasePlayer()
     }
-
     override fun onStop() {
         super.onStop()
-        simpleExoPlayer?.let { player ->
-            pvm.savePlayerState(player, videoUrl)
-            player.stop()
-            player.playWhenReady = false
-        }
+        releasePlayer()
     }
-
     override fun onDestroy() {
         super.onDestroy()
-        simpleExoPlayer?.release()
+        releasePlayer()
     }
 
     override fun onResume() {

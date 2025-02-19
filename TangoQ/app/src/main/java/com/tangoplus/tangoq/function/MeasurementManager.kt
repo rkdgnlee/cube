@@ -18,7 +18,6 @@ import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.cropToPortraitRatio
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.vo.ProgressUnitVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -59,6 +58,10 @@ object MeasurementManager {
         "우측 무릎" to listOf(0, 1, 4, 5),
         "좌측 발목" to listOf(0, 5),
         "우측 발목" to listOf(0, 5)
+    )
+
+    val matchedIndexs = listOf(
+        "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목"
     )
 
     // first: seq / second: matchedUris의 index / third: 가장 작은 index
@@ -301,7 +304,7 @@ object MeasurementManager {
                 "front_horizontal_distance_knee_left" to Triple(13f, 2.15f, 3.75f),
                 "front_vertical_angle_hip_knee_ankle_left" to Triple(175f,2.5f, 5f)),
             3 to mapOf("side_left_vertical_angle_hip_knee" to Triple(91f, 6.4f, 9.4f),
-                "side_left_vertical_angle_hip_knee_ankle" to Triple(175f, 8.9f, 13.9f)),
+                "side_left_vertical_angle_hip_knee_ankle" to Triple(175f, 6.9f, 10.9f)),
             5 to mapOf("back_horizontal_angle_knee" to Triple(0f, -1.85f, -3.05f),
                 "back_horizontal_distance_knee_left" to Triple(12f, 5.6f, 8.9f))
         ),
@@ -310,21 +313,21 @@ object MeasurementManager {
                 "front_horizontal_distance_knee_right" to Triple(13f, 2.15f, 3.75f),
                 "front_vertical_angle_hip_knee_ankle_right" to Triple(175f,2.5f, 5f)),
             4 to mapOf("side_right_vertical_angle_hip_knee" to Triple(89f, 6.4f, 9.4f),
-                "side_right_vertical_angle_hip_knee_ankle" to Triple(175f, 8.9f, 13.9f)),
+                "side_right_vertical_angle_hip_knee_ankle" to Triple(175f, 6.9f, 10.9f)),
             5 to mapOf("back_horizontal_angle_knee" to Triple(0f, 1.85f, 3.05f),
                 "back_horizontal_distance_knee_right" to Triple(12f, 5.6f, 8.9f))
         ),
         // 좌측 발목
         mapOf(
-            0 to mapOf("front_vertical_angle_knee_ankle_left" to Triple(88f,3.85f, 6.8f),
-                "front_horizontal_angle_ankle" to Triple(-180f, 1.8f, 4.1f),
+            0 to mapOf("front_vertical_angle_knee_ankle_left" to Triple(88f,3.85f, 5.8f),
+                "front_horizontal_angle_ankle" to Triple(-180f, 1.8f, 2.6f),
                 "front_horizontal_distance_ankle_left" to Triple(10f,5.2f, 8.2f)),
             5 to mapOf("back_horizontal_distance_sub_ankle" to  Triple(0f, 0.3f, 1.1f),
                 "back_horizontal_distance_heel_left" to Triple(11f, 6f, 11f))
         ),
         mapOf(
-            0 to mapOf("front_vertical_angle_knee_ankle_right" to Triple(88f,3.85f, 6.8f),
-                "front_horizontal_angle_ankle" to Triple(180f, 1.8f, 4.1f),
+            0 to mapOf("front_vertical_angle_knee_ankle_right" to Triple(88f,3.85f, 5.8f),
+                "front_horizontal_angle_ankle" to Triple(180f, 1.8f, 2.6f),
                 "front_horizontal_distance_ankle_right" to Triple(10f,5.2f, 8.2f)),
             5 to mapOf("back_horizontal_distance_sub_ankle" to Triple(0f, 0.3f, 1.1f),
                 "back_horizontal_distance_heel_right" to Triple(11f, 6f, 11f))
@@ -455,9 +458,6 @@ object MeasurementManager {
     enum class Status{
         DANGER, WARNING, NORMAL
     }
-    val matchedIndexs = listOf(
-        "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목"
-    )
 
     // 측정 완료 후 measure_info의 painpart만들기 - motherJa에는 dynamic포함된 값있어야함
     fun getPairParts(context: Context, motherJa: JSONArray) : MutableList<Pair<String, Status>> {
@@ -774,10 +774,10 @@ object MeasurementManager {
                         override fun onReady() {
                             if (!isSet) {
 
-                                val imageViewWidth = ssiv.width
+
                                 val imageViewHeight = ssiv.height
                                 // iv에 들어간 image의 크기 같음 screenWidth
-                                val sWidth = ssiv.sWidth
+
                                 val sHeight = ssiv.sHeight
                                 // 스케일 비율 계산
                                 val scaleFactorX = imageViewHeight / sHeight.toFloat()
@@ -879,23 +879,23 @@ object MeasurementManager {
         }
     }
 
-    fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
-        val progressIndex = progresses?.indexOfFirst { it.progress > 0 && it.progress < it.duration }
-        if (progressIndex != -1) {
-            return progressIndex ?: -1
-        }
-
-        for (i in 1 until progresses.size) {
-            val prev = progresses[i - 1].countSet
-            val current = progresses[i].countSet
-            if ((prev == 3 && current == 2) ||
-                (prev == 2 && current == 1) ||
-                (prev == 1 && current == 0)) {
-                return i
-            }
-        }
-        return 0
-    }
+//    fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
+//        val progressIndex = progresses?.indexOfFirst { it.progress > 0 && it.progress < it.duration }
+//        if (progressIndex != -1) {
+//            return progressIndex ?: -1
+//        }
+//
+//        for (i in 1 until progresses.size) {
+//            val prev = progresses[i - 1].countSet
+//            val current = progresses[i].countSet
+//            if ((prev == 3 && current == 2) ||
+//                (prev == 2 && current == 1) ||
+//                (prev == 1 && current == 0)) {
+//                return i
+//            }
+//        }
+//        return 0
+//    }
 
     // 평균과 설명을 넣어주는 곳
     private fun setLabels(columnName : String) : String {

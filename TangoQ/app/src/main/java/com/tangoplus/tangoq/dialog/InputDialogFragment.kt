@@ -1,10 +1,13 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
@@ -12,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -48,6 +52,8 @@ class InputDialogFragment : DialogFragment() {
         val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&^])[A-Za-z[0-9]$@$!%*#?&^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
         val pwPatternCheck = Pattern.compile(pwPattern)
         disabledButton()
+        visibleKeyboard()
+
         binding.etIDPw.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -59,7 +65,7 @@ class InputDialogFragment : DialogFragment() {
 
         binding.btnIDConfirm.setOnSingleClickListener {
             val jo = JSONObject().apply { put("password", binding.etIDPw.text.toString()) }
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch {
                 verifyPW(requireContext(), getString(R.string.API_user), jo) { status ->
                     when (status) {
                         200 -> {
@@ -70,6 +76,7 @@ class InputDialogFragment : DialogFragment() {
                         else -> {
                             Toast.makeText(requireContext(), "적절하지 않은 비밀번호입니다\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
                             binding.etIDPw.setText("")
+                            visibleKeyboard()
                         }
                     }
                 }
@@ -106,6 +113,17 @@ class InputDialogFragment : DialogFragment() {
         } else {
             dialogFragmentResize(requireContext(), this, width =  0.9f, height = 0.35f)
         }
+    }
+
+    private fun visibleKeyboard() {
+        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.etIDPw.requestFocus()
+            binding.etIDPw.postDelayed({
+                imm.showSoftInput(binding.etIDPw, InputMethodManager.SHOW_IMPLICIT)
+            }, 0)
+            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+        }, 250)
     }
 
 }
