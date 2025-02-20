@@ -99,6 +99,7 @@ class FindAccountDialogFragment : DialogFragment() {
                 binding.btnFADConfirm.text = "인증 하기"
                 binding.etFADMobile.setText("")
                 binding.etFADId.setText("")
+                binding.etFADName.setText("")
 
                 removeAuthInstance() // 파이어베이스 인증 상태 제거
                 when(tab?.position) {
@@ -333,10 +334,6 @@ class FindAccountDialogFragment : DialogFragment() {
                             binding.btnFADConfirm.text = "아이디 찾기"
                         } else {
                             // TODO 여기서 바로 전화번호와 아이디가 맞는지에 대한 값을 보내줌. -> 바로 검증 실행
-
-
-
-
 //                            // snack bar 내용을 확인하고
 //                            val snackbar = Snackbar.make(requireView(), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
 //                            snackbar.setAction("확인") { snackbar.dismiss() }

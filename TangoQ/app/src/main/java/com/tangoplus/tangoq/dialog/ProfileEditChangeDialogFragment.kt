@@ -235,7 +235,8 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 })
             }
             "생년월일" -> {
-                binding.etPCD1.hint = "19950223"
+                binding.etPCD1.hint = "19950812"
+                binding.etPCD1.setHintTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
                 val birthdayPattern = "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\$"
                 val birthdayPatternCheck = Pattern.compile(birthdayPattern)
                 binding.etPCD1.addTextChangedListener(object: TextWatcher {

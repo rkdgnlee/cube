@@ -64,6 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
+                    android:layout_marginTop="10dp"
                     android:text="휴대폰 인증"
                     android:textColor="@color/black"
                     android:textSize="20dp"
@@ -212,36 +213,77 @@
                 app:layout_constraintTop_toBottomOf="@+id/tlFAD">
 
                 <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="20dp"
+                    android:text="이름 입력"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/etFADName"
+                    android:layout_width="0dp"
+                    android:layout_height="74dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/bckgnd_12_edit_text"
+                    android:ems="10"
+                    android:hint="이름을 입력해주세요"
+                    android:inputType="text"
+                    android:paddingStart="12dp"
+                    android:paddingTop="20dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="20dp"
+                    android:textColor="@color/subColor800"
+                    android:textColorHint="@color/subColor200"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+                <TextView
                     android:id="@+id/textView133"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="40dp"
                     android:text="아이디 입력"
                     android:textColor="@color/black"
                     android:textSize="20dp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/etFADId"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etFADName" />
 
                 <EditText
                     android:id="@+id/etFADId"
                     android:layout_width="0dp"
                     android:layout_height="74dp"
                     android:layout_marginStart="40dp"
-                    android:layout_marginTop="48dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="40dp"
-                    android:background="@drawable/bckgnd_20_edit_text"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="아이디를 입력해주세요"
                     android:inputType="text"
-                    android:padding="20dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="20dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="20dp"
                     android:textColor="@color/subColor800"
                     android:textColorHint="@color/subColor200"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView133"
+                    app:layout_constraintVertical_bias="0.0" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

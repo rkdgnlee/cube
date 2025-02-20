@@ -52,6 +52,7 @@
         android:inputType="text|textPassword"
         android:padding="16dp"
         android:textColor="@color/subColor800"
+        android:textColorHint="@color/subColor400"
         android:textSize="18dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"

@@ -179,14 +179,14 @@ object FileStorageUtil {
             val encryptedFile = File(dir, fileName)
             if (encryptedFile.exists()) {
                 encryptedFile.delete()
-                Log.v("DeleteFile", "Deleted encrypted file: ${encryptedFile.absolutePath}")
+                Log.v("DeleteFile", "Deleted encrypted file")
             }
 
             // 내부 저장소의 복호화된 파일 삭제
             val internalFile = File(context.filesDir, fileName)
             if (internalFile.exists()) {
                 internalFile.delete()
-                Log.v("DeleteFile", "Deleted internal storage file: ${internalFile.absolutePath}")
+                Log.v("DeleteFile", "Deleted internal storage file")
             }
         }
     }

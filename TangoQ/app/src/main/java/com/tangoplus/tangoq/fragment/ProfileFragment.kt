@@ -123,16 +123,20 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         setAdapter(profilemenulist.subList(3,6), binding.rvPHelp, 1)
         setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
-        svm.setHeight.observe(viewLifecycleOwner) { height ->
 
-
-        }
 
         svm.setWeight.observe(viewLifecycleOwner) { weight ->
             binding.tvPWeight.text = weight.toString() + "kg"
         }
         svm.setHeight.observe(viewLifecycleOwner) { height ->
             binding.tvPHeight.text = height.toString() + "cm"
+        }
+        svm.setBirthday.observe(viewLifecycleOwner) { birthday ->
+            if (birthday.length >= 8) {
+                Log.v("버스데이", "$birthday")
+                val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+                binding.tvPAge.text = (c.get(Calendar.YEAR) - birthday.substring(0, 4).toInt()).toString() + "세"
+            }
         }
         binding.tvPHeight.setOnSingleClickListener {
             val dialog = ProfileEditChangeDialogFragment.newInstance("신장", svm.setHeight.value.toString())
@@ -141,6 +145,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         binding.tvPWeight.setOnSingleClickListener {
             val dialog = ProfileEditChangeDialogFragment.newInstance("몸무게", svm.setWeight.value.toString())
             dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+        }
+        binding.tvPAge.setOnSingleClickListener {
+            if (binding.tvPAge.text == "미설정") {
+                val dialog = ProfileEditChangeDialogFragment.newInstance("생년월일", svm.setBirthday.value.toString())
+                dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+            }
         }
     }
 

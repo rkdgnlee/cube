@@ -23,6 +23,50 @@ import java.io.IOException
 
 object NetworkUser {
     const val TAG = "NetworkUser"
+
+    // 아이디 비밀번호 자체 로그인
+    suspend fun trySelfLogin(myUrl: String, context: Context, refreshToken: String?, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body =
+            JSONObject().put("refresh_token", refreshToken).toString().toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("${myUrl}auto_login.php")
+            .post(body)
+            .build()
+        return withContext(Dispatchers.IO) {
+            OkHttpClient().newCall(request).enqueue(object : Callback{
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e("Token응답실패", "Failed to execute request")
+                    callback(null)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val responseBody = response.body?.string()
+//                        Log.v("trySelfLogin", "$responseBody")
+                        val bodyJo = JSONObject(responseBody.toString())
+                        val jwtJo = JSONObject().apply {
+                            put("access_jwt", bodyJo.optString("access_jwt"))
+                            put("refresh_jwt", bodyJo.optString("refresh_jwt"))
+                        }
+                        saveEncryptedJwtToken(context, jwtJo)
+                        callback(bodyJo)
+                    } catch (e: IndexOutOfBoundsException) {
+                        Log.e("autoSelfLogin", "IndexError: ${e.message}")
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("autoSelfLogin", "IllegalArgumentError: ${e.message}")
+                    } catch (e: IllegalStateException) {
+                        Log.e("autoSelfLogin", "IllegalStateError: ${e.message}")
+                    } catch (e: NullPointerException) {
+                        Log.e("autoSelfLogin", "NullPointerError: ${e.message}")
+                    } catch (e: java.lang.Exception) {
+                        Log.e("autoSelfLogin", "Exception: ${e.message}")
+                    }
+                }
+            })
+        }
+    }
+
     // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------
     // (각 플랫폼 sdk를 통해서 자동 로그인까지 동작)
     fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
@@ -82,7 +126,7 @@ object NetworkUser {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-                    // Log.v("자체로그인Success", "$responseBody")
+                     Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     callback(jo)
@@ -318,7 +362,8 @@ object NetworkUser {
 
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = joBody.toRequestBody(mediaType)
-        val client = getClient(context)
+//        val client = getClient(context)
+        val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}find_user_id.php")
             .post(body)

@@ -219,7 +219,6 @@ class MeasureDetailFragment : Fragment() {
                             // 각 measureIndex(0~4)에 대해 반복
                             for (measureIndex in 0 until singletonSize) {
                                 val seqList = matchedUris[part] ?: emptyList()  // 현재 부위에 해당하는 seq 리스트 가져오기
-                                // TODO 현재 지난 기록의 singleton이 없기 때문에? 안나오는 것 뿐이었다.
                                 val allAnalysisUnits = seqList.mapNotNull { seq ->
                                     singletonMeasure?.get(currentMeasureIndex + measureIndex)?.measureResult?.let {
                                         getAnalysisUnits(requireContext(), part, seq, it)

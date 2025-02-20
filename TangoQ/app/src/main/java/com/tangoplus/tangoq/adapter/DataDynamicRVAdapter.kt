@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,6 +47,7 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
             // leftIndex가 +1인 이유: 좌우 값이 반대로 가야함.
             val pairStartIndex = (position * 2)
             val leftIndex = pairStartIndex + 1
+
             when (position) {
                 0 -> {
                     holder.llDDAILegend.visibility = View.VISIBLE
@@ -70,9 +72,9 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                     holder.clDDAI1.layoutParams = layoutParams
                 }
                 2 -> {
-                    if (leftIndex < data.size) {
-                        holder.cvDDAI1.setPoints(data[pairStartIndex - 1 ]) // data의 size가 5가 됐음.
-                         holder.tvDDAI1.text = titles[pairStartIndex]
+                    if (leftIndex <= data.size) {
+                        holder.cvDDAI1.setPoints(data[pairStartIndex - 1 ]) // data의 size가 5가 됐음. 3
+                         holder.tvDDAI1.text = titles[pairStartIndex] // 4
                     }
                     if (pairStartIndex < data.size) {
                         holder.cvDDAI2.setPoints(data[leftIndex - 1])

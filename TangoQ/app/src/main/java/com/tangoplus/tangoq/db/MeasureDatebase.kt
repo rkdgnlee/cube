@@ -40,7 +40,6 @@ abstract class MeasureDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: MeasureDatabase? = null
         fun getDatabase(context: Context): MeasureDatabase {
-            Log.d("Database", "Initializing MeasureDatabase")
             return INSTANCE ?: synchronized(this) {
                 val passphrase = generateSecurePassphrase(context)
                 val instance = Room.databaseBuilder(
@@ -52,7 +51,6 @@ abstract class MeasureDatabase : RoomDatabase() {
                     .addMigrations(MIGRATION_12_13)
                     .build()
                 INSTANCE = instance
-                Log.d("Database", "MeasureDatabase created")
                 instance
             }
         }

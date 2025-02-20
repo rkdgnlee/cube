@@ -20,10 +20,13 @@
                 android:id="@+id/tvMATitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
                 android:gravity="center"
+                android:padding="4dp"
                 android:textColor="@color/subColor800"
                 android:textSize="22dp"
                 android:textStyle="bold"
@@ -36,8 +39,10 @@
                 android:id="@+id/ivMAPartBS"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="1dp"
                 android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
                 android:src="@drawable/icon_autocomplete_button"
                 app:layout_constraintBottom_toBottomOf="@+id/tvMATitle"
                 app:layout_constraintStart_toEndOf="@+id/tvMATitle"
@@ -617,7 +622,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_begin="0dp" />
+                    app:layout_constraintGuide_end="0dp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

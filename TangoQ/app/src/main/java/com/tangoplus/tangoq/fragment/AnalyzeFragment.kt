@@ -161,9 +161,6 @@ class AnalyzeFragment : Fragment() {
                     }
                 }
                 setShimmer(false)
-//                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_fade_in)
-//                binding.clEProgress2.animation = animation
-
                 binding.cvAProgress.setOnSingleClickListener {
                     val programSn = evm.latestProgram?.programSn ?: -1
                     val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1

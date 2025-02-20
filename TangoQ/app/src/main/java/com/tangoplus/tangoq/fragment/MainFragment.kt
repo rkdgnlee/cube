@@ -178,7 +178,7 @@ class MainFragment : Fragment() {
 
         if (measures.isNullOrEmpty()) {
             // ------# measure에 뭐라도 들어있으면 위 코드 #-------
-            binding.tvMTitle.text = "${Singleton_t_user.getInstance(requireContext()).jsonObject?.getString("user_name")}님"
+            binding.tvMTitle.text = "${Singleton_t_user.getInstance(requireContext()).jsonObject?.getString("user_name") ?: ""}님"
 
             binding.tvMMeasureDate.visibility = View.GONE
             binding.tvMOverall.text = "-"
@@ -313,6 +313,7 @@ class MainFragment : Fragment() {
 
     private fun notExistedMeasurementGuide() {
         TooltipManager.createGuide(
+
             context = requireContext(),
             text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
             anchor = binding.tvMOverall,

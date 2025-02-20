@@ -222,7 +222,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         if (dynamic.isNotEmpty()) {
             statics.add(1, dynamic[0])
         }
-        Log.v("url가져오기", "$statics")
+//        Log.v("url가져오기", "$statics")
         return statics
     }
     // ------# 저장된 measure에다가 파일 다운로드 및 암호화 하기 (1개의 measure만) #-------
@@ -240,7 +240,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             try {
                                 saveFileFromUrl(context, fileName2, FileStorageUtil.FileType.VIDEO)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving video file: $fileName2", e)
+                                Log.e("downloadFiles", "Error saving video file", e)
                                 false
                             }
                         })
@@ -248,19 +248,19 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             try {
                                 saveFileFromUrl(context, jsonName2, FileStorageUtil.FileType.JSON)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving JSON file: $jsonName2", e)
+                                Log.e("downloadFiles", "Error saving JSON file", e)
                                 false
                             }
                         })
                     } else {
                         val fileName = urlTuples[index].measure_server_file_name
                         val jsonName = urlTuples[index].measure_server_json_name
-                        Log.v("urlTuples", "jpg: ${fileName}, json: $jsonName")
+//                        Log.v("urlTuples", "jpg: ${fileName}, json: $jsonName")
                         saveJobs.add(async {
                             try {
                                 saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving image file: $fileName", e)
+                                Log.e("downloadFiles", "Error saving image file", e)
                                 false
                             }
                         })
@@ -269,7 +269,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             try {
                                 saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving JSON file: $jsonName", e)
+                                Log.e("downloadFiles", "Error saving JSON file", e)
                                 false
                             }
                         })
