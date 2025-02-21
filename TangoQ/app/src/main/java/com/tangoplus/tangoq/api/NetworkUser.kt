@@ -43,7 +43,7 @@ object NetworkUser {
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val responseBody = response.body?.string()
-//                        Log.v("trySelfLogin", "$responseBody")
+                        Log.v("trySelfLogin", "$responseBody")
                         val bodyJo = JSONObject(responseBody.toString())
                         val jwtJo = JSONObject().apply {
                             put("access_jwt", bodyJo.optString("access_jwt"))

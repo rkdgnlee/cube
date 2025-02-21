@@ -48,8 +48,10 @@ class MeasureViewModel : ViewModel() {
     var dynamicJsonFile : File? = null
 
     // 핸드폰번호, 이름 세팅 vm
-    var setupMobile =""
     var setupName = ""
+    var setupNameCondition = MutableLiveData(true)
+    var setupAgreement1 = MutableLiveData(true)
+    var setupAgreement2 = MutableLiveData(true)
 
     // measureDetail
     val recentAnalysisUnits = mutableListOf<MutableList<AnalysisUnitVO>>()

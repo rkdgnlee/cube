@@ -12,15 +12,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.WindowManager
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -35,11 +32,6 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.skydoves.balloon.ArrowPositionRules
-import com.skydoves.balloon.Balloon
-import com.skydoves.balloon.BalloonAnimation
-import com.skydoves.balloon.BalloonSizeSpec
-import com.skydoves.balloon.showAlignBottom
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
@@ -53,6 +45,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.BiometricManager
+import com.tangoplus.tangoq.function.MeasurementManager.exceptDynamicMatchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
@@ -138,8 +131,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 avm.currentIndex = 0
                 measureResult = mvm.selectedMeasure?.measureResult ?: JSONArray()
 
+                binding.ibtnMTDBack.setOnClickListener { dismiss() }
+                pvm.setLeftPlaybackPosition(0)
+                pvm.setRightPlaybackPosition(0)
                 // ------# 비교할 모든 analysisVO 넣기 #------
-                avm.rightAnalysises = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
+                avm.rightAnalysises = transformAnalysisUnit(avm.rightMeasurement.value?.measureResult ?: JSONArray())
 
                 // -------# 측정 날짜 고르는 ACTV left #-------
                 avm.measureDisplayDates = avm.createDateDisplayList(measures)
@@ -158,7 +154,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         setMeasureFiles(avm.leftMeasureDate.value?.fullDateTime)
                         withContext(Dispatchers.Main) {
                             avm.leftMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.regDate == avm.leftMeasureDate.value?.fullDateTime }
-                            avm.leftAnalysises = transformAnalysis(avm.leftMeasurement.value?.measureResult ?: JSONArray())
+                            avm.leftAnalysises = transformAnalysisUnit(avm.leftMeasurement.value?.measureResult ?: JSONArray())
                             val transIndex = if (avm.currentIndex == 6) {
                                 1
                             } else if (avm.currentIndex > 0){
@@ -243,7 +239,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
             // 값 셋팅
             withContext(Dispatchers.Main) {
                 avm.rightMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.regDate == avm.rightMeasureDate.value?.fullDateTime }
-                avm.rightAnalysises = transformAnalysis(avm.rightMeasurement.value?.measureResult ?: JSONArray())
+                avm.rightAnalysises = transformAnalysisUnit(avm.rightMeasurement.value?.measureResult ?: JSONArray())
                 val transIndex = if (avm.currentIndex == 6) {
                     1
                 } else if (avm.currentIndex > 0){
@@ -372,28 +368,41 @@ class MeasureTrendDialogFragment : DialogFragment() {
         }
     }
 
-    private fun setAdapter(analyzesLeft: MutableList<MutableList<AnalysisVO>>?,
-                           analyzesRight : MutableList<MutableList<AnalysisVO>>?,
+    private fun setAdapter(analyzesLeft: MutableList<MutableList<AnalysisUnitVO>>?,
+                           analyzesRight : MutableList<MutableList<AnalysisUnitVO>>?,
                            currentSeq : Int = 0) {
-        val filteredLeftAnalysises = analyzesLeft?.mapNotNull { analysisList ->
-            if (analysisList.any { it.indexx == currentSeq }) {
-                analysisList
-            } else {
-                null
-            }
-        }?.toMutableList()
-        val filteredRightAnalysises = analyzesRight?.mapNotNull { analysisList ->
-            if (analysisList.any { it.indexx == currentSeq }) {
-                analysisList
-            } else {
-                null
-            }
-        }?.toMutableList()
-        // indexx가 1인 AnalysisVO가 포함된 리스트의 원래 인덱스 추출
-        val filteredIndexes = analyzesRight?.mapIndexedNotNull { index, analysisList ->
-            if (analysisList.any { it.indexx == currentSeq }) index else null
+        val filteredLeftAnalysises = if (currentSeq == 1) {
+            analyzesLeft?.filterIndexed{ index, _ -> index in listOf(1, 2, 7,8,9,10) }?.toMutableList()
+        } else {
+            analyzesLeft?.mapNotNull { analysisList ->
+                if (analysisList.any { it.seq == currentSeq }) {
+                    analysisList
+                } else {
+                    null
+                }
+            }?.toMutableList()
         }
+        val filteredRightAnalysises = if (currentSeq == 1) {
+            analyzesRight?.filterIndexed{ index, _ -> index in listOf(1, 2, 7,8,9,10) }?.toMutableList()
+        } else {
+            analyzesRight?.mapNotNull { analysisList ->
+                if (analysisList.any { it.seq == currentSeq }) {
+                    analysisList
+                } else {
+                    null
+                }
+            }?.toMutableList()
 
+        }
+        Log.v("오른쪽 필터링", "$filteredRightAnalysises")
+
+        val filteredIndexes = if (currentSeq == 1 ) {
+            listOf(1, 2, 7, 8, 9, 10)
+        } else {
+            analyzesRight?.mapIndexedNotNull { index, analysisList ->
+                if (analysisList.any { it.seq == currentSeq }) index else null
+            }
+        }
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val adapter = TrendRVAdapter(this@MeasureTrendDialogFragment, filteredLeftAnalysises, filteredRightAnalysises, filteredIndexes?.map { matchedIndexs[it] })
         binding.rvMTD.layoutManager = layoutManager
@@ -402,22 +411,28 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
 
     // 13 > 3개의 AnalysisVO임. == 관절 1개의 3개가 들어간 raw 하나를 말하는 것.
-    private fun transformAnalysis(ja : JSONArray) : MutableList<MutableList<AnalysisVO>> {
-        val analyzes = mutableListOf<MutableList<AnalysisVO>>()
-        matchedUris.forEach { (part, seqList) ->
-            val relatedAnalyzes = mutableListOf<AnalysisVO>()
-
-            seqList.forEachIndexed { index, i ->
-                val analysisUnits = getAnalysisUnits(requireContext(), part, i, ja)
-                val analysisVO = AnalysisVO(
-                    i,
-                    analysisUnits,
-                )
-                relatedAnalyzes.add(analysisVO)
+    private fun transformAnalysisUnit(ja : JSONArray) : MutableList<MutableList<AnalysisUnitVO>> {
+        val analyzes1 = mutableListOf<MutableList<MutableList<AnalysisUnitVO>>>()
+        matchedUris.forEach { (part, seqList) -> // 13가지 관절 전부다
+            val analyzes2 = mutableListOf<MutableList<AnalysisUnitVO>>()
+            seqList.forEachIndexed { index, i -> // 각 시퀀스별로
+                val analyzes3 = getAnalysisUnits(requireContext(), part, i, ja) // 지금 여기서 1이 들어가서 문제가 생긴듯?
+                analyzes2.add(analyzes3)
             }
-            analyzes.add(relatedAnalyzes)
+            analyzes1.add(analyzes2)
         }
-        return analyzes
+        val analysis1 = mutableListOf<MutableList<AnalysisUnitVO>>()
+        // 지금 모든 값들이 다 들어가있는데 matchedTripleIndexes를 통해서 13개의 각각의
+        Log.v("analyse1", "${analyzes1.size}, ${analyzes1.map { it.size }}")
+        matchedTripleIndexes.mapIndexed { indexx, item3 ->
+
+            val analysis2 = item3.map { (seq, matchedIndex, index1) ->
+                analyzes1[indexx][matchedIndex][index1] // 해당 index에서 가져오기
+            }.toMutableList()
+            analysis1.add(analysis2)
+        }
+        Log.v("유닛3개로", "${analysis1.size}, ${analysis1.map { it.map { it.columnName } }}")
+        return analysis1
     }
 
     private suspend fun setMeasureFiles(inputRegDate: String?) {
@@ -501,6 +516,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 exoPlay2?.visibility = View.VISIBLE
                                 exoPlay2?.bringToFront()
                                 exoPause2?.visibility = View.GONE
+                                pvm.setRightPlaybackPosition(0)
                             }
                         }
                     })
@@ -529,6 +545,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                     }
                                 }
                             } else if (playbackState == Player.STATE_ENDED) {
+                                pvm.setLeftPlaybackPosition(0)
                                 exoPlay1?.visibility = View.VISIBLE
                                 exoPlay1?.bringToFront()
                                 exoPause1?.visibility = View.GONE
@@ -594,12 +611,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 llSpeed2?.visibility = View.GONE
                 exoExit2?.visibility = View.GONE
                 exoPlay2?.setOnClickListener {
-                    simpleExoPlayer2?.seekTo(0)
+                    simpleExoPlayer2?.seekTo(pvm.getRightPlaybackPosition())
                     simpleExoPlayer2?.play()
                     exoPlay2?.visibility = View.GONE
                     exoPause2?.visibility = View.VISIBLE
                 }
                 exoPause2?.setOnClickListener{
+                    simpleExoPlayer2?.let { it1 -> pvm.setRightPlaybackPosition(it1.currentPosition) }
                     simpleExoPlayer2?.pause()
                     exoPlay2?.visibility = View.VISIBLE
                     exoPause2?.visibility = View.GONE
@@ -612,13 +630,14 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 llSpeed1?.visibility = View.GONE
                 exoExit1?.visibility = View.GONE
                 exoPlay1?.setOnClickListener {
-                    simpleExoPlayer1?.seekTo(0)
+                    simpleExoPlayer1?.seekTo(pvm.getLeftPlaybackPosition())
                     simpleExoPlayer1?.play()
                     exoPlay1?.visibility = View.GONE
                     exoPause1?.visibility = View.VISIBLE
 
                 }
                 exoPause1?.setOnClickListener{
+                    simpleExoPlayer1?.let { it1 -> pvm.setLeftPlaybackPosition(it1.currentPosition) }
                     simpleExoPlayer1?.pause()
                     exoPlay1?.visibility = View.VISIBLE
                     exoPause1?.visibility = View.GONE

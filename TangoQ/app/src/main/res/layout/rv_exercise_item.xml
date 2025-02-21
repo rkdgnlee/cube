@@ -5,6 +5,7 @@
     android:id="@+id/clMItem"
     android:layout_width="match_parent"
     android:layout_height="128dp"
+    android:layout_marginBottom="8dp"
     android:background="@color/white">
 
     <View
@@ -164,7 +165,7 @@
     <com.skydoves.progressview.ProgressView
         android:id="@+id/hpvEI"
         android:layout_width="0dp"
-        android:layout_height="6dp"
+        android:layout_height="5dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

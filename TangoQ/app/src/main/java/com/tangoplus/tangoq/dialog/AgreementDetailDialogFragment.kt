@@ -11,15 +11,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentAgreementDetailDialogBinding
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.ClassCastException
+import java.time.LocalDate
 
 
 class AgreementDetailDialogFragment : DialogFragment() {
     lateinit var binding: FragmentAgreementDetailDialogBinding
+    private val titles = listOf("서비스 이용 약관", "개인정보 처리 방침", "마케팅 정보 수신 동의 약관", "개인정보 수집 활용 동의서", "개인정보 제3자 제공 동의서")
+
     companion object {
         const val ARG_AGREEMENT_TYPE = "agreement_type"
 
@@ -77,30 +82,58 @@ class AgreementDetailDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
-        val agreementText = when (agreementType) {
-            "agreement1" -> { readAgreementFromFile(R.raw.agreement1) }
+        var agreementText = when (agreementType) {
+            "agreement1" -> readAgreementFromFile(R.raw.agreement1)
             "agreement2" -> readAgreementFromFile(R.raw.agreement2)
             "agreement3" -> readAgreementFromFile(R.raw.agreement3)
+            "agreement4" -> readAgreementFromFile(R.raw.agreement4)
+            "agreement5" -> readAgreementFromFile(R.raw.agreement5)
             else -> ""
         }
+
+        if (agreementType in listOf("agreement4", "agreement5")) {
+            val userName = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_name") ?: ""
+            val currentDate = "${LocalDate.now()}".replace("-", " .")
+
+            agreementText += "\n${currentDate}\n이용자 성명 $userName"
+        }
+
         val builder = AlertDialog.Builder(requireContext())
         binding = FragmentAgreementDetailDialogBinding.inflate(layoutInflater)
         builder.setView(binding.root)
+
+        binding.tvAgreementTitle.text = when (agreementType) {
+            "agreement1" -> titles[0]
+            "agreement2" -> titles[1]
+            "agreement3" -> titles[2]
+            "agreement4" -> titles[3]
+            "agreement5" -> titles[4]
+            else -> ""
+        }
+
+        val titleIndex = agreementText.indexOf("\n")
+        agreementText = agreementText.substring(titleIndex + 1, agreementText.length)
+        binding.tvAgreementTitle.textSize = if (isTablet(requireContext()) ) 24f else 20f
+
         binding.tvAgreement.text = agreementText
+        binding.tvAgreement.textSize = if (isTablet(requireContext())) 19f else 16f
+
         binding.ibtnAgreement.setOnClickListener {
-            Log.v("디스미스", "dismiss")
             dismiss()
         }
         return builder.create()
     }
-
     @SuppressLint("UseCompatLoadingForDrawables")
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.6f)
+//        dialog?.window?.setDimAmount(0.6f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-        dialogFragmentResize(requireContext(), this@AgreementDetailDialogFragment)
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+//        dialogFragmentResize(requireContext(), this@AgreementDetailDialogFragment)
     }
 
 }

@@ -122,10 +122,6 @@
             </intent-filter>
         </service>
 
-        <service android:name=".service.ForcedTerminationService"
-            android:process=":main"
-            android:stopWithTask="false"/>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.tangoplus.tangoq.provider"

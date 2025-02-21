@@ -207,7 +207,6 @@ class MainFragment : Fragment() {
                     binding.btnMProgram.setOnClickListener {
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flMain, ProgramSelectFragment())
-                            addToBackStack(null)
                             commit()
                         }
                     }
@@ -217,8 +216,10 @@ class MainFragment : Fragment() {
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
                         try {
                             lifecycleScope.launch(Dispatchers.Main) {
+                                Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
                                 val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
                                 if (dateIndex != null) {
+
                                     measures?.get(dateIndex)?.recommendations
                                     binding.tvMMeasureDate.text = measure[dateIndex].regDate.substring(0, 10)
                                     binding.tvMOverall.text = measure[dateIndex].overall.toString()

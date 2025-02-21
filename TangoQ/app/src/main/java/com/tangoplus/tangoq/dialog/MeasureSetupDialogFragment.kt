@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MediatorLiveData
@@ -25,7 +27,6 @@ import java.util.regex.Pattern
 class MeasureSetupDialogFragment : DialogFragment() {
     private lateinit var  binding: FragmentMeasureSetupDialogBinding
     private val mvm : MeasureViewModel by activityViewModels()
-    private val svm : SignInViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,47 +40,92 @@ class MeasureSetupDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 버튼 셋엄
-        binding.ibtnMSDPhoneClear.setOnClickListener{ binding.etMSDPhone.setText("")}
+//        binding.ibtnMSDPhoneClear.setOnClickListener{ binding.etMSDPhone.setText("")}
         binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
         binding.tvMSDSkip.setOnClickListener {
 //            Log.v("스킵", "go skip")
             dismiss()
         }
+        binding.ibtnMSDAgreement1.setOnClickListener {
+            val dialog = AgreementDetailDialogFragment.newInstance("agreement4")
+            dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+        }
+        binding.ibtnMSDAgreement2.setOnClickListener {
+            val dialog = AgreementDetailDialogFragment.newInstance("agreement5")
+            dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+        }
+        binding.clMSDAgreement1.setOnClickListener {
+            mvm.setupAgreement1.value = if (mvm.setupAgreement1.value == true) false else true
+        }
+        binding.clMSDAgreement2.setOnClickListener {
+            mvm.setupAgreement2.value = if (mvm.setupAgreement2.value == true) false else true
+        }
+        mvm.setupAgreement1.observe(viewLifecycleOwner) { agreement1 ->
+            binding.ivMSDAgreement1.setImageDrawable(ContextCompat.getDrawable(requireContext(),
+                if (agreement1) {
+                    R.drawable.icon_part_checkbox_enabled
+                } else {
+                    R.drawable.icon_part_checkbox_disabled
+                }
+            ))
+        }
+        mvm.setupAgreement2.observe(viewLifecycleOwner) {agreement2->
+            binding.ivMSDAgreement2.setImageDrawable(ContextCompat.getDrawable(requireContext(),
+                if (agreement2) {
+                    R.drawable.icon_part_checkbox_enabled
+                } else {
+                    R.drawable.icon_part_checkbox_disabled
+                }
+            ))
+        }
 
         // 버튼 observer 세팅
         val buttonEnabled = MediatorLiveData<Boolean>().apply {
-            addSource(svm.idCondition) { idValid ->
-                value = idValid == true && svm.mobileCondition.value == true
+            addSource(mvm.setupNameCondition) { nameValid ->
+                value = nameValid == true && mvm.setupNameCondition.value == true
             }
-            addSource(svm.mobileCondition) { mobileValid ->
-                value = mobileValid == true && svm.idCondition.value == true
+            addSource(mvm.setupAgreement1) { agreement1Valid ->
+                value = agreement1Valid == true && mvm.setupAgreement1.value == true
+            }
+            addSource(mvm.setupAgreement2) { agreement2Valid ->
+                value = agreement2Valid == true && mvm.setupAgreement2.value == true
             }
         }
+//        val buttonEnabled = MediatorLiveData<Boolean>().apply {
+//            addSource(svm.idCondition) { idValid ->
+//                value = idValid == true && svm.mobileCondition.value == true
+//            }
+//            addSource(svm.mobileCondition) { mobileValid ->
+//                value = mobileValid == true && svm.idCondition.value == true
+//            }
+//        }
         buttonEnabled.observe(viewLifecycleOwner) { isEnabled ->
             binding.btnMSDFinish.isEnabled = isEnabled
-//            Log.v("isEnabled", "$isEnabled")
+            binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
+                if (isEnabled) R.color.mainColor else R.color.subColor400
+            ))
         }
 
-        val mobilePattern = "^010-\\d{4}-\\d{4}\$"
-        val mobilePatternCheck = Pattern.compile(mobilePattern)
-        binding.etMSDPhone.addTextChangedListener(object: TextWatcher {
-            private var isFormatting = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                if (isFormatting) return
-                isFormatting = true
-                val cleaned =s.toString().replace("-", "")
-                when {
-                    cleaned.length <= 3 -> s?.replace(0, s.length, cleaned)
-                    cleaned.length <= 7 -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3)}")
-                    else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
-                }
-                isFormatting = false
-                svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etMSDPhone.text.toString()).find()
-            }
-        })
-        val NamePatternCheck = Pattern.compile(
+//        val mobilePattern = "^010-\\d{4}-\\d{4}\$"
+//        val mobilePatternCheck = Pattern.compile(mobilePattern)
+//        binding.etMSDPhone.addTextChangedListener(object: TextWatcher {
+//            private var isFormatting = false
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//            override fun afterTextChanged(s: Editable?) {
+//                if (isFormatting) return
+//                isFormatting = true
+//                val cleaned =s.toString().replace("-", "")
+//                when {
+//                    cleaned.length <= 3 -> s?.replace(0, s.length, cleaned)
+//                    cleaned.length <= 7 -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3)}")
+//                    else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
+//                }
+//                isFormatting = false
+//                svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etMSDPhone.text.toString()).find()
+//            }
+//        })
+        val namePatternCheck = Pattern.compile(
             "^(?:" +
                     "[가-힣]{2,5}|" +  // 한글 2-5글자
                     "[a-zA-Z]{3,15}" + // 영어 3-15글자
@@ -89,23 +135,22 @@ class MeasureSetupDialogFragment : DialogFragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                svm.id.value = s.toString()
-                svm.idCondition.value = NamePatternCheck.matcher(binding.etMSDName.text.toString()).find()
+                mvm.setupName = s.toString()
+                mvm.setupNameCondition.value = namePatternCheck.matcher(binding.etMSDName.text.toString()).find()
 //                Log.v("idPw", "${svm.idCondition.value}")
             }
         })
 
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         val userName = userJson?.optString("user_name")
-        val mobile = userJson?.optString("mobile")
         binding.etMSDName.setText(userName)
         mvm.setupName = userName ?: ""
-        binding.etMSDPhone.setText(mobile)
-        mvm.setupMobile = mobile ?: ""
+//        binding.etMSDPhone.setText(mobile)
+
 
         binding.btnMSDFinish.setOnClickListener {
             mvm.setupName = binding.etMSDName.text.toString()
-            mvm.setupMobile = binding.etMSDPhone.text.toString()
+//            mvm.setupMobile = binding.etMSDPhone.text.toString()
             dismiss()
 //            Log.v("mvm넣기", "mvm.Name: ${mvm.setupName}, mvm.Mobile: ${mvm.setupMobile}")
         }
@@ -116,14 +161,18 @@ class MeasureSetupDialogFragment : DialogFragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.7f)
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+//        dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20))
-
-        dialog?.setCancelable(false)
-        if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this, width =  0.6f ,height = 0.4f)
-        } else {
-            dialogFragmentResize(requireContext(), this, height = 0.475f)
-        }
+//
+//        dialog?.setCancelable(false)
+//        if (isTablet(requireContext())) {
+//            dialogFragmentResize(requireContext(), this, width =  0.6f ,height = 0.4f)
+//        } else {
+//            dialogFragmentResize(requireContext(), this, height = 0.475f)
+//        }
     }
 }

@@ -56,7 +56,7 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
-    implementation("com.google.mediapipe:tasks-vision:0.20230731")
+    implementation("com.google.mediapipe:tasks-vision:0.10.0")
 
     // 외부 라이브러리
     implementation("com.github.shuhart:StepView:v1.5.1")

@@ -33,6 +33,7 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureBinding
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
+import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
@@ -73,6 +74,18 @@ class MeasureFragment : Fragment() {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
+        val dateTvs = listOf(binding.tvM1,binding.tvM2,binding.tvM3,binding.tvM4,binding.tvM5 )
+        val scoreTvs = listOf(binding.tvM6,binding.tvM7,binding.tvM8,binding.tvM9,binding.tvM10 )
+        dateTvs.forEachIndexed { index, tv->
+            tv.setOnClickListener {
+                mvm.selectedMeasureIndex.value = index
+            }
+        }
+        scoreTvs.forEachIndexed { index, tv ->
+            tv.setOnClickListener {
+                mvm.selectedMeasureIndex.value = index
+            }
+        }
 // ------# 싱글턴 패턴 객체 가져오기 #------
         val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         measures = singletonMeasure.measures ?: mutableListOf()
@@ -99,16 +112,64 @@ class MeasureFragment : Fragment() {
                             "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)}"
                         binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMPredictDicease.setOnClickListener {
+                            val dialog = LoadingDialogFragment.newInstance("측정파일")
+                            dialog.show(activity?.supportFragmentManager ?: return@setOnClickListener, "LoadingDialogFragment")
 
                             hideBadgeFunction?.invoke()
                             ssm = SaveSingletonManager(requireContext(), requireActivity())
                             CoroutineScope(Dispatchers.IO).launch {
-                                ssm.setRecent5MeasureResult(0)
-                                withContext(Dispatchers.Main) {
-                                    // 다운로드 후 이동
-                                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                                        replace(R.id.flMain, MeasureDetailFragment())
-                                        commit()
+                                try {
+                                    val measureIndex = 4 - (mvm.selectedMeasureIndex.value ?: 0)
+                                    val currentMeasure = singletonMeasure.measures?.getOrNull(measureIndex)
+                                    val uriTuples = currentMeasure?.sn?.let { it -> ssm.get1MeasureUrls(it) }
+                                    if (uriTuples != null) {
+                                        ssm.downloadFiles(uriTuples)
+                                        val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
+                                        // singleton의 인덱스 찾아서 ja와 값 넣기
+                                        val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == currentMeasure.regDate }
+                                        if (singletonIndex != null && singletonIndex >= 0) {
+                                            withContext(Dispatchers.Main) {
+                                                singletonMeasure.measures?.set(singletonIndex, editedMeasure)
+                                                mvm.selectedMeasure = editedMeasure
+                                                mvm.selectedMeasureDate.value = currentMeasure.regDate
+                                                mvm.selectMeasureDate.value = currentMeasure.regDate
+
+                                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
+                                                requireActivity().supportFragmentManager.beginTransaction().apply {
+                                                    replace(R.id.flMain, MeasureDetailFragment())
+                                                    commit()
+                                                }
+
+//                                                ssm.setRecent5MeasureResult(mvm.selectedMeasureIndex.value ?: 0)
+//                                                withContext(Dispatchers.Main) {
+//                                                    // 다운로드 후 이동
+//                                                    requireActivity().supportFragmentManager.beginTransaction().apply {
+//                                                        replace(R.id.flMain, MeasureDetailFragment())
+//                                                        commit()
+//                                                    }
+//                                                }
+
+                                                dialog.dismiss()
+                                            }
+                                        }
+                                    }
+                                } catch (e: IllegalStateException) {
+                                    Log.e("measureSelectError", "MeasureBSIllegalState: ${e.message}")
+                                } catch (e: IllegalArgumentException) {
+                                    Log.e("measureSelectError", "MeasureBSIllegalArgument: ${e.message}")
+                                } catch (e: NullPointerException) {
+                                    Log.e("measureSelectError", "MeasureBSNullPointer: ${e.message}")
+                                } catch (e: InterruptedException) {
+                                    Log.e("measureSelectError", "MeasureBSInterrupted: ${e.message}")
+                                } catch (e: IndexOutOfBoundsException) {
+                                    Log.e("measureSelectError", "MeasureBSIndexOutOfBounds: ${e.message}")
+                                } catch (e: Exception) {
+                                    Log.e("measureSelectError", "MeasureBS: ${e.message}")
+                                } finally {
+                                    withContext(Dispatchers.Main) {
+                                        if (dialog.isAdded && dialog.isVisible) {
+                                            dialog.dismiss()
+                                        }
                                     }
                                 }
                             }
@@ -147,7 +208,6 @@ class MeasureFragment : Fragment() {
         binding.btnM2.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
-                addToBackStack("MeasureHistoryFragment")
                 commit()
             }
         }

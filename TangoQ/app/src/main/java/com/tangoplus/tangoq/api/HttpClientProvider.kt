@@ -2,7 +2,11 @@ package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
@@ -100,14 +104,17 @@ object HttpClientProvider {
     }
 
     fun scheduleTokenCheck(context: Context) {
-        val tokenCheckRequest = PeriodicWorkRequestBuilder<TokenCheckWorker>(
-            50, TimeUnit.SECONDS
-        ).build()
-//        Log.v("worker실행", "scheduleTokenCheck")
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "TokenCheckWork", // 작업의 고유 이름
-            ExistingPeriodicWorkPolicy.UPDATE, // 기존 작업 유지
-            tokenCheckRequest
-        )
+        val tokenCheckRequest = OneTimeWorkRequestBuilder<TokenCheckWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) // 강제 실행
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // 네트워크 필요 없음
+                    .setRequiresBatteryNotLow(false) // 배터리 부족 시 실행 허용
+                    .setRequiresCharging(false) // 충전 중이 아니어도 실행
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(context).enqueue(tokenCheckRequest)
     }
 }

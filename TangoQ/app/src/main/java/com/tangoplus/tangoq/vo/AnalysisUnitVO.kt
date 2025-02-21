@@ -6,5 +6,6 @@ data class AnalysisUnitVO(
     val rawData : Float = 0f,
     val rawDataBound : Triple<Float, Float, Float>,
     var summary: String = "",
-    val state : Int
+    val state : Int,
+    val seq: Int
 )

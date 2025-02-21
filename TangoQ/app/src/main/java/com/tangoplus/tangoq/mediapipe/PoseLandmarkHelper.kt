@@ -139,7 +139,7 @@ class PoseLandmarkerHelper(
                 "Pose Landmarker failed to initialize. See error logs for " +
                         "details"
             )
-            Log.v(
+            Log.e(
                 TAG, "MediaPipe failed to load the task with error: " + e
                     .message
             )
@@ -149,7 +149,7 @@ class PoseLandmarkerHelper(
                 "Pose Landmarker failed to initialize. See error logs for " +
                         "details", GPU_ERROR
             )
-            Log.v(
+            Log.e(
                 TAG,
                 "Image classifier failed to load model with error: " + e.message
             )

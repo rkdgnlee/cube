@@ -19,6 +19,8 @@ import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -428,17 +430,52 @@ object NetworkProgress {
             }
         }
     }
-//    suspend fun getOrInsertProgress(context: Context, sns: Triple<Int, Int, Int>) : Unit = suspendCoroutine  { continuation ->
-//        postProgressInCurrentProgram(context.getString(R.string.API_progress), sns, context) { pv3s, progressUnits -> // MutableList<ProgressUnitVO>
-//            // (자동) 있으면 가져오고 없으면 추가되서 가져오고
-//            if (progressUnits.isNotEmpty()) {
-//
-//                continuation.resume(Unit) // continuation이라는 Coroutine함수를 통해 보내기
-//            } else {
-//                // ------# 측정 기록이 없음 #------
-//                // 프로그램 운동 기록이 없을 때.
-//                continuation.resume(Unit)
-//            }
-//        }
-//    }
+
+    suspend fun getMonthProgress(myUrl: String, month: String, context: Context) : MutableSet<String>? {
+        val client = getClient(context)
+        val request = Request.Builder()
+            .url("$myUrl?month=$month")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+
+                if (!response.isSuccessful) {
+                    Log.e("MonthProgressFailed" ,"response is Null")
+                    return@withContext null
+                }
+
+                val responseBody = response.body?.string()
+                try {
+                    val bodyJa = responseBody?.let { JSONObject(it).optJSONArray("data") }
+                    val result = mutableSetOf<String>()
+                    if (bodyJa != null) {
+                        for (i in 0 until bodyJa.length()) {
+                            val dateString = bodyJa.getJSONObject(i).optString("completed_watch_at")
+                            result.add(dateString)
+                        }
+                    }
+                    Log.v("getMonthProgress", "$result")
+                    return@use result
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("ProgressIndex", "MonthProgressFailed: ${e.message}")
+                    mutableSetOf()
+                } catch (e: IllegalArgumentException) {
+                    Log.e("ProgressIllegal", "MonthProgressFailed: ${e.message}")
+                    mutableSetOf()
+                } catch (e: IllegalStateException) {
+                    Log.e("ProgressIllegal", "MonthProgressFailed: ${e.message}")
+                    mutableSetOf()
+                } catch (e: NullPointerException) {
+                    Log.e("ProgressNull", "MonthProgressFailed: ${e.message}")
+                    mutableSetOf()
+                } catch (e: java.lang.Exception) {
+                    Log.e("ProgressException", "MonthProgressFailed: ${e.message}")
+                    mutableSetOf()
+                }
+
+            }
+        }
+    }
 }

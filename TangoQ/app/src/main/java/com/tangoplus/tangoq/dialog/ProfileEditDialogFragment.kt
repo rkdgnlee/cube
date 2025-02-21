@@ -64,6 +64,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         setStyle(STYLE_NO_FRAME, R.style.AppTheme_DialogFragment)
         singletonUser = Singleton_t_user.getInstance(requireContext())
 
+        binding.ibtnPEDBack.setOnClickListener { dismiss() }
         // ------# 초기 생체인증 init #------
         biometricManager = BiometricManager(this)
         biometricManager.authenticate(

@@ -107,7 +107,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
         // -------# 기본 셋팅 #-------
         initVMValue()
-
+        binding.ibtnPCDBack.setOnClickListener { dismiss() }
         // main으로 돌아갈시 업데이트
         pvm.fromProgramCustom = true
 

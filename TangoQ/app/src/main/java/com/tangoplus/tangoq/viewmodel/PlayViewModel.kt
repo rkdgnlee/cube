@@ -47,4 +47,12 @@ class PlayViewModel : ViewModel() {
     var isProgram = false
     var uvpSn = 0
     var uvpSnCurrentPosition = 0
+
+
+    private var leftPlayBackPosition  = 0L
+    private var rightPlayBackPosition = 0L
+    fun setLeftPlaybackPosition(position : Long) { leftPlayBackPosition = position }
+    fun setRightPlaybackPosition(position: Long) { rightPlayBackPosition = position }
+    fun getLeftPlaybackPosition() = leftPlayBackPosition
+    fun getRightPlaybackPosition() = rightPlayBackPosition
 }

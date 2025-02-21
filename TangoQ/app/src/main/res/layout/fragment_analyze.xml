@@ -78,6 +78,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvA"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fillViewport="true"
@@ -345,19 +346,57 @@
                         app:layout_constraintTop_toTopOf="@+id/bcA"
                         app:layout_constraintVertical_bias="0.6" />
 
-                    <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/bcA"
-                        android:layout_width="match_parent"
-                        android:layout_height="128dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginBottom="30dp"
-                        android:layerType="none"
-                        app:cardBackgroundColor="@color/black"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvAWeekProgress" />
+                        app:layout_constraintEnd_toEndOf="@+id/llAWeek"
+                        app:layout_constraintStart_toStartOf="@+id/llAWeek"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <View
+                            android:id="@+id/vA1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA7"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/llAWeek"
@@ -422,6 +461,21 @@
                             android:src="@drawable/icon_week_7_disabled" />
 
                     </LinearLayout>
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/bcA"
+                        android:layout_width="match_parent"
+                        android:layout_height="128dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="30dp"
+                        android:clickable="true"
+                        android:layerType="none"
+                        app:cardBackgroundColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAWeekProgress" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

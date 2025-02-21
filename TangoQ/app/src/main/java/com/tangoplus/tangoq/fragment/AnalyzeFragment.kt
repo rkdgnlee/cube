@@ -2,6 +2,8 @@ package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +23,9 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -37,6 +42,7 @@ import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.api.NetworkProgress.getDailyProgress
 import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgresses
+import com.tangoplus.tangoq.api.NetworkProgress.getMonthProgress
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.databinding.FragmentAnalyzeBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
@@ -47,8 +53,10 @@ import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
@@ -62,7 +70,7 @@ import java.util.Locale
 class AnalyzeFragment : Fragment() {
     lateinit var binding : FragmentAnalyzeBinding
     var currentMonth = YearMonth.now()
-
+    private val avm : AnalysisViewModel by activityViewModels()
     private val pvm : ProgressViewModel by activityViewModels()
     private val evm : ExerciseViewModel by activityViewModels()
     private lateinit var  todayInWeek : List<Int>
@@ -167,6 +175,18 @@ class AnalyzeFragment : Fragment() {
                     ProgramCustomDialogFragment.newInstance(programSn, recSn)
                         .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
                 }
+                Log.v("현재날짜", "${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+                updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+                avm.existedMonthProgresses.collectLatest { dates ->
+                    binding.cvACalendar.notifyCalendarChanged()
+                }
+
+                val btns = listOf(binding.vA1, binding.vA2, binding.vA3, binding.vA4, binding.vA5)
+                btns.forEachIndexed { index, view ->
+                    view.setOnClickListener {
+                        showDailyProgress(index)
+                    }
+                }
             } else {
                 setGraph()
                 setShimmer(false)
@@ -225,7 +245,7 @@ class AnalyzeFragment : Fragment() {
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
                 updateMonthView()
-                updateMonthProgress()
+                updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
                 setAdapter(listOf())
             }
         }
@@ -239,36 +259,18 @@ class AnalyzeFragment : Fragment() {
             if (currentMonth > YearMonth.now().minusMonths(24)) {
                 currentMonth = currentMonth.minusMonths(1)
                 updateMonthView()
-                updateMonthProgress()
+                updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
                 setAdapter(listOf())
             }
         }
 
         binding.monthText.setOnClickListener {
-            updateMonthProgress()
+            updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
         }
 
         // ------# 운동 기록 날짜 받아오기 #------
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                pvm.selectedDate?.let { selectedDate ->
-                    val date = selectedDate.format(formatter)
-//                    Log.v("date", date)
-                    val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
-                    withContext(Dispatchers.Main) {
-                        if (!currentProgresses.isNullOrEmpty()) {
-                            setAdapter(currentProgresses)
-                        } else {
-                            setAdapter(listOf())
-                        }
-                        binding.tvADate.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
-                    }
-                } ?: run {
-                    Log.e("DateSelection", "Selected date is null")
-                }
-            }
-        }
+        showDailyProgress()
 
         binding.cvACalendar.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthHeaderViewContainer> {
             override fun create(view: View) = MonthHeaderViewContainer(view)
@@ -392,6 +394,14 @@ class AnalyzeFragment : Fragment() {
     private fun setDateStyle(container: DayViewContainer, day: CalendarDay) {
         container.date.background = null
         when {
+            avm.existedMonthProgresses.value.contains(day.date.toString()) -> {
+                if (day.date == pvm.selectedDate) {
+                    container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.white))
+                    container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
+                } else {
+                    container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.thirdColor))
+                }
+            }
             day.date == pvm.selectedDate -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.white))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
@@ -492,16 +502,16 @@ class AnalyzeFragment : Fragment() {
     }
 
     // 버튼으로 월이 바꼈을 때,
-    private fun updateMonthProgress() {
+    private fun updateMonthProgress(date: String) {
         binding.tvADate.text = "날짜를 선택해주세요"
-//        val filteredExercises = pvm.allHistorys.filter { history ->
-//            history.regDate?.let { regDateString ->
-//                val historyDate = stringToLocalDate(regDateString)
-//                YearMonth.from(historyDate) == currentMonth
-//            } ?: false
-//        }.toMutableList()
-//        val historySummaries = filteredExercises.toHistorySummaries()
-//        setAdapter(historySummaries)
+        Log.v("updateMonthProgress", date)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val dateList = getMonthProgress(requireActivity().getString(R.string.API_progress), date, requireContext())?.toList()
+            if (dateList != null) {
+                avm.updateMonthProgress(dateList)
+            }
+            Log.v("VMProgresses", "${avm.existedMonthProgresses}")
+        }
     }
 
     private fun setShimmer(isStart: Boolean) {
@@ -621,5 +631,66 @@ class AnalyzeFragment : Fragment() {
                 setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
             }
         }
+
+        barChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                e?.let {
+                    val index = it.x.toInt() // 선택한 값의 X 좌표 (index)
+                    Log.v("X축index", "$index")
+                    showDailyProgress(index)
+                }
+            }
+            override fun onNothingSelected() {}
+        })
     }
+    private fun showDailyProgress(index: Int? = null) {
+        if (index != null) {
+            pvm.selectedDate = LocalDate.now().minusDays((6 - index).toLong())
+        }
+        Log.v("막대그래프 클릭", "${pvm.selectedDate}")
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                pvm.selectedDate?.let { selectedDate ->
+                    val date = selectedDate.format(formatter)
+//                    Log.v("date", date)
+                    val currentProgresses = getDailyProgress(getString(R.string.API_progress), date, requireContext())
+                    withContext(Dispatchers.Main) {
+                        if (!currentProgresses.isNullOrEmpty()) {
+                            setAdapter(currentProgresses)
+                        } else {
+                            setAdapter(listOf())
+                        }
+                        binding.tvADate.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            scrollToView(binding.rvA)
+//                        }, 250)
+                    }
+                } ?: run {
+                    Log.e("DateSelection", "Selected date is null")
+                }
+            }
+        }
+    }
+//    private fun scrollToView(view: View) {
+//        // 1 뷰의 위치를 저장할 배열 생성
+//        val location = IntArray(2)
+//        // 2 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
+//        view.getLocationInWindow(location)
+//        val viewTop = location[1]
+//        // 3 스크롤 뷰의 위치를 저장할 배열 생성
+//        val scrollViewLocation = IntArray(2)
+//
+//        // 4 스크롤 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
+//        binding.nsvA.getLocationInWindow(scrollViewLocation)
+//        val scrollViewTop = scrollViewLocation[1]
+//        // 5 현재 스크롤 뷰의 스크롤된 y 위치 가져오기
+//        val scrollY = binding.nsvA.scrollY
+//        // 6 스크롤할 위치 계산
+//        //    현재 스크롤 위치 + 뷰의 상대 위치 = 스크롤 위치 계산
+//        val scrollTo = scrollY + viewTop - scrollViewTop
+//        // 7 스크롤 뷰 해당 위치로 스크롤
+//        binding.nsvA.smoothScrollTo(0, scrollTo)
+//    }
 }

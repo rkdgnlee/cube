@@ -3,43 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
     android:layout_marginTop="32dp"
     android:layout_marginEnd="16dp"
     android:layout_marginBottom="32dp"
     android:background="@drawable/bckgnd_rectangle_20"
+    android:backgroundTint="@color/white"
     tools:context=".dialog.MeasureSetupDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <EditText
-            android:id="@+id/etMSDPhone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/bckgnd_1_sub200_12"
-            android:ems="10"
-            android:hint="전화번호를 입력해주세요"
-            android:inputType="phone"
-            android:padding="20dp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/subColor150"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.3" />
+        android:layout_height="match_parent"
+        android:background="@drawable/bckgnd_rectangle_12">
 
         <EditText
             android:id="@+id/etMSDName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="60dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/bckgnd_1_sub200_12"
             android:ems="10"
@@ -48,21 +30,11 @@
             android:padding="20dp"
             android:textColor="@color/black"
             android:textColorHint="@color/subColor150"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etMSDPhone" />
-        <ImageButton
-            android:id="@+id/ibtnMSDPhoneClear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:backgroundTint="#00FFFFFF"
-            android:contentDescription="clearEtLdId"
-            android:src="@drawable/icon_text_clear"
-            app:layout_constraintBottom_toBottomOf="@+id/etMSDPhone"
-            app:layout_constraintEnd_toEndOf="@+id/etMSDPhone"
-            app:layout_constraintTop_toTopOf="@+id/etMSDPhone" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3" />
 
         <ImageButton
             android:id="@+id/ibtnMSDNameClear"
@@ -84,25 +56,15 @@
             android:layout_margin="20dp"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/mainColor"
-            android:padding="16dp"
+            android:padding="20dp"
             android:stateListAnimator="@null"
-            android:text="설정 완료"
+            android:text="동의 완료"
             android:textColor="@color/whiteText"
-            android:textSize="16dp"
+            android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/textView32"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="전화번호"
-            android:textColor="@color/subColor800"
-            android:textSize="18dp"
-            app:layout_constraintBottom_toTopOf="@+id/etMSDPhone"
-            app:layout_constraintStart_toStartOf="@+id/etMSDPhone" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clMSDAgreement2" />
 
         <TextView
             android:id="@+id/textView33"
@@ -111,7 +73,7 @@
             android:layout_marginBottom="10dp"
             android:text="이름"
             android:textColor="@color/subColor800"
-            android:textSize="18dp"
+            android:textSize="20dp"
             app:layout_constraintBottom_toTopOf="@+id/etMSDName"
             app:layout_constraintStart_toStartOf="@+id/etMSDName" />
 
@@ -125,10 +87,105 @@
             android:padding="6dp"
             android:text="Skip"
             android:textColor="@color/subColor500"
-            android:textSize="16dp"
+            android:textSize="24dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMSDAgreement1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/effect_ibtn"
+            android:backgroundTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etMSDName">
 
+            <ImageView
+                android:id="@+id/ivMSDAgreement1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox_disabled"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView59"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="[필수] 개인정보 수집 및 활용 동의"
+                android:textColor="@color/subColor800"
+                android:textSize="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivMSDAgreement1"
+                app:layout_constraintStart_toEndOf="@+id/ivMSDAgreement1"
+                app:layout_constraintTop_toTopOf="@+id/ivMSDAgreement1" />
+
+            <ImageButton
+                android:id="@+id/ibtnMSDAgreement1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_arrow_right_agreement"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMSDAgreement2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/effect_ibtn"
+            android:backgroundTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clMSDAgreement1">
+
+            <ImageView
+                android:id="@+id/ivMSDAgreement2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/icon_part_checkbox_disabled"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView47"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="[필수] 개인정보 제3자 제공 동의"
+                android:textColor="@color/subColor800"
+                android:textSize="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivMSDAgreement2"
+                app:layout_constraintStart_toEndOf="@+id/ivMSDAgreement2"
+                app:layout_constraintTop_toTopOf="@+id/ivMSDAgreement2" />
+
+            <ImageButton
+                android:id="@+id/ibtnMSDAgreement2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_arrow_right_agreement"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

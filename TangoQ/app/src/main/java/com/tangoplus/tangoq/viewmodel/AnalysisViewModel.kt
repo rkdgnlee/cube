@@ -3,9 +3,12 @@ package com.tangoplus.tangoq.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.vo.DateDisplay
 import com.tangoplus.tangoq.vo.MeasureVO
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
 
 class AnalysisViewModel : ViewModel() {
@@ -39,11 +42,19 @@ class AnalysisViewModel : ViewModel() {
     }
 
     // trend
-    var leftAnalysises : MutableList<MutableList<AnalysisVO>>? = null
-    var rightAnalysises : MutableList<MutableList<AnalysisVO>>? = null
+    var leftAnalysises : MutableList<MutableList<AnalysisUnitVO>>? = null
+    var rightAnalysises : MutableList<MutableList<AnalysisUnitVO>>? = null
     var trendLeftUri: String? = null
     var trendRightUri : String? = null
     var currentIndex : Int = 0
+
+    private val _existedMonthProgresses = MutableStateFlow<List<String>>(emptyList())
+    val existedMonthProgresses: StateFlow<List<String>> = _existedMonthProgresses
+
+    fun updateMonthProgress(newData: List<String>) {
+        _existedMonthProgresses.value = newData
+    }
+
 
     fun setTrendIndexToZero() {
         currentIndex = 0

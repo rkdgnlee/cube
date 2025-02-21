@@ -59,12 +59,27 @@ object MeasurementManager {
         "좌측 발목" to listOf(0, 5),
         "우측 발목" to listOf(0, 5)
     )
+    val exceptDynamicMatchedUris = mapOf(
+        "목관절" to listOf(0, 3, 4, 5, 6),
+        "좌측 어깨" to listOf(0, 3, 5, 6),
+        "우측 어깨" to listOf(0, 4, 5, 6),
+        "좌측 팔꿉" to listOf(0, 2, 3),
+        "우측 팔꿉" to listOf(0, 2, 4),
+        "좌측 손목" to listOf(0, 2, 3),
+        "우측 손목" to listOf(0, 2, 4),
+        "좌측 골반" to listOf(0, 3, 5, 6),
+        "우측 골반" to listOf(0, 4, 5, 6),
+        "좌측 무릎" to listOf(0, 3, 5),
+        "우측 무릎" to listOf(0, 4, 5),
+        "좌측 발목" to listOf(0, 5),
+        "우측 발목" to listOf(0, 5)
+    )
 
     val matchedIndexs = listOf(
         "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목"
     )
 
-    // first: seq / second: matchedUris의 index / third: 가장 작은 index
+    // first: seq / second: matchedUris 내부의 index / third: 가장 작은 index
     val matchedTripleIndexes = listOf(
         listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
         // 어깨
@@ -611,7 +626,8 @@ object MeasurementManager {
                             rawData = data,
                             rawDataBound = boundPair,
                             summary = setLabels(columnName),
-                            state = state
+                            state = state,
+                            seq = currentKey
                         )
                     )
                 }
@@ -1015,7 +1031,7 @@ object MeasurementManager {
             listOf("우측 팔꿉", "우측 손목") to "우측 팔 근육과 주변 어깨 근육을 확인하세요",
             listOf("우측 무릎", "우측 발목") to "우측 다리의 정렬을 확인하세요",
             listOf("목관절", "좌측 어깨") to "우측으로 쏠린 상체를 교정해보세요",
-            listOf("목관절", "우측 어깨") to "좌측으로 쏠린ㅅ 상체를 교정해보세요",
+            listOf("목관절", "우측 어깨") to "좌측으로 쏠린 상체를 교정해보세요",
             listOf("우측 어깨", "우측 손목", "우측 골반") to "우측 상체의 긴장을 의심해야 합니다.",
             listOf("좌측 어깨", "좌측 손목", "좌측 골반") to "좌측 상체의 긴장을 의심해야 합니다.",
             listOf("좌측 어깨", "우측 어깨") to "라운드 숄더나 자세 틀어짐을 확인하세요",

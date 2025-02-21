@@ -166,7 +166,7 @@
     <com.skydoves.progressview.ProgressView
         android:id="@+id/hpvEI"
         android:layout_width="0dp"
-        android:layout_height="10dp"
+        android:layout_height="8dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

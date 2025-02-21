@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/effect_ibtn_12dp"
     tools:context=".dialog.MeasureTrendDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,14 +16,14 @@
             android:id="@+id/textView30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="5dp"
             android:text="측정 기록 비교"
             android:textColor="@color/subColor800"
             android:textSize="24dp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnMTDBack"
+            app:layout_constraintStart_toEndOf="@+id/ibtnMTDBack"
+            app:layout_constraintTop_toTopOf="@+id/ibtnMTDBack" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilMTDLeft"
@@ -530,6 +531,19 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <ImageButton
+            android:id="@+id/ibtnMTDBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/white"
+            android:padding="4dp"
+            android:src="@drawable/icon_arrow_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

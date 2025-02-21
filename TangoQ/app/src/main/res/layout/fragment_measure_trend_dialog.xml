@@ -15,14 +15,14 @@
             android:id="@+id/textView30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="5dp"
             android:text="측정 기록 비교"
             android:textColor="@color/subColor800"
             android:textSize="24dp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnMTDBack"
+            app:layout_constraintStart_toEndOf="@+id/ibtnMTDBack"
+            app:layout_constraintTop_toTopOf="@+id/ibtnMTDBack" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilMTDLeft"
@@ -264,7 +264,6 @@
                         android:id="@+id/clMTDRight"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="#FF7979"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -530,6 +529,19 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <ImageButton
+            android:id="@+id/ibtnMTDBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/white"
+            android:padding="4dp"
+            android:src="@drawable/icon_arrow_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

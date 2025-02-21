@@ -3,6 +3,7 @@ package com.tangoplus.tangoq
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.Math.toDegrees
+import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.atan2
 
@@ -289,4 +290,11 @@ class MathTest {
         println("list1: $transList1, list2: $transList2")
 
     }
+    @Test
+    fun current() {
+        val list1 = LocalDate.now()
+        println("list1: $list1")
+
+    }
+
 }

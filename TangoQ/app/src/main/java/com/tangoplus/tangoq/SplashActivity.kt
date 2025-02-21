@@ -132,8 +132,8 @@ class SplashActivity : AppCompatActivity() {
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
 
-                val aa = getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) }
-                Log.v("aa", "$aa, ${getEncryptedJwtJo(this@SplashActivity)}" )
+//                val aa = getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) }
+//                Log.v("aa", "$aa, ${getEncryptedJwtJo(this@SplashActivity)}" )
                 // ------! 네이버 토큰 있음 시작 !------
                 if (naverTokenExist == NidOAuthLoginState.OK) {
                     Log.e("네이버 로그인", "$naverTokenExist")
@@ -260,8 +260,8 @@ class SplashActivity : AppCompatActivity() {
                                     navigateDeepLink()
                                 }
                             } else {
+                                Log.v("invalidRefresh", "logout invalidRefreshToken ")
                                 logout(this@SplashActivity, 0)
-
                             }
                         }
                     }

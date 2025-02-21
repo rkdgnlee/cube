@@ -443,7 +443,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 setTitle("알림")
                 setMessage("측정을 종료하시겠습니까 ?")
                 setPositiveButton("예") { _, _ ->
-                    Log.v("mvm이름잘", "name: ${mvm.setupName}, mobile: ${mvm.setupMobile}")
+                    Log.v("mvm이름잘", "name: ${mvm.setupName}")
                     val activityIntent = Intent(this@MeasureSkeletonActivity, MainActivity::class.java)
                     intent.putExtra("showMeasureFragment", true)
                     startActivity(activityIntent)
@@ -1905,13 +1905,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 .build()
 
             // Start recording video with audio
-            recording = videoCapture.output.prepareRecording(this@MeasureSkeletonActivity, mediaStoreOutputOptions).apply {
-                if (PermissionChecker.checkSelfPermission(
-                        this@MeasureSkeletonActivity, Manifest.permission.RECORD_AUDIO
-                    ) == PermissionChecker.PERMISSION_GRANTED) {
-                    withAudioEnabled()
-                }
-            }.start(ContextCompat.getMainExecutor(this@MeasureSkeletonActivity)) { recordEvent ->
+            recording = videoCapture.output.prepareRecording(this@MeasureSkeletonActivity, mediaStoreOutputOptions)
+//                .apply {
+//                    if (PermissionChecker.checkSelfPermission(
+//                            this@MeasureSkeletonActivity, Manifest.permission.RECORD_AUDIO
+//                        ) == PermissionChecker.PERMISSION_GRANTED) {
+//                        withAudioEnabled()
+//                    }
+//                }
+                .start(ContextCompat.getMainExecutor(this@MeasureSkeletonActivity)) { recordEvent ->
                 when (recordEvent) {
                     is VideoRecordEvent.Start -> {
                         CoroutineScope(Dispatchers.Main).launch {

@@ -349,6 +349,7 @@ class MainAnalysisFragment : Fragment() {
                         exoPlay?.visibility = View.VISIBLE
                         exoPlay?.bringToFront()
                         exoPause?.visibility = View.GONE
+                        pvm.setPlaybackPosition(0)
                     }
                 }
             })
@@ -388,12 +389,13 @@ class MainAnalysisFragment : Fragment() {
         }
         exoPlay?.visibility = View.GONE
         exoPlay?.setOnClickListener {
-            simpleExoPlayer?.seekTo(0)
+            simpleExoPlayer?.seekTo(pvm.getPlaybackPosition())
             simpleExoPlayer?.play()
             exoPlay?.visibility = View.GONE
             exoPause?.visibility = View.VISIBLE
         }
         exoPause?.setOnClickListener{
+            simpleExoPlayer?.let { it1 -> pvm.savePlayerState(it1) }
             simpleExoPlayer?.pause()
             exoPlay?.visibility = View.VISIBLE
             exoPause?.visibility = View.GONE
