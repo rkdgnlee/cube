@@ -19,8 +19,8 @@
 
             <ImageButton
                 android:id="@+id/ibtnMDBack"
-                android:layout_width="36dp"
-                android:layout_height="38dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="36dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/effect_ibtn_12dp"
@@ -35,10 +35,9 @@
                 android:id="@+id/textView40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
                 android:text="측정 이력"
                 android:textColor="@color/subColor800"
-                android:textSize="32dp"
+                android:textSize="24dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/ibtnMDBack"
                 app:layout_constraintStart_toEndOf="@+id/ibtnMDBack"
@@ -46,13 +45,12 @@
 
             <ImageButton
                 android:id="@+id/ibtnMDAlarm"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="36dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:contentDescription="showAlarm"
-                android:padding="8dp"
-                android:scaleType="centerCrop"
+                android:padding="4dp"
                 android:src="@drawable/icon_alarm"
                 app:layout_constraintBottom_toBottomOf="@+id/textView40"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -62,7 +60,7 @@
                 android:id="@+id/materialDivider15"
                 android:layout_width="wrap_content"
                 android:layout_height="1.5dp"
-                android:layout_marginTop="29dp"
+                android:layout_marginTop="20dp"
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +70,7 @@
                 android:id="@+id/materialDivider16"
                 android:layout_width="wrap_content"
                 android:layout_height="1.5dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 app:dividerColor="@color/subColor150"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +91,7 @@
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:background="@drawable/bckgnd_1_sub150_20"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialDivider15">
@@ -118,44 +116,22 @@
                 android:layout_height="450dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider16" />
+                app:layout_constraintTop_toBottomOf="@+id/rvMDHorizon" />
 
             <TextView
                 android:id="@+id/tvMDDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 android:text="2024.08.07"
                 android:textColor="@color/subColor800"
-                android:textSize="22dp"
+                android:textSize="24dp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
-                app:layout_constraintTop_toTopOf="@+id/constraintLayout29"
-                app:layout_constraintVertical_bias="0.3" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnMDShare"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginBottom="80dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/subColor150"
-                android:padding="20dp"
-                android:stateListAnimator="@null"
-                android:text="공유하기"
-                android:textColor="@color/white"
-                android:textSize="22dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvMD" />
+                app:layout_constraintTop_toTopOf="@+id/constraintLayout29" />
 
             <TextView
                 android:id="@+id/tvMDParts"
@@ -163,21 +139,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:singleLine="true"
-                android:text="상세 정보"
+                android:maxLines="2"
+                android:singleLine="false"
+                android:text="보고 싶은 부위의 데이터를 선택해주세요"
                 android:textColor="@color/subColor400"
-                android:textSize="20dp"
+                android:textSize="18dp"
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
-                app:layout_constraintTop_toBottomOf="@+id/tvMDDate"
-                app:layout_constraintVertical_bias="0.2" />
+                app:layout_constraintTop_toBottomOf="@+id/tvMDDate" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMD"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView12" />
@@ -186,7 +162,7 @@
                 android:id="@+id/textView12"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="40dp"
                 android:background="@color/secondContainerColor"
                 android:paddingStart="40dp"
                 android:paddingTop="20dp"
@@ -198,6 +174,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rcMD" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMDHorizon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider16" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

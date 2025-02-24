@@ -77,7 +77,7 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             }
             false -> {
                 binding.btnMSDConfirm.text = "모두 이해했습니다"
-                val dialog1 = MeasureSetupDialogFragment()
+                val dialog1 = MeasureSetupDialogFragment.newInstance(0)
                 dialog1.show(requireActivity().supportFragmentManager, "MeasureSetupDialogFragment")
             }
         }

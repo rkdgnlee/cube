@@ -346,14 +346,29 @@
                         app:layout_constraintTop_toTopOf="@+id/bcA"
                         app:layout_constraintVertical_bias="0.6" />
 
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/bcA"
+                        android:layout_width="match_parent"
+                        android:layout_height="128dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="30dp"
+                        android:clickable="true"
+                        android:layerType="none"
+                        app:cardBackgroundColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAWeekProgress" />
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:orientation="horizontal"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@+id/llAWeek"
                         app:layout_constraintEnd_toEndOf="@+id/llAWeek"
                         app:layout_constraintStart_toStartOf="@+id/llAWeek"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toTopOf="@+id/bcA">
 
                         <View
                             android:id="@+id/vA1"
@@ -363,38 +378,38 @@
 
                         <View
                             android:id="@+id/vA2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_weight="1" />
 
                         <View
                             android:id="@+id/vA3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_weight="1" />
 
                         <View
                             android:id="@+id/vA4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_weight="1" />
 
                         <View
                             android:id="@+id/vA5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_weight="1" />
 
                         <View
                             android:id="@+id/vA6"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_weight="1" />
 
                         <View
                             android:id="@+id/vA7"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_weight="1" />
                     </LinearLayout>
 
@@ -461,21 +476,6 @@
                             android:src="@drawable/icon_week_7_disabled" />
 
                     </LinearLayout>
-
-                    <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/bcA"
-                        android:layout_width="match_parent"
-                        android:layout_height="128dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginBottom="30dp"
-                        android:clickable="true"
-                        android:layerType="none"
-                        app:cardBackgroundColor="@color/black"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvAWeekProgress" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -567,6 +567,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:text="2024년 5월 9일"
+                    android:textColor="@color/subColor800"
                     android:textSize="24dp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -650,6 +651,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="완료한 운동 갯수"
+                            android:textColor="@color/subColor800"
+                            android:textSize="14dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.25"
                             app:layout_constraintStart_toStartOf="parent"
@@ -708,6 +711,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="총 운동 시간"
+                            android:textColor="@color/subColor800"
+                            android:textSize="14dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.15"
                             app:layout_constraintStart_toStartOf="parent"

@@ -829,14 +829,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
 
         binding.ibtnMeasureSkeletonInfo.setOnSingleClickListener {
-            dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+            dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.fabtnMeasureSkeleton.setOnSingleClickListener {
             val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
             dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
-        binding.ibtnMeasureSkeletonInfo.setOnSingleClickListener {
-            val dialog4 = MeasureSetupDialogFragment()
+        binding.ibtnMeasureSkeletonSetup.setOnSingleClickListener {
+            val dialog4 = MeasureSetupDialogFragment.newInstance(1)
             dialog4.show(supportFragmentManager, "MeasureSkeletonSetup")
         }
         // ------! 다시 찍기 관리 시작 !------

@@ -44,6 +44,8 @@ object MeasurementManager {
         11 to "좌측 발목",
         12 to "우측 발목",
     )
+
+    val seqs = listOf("정면 측정", "동적 측정", "팔꿉 측정", "좌측 측정", "우측 측정", "후면 측정", "앉은 후면")
     val matchedUris = mapOf(
         "목관절" to listOf(0, 3, 4, 5, 6),
         "좌측 어깨" to listOf(0, 1, 3, 5, 6),
@@ -131,7 +133,7 @@ object MeasurementManager {
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 3f, 5f),
                 "back_horizontal_angle_shoulder" to Triple(0f, 0.9f,1.8f)),
             6 to mapOf("back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 6f, 10f),
-                "back_sit_vertical_angle_center_hip_right_shoulder_left_shoulder" to Triple(37f, 5f, 10f)
+                "back_sit_vertical_angle_centehr_hip_right_shoulder_left_shoulder" to Triple(37f, 5f, 10f)
             )
         ),
         // 좌측 팔꿉
@@ -809,7 +811,7 @@ object MeasurementManager {
                                 )
                                 isSet = true
                                 // ------# main part일 때 #------
-                                if (case == "mainPart") {
+                                if (case in listOf("mainPart", "solo")  ) {
                                     ssiv.setImage(ImageSource.bitmap(combinedBitmap))
                                     // 이미지 크기 맞추기
                                     // ------# trend 비교 일 때 #------
@@ -1012,6 +1014,19 @@ object MeasurementManager {
 //            "back_horizontal_distance_sub_ankle" -> ""
             "back_horizontal_distance_heel_right" -> "후면에서 발뒷꿈치의 기울기는 값 11cm 기준으로 7cm 오차 이내가 정상입니다. 이를 벗어날 경우, 전면과 비교해 발의 정렬을 교정해주세요"
             else -> "측정 사진을 확인하세요"
+        }
+    }
+
+    fun createSeqGuideComment(seq: Int) : String {
+        return when (seq) {
+            0 -> "정면 선자세를 먼저 측정해 전체적인 체형의 이상 상태를 확인합니다."
+            1 -> "오버헤드 스쿼트를 통해 어깨, 무릎, 골반의 궤적을 통해 흔들림을 확인합니다."
+            2 -> "팔의 정렬을 통해 손목, 팔꿉, 어깨 후면의 긴장 상태를 확인합니다."
+            3 -> "발뒷꿈치 중심선을 기준으로 좌측 각 관절의 위치를 확인합니다."
+            4 -> "발뒷꿈치 중심선을 기준으로 우측 각 관절의 위치를 확인합니다."
+            5 -> "정면과 비교해 어깨, 무릎, 발의 정렬 상태를 확인합니다."
+            6 -> "후면 선자세와 비교해, 골반의 틀어짐과 발의 정렬 상태를 비교합니다."
+            else -> ""
         }
     }
 

@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/white"
                 android:padding="4dp"
@@ -47,7 +47,7 @@
                 android:id="@+id/ibtnMDAlarm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:contentDescription="showAlarm"
                 android:padding="4dp"
@@ -116,7 +116,7 @@
                 android:layout_height="350dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider16" />
+                app:layout_constraintTop_toBottomOf="@+id/rvMDHorizon" />
 
             <TextView
                 android:id="@+id/tvMDDate"
@@ -133,27 +133,6 @@
                 app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
                 app:layout_constraintTop_toTopOf="@+id/constraintLayout29" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnMDShare"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="80dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/subColor150"
-                android:padding="16dp"
-                android:stateListAnimator="@null"
-                android:text="공유하기"
-                android:textColor="@color/white"
-                android:textSize="18dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvMD" />
-
             <TextView
                 android:id="@+id/tvMDParts"
                 android:layout_width="0dp"
@@ -162,7 +141,7 @@
                 android:layout_marginEnd="20dp"
                 android:maxLines="2"
                 android:singleLine="false"
-                android:text="상세 정보"
+                android:text="보고 싶은 부위의 데이터를 선택해주세요"
                 android:textColor="@color/subColor400"
                 android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
@@ -174,26 +153,20 @@
                 android:id="@+id/rvMD"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView12" />
-
-            <TextView
-                android:id="@+id/textView12"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@color/secondContainerColor"
-                android:paddingStart="20dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:text="부위별 분석"
-                android:textColor="@color/subColor800"
-                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rcMD" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMDHorizon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider16" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

@@ -24,12 +24,12 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/bckgnd_rectangle_20"
-                android:backgroundTint="@color/subColor100"
+                android:backgroundTint="@color/secondContainerColor"
                 android:orientation="horizontal"
-                android:padding="12dp"
+                android:padding="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider12">
 
                 <ImageView
                     android:id="@+id/imageView25"
@@ -53,7 +53,8 @@
                     android:imeOptions="actionDone"
                     android:singleLine="true"
                     android:textColor="@color/subColor800"
-                    android:textColorHint="@color/subColor400" />
+                    android:textColorHint="@color/subColor400"
+                    android:textSize="16dp" />
 
                 <ImageButton
                     android:id="@+id/ibtnESDClear"
@@ -73,7 +74,7 @@
                 app:dividerColor="@color/subColor100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+                app:layout_constraintTop_toBottomOf="@+id/ibtnESDBack" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv1"
@@ -82,7 +83,7 @@
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider12" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clESDEmpty"
@@ -180,6 +181,31 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView56" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageButton
+                android:id="@+id/ibtnESDBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView32"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="운동 검색"
+                android:textColor="@color/subColor800"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnESDBack"
+                app:layout_constraintStart_toEndOf="@+id/ibtnESDBack"
+                app:layout_constraintTop_toTopOf="@+id/ibtnESDBack" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

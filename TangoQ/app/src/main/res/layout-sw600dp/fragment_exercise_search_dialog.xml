@@ -21,7 +21,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:background="@drawable/bckgnd_rectangle_20"
                 android:backgroundTint="@color/subColor100"
@@ -32,17 +32,7 @@
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/imageView25"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="4dp"
-                    android:layout_weight="1"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/icon_search" />
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider12">
 
                 <EditText
                     android:id="@+id/etESDSearch"
@@ -76,11 +66,11 @@
                 android:id="@+id/materialDivider12"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="36dp"
                 app:dividerColor="@color/subColor100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+                app:layout_constraintTop_toBottomOf="@+id/ibtnESDBack" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv1"
@@ -89,7 +79,7 @@
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider12" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clESDEmpty"
@@ -180,6 +170,33 @@
                 app:layout_constraintBottom_toBottomOf="@+id/textView56"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView56" />
+
+            <ImageButton
+                android:id="@+id/ibtnESDBack"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="36dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView32"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="운동 검색"
+                android:textColor="@color/subColor800"
+                android:textSize="28dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnESDBack"
+                app:layout_constraintStart_toEndOf="@+id/ibtnESDBack"
+                app:layout_constraintTop_toTopOf="@+id/ibtnESDBack" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

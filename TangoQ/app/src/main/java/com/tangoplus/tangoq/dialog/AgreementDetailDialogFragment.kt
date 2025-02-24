@@ -118,9 +118,8 @@ class AgreementDetailDialogFragment : DialogFragment() {
         binding.tvAgreement.text = agreementText
         binding.tvAgreement.textSize = if (isTablet(requireContext())) 19f else 16f
 
-        binding.ibtnAgreement.setOnClickListener {
-            dismiss()
-        }
+        binding.ibtnAgreement.setOnClickListener { dismiss() }
+        binding.btnAgreement.setOnClickListener { dismiss() }
         return builder.create()
     }
     @SuppressLint("UseCompatLoadingForDrawables")

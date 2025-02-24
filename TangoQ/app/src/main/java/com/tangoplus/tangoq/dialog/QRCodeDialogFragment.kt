@@ -40,6 +40,7 @@ import com.tangoplus.tangoq.databinding.FragmentQRCodeDialogBinding
 import com.tangoplus.tangoq.api.NetworkUser.loginWithPin
 import com.tangoplus.tangoq.api.NetworkUser.loginWithQRCode
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.function.SaveSingletonManager
 import `in`.aabhasjindal.otptextview.OTPListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +76,7 @@ class QRCodeDialogFragment : DialogFragment() {
         val balloon = Balloon.Builder(requireContext())
             .setWidth(BalloonSizeSpec.WRAP)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("탱고바디 키오스크로 로그인을 위한 화면입니다\n탱고바디 화면에 나오는 6자리 PIN번호를 입력해주세요")
+            .setText("탱고바디 키오스크로 로그인을 위한 화면입니다\n탱고바디 화면의 6자리 PIN번호를 입력해주세요")
             .setTextColorResource(R.color.subColor800)
             .setTextSize(18f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
@@ -87,6 +88,12 @@ class QRCodeDialogFragment : DialogFragment() {
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
+
+//        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//        binding.otvLSD.requestFocus()
+//        binding.otvLSD.postDelayed({
+//            imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
+//        }, 250)
 
         binding.ibtnLSDInfo.setOnClickListener {
             binding.textView20.showAlignBottom(balloon)

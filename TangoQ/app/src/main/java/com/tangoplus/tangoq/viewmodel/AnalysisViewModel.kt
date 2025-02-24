@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
 
 class AnalysisViewModel : ViewModel() {
-    // MeasureAnalysisFragment
+    // MainAnalysisFragment
     var currentParts : List<String>? = null
     // seqBottomSheet
     val currentPart = MutableLiveData<String>()
@@ -21,6 +21,15 @@ class AnalysisViewModel : ViewModel() {
     // ------# 비교할 measure 담을 공간 #------
     val leftMeasurement = MutableLiveData<MeasureVO>()
     val rightMeasurement = MutableLiveData<MeasureVO>()
+
+    // trend
+    var leftAnalysises : MutableList<MutableList<AnalysisUnitVO>>? = null
+    var rightAnalysises : MutableList<MutableList<AnalysisUnitVO>>? = null
+    var trendLeftUri: String? = null
+    var trendRightUri : String? = null
+
+    // trend(자세별: 0~6 저장), mainAnalysis(seq: 0, 1, 2, 3 저장 ) // measureDetail(seq: 0~6)사용
+    var currentIndex : Int = 0
 
     // actv에 연결할 날짜들
     var leftMeasureDate = MutableLiveData<DateDisplay>()
@@ -41,35 +50,14 @@ class AnalysisViewModel : ViewModel() {
         }
     }
 
-    // trend
-    var leftAnalysises : MutableList<MutableList<AnalysisUnitVO>>? = null
-    var rightAnalysises : MutableList<MutableList<AnalysisUnitVO>>? = null
-    var trendLeftUri: String? = null
-    var trendRightUri : String? = null
-    var currentIndex : Int = 0
-
     private val _existedMonthProgresses = MutableStateFlow<List<String>>(emptyList())
     val existedMonthProgresses: StateFlow<List<String>> = _existedMonthProgresses
 
     fun updateMonthProgress(newData: List<String>) {
         _existedMonthProgresses.value = newData
     }
-
-
-    fun setTrendIndexToZero() {
-        currentIndex = 0
-    }
-/* 버튼   실제 index
-*  0    0
-*  1    2
-*  2    3
-*  3    4
-*  4    5
-*  5    6
-*  6    7 (동적 6 번째 )
-* */
-    var mafMeasureResult = JSONArray()
-
+    var mdMeasureResult = JSONArray()
     val dynamicTitles = listOf("좌측 손", "우측 손", "골반 중심", "골반 중심", "좌측 무릎", "우측 무릎") // 0 , 1 , 2
+
 
 }

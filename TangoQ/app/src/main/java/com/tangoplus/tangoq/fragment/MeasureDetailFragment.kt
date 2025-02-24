@@ -15,40 +15,48 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.tangoplus.tangoq.MainActivity
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
+import com.tangoplus.tangoq.adapter.MainPartRVAdapter
 import com.tangoplus.tangoq.adapter.MeasureDetailRVAdapter
+import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
-import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
-import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.AnalysisVO
+import org.apache.commons.math3.geometry.euclidean.twod.Line
+import org.json.JSONArray
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.abs
 
 
-class MeasureDetailFragment : Fragment() {
+class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
     private lateinit var binding : FragmentMeasureDetailBinding
     private var singletonMeasure : MutableList<MeasureVO>? = null
     private var measure : MeasureVO? = null
     private val mvm : MeasureViewModel by activityViewModels()
+    private val avm : AnalysisViewModel by activityViewModels()
+    private lateinit var adapterAnalysises : List<AnalysisVO>
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +72,6 @@ class MeasureDetailFragment : Fragment() {
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
         val showMeasure = arguments?.getBoolean("showMeasure", false) ?: false
         if (showMeasure) {
-
             val balloonText = "측정 결과를 확인해보세요\n실제 자세도 함께 볼 수 있습니다."
             val balloonlc1 = Balloon.Builder(requireContext())
                 .setWidthRatio(0.5f)
@@ -97,8 +104,10 @@ class MeasureDetailFragment : Fragment() {
         }
         // ------# measure 에 맞게 UI 수정 #------
         measure = mvm.selectedMeasure
+        avm.currentPart.value = "목관절"
+        avm.mdMeasureResult = measure?.measureResult?.getJSONArray(1) ?: JSONArray()
         updateUI()
-
+        setHorizonAdapter()
         // ------# 10각형 레이더 차트 #------
 
         val bodyParts = listOf("목관절", "우측 어깨", "좌측 어깨", "우측 팔꿉", "좌측 팔꿉","우측 손목","좌측 손목", "우측 골반","좌측 골반", "우측 무릎","좌측 무릎","우측 발목", "좌측 발목")
@@ -176,166 +185,65 @@ class MeasureDetailFragment : Fragment() {
             }
             invalidate() // 차트 갱신
         }
-        val currentMeasureIndex = singletonMeasure?.indexOf(mvm.selectedMeasure)
-        setAdapter(currentMeasureIndex ?: 0)
-
-        binding.btnMDShare.setOnClickListener {
-            // ------! 그래프 캡처 시작 !------
-            val bitmap = Bitmap.createBitmap(binding.rcMD.width, binding.rcMD.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            binding.rcMD.draw(canvas)
-
-            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
-            val fileOutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
-            fileOutputStream.flush()
-            fileOutputStream.close()
-
-            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
-            // ------! 그래프 캡처 끝 !------
-            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/3")
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "image/png" // 이곳에서 공유 데이터 변경
-            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
-            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !\n$url")
-            startActivity(Intent.createChooser(intent, "밸런스 그래프"))
+//        val currentMeasureIndex = singletonMeasure?.indexOf(mvm.selectedMeasure)
+//        setAdapter(currentMeasureIndex ?: 0)
+        avm.currentPart.observe(viewLifecycleOwner) { part ->
+            setAdapter(part)
+            // 초기 상태
+            avm.currentIndex = matchedIndexs.indexOf(part)
+            Log.v("파트observe", "$part, ${avm.currentPart.value}")
         }
+
     }
+    private fun setAdapter(part: String) {
+//        val painPart = avm.currentParts?.find { it == part }
+        val seqs = matchedUris[part]
+        val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
 
-    private fun setAdapter(currentMeasureIndex: Int) {
-        val singletonSize = singletonMeasure?.size
-        val dates = mutableListOf<String>()
-        if (singletonSize != null) {
-            when (singletonSize) {
-                in 0 .. 4 -> {
-
-                    for (i in 0 until singletonSize) {
-                        dates.add(singletonMeasure?.get(currentMeasureIndex + i)?.regDate.toString())
-                        val result = mutableListOf<MutableList<Float>>()  // 최종 결과 리스트 (13개의 부위별 5개 score)
-
-                        matchedIndexs.forEachIndexed { partIndex, part ->
-                            val partScores = mutableListOf<Float>()  // 현재 부위의 5개 measure에 대한 score 리스트
-
-                            // 각 measureIndex(0~4)에 대해 반복
-                            for (measureIndex in 0 until singletonSize) {
-                                val seqList = matchedUris[part] ?: emptyList()  // 현재 부위에 해당하는 seq 리스트 가져오기
-                                val allAnalysisUnits = seqList.mapNotNull { seq ->
-                                    singletonMeasure?.get(currentMeasureIndex + measureIndex)?.measureResult?.let {
-                                        getAnalysisUnits(requireContext(), part, seq, it)
-                                    }
-                                }.flatten()  // 각 seq에서 가져온 AnalysisUnitVO를 모두 하나의 리스트로 합침
-                                val triples = matchedTripleIndexes[partIndex]
-
-                                // triples로 AnalysisUnitVO 3개 추출
-                                val processedData = triples.mapNotNull { triple ->
-                                    allAnalysisUnits.getOrNull(triple.first)
-                                }.toMutableList()
-
-                                // 3개의 AnalysisUnitVO로 하나의 score 계산
-                                val score = if (processedData.size == 3) {
-                                    calculatePercent(processedData)  // Float 값을 반환
-                                } else {
-                                    0f  // 데이터 부족 시 0으로 처리
-                                }
-                                partScores.add(score)
-                            }
-                            result.add(partScores)
-                        }
-                        val entries = convertEntries(result)
-                        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                        binding.rvMD.layoutManager = layoutManager
-                        val adapter = MeasureDetailRVAdapter(this@MeasureDetailFragment, entries, dates.reversed())
-                        binding.rvMD.adapter = adapter
-                    }
-                    for (i in singletonSize - 1 downTo  1) {
-                        mvm.recentAnalysisUnits.add( mutableListOf() )
-                        dates.add("-")
-                    }
-                }
-                else -> {
-                    val result = mutableListOf<MutableList<Float>>()  // 최종 결과 리스트 (13개의 부위별 5개 score)
-
-                    matchedIndexs.forEachIndexed { partIndex, part ->
-                        val partScores = mutableListOf<Float>()  // 현재 부위의 5개 measure에 대한 score 리스트
-
-                        // 각 measureIndex(0~4)에 대해 반복
-                        for (measureIndex in 0 until 5) {
-                            if (dates.size < 5) {
-                                if (currentMeasureIndex + measureIndex < singletonMeasure?.size!!) {
-                                    dates.add(singletonMeasure?.get(currentMeasureIndex + measureIndex)?.regDate.toString())
-                                } else {
-                                    dates.add("-")
-                                }
-
-                            }
-                            val seqList = matchedUris[part] ?: emptyList()  // 현재 부위에 해당하는 seq 리스트 가져오기
-
-                            // allAnalysisUnits = ErrorBounds를 계산해서 각 seq별로 1차 필터링된 값들)
-                            val allAnalysisUnits = if (currentMeasureIndex + measureIndex < singletonMeasure?.size!!) {
-                                seqList.mapNotNull { seq ->
-                                    singletonMeasure?.get(currentMeasureIndex + measureIndex)?.measureResult?.let {
-                                        getAnalysisUnits(requireContext(), part, seq, it)
-                                    }
-                                }
-                            } else {
-                                listOf()
-                            }
-
-                            val triples = matchedTripleIndexes[partIndex]
-
-                            // triples로 allAnalysisUnits 에서 AnalysisUnitVO 3개 추출
-                            val processedData = triples.mapNotNull { triple ->
-                                allAnalysisUnits.getOrNull(triple.second)?.getOrNull(triple.third)
-                            }.toMutableList()
-                            // 3개의 AnalysisUnitVO로 하나의 score 계산
-
-                            val score = if (processedData.size == 3) {
-                                 calculatePercent(processedData)  // 1f Float 값을 반환
-                            } else {
-                                50f  // 데이터 부족 시 0으로 처리
-                            }
-                            partScores.add(score)
-                        }
-                        result.add(partScores)
-                    }
-                    val entries = convertEntries(result)
-//                    Log.v("entries", "$entries")
-                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                    binding.rvMD.layoutManager = layoutManager
-                    val adapter = MeasureDetailRVAdapter(this@MeasureDetailFragment, entries, dates.reversed())
-                    binding.rvMD.adapter = adapter
-                }
+        seqs?.forEach { seqIndex ->
+            val analyses = getAnalysisUnits(requireContext(), part, seqIndex, measure?.measureResult ?: JSONArray())
+            if (!groupedAnalyses.containsKey(seqIndex)) {
+                groupedAnalyses[seqIndex] = mutableListOf()
             }
+            groupedAnalyses[seqIndex]?.add(analyses)
+
         }
 
+        adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
+            AnalysisVO(
+                indexx = indexx,
+                labels = analysesList.flatten().toMutableList(),
+                url = measure?.fileUris?.get(indexx) ?: ""
+            )
+        }.sortedBy { it.indexx }
+
+//        Log.v("변환analysis", "${adapterAnalysises.map { it.labels.size }}, ${ adapterAnalysises.map { it } }")
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val adapter = MeasureDetailRVAdapter(this@MeasureDetailFragment, adapterAnalysises, avm) // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
+        binding.rvMD.layoutManager = layoutManager
+        binding.rvMD.adapter = adapter
     }
 
-    // seq안에 // 각각의 데이터들이 들어가 있음.
-    private fun convertEntries(result: MutableList<MutableList<Float>>) : MutableList<MutableList<Entry>> {
-        val convertedEntries = mutableListOf<MutableList<Entry>>()
+    private fun setHorizonAdapter() {
+        val partStates = matchedIndexs.map { part ->
+            measure?.dangerParts?.find { it.first == part }  ?: (part to 0f)
+        }. toMutableList()
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val adapter = MainPartRVAdapter(this@MeasureDetailFragment, partStates, avm, "measureDetail")
+        adapter.onCategoryClickListener = this
+        binding.rvMDHorizon.layoutManager = layoutManager
+        binding.rvMDHorizon.adapter=  adapter
 
-        result.forEachIndexed { partIndex, scores ->  // 바깥 리스트(13개의 부위)
-            val partEntries = mutableListOf<Entry>()
-
-            scores.forEachIndexed { measureIndex, score ->  // 각 부위의 5개의 measure
-                val entry = Entry(measureIndex.toFloat(), score)
-                partEntries.add(entry)
-            }
-
-            convertedEntries.add(partEntries)  // 각 부위별 Entry 리스트 추가
-        }
-
-        return convertedEntries
     }
 
-    // 3개의 progressUnitVO를 가져와서
-    private fun calculatePercent(processedData: MutableList<AnalysisUnitVO>) : Float {
-        val calculatePercent = processedData.map { calculateBoundedScore(it.columnName, abs(it.rawData), it.rawDataBound) }.map { if (it <= 50f) 50f else it }
-        return calculatePercent.average().toFloat()
-    }
     private fun updateUI() {
         binding.tvMDScore.text = measure?.overall.toString()
         binding.tvMDDate.text = "${measure?.regDate?.substring(0, 10)} ${measure?.userName}"
-        binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
+//        binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
+    }
+
+    override fun onCategoryClick(category: String) {
+        avm.currentPart.value = category
+        Log.v("커런트파트변경", "$category, ${avm.currentPart.value}")
     }
 }

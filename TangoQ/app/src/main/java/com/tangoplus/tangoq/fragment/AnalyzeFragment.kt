@@ -95,7 +95,7 @@ class AnalyzeFragment : Fragment() {
 
         // ------# 운동 기록 API 공간 #------
         todayInWeek = sortTodayInWeek()
-
+        pvm.selectedDate = LocalDate.now()
         // 클릭 리스너 달기
         binding.ibtnAAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
@@ -106,7 +106,16 @@ class AnalyzeFragment : Fragment() {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
+        val btns = listOf(binding.vA1, binding.vA2, binding.vA3, binding.vA4, binding.vA5)
+        btns.forEachIndexed { index, view ->
+            view.setOnClickListener {
 
+                showDailyProgress(index)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    scrollToView(binding.rvA)
+                }, 250)
+            }
+        }
 
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
         lifecycleScope.launch(Dispatchers.Main) {
@@ -175,18 +184,13 @@ class AnalyzeFragment : Fragment() {
                     ProgramCustomDialogFragment.newInstance(programSn, recSn)
                         .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
                 }
-                Log.v("현재날짜", "${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+//                Log.v("현재날짜", "${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
                 updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
                 avm.existedMonthProgresses.collectLatest { dates ->
                     binding.cvACalendar.notifyCalendarChanged()
                 }
 
-                val btns = listOf(binding.vA1, binding.vA2, binding.vA3, binding.vA4, binding.vA5)
-                btns.forEachIndexed { index, view ->
-                    view.setOnClickListener {
-                        showDailyProgress(index)
-                    }
-                }
+
             } else {
                 setGraph()
                 setShimmer(false)
@@ -194,9 +198,6 @@ class AnalyzeFragment : Fragment() {
                 binding.cvAProgress.visibility = View.GONE
             }
         }
-
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-//        Log.v("Singleton>Profile", "${userJson}")
 
         // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
@@ -240,8 +241,7 @@ class AnalyzeFragment : Fragment() {
             val oldDate = pvm.selectedDate
             pvm.selectedDate = null
             oldDate?.let { binding.cvACalendar.notifyDateChanged(it) }
-
-
+            binding.tvADate.text = "날짜를 선택해주세요"
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
                 updateMonthView()
@@ -255,7 +255,7 @@ class AnalyzeFragment : Fragment() {
             val oldDate = pvm.selectedDate
             pvm.selectedDate = null
             oldDate?.let { binding.cvACalendar.notifyDateChanged(it) }
-
+            binding.tvADate.text = "날짜를 선택해주세요"
             if (currentMonth > YearMonth.now().minusMonths(24)) {
                 currentMonth = currentMonth.minusMonths(1)
                 updateMonthView()
@@ -396,14 +396,14 @@ class AnalyzeFragment : Fragment() {
         when {
             avm.existedMonthProgresses.value.contains(day.date.toString()) -> {
                 if (day.date == pvm.selectedDate) {
-                    container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.white))
+                    container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                     container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
                 } else {
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.thirdColor))
                 }
             }
             day.date == pvm.selectedDate -> {
-                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.white))
+                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }
             day.date == LocalDate.now() -> {
@@ -503,14 +503,14 @@ class AnalyzeFragment : Fragment() {
 
     // 버튼으로 월이 바꼈을 때,
     private fun updateMonthProgress(date: String) {
-        binding.tvADate.text = "날짜를 선택해주세요"
-        Log.v("updateMonthProgress", date)
+
+//        Log.v("updateMonthProgress", date)
         lifecycleScope.launch(Dispatchers.IO) {
             val dateList = getMonthProgress(requireActivity().getString(R.string.API_progress), date, requireContext())?.toList()
             if (dateList != null) {
                 avm.updateMonthProgress(dateList)
             }
-            Log.v("VMProgresses", "${avm.existedMonthProgresses}")
+//            Log.v("VMProgresses", "${avm.existedMonthProgresses}")
         }
     }
 
@@ -631,23 +631,12 @@ class AnalyzeFragment : Fragment() {
                 setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
             }
         }
-
-        barChart.setOnChartValueSelectedListener(object: OnChartValueSelectedListener {
-            override fun onValueSelected(e: Entry?, h: Highlight?) {
-                e?.let {
-                    val index = it.x.toInt() // 선택한 값의 X 좌표 (index)
-                    Log.v("X축index", "$index")
-                    showDailyProgress(index)
-                }
-            }
-            override fun onNothingSelected() {}
-        })
     }
     private fun showDailyProgress(index: Int? = null) {
         if (index != null) {
             pvm.selectedDate = LocalDate.now().minusDays((6 - index).toLong())
         }
-        Log.v("막대그래프 클릭", "${pvm.selectedDate}")
+//        Log.v("막대그래프 클릭", "${pvm.selectedDate}")
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         lifecycleScope.launch {
@@ -671,26 +660,29 @@ class AnalyzeFragment : Fragment() {
                     Log.e("DateSelection", "Selected date is null")
                 }
             }
+            withContext(Dispatchers.Main) {
+                binding.cvACalendar.notifyCalendarChanged()
+            }
         }
     }
-//    private fun scrollToView(view: View) {
-//        // 1 뷰의 위치를 저장할 배열 생성
-//        val location = IntArray(2)
-//        // 2 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
-//        view.getLocationInWindow(location)
-//        val viewTop = location[1]
-//        // 3 스크롤 뷰의 위치를 저장할 배열 생성
-//        val scrollViewLocation = IntArray(2)
-//
-//        // 4 스크롤 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
-//        binding.nsvA.getLocationInWindow(scrollViewLocation)
-//        val scrollViewTop = scrollViewLocation[1]
-//        // 5 현재 스크롤 뷰의 스크롤된 y 위치 가져오기
-//        val scrollY = binding.nsvA.scrollY
-//        // 6 스크롤할 위치 계산
-//        //    현재 스크롤 위치 + 뷰의 상대 위치 = 스크롤 위치 계산
-//        val scrollTo = scrollY + viewTop - scrollViewTop
-//        // 7 스크롤 뷰 해당 위치로 스크롤
-//        binding.nsvA.smoothScrollTo(0, scrollTo)
-//    }
+    private fun scrollToView(view: View) {
+        // 1 뷰의 위치를 저장할 배열 생성
+        val location = IntArray(2)
+        // 2 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
+        view.getLocationInWindow(location)
+        val viewTop = location[1]
+        // 3 스크롤 뷰의 위치를 저장할 배열 생성
+        val scrollViewLocation = IntArray(2)
+
+        // 4 스크롤 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
+        binding.nsvA.getLocationInWindow(scrollViewLocation)
+        val scrollViewTop = scrollViewLocation[1]
+        // 5 현재 스크롤 뷰의 스크롤된 y 위치 가져오기
+        val scrollY = binding.nsvA.scrollY
+        // 6 스크롤할 위치 계산
+        //    현재 스크롤 위치 + 뷰의 상대 위치 = 스크롤 위치 계산
+        val scrollTo = scrollY + viewTop - scrollViewTop
+        // 7 스크롤 뷰 해당 위치로 스크롤
+        binding.nsvA.smoothScrollTo(0, scrollTo)
+    }
 }

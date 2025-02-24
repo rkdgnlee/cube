@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.exoplayer2.SimpleExoPlayer
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.json.JSONArray
 
 class PlayViewModel : ViewModel() {
 
@@ -23,7 +24,7 @@ class PlayViewModel : ViewModel() {
     var simpleExoPlayer: SimpleExoPlayer? = null
     var currentMediaSourceIndex = 0
     var currentVideoDuration = 0L
-
+    var dynamicJa = JSONArray()
     fun savePlayerState(player: SimpleExoPlayer, url: String = "") {
         playbackPosition = player.currentPosition
         playWhenReady = player.playWhenReady

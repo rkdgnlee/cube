@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +18,7 @@ import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MainProgressRVAdapter
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.adapter.PartRVAdapter
+import com.tangoplus.tangoq.adapter.MainPartRVAdapter
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -36,7 +35,6 @@ import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
-import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -166,7 +164,7 @@ class MainFragment : Fragment() {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvM1.layoutManager = layoutManager1
         val filteredParts = measures?.get(index)?.dangerParts?.filter { it.second == 1f || it.second == 2f}
-        val partAdapter = PartRVAdapter(this@MainFragment, filteredParts?.toMutableList(), avm)
+        val partAdapter = MainPartRVAdapter(this@MainFragment, filteredParts?.toMutableList(), avm, "main")
         binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
     }

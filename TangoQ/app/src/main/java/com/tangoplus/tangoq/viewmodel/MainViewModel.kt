@@ -21,6 +21,6 @@ class MainViewModel: ViewModel() {
     }
 
     fun resetLogoutDialog() {
-        _showLogoutDialog.value = false
+        _showLogoutDialog.value = null
     }
 }

@@ -104,76 +104,76 @@ class MainAnalysisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // ------# 데이터 필터링을 위한 사전 세팅 #------
+        val part = arguments?.getString(ARG_PART) ?: ""
+        avm.currentPart.value = part
+        mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
+        avm.mdMeasureResult = JSONArray()
 
-        biometricManager = BiometricManager(this)
-        biometricManager.authenticate(
-            onSuccess = {
-                val part = arguments?.getString(ARG_PART) ?: ""
-                avm.currentPart.value = part
-                mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
-                avm.mafMeasureResult = JSONArray()
+        // viewModel에 들어가있던 동적 자세 기록들 초기화
 
-                // viewModel에 들어가있던 동적 자세 기록들 초기화
+        pvm.videoUrl = null
+        simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
-                pvm.videoUrl = null
-                simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
+        avm.currentPart.observe(viewLifecycleOwner) { part ->
+            val painPart = avm.currentParts?.find { it == part }
+            val seqs = matchedUris[painPart]
+            val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
 
-                avm.currentPart.observe(viewLifecycleOwner) { part ->
-                    val painPart = avm.currentParts?.find { it == part }
-                    val seqs = matchedUris[painPart]
-                    val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
-
-                    seqs?.forEach { seq ->
-                        val analyses = getAnalysisUnits(requireContext(), painPart.toString(), seq, mr)
-                        val indexx = when (seq) {
-                            0, 2 -> 0
-                            3, 4 -> 1
-                            5, 6 -> 2
-                            1 -> 3
-                            else -> 0
-                        }
-                        if (!groupedAnalyses.containsKey(indexx)) {
-                            groupedAnalyses[indexx] = mutableListOf()
-                        }
-                        groupedAnalyses[indexx]?.add(analyses)
-
-                    }
-
-                    adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
-                        AnalysisVO(
-                            indexx = indexx,
-                            labels = analysesList.flatten().toMutableList()
-                        )
-                    }.sortedBy { it.indexx }
-
-                    binding.tvMATitle.text = "$painPart"
-                    val myApplication = requireActivity().application as MyApplication
-                    myApplication.setBiometricSuccess()
-
-                    // 초기 상태
-                    avm.currentIndex = 0
-                    // 버튼 클릭리스너와 사진 동영상 세팅
-                    updateButtonState()
-                    setMedia()
+            seqs?.forEach { seq ->
+                val analyses = getAnalysisUnits(requireContext(), painPart.toString(), seq, mr)
+                val indexx = when (seq) {
+                    0, 2 -> 0
+                    3, 4 -> 1
+                    5, 6 -> 2
+                    1 -> 3
+                    else -> 0
                 }
-                binding.tvMATitle.setOnSingleClickListener {
-                    val dialog = SequenceBSDialogFragment()
-                    dialog.show(requireActivity().supportFragmentManager, "SequenceBSDialogFragment")
+                if (!groupedAnalyses.containsKey(indexx)) {
+                    groupedAnalyses[indexx] = mutableListOf()
                 }
-                binding.ivMAPartBS.setOnSingleClickListener {
-                    val dialog = SequenceBSDialogFragment()
-                    dialog.show(requireActivity().supportFragmentManager, "SequenceBSDialogFragment")
-                }
-            },
-            onError = {
-                Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flMain, MainFragment())
-                    addToBackStack(null)
-                    commit()
-                }
+                groupedAnalyses[indexx]?.add(analyses)
+
             }
-        )
+
+            adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
+                AnalysisVO(
+                    indexx = indexx,
+                    labels = analysesList.flatten().toMutableList()
+                )
+            }.sortedBy { it.indexx }
+
+            binding.tvMATitle.text = "$painPart"
+//            val myApplication = requireActivity().application as MyApplication
+//            myApplication.setBiometricSuccess()
+
+            // 초기 상태
+            avm.currentIndex = 0
+            // 버튼 클릭리스너와 사진 동영상 세팅
+            updateButtonState()
+            setMedia()
+        }
+        binding.tvMATitle.setOnSingleClickListener {
+            val dialog = SequenceBSDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "SequenceBSDialogFragment")
+        }
+        binding.ivMAPartBS.setOnSingleClickListener {
+            val dialog = SequenceBSDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "SequenceBSDialogFragment")
+        }
+//        biometricManager = BiometricManager(this)
+//        biometricManager.authenticate(
+//            onSuccess = {
+//
+//            },
+//            onError = {
+//                Toast.makeText(requireContext(),"인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    replace(R.id.flMain, MainFragment())
+//                    addToBackStack(null)
+//                    commit()
+//                }
+//            }
+//        )
     }
     // 버튼 UI
     private fun updateButtonState() {

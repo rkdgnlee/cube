@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.collection.intListOf
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -19,7 +22,9 @@ import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartBSItemBinding
+import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDisconnectListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 
@@ -28,7 +33,9 @@ class StringRVAdapter(private val fragment: Fragment,
                       private val nameList : MutableList<String>?,
                       private val xmlName: String,
                       private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var onDisconnectListener: OnDisconnectListener? = null
+
+
+
     inner class MuscleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val ivMI : ImageView = view.findViewById(R.id.ivMI)
         val tvMIName : TextView = view.findViewById(R.id.tvMIName)
@@ -37,7 +44,7 @@ class StringRVAdapter(private val fragment: Fragment,
     inner class CbViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cbWI : CheckBox = view.findViewById(R.id.cbWI)
     }
-    inner class PartBSViewHolder(view:View) : RecyclerView.ViewHolder(view) {
+    inner class MainPartBSViewHolder(view:View) : RecyclerView.ViewHolder(view) {
         val cbPBSI : CheckBox = view.findViewById(R.id.cbPBSI)
         val cvPBSI : CardView = view.findViewById(R.id.cvPBSI)
         val ivPBSI : ImageView = view.findViewById(R.id.ivPBSI)
@@ -58,7 +65,7 @@ class StringRVAdapter(private val fragment: Fragment,
             }
             2 -> {
                 val binding = RvPartBSItemBinding.inflate(inflater, parent, false)
-                PartBSViewHolder(binding.root)
+                MainPartBSViewHolder(binding.root)
             }
             else -> throw IllegalArgumentException("Invaild View Type")
         }
@@ -174,7 +181,7 @@ class StringRVAdapter(private val fragment: Fragment,
                     }
                 }
             }
-            is PartBSViewHolder -> {
+            is MainPartBSViewHolder -> {
 
                 holder.cbPBSI.text = if (currentItem != "목관절") "$currentItem 관절" else currentItem
                 holder.ivPBSI.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), getImageResourceId(currentItem.toString())))
@@ -196,6 +203,8 @@ class StringRVAdapter(private val fragment: Fragment,
                     }
                 }
             }
+
+
         }
     }
 
@@ -208,14 +217,15 @@ class StringRVAdapter(private val fragment: Fragment,
         checkbox.setTextColor(ContextCompat.getColor(fragment.requireContext(), colorResId))
     }
 
-    private fun updateCheckbox(holder: PartBSViewHolder, checkbox: CheckBox, isChecked: Boolean = checkbox.isChecked) {
+    private fun updateCheckbox(holder: MainPartBSViewHolder, checkbox: CheckBox, isChecked: Boolean = checkbox.isChecked) {
         val cvBackgroundColor = if (isChecked) R.color.secondaryColor else R.color.subColor400
         val cbBackgroundClor = if (isChecked) R.color.secondContainerColor else R.color.white
         checkbox.setTextColor(ContextCompat.getColor(fragment.requireContext(), cvBackgroundColor))
         checkbox.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), cbBackgroundClor))
         holder.cvPBSI.setCardBackgroundColor(ContextCompat.getColor(fragment.requireContext(), cvBackgroundColor))
-
     }
+
+
     private fun getImageResourceId(currentItem: String): Int {
         return when (currentItem) {
             "목관절" -> R.drawable.icon_part1
