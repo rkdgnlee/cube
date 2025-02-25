@@ -49,6 +49,7 @@ import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
@@ -96,6 +97,7 @@ class AnalyzeFragment : Fragment() {
         // ------# 운동 기록 API 공간 #------
         todayInWeek = sortTodayInWeek()
         pvm.selectedDate = LocalDate.now()
+
         // 클릭 리스너 달기
         binding.ibtnAAlarm.setOnClickListener {
             val dialog = AlarmDialogFragment()
@@ -124,13 +126,12 @@ class AnalyzeFragment : Fragment() {
                 pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
             }
 
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             if (pvm.graphProgresses != null) {
-
                 withContext(Dispatchers.Main) {
                     setGraph()
                 }
             }
+            // 상단 프로그레스 받아오기
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             if (progressResult != null) {
                 evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
@@ -270,7 +271,7 @@ class AnalyzeFragment : Fragment() {
 
         // ------# 운동 기록 날짜 받아오기 #------
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        showDailyProgress()
+        showDailyProgress(6)
 
         binding.cvACalendar.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthHeaderViewContainer> {
             override fun create(view: View) = MonthHeaderViewContainer(view)
@@ -393,13 +394,17 @@ class AnalyzeFragment : Fragment() {
 
     private fun setDateStyle(container: DayViewContainer, day: CalendarDay) {
         container.date.background = null
+        container.removeBadge()
+
         when {
             avm.existedMonthProgresses.value.contains(day.date.toString()) -> {
                 if (day.date == pvm.selectedDate) {
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                     container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
+                    container.removeBadge()
                 } else {
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.thirdColor))
+                    container.addBadge()
                 }
             }
             day.date == pvm.selectedDate -> {
@@ -492,7 +497,6 @@ class AnalyzeFragment : Fragment() {
         } else {
             Log.e("MeasureDashBoard2Fragment", "ImageView with id $ivId not found")
         }
-
     }
 
 

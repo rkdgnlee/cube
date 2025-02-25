@@ -72,7 +72,9 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:configChanges="uiMode">
+            android:screenOrientation="portrait"
+            android:configChanges="uiMode"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter android:autoVerify="true" >
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />

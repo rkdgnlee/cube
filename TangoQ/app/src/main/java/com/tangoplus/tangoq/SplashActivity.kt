@@ -40,6 +40,8 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
@@ -55,6 +57,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private lateinit var ssm : SaveSingletonManager
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 //    private var integrityTokenProvider: StandardIntegrityTokenProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

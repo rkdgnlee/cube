@@ -2,19 +2,15 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="32dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="32dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/bckgnd_rectangle_20"
-    app:layout_constraintWidth_percent="0.8"
+    app:layout_gravity="center"
     tools:context=".dialog.MeasureSetupDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <EditText
             android:id="@+id/etMSDName"
@@ -95,7 +91,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clMSDAgreement1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/effect_ibtn"

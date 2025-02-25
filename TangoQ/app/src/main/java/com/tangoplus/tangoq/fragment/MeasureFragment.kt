@@ -78,11 +78,13 @@ class MeasureFragment : Fragment() {
         val scoreTvs = listOf(binding.tvM6,binding.tvM7,binding.tvM8,binding.tvM9,binding.tvM10 )
         dateTvs.forEachIndexed { index, tv->
             tv.setOnClickListener {
+                mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
                 mvm.selectedMeasureIndex.value = index
             }
         }
         scoreTvs.forEachIndexed { index, tv ->
             tv.setOnClickListener {
+                mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
                 mvm.selectedMeasureIndex.value = index
             }
         }
@@ -271,7 +273,9 @@ class MeasureFragment : Fragment() {
                 }
             }
             // 선택시 값을 움직일 index 저장
-            mvm.selectedMeasureIndex.value = 4
+            if (mvm.selectedMeasureIndex.value == null) {
+                mvm.selectedMeasureIndex.value = 4
+            }
 
             val lcEntries: MutableList<Entry> = mutableListOf()
             for (i in startIndex until lcDataList.size) {
@@ -405,6 +409,7 @@ class MeasureFragment : Fragment() {
                         lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
                         balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
 //                        Log.v("originalIndex", "$originalIndex")
+                        mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
                         mvm.selectedMeasureIndex.value = originalIndex
                     }
 
@@ -448,7 +453,6 @@ class MeasureFragment : Fragment() {
                     createBalloon(userJson, percentage)
                     binding.tvMTotalScore.text = userPercentile.toString()
                 }
-
                 animateCardViewToPercentage(it)
             }
 
@@ -519,7 +523,14 @@ class MeasureFragment : Fragment() {
 
     private fun animateCardViewToPercentage(index: Int) {
         val params = binding.cvM.layoutParams as ConstraintLayout.LayoutParams
-        val startBias = params.horizontalBias
+        Log.v("눌렀을 때", "${mvm.previousMeasureIndex}, ${mvm.selectedMeasureIndex.value}")
+        val startBias = when(mvm.previousMeasureIndex) {
+            4 -> 1.0f
+            3 -> 0.75f
+            1 -> 0.25f
+            0 -> 0.0f
+            else -> 0.5f
+        }
         val endBias = when (index) {
             4 -> 1.0f
             3 -> 0.75f
@@ -527,6 +538,7 @@ class MeasureFragment : Fragment() {
             0 -> 0.0f
             else -> 0.5f
         } // 이동할 목표 위치
+
         val durations = when (index) {
             1, 3 -> 750L
             else -> 1000L
@@ -551,7 +563,7 @@ class MeasureFragment : Fragment() {
             if (selectedData.first != "") {
                 tvMDates[i].text = selectedData.first.substring(5, 10).replace("-",".")
             } else {
-                val bodyText =  "기록없음"
+                val bodyText =  "-"
                 tvMDates[i].text =bodyText
             }
 
@@ -559,7 +571,7 @@ class MeasureFragment : Fragment() {
                 tvMScores[i].text = "${selectedData.second}"
 
             } else {
-                val bodyText =  "기록없음"
+                val bodyText =  "-"
                 tvMScores[i].text =bodyText
             }
 

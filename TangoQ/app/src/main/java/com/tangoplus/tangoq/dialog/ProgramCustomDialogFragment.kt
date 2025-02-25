@@ -130,7 +130,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 * recommendation_sn + week 까지만 받아서 쓰면 될듯?
                 * 그러면 내가 week
                 * */
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     val result = async { pvm.getProgressData(requireContext()) }
                     result.await()
                     withContext(Dispatchers.Main) {
@@ -268,9 +268,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     private fun updateUI() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                calculateInitialWeekAndSequence()
+                val initSeqWeek = async { calculateInitialWeekAndSequence() }
+                initSeqWeek.await()
                 val result = withContext(Dispatchers.IO) {
                     // 1주에 해당하는 전체 progresses를 통해서 계산.
+
                     endSequence()
                     // 현재 기본값 설정
                     pvm.getProgressData(requireContext())
@@ -396,6 +398,14 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     private fun setButtonFlavor() {
         val selectedWeekValue = pvm.selectedWeek.value
         val selectedSeqValue = pvm.selectedSequence.value
+        val durations = pvm.currentProgresses.map { it.duration }
+        val cycleProgresses = pvm.currentProgresses.map { it.cycleProgress }
+
+        val currentSeqValid = durations.zip(cycleProgresses).map { (duration, progress) ->
+            progress.toFloat() / duration
+        }.all { it >= 92f }
+//        Log.v("currentValid", "$durations, $cycleProgresses $currentSeqValid")
+
         if (selectedWeekValue != null && pvm.currentProgresses.isNotEmpty()) {
             val lastWeekProgress = pvm.currentProgresses.last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
             Log.v("lastWeekProgress", "$lastWeekProgress, 목록: ${pvm.currentProgresses}")
@@ -414,26 +424,20 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
                     text = "오늘자 운동을 진행해주세요"
                 }
-                //
-            } else if (lastWeekProgress.updatedAt != null && lastWeekProgress.updatedAt.length > 9 && selectedSeqValue == pvm.currentSequence) {
-                val inputDate = LocalDate.parse(lastWeekProgress.updatedAt.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                val currentDate = LocalDate.now()
-                if (inputDate == currentDate && lastWeekProgress.countSet > 0 && selectedSeqValue == pvm.currentSequence) {
-                    // 오늘 시퀀스가 끝났으니 버튼 Flavor 맞추기
-                    binding.btnPCDRight.apply {
-                        isEnabled = false
-                        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-                        text = "오늘 회차의 운동을 완료했습니다"
-                    }
-                    // 회차가 끝난 사람이 다음날 들어오는 곳
-                } else if (selectedSeqValue == pvm.currentSequence) {
-                    binding.btnPCDRight.apply {
-                        isEnabled = true
-                        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
-                        text = "운동 시작하기"
-                    }
+                // 오늘자인데.
+            } else if (currentSeqValid && selectedSeqValue == pvm.currentSequence) { //
+                binding.btnPCDRight.apply {
+                    isEnabled = false
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+                    text = "오늘 회차의 운동을 완료했습니다"
                 }
                 // 전혀 기록이 없는 사람이 현재 seq눌렀을 떄
+//            } else if (!currentSeqValid && selectedSeqValue == pvm.currentSequence) {
+//                binding.btnPCDRight.apply {
+//                    isEnabled = false
+//                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+//                    text = "오늘 회차의 운동을 완료했습니다"
+//                }
             } else if (selectedSeqValue == pvm.currentSequence) {
                 binding.btnPCDRight.apply {
                     isEnabled = true
@@ -455,7 +459,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 //            return progressIndex1
 //        }
         val sortedProgresses = progresses.sortedBy { it.exerciseId }
-        val progressItem = sortedProgresses.first { it.isWatched == 0 }
+        val progressItem = sortedProgresses.firstOrNull { it.isWatched == 0 } ?: -1
         val progressIndex1 = sortedProgresses.indexOf(progressItem)
         if (progressIndex1 != -1) {
             return progressIndex1
@@ -480,22 +484,14 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     private fun endSequence() {
         if (pvm.currentProgresses.isNotEmpty()) {
-            val lastWeekProgress = pvm.currentProgresses.last() // 현재 주차의 가장 마지막 item을 가져옴 팔꿉에서는 index 2
-            Log.v("pvmProgresses", "${pvm.currentProgresses}, $lastWeekProgress")
-            if (lastWeekProgress.updatedAt != null && lastWeekProgress.updatedAt.length > 9) {
-                val inputDate = LocalDate.parse(lastWeekProgress.updatedAt.subSequence(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                val currentDate = LocalDate.now()
-                Log.v("오늘자", "오늘자 완료한걸까요. ${pvm.currentSequence} / ${pvm.selectedSequence.value} , $inputDate / $currentDate")
-                if (pvm.selectedSequence.value == pvm.currentSequence) {
+            val currentSeqFinished = pvm.currentProgresses.map { it.isWatched == 1 }.all { it }
+            Log.v("endSeq?", "currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, ${currentSeqFinished}")
+            if (pvm.currentWeek== 3 && pvm.currentSequence == 2 && currentSeqFinished) {
+                val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
+                dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
 
-                    if (inputDate == currentDate && lastWeekProgress.duration == lastWeekProgress.cycleProgress) {
-                        val dialog = ProgramAlertDialogFragment.newInstance(this, 1)
-                        dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
-
-                        // 버튼 잠금
-                        setButtonFlavor()
-                    }
-                }
+                // 버튼 잠금
+                setButtonFlavor()
             }
         }
     }
@@ -513,28 +509,42 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 CoroutineScope(Dispatchers.Main).launch {  // LiveData 업데이트는 메인 스레드에서
                     val adjustedWeek = if (week == -1) 0 else week - 1
                     val adjustedSeq = if (seq == -1) 0 else seq - 1
-                    Log.v("포스트getProgress", "callback: $adjustedWeek, $adjustedSeq, $week, $seq, result: $result")
+                    Log.v("포스트getProgress", "callback: ($adjustedWeek, $adjustedSeq, $week, $seq,) result: $result")
+                    val countSets = result[adjustedWeek].map { it.countSet }
+                    val isMaxSeq = countSets.map { it == 3 }.all { it }
+                    val isMinSeq = countSets.min()
+                    val isSeqFinish = countSets.distinct().size == 1
 
-                    val serverLastItem = result[adjustedWeek].last()
-                    Log.v("포스트getProgress", "$serverLastItem $adjustedSeq, $week, $seq")
-                    if (serverLastItem.countSet == serverLastItem.requiredSet) {
-                        // 모든 회차가 끝남
+//                    val serverLastItem = result[adjustedWeek].last()
+//                    Log.v("포스트getLast팡", "$serverLastItem $adjustedSeq, $week, $seq")
+                    if (isMaxSeq && isSeqFinish) {
+                        // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
                         pvm.currentWeek = adjustedWeek + 1
                         pvm.selectWeek.value = adjustedWeek + 1
                         pvm.selectedWeek.value = adjustedWeek + 1
-                    } else {
+                        pvm.currentSequence = 0
+                        pvm.selectedSequence.value = 0
+                        // 회차 진행중
+                    } else if (!isMaxSeq && isSeqFinish && isMinSeq > 0) {
                         pvm.currentWeek = adjustedWeek
                         pvm.selectWeek.value = adjustedWeek
                         pvm.selectedWeek.value = adjustedWeek
-                    }
-                    if (serverLastItem.countSet == seq) {
+                        pvm.currentSequence = adjustedSeq + 1
+                        pvm.selectedSequence.value= adjustedSeq + 1
+                        // 시청 중간
+                    } else if (isMinSeq > 0) {
+                        pvm.currentWeek = adjustedWeek
+                        pvm.selectWeek.value = adjustedWeek
+                        pvm.selectedWeek.value = adjustedWeek
+                        pvm.currentSequence = adjustedSeq + 1
+                        pvm.selectedSequence.value= adjustedSeq + 1
+                    }else {
+                        pvm.currentWeek = adjustedWeek
+                        pvm.selectWeek.value = adjustedWeek
+                        pvm.selectedWeek.value = adjustedWeek
                         pvm.currentSequence = adjustedSeq
                         pvm.selectedSequence.value= adjustedSeq
-                    } else {
-                        pvm.currentSequence = adjustedSeq
-                        pvm.selectedSequence.value= adjustedSeq
                     }
-
 
                     Log.v("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}")
                 }

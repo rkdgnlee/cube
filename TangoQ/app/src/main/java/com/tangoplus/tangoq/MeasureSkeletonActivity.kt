@@ -34,6 +34,7 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -55,6 +56,7 @@ import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
+import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -388,6 +390,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         super.onCreate(savedInstanceState)
         binding = ActivityMeasureSkeletonBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         // ------# room(DB) & singleton & uuid init #------
         md = MeasureDatabase.getDatabase(this)
@@ -1097,44 +1100,40 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
-        preview?.surfaceProvider = binding.viewFinder.surfaceProvider
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
 
         val cameraSelector =
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
-        // 미리보기. 4:3 비율만 사용합니다. 이것이 우리 모델에 가장 가깝기 때문입니다.
-
-        binding.viewFinder.display?.let { display ->
-            preview = Preview.Builder()
-//            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-                .setTargetResolution(Size(720, 1280))
-                .setTargetRotation(display.rotation)
-                .build()
-        } ?: run {
-            Log.e(TAG, "Display is null")
-        }
-        val rotation = binding.viewFinder.display?.rotation
-            ?: Surface.ROTATION_0
+        // 회전 정보 가져오기
+        val rotation = binding.viewFinder.display?.rotation ?: Surface.ROTATION_0
         Log.d("RotationDebug", "Display Rotation: $rotation")
-        // 이미지 분석. RGBA 8888을 사용하여 모델 작동 방식 일치
-        imageAnalyzer =
-            ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9)
-                .setTargetRotation(rotation)
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                .build()
-                // The analyzer can then be assigned to the instance
-                .also {
-                    it.setAnalyzer(backgroundExecutor) { image ->
-                        detectPose(image)
-                    }
+
+        // 미리보기 설정
+        preview = Preview.Builder()
+            .setTargetResolution(Size(720, 1280))
+            .setTargetRotation(rotation)
+            .build()
+
+        // 중요: 이 시점에서 surfaceProvider 설정
+        preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+
+        // 이미지 분석 설정
+        imageAnalyzer = ImageAnalysis.Builder()
+            .setTargetResolution(Size(720, 1280)) // aspectRatio 대신 resolution 사용
+            .setTargetRotation(rotation)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            .build()
+            .also {
+                it.setAnalyzer(backgroundExecutor) { image ->
+                    detectPose(image)
                 }
+            }
 
         // 이미지 캡처 설정
         imageCapture = ImageCapture.Builder()
-//            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetResolution(Size(720, 1280))
             .setTargetRotation(rotation)
             .build()
@@ -1149,9 +1148,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
         try {
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageAnalyzer, imageCapture, videoCapture
+                this, cameraSelector, imageAnalyzer, imageCapture, videoCapture, preview
             )
-            preview?.surfaceProvider = binding.viewFinder.surfaceProvider
         } catch (e: IndexOutOfBoundsException) {
             Log.e("MSCameraIndex", "${e.message}")
         } catch (e: IllegalArgumentException) {

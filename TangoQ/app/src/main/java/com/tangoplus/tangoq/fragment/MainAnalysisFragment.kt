@@ -112,6 +112,8 @@ class MainAnalysisFragment : Fragment() {
         // viewModel에 들어가있던 동적 자세 기록들 초기화
 
         pvm.videoUrl = null
+        pvm.setPlaybackPosition(0)
+
         simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
         avm.currentPart.observe(viewLifecycleOwner) { part ->

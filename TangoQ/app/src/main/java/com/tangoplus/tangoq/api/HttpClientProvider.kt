@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
@@ -76,29 +77,29 @@ object HttpClientProvider {
                     code
                 } else if (response.isSuccessful) {
                     val responseBody = response.body?.string()
-                    Log.v("토큰갱신", "Success to refresh Access Token: $responseBody")
+                    Log.v("토큰갱신", "$responseBody")
                     val newToken = responseBody?.let { JSONObject(it) }
                     saveEncryptedJwtToken(context, newToken)
                     200
                 } else {
                     Log.e("RefreshToken", "Failed to refresh token: ${response.code}")
-                    404
+                    400
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("RefreshTokenError", "refresh: ${e.message}")
-                404
+                400
             } catch (e: IllegalArgumentException) {
                 Log.e("RefreshTokenError", "refresh: ${e.message}")
-                404
+                400
             } catch (e: IllegalStateException) {
                 Log.e("RefreshTokenError", "refresh: ${e.message}")
-                404
+                400
             } catch (e: NullPointerException) {
                 Log.e("RefreshTokenError", "refresh: ${e.message}")
-                404
+                400
             } catch (e: Exception) {
                 Log.e("RefreshTokenError", "refresh: ${e.message}")
-                404
+                400
             }
         }
     }
@@ -115,6 +116,9 @@ object HttpClientProvider {
             )
             .build()
 
-        WorkManager.getInstance(context).enqueue(tokenCheckRequest)
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "TokenCheckWork",
+            ExistingWorkPolicy.REPLACE
+            ,tokenCheckRequest)
     }
 }

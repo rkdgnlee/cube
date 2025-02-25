@@ -72,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:background="@color/white"
-                    android:text="측정"
+                    android:text="측정 기록"
                     android:textColor="@color/black"
                     android:textSize="32dp"
                     android:textStyle="bold"

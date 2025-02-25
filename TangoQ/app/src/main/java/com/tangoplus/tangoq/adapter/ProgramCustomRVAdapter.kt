@@ -138,7 +138,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
 
     private fun setCompleted(holder: CustomViewHolder, isSelect: Boolean) {
         holder.cvPSI.visibility = View.VISIBLE
-        holder.tvPSIName.text = "Completed"
+        holder.tvPSIName.text = "Complete"
         holder.tvPSIName.textSize = 16f
         if (isSelect) {
             setCheckBadge(holder, true)

@@ -78,7 +78,7 @@ class WithdrawalFragment : Fragment() {
         val endIndex = message.indexOf("회원 계정")
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 42, 44, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        message.setSpan(StyleSpan(Typeface.BOLD), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        message.setSpan(StyleSpan(Typeface.BOLD), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.btnWd.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("경고⚠️")

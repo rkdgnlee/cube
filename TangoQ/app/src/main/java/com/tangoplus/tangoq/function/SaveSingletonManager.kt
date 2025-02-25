@@ -85,7 +85,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     private suspend fun saveMeasureInfo(userUUID: String, callbacks: (Boolean) -> Unit) {
         val currentActivity = activity
         val dialog = withContext(Dispatchers.Main) {
-            if (!currentActivity.isFinishing && !currentActivity.isDestroyed) {
+            if (!currentActivity.isFinishing && !currentActivity.isDestroyed && !activity.supportFragmentManager.isStateSaved) {
                 LoadingDialogFragment.newInstance("측정이력").apply {
                     show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
                 }
@@ -99,7 +99,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             withContext(Dispatchers.Main) {
                 if (dialog != null) {
                     if (dialog.isAdded && dialog.isVisible) {
-                        dialog.dismiss()
+                        dialog.dismissAllowingStateLoss()
                     }
                 }
             }
@@ -112,7 +112,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     private suspend fun fetchAndFilterMeasureInfo(userUUID: String) {
         val currentActivity = activity
         val dialog = withContext(Dispatchers.Main) {
-            if (!currentActivity.isFinishing && !currentActivity.isDestroyed) {
+            if (!currentActivity.isFinishing && !currentActivity.isDestroyed && !activity.supportFragmentManager.isStateSaved) {
                 LoadingDialogFragment.newInstance("측정파일").apply {
                     show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
                 }
@@ -207,7 +207,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         } finally {
             withContext(Dispatchers.Main) {
                 if (dialog?.isAdded == true && dialog.isVisible) {
-                    dialog.dismiss()
+                    dialog.dismissAllowingStateLoss()
                 }
             }
         }
@@ -444,7 +444,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     private suspend fun addRecommendations() {
         withContext(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("추천")
-            if (!activity.isFinishing && !activity.isDestroyed) {
+            if (!activity.isFinishing && !activity.isDestroyed && !activity.supportFragmentManager.isStateSaved) {
                dialog.show(activity.supportFragmentManager, "LoadingDialogFragment")
             }
             withContext(Dispatchers.IO) {
@@ -475,7 +475,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     // 모든 async 작업이 완료될 때까지 대기
                     withContext(Dispatchers.Main) {
                         if (dialog.isAdded && dialog.isVisible) {
-                            dialog.dismiss()
+                            dialog.dismissAllowingStateLoss()
                         }
                     }
                 }
@@ -523,7 +523,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
     suspend fun setRecent5MeasureResult(currentMeasureIndex: Int) {
         val currentActivity = activity
         val dialog = withContext(Dispatchers.Main) {
-            if (!currentActivity.isFinishing && !currentActivity.isDestroyed) {
+            if (!currentActivity.isFinishing && !currentActivity.isDestroyed && !activity.supportFragmentManager.isStateSaved) {
                 LoadingDialogFragment.newInstance("측정파일").apply {
                     show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
                 }
@@ -611,7 +611,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             Log.e("measureError", "fetchAndFilter: ${e.message}")
         } finally {
             withContext(Dispatchers.Main) {
-                dialog?.dismiss()
+                dialog?.dismissAllowingStateLoss()
             }
         }
     }

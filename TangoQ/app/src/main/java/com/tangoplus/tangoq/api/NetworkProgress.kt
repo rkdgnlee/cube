@@ -36,7 +36,7 @@ object NetworkProgress {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    // Log.v("포스트프로그램싸이클", "$responseBody")
+                     Log.v("포스트프로그램싸이클", "$responseBody")
                     val bodyJson = JSONObject(responseBody.toString())
                     val ja = bodyJson.optJSONArray("data")
                     val pv3 = bodyJson.optJSONObject("sum_data_for_each_cycle")
@@ -78,6 +78,7 @@ object NetworkProgress {
                                 isWatched = jo.optInt("is_watched"),
                                 cycleProgress = jo.optInt("cycle_progress")
                             )
+//                            Log.v("seq,week계산하기", "$i $progressUnitVO")
                             progresses.add(progressUnitVO)
                         }
                     }
@@ -121,7 +122,7 @@ object NetworkProgress {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                // Log.v("patch>Progress1Item", "$responseBody")
+                 Log.v("patch>Progress1Item", "$responseBody")
                 val jo = JSONObject(responseBody.toString()).optJSONObject("update_video_progress")
                 if (jo != null) {
                     val progressUnitVO = ProgressUnitVO(
@@ -187,6 +188,7 @@ object NetworkProgress {
                                     updatedAt = jo.optString("updated_at"),
                                     isWatched = jo.optInt("is_watched")
                                 )
+                                Log.v("seq,week계산하기", "$i $progressUnitVO")
                                 seqUnits.add(progressUnitVO)
                             }
                         }

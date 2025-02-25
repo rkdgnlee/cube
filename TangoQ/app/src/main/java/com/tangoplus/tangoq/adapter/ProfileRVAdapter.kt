@@ -165,7 +165,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                                         setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                                         replace(R.id.flMain, WithdrawalFragment())
-                                        addToBackStack(null)
+
                                         commit()
                                     }
                                 }

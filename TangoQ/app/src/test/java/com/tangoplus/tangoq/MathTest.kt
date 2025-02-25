@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq
 
+import android.util.Log
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.Math.toDegrees
@@ -297,4 +298,43 @@ class MathTest {
 
     }
 
+    @Test
+    fun calculateWeekSeq() {
+        val result = listOf(listOf(3, 3, 3, 3), listOf(3, 3, 3, 3), listOf(3, 3, 3, 3), listOf(1, 1,1, 1))
+        val adjustedWeek = 4 - 1
+        val adjustedSeq = 1 - 1
+//        Log.v("포스트getProgress", "callback: ($adjustedWeek, $adjustedSeq, $week, $seq,) result: $result")
+        val countSets = result[adjustedWeek]
+        val isMaxSeq = countSets.map { it == 3 }.all { it }
+        val isMinSeq = countSets.min()
+        val isSeqFinish = countSets.distinct().size == 1
+        val setWeek : Int
+        val setSeq : Int
+//                    val serverLastItem = result[adjustedWeek].last()
+//                    Log.v("포스트getLast팡", "$serverLastItem $adjustedSeq, $week, $seq")
+        if (isMaxSeq && isSeqFinish) {
+            // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
+            setWeek = adjustedWeek + 1
+            setSeq = 0
+            // 회차 진행중
+            println("0")
+        } else if (!isMaxSeq && isSeqFinish && isMinSeq > 0) {
+            setWeek = adjustedWeek
+            setSeq = adjustedSeq + 1
+            // 회차가 끝남
+            println("1")
+
+        } else if (isMinSeq > 0) {
+            setWeek = adjustedWeek
+            setSeq = adjustedSeq + 1
+            // 회차가 끝남
+            println("2")
+
+        } else {
+            setWeek = adjustedWeek
+            setSeq = adjustedSeq
+            println("3")
+        }
+        print("week: $setWeek, seq: $setSeq")
+    }
 }

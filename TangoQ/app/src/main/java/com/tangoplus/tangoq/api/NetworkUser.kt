@@ -45,12 +45,16 @@ object NetworkUser {
                         val responseBody = response.body?.string()
                         Log.v("trySelfLogin", "$responseBody")
                         val bodyJo = JSONObject(responseBody.toString())
-                        val jwtJo = JSONObject().apply {
-                            put("access_jwt", bodyJo.optString("access_jwt"))
-                            put("refresh_jwt", bodyJo.optString("refresh_jwt"))
+                        if (bodyJo.optJSONObject("login_data") == null) {
+                            callback(null)
+                        } else {
+                            val jwtJo = JSONObject().apply {
+                                put("access_jwt", bodyJo.optString("access_jwt"))
+                                put("refresh_jwt", bodyJo.optString("refresh_jwt"))
+                            }
+                            saveEncryptedJwtToken(context, jwtJo)
+                            callback(bodyJo)
                         }
-                        saveEncryptedJwtToken(context, jwtJo)
-                        callback(bodyJo)
                     } catch (e: IndexOutOfBoundsException) {
                         Log.e("autoSelfLogin", "IndexError: ${e.message}")
                     } catch (e: IllegalArgumentException) {

@@ -190,24 +190,14 @@ class MeasureSetupDialogFragment : DialogFragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        val params = dialog?.window?.attributes
-        params?.width = Resources.getSystem().displayMetrics.widthPixels - dpToPx(32) // 좌우 마진을 16dp씩 주기
-        dialog?.window?.attributes = params
-
-//        dialog?.window?.setDimAmount(0.7f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20))
+        dialog?.window?.setDimAmount(0.7f)
+        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
-//        if (isTablet(requireContext())) {
-//            dialogFragmentResize(requireContext(), this, width =  0.6f ,height = 0.4f)
-//        } else {
-//            dialogFragmentResize(requireContext(), this, height = 0.475f)
-//        }
-    }
-    fun dpToPx(dp: Int): Int {
-        return (dp * Resources.getSystem().displayMetrics.density).toInt()
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        if (isTablet(requireContext())) {
+            dialogFragmentResize(requireContext(), this@MeasureSetupDialogFragment, width = 0.7f, height = 0.4f)
+        } else {
+            dialogFragmentResize(requireContext(), this@MeasureSetupDialogFragment, width =  0.9f, height = 0.45f)
+        }
     }
 }

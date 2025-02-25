@@ -227,7 +227,11 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
     private fun setHorizonAdapter() {
         val partStates = matchedIndexs.map { part ->
             measure?.dangerParts?.find { it.first == part }  ?: (part to 0f)
-        }. toMutableList()
+        }. toMutableList().apply {
+            val zeroItem = filter { it.second == 0f }
+            removeAll(zeroItem)
+            addAll(zeroItem)
+        }
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         val adapter = MainPartRVAdapter(this@MeasureDetailFragment, partStates, avm, "measureDetail")
         adapter.onCategoryClickListener = this

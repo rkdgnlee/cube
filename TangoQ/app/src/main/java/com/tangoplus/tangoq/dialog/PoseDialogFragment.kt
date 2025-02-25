@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -16,6 +17,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -108,7 +110,7 @@ class PoseDialogFragment : DialogFragment() {
 
                 pvm.setPlaybackPosition(0L)
                 pvm.setWindowIndex(0)
-
+                pvm.videoUrl = mvm.selectedMeasure?.fileUris?.get(1)
                 exoPlay = view.findViewById(R.id.btnPlay)
                 exoPause = view.findViewById(R.id.btnPause)
                 llSpeed = view.findViewById(R.id.llSpeed)
@@ -207,8 +209,7 @@ class PoseDialogFragment : DialogFragment() {
         binding.pvPD.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
             // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
-            pvm.videoUrl = pvm.videoUrl ?: mvm.selectedMeasure?.fileUris?.get(1).toString()
-            pvm.videoUrl = pvm.videoUrl  // URL 저장
+            pvm.videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
 
             val mediaItem = MediaItem.fromUri(Uri.parse(pvm.videoUrl))
             val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
@@ -418,14 +419,19 @@ class PoseDialogFragment : DialogFragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-//        dialog?.window?.setDimAmount(0.6f)
+
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
+
+        val background = dialog?.window?.decorView?.background
+        if (background != null) {
+            val wrappedDrawable = DrawableCompat.wrap(background).mutate()
+            DrawableCompat.setTint(wrappedDrawable, Color.parseColor("#00FFFFFF"))
+            dialog?.window?.setBackgroundDrawable(wrappedDrawable)
+        }
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-
-//        dialogFragmentResize(requireContext(), this@PoseDialogFragment, 0.7f, 0.75f)
     }
 
 }

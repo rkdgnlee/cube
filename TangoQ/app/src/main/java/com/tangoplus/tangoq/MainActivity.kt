@@ -92,9 +92,8 @@ class MainActivity : AppCompatActivity() {
 //            Log.v("TokenCheckWorker", "$workInfos")
         }
         viewModel.showLogoutDialog.observe(this) { shouldShow ->
-            if (shouldShow) {
+            if (shouldShow == true) {  // null 체크
                 Log.v("로그아웃갑시다2", "중복 로그인 - 현재 기기 로그아웃 처리")
-                // 로그아웃 처리 / 성공 처리에 대한 토큰 저장은 이미 api 함수에서 실행 중
                 val dialog = AlertDialogFragment.newInstance("logout")
                 dialog.show(supportFragmentManager, "AlertDialogFragment")
                 viewModel.resetLogoutDialog()

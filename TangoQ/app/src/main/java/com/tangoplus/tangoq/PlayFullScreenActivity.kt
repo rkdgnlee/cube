@@ -293,12 +293,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             if (currentWindowIndex < mediaSourceList.size) {
                                 pvm.totalProgressDuration += pvm.simpleExoPlayer?.duration?.toInt() ?: 0
                                 pvm.currentMediaSourceIndex++
-                                Log.v("윈도우인덱스", "$pvm.currentMediaSourceIndex")
+                                Log.v("윈도우인덱스", "${pvm.currentMediaSourceIndex}")
 
                                 currentExerciseId = pvm.sns?.get(currentWindowIndex) ?: ""
                                 startNextVideoCountdown()
                                 pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
-                                Log.e("currentVideoDuration임", "$pvm.currentVideoDuration")
+                                Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
                             }
                         }
                     }
@@ -362,7 +362,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         val currentUvpSns = pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()
         if (pvm.uvpSns?.isNotEmpty() == true && currentUvpSns != null) {
             patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { }
-            Log.v("progress완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
+            Log.v("progresses완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
             callback()
         } else if (pvm.uvpSn != 0) {
             patchProgress1Item(getString(R.string.API_progress), pvm.uvpSn, jo, this@PlayFullScreenActivity) { }
@@ -370,7 +370,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
             callback()
         }
     }
-
 
     private fun fullScreen(fullScreenOption : Int) {
         window.decorView.systemUiVisibility = (
