@@ -29,13 +29,13 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tabIndicatorColor="@color/thirdWhiteColor"
+                app:tabIndicatorColor="@color/secondaryColor"
                 app:tabIndicatorFullWidth="true"
                 app:tabMode="fixed"
                 app:tabRippleColor="@color/subColor100"
                 app:tabSelectedTextColor="@color/secondWhiteColor"
                 app:tabTextAppearance="@style/TabLayoutTextStyle"
-                app:tabTextColor="@color/secondContainerColor">
+                app:tabTextColor="@color/secondHalfColor">
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"

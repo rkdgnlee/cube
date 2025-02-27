@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.fragment
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
@@ -9,7 +10,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setPadding
@@ -108,14 +111,15 @@ class AnalyzeFragment : Fragment() {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
-        val btns = listOf(binding.vA1, binding.vA2, binding.vA3, binding.vA4, binding.vA5)
+        val btns = listOf(binding.vA1, binding.vA2, binding.vA3, binding.vA4, binding.vA5, binding.vA6, binding.vA7)
         btns.forEachIndexed { index, view ->
             view.setOnClickListener {
 
                 showDailyProgress(index)
+                animateCardViewToPercentage( index)
                 Handler(Looper.getMainLooper()).postDelayed({
                     scrollToView(binding.rvA)
-                }, 250)
+                }, 400)
             }
         }
 
@@ -239,10 +243,7 @@ class AnalyzeFragment : Fragment() {
 
         binding.nextMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
-            val oldDate = pvm.selectedDate
-            pvm.selectedDate = null
-            oldDate?.let { binding.cvACalendar.notifyDateChanged(it) }
-            binding.tvADate.text = "날짜를 선택해주세요"
+            initMonthData()
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
                 updateMonthView()
@@ -253,10 +254,7 @@ class AnalyzeFragment : Fragment() {
 
         binding.previousMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
-            val oldDate = pvm.selectedDate
-            pvm.selectedDate = null
-            oldDate?.let { binding.cvACalendar.notifyDateChanged(it) }
-            binding.tvADate.text = "날짜를 선택해주세요"
+            initMonthData()
             if (currentMonth > YearMonth.now().minusMonths(24)) {
                 currentMonth = currentMonth.minusMonths(1)
                 updateMonthView()
@@ -266,6 +264,7 @@ class AnalyzeFragment : Fragment() {
         }
 
         binding.monthText.setOnClickListener {
+            initMonthData()
             updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
         }
 
@@ -505,6 +504,14 @@ class AnalyzeFragment : Fragment() {
         binding.cvACalendar.scrollToMonth(currentMonth)
     }
 
+    private fun initMonthData() {
+        val oldDate = pvm.selectedDate
+        pvm.selectedDate = null
+        oldDate?.let { binding.cvACalendar.notifyDateChanged(it) }
+        setAdapter(listOf())
+        binding.tvADate.text = "날짜를 선택해주세요"
+    }
+
     // 버튼으로 월이 바꼈을 때,
     private fun updateMonthProgress(date: String) {
 
@@ -688,5 +695,34 @@ class AnalyzeFragment : Fragment() {
         val scrollTo = scrollY + viewTop - scrollViewTop
         // 7 스크롤 뷰 해당 위치로 스크롤
         binding.nsvA.smoothScrollTo(0, scrollTo)
+    }
+
+    private fun animateCardViewToPercentage(index: Int) {
+        val params = binding.cvAEffect.layoutParams as ConstraintLayout.LayoutParams
+        val startBias = params.horizontalBias
+        val endBias = when (index) {
+            6 -> 0.975f
+            5 -> 0.815f
+            4 -> 0.66f
+            2 -> 0.34f
+            1 -> 0.185f
+            0 -> 0.025f
+            else -> 0.5f
+        } // 이동할 목표 위치
+
+        val durations = when (index) {
+            1,2, 4, 5 -> 650L
+            else -> 500L
+        }
+        val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
+            duration = durations // 1초 동안 애니메이션
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { animation ->
+                val animatedValue = animation.animatedValue as Float
+                params.horizontalBias = animatedValue
+                binding.cvAEffect.layoutParams = params
+            }
+        }
+        animator.start()
     }
 }

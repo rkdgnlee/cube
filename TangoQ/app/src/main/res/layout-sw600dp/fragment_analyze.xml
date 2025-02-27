@@ -268,14 +268,16 @@
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout9">
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cvAEffect"
                         android:layout_width="64dp"
                         android:layout_height="0dp"
+                        android:layout_marginBottom="5dp"
                         app:cardCornerRadius="6dp"
                         app:cardElevation="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/llAWeek"
-                        app:layout_constraintHorizontal_bias="0.9725"
-                        app:layout_constraintStart_toStartOf="@+id/llAWeek"
+                        app:layout_constraintEnd_toEndOf="@+id/linearLayout17"
+                        app:layout_constraintHorizontal_bias="0.975"
+                        app:layout_constraintStart_toStartOf="@+id/linearLayout17"
                         app:layout_constraintTop_toTopOf="@+id/bcA">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -416,6 +418,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/linearLayout17"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:orientation="horizontal"
@@ -653,6 +656,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="완료한 운동 갯수"
+                            android:textSize="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.4"
                             app:layout_constraintStart_toStartOf="parent"
@@ -671,7 +675,7 @@
                             android:paddingBottom="4dp"
                             android:text="7개"
                             android:textColor="@color/whiteText"
-                            android:textSize="14dp"
+                            android:textSize="16dp"
                             app:layout_constraintBottom_toBottomOf="@+id/textView24"
                             app:layout_constraintStart_toEndOf="@+id/textView24"
                             app:layout_constraintTop_toTopOf="@+id/imageView21" />
@@ -711,6 +715,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="총 운동 갯수"
+                            android:textSize="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.4"
                             app:layout_constraintStart_toStartOf="parent"
@@ -729,7 +734,7 @@
                             android:paddingBottom="4dp"
                             android:text="25개"
                             android:textColor="@color/whiteText"
-                            android:textSize="14dp"
+                            android:textSize="16dp"
                             app:layout_constraintBottom_toBottomOf="@+id/textView23"
                             app:layout_constraintStart_toEndOf="@+id/textView23"
                             app:layout_constraintTop_toTopOf="@+id/imageView17" />

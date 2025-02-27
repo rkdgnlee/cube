@@ -142,6 +142,8 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_weight="1"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/secondContainerColor"
                         android:contentDescription="clearEditText"
                         android:src="@drawable/icon_text_clear" />
                 </LinearLayout>

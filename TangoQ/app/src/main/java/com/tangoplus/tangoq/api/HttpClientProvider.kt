@@ -73,7 +73,7 @@ object HttpClientProvider {
             try {
                 if (!response.isSuccessful) {
                     val code = response.code
-                    Log.e("RefreshToken", "Failed to refresh token: $code")
+                    Log.e("RefreshTokenFail", "Failed to refresh token: $code")
                     code
                 } else if (response.isSuccessful) {
                     val responseBody = response.body?.string()
@@ -82,7 +82,7 @@ object HttpClientProvider {
                     saveEncryptedJwtToken(context, newToken)
                     200
                 } else {
-                    Log.e("RefreshToken", "Failed to refresh token: ${response.code}")
+                    Log.e("RefreshTokenElse", "Failed to refresh token: ${response.code}")
                     400
                 }
             } catch (e: IndexOutOfBoundsException) {

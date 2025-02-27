@@ -68,10 +68,13 @@ class MainFragment : Fragment() {
             CoroutineScope(Dispatchers.IO).launch {
                 val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
                 mvm.selectedMeasure?.recommendations = progressRec
-                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
                 withContext(Dispatchers.Main){
-                    setAdapter()
+                    if (isAdded) {
+                        Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+                        Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
+                        setAdapter()
+                    }
+
                     pvm.fromProgramCustom = false
                 }
             }

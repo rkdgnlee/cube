@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -47,17 +48,11 @@ import kotlin.math.roundToInt
 class PlayFullScreenActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayFullScreenBinding
     val pvm : PlayViewModel by viewModels()
-//    private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var chronometer: Chronometer
     var currentExerciseId = ""
     private var isExitDialogVisible = false
     private lateinit var mediaSourceList: List<MediaSource>
-//    private var currentMediaSourceIndex = 0
-//    private var currentVideoDuration = 0L
-
-
-
 
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null
@@ -87,10 +82,17 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayFullScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if (Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_left, R.anim.none)
+        } else {
+            overridePendingTransition(R.anim.none, R.anim.slide_in_left)
+        }
 
         // ------# 재생시간 타이머 시작하기 #------
         chronometer = findViewById(R.id.chronometer)
@@ -516,6 +518,11 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        if (Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, R.anim.none, R.anim.slide_in_right)
+        } else {
+            overridePendingTransition(R.anim.none, R.anim.slide_in_right)
+        }
         pvm.simpleExoPlayer?.let { player ->
             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
             player.stop()

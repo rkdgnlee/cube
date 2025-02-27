@@ -12,14 +12,13 @@
         android:id="@+id/tvSignInGuide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
         android:text="회원가입을 시작할게요"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/ibtnSignInFinish"
+        app:layout_constraintStart_toEndOf="@+id/ibtnSignInFinish"
+        app:layout_constraintTop_toTopOf="@+id/ibtnSignInFinish" />
 
     <com.shuhart.stepview.StepView
         android:id="@+id/svSignIn"
@@ -37,7 +36,7 @@
         app:sv_doneCircleColor="@color/thirdColor"
         app:sv_doneStepLineColor="@color/white"
         app:sv_doneStepMarkColor="@color/white"
-        app:sv_doneTextColor="@color/thirdColor"
+        app:sv_doneTextColor="@color/secondaryColor"
         app:sv_nextStepCircleColor="@color/subColor100"
         app:sv_nextStepCircleEnabled="true"
         app:sv_nextStepLineColor="@color/white"
@@ -47,7 +46,7 @@
         app:sv_selectedTextColor="@color/secondaryColor"
         app:sv_stepsNumber="4"
         app:sv_textPadding="4dp"
-        app:sv_textSize="16sp" />
+        app:sv_textSize="16dp" />
 
 
     <com.skydoves.progressview.ProgressView
@@ -179,7 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:gravity="center_vertical"
                     android:text="비밀번호 설정"
                     android:textColor="@color/subColor800"
@@ -234,7 +233,7 @@
                     android:id="@+id/TextView80"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:text="비밀번호 확인"
                     android:textColor="@color/subColor800"
                     android:textSize="18dp"
@@ -333,6 +332,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
                     android:textColor="@color/subColor800"
                     android:textSize="13dp" />
             </LinearLayout>
@@ -510,6 +510,7 @@
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
                         android:inputType="phone"
+                        android:maxLength="13"
                         android:paddingLeft="12dp"
                         android:paddingTop="16dp"
                         android:paddingRight="12dp"
@@ -549,6 +550,7 @@
                     android:ems="10"
                     android:hint="인증 번호를 입력해주세요"
                     android:inputType="number"
+                    android:maxLength="10"
                     android:paddingLeft="12dp"
                     android:paddingTop="16dp"
                     android:paddingRight="16dp"
@@ -588,5 +590,17 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <ImageButton
+        android:id="@+id/ibtnSignInFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:padding="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_arrow_left" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

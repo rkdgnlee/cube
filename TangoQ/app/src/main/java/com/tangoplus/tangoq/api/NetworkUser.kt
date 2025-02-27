@@ -43,7 +43,7 @@ object NetworkUser {
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val responseBody = response.body?.string()
-                        Log.v("trySelfLogin", "$responseBody")
+//                        Log.v("trySelfLogin", "$responseBody")
                         val bodyJo = JSONObject(responseBody.toString())
                         if (bodyJo.optJSONObject("login_data") == null) {
                             callback(null)
@@ -214,7 +214,7 @@ object NetworkUser {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseBody = response.body?.string()
-                        // Log.v("응답성공", "code: ${response.code}, body: $responseBody")
+                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
 
                         if (response.isSuccessful) {
                             Log.v("회원가입로그", "${response.code}")

@@ -223,14 +223,14 @@ object NetworkMeasure {
                         val jo = ja.optJSONObject(i)
                         getInfos.add(jo.toMeasureInfo())
                     }
-                    Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID)}")
+                    Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID).size}")
 
                     val newInfos = getInfos.filter { apiInfo ->
                         apiInfo.sn !in roomInfoSns
                     }
 
                     // ------# 없는 것들만 필터링 #------
-                    Log.v("db없는infoSn", "newInfos: $newInfos")
+                    Log.v("db없는infoSn", "newInfos: ${newInfos.size}")
 
                     Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
                     newInfos.forEach{ newInfo ->
@@ -277,7 +277,7 @@ object NetworkMeasure {
                     val md = MeasureDatabase.getDatabase(context)
                     val mDao = md.measureDao()
                     val responseBody = response.body?.string()
-                    Log.w("getMeasureResult", "$responseBody")
+//                    Log.w("getMeasureResult", "$responseBody")
 
                     val motherJo = responseBody?.let { JSONObject(it) }
                     if (motherJo != null) {
@@ -299,15 +299,15 @@ object NetworkMeasure {
 
             } catch (e: SocketTimeoutException) {
                 // 타임아웃 처리
-                Log.e("getMeasureResultError", "Request timed out", e)
+                Log.e("getMeasureResultError", "Request timed out, ${e.message}")
                 return@withContext Result.failure(Exception("Request timed out"))
             } catch (e: IOException) {
                 // 네트워크 문제 처리
-                Log.e("getMeasureResultError", "Network error", e)
+                Log.e("getMeasureResultError", "Network error ${e.message}")
                 return@withContext Result.failure(Exception("Network error: ${e.message}"))
             } catch (e: Exception) {
                 // 일반적인 예외 처리
-                Log.e("getMeasureResultError", "Error fetching measure result", e)
+                Log.e("getMeasureResultError", "Error fetching measure result ${e.message}")
                 return@withContext Result.failure(e)
             }
         }

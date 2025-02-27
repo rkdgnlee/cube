@@ -274,12 +274,15 @@ class MainActivity : AppCompatActivity() {
             val fragmentManager = supportFragmentManager
 
             if (fragmentManager.fragments.lastOrNull() is MainFragment) {
-                MeasureDatabase.closeDatabase()
-                backPressedOnce = true
-                Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
-                backPressHandler.postDelayed(backPressRunnable, 1000)
-                myApplication.clearLastActivity()
-                finishAffinity()
+                if (backPressedOnce) {
+                    MeasureDatabase.closeDatabase()
+                    myApplication.clearLastActivity()
+                    finishAffinity() // 앱 종료
+                } else {
+                    backPressedOnce = true
+                    Toast.makeText(this@MainActivity, "한 번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+                    backPressHandler.postDelayed(backPressRunnable, 1000) // 1초 내에 다시 누르면 종료
+                }
             } else {
                 myApplication.setLastActivity()
                 binding.bnbMain.selectedItemId = R.id.main

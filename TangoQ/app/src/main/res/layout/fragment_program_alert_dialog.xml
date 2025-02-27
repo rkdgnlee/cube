@@ -24,7 +24,7 @@
             android:layout_marginEnd="20dp"
             android:gravity="center_vertical"
             android:lineSpacingExtra="4dp"
-            android:text="늘 필요한 운동을 다 마쳤습니다.\n개인 운동을 진행 하거나 휴식을 취해주세요."
+            android:text="오늘 필요한 운동을 다 마쳤습니다.\n개인 운동을 진행 하거나 휴식을 취해주세요."
             android:textColor="@color/subColor800"
             android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -34,12 +34,15 @@
         <ImageView
             android:id="@+id/ivPAD"
             android:layout_width="0dp"
-            android:layout_height="200dp"
+            android:layout_height="0dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:background="@drawable/drawable_finish_program"
+            android:background="@drawable/drawable_finish_sequence"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
@@ -50,9 +53,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvPAD">
+            app:layout_constraintTop_toBottomOf="@+id/tvPAD"
+            app:layout_constraintVertical_bias="1.0">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPAD1"
@@ -65,7 +70,8 @@
                 android:stateListAnimator="@null"
                 android:text="이전으로"
                 android:textColor="@color/white"
-                android:textSize="18dp" />
+                android:textSize="18dp"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPAD2"

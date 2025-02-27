@@ -93,6 +93,7 @@ class SignInActivity : AppCompatActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         auth = FirebaseAuth.getInstance()
         auth.setLanguageCode("kr")
+        binding.ibtnSignInFinish.setOnClickListener { finish() }
         // -----! 초기 버튼 숨기기 및 세팅 시작 !-----
         binding.llPwCondition.visibility = View.GONE
         binding.etPw.visibility = View.GONE
@@ -137,9 +138,6 @@ class SignInActivity : AppCompatActivity() {
 
         // -----! progress bar 시작 !-----
         binding.pvSignIn.progress = 25f
-        // -----! progress bar 끝 !-----
-
-
 
         // -----! 회원가입 입력 창 anime 시작  !-----
         TransitionManager.beginDelayedTransition(binding.llSignIn, SignInTransition())
@@ -343,6 +341,7 @@ class SignInActivity : AppCompatActivity() {
                                 setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
                                 setPositiveButton("예") { _, _ ->
                                     binding.btnIdCondition.isEnabled = false
+                                    binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.subColor400, null))
                                     binding.etId.isEnabled = false
                                     viewModel.User.value?.put("user_id", id)
                                     Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
@@ -406,16 +405,26 @@ class SignInActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+
                 if (isFormatting) return
                 isFormatting = true
-                val cleaned =s.toString().replace("-", "")
-                when {
-                    cleaned.length <= 3 -> s?.replace(0, s.length, cleaned)
-                    cleaned.length <= 7 -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3)}")
-                    else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
+                val cleaned = s.toString().replace("-", "")
+                val maxDigits = 11
+                val limited = if (cleaned.length > maxDigits) cleaned.substring(0, maxDigits) else cleaned
+
+
+                val formatted = when {
+                    limited.length <= 3 -> limited
+                    limited.length <= 7 -> "${limited.substring(0, 3)}-${limited.substring(3)}"
+                    else -> "${limited.substring(0, 3)}-${limited.substring(3, 7)}-${limited.substring(7)}"
                 }
+
+                // 기존 입력과 다를 때만 업데이트
+                if (s.toString() != formatted && s != null) {
+                    s.replace(0, s.length, formatted)
+                }
+
                 isFormatting = false
-                Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()}")
                 viewModel.mobileCondition.value = mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()
                 if (viewModel.mobileCondition.value == true) {
                     binding.btnAuthSend.isEnabled = true
@@ -623,13 +632,28 @@ class SignInActivity : AppCompatActivity() {
                                         }
                                     }
                                     423, 409, 404, 403 -> {
-                                        MaterialAlertDialogBuilder(context, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                            setTitle("회원 가입 실패")
-                                            setMessage("올바르지 않은 데이터가 존재합니다\n입력한 정보를 다시 확인해주세요")
-                                            setPositiveButton("예") { _, _ ->
-
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            MaterialAlertDialogBuilder(context, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                                setTitle("회원 가입 실패")
+                                                setMessage("올바르지 않은 데이터가 존재합니다\n입력한 정보를 다시 확인해주세요")
+                                                setPositiveButton("예") { _, _ ->
+                                                    binding.etEmail.isEnabled = true
+                                                    binding.etPw.isEnabled = true
+                                                    binding.etPwRepeat.isEnabled = true
+                                                    binding.etId.isEnabled = true
+                                                    binding.etAuthNumber.isEnabled = true
+                                                    binding.etMobile.isEnabled = true
+                                                    binding.btnAuthConfirm.isEnabled = true
+                                                    binding.btnAuthSend.isEnabled = true
+                                                    binding.btnEmailNext.isEnabled = true
+                                                    binding.btnIdCondition.isEnabled = true
+                                                    binding.btnAuthConfirm.backgroundTintList  = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                    binding.btnAuthSend.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                    binding.btnEmailNext.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                    binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                }
+                                                show()
                                             }
-                                            show()
                                         }
                                     }
                                 }

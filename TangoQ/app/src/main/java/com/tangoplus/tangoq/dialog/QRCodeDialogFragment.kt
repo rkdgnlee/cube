@@ -70,9 +70,10 @@ class QRCodeDialogFragment : DialogFragment() {
         checkCameraPermission()
 
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
+        binding.ibtnLSDBack.setOnClickListener { dismiss() }
 
         // ------! balloon 시작 !------
-
+        binding.ibtnLSDBack.setOnClickListener { dismiss() }
         val balloon = Balloon.Builder(requireContext())
             .setWidth(BalloonSizeSpec.WRAP)
             .setHeight(BalloonSizeSpec.WRAP)

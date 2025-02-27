@@ -57,7 +57,12 @@ class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private lateinit var ssm : SaveSingletonManager
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val timeoutHandler = Handler(Looper.getMainLooper())
+    private val timeoutRunnable = Runnable {
+        // 일정 시간이 지나도 응답이 없으면 IntroActivity로 이동
+        introInit()
+    }
+
 //    private var integrityTokenProvider: StandardIntegrityTokenProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -273,6 +278,7 @@ class SplashActivity : AppCompatActivity() {
                     introInit()
                 }
 
+                timeoutHandler.postDelayed(timeoutRunnable, 20000)
                 // ------! 카카오 토큰 있음 끝 !------
                 // ------! 화면 경로 설정 끝 !------
             }
@@ -369,4 +375,9 @@ class SplashActivity : AppCompatActivity() {
 //        }
 //        return true
 //    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timeoutHandler.removeCallbacks(timeoutRunnable)
+    }
 }

@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
@@ -65,13 +66,14 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
 
             if (!hpvProgresses.isNullOrEmpty()) {
                 val currentHpvProgresses = hpvProgresses[position]
-                Log.v("progress", "$hpvProgresses, $position, $currentHpvProgresses")
+
                 if (week.second <= week.first) {
                     // 선택한 회차 + 현재 회차
                     if (position == seq.third && seq.second == seq.third) {
                         setHpv(holder, true, currentHpvProgresses)
                         setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
                         if (holder.hpvPSI.progress > 90f) {
+
                             setCompleted(holder, true)
                         }
                         // 선택한 회차 + 이전 회차
@@ -131,7 +133,6 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
             holder.hpvPSI.progress = progress.toFloat()
         } else {
             holder.hpvPSI.colorBackground = fragment.resources.getColor(R.color.subColor100, null)
-
             holder.hpvPSI.progress = progress.toFloat()
         }
     }
@@ -143,10 +144,12 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
         if (isSelect) {
             setCheckBadge(holder, true)
             holder.ivPSICheck.visibility = View.VISIBLE
+            holder.cvPSI.setCardBackgroundColor(ColorStateList.valueOf(fragment.resources.getColor(R.color.secondaryColor, null)))
         } else {
             setCheckBadge(holder, false)
             holder.ivPSICheck.visibility = View.VISIBLE
-            holder.cvPSI.visibility = View.VISIBLE
+            holder.cvPSI.setCardBackgroundColor(ColorStateList.valueOf(fragment.resources.getColor(R.color.subColor400, null)))
+
         }
     }
     private fun setTextView(tv: TextView, color1: Int, color2: Int) {

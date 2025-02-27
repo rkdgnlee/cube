@@ -197,8 +197,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     var latestResult: PoseLandmarkerHelper.ResultBundle? = null
     private val mvm : MeasureViewModel by viewModels()
 
-    private var repeatCount = MutableLiveData(0)
-    private val maxRepeats = 6
+    private var seqStep = MutableLiveData(0)
+    private val maxSeq = 6
     private var progress = 12
     private var timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
     private val startTime = LocalDateTime.now()
@@ -219,7 +219,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
-        object : CountDownTimer((if (repeatCount.value == 5) 7000 else 5000), 1000) {
+        object : CountDownTimer((if (seqStep.value == 5) 7000 else 5000), 1000) {
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 runOnUiThread{
@@ -317,11 +317,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         hideViews(600)
                         Log.v("사진service", "isCapture: ${isCapture}, isRecording: $isRecording")
                         // ------! 종료 후 다시 세팅 !------
-                        latestResult?.let { resultBundleToJson(it, repeatCount.value ?: -1) }
-                        if (repeatCount.value != null) {
-                            captureImage(repeatCount.value ?: -1)
+                        latestResult?.let { resultBundleToJson(it, seqStep.value ?: -1) }
+                        if (seqStep.value != null) {
+                            captureImage(seqStep.value ?: -1)
                         }
-                        Log.v("캡쳐종료시점", "step: ${repeatCount.value}")
+                        Log.v("캡쳐종료시점", "step: ${seqStep.value}")
                         updateUI()
                         isCapture = false
                     }
@@ -439,7 +439,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // ------! 안내 문구 사라짐 시작 !------
 
         /** 사진 및 동영상 촬영 순서
-         * 1. isLooping true -> repeatCount확인 -> count에 맞게 isCapture및 isRecord 선택
+         * 1. isLooping true -> seqStep확인 -> count에 맞게 isCapture및 isRecord 선택
          * 2. mCountdown.start() -> 카운트 다운이 종료될 때 isCapture, isRecording에 따라 service 함수 실행 */
         binding.ibtnMeasureSkeletonBack.setOnClickListener {
             MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
@@ -835,7 +835,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.fabtnMeasureSkeleton.setOnSingleClickListener {
-            val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
+            val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
             dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.ibtnMeasureSkeletonSetup.setOnSingleClickListener {
@@ -843,13 +843,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             dialog4.show(supportFragmentManager, "MeasureSkeletonSetup")
         }
         // ------! 다시 찍기 관리 시작 !------
-        repeatCount.observe(this@MeasureSkeletonActivity) { count ->
+        seqStep.observe(this@MeasureSkeletonActivity) { count ->
             binding.btnMeasureSkeletonStepPrevious.visibility = if (count.compareTo(0) == 0) {
                 View.GONE
             } else {
                 View.VISIBLE
             }
-            Log.v("visible", "repeatCount: ${repeatCount.value}")
+            Log.v("visible", "seqStep: ${seqStep.value}")
         }
 
         binding.btnMeasureSkeletonStepPrevious.setOnSingleClickListener {
@@ -949,8 +949,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     // ------# 측정 seq가 종료될 때 실행되는 함수 #------
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
-        when (repeatCount.value) {
-            maxRepeats -> {
+        when (seqStep.value) {
+            maxSeq -> {
                 binding.pvMeasureSkeleton.progress = 100f
                 binding.clMeasureSkeletonCount.visibility = View.VISIBLE
 
@@ -964,23 +964,23 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             else -> {
                 Log.v("dynamic잘들어갔", "${mvm.dynamic}, ${mvm.dynamicJa.length()}")
                 binding.tvMeasureSkeletonGuide.text = "다음 동작을 준비해주세요"
-                repeatCount.value = repeatCount.value?.plus(1)
+                seqStep.value = seqStep.value?.plus(1)
                 progress += 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
-                Log.v("몇단계?", "repeatCount: ${repeatCount.value}, progress: $progress")
+                Log.v("몇단계?", "seqStep: ${seqStep.value}, progress: $progress")
                 binding.clMeasureSkeletonCount.visibility = View.INVISIBLE
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
 
-                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
+                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
                     dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }, 1000)
 
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${seqStep.value!!.toInt()}", "drawable", packageName))
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
                 }, 1100)
             }
         }
-        Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")
+        Log.v("updateUI", "progressbar: ${progress}, seqStep: ${seqStep.value}")
     }
 
 
@@ -988,34 +988,35 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private fun setPreviousStep() {
 
         /*  이전 버튼 시 동작해야할 사항
-        *   1. repeatCount.value
+        *   1. seqStep.value
         *   2. media file -> jpg, mp4
         *   3. json file -> json
         *   4. comment와 progress들
         * */
 
-        when (repeatCount.value) {
-            maxRepeats -> {
-                mvm.statics.removeAt(repeatCount.value?.minus(1)  ?: 0)
-                mvm.staticFiles.removeAt(repeatCount.value ?: 0)
-                mvm.staticJsonFiles.removeAt(repeatCount.value ?: 0)
+        when (seqStep.value) {
+            maxSeq -> {
+                mvm.statics.removeAt(seqStep.value?.minus(1)  ?: 0)
+                mvm.staticFiles.removeAt(seqStep.value ?: 0)
+                mvm.staticJsonFiles.removeAt(seqStep.value ?: 0)
                 binding.pvMeasureSkeleton.progress -= 16  // 마지막 남은 2까지 전부 빼기
                 binding.tvMeasureSkeletonGuide.text = "프레임에 맞춰 서주세요"
                 binding.btnMeasureSkeletonStep.text = "측정하기"
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
                 binding.clMeasureSkeletonCount.visibility = View.INVISIBLE
                 // 1 3 4 5 6 7
             }
+            // 0번 스텝이 완료됐을 때
             1 -> {
-                repeatCount.value = repeatCount.value?.minus(1)
+                seqStep.value = seqStep.value?.minus(1)
                 progress -= 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
-                Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value} / 6")
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
-                mvm.statics.removeAt(repeatCount.value ?: 0) // static을
-                mvm.staticFiles.removeAt(repeatCount.value ?: 0)
-                mvm.staticJsonFiles.removeAt(repeatCount.value ?: 0)
+                Log.v("녹화종료되나요?", "seqStep: ${seqStep.value} / 6")
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
+                mvm.statics.removeAt(seqStep.value ?: 0) // static을
+                mvm.staticFiles.removeAt(seqStep.value ?: 0)
+                mvm.staticJsonFiles.removeAt(seqStep.value ?: 0)
                 val mirroredVideoFile = File(cacheDir, "mirrored_video.mp4")
                 if (mirroredVideoFile.exists()) {
                     // 파일 삭제
@@ -1029,16 +1030,18 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     Log.v("MPEGLog","mirrored_video.mp4 파일이 존재하지 않습니다.")
                 }
             }
+            // 1번 이상 (dynamic, static 들)
             2, 3, 4, 5, 6 -> {
-                repeatCount.value = repeatCount.value?.minus(1)
+                seqStep.value = seqStep.value?.minus(1)
                 progress -= 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
-                Log.v("촬영중단되나요?", "repeatCount: ${repeatCount.value} / 6")
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
-                if (repeatCount.value != 1) {
-                    mvm.statics.removeAt(repeatCount.value?.minus(1) ?: 0) // static을
-                    mvm.staticFiles.removeAt(repeatCount.value?.minus(1)?: 0)
-                    mvm.staticJsonFiles.removeAt(repeatCount.value?.minus(1) ?: 0)
+                Log.v("촬영중단되나요?", "seqStep: ${seqStep.value} / 6")
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
+                // 이곳이 1인 이유는 minus를 한 값기준으로 세기 때문임 when 절의 2, 3, 4, 5, 6 은 이제 할 seqSteps임.
+                if (seqStep.value != 1) {
+                    mvm.statics.removeAt(seqStep.value?.minus(1) ?: 0) // static을
+                    mvm.staticFiles.removeAt(seqStep.value?.minus(1)?: 0)
+                    mvm.staticJsonFiles.removeAt(seqStep.value?.minus(1) ?: 0)
                 } else {
                     mvm.dynamic = null
                     mvm.dynamicJa = JSONArray()
@@ -1047,9 +1050,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 }
             }
         }
-        val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+        val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${seqStep.value!!.toInt()}", "drawable", packageName))
         binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-        Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}, staticsSize: ${mvm.statics.size} / 6 ")
+        Log.v("updateUI", "progressbar: ${progress}, seqStep: ${seqStep.value}, staticsSize: ${mvm.statics.size} / 6 ")
     }
 
     // ------! 촬영 시 view 즉시 가리고 -> 서서히 보이기 !-----
@@ -1058,7 +1061,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         binding.fabtnMeasureSkeleton.visibility = View.INVISIBLE
         binding.llMeasureSkeletonBottom.visibility = View.INVISIBLE
         binding.clMeasureSkeletonCount.visibility = View.INVISIBLE
-        if (repeatCount.value != 1) startCameraShutterAnimation()
+        if (seqStep.value != 1) startCameraShutterAnimation()
 
         setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
         setAnimation(binding.fabtnMeasureSkeleton, 850, delay, true) {}
@@ -1070,7 +1073,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private fun startTimer() {
         // 시작 버튼 후 시작
         binding.btnMeasureSkeletonStep.isEnabled = false
-        when (repeatCount.value) {
+        when (seqStep.value) {
             1 -> {
                 isCapture = false
                 isRecording = true
@@ -1080,7 +1083,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 isRecording = false
             }
         }
-        Log.v("repeatCount", "${repeatCount.value} / 6")
+        Log.v("seqStep", "${seqStep.value} / 6")
         mCountDown.start()
         // ------! 타이머 control 끝 !------
     }
@@ -1170,7 +1173,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 isFrontCamera = cameraFacing == CameraSelector.LENS_FACING_FRONT
             )
             if (startRecording && isRecording && latestResult != null) {
-                resultBundleToJson(latestResult, repeatCount.value?: -1)
+                resultBundleToJson(latestResult, seqStep.value?: -1)
             }
         }
         imageProxy.close()

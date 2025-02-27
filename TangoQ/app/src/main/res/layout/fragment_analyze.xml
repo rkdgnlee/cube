@@ -268,15 +268,16 @@
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cvAEffect"
                         android:layout_width="30dp"
                         android:layout_height="0dp"
                         android:layout_marginBottom="8dp"
                         app:cardCornerRadius="6dp"
                         app:cardElevation="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/bcA"
-                        app:layout_constraintHorizontal_bias="0.925"
-                        app:layout_constraintStart_toStartOf="@+id/bcA"
+                        app:layout_constraintEnd_toEndOf="@+id/linearLayout19"
+                        app:layout_constraintHorizontal_bias="0.975"
+                        app:layout_constraintStart_toStartOf="@+id/linearLayout19"
                         app:layout_constraintTop_toBottomOf="@+id/tvAWeekProgress">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -362,58 +363,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvAWeekProgress" />
 
                     <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:orientation="horizontal"
-                        app:layout_constraintBottom_toBottomOf="@+id/llAWeek"
-                        app:layout_constraintEnd_toEndOf="@+id/llAWeek"
-                        app:layout_constraintStart_toStartOf="@+id/llAWeek"
-                        app:layout_constraintTop_toTopOf="@+id/bcA">
-
-                        <View
-                            android:id="@+id/vA1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
-
-                        <View
-                            android:id="@+id/vA2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
-
-                        <View
-                            android:id="@+id/vA3"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
-
-                        <View
-                            android:id="@+id/vA4"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
-
-                        <View
-                            android:id="@+id/vA5"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
-
-                        <View
-                            android:id="@+id/vA6"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
-
-                        <View
-                            android:id="@+id/vA7"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
-                    </LinearLayout>
-
-                    <LinearLayout
                         android:id="@+id/llAWeek"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -477,6 +426,59 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/linearLayout19"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="@+id/llAWeek"
+                        app:layout_constraintEnd_toEndOf="@+id/llAWeek"
+                        app:layout_constraintStart_toStartOf="@+id/llAWeek"
+                        app:layout_constraintTop_toTopOf="@+id/bcA">
+
+                        <View
+                            android:id="@+id/vA1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA4"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA6"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <View
+                            android:id="@+id/vA7"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.cardview.widget.CardView
@@ -538,7 +540,7 @@
                             <TextView
                                 android:id="@+id/monthText"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_gravity="center"
                                 android:layout_weight="8"
                                 android:gravity="center"

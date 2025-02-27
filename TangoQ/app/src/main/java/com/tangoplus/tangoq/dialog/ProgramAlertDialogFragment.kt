@@ -96,11 +96,11 @@ class ProgramAlertDialogFragment : DialogFragment() {
         dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+//        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f ,height = 0.5f)
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f , height = 0.35f)
         } else {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.5f)
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.45f)
         }
     }
 }

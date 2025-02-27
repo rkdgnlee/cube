@@ -111,7 +111,7 @@ class MeasureFragment : Fragment() {
                         )
 
                         binding.tvMMeasureHistory.text =
-                            "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)}"
+                            "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
                         binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.clMPredictDicease.setOnClickListener {
                             val dialog = LoadingDialogFragment.newInstance("측정파일")
@@ -178,7 +178,7 @@ class MeasureFragment : Fragment() {
                         }
                         binding.tvM1Trend.isEnabled = true
                     } else {
-                        binding.tvMTotalScore.text = "0"
+                        binding.tvMTotalScore.text = "-"
                         binding.tvMMeasureHistory.text = "측정기록없음"
                         binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
                         binding.tvMDuration.text = "측정 기록 없음"

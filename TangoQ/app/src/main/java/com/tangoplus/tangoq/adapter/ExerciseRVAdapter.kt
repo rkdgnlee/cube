@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -43,6 +44,7 @@ class ExerciseRVAdapter (
 
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val clEI : ConstraintLayout = view.findViewById(R.id.clEI)
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
         val tvEIName : TextView = view.findViewById(R.id.tvEIName)
         val tvEISymptom : TextView= view.findViewById(R.id.tvEISymptom)
@@ -202,18 +204,20 @@ class ExerciseRVAdapter (
                             }
                         }
                     }
-                    holder.vEI.setOnClickListener {
-                        val currentItem = progresses?.get(position)
-                        val dialogFragment = PlayThumbnailDialogFragment().apply {
-                            arguments = Bundle().apply {
-                                putParcelable("ExerciseUnit", currentExerciseItem)
-                                if (progresses != null) {
-                                    putBoolean("isProgram", true)
-                                    putInt("uvpSn", currentItem?.uvpSn ?: 0)
+                    if (!isTouchLocked) {
+                        holder.vEI.setOnClickListener {
+                            val currentItem = progresses?.get(position)
+                            val dialogFragment = PlayThumbnailDialogFragment().apply {
+                                arguments = Bundle().apply {
+                                    putParcelable("ExerciseUnit", currentExerciseItem)
+                                    if (progresses != null) {
+                                        putBoolean("isProgram", true)
+                                        putInt("uvpSn", currentItem?.uvpSn ?: 0)
+                                    }
                                 }
                             }
+                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                         }
-                        dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                     }
 //                    else {
 //                        // ------ # PlayThumbnail #------
@@ -322,6 +326,15 @@ class ExerciseRVAdapter (
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
     }
+    private var isTouchLocked = false
+
+    fun setTouchLocked(enabled: Boolean) {
+        isTouchLocked = when (enabled) {
+            true -> true
+            false -> false
+        }
+    }
+
 
 
 //    private fun updateLikeButtonState(exerciseId: String, ibtn : ImageButton) {

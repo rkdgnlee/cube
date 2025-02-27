@@ -41,10 +41,10 @@
 
     <ImageView
         android:id="@+id/ivPSICheck"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="-4dp"
-        android:layout_marginTop="-4dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="-6dp"
+        android:layout_marginTop="-5dp"
         app:layout_constraintStart_toStartOf="@+id/hpvPSI"
         app:layout_constraintTop_toTopOf="@+id/tvPSIName"
         app:srcCompat="@drawable/icon_check_bckgnd_white"

@@ -300,9 +300,9 @@ class MathTest {
 
     @Test
     fun calculateWeekSeq() {
-        val result = listOf(listOf(3, 3, 3, 3), listOf(3, 3, 3, 3), listOf(3, 3, 3, 3), listOf(1, 1,1, 1))
-        val adjustedWeek = 4 - 1
-        val adjustedSeq = 1 - 1
+        val result = listOf(listOf(3, 2, 3, 2), listOf(0, 0, 0, 0), listOf(0, 0, 0, 0), listOf(0, 0, 0, 0))
+        val adjustedWeek = 1 - 1
+        val adjustedSeq = 3 - 1
 //        Log.v("포스트getProgress", "callback: ($adjustedWeek, $adjustedSeq, $week, $seq,) result: $result")
         val countSets = result[adjustedWeek]
         val isMaxSeq = countSets.map { it == 3 }.all { it }
@@ -318,15 +318,15 @@ class MathTest {
             setSeq = 0
             // 회차 진행중
             println("0")
-        } else if (!isMaxSeq && isSeqFinish && isMinSeq > 0) {
+        } else if (!isMaxSeq && isSeqFinish && isMinSeq > 0) { // 3회차가 아니고, 전부 끝났고, 현재 회차가 1이상임 -> 여기서 그럼 전부 안끝냈을 때의 조건이 있어야 함.
             setWeek = adjustedWeek
             setSeq = adjustedSeq + 1
             // 회차가 끝남
             println("1")
 
-        } else if (isMinSeq > 0) {
+        } else if (isMinSeq > 0) { // 현재 회차가 1 이상임 그리고
             setWeek = adjustedWeek
-            setSeq = adjustedSeq + 1
+            setSeq = adjustedSeq
             // 회차가 끝남
             println("2")
 

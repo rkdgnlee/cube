@@ -13,7 +13,7 @@
         <item name="android:dialogTheme">@style/AppTheme.DialogFragment</item>
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:windowLightNavigationBar">true</item>
-
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 

@@ -31,7 +31,6 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.databinding.FragmentMainAnalysisBinding
-import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.SequenceBSDialogFragment
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.function.BiometricManager
@@ -325,7 +324,7 @@ class MainAnalysisFragment : Fragment() {
     private fun releasePlayer() {
         simpleExoPlayer?.release()
         simpleExoPlayer = null
-        binding.pvAI.player = null
+
     }
     //---------------------------------------! VideoOverlay !---------------------------------------
     private fun setPlayer() {

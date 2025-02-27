@@ -74,7 +74,7 @@ object NetworkProgress {
                                 requiredSet = jo.optInt("required_set"),
                                 duration = jo.optInt("duration"),
                                 progress = jo.optInt("progress"),
-                                updatedAt = jo.optString("updated_at"),
+                                updatedAt = jo.optString("updated_at") ?: "",
                                 isWatched = jo.optInt("is_watched"),
                                 cycleProgress = jo.optInt("cycle_progress")
                             )
@@ -146,7 +146,7 @@ object NetworkProgress {
         })
     }
     // 가장 최신 정보를 가져오는게 좋다.
-    suspend fun getProgress(myUrl: String, bodySn : JSONObject, context: Context, callback: (Triple<Int, Int, Int>, MutableList<MutableList<ProgressUnitVO>>) -> Unit) {
+    suspend fun getProgress(myUrl: String, bodySn : JSONObject, context: Context, callback: (Triple<Int, Int, Int>, List<List<ProgressUnitVO>>) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodySn.toString().toRequestBody(mediaType)
         val client = getClient(context)
@@ -164,14 +164,12 @@ object NetworkProgress {
                     val currentWeek = latest?.optInt("week_number")
                     val currentCycle = latest?.optInt("cycle")
                     Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
-
+                    val result = mutableListOf<ProgressUnitVO>()
                     val exerciseCount = bodyJson.optInt("row_count") / 4
                     val data = bodyJson.optJSONArray("data")
-                    val result = mutableListOf<MutableList<ProgressUnitVO>>()
-                    for (i in 0 until 4) {
-                        val seqUnits = mutableListOf<ProgressUnitVO>()
-                        for (j in 0 until exerciseCount) {
-                            val jo = data?.optJSONObject(i * j)
+                    if (data != null) {
+                        for (i in 0 until data.length()) {
+                            val jo = data.optJSONObject(i)
                             if (jo != null) {
                                 val progressUnitVO = ProgressUnitVO(
                                     uvpSn = jo.optInt("uvp_sn"),
@@ -188,20 +186,22 @@ object NetworkProgress {
                                     updatedAt = jo.optString("updated_at"),
                                     isWatched = jo.optInt("is_watched")
                                 )
-                                Log.v("seq,week계산하기", "$i $progressUnitVO")
-                                seqUnits.add(progressUnitVO)
+//                                Log.v("seq,week계산하기", "$i $progressUnitVO")
+                                result.add(progressUnitVO)
                             }
                         }
-                        result.add(seqUnits)
+                        if (result.isNotEmpty()) {
+                            val chunckedResult = result.chunked(exerciseCount)
+                            callback(
+                                Triple(
+                                    progressHistorySn ?: -1,
+                                    currentWeek ?: -1,
+                                    currentCycle ?: -1
+                                ),
+                                chunckedResult
+                            )
+                        }
                     }
-                    callback(
-                        Triple(
-                            progressHistorySn ?: -1,
-                            currentWeek ?: -1,
-                            currentCycle ?: -1
-                        ),
-                        result
-                    )
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgressIndex", "Post Progress(latest): ${e.message}")
